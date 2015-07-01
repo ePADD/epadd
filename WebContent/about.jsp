@@ -1,0 +1,177 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>About ePADD</title>
+
+    <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/jquery/jquery.tools.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <jsp:include page="css/css.jsp"/>
+    <script src="js/muse.js" type="text/javascript"></script>
+    <script src="js/epadd.js"></script>
+    <style>.heading {font-size: 16px; color: #69AA35}</style>
+  </head>
+</head>
+<body>
+<jsp:include page="header.jspf"/>
+
+  <div style="margin-left:160px;margin-right:160px">
+    <span>ePADD version <% out.println(edu.stanford.epadd.Version.version);%></span>
+      © Stanford University<p>
+      Licensed with source code under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a><p>
+
+      <p>  For more information about ePADD, including help, mailing lists and community support forum, please visit <a href="https://library.stanford.edu/projects/epadd">this page</a>.
+</p>
+<h1>Credits</h1>
+      <p>
+      <p></p>
+      <div class="block">
+      <div class="heading">Research and Development</div>
+
+      Sudheendra Hangal, Ashoka University and Amuse Labs <br/>
+      Vihari Piratla, Amuse Labs<br/>
+      Sit Manovit, iXora Inc.<br/>
+      Peter Chan, Stanford University Libraries<br/>
+      Glynn Edwards, Stanford University Libraries<br/>
+      Josh Schneider, Stanford University Libraries<br/>
+      </div>
+      <p>
+
+      <div class="block">
+      <div class="heading">Design</div>
+      Saumya Sarangi, Lollypop Design<br/>
+      Mandeep RJ, Lollypop Design<br/>
+      </div>
+      <p>
+
+      <div class="block">
+      <div class="heading">Initial specifications (requirements and wireframes)</div>
+
+      Daniel Hartwig, Stanford University Libraries<br/>
+      Daniel Jarvis, Hoover Institute, Stanford<br/>
+      Lisa Miller, Hoover Institute, Stanford<br/>
+      Aimee Morgan, formerly Stanford University Libraries<br/>
+      Laura O'Hara, formerly SLAC National Accelerator Laboratory<br/>
+      </div>
+      </p>
+      <p>
+      <div class="block">
+      <div class="heading">Testing and Collaboration</div>
+          Donald Mennerich, New York University Libraries<br/>
+          Susan Thomas, Bodleian Library, Oxford University<br/>
+          Riccardo Ferrante and Lynda Schmitz Fuhrig, Smithsonian Institution Archives<br/>
+          Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University<br/>
+      </div>
+      <p>
+      <div class="block">
+          <div class="heading">Advisors</div>
+              Jeremy Leighton John, British Library<br/>
+          Monica S. Lam, Stanford University<br/>
+          Phillip R. Malone, Stanford University<br/>
+          Pam Maples, Stanford University<br/>
+          Meg McAleer, Library of Congress<br/>
+          Chris Prom, University of Illinois<br/>
+          Ben Shneiderman, University of Maryland<br/>
+          Jeff Ubois, Macarthur Foundation<br/>
+      <p>
+      <div class="block">
+          <div class="heading">Funding</div>
+
+      <a href="http://www.archives.gov/nhprc/NHPRC">National Historical Publications &amp; Records Commission</a><br/>
+      Payton J. Treat Fund from the Stanford University Libraries <br/>
+      U.S. <a href="http://nsf.gov">National Science Foundation</a> (for Muse)<br/>
+      <a href="http://mobisocial.stanford.edu">Mobisocial Laboratory</a> at Stanford University (for Muse)<br/>
+      <p>
+      <p>
+
+      <h1>Software</h1><p>
+      Under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>:<br/>
+      <a href="http://apache.org">Apache</a> Commons (fileupload, lang3, io, httpclient, cli, codec), tika, opennlp, tomcat, maven, ant © Apache Software Foundation<br/>
+      <a href="http://mobisocial.stanford.edu">Muse</a> © Mobisocial Laboratory, Stanford University <br/>
+      <a href="https://code.google.com/p/google-gson/">Google Gson</a> © Google<br/>
+      <a href="http://opencsv.sourceforge.net">OpenCSV</a> © Glen Smith and others <br/>
+      <p>
+      <a href="java.oracle.com">Java SE Platform Products</a> © Oracle - <a href="http://www.oracle.com/technetwork/java/javase/terms/license/index.html">Oracle BCL</a><br/>
+      <a href="http://launch4j.sourceforge.net/">Launch4j</a> © Grzegorz Kowal <a href="http://opensource.org/licenses/BSD-3-Clause">BSD 3-clause license and <a href="http://opensource.org/licenses/mit-license.html">MIT license</a> <br/>
+      <a href="http://fontawesome.io">Font Awesome</a> © Dave Gandy <a href="http://opensource.org/licenses/mit-license.html">MIT license</a>, <a href="http://scripts.sil.org/OFL">SIL OFL 1.1</a><br/>
+      Jsoup <br/>
+      <p></p>
+      <a href="https://github.com/cooliris/embed-wall">Cooliris Image wall</a> (Special thanks to Soujanya Bhumkar, Austin Shoemaker and team for making the software available to us)<br/>
+
+      Copyright (c) 2015 Yahoo, Inc.
+
+      This software is provided 'as-is', without any express or implied
+      warranty. In no event will the authors be held liable for any damages
+      arising from the use of this software.
+
+      Permission is granted to anyone to use this software for any purpose,
+      including commercial applications, and to alter it and redistribute it
+      freely, subject to the following restrictions:
+
+      1. The origin of this software must not be misrepresented; you must not
+      claim that you wrote the original software. If you use this software
+      in a product, an acknowledgement in the product documentation would be
+      appreciated but is not required.
+      2. Altered source versions must be plainly marked as such, and must not be
+      misrepresented as being the original software.
+      3. This notice may not be removed or altered from any source distribution.
+
+      <p></p>
+
+      <a href="http://www.csie.ntu.edu.tw/~cjlin/libsvm/">LIBSVM</a> <br/>
+
+      Copyright (c) 2000-2014 Chih-Chung Chang and Chih-Jen Lin
+      All rights reserved.
+
+      Redistribution and use in source and binary forms, with or without
+      modification, are permitted provided that the following conditions
+      are met:
+
+      1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+      2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+      3. Neither name of copyright holders nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+
+
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+      ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+      LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+      A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR
+      CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+      EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+      PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+      PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+      LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+      NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+      SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+      <p></p>
+
+      <a href="http://mstor.sourceforge.net/index.html">Mstor</a><br/>
+      Copyright (c) 2007, Ben Fortuna
+      All rights reserved.
+
+      Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+      Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+      Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+      Neither the name of Ben Fortuna nor the names of any other contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+</div>
+
+</body>
+</html>

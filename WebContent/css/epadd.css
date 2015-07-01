@@ -1,0 +1,224 @@
+@CHARSET "UTF-8";
+body { 	font-family: 'Open Sans', sans-serif; /* "Myriad Pro", "Trebuchet MS", Calibri, Verdana, Geneva, Arial, sans-serif; */
+	line-height: 1.6em;
+  /*  margin: 0% 5%; */
+    text-align: left;
+}
+
+h1 { text-align:center; font-size: 20px;}
+h2 { text-align:center; font-size: 16px;}
+h3 { text-align:center; font-size: 14px;}
+
+.navbar-nav li { padding: 0px 3px;}
+.note {	padding:5px; width:100%;border: solid 1px rgba(0,0,0,0.2); 	text-align:left;
+}
+
+hr {
+	border-top: solid 1px rgba(0,0,0,0.2);
+}
+
+.epadd-nav { background: #0175bc; color: white }
+.navbar-default .navbar-nav>li>a { color: rgba(255,255,255,0.5);}
+.navbar-default .navbar-nav>li>a:hover { color: rgba(255,255,255,1.0);}
+.navbar-brand { padding : 0px; background: #07659E;}
+.navbar-brand img { padding : 0px; background: #07659E;}
+
+a {color: #3682bb;}
+/* #nav1 { font-size: 120%;}
+#nav1 a, #nav2 a, #nav3 a { padding: 3px;  color: #6f6f6f; text-decoration: none}
+#nav1 a.selected, #nav1 a:hover, #nav2 a.selected, #nav2 a:hover, #nav3 a.selected, #nav3 a:hover { color: yellow; background-color: #3682bb; transition: background-color 0.5s, color 0.5s;} */ 
+/* color picked from testflightapp.com */
+/* #nav1 a.selected, #nav1 a:hover, #nav2 a.selected, #nav2 a:hover { color: #3682bb; border-bottom: solid 1px #3682bb} */
+/* #nav2, #nav3 { padding-left:190px;} */
+.status {
+	border-collapse: separate;
+	border-spacing: 5px;
+	filter: alpha(opacity = 90);
+	opacity: 0.9;
+	-khtml-opacity: 0.9;
+	opacity: 0.9;
+	color: #000000;
+    background-color: white; 
+    border-color: black;
+	
+	z-index:1000;min-height:180px;height:180px;padding:30px;position:fixed;width:500px;box-shadow:0 4px 23px 5px rgba(25,25,25, 0.2), 0 2px 6px rgba(255,255,255,0.15);
+}
+
+div.progress_bar_outer_box {margin-top: 15px; width:400px;border-style:none;background-color:#e5e5e5;border-radius:5%;border-top:15px;}
+
+div.progress_bar {
+	background-color: #0175bc;
+	border-radius: 5%;
+	padding:0;width:0;height:12px;
+/*        background-color: navy; /* hotpink; #40f040; */ 
+}
+
+div.facets {
+	background-color:#F0F0F0;
+    font-size: 12px;
+	padding-left:5px;
+	border:solid 1px rgba(160,160,160,0.3);
+}
+
+.selected-facet {
+	background-color: #2A8E82;
+	color: white;
+	padding: 4px;
+}
+
+.facet, .search { /* these are links */
+		cursor: pointer;
+}
+
+.facet:hover, .noTNattachmentText:hover, .selected-facet {
+    border-bottom: 1px solid #4E7178;
+    text-decoration:none;
+}
+
+.browse_message_area {
+  /*  background-image: url("../images/parchment-light.png"); */
+    background-color: white; /* #f8f8ff; */
+	border:1px solid #D4D4D4;
+	margin-bottom: 10px;
+}
+
+.docheader { /* padding:8px 10px; */
+	padding: 10px;
+	margin-bottom: 10px;
+	border-bottom: solid 1px rgba(160,160,160,0.3);
+}
+
+.docheader {
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+	width: 98%; 	
+}
+
+table.docheader td {padding: 2px;}
+.muse-doc-header { padding-bottom:10px; }
+div.muse-doc {
+        padding-top: 0px;
+        margin-left: 20px;
+        margin-right: 20px;
+        /* font-family: Courier, Arial, sans-serif; */
+        font-family: Courier, "Myriad Pro", Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.6em;
+/*      min-height: 1200px; */
+
+        /* insert word break to handle long unbroken words longer than a line: see http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css    */
+        -ms-word-break: break-all;
+        word-break: break-all;
+        -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
+
+#status a, #status a:hover {
+	color: #0000EE;
+}
+
+#status_text { margin-top:20px;}
+#status { z-index: 1000000; /* has to be higher than overlay */}
+a.hilitedTerm, .hilitedTerm {
+        background-color: yellow;
+  /*  border-bottom: 1px solid #74C0CF; */
+    color: #000000;
+}
+
+#status_cancel { margin-left:20px; position:relative; top: -2px}
+
+.light-border { border: solid 1px rgba(0,0,0,0.5);}
+.underline { text-decoration: underline; }
+.underline_on_hover:hover { text-decoration: underline; }
+
+.folderEntry {
+	min-width: 15em;
+/*	width: 15em;
+	max-width: 15em; */
+	margin: 1px;
+	padding: 0px 10px;
+}
+
+.browseFolder {
+	border: solid 1px rgba(0,0,0,0.2); font-size:80%; padding:5px; margin:5px; display:none; height:250px;overflow:auto;
+}
+
+.resolved,.unresolved,.custom{
+	cursor: pointer;
+	display: inline-block;
+	line-height: 17px;
+}
+
+.resolved{
+	text-decoration: none;
+	color: black;
+	border-bottom: 1px dotted #000;
+	border-bottom-color: red;
+}
+
+.opennlp-person{
+	color: black;
+	border-top: 1px dotted #000;
+	border-top-color: rgba(255, 0, 0, 0.2);
+}
+
+.opennlp-org{
+	color: black;
+	border-top: 1px dotted #000;
+	border-top-color: rgba(0, 0, 255, 0.2);
+}
+
+.opennlp-place{
+	color: black;
+	border-top: 1px dotted #000;
+	border-top-color: rgba(0, 255, 0, 0.2);
+}
+
+.custom-people{
+	color: black;
+	border-bottom: 2px solid #000;
+	border-bottom-color: red;
+}
+
+.custom-org{
+	color: black;
+	border-bottom: 2px solid #000;
+	border-bottom-color: blue;
+}
+
+.custom-loc{
+	color: black;
+	border-bottom: 2px solid #000;
+ 	border-bottom-color: green;
+}
+
+.resolutions{
+	text-align:left;
+}
+
+.muse-overlay, .overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0.8;
+    z-index: 10000;
+}
+
+.dataTables_paginate a { margin: 0px 2px;}
+
+.flag { font-size:25px;margin-left:25px;position:relative;top:3px; color: #a0a0a0;}
+.flag-enabled { color: #0175bc; } /* important that flag-enabled come after .flag, so that it takes precedence in case both flag and flag-enabled are applied */
+
+.authorities-table { font-size: 14px; }
+.authorities-table .ids a { font-size: 12px; margin: 10px; }
+.authorities-table .ids { margin-left:5px; }
+.authorities-table tr { border-bottom: solid 1px rgba(0,0,0,0.2); }
+
+#manualassign { padding: 20px }
+#manualassign, #manualassign .aa { font-size: 12px; }
+#manualassign .header { font-size: 20px; }
+.fancybox-skin { background-color: white; }

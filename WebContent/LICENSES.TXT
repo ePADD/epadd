@@ -1,0 +1,6 @@
+jgrowl
+jquery
+
+apache libraries
+
+jquery file tree under MIT Public License.

@@ -1,0 +1,19 @@
+@CHARSET "UTF-8";
+
+.clustersmenu {
+	padding:2px;
+/*	border-style: solid;
+	border-width: 1px; */
+}
+
+.elementmenu {
+	padding:1px;
+}
+
+ul.elementList {
+	min-width:170px;
+}
+
+.clusterMenu { padding:0px; z-index:99;display:none;position:absolute;top:12px;right:7px;height:18px; }
+.elementMenu { position:absolute;right:7;z-index:99;visibility:hidden; }
+div.cluster { position:relative; width:300px; float:left;margin:20px;border:solid 1px;border-color: rgba(128,128,128,0.5); }

@@ -1,0 +1,84 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomoon.eot?3oucz5');
+	src:url('../fonts/icomoon.eot?#iefix3oucz5') format('embedded-opentype'),
+		url('../fonts/icomoon.woff?3oucz5') format('woff'),
+		url('../fonts/icomoon.ttf?3oucz5') format('truetype'),
+		url('../fonts/icomoon.svg?3oucz5#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	font-size:14px;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-arrowbutton:before {
+	content: "\e600";
+	font-size:10px;
+}
+
+.icon-browsetoparrow:before {
+	content: "\e601";
+
+}
+
+.icon-checkboxtik:before {
+	content: "\e602";
+}
+
+.icon-circlearrow:before {
+	content: "\e603";
+}
+
+.icon-circlearrowhover:before {
+	content: "\e604";
+}
+
+.icon-correspondent:before {
+	content: "\e605";
+	font-size:22px;
+}
+
+.icon-dropdownarrow:before {
+	content: "\e606";
+}
+
+.icon-error:before {
+	content: "\e607";
+	font-size:20px;
+
+}
+
+.icon-peginationarrow:before {
+	content: "\e608";
+}
+
+.icon-radioselected:before {
+	content: "\e609";
+}
+
+.icon-selectedcircle:before {
+	content: "\e60a";
+}
+
+.icon-upload:before {
+	content: "\e60b";
+}
+
+.icon-image:before {
+	content: "\e60a";
+}
+
+

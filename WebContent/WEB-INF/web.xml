@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+    <display-name>ePADD email analysis program</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+
+	<listener>
+		<listener-class>edu.stanford.epadd.EpaddInitializer</listener-class>
+	</listener>
+
+	<listener>
+	    <listener-class>edu.stanford.muse.webapp.SessionListener</listener-class>
+	</listener>
+
+	<filter>
+	    <filter-name>LoggingFilter</filter-name>
+	    <filter-class>
+	        edu.stanford.muse.webapp.LoggingFilter
+	    </filter-class>
+	    <init-param>
+	        <param-name>test-param</param-name>
+	        <param-value>This parameter is for testing.</param-value>
+	    </init-param>
+	</filter>
+	
+	<filter-mapping>
+	    <filter-name>LoggingFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>ner</servlet-name>
+		<jsp-file>/ner.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ner</servlet-name>
+		<url-pattern>/ner</url-pattern>
+	</servlet-mapping>	
+
+	<servlet>
+		<servlet-name>collections</servlet-name>
+		<jsp-file>/collections.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>collections</servlet-name>
+		<url-pattern>/collections</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>collection-detail</servlet-name>
+		<jsp-file>/collection-detail.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>collection-detail</servlet-name>
+		<url-pattern>/collection-detail</url-pattern>
+	</servlet-mapping>
+
+	<!--  treat jspf files as jsp so that they get translated. See http://www.coderanch.com/t/171516/java-Web-Component-SCWCD/certification/jspf-file-behaving-jsp-file-->
+	<jsp-config>
+	<jsp-property-group>
+		<url-pattern>*.jspf</url-pattern>
+	</jsp-property-group>
+	</jsp-config>
+
+	<servlet>
+		<servlet-name>assignauthorities-top</servlet-name>
+		<jsp-file>/assignauthorities-top.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>assignauthorities-top</servlet-name>
+		<url-pattern>/assignauthorities-top</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>import</servlet-name>
+		<jsp-file>/import.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>import</servlet-name>
+		<url-pattern>/import</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>edit-accession</servlet-name>
+		<jsp-file>/edit-accession.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>edit-accession</servlet-name>
+		<url-pattern>/edit-accession</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>assign-authorities</servlet-name>
+		<jsp-file>/assign-authorities.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>assign-authorities</servlet-name>
+		<url-pattern>/assign-authorities</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>email-sources</servlet-name>
+		<jsp-file>/email-sources.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>email-sources</servlet-name>
+		<url-pattern>/email-sources</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>set-images</servlet-name>
+		<jsp-file>/set-images.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>set-images</servlet-name>
+		<url-pattern>/set-images</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>upload-images</servlet-name>
+		<jsp-file>/upload-images.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>upload-images</servlet-name>
+		<url-pattern>/upload-images</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>home</servlet-name>
+		<jsp-file>/index.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>home</servlet-name>
+		<url-pattern>/home</url-pattern>
+	</servlet-mapping>
+ 
+ 	<servlet>
+		<servlet-name>folders</servlet-name>
+		<jsp-file>/folders.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>folders</servlet-name>
+		<url-pattern>/folders</url-pattern>
+	</servlet-mapping>
+ 
+ 	<servlet>
+		<servlet-name>browse</servlet-name>
+		<jsp-file>/browse.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>browse</servlet-name>
+		<url-pattern>/browse</url-pattern>
+	</servlet-mapping>
+
+ 	<servlet>
+		<servlet-name>browse-top</servlet-name>
+		<jsp-file>/browse-top.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>browse-top</servlet-name>
+		<url-pattern>/browse-top</url-pattern>
+	</servlet-mapping>
+ 
+ 	<servlet>
+		<servlet-name>correspondents</servlet-name>
+		<jsp-file>/correspondents.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>correspondents</servlet-name>
+		<url-pattern>/correspondents</url-pattern>
+	</servlet-mapping>
+	
+		<servlet>
+		<servlet-name>entities</servlet-name>
+		<jsp-file>/entities.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>entities</servlet-name>
+		<url-pattern>/entities</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>lexicon</servlet-name>
+		<jsp-file>/lexicon.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>lexicon</servlet-name>
+		<url-pattern>/lexicon</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>edit-lexicon</servlet-name>
+		<jsp-file>/edit-lexicon.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>edit-lexicon</servlet-name>
+		<url-pattern>/edit-lexicon</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>image-attachments</servlet-name>
+		<jsp-file>/image-attachments.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>image-attachments</servlet-name>
+		<url-pattern>/image-attachments</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>attachments</servlet-name>
+		<jsp-file>/attachments.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>attachments</servlet-name>
+		<url-pattern>/attachments</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>graph</servlet-name>
+		<jsp-file>/graph.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>graph</servlet-name>
+		<url-pattern>/graph</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>edit-correspondents</servlet-name>
+		<jsp-file>/editAddressBook.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>edit-correspondents</servlet-name>
+		<url-pattern>/edit-correspondents</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>search-query</servlet-name>
+		<jsp-file>/search-query.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>search-query</servlet-name>
+		<url-pattern>/search-query</url-pattern>
+	</servlet-mapping>
+ 	
+ 	<servlet>
+		<servlet-name>query-generator</servlet-name>
+		<jsp-file>/query-generator.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>query-generator</servlet-name>
+		<url-pattern>/query-generator</url-pattern>
+	</servlet-mapping>
+	
+ 	<servlet>
+		<servlet-name>status</servlet-name>
+		<jsp-file>/ajax/getStatus.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>status</servlet-name>
+		<url-pattern>/status</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>export-processing</servlet-name>
+		<jsp-file>/export-processing.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-processing</servlet-name>
+		<url-pattern>/export-processing</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>export-review-processing</servlet-name>
+		<jsp-file>/export-review-processing.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-review-processing</servlet-name>
+		<url-pattern>/export-review-processing</url-pattern>
+	</servlet-mapping>
+
+ 	<servlet>
+		<servlet-name>export</servlet-name>
+		<jsp-file>/export.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export</servlet-name>
+		<url-pattern>/export</url-pattern>
+	</servlet-mapping>
+
+ 	<servlet>
+		<servlet-name>export-review</servlet-name>
+		<jsp-file>/export-review.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-review</servlet-name>
+		<url-pattern>/export-review</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>export-complete</servlet-name>
+		<jsp-file>/export-complete.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>export-complete</servlet-name>
+		<url-pattern>/export-complete</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>export-complete-processing</servlet-name>
+		<jsp-file>/export-complete-processing.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>export-complete-processing</servlet-name>
+		<url-pattern>/export-complete-processing</url-pattern>
+	</servlet-mapping>
+ 
+	<servlet>
+		<servlet-name>review-cart</servlet-name>
+		<jsp-file>/review-cart.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>review-cart</servlet-name>
+		<url-pattern>/review-cart</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>debug</servlet-name>
+		<jsp-file>/debug.jsp</jsp-file>
+  	</servlet>
+  	<servlet-mapping>
+	  	<servlet-name>debug</servlet-name>
+	    <url-pattern>/debug</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>settings</servlet-name>
+		<jsp-file>/settings.jsp</jsp-file>
+  	</servlet>
+  	<servlet-mapping>
+	  	<servlet-name>settings</servlet-name>
+	    <url-pattern>/settings</url-pattern>
+	</servlet-mapping>
+
+   <servlet>
+		<servlet-name>help</servlet-name>
+		<jsp-file>/help.jsp</jsp-file>
+  	</servlet>
+
+  	<servlet-mapping>
+	  	<servlet-name>help</servlet-name>
+	    <url-pattern>/help</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>about</servlet-name>
+		<jsp-file>/about.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>about</servlet-name>
+		<url-pattern>/about</url-pattern>
+	</servlet-mapping>
+
+	 <servlet>
+		<servlet-name>error</servlet-name>
+		<jsp-file>/error.jsp</jsp-file>
+  	</servlet>
+  	<servlet-mapping>
+	  	<servlet-name>error</servlet-name>
+	    <url-pattern>/error</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>report</servlet-name>
+		<jsp-file>/report.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>report</servlet-name>
+		<url-pattern>/report</url-pattern>
+	</servlet-mapping>
+
+	<error-page>
+  <exception-type>java.lang.Exception</exception-type>
+  <location>/error</location>
+</error-page>
+
+<error-page>
+  <exception-type>java.lang.Error</exception-type>
+  <location>/error</location>
+</error-page>
+
+<error-page>
+  <error-code>500</error-code>
+  <location>/error</location>
+</error-page>
+
+</web-app>

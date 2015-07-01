@@ -1,0 +1,37 @@
+svg {
+  font: 10px sans-serif;
+}
+
+path {
+  fill: lightsteelblue;
+  stroke: steelblue;
+}
+
+.axis path, .axis line, line.axis {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crisp-edges;
+}
+
+.brush .extent {
+  stroke: #f88;
+  fill-opacity: .125;
+  shape-rendering: crisp-edges;
+}
+
+#individual-charts svg {
+  font: 8px sans-serif;
+}
+
+#individual-charts path, #individual-charts .axis path, #individual-charts .axis line, #individual-charts line.axis {
+  stroke-opacity: 0.4;
+}
+
+#individual-charts a:link {
+  text-decoration: none;
+}
+
+#div_legend, #div_graph {
+  font: 10px sans-serif;
+  stroke-width: 1;
+}

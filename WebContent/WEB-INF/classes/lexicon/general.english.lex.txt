@@ -1,0 +1,7 @@
+Achievements:award|prize|medal|fellowship|certificate
+
+Family: father|dad|dada|daddy|papa|pappa|pop|"old man"|mother|mama|mamma|mom|momma|mommy|mammy|mum|mummy|"father in law"|"mother in law"|"brother in law"|"sister in law"|stepfather|stepmother|husband|wife|son|boy|daughter|girl|sister|brother|cousin|grandfather|grandmother|grandson|granddaughter|genealogy|reunion
+
+Academics: teaching|learning|research|university|college|school|education|fellowship|professor|graduate
+
+Publications: book|chapter|article|draft|submission|review|festschrift|poetry|prose|writing

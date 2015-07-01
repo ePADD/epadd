@@ -1,0 +1,12 @@
+<div id="nav3">
+<nav>
+<a href="correspondents">Correspondents</a> &bull;
+<a href="entities?type=person">People</a> &bull;
+<a href="entities?type=organization">Organizations</a> &bull;
+<a href="entities?type=location">Locations</a> &bull;
+<a href="lexicon">Lexicon</a> &bull;
+<a href="image-attachments">Image Attachments</a> &bull;
+<a href="attachments?type=doc">Document Attachments</a> &bull;
+<a href="attachments?type=nondoc">Other Attachments</a>
+</nav>
+</div>

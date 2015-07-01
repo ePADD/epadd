@@ -1,0 +1,13 @@
+/* body { font-family: sans-serif; font-size: 14px; line-height: 1.6em; margin: 0; padding: 0; } */
+.container { width: 800px; margin: 0 auto; }
+
+/* Sorry for the obscure top offset here, the autocomplete box seems calculates position wrong sometimes. This top offset positions the suggestions right below the name input box in manual assign authority.  */
+.autocomplete-suggestions {position:fixed !important; border: 1px solid #999; background: #FFF; cursor: default; overflow: auto; -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: auto; }
+.autocomplete-no-suggestion { padding: 2px 5px;}
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: bold; color: #000; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { font-weight: bold; font-size: 16px; color: #000; display: block; border-bottom: 1px solid #000; }
+
+input.suggest { font-size: 15px; padding: 1px; display: block; margin: 20px 0; border:none; }

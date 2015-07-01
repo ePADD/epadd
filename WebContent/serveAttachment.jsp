@@ -1,0 +1,1 @@
+<%edu.stanford.muse.webapp.JSPHelper.serveBlob(request, response);%>

@@ -1,0 +1,23 @@
+# if any of these words are present (as a full word, not part of some other substring) in a person's "name" in the email header, that name will be ignored
+return
+request
+requested
+postmaster
+administrator
+project
+user
+workshop
+subscriber
+panel
+committee
+news
+lab
+list
+recipient
+unknown
+pbwiki
+archive
+archives
+evite
+members
+users

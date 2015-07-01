@@ -1,0 +1,98 @@
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<header>
+	<div id="nav1">
+
+		<nav class="epadd-nav navbar navbar-default" role="navigation">
+
+			<div class="container-fluid" style="height:55px">
+
+				<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+				<!-- 		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    </a>
+                <button class="navbar-toggle" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+             -->
+				<%	String logo = "";
+	if (ModeConfig.isAppraisalMode())
+		logo = "images/logo-appraisal.png";
+	if (ModeConfig.isProcessingMode())
+		logo = "images/logo-processing.png";
+	if (ModeConfig.isDiscoveryMode())
+		logo = "images/logo-discovery.png";
+	if (ModeConfig.isDeliveryMode())
+		logo = "images/logo-delivery.png";
+
+	boolean haveArchive = session.getAttribute("archive") != null;
+%>
+	<div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"><img src="<%=logo%>"/></a>
+    </div>
+	<div id="bs-example-navbar-collapse" class="collapse navbar-collapse bs-navbar-collapse">
+		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav">
+
+			<% if (ModeConfig.isAppraisalMode()) {
+				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
+			} else {
+				out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
+			}
+
+			if (ModeConfig.isProcessingMode()) {
+				out.println("<li style='display:inline'><a href='import'>Add</a></li>");
+			}
+
+			// offer the following options only if an archive is actually in the session
+			if (haveArchive) { %>
+				<li style="display:inline"><a href="browse-top">Browse</a></li>
+				<li style="display:inline"><a href="search-query">Search</a></li>
+				<% 	if (ModeConfig.isProcessingMode()) { %>
+					<li style="display:inline"><a href="assignauthorities-top">Authorities</a></li>
+				<% } %>
+				<% if (ModeConfig.isAppraisalMode()) { %>
+					<li style="display:inline"><a href="export-review">Export</a></li>
+				<% } %>
+				<% if (ModeConfig.isProcessingMode()) { %>
+					<li style="display:inline"><a href="export-review-processing">Export</a></li>
+				<% } %>
+				<% if (ModeConfig.isDeliveryMode()) { %>
+					<li style="display:inline"><a href="review-cart">Cart</a></li>
+				<% }
+			}
+			%>
+
+			<!--  <li style="display:inline"><a href="delivery">Delivery</a></li>  -->
+<!-- 		<li style="display:inline"><a target="_blank" href="http://library.stanford.edu/spc/more-about-us/projects-and-initiatives/epadd-project">About</a></li>  -->	
+		</ul>
+
+		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">
+ 			<li style="display:inline"><a target="_blank" href="https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc/edit"><img src="images/header-helpicon.svg"/></a></li>
+			<li class="dropdown" id="options">
+				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href="#">
+		 			<img src="images/header-menuicon.svg"/>
+		 		</a>
+		 		<ul class="dropdown-menu">
+		 			<% if (haveArchive && (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode())) { %>
+						<li><a href="set-images"><i class="menu-icon fa fa-file-image-o fa-fw"></i>Set Images
+						</a></li>
+						<li><a href="edit-correspondents"><i class="menu-icon fa fa-pencil fa-fw"></i>Edit Correspondents</a></li>
+						<li><a href="report"><i class="menu-icon fa fa-tachometer fa-fw"></i>Archive statistics</a></li>
+					<% } %>
+		 			 <li><a id="settings" href="settings"><i class="menu-icon fa fa-gear fa-fw"></i>Settings</a></li>
+		 			 <li><a id="about" href="about"><i class="menu-icon fa fa-user fa-fw"></i>About ePADD</a></li>
+		 		</ul>
+	 		</li>
+		</ul>
+	</div>
+</div>	
+</nav>
+</div>
+</header>
+<jsp:include page="alert.jspf"/>

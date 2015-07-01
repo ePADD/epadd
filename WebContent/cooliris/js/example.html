@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+
+<!-- 1. Load the SWFObject library to embed Flash content. -->
+<script src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+
+<!-- 2. Load the JavaScript bridge. -->
+<script src="cooliris-embed.js"></script>
+
+<!-- 3. Example that registers for interaction callbacks and displays the wall. -->
+<script type="text/javascript">
+
+var EMBED_WALL_URL = '../cooliris.swf';  // Change this URL.
+
+/*********************************************************************************
+ * IMPORTANT: This example will work only when hosted on an HTTP server, with    *
+ * cooliris.swf and cooliris-embed.js URLs changed to reference your local copy. *
+ * ----------------------------------------------------------------------------- *
+ * For example, to run this demo using Python, run "python -m SimpleHTTPServer"  *
+ * in your terminal from the root of the embed-wall repository, then visit       *
+ * http://localhost:8000 and browse to js/example.html.                          *
+ *********************************************************************************/
+
+// Registers callbacks to be invoked as the user interacts with the wall.
+window.cooliris.onEmbedInitialized = function() {
+  cooliris.embed.setCallbacks({
+    feedload: function(itemsLoaded) {
+      log('[LOADED] ' + itemsLoaded + ' items');
+    },
+    feederror: function(error) {
+      log('[LOAD-ERROR] ' + error);
+    },
+    select: function(item) {
+      log("[SELECTED] " + JSON.stringify(item, null, 2));
+    },
+    deselect: function(item) {
+      log("[DESELECTED] " + JSON.stringify(item, null, 2));
+    }
+  });
+};
+
+// Convenience function that replaces the |replaceElementId| HTML element with
+// a wall displaying the contents of |feedUrl|. If |useScripting| is true,
+// the onEmbedInitialized() callback will be invoked and the cooliris-embed.js
+// script must be included.
+function embedWall(replaceElementId, feedUrl, width, height, useScripting) {
+  swfobject.embedSWF(EMBED_WALL_URL,
+                     replaceElementId,  // The ID of the HTML element to replace with the Embed Wall.
+                     width,             // Width of the Flash content.
+                     height,            // Height of the Flash content.
+                     '9.0.0',           // Minimum supported version of Flash.
+                     '',
+                     {feed: feedUrl},
+                     {AllowFullScreen: 'true', AllowScriptAccess: useScripting ? 'always' : 'never'});
+}
+
+// Appends a log message to the demo page, to show how events are generated.
+function log(message) {
+  message = message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&/g,'&amp;');
+  document.getElementById('demo-log').innerHTML += '<div>' + message + '</div>';
+}
+
+// Loads the wall with the given initial URL.
+embedWall('wall', 'api://www.flickr.com/?', 600, 450, true);
+
+function setFeedUrl(url) {
+  document.getElementById('demo-log').innerHTML = '';
+  cooliris.embed.setFeedURL(url);
+}
+
+</script>
+<style type="text/css">
+
+body {
+  font-family: monospace;
+}
+
+#wall {
+  background-color: #f4f4f4;
+  height: 450px;
+  text-align: center;
+}
+
+#demo-log-box {
+  border: 1px solid #eee;
+  padding: 10px;
+}
+
+#demo-log {
+  white-space: pre-wrap;
+}
+
+</style>
+</head>
+<body>
+  Click a link to load an example:
+  <ul>
+    <li><a href="#" onclick="setFeedUrl('api://www.flickr.com/?user=flickr')">Flickr Photostream</a> (api://www.flickr.com/?user=flickr)</li>
+    <li><a href="#" onclick="setFeedUrl('api://www.flickr.com/?user=flickr&amp;album=72157641288898144')">Flickr Photoset</a> (api://www.flickr.com/?user=flickr&amp;album=72157641288898144)</li>
+    <li><a href="#" onclick="setFeedUrl('api://www.youtube.com/?user=YouTube')">YouTube Channel</a> (api://www.youtube.com/?user=YouTube)</li>
+    <li>If you have been using a Media RSS feed, you can simply use an HTTP(S) URL to your feed.</li>
+    <li>Warning: api:// URLs rely on API keys that may stop working in the future.</li>
+  </ul>
+  <div id="wall"></div>
+
+  <div id="demo-log-box">
+    <b>Console</b>
+    <hr size=1 color="#eee">
+    <div id="demo-log"></div>
+  </div>
+</body>
+</html>
+
+

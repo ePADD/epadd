@@ -1,0 +1,1 @@
+<%edu.stanford.epadd.util.Photos.serveImage(request, response);%>

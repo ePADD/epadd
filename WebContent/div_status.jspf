@@ -1,0 +1,23 @@
+ <!--  status box -->
+ <%boolean show_help_page = false; %>
+<div id="status" class="rounded status" style="display:none;" >
+		<div style="float:left;font-size:20px">Working...</div>
+		<div style="float:right">
+		  <img width="25" src="images/spinner.gif"/>
+		</div>
+		<div style="clear:both"></div>
+
+	<div id="status_text">No Status</div>
+	<div style="display:inline-block">
+		<div class="progress_bar_outer_box" style="">
+		  <div class="progress_bar" style=""></div>
+		</div>
+	</div>
+	<div style="display:inline-block;" id="status_cancel">
+		<a style="display:none" id="cancel" href="#"><img src="images/cancel.svg"/></a> <% /* important, has to be called #cancel because statusUpdate.js depends on it */ %>
+	</div>		
+	
+		<div class="time_remaining" style="display:none;color:#adadad"></div>
+</div>
+
+<div style="display:none" class="muse-overlay"></div>
