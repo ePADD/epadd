@@ -1,8 +1,8 @@
-ePADD (Email: Process Appraise, Discover, Deliver) 
+**ePADD (Email: Process Appraise, Discover, Deliver)** 
 
 https://library.stanford.edu/projects/epadd
 
-Introduction
+**Introduction**
 
 ePADD is a software package developed by Stanford University's Special Collections & University Archives that supports archival processes around the appraisal, ingest, processing, discovery, and delivery of email archives.
 
@@ -16,18 +16,18 @@ Discovery: Provides the tools for repositories to remotely share a redacted view
 
 Delivery: Enables archival repositories to provide moderated full-text access to unrestricted email archives within a reading room environment.
 
-System Requirements
+**System Requirements**
 
 OS: Windows 7 SP1 / 8.1, Mac OS X  10.9 / 10.10
 Memory:  4096 MB RAM (2048 MB RAM allocated to the application by default)
 Browser:  Chrome 41/42, Firefox 38/39 
 Windows installations: Java Runtime Environment 7u55 or later required. 
 
-Installation 
+**Installation** 
 
 ePADD has been tested on and optimized for Windows 7 SP1 / 8.1 and  Mac OS X  10.9 / 10.10. Please follow the instructions below for your operating system.
 
-Installing ePADD on Windows
+*Installing ePADD on Windows*
 
 Please download the latest ePADD distribution *.exe file from https://github.com/epadd. You will need to have Java 1.7 or later installed on your machine for ePADD to work properly.
 When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it.  The ePADD Appraisal Module directory is located at c:\users\<username>\epadd-appraisal. 
@@ -36,7 +36,7 @@ Note: This directory houses many customizable files discussed further elsewhere 
 Depending on your network permissions, you may be asked to allow ePADD access to your internet connection. ePADD requires an internet connection to download email from an email account using the IMAP protocol.
 Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
-Installing ePADD on OSX
+*Installing ePADD on OSX*
 
 Please download the latest ePADD distribution *.dmg file from https://github.com/epadd.
 When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it.  The ePADD Appraisal Module directory is located at Macintosh HD/Users/<username>/epadd-appraisal.
@@ -46,18 +46,18 @@ Depending on upon your network permissions, you may be asked to allow ePADD acce
 In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
 
-ePADD Documentation, Help, and other Information
+**ePADD Documentation, Help, and other Information**
 
 More information about the software and related developments, including links to the full installation and user guide, and a link to the community forums, can be found via our website.
 
-License(s)
+**License(s)**
 
 The ePADD logo, project documentation (including installation and user guide), and other non-software products of the ePADD team are subject to the Creative Commons Attribution 2.0 Generic license (CC By 2.0).
 Unless otherwise indicated, software items in this repository are distributed under the terms of the Apache License 2.0.
 
-Credits
+**Credits**
 
-Research and Development:
+*Research and Development:*
 Sudheendra Hangal, Ashoka University and Amuse Labs;
 Vihari Piratla, Amuse Labs;
 Sit Manovit, iXora Inc.;
@@ -65,24 +65,24 @@ Peter Chan, Stanford University Libraries;
 Glynn Edwards, Stanford University Libraries;
 Josh Schneider, Stanford University Libraries
 
-Design:
+*Design:*
 Saumya Sarangi, Lollypop Design;
 Mandeep RJ, Lollypop Design
 
-Initial specifications (requirements and wireframes):
+*Initial specifications (requirements and wireframes):*
 Daniel Hartwig, Stanford University Libraries;
 Daniel Jarvis, Hoover Institute, Stanford;
 Lisa Miller, Hoover Institute, Stanford;
 Aimee Morgan, formerly Stanford University Libraries;
 Laura O'Hara, formerly SLAC National Accelerator Laboratory
 
-Testing and Collaboration:
+*Testing and Collaboration:*
 Donald Mennerich, New York University Libraries;
 Susan Thomas, Bodleian Library, Oxford University;
 Riccardo Ferrante and Lynda Schmitz Fuhrig, Smithsonian Institution Archives;
 Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University
 
-Advisors:
+*Advisors:*
 Jeremy Leighton John, British Library;
 Monica S. Lam, Stanford University;
 Phillip R. Malone, Stanford University;
@@ -92,13 +92,13 @@ Chris Prom, University of Illinois;
 Ben Shneiderman, University of Maryland;
 Jeff Ubois, Macarthur Foundation
 
-Funding
+*Funding:*
 National Historical Publications & Records Commission;
 Payton J. Treat Fund from the Stanford University Libraries ;
 U.S. National Science Foundation (for Muse);
 Mobisocial Laboratory at Stanford University (for Muse);
 
-Software
+*Software:*
 
 Under Apache License 2.0:
 Apache Commons (fileupload, lang3, io, httpclient, cli, codec), tika, opennlp, tomcat, maven, ant © Apache Software Foundation
