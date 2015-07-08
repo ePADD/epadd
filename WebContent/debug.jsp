@@ -57,7 +57,7 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%>
 		{
 			java.util.Map.Entry entry = (java.util.Map.Entry) obj;
 			String key = (String) entry.getKey();
-			String val = (String) entry.getValue();
+			Object val = (Object) entry.getValue();
 			out.println("<b>" + key + "</b>: " + val + "<br>");
 		}
 	%>

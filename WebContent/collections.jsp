@@ -25,6 +25,17 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Collections');</script>
 
+<div style="padding-left:170px;padding-right:50px;">
+  <% if (ModeConfig.isDiscoveryMode()) { %>
+    <h1>Welcome to the ePADD discovery module.</h1>
+    Email messages can be browsed and searched in several ways.  Email messages in the ePADD Discovery Module have been redacted to ensure the privacy of donors and other correspondents.
+    Please contact the host repository if you would like to request access to full messages, including any attachments.
+  <% } %>
+  <% if (ModeConfig.isDeliveryMode()) { %>
+    <h1>Welcome to the ePADD delivery module.</h1>
+  <% } %>
+</div>
+
 <%!
   private static String formatMetadataField(String s)
   {

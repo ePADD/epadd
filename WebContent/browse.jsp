@@ -106,13 +106,10 @@ if (ModeConfig.isPublicMode()) {
 <body > <!--  override margin because this page is framed. -->
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
-
 	<!--  required to include joh_plugin for some compilation issues -->
 	<!--  important: include jog_plugin AFTER header.jsp, otherwise the extension is applied to a jquery ($) object that is overwritten when header.jsp is included! -->
 	<script src="js/jog_plugin.js" type="text/javascript"></script>
-	
 <%
-	
 	String bestName = archive.addressBook.getBestNameForSelf();
 //	writeProfileBlock(out, bestName, "Search", "");
 	// archive is null if we haven't been able to read an existing dataset
@@ -141,85 +138,42 @@ if (ModeConfig.isPublicMode()) {
 	 if (Util.nullOrEmpty(docs)) { %>
 		 <div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
 	 <%} else { %>
- 
-		 <div id="controls" style="position:relative;left:160px;width:1020px;padding:5px">
-			 <div style="display:inline-block;">
-				<img src="images/back_enabled.png" id="back_arrow"/>
-				<div style="display:inline;" id="pageNumbering"></div>
-				<img src="images/forward_enabled.png" id="forward_arrow"/>
-<!--
-					 <div class="pagination">
-						 <li><a id="back_arrow" style="border-right:0" href="#0" class="icon-peginationarrow"></a></li>
-						 <li> <div style="display:inline;" id="pageNumbering"></div></li>
-						 <li><a id="forward_arrow" href="#0" class="icon-circlearrow"></a></li>
-					 </div>
-					 -->
-			 </div>
-			 <div style="position:relative;float:right;border:solid 1px rgba(160,160,160,0.3);padding:5px;background-color: #f0f0f0">
-		
-		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-			 <i title="Do not transfer" id="doNotTransfer" class="flag fa fa-ban"></i>
-			 <i title="Transfer with restrictions" id="transferWithRestrictions" class="flag fa fa-exclamation-triangle"></i>
-		<% } %>
-		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-				 <i title="Message Reviewed" id="reviewed" class="flag fa fa-eye"></i>
-		<% } %>
-		<% if (ModeConfig.isDeliveryMode()) { %>
-				 <i title="Add to Cart" id="addToCart" class="flag fa fa-shopping-cart"></i>
-		<% } %>
-			
-		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-			<div style="display:inline;" id="annotation_div" style="z-index:1000;">
-				<input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
-			</div>
-		<% } %>
-		 <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-		 <!--			<div style="display:inline-block;position:relative;top:10px"><input type="checkbox" id="applyToAll" style="margin-left:250px"/> Apply to all</div> -->
-		 <button class="btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
-				<%
-					// show apply to all only if > 1 doc
-					if (docs.size() > 1) { %>
-				 		<button class="btn-default" id="applyToAll" style="margin-right:25px">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
-				<% } %>
-		 <% } %>
-		</div>
-		 <div style="clear:both"></div>
-		</div>
-
-<div class="browsepage" style="min-width:1220px">
+ <div class="browsepage" style="min-width:1220px">
 
  <%
- Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive, lexicon);
- //returns sorted collection 
- //Collection<DetailedFacetItem> locSubjects = TopicsSearcher.getMentions(docs,archive);
- //if(locSubjects!=null)
- 	//facets.put("mentions", locSubjects);
- 
- boolean jogDisabled = true;
+	 Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive, lexicon);
+	 //returns sorted collection
+	 //Collection<DetailedFacetItem> locSubjects = TopicsSearcher.getMentions(docs,archive);
+	 //if(locSubjects!=null)
+		//facets.put("mentions", locSubjects);
 
- // now docs is the selected docs
+	 boolean jogDisabled = true;
 
- String jog_contents_class = "";
- jog_contents_class = "message";
-	String origQueryString = request.getQueryString();
-	if (origQueryString == null)
-		origQueryString = "";
-%>
+	 // now docs is the selected docs
+
+	 String jog_contents_class = "";
+	 jog_contents_class = "message";
+		String origQueryString = request.getQueryString();
+		if (origQueryString == null)
+			origQueryString = "";
+
+	 String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+	 int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);
+ %>
 
 <div style="display:inline-block;vertical-align:top;width:160px;padding-left:5px">
 <div class="facets" style="min-width:10em;text-align:left;margin-bottom:0px;">
 <%
 	if (!Util.nullOrEmpty(term)) { 
-		out.println("<b>search</b><br/>\n");		
+		out.println("<b>Search</b><br/>\n");
 		String displayTerm = Util.ellipsize(term, 15);
 
 		out.println("<span title=\"" + Util.escapeHTML(term) + "\" class=\"facet nojog selected-facet rounded\" style=\"padding-left:2px;padding-right:2px\">" + Util.escapeHTML(displayTerm));
 		out.println (" <span class=\"facet-count\">(" + docs.size() + ")</span>");
 		out.println ("</span><br/>\n");
-		out.println("<hr/>\n");
+		out.println("<br/>\n");
 	}
 
-	boolean first = true;
 	for (String facet: facets.keySet())
 	{
 		List<DetailedFacetItem> items = new ArrayList<DetailedFacetItem>(facets.get(facet));
@@ -237,17 +191,13 @@ if (ModeConfig.isPublicMode()) {
 		if (!nonzero)
 			continue;
 
-		if (first)
-			first = false;
-		else
-			out.println("<hr/>"); // facet categories separator, but only for 2nd and later facets
-
 		String facetTitle = Util.escapeHTML(facet);
 		if ("sentiments".equals(facetTitle))
 			facetTitle = "lexicon";
 		if ("people".equals(facetTitle))
 			facetTitle = "correspondents";
 
+		facetTitle = Util.capitalizeFirstLetter(facetTitle);
 		out.println("<b>" + facetTitle + "</b><br/>\n");
 		Collections.sort(items);
 
@@ -307,31 +257,84 @@ if (ModeConfig.isPublicMode()) {
 		for (String html: htmlForAllFacets)
 		{
 			out.println (html);
-			if (++count == N_INITIAL_FACETS)
+			if (++count == N_INITIAL_FACETS && htmlForAllFacets.size() > N_INITIAL_FACETS)
 				out.println("<div style=\"display:none;margin:0px;\">\n");
 		}
 		
-		if (count >= N_INITIAL_FACETS)
+		if (count > N_INITIAL_FACETS)
 		{
 			out.println("</div>");
 			out.println("<div class=\"clickableLink\" style=\"text-align:right;padding-right:10px;font-size:80%\" onclick=\"muse.reveal(this)\">More</div>\n");
 		}
+		out.println ("<br/>");
 		
 	} // String facet
 	%>
 </div> <!--  .facets -->
-</div>
+</div> <!-- 160px block -->
 
 <%
-
-String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
-int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);
 
 %>
 
 <div style="display:inline-block;vertical-align:top;">
 	<div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
-	<!--  to fix: these image margins and paddings are held together with ducttape cos the orig. images are not a consistent size -->
+		<div class="controls" style="position:relative;width:100%;">
+
+			<div style="position:relative;float:left;padding:5px;">
+				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+				<i title="Do not transfer" id="doNotTransfer" class="flag fa fa-ban"></i>
+				<i title="Transfer with restrictions" id="transferWithRestrictions" class="flag fa fa-exclamation-triangle"></i>
+				<% } %>
+				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
+				<i title="Message Reviewed" id="reviewed" class="flag fa fa-eye"></i>
+				<% } %>
+				<% if (ModeConfig.isDeliveryMode()) { %>
+				<i title="Add to Cart" id="addToCart" class="flag fa fa-shopping-cart"></i>
+				<% } %>
+
+				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
+				<div style="display:inline;" id="annotation_div" style="z-index:1000;">
+					<input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
+				</div>
+				<% } %>
+				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
+				<!--			<div style="display:inline-block;position:relative;top:10px"><input type="checkbox" id="applyToAll" style="margin-left:250px"/> Apply to all</div> -->
+				<button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+				<%
+					// show apply to all only if > 1 doc
+					if (docs.size() > 1) { %>
+				<button type="button" class="btn btn-default" id="applyToAll" style="margin-right:25px">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+				<% } %>
+				<% } %>
+			</div>
+
+			<div style="float:right;position:relative;top:8px">
+				<div>
+						<div style="display:inline;vertical-align:top;font-size:20px; position:relative; top:8px; margin-right:10px" id="pageNumbering"></div>
+						<ul class="pagination">
+							<li class="button">
+								<a id="page_back" style="border-right:0" href="#0" class="icon-peginationarrow"></a>
+								<a id="page_forward" href="#0" class="icon-circlearrow"></a>
+							</li>
+						</ul>
+				</div>
+				<!--
+				<img src="images/back_enabled.png" id="back_arrow"/>
+				<img src="images/forward_enabled.png" id="forward_arrow"/>
+				-->
+				<!--
+					 <div class="pagination">
+						 <li><a id="back_arrow" style="border-right:0" href="#0" class="icon-peginationarrow"></a></li>
+						 <li> <div style="display:inline;" id="pageNumbering"></div></li>
+						 <li><a id="forward_arrow" href="#0" class="icon-circlearrow"></a></li>
+					 </div>
+					 -->
+			</div>
+			<div style="clear:both"></div>
+		</div> <!-- controls -->
+
+		<!--  to fix: these image margins and paddings are held together with ducttape cos the orig. images are not a consistent size -->
 <!-- <span id="jog_status1" class="showMessageFilter rounded" style="float:left;opacity:0.5;margin-left:30px;margin-top:10px;">&nbsp;0/0&nbsp;</span>  -->	
 	<div style="font-size:12pt;opacity:0.5;margin-left:30px;margin-right:30px;margin-top:10px;">
 <!--	Unique Identifier: <span id="jog_docId" title="Unique ID for this message"></span> -->
@@ -547,14 +550,17 @@ function update_controls_on_screen(currentPage) {
 			$elem.removeClass('flag-enabled');
 	}
 	$('#pageNumbering').html(((TOTAL_PAGES == 0) ? 0 : currentPage+1) + '/' + TOTAL_PAGES);
-	// color the arrows
-	$('#back_arrow').attr('src', (currentPage == 0) ? 'images/back_disabled.png' : 'images/back_enabled.png');
-	$('#forward_arrow').attr('src', (currentPage == TOTAL_PAGES-1) ? 'images/forward_disabled.png' : 'images/forward_enabled.png');
-
 	set_class(doNotTransfer[currentPage], $('#doNotTransfer'));
 	set_class(transferWithRestrictions[currentPage], $('#transferWithRestrictions'));
 	set_class(reviewed[currentPage], $('#reviewed'));
 	set_class(addToCart[currentPage], $('#addToCart'));
+
+	// color the arrows
+	/*
+	 $('#page_back').attr('src', (currentPage == 0) ? 'images/back_disabled.png' : 'images/back_enabled.png');
+	 $('#page_forward').attr('src', (currentPage == TOTAL_PAGES-1) ? 'images/forward_disabled.png' : 'images/forward_enabled.png');
+	 */
+
 }
 
 // toggle each flag upon click
@@ -624,8 +630,8 @@ $('body').ready(function() {
 					dynamic: false
 	});
 		
-	$('#forward_arrow').click(x.forward_func);
-	$('#back_arrow').click(x.back_func);
+	$('#page_forward').click(x.forward_func);
+	$('#page_back').click(x.back_func);
 	
 });
 

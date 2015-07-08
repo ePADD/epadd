@@ -504,7 +504,7 @@ function start_prettyphoto() {
         var $clickdiv = $_('<a id="muse-clicker" title="Message Details" href="#muse-details" alt="ALT"></a>'); // funnily, the title for this clicker needs to be set, otherwise pretty photo shows an undefined at bottom left
         $_('body').append($clickdiv);
         var $div = $_('<div style="font-size:11px; max-height:250px;display:none" class="muse-details" title="Message Details" style="align:left;display:none" id="muse-details"/>');
-        var $child = $_('<div id="muse-pointers" style="color:white;font-size:11px" title="Message Details" alt="alt"/>');
+        var $child = $_('<div id="muse-pointers" style="font-size:12px" title="Message Details" alt="alt"/>');
         $div.append($child);
         $_('body').append($div);
 LOG ('pretty photo started');
@@ -832,7 +832,7 @@ var open_popup = function(hit_details)
         var title = (typeof mesg.contents != 'undefined') ? mesg.contents : '';
         title = title.replace(/"/g, "&quot;");
         title = title.replace(/\n/g, " ");
-        popup += "<p style=\"color:white;\" title=\"" + title + "\">" + mesg.date + " | "
+        popup += "<p title=\"" + title + "\">" + mesg.date + " | "
         	   + "From: " + ((mesg.from.length > 0) ? mesg.from[0].email : '???')
         	   + " | To: " + ((mesg.to.length > 0) ? mesg.to[0].email + plus_mesg : '???')
                + "<br/>Subject: " + ellipsize(hit_details.messages[m].subject, 46);

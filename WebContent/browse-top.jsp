@@ -13,6 +13,7 @@
 <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Archive Information</title>
+<!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans"> -->
 
 	<script src="js/jquery.js"></script>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -97,7 +98,11 @@
 			<p class="cta-text-2">Persons<%=pC%></p>
 			</a>
 	</div>
-	
+
+	<% if (ModeConfig.isDiscoveryMode()) { %>
+		<br/>
+	<% } %>
+
 	<div class="cta-box text-center margin30">
 		<a href="entities?type=en_org">
 			<i class="icon-browsetoparrow"></i>
@@ -106,7 +111,11 @@
 			<p class="cta-text-2">Organizations<%=oC%></p>
 		</a>
 	</div>
-			
+
+	<% if (!ModeConfig.isDiscoveryMode()) { %>
+		<br/>
+	<% } %>
+
 	<div class="cta-box text-center margin30">
 		<a href="entities?type=en_loc">
 			<i class="icon-browsetoparrow"></i>
@@ -135,6 +144,10 @@
 					<p class="cta-text-2">Sensitive messages<%=nS%></p>
 				</a>
 			</div>
+	<% } %>
+
+	<% if (!ModeConfig.isDiscoveryMode()) { %>
+	<br/>
 	<% } %>
 
 	<% if (!ModeConfig.isDiscoveryMode()) { %>

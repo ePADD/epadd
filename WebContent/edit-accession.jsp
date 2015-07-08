@@ -48,7 +48,6 @@
 <section>
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
-		<div class="panel-heading">Metadata</div>
 
 		<div class="div-input-field">
 			<div class="input-field-label">Institution</div>
@@ -120,7 +119,7 @@
 			<div class="input-field-label">About</div>
 			<br/>
 			<div class="input-field">
-				<textarea style="resize:vertical" class="form-control" type="text" name="about"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.about)%>
+				<textarea style="resize:vertical;height:200px;" class="form-control" type="text" name="about"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.about)%>
 				</textarea>
 			</div>
 		</div>

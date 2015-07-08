@@ -33,24 +33,28 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>
-	epadd.select_link('#nav1', 'Appraisal');
-	epadd.select_link('#nav2', 'Edit Correspondents');
-</script>
 
-<h1 title="title_tooltip">Email Archives of <%= bestName%><br/>
-<span style="font-size:60%">Edit Correspondents</span><br/>
-</h1>
+<%writeProfileBlock(out, bestName, "Edit address book", "");%>
+<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px;margin-top:20px;">
+	<select id="sort-order">
+		<option <%=!alphaSort?"selected":""%> value="volume">Sort by email volume</option>
+		<option <%=alphaSort?"selected":""%> value="alpha">Sort alphabetically</option>
+	</select>
+</div>
+
+<script>
+	$(document).ready(function() {
+		$('#sort-order').change(function (e) {
+			if ('alpha' == this.value)
+				window.location = 'edit-correspondents?sort=alphabetical';
+			else
+				window.location = 'edit-correspondents';
+		});
+	});
+</script>
 
 <p>
 <div style="text-align:center">
-<div style="width:600px;text-align:left;margin:auto">
-	<%=edu.stanford.muse.util.Messages.getMessage("messages", "edit-correspondents")%>
-</div>
-<br/>
-<p>
-<% String href = (alphaSort ? "edit-correspondents" : "edit-correspondents?sort=alphabetical"); String text = (alphaSort ? "Sort by email volume" : "Sort alphabetically"); %>
-<a href="<%=href%>"><%=text%></a><br/>
 <form method="post" action="browse-top">
 <textarea name="addressBookUpdate" id="text" style="width:600px" rows="40">
 <%!

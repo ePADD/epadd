@@ -54,7 +54,7 @@ if (archive != null) {
 <p>
 
 <form method="post" class="form-horizontal">
-<div id="all_fields" style="margin:0% 5%; padding: 10px">
+<div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
 	<section>
 		<div class="panel">
 			<div class="panel-heading">About this archive</div>
@@ -74,8 +74,6 @@ if (archive != null) {
 			</div>
 		</div>
 	</section>
-
-	<br/>
 
 	<section>
 	<div id="servers" class="accounts panel">
@@ -105,8 +103,6 @@ if (archive != null) {
 		<br/>
 	</div> <!--  end servers -->
 </section>
-
-	<br/>
 
 	<section>
 	<p/>
@@ -147,10 +143,7 @@ if (archive != null) {
 		<br/>
 
 	</div> <!--  end servers -->
-	<br/>
 </section>
-
-	<br/>
 
 	<%
 		java.io.File[] rootFiles = java.io.File.listRoots();

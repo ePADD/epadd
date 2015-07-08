@@ -93,9 +93,9 @@
 		// 2 divs for each fetcher: the account header and a div containing the actual folders
 		%> <div>
 			    <div class="account panel" style="padding:25px;border:solid 1px rgba(160,160,160,0.5)" id="<%=accountName%>">
-    				<h2>
+    				<h1>
 						<i class="fa fa-folder-o"></i> <span class="accountHeader"><%=accountName%></span>
-					</h2>
+					</h1>
 
     				<div id="accountBody-<%=accountIdx%>" style="width:100%" class="accountBody folders-div">
 		    	    	<table align="center">
@@ -104,7 +104,11 @@
 	    				</tbody>
 	    				</table>
     				</div>
-    			</div>
+					<br/>
+					<div class="select_all_folders" style="display:none;text-align:center">
+						<button type="button" class="btn-default select_all_button" style="display:none"><i class="fa fa-files-o"></i> Select all folders</button>
+					</div>
+				</div>
    			</div>
    			<%=	accountIdx < nAccounts-1?"<br/>":""%>
 		<%
@@ -112,11 +116,7 @@
 
 	
 	%>
-		<br/>
-		<div id="select_all_folders" style="display:none;text-align:center">
-			<button class="btn-default" onclick="toggle_select_all_folders(this); return false;"><i class="fa fa-files-o"></i> Select all folders</button>
-		</div>
-								
+
  		<div style="margin-top:25px">
 
 			<div id="div_controls" class="toolbox">
@@ -187,6 +187,9 @@ $(document).ready(function() {
     newdiv.setAttribute('id', 'folders-completed');
     var div_main = document.getElementById('div_main');
     div_main.appendChild(newdiv);
+
+	// fade in the select all buttons, and assign their action
+	$('.select_all_button').click(toggle_select_all_folders).fadeIn();
 });
 </script>
 <jsp:include page="footer.jsp"/>

@@ -24,22 +24,31 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Import');</script>
+<script>epadd.nav_mark_active('Add');</script>
 
 <p>
-<br/>
-<h1>Import Accession</h1>
-<p>
-<br/>
 
 <section>
-	<div id="filepicker">
-		<label class="col-sm-2 control-label">Accession folder</label> 
+	<div id="filepicker" style="width:900px;padding-left:170px">
+
+		<div class="div-input-field">
+			<div class="input-field-label"><i class="fa fa-folder-o"></i> Accession folder</div>
+			<div class="input-field">
+				<input id="sourceDir" class="dir form-control" type="text" name="sourceDir"/> <br/>
+				<button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
+					<span>Browse</span>
+				</button>
+			</div>
+			<br/>
+			<div class="roots" style="display:none"></div>
+			<div class="browseFolder"></div>
+			<br/>
+		</div>
+<!--
 		<div class="col-sm-4"><input id="sourceDir" class="dir form-control" type="text" name="sourceDir"/></div>
 		<div class="col-sm-2"><button class="btn-default"><i class="fa fa-file"></i> <span>Browse</span></button></div>
-		<br/>
-		<br/>
-		<label class="col-sm-2 control-label"></label> 
+		-->
+		<label class="col-sm-2 control-label"></label>
 		<div class="col-sm-4"><div style="padding:5px;display:none;" id="stats"></div></div> <!-- this div will be populated with some status once the load is initiated -->
 		
 		<div class="roots" style="display:none"></div>

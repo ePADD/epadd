@@ -54,15 +54,16 @@ div.progress_bar {
 }
 
 div.facets {
-	background-color:#F0F0F0;
     font-size: 12px;
 	padding-left:5px;
 	border:solid 1px rgba(160,160,160,0.3);
 }
+div.facets, div.controls { background-color: #f5f5f8 }
+
+div.controls { border-bottom:solid 1px rgba(160,160,160,0.3); }
 
 .selected-facet {
-	background-color: #2A8E82;
-	color: white;
+	color: #0175bc;
 	padding: 4px;
 }
 
@@ -71,7 +72,7 @@ div.facets {
 }
 
 .facet:hover, .noTNattachmentText:hover, .selected-facet {
-    border-bottom: 1px solid #4E7178;
+   /* border-bottom: 1px solid #4E7178; */
     text-decoration:none;
 }
 
@@ -132,13 +133,16 @@ a.hilitedTerm, .hilitedTerm {
 .underline { text-decoration: underline; }
 .underline_on_hover:hover { text-decoration: underline; }
 
+.account h1 { padding-bottom:10px; border-bottom: solid 1px #aaa}
 .folderEntry {
 	min-width: 15em;
 /*	width: 15em;
 	max-width: 15em; */
 	margin: 1px;
-	padding: 0px 10px;
+	padding: 5px 10px;
 }
+
+.folderEntry input[type=checkbox] {margin-right: 10px;}
 
 .browseFolder {
 	border: solid 1px rgba(0,0,0,0.2); font-size:80%; padding:5px; margin:5px; display:none; height:250px;overflow:auto;
@@ -222,3 +226,9 @@ a.hilitedTerm, .hilitedTerm {
 #manualassign, #manualassign .aa { font-size: 12px; }
 #manualassign .header { font-size: 20px; }
 .fancybox-skin { background-color: white; }
+
+.attachments img { max-width:200px;}
+
+.pp-bottom { height: 0px;}
+.pp_bottom .pp_left, .pp_bottom .pp_right,.pp_bottom .pp_middle { height: 0px;}
+.pp_top .pp_left, .pp_top .pp_right,.pp_top .pp_middle { height: 0px;}

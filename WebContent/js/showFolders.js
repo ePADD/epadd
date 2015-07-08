@@ -37,7 +37,7 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 		$('#go-button').fadeIn();
 		$('#date-range').fadeIn();
 		if (folderInfos.length > 1)
-			$('#select_all_folders').fadeIn();
+			$('.select_all_folders').fadeIn();
 	}
 
 	// $('.nFolders', accountDiv).html(folderInfos.length);
@@ -118,22 +118,26 @@ function display_folders(accountName, accountIdx, first)
 	});
 }
 
-function toggle_select_all_folders(elem) { 
-	var text = $(elem).text();
+function toggle_select_all_folders(e) {
+	var $elem = $(e.target).closest('button');
+	$account = $elem.closest('.account'); // which account we're in for this select all button
+	var text = $elem.text();
 	epadd.log('current text = ' + text);
 	epadd.log($("input.folder").length);
-	if (text.indexOf('Unselect') >= 0) 
+	var UNSELECT_TEXT = 'Unselect all folders', SELECT_TEXT = 'Select all folders'; // text for buttons
+	if (text.indexOf(UNSELECT_TEXT) >= 0)
 	{
-		$(elem).text('Select all folders'); 
-		$("input.folder").attr("checked", false);
-		$("input.folder").closest('.folderEntry').removeClass('selected-folder');
+		$elem.text(SELECT_TEXT);
+		$("input.folder", $account).attr("checked", false);
+		$("input.folder", $account).closest('.folderEntry').removeClass('selected-folder');
 	}
 	else
 	{
-		$(elem).text('Unselect all folders'); 
-		$("input.folder").attr("checked", true);
-		$("input.folder").closest('.folderEntry').addClass('selected-folder');
+		$elem.text(UNSELECT_TEXT);
+		$("input.folder", $account).attr("checked", true);
+		$("input.folder", $account).closest('.folderEntry').addClass('selected-folder');
 	}
+	return false;
 }
 
 function updateFolderSelection(o)

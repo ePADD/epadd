@@ -30,19 +30,9 @@ if (ModeConfig.isPublicMode()) {
 	<script src="js/epadd.js"></script>	
 </head>
 <body>
-<% if (!ModeConfig.isPublicMode()) { %>
 <jsp:include page="header.jspf"/>
-<script>
-	epadd.select_link('#nav1', 'Appraisal');
-	epadd.select_link('#nav2', 'Search');
-</script>
-<% } %>
-<div>
-<br/>
-<%=edu.stanford.muse.util.Messages.getMessage("messages", "bulk-search.help") %>
-<p>
+<div style="margin:1% 5%">
 
-<hr/>
 <p>
 
 <%

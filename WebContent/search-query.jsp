@@ -84,7 +84,7 @@ Email direction:
 	<button class="btn btn-cta" class="" onclick="handle_click()">Search <i class="icon-arrowbutton"></i> </button>
 </p>
 </form>
-<hr/>
+<hr style="border-style:dashed"/>
 <script>
 function handle_click() { 
 	var option = $("input[name=searchType]:checked").val();
@@ -104,8 +104,8 @@ function handle_click() {
 <p>
 
 Query Generator
-<form id="folders" method="post" action="query-generator">
-<textarea name="refText" id="refText" cols="80" rows="30"></textarea>
+<form id="folders" method="post" action="query-generator" accept-charset="UTF-8">
+<textarea name="refText" id="refText" cols="80" rows="20"></textarea>
 <br/>
 <div style="text-align:center">
 <button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i> </button>
