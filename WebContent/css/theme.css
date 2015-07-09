@@ -1464,7 +1464,7 @@ body {
 .collection-detail { text-align: left; margin:auto; width: 900px; position: relative;}
 .collection-detail .heading { font-size: 20px;}
 
-.banner-img { background-color: #0175bc; background-repeat: no-repeat; background-size: cover; width: 900px; height: 400px; position: relative; text-align:center;}
+.banner-img { box-shadow: 3px 3px 11px 0px rgba(0, 0, 0, 0.75); background-color: #0175bc; background-repeat: no-repeat; background-size: cover; width: 900px; height: 400px; position: relative; text-align:center;}
 .collection-detail .banner-img-text-block { top: 80px; left: 30px; padding: 20px; font-size: 16px; text-align: left}
 .collection-detail .banner-img-text-large { font-size: 25px; text-align:left;}
 .collection-detail .details { border-right: dotted 1px rgba(127,127,127,0.5); padding-right: 30px; display: inline-block; max-width: 250px; overflow: hidden;}

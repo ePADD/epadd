@@ -29,6 +29,7 @@ function FilePicker($basediv, roots) {
 		},
 		open: function () { 
 			var $mboxdir = $('.dir', $basediv); // this is the actual text field that holds the dir
+			$browsebutton_label.html('OK');
 
 			if (roots.length == 1) {
 				this.browse_root(roots[0]);
@@ -38,7 +39,7 @@ function FilePicker($basediv, roots) {
 				for (var i = 0; i < roots.length; i++) {
 					var $x = $('<a style="padding-left:25px; cursor:pointer; text-decoration:underline" class="root">' + roots[i] + '</a>');
 					$roots.append($x);
-					$x.click (function() { 
+					$x.click (function(event) {
 						var root = $(event.target).text();
 						$mboxdir.val(root); // this is the actual text field that holds the dir
 						this.browse_root(root);
@@ -52,7 +53,6 @@ function FilePicker($basediv, roots) {
 			var $browse_folder = $('.browseFolder', $basediv); // this is the file selection div
 			var $mboxdir = $('.dir', $basediv); // this is the actual text field that holds the dir
 		    $browse_folder.fadeIn();
-			$browsebutton_label.html('OK');
 			var that = this;
 			$browse_folder.fileTree({ folderEvent: 'dblclick', multiFolder: true, root: root, script:'jqueryFileTree/connectors/jqueryFileTree.jsp' }, 
 			function(file, file_not_dir) {
@@ -65,7 +65,7 @@ function FilePicker($basediv, roots) {
 			    }
 		  });
 		},
-		click_handler: function() {
+		click_handler: function(event) {
 			epadd.log ('filepicker button called when label text is ' + $browsebutton_label.text());
 			// button can be either "browse" or "ok"
 			if ('Browse' == $browsebutton_label.text()) { this.open(); } else { this.close(); }

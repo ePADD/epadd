@@ -102,7 +102,7 @@
 	String url = request.getRequestURI();
 	System.out.println (url);
 %>
-<%writeProfileBlock(out, bestName, "", nEntriesForPiclens + " attachments");%>
+<%writeProfileBlock(out, bestName, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>
 <br/>
 <br/>
 

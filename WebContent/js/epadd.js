@@ -27,6 +27,14 @@ epadd.log = function(mesg, log_on_server)
 
 epadd.alert = function(s) { $('#alert-modal .modal-body').html(s); $('#alert-modal').modal(); }
 
+epadd.pluralize = function(count, description)
+{
+	if (count == 1)
+		return count + ' ' + description;
+	else
+		return count + ' ' + description + 's';
+};
+
 // do a search on the text of the element that was clicked
 epadd.do_search = function(e) {
 	var term = $(e.target).text();

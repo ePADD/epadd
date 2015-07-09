@@ -428,6 +428,7 @@ if (ModeConfig.isPublicMode()) {
 
 var transferWithRestrictions = [], doNotTransfer = [], reviewed = [], addToCart = [], messageIds = [], annotations = [];
 
+
 function apply(e, toAll) {
 	var post_data = {};
 
@@ -443,28 +444,69 @@ function apply(e, toAll) {
 	post_data.setAddToCart =  atc ? "1" : "0";
 	post_data.setAnnotation = ann;
 
-	var url = 'ajax/applyFlags.jsp';
-	// first check if applying to all, in case we may need to check if we append/overwrite
-	var modal_shown = false;
-	if (toAll) {
-		// any messages in current dataset already have annotations?
+	function check_twr() { epadd.log ('checking twr'); check_flags (transferWithRestrictions, twr, 'setTransferWithRestrictions', 'transfer-with-restrictions', check_reviewed); }
+	function check_reviewed() { epadd.log ('checking reviewed'); check_flags (reviewed, rev, 'setReviewed', 'reviewed', check_add_to_cart); }
+	function check_add_to_cart() { epadd.log ('checking add to cart'); check_flags (addToCart, atc, 'setAddToCart', 'add-to-cart', check_annotations); }
+// any messages in current dataset already have annotations?
+
+	function check_annotations() {
 		var anyAnnotations = false;
-		$('.page').each (function(i, o) { if (annotations[i]) { anyAnnotations = true; return false;};});
+		$('.page').each(function (i, o) { if (annotations[i]) {	anyAnnotations = true;	return false;};});
 
 		if (anyAnnotations) {
-			epadd.log ('showing overwrite/append modal');
+			epadd.log('showing overwrite/append modal');
 			// summon the modal and assign click handlers to the buttons.
 			$('#info-modal .modal-body').html('Some messages already have annotations. Append to existing annotations, or overwrite them?');
 			$('#info-modal').modal();
 			modal_shown = true;
-			$('#overwrite-button').click(function() { epadd.log ('overwrite button clicked'); post_updates();  });
-			$('#append-button').click(function() { epadd.log ('append button clicked'); post_data.append = 1; post_updates();});
-//			$('#cancel-button').click(function() { /* do nothing */});
+			$('#overwrite-button').click(function () {
+				epadd.log('overwrite button clicked');
+				post_updates();
+			});
+			$('#append-button').click(function () {
+				epadd.log('append button clicked');
+				post_data.append = 1;
+				post_updates();
+			});
+			//			$('#cancel-button').click(function() { /* do nothing */});
 		}
+		else
+			post_updates();
 	}
 
-	// if modal was not shown, apply updates right away
-	if (!modal_shown)
+	// prompts if any conflicting flags, and if the users says no, then deletes the given prop_name from post_data, then calls continuation()
+	// if the user says yes, or there is no conflict, it calls continuation()
+	function check_flags(flags_array, new_val, prop_name, description, continuation) {
+		var trueCount = 0, falseCount = 0, totalCount = 0;
+		$('.page').each (function(i, o) { totalCount++; if (flags_array[i]) { trueCount++;} else { falseCount++}});
+		var apply_continuation = false;
+		if (trueCount > 0 && falseCount > 0) {
+			var mesg = 'The ' + description + ' flag is set for ' + epadd.pluralize(trueCount, 'message') + ' and unset for ' + epadd.pluralize(falseCount, 'message') + '. '
+			+ (new_val ? 'Set' : 'Unset') + ' this flag for all ' + epadd.pluralize(totalCount, 'message') + '?';
+
+			epadd.log('showing confirm modal for: overwrite/append modal: ' + mesg);
+
+			$('#info-modal1 .modal-body').html(mesg);
+			// make sure to unbind handlers before adding new ones, so that the same handler doesn't get called repeatedly (danger of this happening because the info-modal1 is the same element)
+			$('#no-button').unbind().click(function() { apply_continuation = true; epadd.log('cancelling application of ' + description); alert(prop_name + ' = ' + post_data[prop_name]); + delete post_data[prop_name]; });; // unbind all prev. handlers
+			$('#yes-button').unbind().click(function() { apply_continuation = true; epadd.log('continuing with application of ' + description);});
+			// call continuation only if apply_continuation is set (i.e yes or no was selected), otherwise even dismissing the modal from its close (x) sets it off.
+			$('#info-modal1').unbind('hidden.bs.modal').on('hidden.bs.modal', function() { if (apply_continuation) { continuation(); } else { epadd.log(description + ' modal dismissed without yes or no.');}});
+			$('#info-modal1').modal();
+		}
+		else
+			continuation(); // no continuation, easy.
+	}
+
+	var url = 'ajax/applyFlags.jsp';
+	// first check if applying to all, in case we may need to check if we append/overwrite
+	var modal_shown = false;
+	if (toAll) {
+		epadd.log ('checking do not transfer');
+		check_flags (doNotTransfer, dnt, 'setDoNotTransfer', 'do-not-transfer', check_twr);
+		// the continuation sequence will end up calling post_updates
+	}
+	else
 		post_updates();
 
 	function post_updates() {
@@ -492,10 +534,10 @@ function apply(e, toAll) {
 
 			if (toAll) {
 				$('.page').each(function (i, o) {
-					doNotTransfer[i] = dnt;
-					transferWithRestrictions[i] = twr;
-					reviewed[i] = rev;
-					addToCart[i] = atc;
+					if (post_data.setDoNotTransfer) { doNotTransfer[i] = dnt; }
+					if (post_data.setTransferWithRestrictions) { transferWithRestrictions[i] = twr; }
+					if (post_data.setReviewed) { reviewed[i] = rev; }
+					if (post_data.setAddToCart) { addToCart[i] = atc; }
 					if (ann) {
 						annotations[i] = (post_data.append) ? ((annotations[i] ? annotations[i] : "") + " " + ann) : ann;
 					}
@@ -661,6 +703,23 @@ $(window).unload(function() {
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="info-modal1" class="modal fade" style="z-index:9999">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Confirm</h4>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button id='no-button' type="button" class="btn btn-default" data-dismiss="modal">Leave flags unchanged</button>
+				<button id='yes-button' type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <div style="clear:both"></div>
