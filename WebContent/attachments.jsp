@@ -19,8 +19,7 @@
 <%@include file="getArchive.jspf" %>
 <% 	boolean selectDocType = "doc".equals(request.getParameter("type")); %>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html lang="en">
 <title><%=selectDocType ? "Document":"Other" %> Attachments</title>
 <head>
@@ -135,9 +134,10 @@
 					j.put (2, b.size/1000 + " KB");
 					j.put (3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
 
-					// urls for doc and blob go to the extra json fields, #4 and #5
+					// urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
 					j.put (4, messageURL);
 					j.put (5, blobURL);
+                    j.put (6, Util.escapeHTML(b.filename));
 
 					resultArray.put (count++, j);
 				}
@@ -158,7 +158,7 @@ $(document).ready(function() {
 		return '<a target="_blank" href="' + full[4] + '">' + data + '</a>';
 	};
 	var clickable_attachment = function ( data, type, full, meta ) {
-		return '<a target="_blank" href="' + full[5] + '">' + data + '</a>';
+		return '<a title="' + full[6] + '" target="_blank" href="' + full[5] + '">' + data + '</a>';
 	};
 
 	var attachments = <%=resultArray.toString(4)%>;
