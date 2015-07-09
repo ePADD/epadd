@@ -93,9 +93,8 @@
 							allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
 					} else
 					{
-						if (!Util.is_doc_filename(b.filename))
+						if (!Util.is_doc_filename(b.filename) && !Util.is_image_filename(b.filename))
 							allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
-
 					}
 		}
 
