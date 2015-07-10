@@ -76,7 +76,7 @@
         topDir = Config.REPO_DIR_DISCOVERY;
 
       File topFile = new File(topDir);
-        JSPHelper.log.info("Loading archive from: "+topDir);
+        JSPHelper.log.info("Reading collections from: "+topDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + topDir);
         } else {

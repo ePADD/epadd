@@ -9,6 +9,7 @@
 		session.removeAttribute("userKey");
 		session.removeAttribute("emailDocs");
 		session.removeAttribute("archive");
+		session.removeAttribute("cacheDir");
 		// cache dir?
 
 		session.removeAttribute("museEmailFetcher");

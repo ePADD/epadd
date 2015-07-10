@@ -826,8 +826,7 @@ function showCurrentPage()
 				return;
 			}
 
-LOG ('ok we have page ' + currentPage  + ' ' + pages[currentPage].length + ' chars');
-//LOG ('ok we have page ' + currentPage  + pages[currentPage]);
+// LOG ('ok we have page ' + currentPage  + ' ' + pages[currentPage].length + ' chars');
 			var bStyle = '';
 			if (page < totalPages-1 && i < N_PAGES_IN_FRAME-1)
 				bStyle = 'border-right: solid #888 2px;';

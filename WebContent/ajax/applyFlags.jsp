@@ -62,11 +62,13 @@ if (docs != null)
 			ed.reviewed = reviewed;
 		if (addToCartSet)
 			ed.addedToCart = addToCart;
-//		if (!Util.nullOrEmpty(annotation)) // we explicitly allow empty annotation, in order to clear annotations.
+		if (annotation != null) // this can be null coming in from settings page -> reset all reviewed, in which case we don't want to reset all annotations.
+		{
 			if (append)
 				ed.setComment(Util.nullOrEmpty(ed.comment) ? annotation : ed.comment + " " + annotation);
 			else
 				ed.setComment(annotation);
+		}
 	}
 	nMessages= docs.size();
 }

@@ -111,11 +111,29 @@
             <span class="detail"><%=(Util.nullOrEmpty(pm.accessionID) ? "Unassigned" : pm.accessionID)%> </span>
         </p>
         <p>
+            <% if (pm.firstDate != null && pm.lastDate != null) { %>
+                Date Range<br/>
+                <span class="detail"><%=Util.formatDate(pm.firstDate)%> to <%=Util.formatDate(pm.lastDate)%></span>
+            <% } %>
+        </p><p>
+        <p>
             Messages<br/>
             <span class="detail"><%=Util.commatize(pm.nDocs)%></span>
+            <% if (pm.nIncomingMessages > 0 || pm.nOutgoingMessages > 0) { %>
+            <br/>
+            Incoming: <span class="detail"><%=Util.commatize(pm.nIncomingMessages)%></span><br/>
+            Outgoing: <span class="detail"><%=Util.commatize(pm.nOutgoingMessages)%></span>
+            <% } %>
         </p><p>
             Attachments<br/>
+            <!-- note these are non unique counts -->
             <span class="detail"><%=Util.commatize(pm.nBlobs)%></span>
+                <% if (pm.nDocBlobs > 0 || pm.nImageBlobs > 0 || pm.nOtherBlobs > 0) { %>
+                <br/>
+                Images: <span class="detail"><%=Util.commatize(pm.nImageBlobs)%></span><br/>
+                Documents: <span class="detail"><%=Util.commatize(pm.nDocBlobs)%></span><br/>
+                Others: <span class="detail"><%=Util.commatize(pm.nOtherBlobs)%></span>
+                <% } %>
         </p>
 
         <% if (!Util.nullOrEmpty(pm.contactEmail)) { /* show contact email, but only if it actually present */ %>
