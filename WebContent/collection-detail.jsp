@@ -117,22 +117,19 @@
             <% } %>
         </p><p>
         <p>
-            Messages<br/>
-            <span class="detail"><%=Util.commatize(pm.nDocs)%></span>
+            Messages: <span class="detail"><%=Util.commatize(pm.nDocs)%></span>
             <% if (pm.nIncomingMessages > 0 || pm.nOutgoingMessages > 0) { %>
-            <br/>
-            Incoming: <span class="detail"><%=Util.commatize(pm.nIncomingMessages)%></span><br/>
-            Outgoing: <span class="detail"><%=Util.commatize(pm.nOutgoingMessages)%></span>
+                <br/>
+                Incoming: <span class="detail"><%=Util.commatize(pm.nIncomingMessages)%></span><br/>
+                Outgoing: <span class="detail"><%=Util.commatize(pm.nOutgoingMessages)%></span>
             <% } %>
         </p><p>
-            Attachments<br/>
-            <!-- note these are non unique counts -->
-            <span class="detail"><%=Util.commatize(pm.nBlobs)%></span>
+            Attachments: <span class="detail"><%=Util.commatize(pm.nBlobs)%></span>
                 <% if (pm.nDocBlobs > 0 || pm.nImageBlobs > 0 || pm.nOtherBlobs > 0) { %>
-                <br/>
-                Images: <span class="detail"><%=Util.commatize(pm.nImageBlobs)%></span><br/>
-                Documents: <span class="detail"><%=Util.commatize(pm.nDocBlobs)%></span><br/>
-                Others: <span class="detail"><%=Util.commatize(pm.nOtherBlobs)%></span>
+                    <br/>
+                    Images: <span class="detail"><%=Util.commatize(pm.nImageBlobs)%></span><br/>
+                    Documents: <span class="detail"><%=Util.commatize(pm.nDocBlobs)%></span><br/>
+                    Others: <span class="detail"><%=Util.commatize(pm.nOtherBlobs)%></span>
                 <% } %>
         </p>
 

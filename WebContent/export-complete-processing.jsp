@@ -39,6 +39,7 @@
 %>
 <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 <% out.flush(); %>
+<div style="margin-left:170px">
 
 <%
 	String rawDir = request.getParameter("dir");
@@ -131,7 +132,6 @@
 %>
 <script>$('#spinner-div').hide();</script>
 <p>
-	<div style="margin-left:170px">
 		<p>
 		Full ePADD archive exported to: <%=Util.escapeHTML(folder)%><br/>
 		Please copy this folder under &lt;HOME&gt;/<%=Util.filePathTail(Config.REPO_DIR_DELIVERY)%> and start ePADD in delivery mode.<br/>

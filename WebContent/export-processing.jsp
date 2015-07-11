@@ -27,54 +27,56 @@
 </head>
 
 <body>
-<jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Export');</script>
-<%
-	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
-	writeProfileBlock(out, bestName, "", "Export messages");
-%>
-<script type="text/javascript">
-</script>
-<p>
-<br/>
-<br/>
+	<jsp:include page="header.jspf"/>
+	<script>epadd.nav_mark_active('Export');</script>
+	<%
+		AddressBook ab = archive.addressBook;
+		String bestName = ab.getBestNameForSelf();
+		writeProfileBlock(out, bestName, "", "Export messages");
+	%>
+	<p>
+	<br/>
+	<br/>
 
-<% /* all mboxes folders will be in account divs here */ %>
-<div id="filepicker">
-	<label class="col-sm-1 control-label">Export Folder</label> 
-	<div class="col-sm-5"><input class="dir form-control" type="text" name="mboxDir1"/></div>
-	<div class="col-sm-2"><button class="btn btn-default"><i class="fa fa-file"></i> <span>Browse</span></button></div>
-	<br/>
-	<br/>
-	<br/>
-	<br/>
-	<div class="roots" style="display:none"></div>
-	<div class="browseFolder"></div>
-</div> <!--  end account -->
-    <button class="btn btn-cta" 
-    style="margin-left:110px" onclick="submit(); return false;">Export <i class="icon-arrowbutton"></i> </button> 
-    
-<p>
-<br/>
-<br/>
-<%
-java.io.File[] rootFiles = java.io.File.listRoots(); 
-List<String> roots = new ArrayList<String>();
-for (java.io.File f: rootFiles)
-	roots.add(f.toString());
-String json = new Gson().toJson(roots);
-%>
-<script> 
-	function submit() {
-		window.location = 'export-complete-processing?dir=' + $('#filepicker .dir').val();
-	}
-	var roots = <%=json%>;
-	new FilePicker($('#filepicker'), roots);
-</script>
-<p>
-<p>
+	<div id="filepicker" style="width:900px;padding-left:170px">
+		<div class="div-input-field">
+			<div class="input-field-label"><i class="fa fa-folder-o"></i> Export folder</div>
+			<div class="input-field">
+				<input id="dir" class="dir form-control" type="text" name="dir"/><br/>
+				<button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
+					<span>Browse</span>
+				</button>
+			</div>
+			<div class="roots" style="display:none"></div>
+			<div class="browseFolder"></div>
+			<br/>
+			<div style="text-align:center">
+				<button type="button" class="btn btn-cta" onclick="submit(); return false;">
+					Export <i class="icon-arrowbutton"></i>
+				</button>
+			</div>
+		</div>
+	</div>
 
+	<p>
+	<br/>
+	<br/>
+	<%
+	java.io.File[] rootFiles = java.io.File.listRoots();
+	List<String> roots = new ArrayList<String>();
+	for (java.io.File f: rootFiles)
+		roots.add(f.toString());
+	String json = new Gson().toJson(roots);
+	%>
+	<script>
+		function submit() {
+			window.location = 'export-complete-processing?dir=' + $('#filepicker .dir').val();
+		}
+		var roots = <%=json%>;
+		new FilePicker($('#filepicker'), roots);
+	</script>
+	<p>
+	<p>
 	<jsp:include page="footer.jsp"/>
 </body>
 </html>

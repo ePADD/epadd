@@ -186,11 +186,11 @@ if (archive != null) {
 			<br/>
 		</div>
 	</section>
+	<div style="text-align:center;margin-top:20px">
+		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false">Continue <i class="icon-arrowbutton"></i> </button>
+	</div>
 </div> <!--  all fields -->
 
-<div style="text-align:center;margin-top:20px">
-	<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false">Continue <i class="icon-arrowbutton"></i> </button>
-</div>
 
 </form>
 

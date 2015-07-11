@@ -44,15 +44,6 @@
 			<div class="browseFolder"></div>
 			<br/>
 		</div>
-<!--
-		<div class="col-sm-4"><input id="sourceDir" class="dir form-control" type="text" name="sourceDir"/></div>
-		<div class="col-sm-2"><button class="btn-default"><i class="fa fa-file"></i> <span>Browse</span></button></div>
-		-->
-		<label class="col-sm-2 control-label"></label>
-		<div class="col-sm-4"><div style="padding:5px;display:none;" id="stats"></div></div> <!-- this div will be populated with some status once the load is initiated -->
-		
-		<div class="roots" style="display:none"></div>
-		<div class="browseFolder"></div>
 	</div>
 	<br/>
 	<br/>
