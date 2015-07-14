@@ -4,9 +4,9 @@
 	JSPHelper.checkContainer(request); // do this early on so we are set up
   request.setCharacterEncoding("UTF-8");
 %>
+<%@page language="java" import="edu.stanford.muse.ie.InternalAuthorityAssigner"%>
+<%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="java.util.*"%>
-<%@page language="java" import="java.util.zip.*"%>
-<%@page language="java" import="java.io.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>

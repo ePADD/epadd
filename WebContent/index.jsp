@@ -1,10 +1,10 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
+<%@page language="java" import="edu.stanford.epadd.Version"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.epadd.Version" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%
 	JSPHelper.log.info ("epadd v" + Version.version + " is running");
 if (ModeConfig.isAppraisalMode())

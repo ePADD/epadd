@@ -5,7 +5,19 @@
 <%@page language="java" %>
 
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%><%@ page import="edu.stanford.muse.index.IndexUtils"%><%@ page import="edu.stanford.muse.index.Indexer"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.util.Pair"%><%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONObject"%><%@ page import="java.util.HashSet"%><%@ page import="java.util.List"%><%@ page import="java.util.Map"%><%@ page import="java.util.Set"%><%@ page import="java.util.regex.Pattern"%><%@ page import="edu.stanford.muse.ner.NER"%>
+<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
+<%@ page import="edu.stanford.muse.index.IndexUtils"%>
+<%@ page import="edu.stanford.muse.index.Indexer"%>
+<%@ page import="edu.stanford.muse.util.EmailUtils"%>
+<%@ page import="edu.stanford.muse.util.Pair"%>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@ page import="org.json.JSONObject"%>
+<%@ page import="java.util.HashSet"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.Set"%>
+<%@ page import="java.util.regex.Pattern"%>
+<%@ page import="edu.stanford.muse.ner.NER"%>
 <%/*Given a name; resolves it to multiple word name if the name is single word and also anotates the multiple word name with external(if there is an authorised database id) or internal(If there is a contact in addressbook with that name.)
 	Input: name that is to be expanded/annotated; docId of the document in which name is to be expanded/annotated. 
 	Output: If expanded possible multiple word names with authority type annotations in decreasing order of confidence(Max: 5)
@@ -109,7 +121,7 @@
 								JSPHelper.log.warn("No original string found for normalised name: " + score.first.name);
 		
 							double p = score.second / maxScore;
-							String color = "rgb(" + new Double((1 - p) * 255).intValue() + "," + new Double(p * 255).intValue() + "," + "20)";
+							String color = "#0175BC";//"rgb(" + new Double((1 - p) * 255).intValue() + "," + new Double(p * 255).intValue() + "," + "20)";
 							String width = new Double(50 * p).intValue() + "px";
 							String href = "browse?term=\"" + edu.stanford.muse.util.Util.escapeHTML(d) + "\"";
 							String recordType = "";
@@ -119,7 +131,7 @@
 							if (AuthorisedAuthorities.cnameToDefiniteID != null && AuthorisedAuthorities.cnameToDefiniteID.get(IndexUtils.canonicalizeEntity(d)) != null)
 								recordType += externalRecordHtml;
 		
-							html += "<li><a style='color: white;' href='" + href + "'>" + d + "</a>&nbsp"
+							html += "<li><a href='" + href + "' style='color:black'>" + d + "</a>&nbsp"
 									+ recordType
 									+ "<div style='background-color:" + color + ";width: " + width + ";height:5px;'></div>" + "</li>";//new DecimalFormat("#.####").format(score.second)
 							num++;

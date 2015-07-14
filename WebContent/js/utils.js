@@ -11,11 +11,10 @@ initialiseqtip = function(){
              }
              dirty = false;
              classes.map(function(d,i){if(d.indexOf("custom")>=0|| d.indexOf("acr")>=0){dirty = true;}});
-             if(dirty) console.log("Dirty for: "+this.textContent+", "+classes);
              return !dirty;
         })
         .qtip({hide:{delay:'200',fixed:true},
-            style: {width: '450px',padding: 7,color: 'white',textAlign: 'left',border: {width: 3,radius: 5,color: 'rgb(145, 116, 26)'},name: 'dark'}
+            style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: 2,color: 'black'}}
         });
 }
 reinitialiseqtip = function(){
@@ -24,13 +23,12 @@ reinitialiseqtip = function(){
 	//TODO: use a proper selector
     var qtip_params = {
         hide:{delay:'200',fixed:true},
-        style: {name: 'dark', 'width': '650px', padding: '7px', textAlign: 'left', border: {width: 2,radius: 5, color: '#0175bc'}}
+        style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: 2,color: 'black'}}
     };
 
     //There can be many nested spans, in that case just consider the outer most span element
 	$('div.muse-doc-body span[data-ignore!=][title!=]')
         .filter(function(){
-            console.log("title: "+this.title);
             return this.parentNode.tagName!=="SPAN"
         })
         .qtip(qtip_params);
@@ -51,19 +49,10 @@ expand = function(name,docId,id){
 		success: function(data,status,jqXHR){
 			epadd.log("Response "+data);
 			json = JSON.parse(data);
-			//$(".custom-people, .custom-org, .custom-loc, .acronym").each(
-			//	function(i,e){
-			//		if($(e).text()==name){
-			//			$(e).attr("title",json.result);
-			//			epadd.log("Setting title of: "+$(e).text()+"("+name+") to "+json.result);
-             //           //return false;
-             //       }
-			//});
-            if(typeof(json.result)==="undefined")
+	        if(typeof(json.result)==="undefined")
                 json.result = "No confident matches!";
 			$("#expand_"+id).html(json.result);
-            console.log("Setting id for: "+id+", "+json.result);
-			//reinitialiseqtip();
+            //reinitialiseqtip();
 		},
 	    error: function(jqXHR,exception, error){
 	    	epadd.log("Error while expanding word."+exception+" error:"+error);

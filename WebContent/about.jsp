@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
 <head>

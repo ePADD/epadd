@@ -1,16 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@ page import="edu.stanford.muse.util.Util" %>
 <head>
-	<title>ePadd</title>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png?v3">
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-	<script src="js/jquery.js"></script>
+    <title>ePadd</title>
+    <link rel="icon" type="image/png" href="images/epadd-favicon.png?v3">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <script src="js/jquery.js"></script>
 
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
-	<jsp:include page="css/css.jsp"/>
+    <jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>
 	<style>
 		.hfill {padding:10px;}

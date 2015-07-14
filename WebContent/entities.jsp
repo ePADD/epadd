@@ -79,11 +79,11 @@ if ("location".equals(type)) { %>
 		out.flush();
 
 	Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
-Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
+    Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
 
-Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-for (EmailDocument ed: docs) {
-	List<String> entities = archive.indexer.getEntitiesInDoc(ed, type);
+    Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
+    for (EmailDocument ed: docs) {
+	    List<String> entities = archive.indexer.getEntitiesInDoc(ed, type);
 
 // 	if(edu.stanford.muse.ie.ie.NER.EPER.equals(type)||edu.stanford.muse.ie.ie.NER.ELOC.equals(type)||edu.stanford.muse.ie.ie.NER.EORG.equals(type)){
 // 		List<String> scores = indexer.getEntitiesInDoc(ed, type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);
@@ -98,36 +98,36 @@ for (EmailDocument ed: docs) {
 // 				System.err.println(s);
 // 		}
 // 	}
-	//filter the entities to remove obvious junk
-	entities = edu.stanford.muse.ie.Util.filterEntities(entities, type);
-	// note that entities could have repetitons.
-	// so we create a *set* of entities, but after canonicalization.
-	// canonical to original just uses an arbitrary (first) occurrence of the entity
-	Set<String> canonicalEntities = new LinkedHashSet<String>();
-	for (String e: entities) {
-		String canonicalEntity = IndexUtils.canonicalizeEntity(e);
-		if (canonicalToOriginal.get(canonicalEntity) == null)
-			canonicalToOriginal.put(canonicalEntity, e);
-		canonicalEntities.add(canonicalEntity);
-	}
-	
-	for (String ce: canonicalEntities)
-	{
-		Integer I = counts.get(ce);
-		counts.put(ce, (I == null) ? 1 : I+1);
-	}
-}
+        //filter the entities to remove obvious junk
+        entities = edu.stanford.muse.ie.Util.filterEntities(entities, type);
+	    // note that entities could have repetitons.
+	    // so we create a *set* of entities, but after canonicalization.
+	    // canonical to original just uses an arbitrary (first) occurrence of the entity
+        Set<String> canonicalEntities = new LinkedHashSet<String>();
+        for (String e: entities) {
+            String canonicalEntity = IndexUtils.canonicalizeEntity(e);
+            if (canonicalToOriginal.get(canonicalEntity) == null)
+                canonicalToOriginal.put(canonicalEntity, e);
+            canonicalEntities.add(canonicalEntity);
+        }
+
+        for (String ce: canonicalEntities)
+        {
+            Integer I = counts.get(ce);
+            counts.put(ce, (I == null) ? 1 : I+1);
+        }
+    }
 
 	Contact ownContact = ab.getContactForSelf();
-List<Contact> allContacts = ab.sortedContacts((Collection) docs);
-Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
+    List<Contact> allContacts = ab.sortedContacts((Collection) docs);
+    Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
 %>
 <%
-List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
-int MAX_DEFAULT_RECORDS = 100000;
-int max = HTMLUtils.getIntParam(request, "max", MAX_DEFAULT_RECORDS);
-int count = 0;																																												
-JSONArray resultArray = new JSONArray();
+    List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
+    int MAX_DEFAULT_RECORDS = 100000;
+    int max = HTMLUtils.getIntParam(request, "max", MAX_DEFAULT_RECORDS);
+    int count = 0;
+    JSONArray resultArray = new JSONArray();
 	for (Pair<String, Integer> p: pairs) {
 	if (++count > max)
 		break;

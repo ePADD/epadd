@@ -1,9 +1,9 @@
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="javax.mail.*"%>
-<%@page language="java" import="java.io.*"%>
 <%@page language="java" import="edu.stanford.epadd.Version.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page language="java" import="javax.mail.*"%>
+<%@page language="java" %>
+<%@page language="java" %>
+<%@page language="java" %>
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
