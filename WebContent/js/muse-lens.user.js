@@ -461,7 +461,7 @@ main = function(evt) {
 				decoratePage(muse_response);
 			},
 			error: function(response) {
-				report_error('Muse is off. (<a href="http://mobisocial.stanford.edu/muse/muse.jnlp">Launch it</a>)');
+				report_error('ePADD is off!?');
 			}
 		});
 
@@ -875,7 +875,8 @@ var HIT_CLICKED = function(e, hit_details) {
 				catch (e) { LOG('error in evaluating muse response for term details'); return; }
 				hit_details.messages = new_details.result.messages;
 				hit_details.nMessages = new_details.result.nMessages;
-		    	open_popup(hit_details);
+				hit_details.url = new_details.result.url; // this is essential
+				open_popup(hit_details);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 				alert ('getting term details failed : '  + textStatus);
@@ -1096,7 +1097,7 @@ function decoratePage(hits) {
 		    $_("#calloutparent").fadeIn('slow');
 			$_("#muse-status").fadeOut('slow');
 			window.setTimeout(function() { $_('#calloutparent').fadeOut('slow');}, 5000); // fade out in 5 secs
-			report_error('muse returned an error: ' + hits.displayError);
+			report_error('ePADD returned an error: ' + hits.displayError);
         }
 		return; // do nothing
 	}
