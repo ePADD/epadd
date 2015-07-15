@@ -16,9 +16,6 @@
 
   <script src="js/jquery.js"></script>
 
-  <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-  <script src="js/jquery.dataTables.min.js"></script>
-
   <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
   <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 

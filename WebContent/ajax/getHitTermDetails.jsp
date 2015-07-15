@@ -83,6 +83,7 @@ try {
 			   JSPHelper.log.warn("Alldocs object is null");
 		}
 		obj = Lens.detailsForTerm (term, pageScore, indexer, ab, baseURL, allDocs);
+		((JSONObject) obj).put("url", "/epadd/browse?term=\"" + term + "\"");
 		end = System.currentTimeMillis();
 		//JSPHelper.log.info ("quick get hits " + (end - start) + " ms");
 	} catch (Exception e) {

@@ -81,23 +81,28 @@
 		Map<Blob, String> blobToSubject = new LinkedHashMap<Blob, String>();
 		List<Pair<Blob, EmailDocument>> allAttachments = new ArrayList<Pair<Blob, EmailDocument>>();
 		Collection<EmailDocument> eDocs = (Collection) docs;
-		for (EmailDocument doc : eDocs)
-		{
-			List<Blob> a = doc.attachments;
-			if (a != null)
-				for (Blob b : a)
-					if (selectDocType)
-					{
-						if (Util.is_doc_filename(b.filename))
-							allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
-					} else
-					{
-						if (!Util.is_doc_filename(b.filename) && !Util.is_image_filename(b.filename))
-							allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
-					}
-		}
+        Set<Blob> allBlobsSet = new LinkedHashSet<Blob>();
+        for (EmailDocument doc : eDocs)
+        {
+            List<Blob> a = doc.attachments;
+            if (a != null) {
+                for (Blob b : a) {
+                    if (selectDocType) {
+                        if (Util.is_doc_filename(b.filename)) {
+                            allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
+                            allBlobsSet.add(b);
+                        }
+                    } else {
+                        if (!Util.is_doc_filename(b.filename) && !Util.is_image_filename(b.filename)) {
+                            allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
+                            allBlobsSet.add(b);
+                        }
+                    }
+                }
+            }
+        }
 
-		writeProfileBlock(out, bestName, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment"));
+        writeProfileBlock(out, bestName, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment") + " (" + allBlobsSet.size() + " unique)");
 
 		if (allAttachments.size() > 0) { %>
 			<br/>
@@ -131,7 +136,7 @@
 					JSONArray j = new JSONArray();
 					j.put (0, Util.escapeHTML(subject));
 					j.put (1, ed.dateString());
-					j.put (2, b.size/1000 + " KB");
+					j.put (2, b.size);
 					j.put (3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
 
 					// urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
@@ -160,12 +165,28 @@ $(document).ready(function() {
 	var clickable_attachment = function ( data, type, full, meta ) {
 		return '<a title="' + full[6] + '" target="_blank" href="' + full[5] + '">' + data + '</a>';
 	};
+    var sortable_size = function(data, type, full, meta) {
+        return Math.floor(full[2]/1024) + " KB";
+    };
 
-	var attachments = <%=resultArray.toString(4)%>;
+    $.fn.dataTableExt.oSort['sort-kb-asc']  = function(x,y) {
+        console.log('x =' + x + ' y = ' + y);
+        x = parseInt(x.substring(0, x.indexOf(' KB')));
+        y = parseInt(y.substring(0, y.indexOf(' KB')));
+        console.log('x =' + x + ' y = ' + y);
+        return ((x < y) ? -1 : ((x > y) ?  1 : 0));
+    };
+
+    $.fn.dataTableExt.oSort['sort-kb-desc']  = function(x,y) { return -1 * $.fn.dataTableExt.oSort['sort-kb-asc'](x,y); }
+
+    var attachments = <%=resultArray.toString(4)%>;
 	$('#attachments').dataTable({
 		data: attachments,
 		pagingType: 'simple',
-		columnDefs: [{targets: 0,render:clickable_message},{targets:3,render:clickable_attachment}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
+		columnDefs: [{targets: 0,render:clickable_message},
+            {targets:3,render:clickable_attachment},
+            {targets:1,width:'180px',className: "dt-right"},
+            {targets:2,render:sortable_size,width:'100px',type:'sort-kb',className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
 		order:[[1, 'asc']], // col 1 (date), ascending
 		fnInitComplete: function() { $('#attachments').fadeIn();}
 	});
