@@ -15,7 +15,7 @@ if (ModeConfig.isPublicMode()) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Bulk Search Results</title>
+	<title>Query Generator Results</title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
@@ -41,7 +41,7 @@ out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
 %>
 </div>
 <script type="text/javascript">
-	window.MUSE_URL = '<%=HTMLUtils.getRootURL(request)%>';
+	window.MUSE_URL = '/epadd'; // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
 </script>
 <script type="text/javascript" src="js/muse-lens.user.js"></script>
 <jsp:include page="footer.jsp"/>
