@@ -58,7 +58,7 @@
 	
 	long startMillis = System.currentTimeMillis();
 	session.setAttribute("statusProvider", entitiesData);
-	//this is table data in the form of Array of JSON objects and each JSON object inturn contains
+	//this is table data in the form of Array of JSON objects and each JSON object in turn contains
 	//values, contexts and classes for each row
 	String tabledata = null;
 	try{

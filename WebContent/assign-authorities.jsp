@@ -3,6 +3,8 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page import="edu.stanford.muse.ie.FASTSearcher" %>
+<%@page import="java.io.File" %>
 <%@page language="java" %>
 <%@include file="getArchive.jspf" %>
 
@@ -121,7 +123,7 @@
       //assign authoriities page may contain lot of data that is loaded over time, it is not a good idea to redirect the page and lose all the data
       //hence, we create a new window and set the data
       var export_authorities = function(e){
-          window.location = "exportAuthorityRecords.jsp?exportType=csv";
+          window.location.href = "exportAuthorityRecords.jsp?exportType=csv";
 //		 $.ajax({type: 'POST',
 //				dataType: 'json',
 //				url: 'ajax/exportAuthorityRecords.jsp',
@@ -136,7 +138,7 @@
 //				error: function(data) {
 //					epadd.log(data);
 //					var newWindow = window.open();
-//					newWindow.document.write(data.responseText);
+//					alert(data.responseText);
 //					//alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to the ePADD development team.");
 //					$('img[src="images/spinner.gif').hide(); // hide the spinner otherwise it continues on the page even after this crash
 //					$('.fa-spinner').hide();
@@ -282,7 +284,14 @@
 	fetchTableEntries = function(beginIndex,endIndex){
 		ready = function(j){
 			var t = $('#table').DataTable();
-			total = j["total"];
+			status = j["status"];
+            if(status === "0") {
+                var info = j["info"];
+                epadd.log(info);
+                $("#table").html("<span style='color:red'>"+info+"</span>");
+                return;
+            }
+            total = j["total"];
 			ei = j["endIndex"];
 			j = j["data"];
 			showing += (endIndex-beginIndex);
@@ -324,7 +333,7 @@
 		//supplying the ready function to make it not redirect the other page and give us the handle of the response data.  
 		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), params, ready, null);	
 	}
-	fetchTableEntries(bi,ei);
+    fetchTableEntries(bi,ei);
 </script>
 
 <%
@@ -399,8 +408,6 @@
 			</div>
 		</div>
 	</div>
-
-
 
 	</div>
 	<br/>
