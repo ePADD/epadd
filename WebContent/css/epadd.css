@@ -232,3 +232,6 @@ a.hilitedTerm, .hilitedTerm {
 .pp-bottom { height: 0px;}
 .pp_bottom .pp_left, .pp_bottom .pp_right,.pp_bottom .pp_middle { height: 0px;}
 .pp_top .pp_left, .pp_top .pp_right,.pp_top .pp_middle { height: 0px;}
+
+/**highlight attachment in browse page*/
+.highlight{background-color: yellow}
