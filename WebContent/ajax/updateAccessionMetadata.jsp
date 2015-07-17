@@ -7,7 +7,9 @@
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="org.json.JSONObject"%>
-<%@page language="java" import="javax.mail.MessagingException"%><%@ page import="java.io.*"%>
+<%@page language="java" import="javax.mail.MessagingException"%>
+
+<%@ page import="java.io.*"%>
 		<%!
         private String getFileName(final Part part) throws MessagingException
         {

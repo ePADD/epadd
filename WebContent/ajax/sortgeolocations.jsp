@@ -1,10 +1,9 @@
 <%@page import="edu.stanford.muse.util.Pair"%>
-<%@page import="org.jsoup.Jsoup"%>
-<%@page import="java.net.URL"%>
 <%@page import="java.util.*"%>
-<%@page import="edu.stanford.epadd.util.*"%>
 <%@page import="edu.stanford.epadd.misc.*"%>
 <%@page import="com.google.gson.Gson"%>
+<%@ page import="edu.stanford.muse.util.Network" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -20,7 +19,7 @@
 	response.setCharacterEncoding("UTF-8");
 	
 	try {
-		String json = Network.GetContentFromURL(aUrl);
+		String json = Network.getContentFromURL(aUrl);
 		if (json != null){
 			Gson gson = new Gson();
 			if(json.equals("{\"limits\":{\"coordinates\":500}}"))
@@ -31,7 +30,7 @@
 				String titles = "";
 				if(hits.size()>0){
 					for(Pair<String,Double> hit: hits){
-						System.err.println(hit.getSecond());
+						JSPHelper.log.info(hit.getSecond());
 						titles += hit.getFirst()+"&nbsp"+hit.getSecond() +"kms<br>";
 					}
 				}
@@ -46,7 +45,7 @@
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		System.err.println("Exception: " + e);
+		JSPHelper.log.info("Exception: " + e);
 		return;
 	}
 	

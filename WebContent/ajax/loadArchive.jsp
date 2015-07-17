@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="application/json;charset=UTF-8"%>
+<%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.email.StaticStatusProvider" %>
@@ -6,7 +6,9 @@
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="org.json.JSONObject"%>
-<%@page language="java" import="java.io.File"%><%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@page language="java" import="java.io.File"%>
+<%@page import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig"%>
 <%
 
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading archive"));

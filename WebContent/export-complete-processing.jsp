@@ -3,7 +3,6 @@
 <%@page language="java" import="edu.stanford.epadd.Config"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.ie.AuthorisedAuthorities"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>

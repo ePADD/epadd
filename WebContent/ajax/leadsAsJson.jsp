@@ -1,9 +1,7 @@
 <%@ page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.util.*"%>
-<%@page language="java" import="java.io.*" %>
 <%@page language="java" import="org.json.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.lens.*"%>
@@ -14,7 +12,6 @@
 JSPHelper.setPageUncacheable(response);
 	// https://developer.mozilla.org/en/http_access_control
 response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-//response.setHeader("Access-Control-Allow-Origin", "http://xenon.stanford.edu");
 response.setHeader("Access-Control-Allow-Credentials", "true");
 response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

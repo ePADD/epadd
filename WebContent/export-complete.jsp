@@ -1,4 +1,4 @@
-	<%@page contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.net.*"%>
 <%@page language="java" import="java.io.*"%>

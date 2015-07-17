@@ -5,7 +5,6 @@
 <%
 	JSPHelper.setPageUncacheable(response);
 	response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-	//response.setHeader("Access-Control-Allow-Origin", "http://xenon.stanford.edu");
 	response.setHeader("Access-Control-Allow-Credentials", "true");
 	response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 	response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -21,7 +20,7 @@
 				String[] sents = NLPUtils.SentenceTokenizer(text);  
 				if(sents!=null)
 					json = gson.toJson(sents);	
-				System.err.println(json);
+				JSPHelper.log.info(json);
 				response.getWriter().write(json);
 			}
 		}

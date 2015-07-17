@@ -1,12 +1,8 @@
 <%@ page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
 <%@page language="java" import="java.io.*" %>
 <%@page language="java" import="org.json.*"%>
 <%@page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.epadd.Config"%>
 

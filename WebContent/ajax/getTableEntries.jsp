@@ -7,12 +7,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.List"%>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<% 
+<%
 	InternalAuthorityAssigner assignauthorities = (InternalAuthorityAssigner)request.getSession().getAttribute("authorities");
 	Archive archive = JSPHelper.getArchive(session);
 	

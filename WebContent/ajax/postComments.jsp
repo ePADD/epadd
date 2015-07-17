@@ -1,11 +1,8 @@
 <%@ page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.util.*"%>
-<%@page language="java" import="java.util.zip.*"%>
-<%@page language="java" import="java.io.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%
 String docset = request.getParameter("docset"); // this is actually docs-docset-NNN

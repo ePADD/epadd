@@ -3,9 +3,6 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@page import="edu.stanford.muse.ie.FASTSearcher" %>
-<%@page import="java.io.File" %>
-<%@page language="java" %>
 <%@include file="getArchive.jspf" %>
 
 <html>

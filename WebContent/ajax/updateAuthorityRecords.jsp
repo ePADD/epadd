@@ -4,15 +4,10 @@
 <%@page language="java" import="java.io.*" %>
 <%@page language="java" import="org.json.*"%>
 <%@page language="java" %>
-<%@page language="java" import="com.google.gson.Gson"%>
-<%@page language="java" import="com.google.gson.reflect.TypeToken"%>
-<%@page language="java" import="java.lang.reflect.Type"%>
 
 <%@page language="java" import="edu.stanford.muse.ie.Authority"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive.ProcessingMetadata"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page import="edu.stanford.muse.Config"%>

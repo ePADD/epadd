@@ -11,7 +11,6 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.datacache.*"%>
-<%@page language="java" import="edu.stanford.muse.groups.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.ie.InternalAuthorityAssigner"%>

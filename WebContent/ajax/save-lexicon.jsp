@@ -5,7 +5,6 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%
 	// params:
 	// lexicon=<lexicon name>. if no lexicon name, use "default"

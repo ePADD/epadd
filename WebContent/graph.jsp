@@ -3,15 +3,16 @@
 	JSPHelper.checkContainer(request); // do this early on so we are set up
   request.setCharacterEncoding("UTF-8");
 %>
-<%@page language="java" import="org.json.*"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page import="org.json.*"%>
+<%@ page import="java.util.*"%>
+<%@ page import="edu.stanford.muse.index.*" %>
+<%@ page import="edu.stanford.muse.email.CalendarUtil" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.email.AddressBook" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.util.*" %>
+<%@ page import="edu.stanford.muse.email.Contact" %>
+<%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@include file="getArchive.jspf" %>
 <%!
 
@@ -33,7 +34,7 @@ public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> inte
 			o.put("url", dfi.messagesURL);
 			o.put("histogram", groupVolume);
 			j.put(count, o);
-		} catch (Exception e) { Util.print_exception (e, JSPHelper.log); }
+		} catch (Exception e) { Util.print_exception(e, JSPHelper.log); }
 		count++;
 		if (count >= MAX_COUNT) 
 			break;

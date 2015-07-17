@@ -6,13 +6,10 @@
 <%@page language="java" import="edu.stanford.muse.ner.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.exceptions.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.groups.*"%>
-<%@page language="java" import="edu.stanford.muse.memory.*"%>
+
 <%@page language="java" import="org.json.*"%>
 <%
 session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));

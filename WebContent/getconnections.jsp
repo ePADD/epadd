@@ -11,7 +11,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<!-- Reads edges and returns all connected nodes to nodes that match the input text. -->
+<!-- Obsolete and used nowhere
+    Reads edges and returns all connected nodes to nodes that match the input text. -->
 <%
 	String text = request.getParameter("text").toLowerCase();
 	if(text!=null){

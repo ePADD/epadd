@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@page import="java.util.*"%>
-<%@page import="edu.stanford.muse.util.*"%>
-<%@page import="edu.stanford.muse.ie.FASTSearcher"%>
-<%@page import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@ page import="java.util.*"%>
+<%@ page import="edu.stanford.muse.util.*"%>
+<%@ page import="edu.stanford.muse.ie.FASTSearcher"%>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.ie.Authority" %>
 <%@ page import="edu.stanford.muse.ie.FASTRecord" %>
 <!DOCTYPE html>

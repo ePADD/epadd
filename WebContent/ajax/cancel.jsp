@@ -1,7 +1,4 @@
 <!-- runs on server side -->
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="javax.mail.*"%>
-<%@page language="java" import="java.io.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%
