@@ -1,8 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
@@ -94,7 +92,7 @@
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(name) + "</div>");
 	} else {
 		session.setAttribute("lexicon", lex);
-		Map<String, Set<Document>> map = lex.getEmotions(archive.indexer, (Set) allDocs, false, request.getParameter("originalContentOnly") != null);
+		Map<String, Integer> map = lex.getLexiconCounts(indexer, true);
 		Collection<String> lexiconNames = archive.getAvailableLexicons();
 		if (ModeConfig.isDeliveryMode()) {
 			lexiconNames = new LinkedHashSet(lexiconNames); // we can't call remve on the collection directly, it throws an unsupported op.
@@ -124,7 +122,7 @@
 			<%
 			for (String caption: map.keySet()) {
 				%>
-				<tr><td class="search"><%=caption %></td><td><%=map.get(caption).size()%></td></tr>
+				<tr><td class="search"><%=caption %></td><td><%=map.get(caption)%></td></tr>
 				<%
 			}
 			%>
