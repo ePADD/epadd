@@ -355,16 +355,6 @@
 	    <url-pattern>/settings</url-pattern>
 	</servlet-mapping>
 
-   <servlet>
-		<servlet-name>help</servlet-name>
-		<jsp-file>/help.jsp</jsp-file>
-  	</servlet>
-
-  	<servlet-mapping>
-	  	<servlet-name>help</servlet-name>
-	    <url-pattern>/help</url-pattern>
-	</servlet-mapping>
-
 	<servlet>
 		<servlet-name>about</servlet-name>
 		<jsp-file>/about.jsp</jsp-file>
