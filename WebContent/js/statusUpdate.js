@@ -310,7 +310,14 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		};
 	}
 
-
+    /*
+	$(window).resize(function() {
+		$('.muse-overlay').height($(document).height());
+		$('.muse-overlay').width($(document).width());
+		sdiv.style.left = (window.innerWidth/2)- 320+"px"; // the total width is 640px
+		sdiv.style.top = (window.innerHeight/2) - 65+"px";
+	});
+    */
 	function cancelCurrentOp()
 	{
 		epadd.log ('cancelling current op ' + currentOp);

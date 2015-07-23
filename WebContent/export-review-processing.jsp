@@ -72,6 +72,13 @@ for (EmailDocument ed: docs)
 
 docs = newDocs;
 writeProfileBlock(out, bestName, "", Util.pluralize(docs.size(), "message") + description);%>
+<div id="nav3" style="display:inline-block;margin-left:170px;">
+	<nav>
+		<a href="export-review">Messages to transfer</a> <br/>
+		<a href="export-review?type=doNotTransfer">Do not transfer</a> <br/>
+		<a href="export-review?type=transferWithRestrictions">Transfer with restrictions</a><br/>
+	</nav>
+</div>
 <br/>
 <%
 if ("doNotDeliver".equals(type)) {

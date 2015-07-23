@@ -6,9 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.Sessions"%>
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="java.io.File"%>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@page language="java" %>
 
 <html>
 <head>
@@ -114,6 +112,11 @@
             <% if (pm.firstDate != null && pm.lastDate != null) { %>
                 Date Range<br/>
                 <span class="detail"><%=Util.formatDate(pm.firstDate)%> to <%=Util.formatDate(pm.lastDate)%></span>
+                <% if (pm.nHackyDates > 0) { %>
+            <br/>
+                        <%=Util.pluralize(pm.nHackyDates, "message")%> undated
+                    </p>
+                <% } %>
             <% } %>
         </p><p>
         <p>

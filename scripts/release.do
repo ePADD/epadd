@@ -11,7 +11,7 @@ echo 'public static final String buildInfo = "'${build_info}'";} ' >> src/java/e
 
 cd ../muse
 mvn -f pom-common.xml
-mvn -f pom.xml
+mvn -f pom-jar.xml
 cd ../epadd
 mvn clean
 mvn -f pom-discovery.xml

@@ -86,16 +86,6 @@ writeProfileBlock(out, bestName, "", Util.pluralize(docs.size(), "message") + de
 
 <br/>
 
-<% if ("doNotTransfer".equals(type)) {
-%> <script>epadd.select_link('#nav3', 'Do not transfer');</script> <%
-	} else if ("transferWithRestrictions".equals(type)) {
-%> <script>epadd.select_link('#nav3', 'Transfer with restrictions');</script> <%
-	} else {
-%> <script>epadd.select_link('#nav3', 'Messages to transfer');</script> <%
-	}
-%>
-
-
 <div style="margin:auto; width:900px">
 	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 	<br/><% out.flush(); %>
