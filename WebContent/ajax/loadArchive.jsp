@@ -36,7 +36,7 @@
         JSPHelper.log.info("Loading archive from: "+dir);
 
         Archive archive = SimpleSessions.readArchiveIfPresent(dir);
-        JSPHelper.log.info(dir+" dir of loaded archive: "+archive.indexer.directory);
+        JSPHelper.log.info(dir+" dir of loaded archive: "+archive.getLoadedDirectoryInfo());
         if (archive == null)
         {
             result.put ("status", 2);
@@ -56,7 +56,7 @@
             session.setAttribute("userKey", "user"); // always jam in userKey. This is used by Blobs for the attachment wall to generate the photos.rss file
             session.setAttribute("cacheDir", archive.baseDir);
             out.println (result.toString(4));
-            JSPHelper.log.info("dir of loaded archive (2): "+archive.indexer.directory);
+            JSPHelper.log.info("dir of loaded archive (2): "+archive.getLoadedDirectoryInfo());
             return;
         } catch (Exception e) {
             result.put ("status", 3);

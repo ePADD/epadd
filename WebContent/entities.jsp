@@ -83,7 +83,7 @@ if ("location".equals(type)) { %>
 
     Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
     for (EmailDocument ed: docs) {
-	    List<String> entities = archive.indexer.getEntitiesInDoc(ed, type);
+	    List<String> entities = archive.getEntitiesInDoc(ed, type);
 
 // 	if(edu.stanford.muse.ie.ie.NER.EPER.equals(type)||edu.stanford.muse.ie.ie.NER.ELOC.equals(type)||edu.stanford.muse.ie.ie.NER.EORG.equals(type)){
 // 		List<String> scores = indexer.getEntitiesInDoc(ed, type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);

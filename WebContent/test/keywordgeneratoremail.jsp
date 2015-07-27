@@ -140,7 +140,7 @@
 				//System.err.println("Year: "+year+", month: "+month);
 				int ftw, feA, fAll;
 				if(!processed.containsKey(kw)){
-					Collection<EmailDocument> alldocs = indexer.luceneLookupDocs(kw ,Indexer.QueryType.FULL);
+					Collection<EmailDocument> alldocs = indexer.lookupDocs(kw, Indexer.QueryType.FULL);
 					Collection<EmailDocument> twdocs = IndexUtils.selectDocsByDateRange(alldocs, year, month);
 					List<String> emails = ed.getAllNonOwnAddrs(ab.getOwnAddrs());
 					String[] emailsA = emails.toArray(new String[emails.size()]);

@@ -51,9 +51,9 @@ if(p.equals("expandname")){
 		for(String docId: docMap.keySet()){
 			String etype = "person", otype = "organization", ptype = "location";
 			EmailDocument ed = docMap.get(docId);
-			List<String> persons = indexer.getEntitiesInDoc(ed, etype);
-			List<String> orgs = indexer.getEntitiesInDoc(ed, otype);
-			List<String> places = indexer.getEntitiesInDoc(ed, ptype);
+			List<String> persons = archive.getEntitiesInDoc(ed, etype);
+			List<String> orgs = archive.getEntitiesInDoc(ed, otype);
+			List<String> places = archive.getEntitiesInDoc(ed, ptype);
 			List<String> entities = new ArrayList<String>();
 			entities.addAll(orgs);entities.addAll(places);entities.addAll(persons);
 			int i=0;

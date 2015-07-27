@@ -33,11 +33,11 @@ Archive archive = JSPHelper.getArchive(session);
 Indexer indexer = (Indexer) archive.indexer;
 
 String q = "/r..bert/";
-Collection<EmailDocument> docs = indexer.luceneLookupDocs(q, Indexer.QueryType.FULL);
+Collection<EmailDocument> docs = indexer.lookupDocs(q, Indexer.QueryType.FULL);
 System.out.println("hits for: " + q + " = " + docs.size());
 
 q = "[0-9]{4}[ \\-]*[0-9]{4}[ \\-]*[0-9]{4}[ \\-]*[0-9]{4,6}";
-docs = indexer.luceneLookupDocs(q, Indexer.QueryType.REGEX);
+docs = indexer.lookupDocs(q, Indexer.QueryType.REGEX);
 out.println("hits for: " + q + " = " + docs.size());
 
 // 	Archive archive = JSPHelper.getArchive(session);

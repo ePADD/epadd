@@ -34,7 +34,7 @@
   String fileName = request.getParameter("fileName");
   System.err.println("received request for: fileName: "+fileName);
   out.println("<div class='main' style='padding:50px'>");
-  Pair<String,String> pair = archive.indexer.getContentsOfAttachment(fileName);
+  Pair<String,String> pair = archive.getContentsOfAttachment(fileName);
   String content = pair.first;
   if (content == null){
       out.println("<span style='color:red'>"+pair.second+"</span></div>");

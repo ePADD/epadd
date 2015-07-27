@@ -9,7 +9,7 @@
 <%@ page import="java.util.*" %>
 <%@page language="java" import="edu.stanford.muse.datacache.BlobStore"%>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@page language="java" import="edu.stanford.muse.datacache.FileBlobStore"%>
+<%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
@@ -69,7 +69,7 @@
 		BlobStore store = null;
 		try
 		{
-			store = new FileBlobStore(attachmentsStoreDir);
+			store = new BlobStore(attachmentsStoreDir);
 		} catch (IOException ioe)
 		{
 			JSPHelper.log.error("Unable to initialize attachments store in directory: "

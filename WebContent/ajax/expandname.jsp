@@ -44,19 +44,19 @@
 		Indexer indexer = archive.indexer;
 		String name = request.getParameter("name");
 		String docId = request.getParameter("docId");
-		Map<String, EmailDocument> docMap = indexer.getDocMap();
-		JSPHelper.log.info("DocId: " + docId + " ," + archive.getAllDocs().size() + ", " + docMap.size() + ", " + docMap.keySet().iterator().next());
-		if (!docMap.containsKey(docId)) {
+		JSPHelper.log.info("DocId: " + docId + " ," + archive.getAllDocs().size());
+		EmailDocument ed = indexer.docForId(docId);
+		if (ed == null) {
     		result.put("result", "Wrong docId!");
 	    	response.getWriter().write(result.toString(4));
 			JSPHelper.log.info("Wrong docId!");
 			return;
 		} else {
 			String etype = NER.EPER, otype = NER.EORG, ptype = NER.ELOC;
-			EmailDocument ed = docMap.get(docId);
-			List<String> persons = indexer.getEntitiesInDoc(ed, etype);
-			List<String> orgs = indexer.getEntitiesInDoc(ed, otype);
-			List<String> places = indexer.getEntitiesInDoc(ed, ptype);
+
+			List<String> persons = archive.getEntitiesInDoc(ed, etype);
+			List<String> orgs = archive.getEntitiesInDoc(ed, otype);
+			List<String> places = archive.getEntitiesInDoc(ed, ptype);
 			Pattern pat = Pattern.compile("[A-Z]+");	
 			
 			short et = -1;
