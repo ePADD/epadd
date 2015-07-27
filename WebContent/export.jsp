@@ -4,8 +4,6 @@
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.List"%>
-<%@page language="java" %>
-<%@page language="java" %>
 <%@include file="getArchive.jspf" %>
 
 <html>

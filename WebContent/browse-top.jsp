@@ -78,7 +78,8 @@
 	JSPHelper.log.info("Counts: "+pC+", "+oC+", "+lC);
 %>
 
-<%writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%><br/>
+<%writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
+<br/>
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box text-center margin30">
@@ -125,32 +126,9 @@
 		</a>
 	</div>	
 
-	<% if (!ModeConfig.isDiscoveryMode()) { %>
-		<div class="cta-box text-center margin30">
-			<a href="lexicon">
-				<i class="icon-browsetoparrow"></i>
-				<img src="images/lexicon.svg"/>
-				<p class="cta-text-1">Lexicon search</p>
-				<p class="cta-text-2">Lexicon search</p>
-			</a>	
-		</div>
-	<% } %>
-	<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
-		<div class="cta-box text-center margin30">
-				<a href="browse?sensitive=true">
-					<i class="icon-browsetoparrow"></i>
-					<img src="images/sensitive-message.svg"/>
-					<p class="cta-text-1">Sensitive messages<%=nS%></p>
-					<p class="cta-text-2">Sensitive messages<%=nS%></p>
-				</a>
-			</div>
-	<% } %>
-
-	<% if (!ModeConfig.isDiscoveryMode()) { %>
-	<br/>
-	<% } %>
-
-	<% if (!ModeConfig.isDiscoveryMode()) { %>
+	<% if (ModeConfig.isDiscoveryMode()) { %>
+		<br/>
+	<% } else { %>
 		<div class="cta-box text-center margin30">
 				<a href="image-attachments">
 					<i class="icon-browsetoparrow"></i>
@@ -167,8 +145,10 @@
 					<p class="cta-text-1">Document attachments (<%=nDocAttachments%>)</p>
 					<p class="cta-text-2">Document attachments (<%=nDocAttachments%>)</p>
 				</a>		
-			</div>
-		
+		</div>
+
+		<br/>
+
 		<div class="cta-box text-center margin30">
 				<a href="attachments?type=nondoc">
 					<i class="icon-browsetoparrow"></i>
@@ -178,8 +158,27 @@
 					<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments - nDocAttachments)%>)</p>
 				</a>
 		</div>
-	<% }
-    %>
+
+		<div class="cta-box text-center margin30">
+			<a href="lexicon">
+				<i class="icon-browsetoparrow"></i>
+				<img src="images/lexicon.svg"/>
+				<p class="cta-text-1">Lexicon search</p>
+				<p class="cta-text-2">Lexicon search</p>
+			</a>
+		</div>
+
+		<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
+			<div class="cta-box text-center margin30">
+				<a href="browse?sensitive=true">
+					<i class="icon-browsetoparrow"></i>
+					<img src="images/sensitive-message.svg"/>
+					<p class="cta-text-1">Sensitive messages<%=nS%></p>
+					<p class="cta-text-2">Sensitive messages<%=nS%></p>
+				</a>
+			</div>
+		<% } %>
+	<% } %>
 
 </div> <!--  allCards -->
 <jsp:include page="footer.jsp"/>

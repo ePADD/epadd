@@ -4,8 +4,7 @@
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.List"%>
-<%@page language="java" %>
-<%@page language="java" %>
+<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@include file="getArchive.jspf" %>
 <%
 // we are already logged into all accounts at the point this is called

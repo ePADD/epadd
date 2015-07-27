@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -23,9 +22,13 @@
 <jsp:include page="header.jspf"/>
 
   <div style="margin-left:160px;margin-right:160px">
+      <p>
     <span>ePADD version <% out.println(edu.stanford.epadd.Version.version);%></span>
-      © Stanford University<p>
-      Licensed with source code under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a><p>
+      © Stanford University
+      <p>
+      The ePADD logo, project documentation (including installation and user guide), and other non-software products of the ePADD team are subject to the Creative Commons Attribution 2.0 Generic license (CC By 2.0).
+        <p>
+      Unless otherwise indicated, software items in this repository are distributed under the terms of the Apache License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
       <p>  For more information about ePADD, including help, mailing lists and community support forum, please visit <a href="https://library.stanford.edu/projects/epadd">this page</a>.
 </p>
