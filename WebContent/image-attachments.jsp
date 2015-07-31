@@ -46,7 +46,7 @@
 				+ "blobs" + File.separator;
 		BlobStore store = null;
 		try {
-			store = new FileBlobStore(attachmentsStoreDir);
+			store = new BlobStore(attachmentsStoreDir);
 		} catch (IOException ioe) {
 			JSPHelper.log.error("Unable to initialize attachments store in directory: "
 					+ attachmentsStoreDir + " :" + ioe);

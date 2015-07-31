@@ -42,7 +42,7 @@
   String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
   BlobStore bs = null;
   try {
-    bs = new FileBlobStore(attachmentsStoreDir);
+    bs = new BlobStore(attachmentsStoreDir);
     JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
   } catch (IOException ioe) {
     JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);

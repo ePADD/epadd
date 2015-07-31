@@ -476,7 +476,7 @@ do{
 // 			phrase = Util.cleanForRegex(phrase);
 // 			phrase = ".*"+phrase+".*";
 // 			System.err.println("Looking up for: "+phrase);
-// 			Collection<EmailDocument> eds = li.luceneLookupDocs(phrase ,Indexer.QueryType.REGEX);
+// 			Collection<EmailDocument> eds = li.lookupDocs(phrase ,Indexer.QueryType.REGEX);
 // 			String pattern = "("+p.first+"\\W+("+bookListPattern+"|"+bookPattern+")+)";
 // 			Pattern bookP = Pattern.compile(pattern);
 // 			Pattern patternP = Pattern.compile(p.first);

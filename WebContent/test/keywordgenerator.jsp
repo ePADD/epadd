@@ -102,7 +102,7 @@
 			System.err.println("Processed: "+i+" of: "+kwgentity.size());	
 		i++;
 		String phrase = ".*"+kw+".*";
-		Collection<EmailDocument> eds = indexer.luceneLookupDocs(kw ,Indexer.QueryType.FULL);
+		Collection<EmailDocument> eds = indexer.lookupDocs(kw, Indexer.QueryType.FULL);
 		kwgentity.put(kw, kwgentity.get(kw)/eds.size());
 	}
 	List<Pair<String,Double>> skw = Util.sortMapByValue(kwgentity);
