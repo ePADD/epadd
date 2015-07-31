@@ -35,8 +35,6 @@
 	String bestName = addressBook.getBestNameForSelf();
 	writeProfileBlock(out, bestName, "", "Export archive");
 %>
-<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
-<% out.flush(); %>
 <p>
 <br/>
 <div style="margin-left:170px">
@@ -56,6 +54,10 @@
 		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export\">go back</a> and select a different directory.");
 		return;
 	}
+	%>
+	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+	<% out.flush(); %>
+	<%
 	if (Util.nullOrEmpty(dir)) {
 		dir = System.getProperty("java.io.tmpdir");
 	}
@@ -79,7 +81,7 @@
 	Please zip this folder and submit it to the archives.
 <%
 } catch (Exception e) {
-Util.print_exception("Error in export", e, JSPHelper.log);
+	Util.print_exception("Error in export", e, JSPHelper.log);
 	out.println ("Sorry, export failed: " + e);
 }
 %>

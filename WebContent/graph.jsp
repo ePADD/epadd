@@ -25,7 +25,7 @@ public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> inte
 	for (DetailedFacetItem dfi: dfis)
 	{
 		String folder = dfi.name;
-		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs((Collection) dfi.docs), intervals);
+		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs((Collection) dfi.docs), intervals, true /* ignore invalid dates */);
 		try {
 			JSONArray groupVolume = JSONUtils.arrayToJsonArray(hist);
 			JSONObject o = new JSONObject();
@@ -64,7 +64,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 	for (String caption: map.keySet())
 	{
 		Set<DatedDocument> docs = (Set) map.get(caption);
-		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(docs), intervals);
+		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(docs), intervals, true /* ignore invalid dates */);
 		String sentimentVolume = JSONUtils.arrayToJson(hist);
 		if (json.length() > 2)
 			json.append (",");
@@ -100,14 +100,13 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 	Lexicon lex = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
 	String name = request.getParameter("lexicon");
 
-	Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs);
+	Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
 	Date globalStart = p.getFirst();
 	Date globalEnd = p.getSecond();
 	List<Date> intervals = null;
 	int nIntervals = 0;
 	if (globalStart != null && globalEnd != null) {
-		intervals = CalendarUtil.divideIntoMonthlyIntervals(
-				globalStart, globalEnd);
+		intervals = CalendarUtil.divideIntoMonthlyIntervals(globalStart, globalEnd);
 		nIntervals = intervals.size() - 1;
 	}
 	boolean doSentiments = false, doPeople = false, doEntities = false;
@@ -116,9 +115,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 	String heading = "", tableURL = "";
 	if ("sentiments".equals(view)) {
 		doSentiments = true;
-		JSPHelper.log.info("req lex name = " + name
-				+ " session lex name = "
-				+ ((lex == null) ? "(lex is null)" : lex.name));
+		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
 		// resolve lexicon based on name in request and existing lex in session.
 		// name overrides lex
 		if (!Util.nullOrEmpty(name)) {
@@ -260,7 +257,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 	if (doSentiments)
 	{
 		int normalizer = ProtovisUtil.normalizingMax(allDocs, addressBook, intervals);
-		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals);
+		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 		graph_is_empty = true;
 		if (!Util.nullOrEmpty(allDocs))
 		{
@@ -283,7 +280,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 	else if (doPeople)
 	{
 		int normalizer = ProtovisUtil.normalizingMax(allDocs, addressBook, intervals);
-		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals);
+		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 		Map<Contact, DetailedFacetItem> folders = IndexUtils.partitionDocsByPerson((Collection) allDocs, addressBook);
 		List<DetailedFacetItem> list = new ArrayList<DetailedFacetItem>(folders.values());
 		graph_script = scriptForFacetsGraph(list, intervals, (Collection) allDocs, allMessagesHistogram, 1000, 450);
@@ -291,7 +288,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 	else if (doEntities)
 	{
 		int normalizer = ProtovisUtil.normalizingMax(allDocs, addressBook, intervals);
-		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals);
+		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 		Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
