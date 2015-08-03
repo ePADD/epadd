@@ -85,7 +85,7 @@
 				Pair<String, String> p = Util.fieldsToCSV(archive.addressBook.getStats(), false);
 				JSPHelper.log.info("ADDRESSBOOKSTATS-1: " + p.getFirst());
 				JSPHelper.log.info("ADDRESSBOOKSTATS-2: " + p.getSecond());
-				p = Util.fieldsToCSV(archive.indexer.stats, false);
+				p = Util.fieldsToCSV(archive.getIndexStats(), false);
 				JSPHelper.log.info("INDEXERSTATS-1: " + p.getFirst());
 				JSPHelper.log.info("INDEXERSTATS-2: " + p.getSecond());
 			} catch (Exception e) { }

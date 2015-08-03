@@ -1,23 +1,4 @@
 initialiseqtip = function(){
-    $('.muse-doc-body').find('[title][title!=]')
-        .filter(function(){
-             classes=[];
-             p = this.parentNode;
-             while(p!==null && p.className !=='muse-doc-body') {
-                 p.className.split(/ /).forEach(function (d, i) {
-                     classes.push(d);
-                 });
-                 p = p.parentNode;
-             }
-             dirty = false;
-             classes.map(function(d,i){if(d.indexOf("custom")>=0|| d.indexOf("acr")>=0){dirty = true;}});
-             return !dirty;
-        })
-        .qtip({hide:{delay:'200',fixed:true},
-            style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: 2,color: 'black'}}
-        });
-}
-reinitialiseqtip = function(){
 	$('.qtip')
 		.remove();
 	//TODO: use a proper selector
@@ -28,6 +9,12 @@ reinitialiseqtip = function(){
 
     //There can be many nested spans, in that case just consider the outer most span element
 	$('div.muse-doc-body span[data-ignore!=][title!=]')
+        .filter(function(){
+            return this.parentNode.tagName!=="SPAN"
+        })
+        .qtip(qtip_params);
+
+    $('div.muse-doc-header span[data-ignore!=][title!=]')
         .filter(function(){
             return this.parentNode.tagName!=="SPAN"
         })
