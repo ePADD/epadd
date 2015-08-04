@@ -16,7 +16,8 @@ initialiseqtip = function(){
 
     $('div.muse-doc-header span[data-ignore!=][title!=]')
         .filter(function(){
-            return this.parentNode.tagName!=="SPAN"
+            //dont add qtip to highlighted terms in the header like emaill addresses
+            return this.parentNode.tagName!=="SPAN" && this.className.contains("custom");
         })
         .qtip(qtip_params);
 };
