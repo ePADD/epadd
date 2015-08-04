@@ -5,6 +5,8 @@
 <%@ page import="java.util.*" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%--
   Created by IntelliJ IDEA.
   User: vihari
@@ -30,11 +32,15 @@
 
 </head>
 <body>
+    <script>
+        submit = function(){
+            window.location = "bulkredaction.jsp?filePath="+$("#filePath").val();
+        }
+    </script>
     <% String filePath = request.getParameter("filePath");
-        System.err.println(filePath);
 
         if(filePath==null || !(new File(filePath)).exists()){%>
-    <div style="align:center">
+    <div style="text-align:center;position:relative;top:30px">
         Please provide the path of file with bulk entries
         <input type="text" placeholder="CSV file path" id="filePath"/>
         <button class="btn-default" onclick="submit()">Submit</button>
@@ -48,66 +54,34 @@
             String eA = line[0].trim();
             eas.add(eA);
         }
-        out.println(eas.size() + " email addresses matched<br>");
+        out.println("<div style=\"text-align:center;position:relative;top:30px\">");
+        out.println("Read " + eas.size() + " email address(es) from the file<br>");
         try {
 
             Set<Document> matches = EmailUtils.getDocsForEAs(archive.getAllDocsAsSet(), eas);
             request.setAttribute("selectDocs", matches);
-            //edu.stanford.muse.util.Pair<Integer, Map<String,Integer>> matches = archive.getNumMatchingDocs(eas);
             out.println(matches.size() + " messages matched<br>");
         }catch(Exception e){
-            e.printStackTrace();
+            Util.print_exception("Exception while fetching messages for: "+eas,e, JSPHelper.log);
         }
         %>
-        <div style="display:inline-block;vertical-align:top;">
-            <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
-                <div class="controls" style="position:relative;width:100%;">
+        <div class="controls" style="position:relative;width:100%;">
 
-                    <div style="position:relative;float:left;padding:5px;">
-                        <i title="Do not transfer" id="doNotTransfer" class="flag fa fa-ban"></i>
-                        <i title="Transfer with restrictions" id="transferWithRestrictions" class="flag fa fa-exclamation-triangle"></i>
-                        <i title="Message Reviewed" id="reviewed" class="flag fa fa-eye"></i>
+            <div style="position:relative;padding:5px;">
+                <i title="Do not transfer" id="doNotTransfer" class="flag fa fa-ban"></i>
+                <i title="Transfer with restrictions" id="transferWithRestrictions" class="flag fa fa-exclamation-triangle"></i>
+                <i title="Message Reviewed" id="reviewed" class="flag fa fa-eye"></i>
 
-                        <div style="display:inline;" id="annotation_div" style="z-index:1000;">
-                            <input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
-                        </div>
-                        <!--			<div style="display:inline-block;position:relative;top:10px"><input type="checkbox" id="applyToAll" style="margin-left:250px"/> Apply to all</div> -->
-                        <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
-                    </div>
-
-                    <div style="float:right;position:relative;top:8px">
-                        <div>
-                            <div style="display:inline;vertical-align:top;font-size:20px; position:relative; top:8px; margin-right:10px" id="pageNumbering"></div>
-                            <ul class="pagination">
-                                <li class="button">
-                                    <a id="page_back" style="border-right:0" href="#0" class="icon-peginationarrow"></a>
-                                    <a id="page_forward" href="#0" class="icon-circlearrow"></a>
-                                </li>
-                            </ul>
-                        </div>
-                        <!--
-                        <img src="images/back_enabled.png" id="back_arrow"/>
-                        <img src="images/forward_enabled.png" id="forward_arrow"/>
-                        -->
-                        <!--
-                             <div class="pagination">
-                                 <li><a id="back_arrow" style="border-right:0" href="#0" class="icon-peginationarrow"></a></li>
-                                 <li> <div style="display:inline;" id="pageNumbering"></div></li>
-                                 <li><a id="forward_arrow" href="#0" class="icon-circlearrow"></a></li>
-                             </div>
-                             -->
-                    </div>
-                    <div style="clear:both"></div>
-                </div> <!-- controls -->
-
-                <!--  to fix: these image margins and paddings are held together with ducttape cos the orig. images are not a consistent size -->
-                <!-- <span id="jog_status1" class="showMessageFilter rounded" style="float:left;opacity:0.5;margin-left:30px;margin-top:10px;">&nbsp;0/0&nbsp;</span>  -->
-                <div style="font-size:12pt;opacity:0.5;margin-left:30px;margin-right:30px;margin-top:10px;">
-                    <!--	Unique Identifier: <span id="jog_docId" title="Unique ID for this message"></span> -->
+                <div style="display:inline;" id="annotation_div" style="z-index:1000;">
+                    <input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
                 </div>
+                        <!--			<div style="display:inline-block;position:relative;top:10px"><input type="checkbox" id="applyToAll" style="margin-left:250px"/> Apply to all</div> -->
+                <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
             </div>
+
         </div>
         <%
+        out.println("</div>");
             }
     %>
     <script>
@@ -116,12 +90,12 @@
                     $("input.ea").attr("checked",true);
                 }
         );
-        $(".unselect_all_button").clck(
+        $(".unselect_all_button").click(
                 function(){
                     $("input.ea").attr("checked",false);
                 }
         );
-        var $spinner = $('.spinner', $(e.target));
+        var $spinner = $('.spinner');
         var fade_spinner_with_delay = function () {
             $spinner.delay(500).fadeOut();
         };
@@ -137,6 +111,8 @@
                     post_data.setTransferWithRestrictions = twr ? "1" : "0";
                     post_data.setReviewed = rev ? "1" : "0";
                     post_data.setAnnotation = ann;
+                    url = "ajax/applyFlags.jsp";
+                    $spinner.show();
                     $.ajax({
                         type: 'POST',
                         url: url,
@@ -155,7 +131,11 @@
                         }
                     });
                 }
-        )
+        );
+        $('.flag').click (function(e) {
+            var $target = $(e.target);
+            $target.toggleClass('flag-enabled');
+        });
     </script>
 </body>
 </html>

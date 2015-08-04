@@ -67,7 +67,9 @@
         try{
 		    JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
 		    archive.postProcess();
-		}catch
+		}catch(Throwable t){
+		    Util.print_exception("Something went wrong when trying to fetch and index emails!!", t, JSPHelper.log);
+		}
 
 		emailDocs = (List) archive.getAllDocs();
 		AddressBook addressBook = archive.getAddressBook();
