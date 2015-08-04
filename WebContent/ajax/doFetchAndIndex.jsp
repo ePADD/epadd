@@ -64,8 +64,10 @@
 		// this is a special flag used during screening time to read only headers without the message bodies
 		boolean downloadMessageText = !"false".equals(request.getParameter("downloadMessages"));
 
-		JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
-		archive.postProcess();
+        try{
+		    JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
+		    archive.postProcess();
+		}catch
 
 		emailDocs = (List) archive.getAllDocs();
 		AddressBook addressBook = archive.getAddressBook();
