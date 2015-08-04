@@ -440,154 +440,202 @@ var transferWithRestrictions = [], doNotTransfer = [], reviewed = [], addToCart 
 
 
 function apply(e, toAll) {
-	var post_data = {};
+    var post_data = {};
 
-	// set the post_data based on these vars which track the state of the flags of the currently displayed message
-	var dnt = $('#doNotTransfer').hasClass('flag-enabled');
-	var twr = $('#transferWithRestrictions').hasClass('flag-enabled');
-	var rev = $('#reviewed').hasClass('flag-enabled');
-	var atc = $('#addToCart').hasClass('flag-enabled');
-	var ann = $('#annotation').val();
-	post_data.setDoNotTransfer = dnt ? "1" : "0";
-	post_data.setTransferWithRestrictions = twr ? "1" : "0";
-	post_data.setReviewed =  rev ? "1" : "0";
-	post_data.setAddToCart =  atc ? "1" : "0";
-	post_data.setAnnotation = ann;
+    // set the post_data based on these vars which track the state of the flags of the currently displayed message
+    var dnt = $('#doNotTransfer').hasClass('flag-enabled');
+    var twr = $('#transferWithRestrictions').hasClass('flag-enabled');
+    var rev = $('#reviewed').hasClass('flag-enabled');
+    var atc = $('#addToCart').hasClass('flag-enabled');
+    var ann = $('#annotation').val();
+    post_data.setDoNotTransfer = dnt ? "1" : "0";
+    post_data.setTransferWithRestrictions = twr ? "1" : "0";
+    post_data.setReviewed = rev ? "1" : "0";
+    post_data.setAddToCart = atc ? "1" : "0";
+    post_data.setAnnotation = ann;
 
-	function check_twr() { epadd.log ('checking twr'); check_flags (transferWithRestrictions, twr, 'setTransferWithRestrictions', 'transfer-with-restrictions', check_reviewed); }
-	function check_reviewed() { epadd.log ('checking reviewed'); check_flags (reviewed, rev, 'setReviewed', 'reviewed', check_add_to_cart); }
-	function check_add_to_cart() { epadd.log ('checking add to cart'); check_flags (addToCart, atc, 'setAddToCart', 'add-to-cart', check_annotations); }
+    function check_twr() {
+        epadd.log('checking twr');
+        check_flags(transferWithRestrictions, twr, 'setTransferWithRestrictions', 'transfer-with-restrictions', check_reviewed);
+    }
+
+    function check_reviewed() {
+        epadd.log('checking reviewed');
+        check_flags(reviewed, rev, 'setReviewed', 'reviewed', check_add_to_cart);
+    }
+
+    function check_add_to_cart() {
+        epadd.log('checking add to cart');
+        check_flags(addToCart, atc, 'setAddToCart', 'add-to-cart', check_annotations);
+    }
+
 // any messages in current dataset already have annotations?
 
-	function check_annotations() {
-		var anyAnnotations = false;
-		$('.page').each(function (i, o) { if (annotations[i]) {	anyAnnotations = true;	return false;};});
+    function check_annotations() {
+        var anyAnnotations = false;
+        $('.page').each(function (i, o) {
+            if (annotations[i]) {
+                anyAnnotations = true;
+                return false;
+            }
+            ;
+        });
 
-		if (anyAnnotations) {
-			epadd.log('showing overwrite/append modal');
-			// summon the modal and assign click handlers to the buttons.
-			$('#info-modal .modal-body').html('Some messages already have annotations. Append to existing annotations, or overwrite them?');
-			$('#info-modal').modal();
-			modal_shown = true;
-			$('#overwrite-button').click(function () {
-				epadd.log('overwrite button clicked');
-				post_updates();
-			});
-			$('#append-button').click(function () {
-				epadd.log('append button clicked');
-				post_data.append = 1;
-				post_updates();
-			});
-			//			$('#cancel-button').click(function() { /* do nothing */});
-		}
-		else
-			post_updates();
-	}
+        if (anyAnnotations) {
+            epadd.log('showing overwrite/append modal');
+            // summon the modal and assign click handlers to the buttons.
+            $('#info-modal .modal-body').html('Some messages already have annotations. Append to existing annotations, or overwrite them?');
+            $('#info-modal').modal();
+            modal_shown = true;
+            $('#overwrite-button').click(function () {
+                epadd.log('overwrite button clicked');
+                post_updates();
+            });
+            $('#append-button').click(function () {
+                epadd.log('append button clicked');
+                post_data.append = 1;
+                post_updates();
+            });
+            //			$('#cancel-button').click(function() { /* do nothing */});
+        }
+        else
+            post_updates();
+    }
 
-	// prompts if any conflicting flags, and if the users says no, then deletes the given prop_name from post_data, then calls continuation()
-	// if the user says yes, or there is no conflict, it calls continuation()
-	function check_flags(flags_array, new_val, prop_name, description, continuation) {
-		var trueCount = 0, falseCount = 0, totalCount = 0;
-		$('.page').each (function(i, o) { totalCount++; if (flags_array[i]) { trueCount++;} else { falseCount++}});
-		var apply_continuation = false;
-		if (trueCount > 0 && falseCount > 0) {
-			var mesg = 'The ' + description + ' flag is set for ' + epadd.pluralize(trueCount, 'message') + ' and unset for ' + epadd.pluralize(falseCount, 'message') + '. '
-			+ (new_val ? 'Set' : 'Unset') + ' this flag for all ' + epadd.pluralize(totalCount, 'message') + '?';
+    // prompts if any conflicting flags, and if the users says no, then deletes the given prop_name from post_data, then calls continuation()
+    // if the user says yes, or there is no conflict, it calls continuation()
+    function check_flags(flags_array, new_val, prop_name, description, continuation) {
+        var trueCount = 0, falseCount = 0, totalCount = 0;
+        $('.page').each(function (i, o) {
+            totalCount++;
+            if (flags_array[i]) {
+                trueCount++;
+            } else {
+                falseCount++
+            }
+        });
+        var apply_continuation = false;
+        if (trueCount > 0 && falseCount > 0) {
+            var mesg = 'The ' + description + ' flag is set for ' + epadd.pluralize(trueCount, 'message') + ' and unset for ' + epadd.pluralize(falseCount, 'message') + '. '
+                    + (new_val ? 'Set' : 'Unset') + ' this flag for all ' + epadd.pluralize(totalCount, 'message') + '?';
 
-			epadd.log('showing confirm modal for: overwrite/append modal: ' + mesg);
+            epadd.log('showing confirm modal for: overwrite/append modal: ' + mesg);
 
-			$('#info-modal1 .modal-body').html(mesg);
-			// make sure to unbind handlers before adding new ones, so that the same handler doesn't get called repeatedly (danger of this happening because the info-modal1 is the same element)
-			$('#no-button').unbind().click(function() { apply_continuation = true; epadd.log('cancelling application of ' + description); alert(prop_name + ' = ' + post_data[prop_name]); + delete post_data[prop_name]; });; // unbind all prev. handlers
-			$('#yes-button').unbind().click(function() { apply_continuation = true; epadd.log('continuing with application of ' + description);});
-			// call continuation only if apply_continuation is set (i.e yes or no was selected), otherwise even dismissing the modal from its close (x) sets it off.
-			$('#info-modal1').unbind('hidden.bs.modal').on('hidden.bs.modal', function() { if (apply_continuation) { continuation(); } else { epadd.log(description + ' modal dismissed without yes or no.');}});
-			$('#info-modal1').modal();
-		}
-		else
-			continuation(); // no continuation, easy.
-	}
+            $('#info-modal1 .modal-body').html(mesg);
+            // make sure to unbind handlers before adding new ones, so that the same handler doesn't get called repeatedly (danger of this happening because the info-modal1 is the same element)
+            $('#no-button').unbind().click(function () {
+                apply_continuation = true;
+                epadd.log('cancelling application of ' + description);
+                alert(prop_name + ' = ' + post_data[prop_name]);
+                +delete post_data[prop_name];
+            });
+            ; // unbind all prev. handlers
+            $('#yes-button').unbind().click(function () {
+                apply_continuation = true;
+                epadd.log('continuing with application of ' + description);
+            });
+            // call continuation only if apply_continuation is set (i.e yes or no was selected), otherwise even dismissing the modal from its close (x) sets it off.
+            $('#info-modal1').unbind('hidden.bs.modal').on('hidden.bs.modal', function () {
+                if (apply_continuation) {
+                    continuation();
+                } else {
+                    epadd.log(description + ' modal dismissed without yes or no.');
+                }
+            });
+            $('#info-modal1').modal();
+        }
+        else
+            continuation(); // no continuation, easy.
+    }
 
-	var url = 'ajax/applyFlags.jsp';
-	// first check if applying to all, in case we may need to check if we append/overwrite
-	var modal_shown = false;
-	if (toAll) {
-		epadd.log ('checking do not transfer');
-		check_flags (doNotTransfer, dnt, 'setDoNotTransfer', 'do-not-transfer', check_twr);
-		// the continuation sequence will end up calling post_updates
-	}
-	else
-		post_updates();
+    var url = 'ajax/applyFlags.jsp';
+    // first check if applying to all, in case we may need to check if we append/overwrite
+    var modal_shown = false;
+    if (toAll) {
+        epadd.log('checking do not transfer');
+        check_flags(doNotTransfer, dnt, 'setDoNotTransfer', 'do-not-transfer', check_twr);
+        // the continuation sequence will end up calling post_updates
+    }
+    else
+        post_updates();
 
-	function post_updates() {
-		epadd.log ('posting updates');
-		if (toAll)
-			post_data.datasetId = '<%=datasetName%>';
-		else
-			post_data.docId = messageIds[PAGE_ON_SCREEN];
+    function post_updates() {
+        epadd.log('posting updates');
+        if (toAll)
+            post_data.datasetId = '<%=datasetName%>';
+        else
+            post_data.docId = messageIds[PAGE_ON_SCREEN];
 
-		// we unbind to make sure multiple copies of the same handler don't get attached to the overwrite/append buttons.
-		$('#append-button').unbind();
-		$('#overwrite-button').unbind();
-		// we need the spinner to be visible for at least 500ms so it will be clear to the user that the button press was accepted.
-		// otherwise, the op is usually so quick that the user doesn't know whether anything happened.
-		var fade_spinner_with_delay = function () {
-			$spinner.delay(500).fadeOut();
-		};
-		var $spinner = $('.spinner', $(e.target));
-		epadd.log($spinner);
-		$spinner.show();
+        // we unbind to make sure multiple copies of the same handler don't get attached to the overwrite/append buttons.
+        $('#append-button').unbind();
+        $('#overwrite-button').unbind();
+        // we need the spinner to be visible for at least 500ms so it will be clear to the user that the button press was accepted.
+        // otherwise, the op is usually so quick that the user doesn't know whether anything happened.
+        var fade_spinner_with_delay = function () {
+            $spinner.delay(500).fadeOut();
+        };
+        var $spinner = $('.spinner', $(e.target));
+        epadd.log($spinner);
+        $spinner.show();
 
-		// updates state to all pages in this set in-browser
-		function update_pages_in_browser() {
-			epadd.log ('updating pages in browser');
+        // updates state to all pages in this set in-browser
+        function update_pages_in_browser() {
+            epadd.log('updating pages in browser');
 
-			if (toAll) {
-				$('.page').each(function (i, o) {
-					if (post_data.setDoNotTransfer) { doNotTransfer[i] = dnt; }
-					if (post_data.setTransferWithRestrictions) { transferWithRestrictions[i] = twr; }
-					if (post_data.setReviewed) { reviewed[i] = rev; }
-					if (post_data.setAddToCart) { addToCart[i] = atc; }
-					if (ann) {
-						annotations[i] = (post_data.append) ? ((annotations[i] ? annotations[i] : "") + " " + ann) : ann;
-					}
-				});
-				// also update the annotation on screen to the updated value of the current page
-				if (annotations[PAGE_ON_SCREEN] != null && annotations[PAGE_ON_SCREEN].length > 0)
-					$('#annotation').val(annotations[PAGE_ON_SCREEN]);
-			}
-			else {
-				doNotTransfer[PAGE_ON_SCREEN] = dnt;
-				transferWithRestrictions[PAGE_ON_SCREEN] = twr;
-				reviewed[PAGE_ON_SCREEN] = rev;
-				addToCart[PAGE_ON_SCREEN] = atc;
-				annotations[PAGE_ON_SCREEN] = ann;
-			}
-		}
+            if (toAll) {
+                $('.page').each(function (i, o) {
+                    if (post_data.setDoNotTransfer) {
+                        doNotTransfer[i] = dnt;
+                    }
+                    if (post_data.setTransferWithRestrictions) {
+                        transferWithRestrictions[i] = twr;
+                    }
+                    if (post_data.setReviewed) {
+                        reviewed[i] = rev;
+                    }
+                    if (post_data.setAddToCart) {
+                        addToCart[i] = atc;
+                    }
+                    if (ann) {
+                        annotations[i] = (post_data.append) ? ((annotations[i] ? annotations[i] : "") + " " + ann) : ann;
+                    }
+                });
+                // also update the annotation on screen to the updated value of the current page
+                if (annotations[PAGE_ON_SCREEN] != null && annotations[PAGE_ON_SCREEN].length > 0)
+                    $('#annotation').val(annotations[PAGE_ON_SCREEN]);
+            }
+            else {
+                doNotTransfer[PAGE_ON_SCREEN] = dnt;
+                transferWithRestrictions[PAGE_ON_SCREEN] = twr;
+                reviewed[PAGE_ON_SCREEN] = rev;
+                addToCart[PAGE_ON_SCREEN] = atc;
+                annotations[PAGE_ON_SCREEN] = ann;
+            }
+        }
 
-		// now post updates to server
-		epadd.log('hitting url ' + url);
-		$.ajax({
-			type: 'POST',
-			url: url,
-			datatype: 'json',
-			data: post_data,
-			success: function (data, textStatus, jqxhr) {
-				fade_spinner_with_delay();
-				update_pages_in_browser(); // update pages in browser only if server update successful, because we don't want browser and server out of sync
-				epadd.log("Completed flags updated with status " + textStatus);
-			},
-			error: function (jq, textStatus, errorThrown) {
-				fade_spinner_with_delay();
-				$spinner.delay(500).fadeOut();
-				var message = ("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
-				epadd.log(message);
-				epadd.alert(message);
-			}
-		});
-		// these ajax reqs are completing normally, but report an error after completion... not sure why.
-		return false;
-	}
+        // now post updates to server
+        epadd.log('hitting url ' + url);
+        $.ajax({
+            type: 'POST',
+            url: url,
+            datatype: 'json',
+            data: post_data,
+            success: function (data, textStatus, jqxhr) {
+                fade_spinner_with_delay();
+                update_pages_in_browser(); // update pages in browser only if server update successful, because we don't want browser and server out of sync
+                epadd.log("Completed flags updated with status " + textStatus);
+            },
+            error: function (jq, textStatus, errorThrown) {
+                fade_spinner_with_delay();
+                $spinner.delay(500).fadeOut();
+                var message = ("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
+                epadd.log(message);
+                epadd.alert(message);
+            }
+        });
+        // these ajax reqs are completing normally, but report an error after completion... not sure why.
+        return false;
+    }
 }
 
 

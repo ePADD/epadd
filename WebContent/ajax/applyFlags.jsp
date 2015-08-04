@@ -36,6 +36,8 @@ if (archive == null) {
 
 if (request.getParameter("allDocs") != null)
 	docs = archive.getAllDocsAsSet();
+else if(session.getAttribute("selectDocs")!=null)
+    docs = (Set<Document>)session.getAttribute("selectDocs");
 else
  	docs = JSPHelper.selectDocs(request, session, false /* onlyFilteredDocs */, false);
 
