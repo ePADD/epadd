@@ -5,6 +5,7 @@
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.List"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@include file="getArchive.jspf" %>
 <%
 // we are already logged into all accounts at the point this is called

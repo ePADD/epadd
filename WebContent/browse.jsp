@@ -373,7 +373,18 @@ if (ModeConfig.isPublicMode()) {
 				s = s.substring(1, s.length()-1);
 			highlightTermsUnstemmed.addAll(IndexUtils.getAllWordsInQuery(s));
 		}
-	
+
+    String[] contactIds = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("contact"));
+	Set<Integer> highlightContactIds = new LinkedHashSet<Integer>();
+    if(contactIds!=null && contactIds.length>0)
+        for(String cis: contactIds) {
+            try {
+                int ci = Integer.parseInt(cis);
+                highlightContactIds.add(ci);
+            }catch(Exception e){
+                JSPHelper.log.warn(cis+" is not a contact id");
+            }
+        }
 	// now if filter is in effect, we highlight the filter word too
 	NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
 	if (filter != null && filter.isRegexSearch()) {
@@ -385,7 +396,7 @@ if (ModeConfig.isPublicMode()) {
 
 	Pair<DataSet, String> pair = null;
 	try {
-		pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
+		pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
 	}catch(Exception e){
 		e.printStackTrace();
 	}

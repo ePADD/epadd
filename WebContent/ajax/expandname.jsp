@@ -45,7 +45,7 @@
 		String name = request.getParameter("name");
 		String docId = request.getParameter("docId");
 		JSPHelper.log.info("DocId: " + docId + " ," + archive.getAllDocs().size());
-		EmailDocument ed = indexer.docForId(docId);
+		EmailDocument ed = archive.docForId(docId);
 		if (ed == null) {
     		result.put("result", "Wrong docId!");
 	    	response.getWriter().write(result.toString(4));
