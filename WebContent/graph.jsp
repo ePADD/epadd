@@ -53,7 +53,7 @@ public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> inte
 	+ "</script>\n";
 }
 
-public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date> intervals, int[] allMessagesHistogram, int w, int h, int normalizer, HttpSession session)
+public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, List<Date> intervals, int[] allMessagesHistogram, int w, int h, int normalizer, HttpSession session)
 {
 	String totalMessageVolume = JSONUtils.arrayToJson(allMessagesHistogram);
 
@@ -261,10 +261,10 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 		graph_is_empty = true;
 		if (!Util.nullOrEmpty(allDocs))
 		{
-			Map<String, Set<Document>> map = lex.getEmotions(archive.indexer, (Set) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
+			Map<String, Collection<Document>> map = lex.getEmotions(archive.indexer, (Set) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
 			for (String key: map.keySet())
 			{
-				Set<Document> set = map.get(key);			
+				Collection<Document> set = map.get(key);
 				if (set != null && set.size() > 0)
 				{
 					graph_is_empty = false;
@@ -294,7 +294,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 		Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
 		Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
 		for (EmailDocument ed: docs) {
-			List<String> entities = archive.indexer.getEntitiesInDoc(ed, type);
+			List<String> entities = archive.getEntitiesInDoc(ed, type);
 			Set<String> set = new LinkedHashSet<String>(entities);
 
 			for (String e: set) {
@@ -335,7 +335,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 
 		// now create the actual list of docs for each of the top entities
 		for (EmailDocument ed: docs) {
-			List<String> entities = archive.indexer.getEntitiesInDoc(ed, type);
+			List<String> entities = archive.getEntitiesInDoc(ed, type);
 			Set<String> set = new LinkedHashSet<String>(entities);
 
 			for (String e: set) {
@@ -354,7 +354,7 @@ public String scriptForSentimentsGraph(Map<String, Set<Document>> map, List<Date
 		}
 
 		// now uncanonicalize the top terms in the map to form newmap
-		Map<String, Set<Document>> newMap = new LinkedHashMap<String, Set<Document>>();
+		Map<String, Collection<Document>> newMap = new LinkedHashMap<String, Collection<Document>>();
 		for (String entity: topEntities)
 		{
 			String originalEntity = canonicalToOriginal.get(entity);

@@ -44,6 +44,8 @@ String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestNa
 <div style="text-align:left; padding:5px">
 <form method="get" action="browse">
 <input name="term" size="80" placeholder="search query"/>
+    <input name="start_date" size="8" placeholder="mm/yyyy"/>
+    <input name="end_date" size="8" placeholder="mm/yyyy"/>
 <br/>
 <br/>
 	<!--
@@ -80,6 +82,14 @@ Email direction:
 	<option value="out">Outgoing</option>
 	<option value="both" selected>Both</option>
 </select>
+    &nbsp&nbsp;
+    Sort by:
+    <select name="sort_by" id="sort_by">
+        <option value="relevance">Relevance</option>
+        <option value="chronological">Oldest First</option>
+        <option value="recent">Recent First</option>
+    </select>
+
 <p style="text-align:center">
 	<button class="btn btn-cta" class="" onclick="handle_click()">Search <i class="icon-arrowbutton"></i> </button>
 </p>

@@ -123,10 +123,17 @@ if (ModeConfig.isPublicMode()) {
 		request.getSession().setAttribute("authorities", assignauthorities);
 	}
 	 
-	 Pair<Set<Document>,Set<Blob>> search_result = JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false);
-	 List<Document> docs = new ArrayList<Document>(search_result.first);
-	 Collections.sort(docs);//order by time
-	 Set<Blob> highlightAttachments = search_result.second;
+	 Pair<Collection<Document>,Collection<Blob>> search_result = JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false);
+	 Collection<Document> docs = search_result.first;
+     Document first = docs.iterator().next();
+     Document last = null;
+     for(Document doc: docs) {
+        last = doc;
+     }
+    JSPHelper.log.info("(133)First doc: " + ((EmailDocument)first).getDate()+", second doc: "+((EmailDocument)last).getDate());
+
+    //Collections.sort(docs);//order by time
+	 Collection<Blob> highlightAttachments = search_result.second;
 	 Lexicon lexicon = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
 	 if (lexicon == null)
 	 {
@@ -394,14 +401,28 @@ if (ModeConfig.isPublicMode()) {
 	if(searchType!=null && searchType.equals("regex"))
 		isRegexSearch = true;
 
-	Pair<DataSet, String> pair = null;
+    first = docs.iterator().next();
+    last = null;
+    for(Document doc: docs)
+        last = doc;
+    JSPHelper.log.info("(414)First doc: " + ((EmailDocument)first).getDate()+", second doc: "+((EmailDocument)last).getDate());
+
+    Pair<DataSet, String> pair = null;
 	try {
-		pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
-	}catch(Exception e){
-		e.printStackTrace();
+        String sortBy = request.getParameter("sort_by");
+		if("relevance".equals(sortBy))
+            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments, MultiDoc.ClusteringType.NONE);
+	    else
+            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
+
+    }catch(Exception e){
+		Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
 	}
-		DataSet browseSet = pair.getFirst();
-	String html = pair.getSecond();
+
+    DataSet browseSet = pair.getFirst();
+    first = browseSet.getDocs().get(0);
+    last = browseSet.getDocs().get(browseSet.getDocs().size()-1);
+   String html = pair.getSecond();
 	
 	//this is better than changing the aguements of the avbove function.
 	browseSet.sensitive = "true".equals(request.getParameter("sensitive"));
