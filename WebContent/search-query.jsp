@@ -43,9 +43,8 @@ String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestNa
 <div style="text-align:center; margin:auto; width:600px;">
 <div style="text-align:left; padding:5px">
 <form method="get" action="browse">
+
 <input name="term" size="80" placeholder="search query"/>
-    <input name="start_date" size="8" placeholder="dd/mm/yyyy"/>
-    <input name="end_date" size="8" placeholder="dd/mm/yyyy"/>
 <br/>
 <br/>
 	<!--
@@ -70,27 +69,35 @@ String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestNa
 <span class="option" title="<%=edu.stanford.muse.util.Messages.getMessage("messages", "search.all.help")%>">
 	All
 </span>
+    Sort results by
+    <select name="sort_by" id="sort_by">
+        <option value="relevance">Most relevant</option>
+        <option value="chronological">Oldest first</option>
+        <option value="recent">Newest first</option>
+    </select>
 <!-- &nbsp;
 <input type="radio" name="searchType" value="regex"/> Regex
  -->
  
-<p style="margin-top:10px">
-
-Email direction:
+    <br/>
+    <br/>
+    <i class="fa fa-long-arrow-down"></i><i class="fa fa-long-arrow-up"></i> Email direction
 <select name="direction" id="direction">
 	<option value="in">Incoming</option>
 	<option value="out">Outgoing</option>
 	<option value="both" selected>Both</option>
 </select>
     &nbsp&nbsp;
-    Sort by:
-    <select name="sort_by" id="sort_by">
-        <option value="relevance">Relevance</option>
-        <option value="chronological">Oldest First</option>
-        <option value="recent">Recent First</option>
-    </select>
 
-<p style="text-align:center">
+    <i class="fa fa-calendar"></i> Date Range
+    <input class="form-control" style="width:auto;display:inline" name="start_date" id="from" size="12" placeholder="YYYY/MM/DD" /> to
+    <input class="form-control" style="width:auto;display:inline" name="end_date" id="to" size="12
+    " placeholder="YYYY/MM/DD" />
+
+    <br/>
+    <br/>
+
+    <p style="text-align:center">
 	<button class="btn btn-cta" class="" onclick="handle_click()">Search <i class="icon-arrowbutton"></i> </button>
 </p>
 </form>

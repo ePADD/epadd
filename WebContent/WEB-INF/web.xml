@@ -243,7 +243,16 @@
 		<servlet-name>edit-correspondents</servlet-name>
 		<url-pattern>/edit-correspondents</url-pattern>
 	</servlet-mapping>
-	
+
+	<servlet>
+		<servlet-name>bulk-flags</servlet-name>
+		<jsp-file>/bulk-flags.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>bulk-flags</servlet-name>
+		<url-pattern>/bulk-flags</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>search-query</servlet-name>
 		<jsp-file>/search-query.jsp</jsp-file>

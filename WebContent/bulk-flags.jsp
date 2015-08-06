@@ -3,10 +3,13 @@
 <%@ page import="java.io.FileReader" %>
 <%@ page import="au.com.bytecode.opencsv.CSVReader" %>
 <%@ page import="java.util.*" %>
+<%@page language="java" import="com.google.gson.*"%>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.email.AddressBook" %>
+<%@ page import="edu.stanford.muse.index.DataSet" %>
 <%--
   Created by IntelliJ IDEA.
   User: vihari
@@ -22,6 +25,9 @@
     <title>Bulk Redaction</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <script src="js/jquery.js"></script>
+    <link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
+    <script src="jqueryFileTree/jqueryFileTree.js"></script>
+
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <script src="js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -29,22 +35,60 @@
 
     <jsp:include page="css/css.jsp"/>
     <script src="js/epadd.js"></script>
-
+    <script src="js/filepicker.js" type="text/javascript"></script>
 </head>
 <body>
+<%	AddressBook addressBook = archive.addressBook;
+    String bestName = addressBook.getBestNameForSelf();
+    String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+%>
+    <jsp:include page="header.jspf"/>
+
+<% writeProfileBlock(out, bestName, "Apply flags to many messages", "");%>
+
+<br/>
+<br/>
     <script>
         submit = function(){
-            window.location = "bulkredaction.jsp?filePath="+$("#filePath").val();
+            window.location = "bulk-flags?filePath="+$("#filePath").val();
         }
     </script>
     <% String filePath = request.getParameter("filePath");
 
         if(filePath==null || !(new File(filePath)).exists()){%>
-    <div style="text-align:center;position:relative;top:30px">
-        Please provide the path of file with bulk entries
-        <input type="text" placeholder="CSV file path" id="filePath"/>
-        <button class="btn-default" onclick="submit()">Submit</button>
+
+<div id="filepicker" style="width:900px;padding-left:170px">
+
+    <div class="div-input-field">
+        <div class="input-field-label"><i class="fa fa-folder-o"></i> CSV File</div>
+        <div class="input-field">
+            <input name="filePath" id="filePath" class="dir form-control" type="text" name="sourceDir"/> <br/>
+            <button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
+                <span>Browse</span>
+            </button>
+        </div>
+        <br/>
+        <div class="roots" style="display:none"></div>
+        <div class="browseFolder"></div>
+        <br/>
     </div>
+</div>
+
+<%
+    java.io.File[] rootFiles = java.io.File.listRoots();
+    List<String> roots = new ArrayList<String>();
+    for (java.io.File f: rootFiles)
+        roots.add(f.toString());
+    String json = new Gson().toJson(roots);
+%>
+<script>
+    var roots = <%=json%>;
+    var fp = new FilePicker($('#filepicker'), roots);
+</script>
+
+        <div style="text-align:center;position:relative;top:30px">
+            <button onclick="submit()" class="btn btn-cta" id="gobutton">Submit <span class="spinner"><i class="icon-arrowbutton"></i></span> </button>
+        </div>
     <%}else {
         //read the entries in the file
         CSVReader reader = new CSVReader(new FileReader(filePath));
@@ -55,17 +99,23 @@
             eas.add(eA);
         }
         out.println("<div style=\"text-align:center;position:relative;top:30px\">");
-        out.println("Read " + eas.size() + " email address(es) from the file<br>");
+        out.println("Checking " + eas.size() + " email address(es). ");
         try {
-
             Set<Document> matches = EmailUtils.getDocsForEAs(archive.getAllDocsAsSet(), eas);
             request.setAttribute("selectDocs", matches);
-            out.println(matches.size() + " messages matched<br>");
-        }catch(Exception e){
-            Util.print_exception("Exception while fetching messages for: "+eas,e, JSPHelper.log);
+            out.println(matches.size() + " messages matched<br><br/>");
+
+            // create a dataset out of the matched docs
+            DataSet dataset = new DataSet(matches, archive, datasetName, null, null, null, null);
+            session.setAttribute (datasetName, dataset);
+            session.setAttribute ("docs-" + datasetName, new ArrayList<Document>(matches));
+
+        } catch(Exception e){
+            Util.print_exception("Exception while fetching messages for: " + eas, e, JSPHelper.log);
         }
         %>
-        <div class="controls" style="position:relative;width:100%;">
+
+        <div class="controls" style="position:relative;width:auto;display:inline-block">
 
             <div style="position:relative;padding:5px;">
                 <i title="Do not transfer" id="doNotTransfer" class="flag fa fa-ban"></i>
@@ -76,7 +126,7 @@
                     <input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
                 </div>
                         <!--			<div style="display:inline-block;position:relative;top:10px"><input type="checkbox" id="applyToAll" style="margin-left:250px"/> Apply to all</div> -->
-                <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+                <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
             </div>
 
         </div>
@@ -111,6 +161,8 @@
                     post_data.setTransferWithRestrictions = twr ? "1" : "0";
                     post_data.setReviewed = rev ? "1" : "0";
                     post_data.setAnnotation = ann;
+                    post_data.datasetId = '<%=datasetName%>';
+
                     url = "ajax/applyFlags.jsp";
                     $spinner.show();
                     $.ajax({

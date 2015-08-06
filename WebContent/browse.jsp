@@ -398,7 +398,9 @@ if (ModeConfig.isPublicMode()) {
     Pair<DataSet, String> pair = null;
 	try {
         String sortBy = request.getParameter("sort_by");
-		if("relevance".equals(sortBy))
+
+		// note: we currently do not support clustering for "recent" type, only for the chronological type. might be easy to fix if needed in the future.
+		if ("recent".equals(sortBy) || "relevance".equals(sortBy))
             pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments, MultiDoc.ClusteringType.NONE);
 	    else
             pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);

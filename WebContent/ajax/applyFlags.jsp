@@ -39,10 +39,11 @@ if (request.getParameter("allDocs") != null)
 else if(session.getAttribute("selectDocs")!=null)
     docs = (Set<Document>)session.getAttribute("selectDocs");
 else
- 	docs = JSPHelper.selectDocs(request, session, false /* onlyFilteredDocs */, false);
+ 	docs = new LinkedHashSet<Document>(JSPHelper.selectDocs(request, session, false /* onlyFilteredDocs */, false));
 
 if (docs != null)
 {
+
 	JSPHelper.log.info ("applyFlags to " + docs.size() + " message(s)");
 	if (doNotTransferSet)
 		JSPHelper.log.info ("setting doNotTransfer to " + doNotTransfer);
