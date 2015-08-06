@@ -63,7 +63,7 @@
 <br/>
 
 <%
-	Set<DatedDocument> allDocs = (Set) JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false);
+	Set<DatedDocument> allDocs = new LinkedHashSet<DatedDocument> ((Collection) JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false));
 
 	Lexicon lex = null;
 	// first look for url param for lexicon name if specified
