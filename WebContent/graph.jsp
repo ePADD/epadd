@@ -94,7 +94,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		return;
 	}
 	
-	Set<DatedDocument> allDocs = (Set) JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false);
+	Collection<DatedDocument> allDocs = (Collection) JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false);
 
 	AddressBook addressBook = archive.addressBook;
 	Lexicon lex = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");

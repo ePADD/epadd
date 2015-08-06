@@ -64,12 +64,9 @@
 		// this is a special flag used during screening time to read only headers without the message bodies
 		boolean downloadMessageText = !"false".equals(request.getParameter("downloadMessages"));
 
-        try{
-		    JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
-		    archive.postProcess();
-		}catch(Throwable t){
-		    Util.print_exception("Something went wrong when trying to fetch and index emails!!", t, JSPHelper.log);
-		}
+        JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
+		archive.postProcess();
+
 
 		emailDocs = (List) archive.getAllDocs();
 		AddressBook addressBook = archive.getAddressBook();
@@ -104,6 +101,10 @@
 		Util.print_exception(e, JSPHelper.log);
 		errorMessage = "Exception fetching/indexing emails";
 		// we'll leave archive in this
+	}
+    //should be extra defensive here
+	catch (Throwable t){
+	    Util.print_exception("Something went wrong when trying to fetch and index emails!!", t, JSPHelper.log);
 	}
 
 	if (cancelled) {

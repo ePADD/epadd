@@ -125,12 +125,6 @@ if (ModeConfig.isPublicMode()) {
 	 
 	 Pair<Collection<Document>,Collection<Blob>> search_result = JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false);
 	 Collection<Document> docs = search_result.first;
-     Document first = docs.iterator().next();
-     Document last = null;
-     for(Document doc: docs) {
-        last = doc;
-     }
-    JSPHelper.log.info("(133)First doc: " + ((EmailDocument)first).getDate()+", second doc: "+((EmailDocument)last).getDate());
 
     //Collections.sort(docs);//order by time
 	 Collection<Blob> highlightAttachments = search_result.second;
@@ -401,12 +395,6 @@ if (ModeConfig.isPublicMode()) {
 	if(searchType!=null && searchType.equals("regex"))
 		isRegexSearch = true;
 
-    first = docs.iterator().next();
-    last = null;
-    for(Document doc: docs)
-        last = doc;
-    JSPHelper.log.info("(414)First doc: " + ((EmailDocument)first).getDate()+", second doc: "+((EmailDocument)last).getDate());
-
     Pair<DataSet, String> pair = null;
 	try {
         String sortBy = request.getParameter("sort_by");
@@ -420,9 +408,7 @@ if (ModeConfig.isPublicMode()) {
 	}
 
     DataSet browseSet = pair.getFirst();
-    first = browseSet.getDocs().get(0);
-    last = browseSet.getDocs().get(browseSet.getDocs().size()-1);
-   String html = pair.getSecond();
+    String html = pair.getSecond();
 	
 	//this is better than changing the aguements of the avbove function.
 	browseSet.sensitive = "true".equals(request.getParameter("sensitive"));

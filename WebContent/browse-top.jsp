@@ -78,7 +78,7 @@
 	JSPHelper.log.info("Counts: "+pC+", "+oC+", "+lC);
 %>
 
-<%writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
+<% writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
 <br/>
 
 <div id="all-cards" style="text-align: center; margin:auto">
