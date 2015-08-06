@@ -44,8 +44,8 @@ String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestNa
 <div style="text-align:left; padding:5px">
 <form method="get" action="browse">
 <input name="term" size="80" placeholder="search query"/>
-    <input name="start_date" size="8" placeholder="mm/yyyy"/>
-    <input name="end_date" size="8" placeholder="mm/yyyy"/>
+    <input name="start_date" size="8" placeholder="dd/mm/yyyy"/>
+    <input name="end_date" size="8" placeholder="dd/mm/yyyy"/>
 <br/>
 <br/>
 	<!--
