@@ -6,7 +6,7 @@ superlative: brilliant|super|superb|beautiful|exquisite|astonishing|amazing|amaz
 
 pride: pride|proud|brag|bragging|bragged
 
-joy: joy|joyous|happiness|euphoria|high spirits|lovely|wonderful|gleeful|glad|"thank god"|"thank goodness"|"good news"|rhapsodic|ecstasy|enraptured|ecstatic|jubilation|festivity|celebration|celebrate|"cloud nine"|"walking on air"|rapture|blissful|thrill|excited
+joy: joy|joyous|happiness|euphoria|"high spirits"|lovely|wonderful|gleeful|glad|"thank god"|"thank goodness"|"good news"|rhapsodic|ecstasy|enraptured|ecstatic|jubilation|festivity|celebration|celebrate|"cloud nine"|"walking on air"|rapture|blissful|thrill|excited
 
 surprise: surprise|surprised|surprising|unusual|incredible|astound|astonish|unbelievable
 
@@ -73,7 +73,7 @@ expletives: goddamn|goddam|gaddamit|damn|fuck|f*ck|fucking|fucked|fucks|fucker|s
 
 sadness: cry|crying|sad|sadly|saddened|sadness|bleak|ouch|gloomy|crappy|crushed|distress|suffocate|lonely|rejected|pain|pained|morose|agony|anguish|dismay|dismayed|sympathy|"bad news"
 
-conflict: fault|mend fences|contrite|contrition|struggle|complaint|refuse|refusal|disagree|disagreement|"don't trust"
+conflict: fault|"mend fences"|contrite|contrition|struggle|complaint|refuse|refusal|disagree|disagreement|"don't trust"
 
 anger: angry|anger|exasperate|angered|complain|complained|"freak out"|arrogant|bully|abuse|furious|infuriate|hackles|embitter|vitriol|vituperative|excoriate|rage|umbrage|outrage|madden|defame|slander|travesty|enrage|enraged|irate|wrath|livid|offense|indignant|indignation|tantrum|exasperate|exasperation|harass|harassment|torment|tormented|displeased|irritate|irritating|annoyed|annoying|hostile|hostility|hostilities|wreak|wreaking|"pissed off"|bitch|bitching|bitchy|rude|churlish
 
