@@ -62,7 +62,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 	StringBuilder json = new StringBuilder("[");
 	for (String caption: map.keySet())
 	{
-		Set<DatedDocument> docs = (Set) map.get(caption);
+		Set<DatedDocument> docs = new LinkedHashSet<DatedDocument>((Collection) map.get(caption)); // map.get returns a list, we have to cast it to set
 		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(docs), intervals, true /* ignore invalid dates */);
 		String sentimentVolume = JSONUtils.arrayToJson(hist);
 		if (json.length() > 2)
@@ -260,7 +260,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		graph_is_empty = true;
 		if (!Util.nullOrEmpty(allDocs))
 		{
-			Map<String, Collection<Document>> map = lex.getEmotions(archive.indexer, (Set) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
+			Map<String, Collection<Document>> map = (Map) lex.getEmotions(archive.indexer, (Collection) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
 			for (String key: map.keySet())
 			{
 				Collection<Document> set = map.get(key);

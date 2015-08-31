@@ -1,0 +1,20 @@
+<%@ page import="edu.stanford.muse.webapp.*" %>
+<%@ page import="edu.stanford.muse.ner.model.NERModel" %>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.ner.model.SVMModel" %>
+<%--
+  User: vihari
+  Date: 31/08/15
+  ePADD NER is session dependant and cannot be loaded with a static class
+--%>
+<%
+// if archive not in session, nothing can be done
+    NERModel nerModel = (NERModel)JSPHelper.getSessionAttribute(session, "ner");
+    if (nerModel == null)
+    {
+        String modelFile = archive.baseDir + File.separator + "models" + File.separator + SVMModel.modelFileName;
+        nerModel = SVMModel.loadModel(new File(modelFile));
+        JSPHelper.log.info("Loaded ner model from "+modelFile);
+        request.getSession().setAttribute("ner", nerModel);
+    }
+%>
