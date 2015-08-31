@@ -6,6 +6,7 @@
 <%@page language="java" import="java.util.List"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
 <%@include file="getArchive.jspf" %>
 <%
 // we are already logged into all accounts at the point this is called
@@ -49,11 +50,13 @@
 <%
 	List<FetchStats> fetchStats = archive.allStats;
 	int count = 0;
-	for (FetchStats fs: fetchStats) {
-		out.println ("<h2>Import #" + (++count) + "</h2>");
-		out.println (fs.toHTML());
-		out.println ("<hr/>");
-	}
+	if(fetchStats!=null) {
+        for (FetchStats fs : fetchStats) {
+            out.println("<h2>Import #" + (++count) + "</h2>");
+            out.println(fs.toHTML());
+            out.println("<hr/>");
+        }
+    }
 
 	Collection<String> dataErrors = addressBook.getDataErrors();
 	int i = 0;

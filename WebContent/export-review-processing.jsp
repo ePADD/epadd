@@ -92,7 +92,7 @@ if ("doNotDeliver".equals(type)) {
 
 
 <div style="margin:auto; width:900px">
-	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+    <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 	<br/><% out.flush(); %>
 
 	<div id="nav3" style="display:none">
@@ -103,8 +103,10 @@ if ("doNotDeliver".equals(type)) {
 		</nav>
 		<br/>
 	</div>
-
-	<table id="messages" style="display:none">
+    <div style="text-align: center">
+        <button class="btn btn-cta" onclick="window.location='export-mbox'">Export all to mbox <i class="icon-arrowbutton"></i> </button>
+    </div>
+    <table id="messages" style="display:none">
 	<thead><tr><th>Subject</th><th>Date</th><th>Annotation</th></tr></thead>
 	<tbody>
 

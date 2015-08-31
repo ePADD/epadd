@@ -20,7 +20,6 @@ public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> inte
 {
 	Collections.sort(dfis);
 	JSONArray j = new JSONArray();
-
 	int count = 0, MAX_COUNT = 20; // we can only show top 20 layers
 	for (DetailedFacetItem dfi: dfis)
 	{

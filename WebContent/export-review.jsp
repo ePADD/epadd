@@ -86,7 +86,12 @@ writeProfileBlock(out, bestName, "", Util.pluralize(docs.size(), "message") + de
 
 <br/>
 
+<div style="text-align: center">
+    <button class="btn btn-cta" onclick="window.location='export-mbox'">Export all to mbox <i class="icon-arrowbutton"></i> </button>
+    <br>
+</div>
 <div style="margin:auto; width:900px">
+
 	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 	<br/><% out.flush(); %>
 

@@ -90,6 +90,10 @@
 				<% if (!ModeConfig.isDiscoveryMode()) { %>
 					<p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button>
 				<% } %>
+                <% if ( ModeConfig.isAppraisalMode()||ModeConfig.isProcessingMode()) {%>
+                    <!-- Add a relevant icon -->
+                    <p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-flags?allDocs=1'">Set bulk flags</button>
+                <% } %>
 			<%--<p><button class="btn btn-default" id="featuresIndex" style='cursor:pointer'><i class="fa fa-refresh"></i> Build cache for internal authority assignment</button>--%>
 		</div>
 	<% } /* archive != null */ %>

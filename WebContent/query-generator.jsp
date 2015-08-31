@@ -4,6 +4,10 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.ner.model.SVMModel" %>
+<%@ page import="edu.stanford.muse.ner.model.NERModel" %>
+<%@include file="getArchive.jspf" %>
 <%
 if (ModeConfig.isPublicMode()) {
 	// this browse page is also used by Public mode where the following set up may be requried. 
@@ -37,7 +41,25 @@ if (ModeConfig.isPublicMode()) {
 
 <%
 String req = request.getParameter("refText");
-out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
+String modelFile = archive.baseDir + File.separator + "models" + File.separator + SVMModel.modelFileName;
+
+NERModel nerModel = (NERModel)request.getSession().getAttribute("model");
+if(nerModel == null){
+    nerModel = SVMModel.loadModel(new File(modelFile));
+    request.getSession().setAttribute("model", nerModel);
+}
+Pair<Map<Short,List<String>>,List<Triple<String,Integer,Integer>>> mapAndOffsets = nerModel.find(req);
+            Map<Short, List<String>> map = mapAndOffsets.getFirst();
+            for(Short k: map.keySet()){
+                //out.println(k+":"+map.get(k).size());
+                out.println(k+":"+map.get(k).size());
+
+                List<String> names = map.get(k);
+                for(String n: names){
+                    out.println("<" +k+":"+n+"></br>");
+                }
+            }
+//out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
 %>
 </div>
 <script type="text/javascript">
