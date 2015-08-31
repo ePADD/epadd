@@ -23,23 +23,14 @@ response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Co
 JSONObject result = new JSONObject();
 int callout_lines = HTMLUtils.getIntAttr(session, "lens.callout.lines", 3);
 result.put("callout_lines", callout_lines);
-try {	
-	response.setContentType("application/json; charset=utf-8");
-	
-	String text = request.getParameter("refText");	
+try {
+    response.setContentType("application/json; charset=utf-8");
+	String text = request.getParameter("refText");
 	String url = request.getParameter("refURL");
 
 	String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-	Archive archive = JSPHelper.getArchive(session);
-	if (archive == null)
-	{
-		// display error is a message that can be displayed to the end user, i.e. something he can take action upon.
-		result.put("displayError", "<a href=\"" + baseURL + "\">Load an archive into Muse</a>.");
-		JSPHelper.log.warn ("No archive loaded for leadsAsJson");
-		return;
-	}
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
-	Indexer	indexer = archive.indexer;
+	//Indexer	indexer = archive.indexer;
 	if (allDocs == null)
 		allDocs = (Collection) archive.getAllDocs();
 	

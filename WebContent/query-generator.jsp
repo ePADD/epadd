@@ -1,12 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@ page import="java.io.File" %>
-<%@ page import="edu.stanford.muse.ner.model.SVMModel" %>
-<%@ page import="edu.stanford.muse.ner.model.NERModel" %>
 <%@include file="getArchive.jspf" %>
 <%
 if (ModeConfig.isPublicMode()) {
@@ -40,13 +34,16 @@ if (ModeConfig.isPublicMode()) {
 <p>
 
 <%
-String req = request.getParameter("refText");
-
-out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
+    //System.err.println(request);
+    String req = request.getParameter("refText");
+    //System.err.println("reftext: "+req);
+    out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
 %>
 </div>
 <script type="text/javascript">
-	window.MUSE_URL = '/epadd'; // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
+	window.MUSE_URL = "<%=request.getContextPath()%>" // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
+    if(window.MUSE_URL==null)
+        window.MUSE_URL="";
 </script>
 <script type="text/javascript" src="js/muse-lens.user.js"></script>
 <jsp:include page="footer.jsp"/>
