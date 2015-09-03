@@ -83,7 +83,13 @@
                    out.println("<div style=\"text-align:center;position:relative;top:30px\">");
                    out.println("Checking " + eas.size() + " email address(es). ");
 
-                   Set<Document> matches = EmailUtils.getDocsForEAs(archive.getAllDocsAsSet(), eas);
+                   Map<String,Set<Document>> matchesWithNumHits = EmailUtils.getDocsForEAs(archive.getAllDocsAsSet(), eas);
+                   Set<Document> matches = new LinkedHashSet<Document>();
+                   if(matchesWithNumHits!=null)
+                       for(Set<Document> docs: matchesWithNumHits.values()){
+                           if(docs!=null)
+                               matches.addAll(docs);
+                       }
                    request.setAttribute("selectDocs", matches);
                    out.println(matches.size() + " messages matched<br><br/>");
 
