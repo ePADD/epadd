@@ -8,7 +8,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Export Cart</title>
+    <title>Export</title>
 
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
@@ -27,12 +27,7 @@
 
 <div class="panel" style="padding-left:10%">
     <%
-        List<EmailDocument> selectedDocs = new ArrayList<EmailDocument>();
-        for (Document d: archive.getAllDocs()) {
-            EmailDocument ed = (EmailDocument) d;
-            selectedDocs.add(ed);
-        }
-
+        List<EmailDocument> selectedDocs = (List<EmailDocument>)JSPHelper.getSessionAttribute(request.getSession(), "action-docs");
         JSPHelper.log.info ("original browse set has " + selectedDocs.size() + " docs");
 
         // either we do tags (+ or -) from selectedTags
