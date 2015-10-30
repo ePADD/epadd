@@ -6,7 +6,7 @@ set version = `cat version`
 echo 'ePADD version '${version}  
 echo 'ePADD version '${version}  >! WebContent/version.jsp
 echo 'package edu.stanford.epadd;' >! src/java/edu/stanford/epadd/Version.java
-echo 'package edu.stanford.epadd;public class Version {  public static final String version = "'${version}'"; ' >> src/java/edu/stanford/epadd/Version.java
+echo 'public class Version {  public static final String version = "'${version}'"; ' >> src/java/edu/stanford/epadd/Version.java
 echo 'public static final String buildInfo = "'${build_info}'";} ' >> src/java/edu/stanford/epadd/Version.java
 
 cd ../muse
