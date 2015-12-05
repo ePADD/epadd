@@ -79,7 +79,7 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%>
     while (keys.hasMoreElements())
     {
       String key = (String)keys.nextElement();
-      if (!"emailDocs".equals(key) && !"lexicon".equals(key) && !"fullEmailDocs".equals(key) && !key.startsWith("dataset") && !key.startsWith("docs-docset") && !key.startsWith("GroupsJSON")) // don't print email docs which have email headers (too sensitive), same with dataset
+      if (!"emailDocs".equals(key) && !"lexicon".equals(key) && !"fullEmailDocs".equals(key) && !key.startsWith("dataset") && !key.startsWith("docs-docset") && !key.startsWith("GroupsJSON")) // don't toString email docs which have email headers (too sensitive), same with dataset
 	      out.println("<b>" + key + "</b>: " + JSPHelper.getSessionAttribute(session, key) + "<br>");
       else
     	  out.println("<b>" + key + "</b>: not printed<br>");
