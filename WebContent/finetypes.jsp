@@ -84,6 +84,8 @@
         List<Pair<Entity,Double>> lst = Util.sortMapByValue(vals);
 
         JSONArray resultArray = new JSONArray();
+        String url = request.getRequestURL().toString();
+        url = url.substring(0,url.indexOf("/finetypes"));
         int count = 0;
 	    for (Pair<Entity, Double> p: lst) {
 	        count++;
@@ -91,7 +93,7 @@
 //                break;
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
-            j.put (0, entity);
+            j.put (0, "<a target='_blank' href='"+url+"/browse?term=\""+entity+"\"'>"+entity+"</a>");
             j.put (1, (float)p.getFirst().score);
             j.put (2, p.getFirst().freq);
 
