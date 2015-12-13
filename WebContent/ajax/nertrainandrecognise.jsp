@@ -11,6 +11,9 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 
 <%@page language="java" import="org.json.*"%>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
+<%@ page import="java.io.IOException" %>
 <%
 session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
 
@@ -25,16 +28,33 @@ if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
   session.removeAttribute("statusProvider");
 
 if(archive!=null){
-	try{
-		NER ner = new NER(archive);
-		session.setAttribute("statusProvider", ner);
-		ner.trainAndRecognise();
-		archive.processingMetadata.entityCounts = ner.stats.counts;
-		System.err.println(ner.stats);
-		
-		session.removeAttribute("statusProvider");
-		resultPage = "browse-top";
-	}catch (CancelledException ce) {
+    try {
+        String mwl = System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator;
+        String modelFile = mwl + SequenceModel.modelFileName;
+        SequenceModel nerModel = (SequenceModel) session.getAttribute("ner");
+        session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
+        JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
+        try {
+            nerModel = SequenceModel.loadModel(new File(modelFile));
+        } catch (IOException e) {
+            Util.print_exception("Could not load the sequence model from: " + modelFile, e, JSPHelper.log);
+        }
+        if (nerModel == null) {
+            JSPHelper.log.error("Could not load NER model from: " + modelFile);
+        } else {
+            NER ner = new NER(archive, nerModel);
+            session.setAttribute("statusProvider", ner);
+            ner.recongniseArchive();
+            archive.processingMetadata.entityCounts = ner.stats.counts;
+            JSPHelper.log.info(ner.stats);
+            System.err.println(ner.stats);
+        }
+        archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
+        JSPHelper.log.info("Number of potentially sensitive messages " + archive.processingMetadata.numPotentiallySensitiveMessages);
+
+        session.removeAttribute("statusProvider");
+        resultPage = "browse-top";
+    }catch (CancelledException ce) {
 		JSPHelper.log.warn("ePADD NER entity extraction cancelled by user");
 		cancelled = true;
 	} catch (Exception e) {

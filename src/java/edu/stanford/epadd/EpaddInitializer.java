@@ -6,13 +6,14 @@ import java.io.File;
 public class EpaddInitializer implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent event) {
-		try { 
+		try {
 			// default folder is ~/ePADD
 			// Though on MacOSX it should be ~/Library/Application Support/ePADD
 			// https://developer.apple.com/library/mac/technotes/tn2002/tn2110.html			
 			// but it is not visible in the finder, so we stay with ~/epadd.
 			System.setProperty("muse.defaultArchivesDir", Config.REPO_DIR_APPRAISAL); // this will get picked up by Muse's Sessions.java
-			System.setProperty("muse.log", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "epadd.log");
+			//The muse.log system variable is already being set in TomcatMain.java, dont touch it here
+			//System.setProperty("muse.log", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "epadd.log");
 
 			// ensure existence of the directory
 			File f = new File(Config.REPO_DIR_APPRAISAL);
@@ -31,7 +32,8 @@ public class EpaddInitializer implements ServletContextListener {
 			{
 				System.err.println ("Sorry, unable to create ePADD base folder: " + f.getPath());
 				throw new RuntimeException();
-			}	
+			}
+            System.err.println("muse.log system variable is: "+System.getProperty("muse.log"));
 		} catch (Exception e) {
 			System.err.println ("ERROR initializing ePADD: " + e);
 			e.printStackTrace(System.err);

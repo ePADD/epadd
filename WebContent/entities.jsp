@@ -129,16 +129,16 @@ if ("location".equals(type)) { %>
     int count = 0;
     JSONArray resultArray = new JSONArray();
 	for (Pair<String, Integer> p: pairs) {
-	if (++count > max)
-		break;
-	String entity = p.getFirst();
-	String entityToPrint = canonicalToOriginal.get(entity);
-	JSONArray j = new JSONArray();
-	j.put (0, Util.escapeHTML(entityToPrint));
-	j.put (1, counts.get(entity));
+        if (++count > max)
+            break;
+        String entity = p.getFirst();
+        String entityToPrint = canonicalToOriginal.get(entity);
+        JSONArray j = new JSONArray();
+        j.put (0, Util.escapeHTML(entityToPrint));
+        j.put (1, counts.get(entity));
 
-	resultArray.put (count-1, j);
-}
+        resultArray.put (count-1, j);
+    }
 %>
 <table id="entities" style="display:none">
 	<thead><th>Entity</th><th>Messages</th></thead>

@@ -83,6 +83,7 @@
 						<li><a href="set-images"><i class="menu-icon fa fa-file-image-o fa-fw"></i>Set Images
 						</a></li>
 						<li><a href="edit-correspondents"><i class="menu-icon fa fa-pencil fa-fw"></i>Edit Correspondents</a></li>
+                        <li><a href="browse-finetypes.jsp"><i class="menu-icon fa fa-tachometer fa-fw"></i>Fine types</a></li>
 						<li><a href="bulk-flags"><i class="menu-icon fa fa-flag fa-fw"></i>Bulk apply flags</a></li>
 						<li><a href="report"><i class="menu-icon fa fa-tachometer fa-fw"></i>Archive Statistics</a></li>
 					<% } %>
