@@ -34,10 +34,14 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
+    //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
 	AddressBook ab = archive.addressBook;
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
-	if (!Util.nullOrEmpty(addressBookUpdate))
-		ab.initialize(addressBookUpdate);
+	if (!Util.nullOrEmpty(addressBookUpdate)) {
+        ab.initialize(addressBookUpdate);
+        archive.close();
+        archive.openForRead();
+    }
 
 	Collection<EmailDocument> allDocs = (Collection) JSPHelper.getSessionAttribute(session, "emailDocs");
 	Collection<EmailDocument> fullEmailDocs = (Collection) archive.getAllDocs();
