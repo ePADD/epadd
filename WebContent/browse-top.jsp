@@ -35,12 +35,11 @@
 
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
-	AddressBook ab = archive.addressBook;
+    AddressBook ab = archive.addressBook;
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
-        ab.initialize(addressBookUpdate);
-        archive.close();
-        archive.openForRead();
+        archive.addressBook.initialize(addressBookUpdate);
+        SimpleSessions.saveArchive(session);
     }
 
 	Collection<EmailDocument> allDocs = (Collection) JSPHelper.getSessionAttribute(session, "emailDocs");
