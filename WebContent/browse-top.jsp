@@ -3,7 +3,6 @@
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@include file="getArchive.jspf" %>
@@ -13,7 +12,6 @@
 <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Archive Information</title>
-<!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans"> -->
 
 	<script src="js/jquery.js"></script>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -45,10 +43,6 @@
 	Collection<EmailDocument> fullEmailDocs = (Collection) archive.getAllDocs();
 	if (allDocs == null)
 		allDocs = fullEmailDocs;
-
-	Indexer indexer = null;
-	if (archive != null)
-		indexer = archive.indexer;
 
 	String bestName = ab.getBestNameForSelf();
 	String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestName) : "SUMMARY");

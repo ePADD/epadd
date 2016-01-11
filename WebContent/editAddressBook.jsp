@@ -56,7 +56,8 @@
 <p>
 <div style="text-align:center">
 <form method="post" action="browse-top">
-<textarea name="addressBookUpdate" id="text" style="width:600px" rows="40">
+    <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
+<textarea name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <%!
 private static String dumpForContact(Contact c, String description) {
 	StringBuilder sb = new StringBuilder();
