@@ -1,7 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.email.Contact"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
 <%@ page import="edu.stanford.muse.util.Pair" %>
@@ -9,6 +8,9 @@
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.*" %>
+<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.ner.NER" %>
+<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%@include file="getArchive.jspf" %>
 
 <!-- Input: Field name
@@ -56,12 +58,19 @@ if ("location".equals(type)) { %>
 	AddressBook ab = archive.addressBook;
 	String bestName = ab.getBestNameForSelf();
 	String et = "";
-	if(edu.stanford.muse.ner.NER.EPER.equals(type)||"person".equals(type))
-		et = "Person";
-	else if(edu.stanford.muse.ner.NER.ELOC.equals(type)||"place".equals(type))
-		et = "Location";
-	else if(edu.stanford.muse.ner.NER.EORG.equals(type)||"organisation".equals(type))
-		et = "Organisation";
+    Short ct = FeatureDictionary.PERSON;
+	if(edu.stanford.muse.ner.NER.EPER.equals(type)||"person".equals(type)) {
+        et = "Person";
+        ct = FeatureDictionary.PERSON;
+    }
+	else if(edu.stanford.muse.ner.NER.ELOC.equals(type)||"place".equals(type)) {
+        et = "Location";
+        ct = FeatureDictionary.PLACE;
+    }
+	else if(edu.stanford.muse.ner.NER.EORG.equals(type)||"organisation".equals(type)) {
+        et = "Organisation";
+        ct = FeatureDictionary.ORGANISATION;
+    }
 	writeProfileBlock(out, bestName, et + " entities", "");
 			%>
 
@@ -78,12 +87,23 @@ if ("location".equals(type)) { %>
 <%
 		out.flush();
 
-	Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
-    Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
+	Map<String, Integer> counts = new LinkedHashMap<>();
+    Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
 
+    double cutoff = 0.001;
     Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
     for (EmailDocument ed: docs) {
-	    List<String> entities = archive.getEntitiesInDoc(ed, type);
+        List<String> entities = new ArrayList<>();
+        Map<Short, Map<String, Double>> es = NER.getEntities(archive.getDoc(ed), true);
+        List<Short> mtypes = Arrays.asList(SequenceModel.mappings.get(type));
+        for (Short mt : mtypes) {
+            for (String e : es.get(mt).keySet()) {
+                double s = es.get(mt).get(e);
+                if (s < cutoff)
+                    continue;
+                entities.add(e);
+            }
+        }
 
 // 	if(edu.stanford.muse.ie.ie.NER.EPER.equals(type)||edu.stanford.muse.ie.ie.NER.ELOC.equals(type)||edu.stanford.muse.ie.ie.NER.EORG.equals(type)){
 // 		List<String> scores = indexer.getEntitiesInDoc(ed, type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);
@@ -118,9 +138,9 @@ if ("location".equals(type)) { %>
         }
     }
 
-	Contact ownContact = ab.getContactForSelf();
-    List<Contact> allContacts = ab.sortedContacts((Collection) docs);
-    Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
+//	Contact ownContact = ab.getContactForSelf();
+//    List<Contact> allContacts = ab.sortedContacts((Collection) docs);
+//    Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
 %>
 <%
     List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);

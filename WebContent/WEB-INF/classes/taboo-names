@@ -1,4 +1,4 @@
-# these are names that are recognized by NER, but we want to ignore them.
+# these are names that are recognized by NER, but should be ignored.
 ok
 sorry
 hi
@@ -81,3 +81,4 @@ state
 looking
 studies
 choice
+etc.
