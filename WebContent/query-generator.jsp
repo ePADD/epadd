@@ -34,10 +34,9 @@ if (ModeConfig.isPublicMode()) {
 <p>
 
 <%
-    //System.err.println(request);
     String req = request.getParameter("refText");
-    //System.err.println("reftext: "+req);
     out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
+
 %>
 </div>
 <script type="text/javascript">

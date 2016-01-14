@@ -1,7 +1,7 @@
 <%@ page import="edu.stanford.muse.webapp.*" %>
 <%@ page import="edu.stanford.muse.ner.model.NERModel" %>
 <%@ page import="java.io.File" %>
-<%@ page import="edu.stanford.muse.ner.model.SVMModel" %>
+<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%--
   User: vihari
   Date: 31/08/15
@@ -12,8 +12,9 @@
     NERModel nerModel = (NERModel)JSPHelper.getSessionAttribute(session, "ner");
     if (nerModel == null)
     {
-        String modelFile = archive.baseDir + File.separator + "models" + File.separator + SVMModel.modelFileName;
-        nerModel = SVMModel.loadModel(new File(modelFile));
+        String modelFile = System.getProperty("user.home")+File.separator+"epadd-settings"+File.separator+SequenceModel.modelFileName;
+        JSPHelper.log.info("Loading NER model from: "+modelFile);
+        nerModel = SequenceModel.loadModel(new File(modelFile));
         JSPHelper.log.info("Loaded ner model from "+modelFile);
         request.getSession().setAttribute("ner", nerModel);
     }
