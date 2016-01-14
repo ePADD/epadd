@@ -95,7 +95,7 @@ if ("location".equals(type)) { %>
     for (EmailDocument ed: docs) {
         List<String> entities = new ArrayList<>();
         Map<Short, Map<String, Double>> es = NER.getEntities(archive.getDoc(ed), true);
-        List<Short> mtypes = Arrays.asList(SequenceModel.mappings.get(type));
+        List<Short> mtypes = Arrays.asList(SequenceModel.mappings.get(ct));
         for (Short mt : mtypes) {
             for (String e : es.get(mt).keySet()) {
                 double s = es.get(mt).get(e);
