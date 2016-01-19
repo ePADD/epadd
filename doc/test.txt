@@ -1,5 +1,5 @@
 To test ePADD:
-- Launch ePADD, it will take you to a screen which asks you to enter some email information. We can use the mbox files for the Sarah Palin archive, or any other archive for testing.
+- Launch ePADD, it will take you to a screen which asks you to enter some email information. We can use the mbox files for the Sarah Palin archive (see test/palin.mbox.gz), or any other archive for testing.
 - Next select all folders, kick off email import into ePADD. (this can take some time).
 - When import is complete, it will go to the browse-top page. Click on each of the 9 boxes on this page, and ensure that there is some valid content on each page.
 - Apply the "do not transfer" flags to a few messages. similar apply "transfer with restrictions" flags to a few messages, along with an annotation "restrict for 25 years". similarly, apply the reviewed flag to a few messages.
