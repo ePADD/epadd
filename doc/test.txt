@@ -1,0 +1,22 @@
+To test ePADD:
+- Launch ePADD, it will take you to a screen which asks you to enter some email information. We can use the mbox files for the Sarah Palin archive, or any other archive for testing.
+- Next select all folders, kick off email import into ePADD. (this can take some time).
+- When import is complete, it will go to the browse-top page. Click on each of the 9 boxes on this page, and ensure that there is some valid content on each page.
+- Apply the "do not transfer" flags to a few messages. similar apply "transfer with restrictions" flags to a few messages, along with an annotation "restrict for 25 years". similarly, apply the reviewed flag to a few messages.
+- Click export. check that the "do not transfer" messages do not show up.
+- The remaining should get exported.
+
+- Now go to settings, switch to processing mode.
+- Select import archive. Assign some dummy collection information.
+- go to assign authorities page. Make sure some data is present. Assign some authorities.
+- Check browse page. Some entities should be recognized. Popups for name expansions should be present.
+- Mark some more messages and annotations with flags. 
+- Export. There should be 2 output archives, one for discovery and one for delivery. 
+
+- Now go to settings, press unload archive, switch to discovery mode.
+- copy discovery files to epadd-discovery directory.
+- ensure that all 4 functions work. Ensure that no sensitive data is displayed.
+
+- Now go to settings, press unload archive, switch to delivery mode.
+- Select all 9 pages and ensure that the pages load and are reasonable.
+
