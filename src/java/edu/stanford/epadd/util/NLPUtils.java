@@ -8,8 +8,7 @@ import opennlp.tools.sentdetect.SentenceModel;
 public class NLPUtils {
 	public static SentenceDetectorME	sentenceDetector;
 	static {
-		InputStream SentStream = NLPUtils.class.getClassLoader()
-				.getResourceAsStream("models/en-sent.bin");
+		InputStream SentStream = edu.stanford.muse.Config.getResourceAsStream("models/en-sent.bin");
 		SentenceModel model = null;
 		try {
 			model = new SentenceModel(SentStream);
