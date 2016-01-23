@@ -62,6 +62,7 @@
     for (Document ed: archive.getAllDocs()) {
         ab.processContactsFromMessage((EmailDocument) ed);
     }
+    ab.organizeContacts();
     archive.addressBook = ab;
 
     Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();

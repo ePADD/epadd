@@ -37,3 +37,4 @@ manager
 office
 information
 guest
+admin
