@@ -1,0 +1,13 @@
+# externalized banned start strings for email addresses. any email account starting with a string here will not be considered for merging.
+# these strings should be in lower case.
+info@
+rsvp@
+events@
+programs@
+grants@
+invitations-noreply@
+office@
+news@
+host@
+do-not-reply-
+noreply-

@@ -50,9 +50,6 @@
 	String bestName = ab.getBestNameForSelf();
 	String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestName) : "SUMMARY");
 	Contact me = ab.getContactForSelf();
-	String title_tooltip = title;
-	if (me != null)
-		title_tooltip = "a.k.a." + me.toTooltip();
 
 	int outCount = ab.getOutMessageCount(allDocs);
 	int inCount = allDocs.size()-outCount;
