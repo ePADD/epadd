@@ -1,4 +1,5 @@
-# if any of these words are present (as a full word, not part of some other substring) in a person's "name" in the email header, that name will be ignored
+# if any of these words are present (as a full word, not part of some other substring) in a person's "name" in the email header, that name will be ignored.
+# should be all lower case
 return
 request
 requested
@@ -18,6 +19,22 @@ unknown
 pbwiki
 archive
 archives
-evite
-members
-users
+customer
+support
+subscription
+info
+autoresponder
+vacation
+admin
+support
+customer
+facebook
+twitter
+linkedin
+pinterest
+program
+manager
+office
+information
+guest
+admin
