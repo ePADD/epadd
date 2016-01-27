@@ -23,8 +23,9 @@
 		</dependency>
 		<dependency>
 			<groupId>edu.stanford.muse</groupId>
-			<artifactId>muse-jar</artifactId>
+			<artifactId>muse</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+			<classifier>classes</classifier>
 		</dependency> 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

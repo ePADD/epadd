@@ -3,6 +3,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="edu.stanford.muse.Config" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 
 
@@ -45,12 +46,24 @@
     }
 %>
 <%
+    DictUtils.initialize();
+
     AddressBook oldAB = archive.getAddressBook();
-    AddressBook ab = new AddressBook(new String[]{"Terry Winograd"}, new String[]{"winograd@cs.stanford.edu", "winograd@stanford.edu"});
+    Contact ownContact = oldAB.getContactForSelf();
+    String ownEmail = "";
+    if (ownContact.emails.size() > 0)
+        ownEmail = ownContact.emails.iterator().next();
+    String ownName = "";
+    if (ownContact.names.size() > 0)
+        ownName = ownContact.names.iterator().next();
+
+    AddressBook ab = new AddressBook(new String[]{ownEmail}, new String[]{ownName});
 
     for (Document ed: archive.getAllDocs()) {
         ab.processContactsFromMessage((EmailDocument) ed);
     }
+    ab.organizeContacts();
+    archive.addressBook = ab;
 
     Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();
     for (Contact c: ab.allContacts())

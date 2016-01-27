@@ -82,9 +82,14 @@
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 					<p><button onclick="window.location.href='ner'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
 					<%
-					org.apache.lucene.document.Document doc = archive.getDoc(archive.getAllDocs().get(0));
-					if (doc.get(edu.stanford.muse.ner.NER.EPER) == null)
-						out.println("ePADD has indexed the emails, but not yet identified entities in these emails.<br>");
+					int size = archive.getAllDocs().size();
+					if (size > 0) {
+						org.apache.lucene.document.Document doc = archive.getDoc(archive.getAllDocs().get(0));
+						if (doc.get(edu.stanford.muse.ner.NER.EPER) == null)
+							out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
+					} else
+						out.println ("There are no messages in this archive.<br/>");
+
 		//		out.println("Recompute numbers that are displayed on the landing page by clicking <a id='recompute' style='cursor:pointer'>here</a> <img id='recompute-stat' src='images/spinner.gif' style='display:none'/>");
 				} %>
 				<% if (!ModeConfig.isDiscoveryMode()) { %>

@@ -96,15 +96,13 @@
 		// need to be careful with incremental indexing here...
 		// may need to archive.clear();
 		cancelled = true;
-	} catch (Exception e) {
-		JSPHelper.log.warn("Exception fetching/indexing emails");
-		Util.print_exception(e, JSPHelper.log);
-		errorMessage = "Exception fetching/indexing emails";
+	} catch (Throwable t) {
+		Util.print_exception("Exception fetching/indexing emails", t, JSPHelper.log);
+		if (t instanceof OutOfMemoryError)
+		    errorMessage = "Ran out of memory. Please re-run ePADD with more memory";
+		else
+    		errorMessage = "Exception fetching/indexing emails";
 		// we'll leave archive in this
-	}
-    //should be extra defensive here
-	catch (Throwable t){
-	    Util.print_exception("Something went wrong when trying to fetch and index emails!!", t, JSPHelper.log);
 	}
 
 	if (cancelled) {
