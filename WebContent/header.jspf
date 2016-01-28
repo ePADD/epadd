@@ -57,10 +57,10 @@
 					<li style="display:inline"><a href="assignauthorities-top">Authorities</a></li>
 				<% } %>
 				<% if (ModeConfig.isAppraisalMode()) { %>
-					<li style="display:inline"><a href="export-review">Export</a></li>
+					<li style="display:inline"><a href="export-review?type=doNotTransfer">Export</a></li>
 				<% } %>
 				<% if (ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="export-review-processing">Export</a></li>
+					<li style="display:inline"><a href="export-review-processing?type=doNotTransfer">Export</a></li>
 				<% } %>
 				<% if (ModeConfig.isDeliveryMode()) { %>
 					<li style="display:inline"><a href="review-cart">Cart</a></li>

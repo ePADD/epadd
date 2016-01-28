@@ -51,7 +51,7 @@
 
 	File file = new File(dir);
 	if (!file.isDirectory() || !file.canWrite()) {
-		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export\">go back</a> and select a different directory.");
+		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export?type=doNotTransfer\">go back</a> and select a different directory.");
 		return;
 	}
 	%>
