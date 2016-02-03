@@ -28,7 +28,8 @@
 		// we're using a simple datatables data source here, because this will be a small table
 		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
 		$(document).ready(function() {
-		  var oTable = $('#table').dataTable({pagingType: 'simple', columnDefs: [{ className: "dt-right", "targets": 1}]});
+		  //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging,
+		  var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
 		  oTable.fnSort( [ [1,'desc'] ] );
 		  $('#table').show();		  
 		  $('.search').click(epadd.do_sentiment_search);
