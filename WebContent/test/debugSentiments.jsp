@@ -127,11 +127,11 @@
 	{
 		String id = d.getUniqueId();
 		String type = request.getParameter("type");
-		List<String> names;
+		List<String> names = null;
 		if (Util.nullOrEmpty(type))
-			names = archive.indexer.getNamesForDocId(id, Indexer.QueryType.ORIGINAL);
-		else
-			names = archive.indexer.getNamesOfTypeForDoc(type, id, Indexer.QueryType.FULL);
+			names = archive.getNamesForDocId(id, Indexer.QueryType.ORIGINAL);
+//		else
+//			names = archive.getNamesOfTypeForDoc(type, id, Indexer.QueryType.FULL);
 		
 		EmailDocument ed = (EmailDocument) d;
 		Collection<Contact> contacts = ed.getParticipatingContactsExceptOwn(addressBook);

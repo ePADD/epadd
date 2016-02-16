@@ -71,6 +71,7 @@
 		if (!ed.doNotTransfer)
 			docsToExport.add(ed);
 	}
+    JSPHelper.log.info("Exporting #"+docsToExport.size()+" docs");
 	// to do: need a progress bar here
 	archive.export(docsToExport, false /* public mode */, folder, "default");
 %>

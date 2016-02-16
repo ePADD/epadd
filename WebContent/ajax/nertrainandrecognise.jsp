@@ -35,7 +35,7 @@ if(archive!=null){
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
         try {
-            nerModel = SequenceModel.loadModel(new File(modelFile));
+            nerModel = SequenceModel.loadModel(modelFile);
         } catch (IOException e) {
             Util.print_exception("Could not load the sequence model from: " + modelFile, e, JSPHelper.log);
         }
@@ -44,7 +44,7 @@ if(archive!=null){
         } else {
             NER ner = new NER(archive, nerModel);
             session.setAttribute("statusProvider", ner);
-            ner.recongniseArchive();
+            ner.recognizeArchive();
             archive.processingMetadata.entityCounts = ner.stats.counts;
             JSPHelper.log.info(ner.stats);
             System.err.println(ner.stats);

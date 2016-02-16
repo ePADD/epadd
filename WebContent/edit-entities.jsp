@@ -61,7 +61,7 @@
 <%!
 private static String dumpForContact(Contact c, String description) {
 	StringBuilder sb = new StringBuilder();
-	sb.append ("-- " + description + "\n");git checkout -b test origin/test
+	sb.append ("-- " + description + "\n");
 
 
 	// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
