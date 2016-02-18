@@ -14,7 +14,6 @@
 <%@ page import="org.json.JSONObject"%>
 <%@ page import="java.util.HashSet"%>
 <%@ page import="java.util.List"%>
-<%@ page import="java.util.Map"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.regex.Pattern"%>
 <%@ page import="edu.stanford.muse.ner.NER"%>
@@ -140,6 +139,8 @@
 					html += "</ol></body>";
 					if (num == 0)
 						html = "No confident matches.";
+					if(num == 1)
+						html = "";
                     if(JSPHelper.log.isDebugEnabled())
 					    JSPHelper.log.debug(html);
 					result.put("result", html);
@@ -151,8 +152,8 @@
 						html += "&nbsp"+internalRecordHtml;
 					if (AuthorisedAuthorities.cnameToDefiniteID != null && AuthorisedAuthorities.cnameToDefiniteID.get(IndexUtils.canonicalizeEntity(d)) != null)
 						html += "&nbsp"+externalRecordHtml;
-					
-					result.put("result",html);
+
+					result.put("result","");
 				}
 			}
 		}
