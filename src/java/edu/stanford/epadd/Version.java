@@ -1,3 +1,3 @@
 package edu.stanford.epadd;
-public class Version {  public static final String version = "Jan 26, 2016"; 
-public static final String buildInfo = "Built by hangal, Tue 26 Jan 2016 11:05 AM";} 
+public class Version {  public static final String version = "Feb 26, 2106"; 
+public static final String buildInfo = "Built by hangal, Fri 26 Feb 2016 10:27 AM";} 
