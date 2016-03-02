@@ -10,7 +10,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="edu.stanford.muse.ner.NER" %>
-<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
+<%@ page import="edu.stanford.muse.util.Span" %>
 <%@include file="getArchive.jspf" %>
 
 <!-- Input: Field name
@@ -94,36 +94,24 @@ if ("location".equals(type)) { %>
     Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
     for (EmailDocument ed: docs) {
         List<String> entities = new ArrayList<>();
-        Map<Short, Map<String, Double>> es = NER.getEntities(archive.getDoc(ed), true);
-        List<Short> mtypes = Arrays.asList(SequenceModel.mappings.get(ct));
-        for (Short mt : mtypes) {
-            for (String e : es.get(mt).keySet()) {
-                double s = es.get(mt).get(e);
-                if (s < cutoff)
-                    continue;
-                entities.add(e);
-            }
-        }
+        Span[] es = NER.getEntities(archive.getLuceneDoc(ed), true);
+        List<Short> mtypes = FeatureDictionary.mappings.get(ct);
+//        entities.addAll(
+//                Arrays.asList(es).stream()
+//                .filter(s -> (s!=null && s.typeScore<cutoff && mtypes.contains(s.type)))
+//                .map(s->s.text)
+//                .collect(Collectors.toList())
+//        );
+        for(Span s: es)
+            if(s!=null && s.typeScore<cutoff && mtypes.contains(s.type))
+                entities.add(s.text);
 
-// 	if(edu.stanford.muse.ie.ie.NER.EPER.equals(type)||edu.stanford.muse.ie.ie.NER.ELOC.equals(type)||edu.stanford.muse.ie.ie.NER.EORG.equals(type)){
-// 		List<String> scores = indexer.getEntitiesInDoc(ed, type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);
-// 		System.err.println("Entities size: "+entities.size()+", scores size: "+scores.size()+", "+type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);
-// 		if(entities.size()==scores.size()){
-// 			entities = Util.filterEntitiesByScore(entities, scores, 0.9);
-// 			System.err.println("Filtered entities with threshold score");
-// 		}else{
-// 			for(String e: entities)
-// 				System.err.println(e);
-// 			for(String s: scores)
-// 				System.err.println(s);
-// 		}
-// 	}
         //filter the entities to remove obvious junk
         entities = edu.stanford.muse.ie.Util.filterEntities(entities, type);
 	    // note that entities could have repetitons.
 	    // so we create a *set* of entities, but after canonicalization.
 	    // canonical to original just uses an arbitrary (first) occurrence of the entity
-        Set<String> canonicalEntities = new LinkedHashSet<String>();
+        Set<String> canonicalEntities = new LinkedHashSet<>();
         for (String e: entities) {
             String canonicalEntity = IndexUtils.canonicalizeEntity(e);
             if (canonicalToOriginal.get(canonicalEntity) == null)

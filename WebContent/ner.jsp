@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <head>
-    <title>ePadd</title>
+    <title>ePADD</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png?v3">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <script src="js/jquery.js"></script>

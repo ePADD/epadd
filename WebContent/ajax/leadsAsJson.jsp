@@ -7,7 +7,7 @@
 <%@page language="java" import="edu.stanford.muse.lens.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="java.util.Calendar"%>
-<%@page language="java" import="java.text.SimpleDateFormat"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%>
+<%@page language="java" import="java.text.SimpleDateFormat"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%><%@ page import="java.util.stream.Collectors"%>
 <%//Archive needs to be loaded since NER is archive dependant%>
 <%@include file="../getArchive.jspf" %>
 <%@include file="../getNERModel.jspf" %>
@@ -48,21 +48,10 @@ try {
 	boolean normalizeByLength = request.getParameter("normalizeByLength") != null;
 	long ner_start_millis = System.currentTimeMillis();
 
-	Pair<Map<Short, Map<String,Double>>, List<Triple<String, Integer, Integer>>> p = nerModel.find(text);
-	if(p!=null){
-	    Map<Short,Map<String,Double>> map = p.getFirst();
-	    if(map!=null){
-	        for(Short k: map.keySet()){
-	            if(FeatureDictionary.OTHER==k)
-                    continue;
-	            JSPHelper.log.info("Entity type: "+k+", "+map.get(k).size());
-	            for(String e: map.get(k).keySet()){
-	                if(map.get(k).get(e)>1.0E-4)
-	                names.add(new Pair<>(e,new Float(1.0)));
-	            }
-	        }
-	    }
-	}
+	Span[] entities = nerModel.find(text);
+	if(entities!=null)
+	    names.addAll(Arrays.asList(entities).stream().map(s->new Pair<>(s.text,1.0f)).collect(Collectors.toList()));
+
 	//names = POS.namesFromPOS(text);
 	long ner_end_millis = System.currentTimeMillis();
 	JSPHelper.log.info("NER time " + (ner_end_millis - ner_start_millis) + " ms");

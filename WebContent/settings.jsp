@@ -84,7 +84,7 @@
 					<%
 					int size = archive.getAllDocs().size();
 					if (size > 0) {
-						org.apache.lucene.document.Document doc = archive.getDoc(archive.getAllDocs().get(0));
+						org.apache.lucene.document.Document doc = archive.getLuceneDoc(archive.getAllDocs().get(0));
 						if (doc.get(edu.stanford.muse.ner.NER.EPER) == null)
 							out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
 					} else
