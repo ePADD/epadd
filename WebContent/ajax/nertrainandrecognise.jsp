@@ -29,8 +29,7 @@ if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
 
 if(archive!=null){
     try {
-        String mwl = System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator;
-        String modelFile = mwl + SequenceModel.modelFileName;
+        String modelFile = SequenceModel.modelFileName;
         SequenceModel nerModel = (SequenceModel) session.getAttribute("ner");
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
