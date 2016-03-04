@@ -122,18 +122,18 @@ if (ModeConfig.isPublicMode()) {
 		assignauthorities = InternalAuthorityAssigner.load(archive);
 		request.getSession().setAttribute("authorities", assignauthorities);
 	}
-	 
+
+    Lexicon lexicon = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
+    if (lexicon == null)
+    {
+        lexicon = archive.getLexicon("default");
+        session.setAttribute("lexicon", lexicon);
+    }
 	 Pair<Collection<Document>,Collection<Blob>> search_result = JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false);
 	 Collection<Document> docs = search_result.first;
 
     //Collections.sort(docs);//order by time
 	 Collection<Blob> highlightAttachments = search_result.second;
-	 Lexicon lexicon = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
-	 if (lexicon == null)
-	 {
-		lexicon = archive.getLexicon("default");
-		session.setAttribute("lexicon", lexicon);	
-	 }
 	 
 	 if (Util.nullOrEmpty(docs)) { %>
 		 <div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
@@ -353,13 +353,7 @@ if (ModeConfig.isPublicMode()) {
 	Set<String> selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(archive.indexer, docs, request.getParameterValues("sentiment"));
 	if (selectedPrefixes == null)
 		selectedPrefixes = new LinkedHashSet<String>();
-    else{
-        //add quotes or else, stop words will be removed and highlights single words
-        Set<String> tmp = new HashSet<String> ();
-        for(String sp: selectedPrefixes)
-            tmp.add('"'+sp+'"');
-        selectedPrefixes = tmp;
-    }
+
 	String searchType = request.getParameter("searchType");
 	// warning: remember to convert, otherwise will not work for i18n queries!
 	String[] searchTerms = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("term"));

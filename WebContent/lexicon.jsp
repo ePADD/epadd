@@ -2,6 +2,9 @@
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -84,7 +87,7 @@
 		if (lex == null)
 		{
 			// if not in session either, simply look for default
-			name = "general";
+			name = "default";
 			lex = archive.getLexicon(name);
 		}
 	}
@@ -135,7 +138,7 @@
 <% } // lex != null %>
 
 	<script>
-		$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
+		$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex!=null?lex.name:""%>';})
 		$('#create-lexicon').click (function() {
 			var lexiconName = prompt ('Enter the name of the new lexicon:');
 			if (!lexiconName)
