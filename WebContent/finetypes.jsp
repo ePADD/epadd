@@ -11,9 +11,7 @@
 <%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--	
-    Use this page to train and recognise fine grainied entity types, 
-    this is part of experimental module and not properly tested 
-    across many archives
+    Browse page for enbtities based on fine types
 -->
 
 <link href="css/epadd.css" rel="stylesheet" type="text/css"/>
@@ -45,18 +43,8 @@
 <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
-        Map<Short, String> desc = new LinkedHashMap<>();
-        desc.put(FeatureDictionary.PERSON,"PERSON");desc.put(FeatureDictionary.COMPANY,"COMPANY");desc.put(FeatureDictionary.BUILDING,"BUILDING");
-        desc.put(FeatureDictionary.PLACE,"PLACE");desc.put(FeatureDictionary.RIVER,"RIVER");desc.put(FeatureDictionary.ROAD,"ROAD");
-        desc.put(FeatureDictionary.UNIVERSITY,"UNIVERSITY");desc.put(FeatureDictionary.MOUNTAIN,"MOUNTAIN");desc.put(FeatureDictionary.AIRPORT,"AIRPORT");
-        desc.put(FeatureDictionary.ORGANISATION,"ORGANISATION");desc.put(FeatureDictionary.PERIODICAL_LITERATURE,"PERIODICAL_LITERATURE");
-        desc.put(FeatureDictionary.ISLAND,"ISLAND");desc.put(FeatureDictionary.MUSEUM,"MUSEUM");desc.put(FeatureDictionary.BRIDGE,"BRIDGE");
-        desc.put(FeatureDictionary.AIRLINE,"AIRLINE");desc.put(FeatureDictionary.GOVAGENCY,"GOVAGENCY");desc.put(FeatureDictionary.HOSPITAL,"HOSPITAL");
-        desc.put(FeatureDictionary.AWARD,"AWARD");desc.put(FeatureDictionary.THEATRE,"THEATRE");desc.put(FeatureDictionary.LEGISTLATURE,"LEGISTLATURE");
-        desc.put(FeatureDictionary.LIBRARY,"LIBRARY");desc.put(FeatureDictionary.LAWFIRM,"LAWFIRM");desc.put(FeatureDictionary.MONUMENT,"MONUMENT");
-        desc.put(FeatureDictionary.DISEASE,"DISEASE");desc.put(FeatureDictionary.EVENT,"EVENT");
         Short type = Short.parseShort(request.getParameter("type"));
-        out.println("<h1>Type: "+desc.get(type)+"</h1>");
+        out.println("<h1>Type: "+FeatureDictionary.desc.get(type)+"</h1>");
         Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
@@ -87,8 +75,6 @@
         int count = 0;
 	    for (Pair<Entity, Double> p: lst) {
 	        count++;
-//            if (++count > max)
-//                break;
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
             j.put (0, "<a target='_blank' href='"+url+"/browse?term=\""+entity+"\"'>"+entity+"</a>");

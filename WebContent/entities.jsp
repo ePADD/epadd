@@ -103,7 +103,7 @@ if ("location".equals(type)) { %>
 //                .collect(Collectors.toList())
 //        );
         for(Span s: es)
-            if(s!=null && s.typeScore<cutoff && mtypes.contains(s.type))
+            if(s!=null && s.typeScore>cutoff && mtypes.contains(s.type))
                 entities.add(s.text);
 
         //filter the entities to remove obvious junk

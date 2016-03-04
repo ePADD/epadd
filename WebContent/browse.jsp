@@ -370,8 +370,8 @@ if (ModeConfig.isPublicMode()) {
 			// note: we add the term to unstemmed terms as well -- no harm. this is being introduced to fix a query param we had like term=K&L Gates and this term wasn't being highlighted on the page earlier, because it didn't match modulo stemming 
 			// if the query param has quotes, strip 'em
 			// along with phrase in quotes thre may be other terms, this method does not handle that.
-			if (s.startsWith("\"") && s.endsWith("\""))
-				s = s.substring(1, s.length()-1);
+//			if (s.startsWith("\"") && s.endsWith("\""))
+//				s = s.substring(1, s.length()-1);
 			highlightTermsUnstemmed.addAll(IndexUtils.getAllWordsInQuery(s));
 		}
 
@@ -404,7 +404,6 @@ if (ModeConfig.isPublicMode()) {
             pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments, MultiDoc.ClusteringType.NONE);
 	    else
             pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
-
     }catch(Exception e){
 		Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
 	}
