@@ -12,7 +12,7 @@
     NERModel nerModel = (NERModel)JSPHelper.getSessionAttribute(session, "ner");
     if (nerModel == null)
     {
-        String modelFile = System.getProperty("user.home")+File.separator+"epadd-settings"+File.separator+SequenceModel.modelFileName;
+        String modelFile = SequenceModel.modelFileName;
         JSPHelper.log.info("Loading NER model from: "+modelFile);
         nerModel = SequenceModel.loadModel(modelFile);
         JSPHelper.log.info("Loaded ner model from "+modelFile);
