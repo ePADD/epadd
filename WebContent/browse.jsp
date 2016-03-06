@@ -202,8 +202,8 @@ if (ModeConfig.isPublicMode()) {
 		Collections.sort(items);
 
 		// generate html for each facet. selected and unselected facets separately
-		List<String> htmlForSelectedFacets = new ArrayList<String>();
-		List<String> htmlForUnSelectedFacets = new ArrayList<String>();
+		List<String> htmlForSelectedFacets = new ArrayList<>();
+		List<String> htmlForUnSelectedFacets = new ArrayList<>();
 
 		// random idea: BUI (Blinds user interface. provide blinds-like controls (pull a chain down/to-the-side to reveal information))
 		for (DetailedFacetItem f: items)
@@ -352,42 +352,36 @@ if (ModeConfig.isPublicMode()) {
 	// but it may not have, in which case, we just split up the docs into monthly intervals.
 	Set<String> selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(archive.indexer, docs, request.getParameterValues("sentiment"));
 	if (selectedPrefixes == null)
-		selectedPrefixes = new LinkedHashSet<String>();
+		selectedPrefixes = new LinkedHashSet<>();
 
-	String searchType = request.getParameter("searchType");
 	// warning: remember to convert, otherwise will not work for i18n queries!
 	String[] searchTerms = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("term"));
-	Set<String> highlightTermsUnstemmed = new LinkedHashSet<String>(); 
+	Set<String> highlightTerms = new LinkedHashSet<>();
 	if (searchTerms != null && searchTerms.length > 0)
 		for (String s: searchTerms) {
-			selectedPrefixes.addAll(IndexUtils.getAllWordsInQuery(s));
-			// note: we add the term to unstemmed terms as well -- no harm. this is being introduced to fix a query param we had like term=K&L Gates and this term wasn't being highlighted on the page earlier, because it didn't match modulo stemming 
+			// note: we add the term to unstemmed terms as well -- no harm. this is being introduced to fix a query param we had like term=K&L Gates and this term wasn't being highlighted on the page earlier, because it didn't match modulo stemming
 			// if the query param has quotes, strip 'em
 			// along with phrase in quotes thre may be other terms, this method does not handle that.
-//			if (s.startsWith("\"") && s.endsWith("\""))
-//				s = s.substring(1, s.length()-1);
-			highlightTermsUnstemmed.addAll(IndexUtils.getAllWordsInQuery(s));
+			highlightTerms.addAll(IndexUtils.getAllWordsInQuery(s));
 		}
+    highlightTerms.addAll(selectedPrefixes);
 
     String[] contactIds = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("contact"));
-	Set<Integer> highlightContactIds = new LinkedHashSet<Integer>();
+	Set<Integer> highlightContactIds = new LinkedHashSet<>();
     if(contactIds!=null && contactIds.length>0)
         for(String cis: contactIds) {
             try {
                 int ci = Integer.parseInt(cis);
                 highlightContactIds.add(ci);
-            }catch(Exception e){
+            } catch(Exception e){
                 JSPHelper.log.warn(cis+" is not a contact id");
             }
         }
 	// now if filter is in effect, we highlight the filter word too
 	NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
 	if (filter != null && filter.isRegexSearch()) {
-		highlightTermsUnstemmed.add(filter.get("term"));
+		highlightTerms.add(filter.get("term"));
 	}
-	Boolean isRegexSearch = false;
-	if(searchType!=null && searchType.equals("regex"))
-		isRegexSearch = true;
 
     Pair<DataSet, String> pair = null;
 	try {
@@ -395,9 +389,9 @@ if (ModeConfig.isPublicMode()) {
 
 		// note: we currently do not support clustering for "recent" type, only for the chronological type. might be easy to fix if needed in the future.
 		if ("recent".equals(sortBy) || "relevance".equals(sortBy))
-            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments, MultiDoc.ClusteringType.NONE);
+            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, highlightTerms, highlightAttachments, MultiDoc.ClusteringType.NONE);
 	    else
-            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
+            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, highlightTerms, highlightAttachments);
     }catch(Exception e){
 		Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
 	}
