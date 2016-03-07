@@ -1,7 +1,7 @@
 <%@ page import="edu.stanford.muse.webapp.*" %>
 <%@ page import="edu.stanford.muse.ner.model.NERModel" %>
 <%@ page import="java.io.File" %>
-<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
+<%@ page import="edu.stanford.muse.ner.model.BMMModel" %>
 <%--
   User: vihari
   Date: 31/08/15
@@ -12,9 +12,9 @@
     NERModel nerModel = (NERModel)JSPHelper.getSessionAttribute(session, "ner");
     if (nerModel == null)
     {
-        String modelFile = SequenceModel.modelFileName;
+        String modelFile = BMMModel.modelFileName;
         JSPHelper.log.info("Loading NER model from: "+modelFile);
-        nerModel = SequenceModel.loadModel(modelFile);
+        nerModel = BMMModel.loadModel(modelFile);
         JSPHelper.log.info("Loaded ner model from "+modelFile);
         request.getSession().setAttribute("ner", nerModel);
     }

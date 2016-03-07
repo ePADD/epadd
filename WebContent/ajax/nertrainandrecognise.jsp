@@ -6,13 +6,13 @@
 <%@page language="java" import="edu.stanford.muse.ner.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@page language="java" %>
+<%@page language="java" %>
+<%@page language="java" %>
 
 <%@page language="java" import="org.json.*"%>
 <%@ page import="java.io.File" %>
-<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
+<%@ page import="edu.stanford.muse.ner.model.BMMModel" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%
@@ -30,12 +30,12 @@ if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
 
 if(archive!=null){
     try {
-        String modelFile = SequenceModel.modelFileName;
-        SequenceModel nerModel = (SequenceModel) session.getAttribute("ner");
+        String modelFile = BMMModel.modelFileName;
+        BMMModel nerModel = (BMMModel) session.getAttribute("ner");
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
         try {
-            nerModel = SequenceModel.loadModel(modelFile);
+            nerModel = BMMModel.loadModel(modelFile);
         } catch (IOException e) {
             Util.print_exception("Could not load the sequence model from: " + modelFile, e, JSPHelper.log);
         }
