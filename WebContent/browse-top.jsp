@@ -5,6 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -177,7 +178,7 @@
 </div> <!--  allCards -->
 <jsp:include page="footer.jsp"/>
 <script>
-	$('.cta-box').click(function(e) { var href = $('a', $(e.target)).attr('href'); window.location = href;}); // clicking anywhere in the cta-box should dispatch to the href of the only link inside it
+	$('.cta-box').click(function(e) { var href = $('a', $(e.target)).attr('href'); if (href) { window.location = href;}}); // clicking anywhere in the cta-box should dispatch to the href of the only link inside it
 </script>
 </body>
 </html>

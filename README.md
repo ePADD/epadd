@@ -62,23 +62,23 @@ Unless otherwise indicated, software items in this repository are distributed un
 **Credits**
 
 *Research and Development:*
-Sudheendra Hangal, Ashoka University and Amuse Labs;
-Vihari Piratla, Amuse Labs;
-Sit Manovit, iXora Inc.;
-Peter Chan, Stanford University Libraries;
-Glynn Edwards, Stanford University Libraries;
-Josh Schneider, Stanford University Libraries
+- Sudheendra Hangal, Ashoka University and Amuse Labs;
+- Vihari Piratla, Amuse Labs;
+- Sit Manovit, iXora Inc.;
+- Peter Chan, Stanford University Libraries;
+- Glynn Edwards, Stanford University Libraries;
+- Josh Schneider, Stanford University Libraries
 
 *Design:*
-Saumya Sarangi, Lollypop Design;
-Mandeep RJ, Lollypop Design
+- Saumya Sarangi, Lollypop Design;
+- Mandeep RJ, Lollypop Design
 
 *Initial specifications (requirements and wireframes):*
-Daniel Hartwig, Stanford University Libraries;
-Daniel Jarvis, Hoover Institute, Stanford;
-Lisa Miller, Hoover Institute, Stanford;
-Aimee Morgan, formerly Stanford University Libraries;
-Laura O'Hara, formerly SLAC National Accelerator Laboratory
+- Daniel Hartwig, Stanford University Libraries;
+- Daniel Jarvis, Hoover Institute, Stanford;
+- Lisa Miller, Hoover Institute, Stanford;
+- Aimee Morgan, formerly Stanford University Libraries;
+- Laura O'Hara, formerly SLAC National Accelerator Laboratory
 
 *Testing and Collaboration:*
 Donald Mennerich, New York University Libraries;
@@ -86,33 +86,34 @@ Susan Thomas, Bodleian Library, Oxford University;
 Riccardo Ferrante and Lynda Schmitz Fuhrig, Smithsonian Institution Archives;
 Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University
 
-*Advisors:*
-Jeremy Leighton John, British Library;
-Monica S. Lam, Stanford University;
-Phillip R. Malone, Stanford University;
-Pam Maples, Stanford University;
-Meg McAleer, Library of Congress;
-Chris Prom, University of Illinois;
-Ben Shneiderman, University of Maryland;
-Jeff Ubois, Macarthur Foundation
+*Advisors (Phase 1):*
+- Jeremy Leighton John, British Library;
+- Monica S. Lam, Stanford University;
+- Phillip R. Malone, Stanford University;
+- Pam Maples, Stanford University;
+- Meg McAleer, Library of Congress;
+- Chris Prom, University of Illinois;
+- Ben Shneiderman, University of Maryland;
+- Jeff Ubois, Macarthur Foundation
 
 *Funding:*
-National Historical Publications & Records Commission;
-Payton J. Treat Fund from the Stanford University Libraries ;
-U.S. National Science Foundation (for Muse);
-Mobisocial Laboratory at Stanford University (for Muse);
+- National Historical Publications & Records Commission (ePADD Phase 1);
+- Payton J. Treat Fund from the Stanford University Libraries ;
+- U.S. National Science Foundation (for Muse);
+- Mobisocial Laboratory at Stanford University (for Muse);
+- Instiute for Museum and Library Services (ePADD phase 2)
 
 *Software:*
 
 Under Apache License 2.0:
-Apache Commons (fileupload, lang3, io, httpclient, cli, codec), tika, opennlp, tomcat, maven, ant © Apache Software Foundation
-Muse © Mobisocial Laboratory, Stanford University 
-Google Gson © Google
-OpenCSV © Glen Smith and others 
-Java SE Platform Products © Oracle - Oracle BCL
-Launch4j © Grzegorz Kowal BSD 3-clause license and MIT license 
-Font Awesome © Dave Gandy MIT license, SIL OFL 1.1
-Jsoup 
+- Apache Commons (fileupload, lang3, io, httpclient, cli, codec), tika, opennlp, tomcat, maven, ant © Apache Software Foundation
+- Muse © Mobisocial Laboratory, Stanford University 
+- Google Gson © Google
+- OpenCSV © Glen Smith and others 
+- Java SE Platform Products © Oracle - Oracle BCL
+- Launch4j © Grzegorz Kowal BSD 3-clause license and MIT license 
+- Font Awesome © Dave Gandy MIT license, SIL OFL 1.1
+- Jsoup 
 
 Cooliris Image wall (Special thanks to Soujanya Bhumkar, Austin Shoemaker and team for making the software available to us)
 Copyright (c) 2015 Yahoo, Inc. This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software. Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions: 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgement in the product documentation would be appreciated but is not required. 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software. 3. This notice may not be removed or altered from any source distribution.
