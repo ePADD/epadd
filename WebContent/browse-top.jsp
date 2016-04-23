@@ -1,11 +1,17 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.Contact"%>
+<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
+<%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.util.EmailUtils" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.List" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -71,6 +77,7 @@
 		nS = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
 
 	JSPHelper.log.info("Counts: "+pC+", "+oC+", "+lC);
+	int nContacts = ab.allContacts().size();
 %>
 
 <% writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
@@ -81,8 +88,8 @@
 		<a href="correspondents">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/correspondent.svg"/>
-			<p class="cta-text-1">Correspondents (<%=ab.sortedContacts(allDocs).size() %>)</p>
-			<p class="cta-text-2">Correspondents (<%=ab.sortedContacts(allDocs).size() %>)</p>
+			<p class="cta-text-1">Correspondents (<%=nContacts %>)</p>
+			<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>
 		</a>
 	</div>
 	
