@@ -11,7 +11,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Correspondents</title>
+    <title>Folders</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <script src="js/jquery.js"></script>
@@ -42,7 +42,7 @@
     String bestName = ab.getBestNameForSelf();
 %>
 
-<%writeProfileBlock(out, bestName, "", "All Correspondents");%>
+<%writeProfileBlock(out, bestName, "", "Email folders");%>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
     <button class="btn-default" onclick="window.location='graph?view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
