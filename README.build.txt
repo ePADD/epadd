@@ -1,7 +1,9 @@
 Building epadd:
 There are 2 versions of ePADD; a normal one with the suffix epadd-) that is used for appraisal, processing and delivery modules, and another one (with the prefix epadd-discovery). ePADD is first built as a WAR file, and then packaged in the epadd-launcher project as a -standalone.jar, and then a .exe for Windows, and a .app and .dmg for Mac OS. 
 
-You need to checkout 3 projects from git.
+Make sure you have the Java 8 JDK installed, as well as the Java build tools maven and ant, and that mvn and ant are available in your path.
+
+First checkout 3 projects from git.
 
 git clone https://github.com/ePADD/muse.git
 git clone https://github.com/ePADD/epadd.git
@@ -29,5 +31,4 @@ Explanation:
 The muse project contains most of the Java based code. It is the core engine used in ePADD.
 The epadd project contains primarily the frontend screens for the application (in the WebContent directory) and creates a deployable WAR file.
 epadd-launcher bundles up the epadd.war into a standalone, runnable jar using an embedded Tomcat server.
-
 

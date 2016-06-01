@@ -1,0 +1,133 @@
+.inbox {
+	position: relative;
+	background-color: #fff;
+	border-bottom: 1px solid #eaeaea;
+	padding:20px;
+
+	 ul.input-items {
+		li { 
+			padding-right:20px;
+			font-size: 13px;
+			color:#9a9a9a;	
+		}
+
+		li.name, 
+		li span { 
+			color:#000; 
+		}
+
+	}
+}
+
+.annotations {
+
+	ul {
+		display: flex;
+		align-items:center;
+		justify-content: flex-end;
+		li {	
+		 	padding: 0 12px;
+		 	display: flex;
+		 	 h6 {
+		 	 	font-weight: 600;
+		 	 	padding-left:4px;
+		 	 }
+		 }
+	}
+}
+
+
+
+
+
+//table
+table { 
+	position: relative;
+	background-color: #fff;
+	tr { 
+		border-bottom:1px solid #eaeaea; 
+		display: inline-flex;
+	}
+    td { 
+
+			font-size: 13px;
+			color:#9a9a9a;
+			padding:20px 0;	
+			margin:0 20px;
+			display: block;
+			 overflow: hidden;
+			 span {
+			 	white-space:nowrap;
+			 }
+			 
+    }
+
+	td.name { color:#000;
+			  width: 130px; 
+			  position: relative;
+	
+				&::after {
+					content: "";
+				    display: inline-block;
+				    width: 10%;
+				    height: 100%;
+				    position: absolute;
+				    top: 0;
+				    right: 0;
+				    background: transparent;
+				    background: linear-gradient(to left, #fff 0px, rgba(255, 255, 255, 0.2) 30px, transparent 100%);
+				    background: -webkit-linear-gradient(to left, #fff 0px, rgba(255, 255, 255, 0.2) 30px, 
+				    	transparent 100%);
+				    background: -o-linear-gradient(to left, #fff 0px, rgba(255, 255, 255, 0.2) 30px, transparent 100%);
+				   
+			}
+
+	
+			}
+
+	td.date { width: 74px;}
+	
+	td.title {
+		width:608px;
+		position: relative;
+
+		&::after {
+			content: "";
+				    display: inline-block;
+				    width: 10%;
+				    height: 100%;
+				    position: absolute;
+				    top: 0;
+				    right: 0;
+				    background: transparent;
+				    background: linear-gradient(to left, #fff 0px, rgba(255, 255, 255, 0.2) 30px, transparent 100%);
+				    background: -webkit-linear-gradient(to left, #fff 0px, rgba(255, 255, 255, 0.2) 30px, 
+				    	transparent 100%);
+				    background: -o-linear-gradient(to left, #fff 0px, rgba(255, 255, 255, 0.2) 30px, transparent 100%);
+				    
+		}
+	}
+	
+	td.annotations { width:198px;}
+}
+
+em { color:#000;}
+
+tr:last-of-type { border:none;}
+
+//hover effect for the annotation
+tr:hover td.annotations{
+        box-shadow: -7px 0px 11px -4px #ccc;
+}
+
+
+ @media screen and (max-width: 1199px){
+
+table { 
+	td.title { width:408px;}
+}
+
+
+ } //end  of media query
+
+    

@@ -1,0 +1,33 @@
+.bgrd-color {
+	background: #fff;
+}
+.correspondance {
+
+  padding:15px;
+  display: flex;
+  align-items:center;
+  justify-content:space-between;
+  font-weight: 300;
+
+	img, h3, h5 { 
+		display: inline-block; 
+	}
+
+	.corsp-menu, .corsp-archive {
+		display: flex;
+		align-items:center;
+	}
+
+ 	.corsp-menu img, .corsp-archive h5  {
+ 		padding-right:15px;
+ 	}
+
+ 	.corsp-menu h6 { padding-right:10px;}
+
+ 	.corsp-archive h5 { 
+ 		line-height: 20px;
+ 		text-align: right;
+ 	}
+
+
+}

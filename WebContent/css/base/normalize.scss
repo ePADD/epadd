@@ -1,0 +1,28 @@
+
+//google font family
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600,300);
+
+/*reset css */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; }
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
+
+body { font-family: 'Open Sans', sans-serif; height: 100%; width: 100%; color: #333; }
+
+ol, ul, li{ list-style: none; }
+
+blockquote, q { quotes: none; }
+
+blockquote:before, blockquote:after, q:before, q:after { content: '';}
+
+table { border-collapse: collapse; border-spacing: 0; }
+
+a:hover, a:focus { text-decoration: none; outline: none; }
+
+a {  cursor: pointer; }
+
+h1, .h1, h2, .h2, h3, .h3, h4, .h4 { margin-top: 0px; margin-bottom: 0px;  }
+
+
+
+

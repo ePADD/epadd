@@ -36,15 +36,31 @@
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
-    desc.put(FeatureDictionary.PERSON,"PERSON");desc.put(FeatureDictionary.COMPANY,"COMPANY");desc.put(FeatureDictionary.BUILDING,"BUILDING");
-    desc.put(FeatureDictionary.PLACE,"PLACE");desc.put(FeatureDictionary.RIVER,"RIVER");desc.put(FeatureDictionary.ROAD,"ROAD");
-    desc.put(FeatureDictionary.UNIVERSITY,"UNIVERSITY");desc.put(FeatureDictionary.MOUNTAIN,"MOUNTAIN");desc.put(FeatureDictionary.AIRPORT,"AIRPORT");
-    desc.put(FeatureDictionary.ORGANISATION,"ORGANISATION");desc.put(FeatureDictionary.PERIODICAL_LITERATURE,"PERIODICAL LITERATURE");
-    desc.put(FeatureDictionary.ISLAND,"ISLAND");desc.put(FeatureDictionary.MUSEUM,"MUSEUM");desc.put(FeatureDictionary.BRIDGE,"BRIDGE");
-    desc.put(FeatureDictionary.AIRLINE,"AIRLINE");desc.put(FeatureDictionary.GOVAGENCY,"GOV AGENCY");desc.put(FeatureDictionary.HOSPITAL,"HOSPITAL");
-    desc.put(FeatureDictionary.AWARD,"AWARD");desc.put(FeatureDictionary.THEATRE,"THEATRE");desc.put(FeatureDictionary.LEGISTLATURE,"LEGISTLATURE");
-    desc.put(FeatureDictionary.LIBRARY,"LIBRARY");desc.put(FeatureDictionary.LAWFIRM,"LAW FIRM");desc.put(FeatureDictionary.MONUMENT,"MONUMENT");
-    desc.put(FeatureDictionary.DISEASE,"DISEASE");desc.put(FeatureDictionary.EVENT,"EVENT");
+    desc.put(FeatureDictionary.PERSON,"PERSON");
+    desc.put(FeatureDictionary.COMPANY,"COMPANY");
+    desc.put(FeatureDictionary.BUILDING,"BUILDING");
+    desc.put(FeatureDictionary.PLACE,"PLACE");
+    desc.put(FeatureDictionary.RIVER,"RIVER");
+    desc.put(FeatureDictionary.ROAD,"ROAD");
+    desc.put(FeatureDictionary.UNIVERSITY,"UNIVERSITY");
+    desc.put(FeatureDictionary.MOUNTAIN,"MOUNTAIN");
+    desc.put(FeatureDictionary.AIRPORT,"AIRPORT");
+    desc.put(FeatureDictionary.ORGANISATION,"ORGANIZATION");
+    desc.put(FeatureDictionary.PERIODICAL_LITERATURE,"PERIODICAL LITERATURE");
+    desc.put(FeatureDictionary.ISLAND,"ISLAND");
+    desc.put(FeatureDictionary.MUSEUM,"MUSEUM");
+    desc.put(FeatureDictionary.BRIDGE,"BRIDGE");
+    desc.put(FeatureDictionary.AIRLINE,"AIRLINE");
+    desc.put(FeatureDictionary.GOVAGENCY,"GOVERNMENT AGENCY");
+    desc.put(FeatureDictionary.HOSPITAL,"HOSPITAL");
+    desc.put(FeatureDictionary.AWARD,"AWARD");
+    desc.put(FeatureDictionary.THEATRE,"THEATRE");
+    desc.put(FeatureDictionary.LEGISTLATURE,"LEGISLATURE");
+    desc.put(FeatureDictionary.LIBRARY,"LIBRARY");
+    desc.put(FeatureDictionary.LAWFIRM,"LAW FIRM");
+    desc.put(FeatureDictionary.MONUMENT,"MONUMENT");
+    desc.put(FeatureDictionary.DISEASE,"DISEASE");
+    desc.put(FeatureDictionary.EVENT,"EVENT");
 
     JSONArray resultArray = new JSONArray();
     int count = 0;

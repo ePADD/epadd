@@ -261,8 +261,17 @@
 		<servlet-name>search-query</servlet-name>
 		<url-pattern>/search-query</url-pattern>
 	</servlet-mapping>
- 	
- 	<servlet>
+
+	<servlet>
+		<servlet-name>advanced-search</servlet-name>
+		<jsp-file>/advanced-search.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>advanced-search</servlet-name>
+		<url-pattern>/advanced-search</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>query-generator</servlet-name>
 		<jsp-file>/query-generator.jsp</jsp-file>
 	</servlet>
