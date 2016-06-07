@@ -1,7 +1,14 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.index.DatedDocument"%>
+<%@page language="java" import="edu.stanford.muse.index.Indexer"%>
+<%@ page import="edu.stanford.muse.index.Lexicon" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.LinkedHashSet" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -43,16 +50,8 @@
 <%
 	Indexer indexer = archive.indexer;
 	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
 %>
-<%writeProfileBlock(out, bestName, "", "Lexicon Hits");%>
-
-<!--
-<h1 title="title_tooltip">
-	Email Archives of <%= bestName%><br/>
-	<span style="font-size:60%">Lexicon Hits</span>
-</h1>
--->
+<%writeProfileBlock(out, archive, "", "Lexicon Hits");%>
 
 <div style="text-align:center">
 	<button class="btn-default" onclick="window.location = 'graph?view=sentiments';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>

@@ -51,8 +51,7 @@
 				lC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PLACE)+")";
 			}
 			AddressBook ab = archive.addressBook;
-			String bestName = ab.getBestNameForSelf();
-			writeProfileBlock(out, bestName, "", "Assign authorities");%>
+			writeProfileBlock(out, archive, "", "Assign authorities");%>
 <br/>
 <div id="all-cards" style="text-align: center; margin:auto">
 

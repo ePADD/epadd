@@ -39,11 +39,7 @@
 
 <%
 AddressBook ab = archive.addressBook;
-String bestName = ab.getBestNameForSelf();
-Contact ownContact = ab.getContactForSelf();
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-List<Contact> allContacts = ab.sortedContacts((Collection) docs);
-Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
 
 String type = request.getParameter("type");
 
@@ -73,8 +69,7 @@ for (EmailDocument ed: docs)
 
 docs = newDocs;
 session.setAttribute("action-docs", docs);
-writeProfileBlock(out, bestName, "", Util.pluralize(docs.size(), "message") + description);%>
-
+writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
 
 <div id="nav3" style="display:inline-block;margin-left:170px;">
 	<nav>

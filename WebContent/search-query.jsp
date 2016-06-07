@@ -20,117 +20,86 @@
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-<style>
-	td > div {
-		padding: 5px;
-	}
-	.option { margin-right:15px;}
-</style>
+	<style>
+		td > div {
+			padding: 5px;
+		}
+
+		.option {
+			margin-right: 15px;
+		}
+
+		.underlined-header { border-bottom: solid 4px #0175bc; }
+		.search-header { font-size: 100%; cursor: pointer; padding-bottom:5px;}
+	</style>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Search');</script>
 
-<%
-AddressBook ab = archive.addressBook;
-String bestName = ab.getBestNameForSelf();
-String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestName) : "SUMMARY");
-%>
-<%writeProfileBlock(out, bestName, "", "Search");%>
+<%writeProfileBlock(out, archive, "", "Search");%>
 <br/>
 <br/>
 
 <div style="text-align:center; margin:auto; width:600px;">
-<div style="text-align:left; padding:5px">
-<form method="get" action="browse">
+	<div style="width:100%;margin-bottom:20px;">
+		<span id="simple-search-header"  class="underlined-header search-header" >Simple search</span>
+		<span id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</span>
+	</div>
 
-<input name="term" size="80" placeholder="search query"/>
-<br/>
-<br/>
-	<!--
+	<div id="simple-search"style="text-align:center">
+		<form method="get" action="browse">
+
+			<input name="term" size="80" placeholder="search query"/>
+			<br/>
+			<br/>
+
+			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+
+			<!--
 <input type="radio" name="searchType" value="correspondents"/> 
 <span class="option" title="<%=edu.stanford.muse.util.Messages.getMessage("messages", "search.correspondents.help")%>">
 	Correspondents
 </span>
 &nbsp;
 -->
-<input type="radio" name="searchType" value="subject" /> 
-<span class="option"title="<%=edu.stanford.muse.util.Messages.getMessage("messages", "search.subject.help")%>">
-	Subject
-</span>
-<!--  <input type="radio" name="searchType" value="attachments"/> Attachments  -->
-&nbsp;
-<input type="radio" name="searchType" value="original"/>
-<span class="option" title="<%=edu.stanford.muse.util.Messages.getMessage("messages", "search.original.help")%>">
-	Original Text
-</span>
-&nbsp;
-<input type="radio" name="searchType" value="All" checked/> 
-<span class="option" title="<%=edu.stanford.muse.util.Messages.getMessage("messages", "search.all.help")%>">
-	All
-</span>
-    Sort results by
-    <select name="sort_by" id="sort_by">
-        <option value="relevance">Most relevant</option>
-        <option value="chronological">Oldest first</option>
-        <option value="recent">Newest first</option>
-    </select>
-<!-- &nbsp;
-<input type="radio" name="searchType" value="regex"/> Regex
- -->
- 
-    <br/>
-    <br/>
-    <i class="fa fa-long-arrow-down"></i><i class="fa fa-long-arrow-up"></i> Email direction
-<select name="direction" id="direction">
-	<option value="in">Incoming</option>
-	<option value="out">Outgoing</option>
-	<option value="both" selected>Both</option>
-</select>
-    &nbsp&nbsp;
-
-    <i class="fa fa-calendar"></i> Date Range
-    <input class="form-control" style="width:auto;display:inline" name="start_date" id="from" size="12" placeholder="YYYY/MM/DD" /> to
-    <input class="form-control" style="width:auto;display:inline" name="end_date" id="to" size="12
-    " placeholder="YYYY/MM/DD" />
-
-    <br/>
-    <br/>
-
-    <p style="text-align:center">
-	<button class="btn btn-cta" class="" onclick="handle_click()">Search <i class="icon-arrowbutton"></i> </button>
-</p>
-</form>
-<hr style="border-style:dashed"/>
-<script>
-function handle_click() { 
-	var option = $("input[name=searchType]:checked").val();
-	if ('original' == option) {
-		$('#originalContentOnly').val('true');
-	}
-	if ('subject' == option) {
-		$('#subjectOnly').val('true');
-	}
-	if ('correspondents' == option) {
-		$('#correspondents').val('true');
-	}
-	return true;
-}
-</script>
-
+		</form>
+	</div>
 <p>
 
-Query Generator
-<form id="folders" method="post" action="query-generator" accept-charset="UTF-8">
-<textarea name="refText" id="refText" cols="80" rows="20"></textarea>
-<br/>
-<div style="text-align:center">
-<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i> </button>
-</div>
-</form>
+	<div style="display:none" id="query-generator">
+		<form method="post" action="query-generator" accept-charset="UTF-8">
+			<textarea placeholder="Type or paste some text here. Named entities in the text will be looked up in the archive." name="refText" id="refText" cols="80" rows="10"></textarea>
+			<br/>
+			<div style="text-align:center">
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+			</div>
+		</form>
+	</div>
 
+	<br/>
+	Need more search options? Try <a href="advanced-search">Advanced Search</a>.
 </div>
-</div>
+
+<script>
+	$(document).ready(function() {
+		$('#simple-search-header').addClass('underined-header');
+		$('#simple-search-header').click(function() {
+			$('#simple-search-header').addClass('underlined-header');
+			$('#query-generator-header').removeClass('underlined-header');
+			$('#simple-search').show();
+			$('#query-generator').hide();
+		});
+		$('#query-generator-header').click(function() {
+			$('#query-generator-header').addClass('underlined-header');
+			$('#simple-search-header').removeClass('underlined-header');
+			$('#simple-search').hide();
+			$('#query-generator').show();
+		});
+	});
+
+</script>
+
 <p>
 <jsp:include page="footer.jsp"/>
 </body>

@@ -192,8 +192,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
 <p>
 <%
-	String bestName = addressBook.getBestNameForSelf();
-	writeProfileBlock(out, bestName, "", heading);
+	writeProfileBlock(out, archive, "", heading);
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">

@@ -68,9 +68,7 @@
 <%
 	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (archive != null) {
-		AddressBook ab = archive.addressBook;
-		String bestName = ab.getBestNameForSelf();
-		writeProfileBlock(out, bestName, "", "Add email from folders");
+		writeProfileBlock(out, archive, "", "Add email from folders");
 	}
 %>
 

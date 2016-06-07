@@ -43,11 +43,10 @@ String bestName = "";
 String bestEmail = "";
 if (archive != null) {
 	AddressBook ab = archive.addressBook;
-	bestName = ab.getBestNameForSelf();
 	Set<String> addrs = ab.getOwnAddrs();
 	if (addrs.size() > 0)
 		bestEmail = addrs.iterator().next();
-	writeProfileBlock(out, bestName, "", "Import email into this archive");
+	writeProfileBlock(out, archive, "", "Import email into this archive");
 }
 %>
 

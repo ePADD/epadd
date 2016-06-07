@@ -33,7 +33,7 @@
 <% try {
 	AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf();
-	writeProfileBlock(out, bestName, "", "Export archive");
+	writeProfileBlock(out, archive, "", "Export archive");
 %>
 <p>
 <br/>

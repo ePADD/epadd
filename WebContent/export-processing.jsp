@@ -29,8 +29,7 @@
 	<script>epadd.nav_mark_active('Export');</script>
 	<%
 		AddressBook ab = archive.addressBook;
-		String bestName = ab.getBestNameForSelf();
-		writeProfileBlock(out, bestName, "", "Export messages");
+		writeProfileBlock(out, archive, "", "Export messages");
 	%>
 	<p>
 	<br/>

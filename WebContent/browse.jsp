@@ -110,7 +110,6 @@ if (ModeConfig.isPublicMode()) {
 	<script src="js/jog_plugin.js" type="text/javascript"></script>
 <%
 	String bestName = archive.addressBook.getBestNameForSelf();
-//	writeProfileBlock(out, bestName, "Search", "");
 	// archive is null if we haven't been able to read an existing dataset
 	
 	AddressBook addressBook = archive.addressBook;

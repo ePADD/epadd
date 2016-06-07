@@ -36,10 +36,8 @@
 <%@include file="div_status.jspf"%>
 <p>
 	<%
-	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
 	String id = request.getParameter("id");
-	writeProfileBlock(out, bestName, "", "Accession metadata");
+	writeProfileBlock(out, archive, "", "Accession metadata");
 	%>
 
 

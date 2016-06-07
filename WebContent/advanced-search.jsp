@@ -31,7 +31,8 @@
 	<jsp:include page="header.jspf"/>
 	<script>epadd.nav_mark_active('Search');</script>
 
-    	<!--Advanced Search-->
+
+	<!--Advanced Search-->
     	<div class="advanced-search">
     	    <!--container-->
     		<div class="container">
@@ -42,7 +43,6 @@
 
 						<h1 >Advanced Search</h1>
 
-						 
 					    <!--sidebar icon-->
 					    <div class="nav-toggle1 sidebar-icon">
 							<img src="images/sidebar.png" alt="sidebar">
@@ -50,6 +50,7 @@
 					    <!--/sidebar icon-->
 
 					</div> <!--end of sidebar-wraper-->
+
 					 <!--sidebar content-->
 				    <nav class="menu1" role="navigation">
 
@@ -113,24 +114,25 @@
 			    	<!--/sidebar-->
 					
 					<!--Text-->
-					 <div class="text search-wraper">
-					 	<h4>Text</h4>
+					<form action="browse">
 
-					 	<form action="">
-						
+					<div class="text search-wraper">
+					 	<h4>Text</h4>
+<br/>
+
 						   <!--message-->
 						 	<div class="margin-btm  col-sm-6">
-							
-							  <!--input form-->
+
+								<!--input form-->
 						 	   <div class="form-group">
 			 					    <label for="message">Message</label>
-								    <input type="text" class="form-control">
+								    <input name="term" id="message" type="text" class="form-control">
 								</div>
 
 							     <!--checkboxes-->
 	                             <div class="checkbox-wraper ">
 	                                <fieldset>
-	                                	<legend class="sr-only">Messege filters using checkbox
+	                                	<legend class="sr-only">Message filters using checkbox
 	                                	</legend>
 
 									  	<div class="checkbox-inline">
@@ -157,7 +159,7 @@
 						  	    <!--input box-->
 						  	    <div class="form-group">
 			 					    <label for="subject">Subject</label>
-								    <input type="text" class="form-control">
+								    <input id="subject" type="text" class="form-control">
 								</div>
 
 								<!--checkboxes-->
@@ -177,16 +179,12 @@
 
 						  	</div>
 						  	<!--/subject-->
-
                             
 							<!--Entity-->
 						    <div class="form-group col-sm-12">
 		 					    <label for="subject">Entity</label>
 							    <input type="text" class="form-control">
 						  	</div>
-
-					 	</form>
-
 					</div>
 					<!--/Text-->
 
@@ -194,25 +192,23 @@
 					<div class="correspondent search-wraper">
 					 	<h4>Correspondent</h4>
 
-					 	<form action="">
-						
 						   <!--To-->
 						 	<div class="form-group col-sm-6">
 		 					    <label for="to">To</label>
-							    <input type="text" class="form-control">
+							    <input id="to" type="text" class="form-control">
 						  	</div>
 
 						  	<!--cc/Bcc-->
 						  	<div class="form-group col-sm-6">
 		 					    <label for="cc-bcc">CC/BCC</label>
-							    <input type="text" class="form-control">
+							    <input id="cc-bcc" type="text" class="form-control">
 						  	</div>
 
 						  	<!--mailing list-->
 						  	<div class="form-group col-sm-6">
 		 					    <label for="mailing-list">Mailing List</label>
 
-		 					     <fieldset id="" class="comman-radio">
+		 					     <fieldset class="comman-radio">
 									<legend class="sr-only">Mailing lists</legend>
 
 								    <label class="radio-inline">
@@ -234,10 +230,9 @@
 						  	</div>
 						  	<!--/mailing list-->
 
-					 	</form>
 
 					 </div>
-					 <!--/Coresspondent-->
+					 <!--/Correspondent-->
 
 					 <!--Attachment-->
 					<div class=" attachment search-wraper clearfix">
@@ -255,7 +250,6 @@
 						</fieldset>
 				
 
-					 	<form action="">
 					 	    <!--form-wraper-->
 							 <div class="form-wraper clearfix">
 							 	
@@ -265,7 +259,7 @@
 									<!--input box-->
 							 	    <div class="form-group">
 				 					    <label for="Content">Content</label>
-									    <input type="text" class="form-control">
+									    <input id="content" type="text" class="form-control">
 								    </div>
 
 								     <!--checkboxes-->
@@ -291,8 +285,8 @@
 
 									<!--input box-->
 									 <div class="form-group">
-				 					    <label for="File Name">File Name</label>
-									    <input type="text" class="form-control">
+				 					    <label for="attachment-name">File Name</label>
+									    <input id="attachment-name" type="text" class="form-control">
 								    </div>
 
 								    <!--checkboxes-->
@@ -314,43 +308,41 @@
 
 							  	<!--Type-->
 							  	<div class="form-group col-sm-6">
-			 					    <label for="Type">Type</label>
-								  	  <select class="form-control multi-select selectpicker" 
-								  	  name="attachment-type" title="Select" multiple>
-									    <option  value="video">Video (avi, mp4, etc.)</option>
-									    <option  value="audio">Audio (mp3, etc.)</option>
-									    <option  value="graphics">Graphics (jpg, png, bmp, gif, etc.)</option>
-									    <option  value="database">Database (fmp, db, mdb, accdb, etc.)</option>
-										  <option  value="presentation">Presentation (ppt, pptx, etc.)</option>
-										  <option  value="spreadsheet">Spreadsheet (pptx, ppt, etc.)</option>
-										  <option  value="document">Document (doc, docx, pdf, etc.)</option>
-										  <option  value="internet">Internet file (html, etc.)</option>
-										  <option  value="zip">Zip (zip, 7zip, tar, ar, etc.)</option>
+			 					    <label for="attachment-type">Type</label>
+								  	  <select id="attachment-type" class="form-control multi-select selectpicker"
+								  	  name="attachment_type" title="Select" multiple>
+									    <option value="avi,mp4">Video (avi, mp4, etc.)</option>
+									    <option value="mp3,ogg">Audio (mp3, etc.)</option>
+									    <option value="jpg,png,gif,bmp">Graphics (jpg, png, bmp, gif, etc.)</option>
+									    <option value="fmp,db,mdb,accdb">Database (fmp, db, mdb, accdb, etc.)</option>
+										  <option value="ppt,pptx,key">Presentation (ppt, pptx, etc.)</option>
+										  <option value="xls,xlsx,numbers">Spreadsheet (pptx, ppt, etc.)</option>
+										  <option value="doc,docx,pages">Document (doc, docx, pdf, etc.)</option>
+										  <option value="html,css,js">Internet file (html, etc.)</option>
+										  <option value="zip,7z,tar,tgz">Zip (zip, 7zip, tar, ar, etc.)</option>
 									  </select>
 							  	</div>
 
 							  	<!--Extension-->
 								 <div class="form-group col-sm-6">
-									 <label for="other-extension">Other extension</label>
-									 <input id="other-extension" type="text" class="form-control">
+									 <label for="attachment-extension">Other extension</label>
+									 <input name="attachment-extension" id="attachment-extension" type="text" class="form-control">
 								 </div>
 
 								 <!--File Size-->
 							  	<div class="form-group col-sm-6">
-			 					    <label for="File Size">File Size</label>
-								    <select class="form-control selectpicker" name="Choose-file">
+			 					    <label for="attachment-filesize">File Size</label>
+								    <select id="attachment-filesize" name="attachment-filesize" class="form-control selectpicker" name="Choose-file">
 								  	   <option value="" selected disabled>Choose File Size</option>
-									    <option  value="1">< 5KB</option>
-									    <option  value="2">5-20KB</option>
-									    <option  value="3">20-100KB</option>
-									    <option  value="4">100KB-2MB</option>
-										<option  value="4">> 2MB</option>
+									    <option value="1">&lt; 5KB</option>
+									    <option value="2">5-20KB</option>
+									    <option value="3">20-100KB</option>
+									    <option value="4">100KB-2MB</option>
+										<option value="5">&gt; 2MB</option>
 									  </select>
 							  	</div>
  	
 							</div>
-							<!--/form-wraper-->
-					 	</form>
 
 					 </div>
 					 <!--/Attachment-->
@@ -371,21 +363,20 @@
 						</fieldset>
 					
 
-					 	<form action="">
 					 	    <!--form-wraper-->
 							 <div class="form-wraper clearfix">
 							 	
 							   <!--Annotation-->
 							 	<div class="margin-btm form-group col-sm-6">
 			 					    <label for="annotation">Annotation</label>
-								    <input type="text" class="form-control">
+								    <input id="annotation" name="annotation" type="text" class="form-control">
 							  	</div>
 							  	
 							  	<!--Reviewed-->
 							  	<div class="form-group col-sm-6">
-			 					    <label for="subject">Reviewed</label>
+			 					    <label for="reviewed">Reviewed</label>
 
-			 					     <fieldset id="" class="comman-radio">
+			 					     <fieldset name="subject" id="reviewed" class="comman-radio">
 										<legend class="sr-only">Reviewed flters </legend>
 
 									    <label class="radio-inline">
@@ -411,7 +402,7 @@
 							  	<div class="form-group col-sm-6">
 			 					    <label for="restricted">Restricted</label>
 
-			 					     <fieldset id="" class="comman-radio">
+			 					     <fieldset id="restricted" name="restricted" class="comman-radio">
 										<legend class="sr-only">Restricted flters </legend>
 
 									    <label class="radio-inline">
@@ -437,7 +428,7 @@
 							  	<div class="form-group col-sm-6">
 			 					    <label for="Transfer">Transfer</label>
 
-			 					     <fieldset id="" class="comman-radio">
+			 					     <fieldset id="transfer" name="transfer" class="comman-radio">
 										<legend class="sr-only">Transfer flters </legend>
 
 									    <label class="radio-inline">
@@ -460,8 +451,6 @@
 							  	<!--/Transfer-->
 							  
 							</div>
-							<!--/form-wraper-->
-					 	</form>
 
 					</div>
 					<!--/Actions-->
@@ -470,13 +459,11 @@
 					<div class="others search-wraper">
 					 	<h4>Others</h4>
 
-					 	<form action="">
-						
 						   <!--Time Range-->
 						 	<div class="form-group col-sm-6">
-		 					    <label for="Time Range">Time Range</label>
+		 					    <label id="time-range" for="Time Range">Time Range</label>
 		 					    <div class="date-input-group">
-								    <input type="date" class="form-control" placeholder="YYYY / MM / DD">
+								    <input id="Time Range" type="date" class="form-control" placeholder="YYYY / MM / DD">
 								    <label for="to">To</label>
 								    <input type="date" class="form-control" placeholder="YYYY / MM / DD">
 							    </div>
@@ -484,8 +471,8 @@
 						  	
 						  	<!--Message Directions-->
 						  	<div class="form-group col-sm-6">
-		 					    <label for="Message Direction">Message Direction</label>
-								 <fieldset id="" class="comman-radio">
+		 					    <label for="direction">Message Direction</label>
+								 <fieldset name="direction" id="direction" class="comman-radio">
 									<legend class="sr-only">Message Direction filters
 									</legend>
 								    <label class="radio-inline">
@@ -507,20 +494,20 @@
 
 						  	<!--Email Source-->
 						  	<div class="form-group col-sm-6">
-		 					    <label for="Email Source">Email Source</label>
-							    <input type="text" class="form-control">
+		 					    <label for="email-source">Email Source</label>
+							    <input name="email-source" id="email-source" type="text" class="form-control">
 						  	</div>
 
 						  	<!--Message Folder-->
 						  	<div class="form-group col-sm-6">
 		 					    <label for="Message Folder">Message Folder</label>
-							    <input type="text" class="form-control">
+							    <input id="Message Folder" type="text" class="form-control">
 						  	</div>
 
 					  		<!--Lexicons-->
 						  	<div class="form-group col-sm-6">
 		 					    <label for="Lexicons">Lexicons</label>
-							    <select class="form-control selectpicker" name="Choose-file">
+							    <select id="Lexicons" class="form-control selectpicker" name="Choose-file">
 							  	   <option value="" selected disabled>Select</option>
 									<% 	Collection<String> lexiconNames = archive.getAvailableLexicons();
 									for (String lexiconName: lexiconNames) { %>
@@ -532,7 +519,7 @@
 						  	<!--Lexicons Category-->
 						  	<div class="form-group col-sm-6">
 		 					    <label for="Lexicons Category">Lexicons Category</label>
-							    <select class="form-control selectpicker" name="Choose-file">
+							    <select id="Lexicons Category" class="form-control selectpicker" name="Choose-file">
 							  	   <option value="" selected disabled>Select</option>
 								    <option  value="1">placeholder1</option>
 								    <option  value="2">placeholder2</option>
@@ -541,16 +528,13 @@
 								  </select>
 						  	</div>
 
-					 	</form>
-
 					 </div>
 					 <!--/Others-->
 
 
 					 <!--Sort Results By-->
 					 <div class="text search-wraper">
-					 	<form action="">
-						
+
 						   <!--Sort Results By-->
 						 	<div class="margin-btm  col-sm-6">
 						 		<!--slect box-->
@@ -584,8 +568,6 @@
 						  	</div>
 						  	<!--/Sort Results By-->
 
-					 	</form>
-
 					</div>
 					<!--/Sort Results By-->
 
@@ -603,9 +585,12 @@
 					 		<h5>Clear Form</h5>
 					 	</button>
 
+
 					 </div>
 					<!--/Search and clear form buttons-->
-    			</div>
+					</form>
+
+				</div>
     			<!--/row-->
     		</div>
     		<!--/container-->

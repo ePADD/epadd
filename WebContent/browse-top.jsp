@@ -54,10 +54,6 @@
 	if (allDocs == null)
 		allDocs = fullEmailDocs;
 
-	String bestName = ab.getBestNameForSelf();
-	String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestName) : "SUMMARY");
-	Contact me = ab.getContactForSelf();
-
 	int outCount = ab.getOutMessageCount(allDocs);
 	int inCount = allDocs.size()-outCount;
 	int nAttachments = EmailUtils.countAttachmentsInDocs(allDocs);
@@ -80,7 +76,7 @@
 	int nContacts = ab.allContacts().size();
 %>
 
-<% writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
+<% writeProfileBlock(out, archive, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
 <br/>
 
 <div id="all-cards" style="text-align: center; margin:auto">

@@ -40,14 +40,7 @@
 <br/>
 
 <%
-AddressBook ab = archive.addressBook;
-String bestName = ab.getBestNameForSelf();
-Contact ownContact = ab.getContactForSelf();
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-List<Contact> allContacts = ab.sortedContacts((Collection) docs);
-Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
-
-String type = request.getParameter("type");
 
 // filter all docs to only get the type requested.
 Collection<EmailDocument> newDocs = new ArrayList<EmailDocument>();
@@ -58,7 +51,7 @@ for (EmailDocument ed: docs)
 }
 
 docs = newDocs;
-writeProfileBlock(out, bestName, "", Util.pluralize(docs.size(), "message") + " in cart");
+writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + " in cart");
 %>
 
 <br/>
