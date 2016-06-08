@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="ePADD" default="release" basedir=".">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ePADD" default="versione" basedir=".">
 
 	<description>
         ePADD Standalone application build script
@@ -11,14 +11,14 @@
     <property name="lib.dir" location="lib" />
     <property name="src.dir" location="src/java" />
     <tstamp><format property="build.time" pattern="MMM dd, yyyy hh:mm aa"/></tstamp>
-    <property name="build.info" value="Built by ${user.name} at ${build.time} on ${os.name} ${os.version} ${os.arch} in ${user.dir} "/>
+    <property name="build.info" value="Built by ${user.name} at ${build.time} on ${os.name} ${os.version} ${os.arch} "/> <!-- would have liked ${user.dir} here, but that causes problems because of backslashes on windows! -->
     <loadfile property="version" srcfile="version">
       <filterchain>
         <striplinebreaks/>
       </filterchain>
     </loadfile>
 
-    <target name="release">
+    <target name="version">
         <echo file="WebContent/version.jsp" message="ePADD version ${version}"/>
         <echo file="src/java/edu/stanford/epadd/Version.java" message="package edu.stanford.epadd;${line.separator}"/>
         <echo file="src/java/edu/stanford/epadd/Version.java" append="true" message="public class Version {  public static final String version = &quot;${version}&quot;;${line.separator}"/>
