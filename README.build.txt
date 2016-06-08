@@ -8,6 +8,7 @@ First checkout 3 projects from git.
 git clone https://github.com/ePADD/muse.git
 git clone https://github.com/ePADD/epadd.git
 git clone https://github.com/ePADD/epadd-launcher.git
+git clone https://github.com/ePADD/epadd-settings.git (this MUST be checked out under your home directory, so that it exists under ~/epadd-settings)
 
 To build epadd 
 1. in the epadd folder, Type:
@@ -32,3 +33,5 @@ The muse project contains most of the Java based code. It is the core engine use
 The epadd project contains primarily the frontend screens for the application (in the WebContent directory) and creates a deployable WAR file.
 epadd-launcher bundles up the epadd.war into a standalone, runnable jar using an embedded Tomcat server.
 
+3. To run automated test cases, go to epadd-launcher and type
+mvn -f pom-test.xml test
