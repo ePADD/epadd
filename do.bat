@@ -1,9 +1,9 @@
-ant
+call ant
 cd ..\muse
-mvn -f pom-common.xml
-mvn -f pom-jar.xml
-mvn 
+call mvn -f pom-common.xml
+call mvn -f pom-jar.xml
+call mvn 
 cd ..\epadd
-mvn clean
-mvn -f pom-discovery.xml
-mvn 
+call mvn clean
+call mvn -f pom-discovery.xml
+call mvn 
