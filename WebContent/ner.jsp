@@ -23,11 +23,7 @@
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
 <%@include file="getArchive.jspf" %>
-<%
-AddressBook ab = archive.addressBook;
-String bestName = ab.getBestNameForSelf();
-%>
-<%writeProfileBlock(out, bestName, "", "Named entity extraction");%>
+<%writeProfileBlock(out, archive, "", "Named entity extraction");%>
 <script>
 	function start(){
 		page = "ajax/nertrainandrecognise.jsp";

@@ -95,14 +95,10 @@
 		}	
 			*/
 	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
-	Contact ownContact = ab.getContactForSelf();
-	List<Contact> allContacts = ab.sortedContacts((Collection) docs);
-	Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
 	String url = request.getRequestURI();
 	System.out.println (url);
 %>
-<%writeProfileBlock(out, bestName, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>
+<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>
 <br/>
 <br/>
 

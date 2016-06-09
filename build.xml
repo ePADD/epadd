@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="ePADD" default="release" basedir=".">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ePADD" default="versione" basedir=".">
 
 	<description>
         ePADD Standalone application build script
@@ -10,69 +10,18 @@
     <property name="log4j.props.dir" location="WebContent/WEB-INF/classes" />
     <property name="lib.dir" location="lib" />
     <property name="src.dir" location="src/java" />
+    <tstamp><format property="build.time" pattern="MMM dd, yyyy hh:mm aa"/></tstamp>
+    <property name="build.info" value="Built by ${user.name} at ${build.time} on ${os.name} ${os.version} ${os.arch} "/> <!-- would have liked ${user.dir} here, but that causes problems because of backslashes on windows! -->
+    <loadfile property="version" srcfile="version">
+      <filterchain>
+        <striplinebreaks/>
+      </filterchain>
+    </loadfile>
 
-    <target name="standalone">
-        <delete dir="${assembly.dir}"/>
-	<echo message="OS: ${os.name} ${os.version}"/>
-	<echo message="JRE: ${java.version} from ${java.vendor} in ${java.home}"/>
-        <echo message="Assembling standalone jar in {assembly.dir}"/>
-        <!-- copy launcher files -->
-    	<javac debug="true" srcdir="${src.dir}/edu/stanford/epadd/launcher" destdir="target/classes" classpath="${lib.dir}/jetty+browserlauncher.jar:${lib.dir}/commons-cli-1.2.jar"/>
-		<copy todir="${assembly.dir}">
-			<fileset dir="${build.classes.dir}" includes="edu/stanford/epadd/launcher/**/*" />
-		</copy>
-        <!-- copy over epadd.war -->
-		<copy tofile="${assembly.dir}/epadd.war" file="${mvn.war.dir}/epadd-0.0.1-SNAPSHOT.war"/>
-		<copy todir="${assembly.dir}"> <fileset dir="${lib.dir}" includes="crossdomain.xml" /> </copy>
-		<copy todir="${assembly.dir}"> <fileset dir="${log4j.props.dir}" includes="log4j*" /> </copy> <!-- so we have the log4j prop files -->
-        <!-- unjar jetty+browserlauncher -->
-        <unjar src="${lib.dir}/jetty+browserlauncher.jar" dest="${assembly.dir}"/>
-        <unjar src="${lib.dir}/commons-cli-1.2.jar" dest="${assembly.dir}"/> <!-- unjar cli because we need it at the top level in standalone -->
-        <!-- unjar resource.jar. not sure if this is needed ?? -->
-      <unjar src="${lib.dir}/resource.jar" dest="${assembly.dir}"/>
-        <delete dir="${assembly.dir}/META-INF"/>
-        <!-- manifest assumed to be in current dir -->
-        <jar destfile="epadd-standalone.jar" basedir="${assembly.dir}" manifest="TOMCAT.MANIFEST.MF"/>
+    <target name="version">
+        <echo file="WebContent/version.jsp" message="ePADD version ${version}"/>
+        <echo file="src/java/edu/stanford/epadd/Version.java" message="package edu.stanford.epadd;${line.separator}"/>
+        <echo file="src/java/edu/stanford/epadd/Version.java" append="true" message="public class Version {  public static final String version = &quot;${version}&quot;;${line.separator}"/>
+        <echo file="src/java/edu/stanford/epadd/Version.java" append="true" message="public static final String buildInfo = &quot;${build.info}&quot;;${line.separator}}${line.separator}"/>
     </target>
-
-	<target name="exe">
-		<condition property="launch4j.dir" value="launch4j-3.3-macos10.7">
-		    <matches string="${os.version}" pattern="^10.[1234567]." />
-		</condition>
-		<condition property="launch4j.dir" value="launch4j-macos10.8">
-		    <matches string="${os.version}" pattern="^10.[89]." />
-		</condition>
-		<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
-		<launch4j configFile="${launch4j.dir}/epadd.xml" />
-	</target>
-
-<property environment="env" />
-
-<taskdef name="bundleapp"
-	 classname="com.oracle.appbundler.AppBundlerTask"
-         classpath="lib/appbundler-1.0.jar" /> 
-<target name="macapp">
-    <mkdir dir="dist/ePADD" /> <!-- dist/ePADD becuase the vol. name on the dmg needs to be Muse and not dist. -->
-    <bundleapp outputdirectory="dist/ePADD"
-        name="ePADD"
-        displayname="ePADD"
-        identifier="components.epadd"
-	icon="lib/epadd.icns"
-        mainclassname="edu.stanford.epadd.launcher.Main">
-	<runtime dir="${env.JAVA_HOME}" />
-        <classpath file="epadd-standalone.jar" />
-	<option value="-Xmx2g"/>
-   </bundleapp>
-  <exec executable="hdiutil">
-        <arg value="create"/>
-        <arg value="ePADD.dmg"/>
-        <arg value="-srcfolder"/>
-        <arg value="./dist/ePADD"/>
-        <arg value="-ov"/>
-  </exec>
-
-</target>
-
-<target name="release" depends="exe,macapp"></target>
-
 </project>

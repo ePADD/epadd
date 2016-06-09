@@ -21,8 +21,6 @@
 	String resultPage = null;
 	// simple flow means we're running off the login page and that we'll just use sent folders
 	boolean simpleFlow = request.getParameter("simple") != null;
-	boolean searchMode = "search".equals(JSPHelper.getSessionAttribute(session, "mode"));
-	boolean memoryTestMode = "memorytest".equals(JSPHelper.getSessionAttribute(session, "mode"));
 	MuseEmailFetcher m = (MuseEmailFetcher) JSPHelper.getSessionAttribute(session, "museEmailFetcher");
 	// m can't be null here, the stores should already have been set up inside it
 
@@ -51,8 +49,12 @@
 		String ownerName = (String) JSPHelper.getSessionAttribute(session, "ownerName");
 		if (!Util.nullOrEmpty(ownerName))
 			archive.addOwnerName(ownerName);
-		
+		String archiveTitle = (String) JSPHelper.getSessionAttribute(session, "archiveTitle");
+		if (!Util.nullOrEmpty(archiveTitle))
+			archive.archiveTitle = archiveTitle;
+
 		String altEmailAddrs = (String) JSPHelper.getSessionAttribute(session, "alternateEmailAddrs");
+
 		for (EmailStore store : m.emailStores)
 			if (!(Util.nullOrEmpty(store.emailAddress)))
 				archive.addOwnerEmailAddr(store.emailAddress);

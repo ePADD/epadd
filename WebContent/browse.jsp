@@ -110,7 +110,6 @@ if (ModeConfig.isPublicMode()) {
 	<script src="js/jog_plugin.js" type="text/javascript"></script>
 <%
 	String bestName = archive.addressBook.getBestNameForSelf();
-//	writeProfileBlock(out, bestName, "Search", "");
 	// archive is null if we haven't been able to read an existing dataset
 	
 	AddressBook addressBook = archive.addressBook;
@@ -294,17 +293,18 @@ if (ModeConfig.isPublicMode()) {
 				<% } %>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-				<div style="display:inline;" id="annotation_div" style="z-index:1000;">
+				<div style="display:inline;z-index:1000;" id="annotation_div">
 					<input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
 				</div>
 				<% } %>
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-				<!--			<div style="display:inline-block;position:relative;top:10px"><input type="checkbox" id="applyToAll" style="margin-left:250px"/> Apply to all</div> -->
+				<!--
 				<button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+				-->
 				<%
 					// show apply to all only if > 1 doc
 					if (docs.size() > 1) { %>
-				<button type="button" class="btn btn-default" id="applyToAll" style="margin-right:25px">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+				<button type="button" class="btn btn-default" id="applyToAll" style="margin-left:25px;margin-right:25px;">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
 				<% } %>
 				<% } %>
 			</div>
@@ -353,10 +353,10 @@ if (ModeConfig.isPublicMode()) {
 	Set<String> selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(archive.indexer, docs, request.getParameterValues("sentiment"));
 	if (selectedPrefixes == null)
 		selectedPrefixes = new LinkedHashSet<>();
-
 	// warning: remember to convert, otherwise will not work for i18n queries!
 	String[] searchTerms = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("term"));
 	Set<String> highlightTerms = new LinkedHashSet<>();
+
 	if (searchTerms != null && searchTerms.length > 0)
 		for (String s: searchTerms) {
 			// note: we add the term to unstemmed terms as well -- no harm. this is being introduced to fix a query param we had like term=K&L Gates and this term wasn't being highlighted on the page earlier, because it didn't match modulo stemming
@@ -423,7 +423,7 @@ if (ModeConfig.isPublicMode()) {
 	out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
 
 	session.setAttribute (datasetName, browseSet);
-	session.setAttribute ("docs-" + datasetName, new ArrayList<Document>(docs));
+	session.setAttribute ("docs-" + datasetName, new ArrayList<>(docs));
 	out.println (html);
 	JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + datasetName);
 	
@@ -452,17 +452,17 @@ function apply(e, toAll) {
 
     function check_twr() {
         epadd.log('checking twr');
-        check_flags(transferWithRestrictions, twr, 'setTransferWithRestrictions', 'transfer-with-restrictions', check_reviewed);
+        check_flags(transferWithRestrictions, PAGE_ON_SCREEN, twr, 'setTransferWithRestrictions', 'transfer-with-restrictions', check_reviewed);
     }
 
     function check_reviewed() {
         epadd.log('checking reviewed');
-        check_flags(reviewed, rev, 'setReviewed', 'reviewed', check_add_to_cart);
+        check_flags(reviewed, PAGE_ON_SCREEN, rev, 'setReviewed', 'reviewed', check_add_to_cart);
     }
 
     function check_add_to_cart() {
         epadd.log('checking add to cart');
-        check_flags(addToCart, atc, 'setAddToCart', 'add-to-cart', check_annotations);
+        check_flags(addToCart, PAGE_ON_SCREEN, atc, 'setAddToCart', 'add-to-cart', check_annotations);
     }
 
 // any messages in current dataset already have annotations?
@@ -470,11 +470,12 @@ function apply(e, toAll) {
     function check_annotations() {
         var anyAnnotations = false;
         $('.page').each(function (i, o) {
+			if (i == PAGE_ON_SCREEN)
+				return;
             if (annotations[i]) {
                 anyAnnotations = true;
                 return false;
             }
-            ;
         });
 
         if (anyAnnotations) {
@@ -500,16 +501,21 @@ function apply(e, toAll) {
 
     // prompts if any conflicting flags, and if the users says no, then deletes the given prop_name from post_data, then calls continuation()
     // if the user says yes, or there is no conflict, it calls continuation()
-    function check_flags(flags_array, new_val, prop_name, description, continuation) {
+	// except_page is excepted when warning for conflicting messages
+	// this is to avoid the case that user clicks on a flag and changes it (which immediately applies it), then clicks apply all button
+    function check_flags(flags_array, except_page, new_val, prop_name, description, continuation) {
         var trueCount = 0, falseCount = 0, totalCount = 0;
         $('.page').each(function (i, o) {
             totalCount++;
+			if (i == except_page)
+				return; // incr. neither true nor false count
             if (flags_array[i]) {
                 trueCount++;
             } else {
                 falseCount++
             }
         });
+
         var apply_continuation = false;
         if (trueCount > 0 && falseCount > 0) {
             var mesg = 'The ' + description + ' flag is set for ' + epadd.pluralize(trueCount, 'message') + ' and unset for ' + epadd.pluralize(falseCount, 'message') + '. '
@@ -549,7 +555,7 @@ function apply(e, toAll) {
     var modal_shown = false;
     if (toAll) {
         epadd.log('checking do not transfer');
-        check_flags(doNotTransfer, dnt, 'setDoNotTransfer', 'do-not-transfer', check_twr);
+        check_flags(doNotTransfer, PAGE_ON_SCREEN, dnt, 'setDoNotTransfer', 'do-not-transfer', check_twr);
         // the continuation sequence will end up calling post_updates
     }
     else
@@ -663,6 +669,7 @@ function update_controls_on_screen(currentPage) {
 $('.flag').click (function(e) {
 	var $target = $(e.target);
 	$target.toggleClass('flag-enabled');
+	apply(e, false);
 });
 
 $('#apply').click(function(e) { apply(e, false);});
@@ -688,11 +695,6 @@ var callback = function(oldPage, currentPage) {
 	PAGE_ON_SCREEN = currentPage;
 };
 
-//called after the new page has been rendered
-var load_callback = function(currentPage) {
-	if (parent.jog_onload)
-		parent.jog_onload(document);
-};
 
 $('body').ready(function() {
 	$pages = $('.page');

@@ -35,10 +35,8 @@
 
 <%
 	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
+	writeProfileBlock(out, archive, "", "All Correspondents");
 %>
-
-<%writeProfileBlock(out, bestName, "", "All Correspondents");%>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
 	<button class="btn-default" onclick="window.location='graph?view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>

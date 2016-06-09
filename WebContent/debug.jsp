@@ -1,8 +1,9 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.util.Log4JUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
+<%@page language="java" import="edu.stanford.muse.util.Version"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.Date" %>
 <!DOCTYPE HTML>
@@ -33,7 +34,9 @@ We are sorry you encountered a problem with ePADD. Please save this page and sen
 <hr style="color:rgba(0,0,0,0.2)"/>
 <b>ePADD version <%=edu.stanford.epadd.Version.version%></b>
 <br/>
-Build Info: <%= edu.stanford.epadd.Version.buildInfo%>
+Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
+Built on Muse version <%=Version.version %> <%=Version.buildInfo%></b>
+
 
 <p/>
 

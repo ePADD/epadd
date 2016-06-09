@@ -335,8 +335,6 @@
 
 <%
 	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
-	String db = request.getParameter("db");
 	String testStr = request.getParameter("test");
 	Boolean test = false;
 	try{
@@ -345,7 +343,7 @@
 		e.printStackTrace();
 	}
 
-	writeProfileBlock(out, bestName, "", "Assign authority records");
+	writeProfileBlock(out, archive, "", "Assign authority records");
 	out.println ("<br/>");
 
 	Integer numEntities = null;

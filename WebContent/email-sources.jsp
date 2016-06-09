@@ -26,7 +26,7 @@
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	<style>
-		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}
+		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px; vertical-align: top;}
 		.input-field {width:350px;}
 		.input-field-label {font-size: 12px;}
 	</style>
@@ -43,11 +43,10 @@ String bestName = "";
 String bestEmail = "";
 if (archive != null) {
 	AddressBook ab = archive.addressBook;
-	bestName = ab.getBestNameForSelf();
 	Set<String> addrs = ab.getOwnAddrs();
 	if (addrs.size() > 0)
 		bestEmail = addrs.iterator().next();
-	writeProfileBlock(out, bestName, "", "Import email into this archive");
+	writeProfileBlock(out, archive, "", "Import email into this archive");
 }
 %>
 
@@ -72,6 +71,15 @@ if (archive != null) {
 					<input class="form-control" type="text" name="alternateEmailAddrs" value="<%=bestEmail%>"/>
 				</div>
 			</div>
+
+			<div class="div-input-field">
+				<div class="input-field-label"><i class="fa fa-tag"></i> Archive title</div>
+				<br/>
+				<div class="input-field">
+					<input class="form-control" type="text" name="archiveTitle" value=""/>
+				</div>
+			</div>
+
 		</div>
 	</section>
 
@@ -163,12 +171,12 @@ if (archive != null) {
 
 			<% /* all mboxes folders will be in account divs here */ %>
 			<div class="account">
-				<input class="accountType" type="text" style="display:none" name="accountType1" value="mbox"/>
+				<input class="accountType" type="text" style="display:none" name="accountType2" value="mbox"/>
 				<div class="div-input-field">
 					<div class="input-field-label"><i class="fa fa-folder-o"></i> Folder or file location</div>
 					<br/>
 					<div class="input-field">
-						<input class="dir form-control" type="text" name="mboxDir1"/> <br/>
+						<input class="dir form-control" type="text" name="mboxDir2"/> <br/>
 						<button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
 							<span>Browse</span>
 						</button>
@@ -178,6 +186,14 @@ if (archive != null) {
 					<div class="browseFolder"></div>
 					<br/>
 				</div>
+				<div class="div-input-field">
+					<div class="input-field-label"><i class="fa fa-bullseye"></i> Name of email source</div>
+					<br/>
+					<div class="input-field">
+						<input class="form-control" type="text" name="emailSource2" value=""/>
+					</div>
+				</div>
+
 				<br/>
 			</div> <!--  end account -->
 			<br/>
@@ -234,6 +250,16 @@ if (archive != null) {
 			fps.push(new FilePicker($clone, roots));
 			return false;
 		}
+
+		$(document).ready(function() {
+			$('input[type="text"]').each(function () {
+				var field = 'email-source:' + $(this).attr('name');
+				if (!field)
+					return;
+				var value = localStorage.getItem(field);
+				$(this).val(value);
+			});
+		});
 
 	</script>
 

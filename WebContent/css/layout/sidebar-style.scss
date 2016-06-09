@@ -1,0 +1,260 @@
+//style for sidebar icon
+
+.heading-wraper { position: relative;}
+
+//Search Tip
+.menu h2, .menu1 h2 {
+	display: inline-block;
+}
+.nav-toggle1, .nav-toggle, .show-form label {
+	cursor: pointer;
+}
+
+ .menu1 h2  { padding-bottom: 25px;}
+
+.sidebar-icon {
+	position: fixed;
+	top:85px;
+	right: 2vw;
+	background-color:$blue;
+	width: 55px;
+	height: 55px;
+	border-radius: 50%; 
+	text-align: center;
+	box-shadow: 0px 2px 10px rgba(0,0,0,.3),0px 0px 1px rgba(0,0,0,.1),inset 0px 1px 0px rgba(255,255,255,.25),inset 0px -1px 0px rgba(0,0,0,.15);
+	img { padding-top:10px;}
+	z-index: 100;
+}
+
+.snnipet-sidebar.sidebar-icon {
+	left: 1.5vw;
+	top:150px;
+}
+.snnipet-sidebar img { padding-top:18px;}
+
+.close {
+	float: right;
+    height: 18px;
+    margin-right: -5px;
+    margin-top: -12px;
+    opacity: 0.5;	
+}
+
+
+
+.search-tips {
+ 	display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+    display: -ms-flexbox;  /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+    display: flex;         /* NEW, Spec - Firefox, Chrome, Opera */
+	
+    align-items:center;
+
+    img { padding-right:30px;}
+    p { border-bottom: 1px solid #eaeaea; padding:15px 0;}
+
+}
+
+div.search-tips:last-of-type p {
+	border-bottom: 0;
+}
+
+
+
+
+//Filter message
+
+.menu h2  {
+	padding-bottom: 25px;
+}
+.close-fltr {
+	float: right;
+    height: 16px;
+    margin-right: -21px;
+    margin-top: -14px;
+    opacity: 0.5;
+}
+.Filter-message { 
+	font-size: 13px;
+	label { 
+		padding-bottom: 8px; 
+		color:$grey-bold;
+		font-weight: 600;
+			
+	}
+	.form-group {
+		select { color:#000;}
+	}
+
+	.search-btn {
+		width: 100%;
+		margin:20px 0;
+	}
+
+}
+
+
+//styling radio buttons and checkbox
+
+.checkbox-wraper label{
+cursor: pointer;
+
+}
+input[type="checkbox"] + .label-text:before,
+input[type="radio"] + .text-radio:before,
+.multi-select .dropdown-menu ul li a:before
+
+ {
+	font-family: "fontAwesome";
+    speak: none;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    text-transform: normal;
+    line-height: 0.8;
+    margin-right: 5px;
+    width: 1em;
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+    color: #ccc;
+    background-color: #fff;
+    width: 13px;
+    height: 13px;
+    font-size: 17px;
+
+}
+
+input[type="checkbox"] {
+	display: none;
+
+	+ .label-text:before {
+		content: "\f096";	
+	}
+
+	&:checked + .label-text:before {
+		content: "\f14a";
+		color:#0175bc;
+	}
+}
+
+input[type="radio"] {
+	display: none;
+
+	+ .text-radio:before {
+		content: "\f1db";	
+	}
+
+	&:checked + .text-radio:before {
+		content: "\f192";
+		color:#0175bc;
+	}
+}
+
+
+//style for select picker
+.multi-select {
+	.dropdown-menu {
+
+		ul li a:before {
+		content: "\f096";
+		}
+
+		ul li.selected a:before{
+			content: "\f14a";
+			color:#0175bc;
+		}
+	
+		ul li {
+		 border-bottom: 1px solid #eaeaea;
+		 margin:0 10px;
+
+			a {
+				padding: 8px 0;
+				color:#999;
+			}
+		  } 
+
+		 ul li:last-of-type { 
+			border-bottom:0;
+		 }
+	}
+}
+
+ul.dropdown-menu.inner li {
+	 border-bottom: 1px solid #eaeaea;
+		margin:0 10px;
+
+		a {
+				padding: 8px 10px;
+				color:#999;
+			}
+}
+
+ul.dropdown-menu.inner li:last-of-type {
+	border-bottom: none;
+}
+
+ul.dropdown-menu.inner li:first-child {
+	display: none !important;
+}
+
+
+.btn-default, .btn-default:hover, 
+.btn-default:focus, 
+.btn-default:active,
+.btn-default:active:hover, 
+.btn-default:active:focus, 
+.btn-default:active.focus, 
+.btn-default.active:hover, 
+.btn-default.active:focus, 
+.btn-default.active.focus, 
+.open > .btn-default.dropdown-toggle:hover, 
+.open > .btn-default.dropdown-toggle:focus, 
+.open > .btn-default.dropdown-toggle.focus,
+.btn-default:active, .btn-default.active, .open > .btn-default.dropdown-toggle {
+    color: #999 ;
+    background-color: #fff ;
+    border-color: #ccc;
+}
+
+.bootstrap-select .dropdown-toggle:focus {
+     outline: 0!important; 
+     outline: none !important; 
+     outline-offset: 0px; 
+
+}
+
+
+button .bs-caret, 
+.bootstrap-select.btn-group.show-tick .dropdown-menu li.selected a span.check-mark {
+	display: none !important;
+}
+
+.btn.dropdown-toggle.btn-default{
+    background: #fff url("../images/angle-up.png") no-repeat;
+    background-position: top 12px right 15px;
+    background-size: 12px 8px;
+   	color:#999999;
+}
+.extension .btn.dropdown-toggle.btn-default{
+   background: none;
+}
+// .btn.dropdown-toggle.btn-default:focus {
+// 	border:none !important;
+// }
+
+.btn-group.open .dropdown-toggle {
+	box-shadow: none;
+}
+
+.bootstrap-select.btn-group.show-tick .dropdown-menu li a span.text {
+	padding-left:4px;
+} 	 
+
+.radio-inline, .checkbox-inline {
+	padding-left:0;
+}	
+
+.btn-group .dropdown-toggle:active, .btn-group.open .dropdown-toggle {
+	box-shadow: none;
+}

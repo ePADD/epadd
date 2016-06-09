@@ -6,6 +6,7 @@ events@
 programs@
 grants@
 invitations-noreply@
+invitations@
 office@
 news@
 host@

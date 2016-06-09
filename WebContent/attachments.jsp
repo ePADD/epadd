@@ -53,8 +53,6 @@
 	String bestName = ab.getBestNameForSelf();
 	JSONArray resultArray = new JSONArray();
 
-	String userKey = "user";
-	String rootDir = JSPHelper.getRootDir(request);
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
 	JSPHelper.log.info("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
 	
@@ -78,7 +76,6 @@
 			String url = null;
 		}
 
-		Map<Blob, String> blobToSubject = new LinkedHashMap<Blob, String>();
 		List<Pair<Blob, EmailDocument>> allAttachments = new ArrayList<Pair<Blob, EmailDocument>>();
 		Collection<EmailDocument> eDocs = (Collection) docs;
         Set<Blob> allBlobsSet = new LinkedHashSet<Blob>();
@@ -102,7 +99,7 @@
             }
         }
 
-        writeProfileBlock(out, bestName, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment") + " (" + allBlobsSet.size() + " unique)");
+        writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment") + " (" + allBlobsSet.size() + " unique)");
 
 		if (allAttachments.size() > 0) { %>
 			<br/>

@@ -46,12 +46,11 @@
 </head>
 <body>
 <%	AddressBook addressBook = archive.addressBook;
-    String bestName = addressBook.getBestNameForSelf();
     String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 %>
     <jsp:include page="header.jspf"/>
 
-<% writeProfileBlock(out, bestName, "Apply flags to multiple messages", "");%>
+<% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");%>
 
 <br/>
 <br/>

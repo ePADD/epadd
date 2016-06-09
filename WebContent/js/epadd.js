@@ -114,13 +114,27 @@ epadd.fix_login_account_numbers = function() {
 		var $dir = $($('input', $mbox_accounts[i])[1]); // second input field is the mbox dir
 		$dir.attr('name', 'mboxDir' + count);
 		$dir.attr('id', 'mboxDir' + count);
+		var $emailSource = $($('input', $mbox_accounts[i])[2]); // second input field is the email source
+		$emailSource.attr('name', 'emailSource' + count);
+		$emailSource.attr('id', 'emailSource' + count);
 		count++;
 	}
 };
 
 /** takes the input fields and does logins, showing spinners while logging is on. returns false if an obvious error occurred. */
 epadd.do_logins = function() {
+
 	epadd.fix_login_account_numbers();
+
+	// squirrel away the input field values in local storage
+	$('input[type="text"]').each(function(){
+		var field = 'email-source:' + $(this).attr('name');
+		if (!field)
+			return;
+		var value = $(this).val();
+		localStorage.setItem(field, value);
+	});
+
 	epadd.log('doing login (go button pressed) for ' + $('#loginName0').val());
 	var post_params = muse.collect_input_fields();
 	var is_valid_account = [];
@@ -194,7 +208,9 @@ epadd.do_logins = function() {
 		var pw = $('#password' + i).val();
 		var mbox = $('#mboxDir' + i).val();
 		// ignore if has login name and password fields, but neither is filled in
-		is_valid_account[i] = (!((login == null || login.length == 0) && (pw == null || pw.length == 0))) || (mbox && mbox.length > 0);
+		var is_valid_login_account = (login && login.length > 0) && (pw && pw.length > 0);
+		var is_valid_mbox_account = (mbox && mbox.length > 0);
+		is_valid_account[i] = is_valid_login_account || is_valid_mbox_account;
 		if (!is_valid_account[i]) {
 			epadd.log('account #' + i + ' is not valid');
 			continue;

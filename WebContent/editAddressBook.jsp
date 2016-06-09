@@ -15,7 +15,6 @@
 		allDocs = (Collection) archive.getAllDocs();
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
-	String bestName = addressBook.getBestNameForSelf();
 %>
 <html>
 <head>
@@ -34,7 +33,7 @@
 <body>
 <jsp:include page="header.jspf"/>
 
-<%writeProfileBlock(out, bestName, "Edit address book", "");%>
+<%writeProfileBlock(out, archive, "Edit address book", "");%>
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px;margin-top:20px;">
 	<select id="sort-order">
 		<option <%=!alphaSort?"selected":""%> value="volume">Sort by email volume</option>
@@ -61,7 +60,8 @@
 <%!
 private static String dumpForContact(Contact c, String description) {
 	StringBuilder sb = new StringBuilder();
-	sb.append ("-- " + description + "\n");
+	String mailingListOutput = (c.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.DEFINITE)) != 0 ? "ML" : "";
+	sb.append ("-- " + mailingListOutput + " " + description + "\n");
 
 	// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
 	Set<String> uniqueNames = new LinkedHashSet<String>();

@@ -56,7 +56,6 @@ if ("location".equals(type)) { %>
 
 		<%
 	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
 	String et = "";
     Short ct = FeatureDictionary.PERSON;
 	if(edu.stanford.muse.ner.NER.EPER.equals(type)||"person".equals(type)) {
@@ -71,7 +70,7 @@ if ("location".equals(type)) { %>
         et = "Organisation";
         ct = FeatureDictionary.ORGANISATION;
     }
-	writeProfileBlock(out, bestName, et + " entities", "");
+	writeProfileBlock(out, archive, et + " entities", "");
 			%>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">

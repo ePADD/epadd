@@ -1,11 +1,17 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.Contact"%>
+<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
+<%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.util.EmailUtils" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.List" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -48,10 +54,6 @@
 	if (allDocs == null)
 		allDocs = fullEmailDocs;
 
-	String bestName = ab.getBestNameForSelf();
-	String title = "Email Archive " + (!Util.nullOrEmpty(bestName) ? ("of " + bestName) : "SUMMARY");
-	Contact me = ab.getContactForSelf();
-
 	int outCount = ab.getOutMessageCount(allDocs);
 	int inCount = allDocs.size()-outCount;
 	int nAttachments = EmailUtils.countAttachmentsInDocs(allDocs);
@@ -71,9 +73,10 @@
 		nS = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
 
 	JSPHelper.log.info("Counts: "+pC+", "+oC+", "+lC);
+	int nContacts = ab.allContacts().size();
 %>
 
-<% writeProfileBlock(out, bestName, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
+<% writeProfileBlock(out, archive, "Date Range: ", IndexUtils.getDateRangeAsString((List) allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
 <br/>
 
 <div id="all-cards" style="text-align: center; margin:auto">
@@ -81,8 +84,8 @@
 		<a href="correspondents">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/correspondent.svg"/>
-			<p class="cta-text-1">Correspondents (<%=ab.sortedContacts(allDocs).size() %>)</p>
-			<p class="cta-text-2">Correspondents (<%=ab.sortedContacts(allDocs).size() %>)</p>
+			<p class="cta-text-1">Correspondents (<%=nContacts %>)</p>
+			<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>
 		</a>
 	</div>
 	
@@ -178,7 +181,7 @@
 </div> <!--  allCards -->
 <jsp:include page="footer.jsp"/>
 <script>
-	$('.cta-box').click(function(e) { var href = $('a', $(e.target)).attr('href'); window.location = href;}); // clicking anywhere in the cta-box should dispatch to the href of the only link inside it
+	$('.cta-box').click(function(e) { var href = $('a', $(e.target)).attr('href'); if (href) { window.location = href;}}); // clicking anywhere in the cta-box should dispatch to the href of the only link inside it
 </script>
 </body>
 </html>

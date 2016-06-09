@@ -1,0 +1,205 @@
+.advanced-search {
+	padding:40px 0 100px 0;
+
+	h1 { padding-bottom: 40px;}
+}
+
+.search-wraper, .Filter-message, .corsp-menu{
+.form-control:focus {
+	    border-color: #ccc;
+	    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	}
+}
+
+.search-wraper {
+	background-color: $grey;
+	border: 1px solid #eaeaea;
+	padding:25px 30px;
+	border-radius: 4px;
+	margin-bottom: 25px;
+
+	h4 { 
+		padding-bottom: 20px;
+		display: inline-block;
+		font-weight: 600;
+	}
+
+	.form-group label { 
+		font-size: 14px;
+		padding-bottom: 13px;
+		font-weight: 600;
+
+	}
+
+	.form-group {
+	    margin-bottom: 20px;
+	}
+
+	form { 
+		display: inline-block;
+		width: 100%;
+	}
+
+	div.col-sm-6:nth-child(odd){ padding:0 10px 0 0; }
+	div.col-sm-6:nth-child(even){ padding:0 0 0 10px; }
+	div.col-sm-12 { padding:0;}
+
+	input[type="checkbox"], input[type="radio"]{
+	    width: 16px;
+	    height: 16px;
+	}
+
+	input[type="radio"]{ 
+		  margin-top:2px;
+	}
+	
+}
+
+.margin-btm.form-group {
+	margin-bottom: 8px;
+}
+
+.checkbox-wraper {
+	label { 
+		font-size: 14px;
+		padding-right:15px;
+	}
+}
+
+.checkbox-wraper.col-sm-6 { margin-bottom: 20px; }
+.comman-radio { 
+	background-color: #fff;
+	height:40px;
+	border-radius: 4px;
+	.radio-inline {
+		    padding: 10px 15px 0 15px;
+	}
+	
+}
+.search-wraper .form-group .comman-radio label
+{
+ font-weight: 500;
+}	
+
+//Attachment
+.attachment, .actions {
+	overflow:visible;
+	h4 { padding-bottom:0; }
+	form { display:none;}
+}
+.show-form {
+	font-size: 14px;
+	float: right;	
+}
+.form-wraper { padding-top:20px;}
+
+.text form div.form-group:nth-last-of-type(1),
+.coresspondent form div.form-group:nth-last-of-type(1),
+.coresspondent form div.form-group:nth-last-of-type(2),
+.others form div.form-group:nth-last-of-type(1),
+.others form div.form-group:nth-last-of-type(2)
+{
+	margin-bottom: 0;
+}
+.attachment form div.form-group:nth-last-of-type(1){
+	margin-bottom: 5px;
+}
+.actions form div.form-group:nth-last-of-type(1),
+.actions form div.form-group:nth-last-of-type(2){
+	margin-bottom: 8px;
+}
+
+.form-group select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    background: #fff url("../images/angle-up.png") no-repeat;
+    background-position: top 14px right 15px;
+    background-size: 12px 8px;
+   	color:#999999;
+}
+
+
+
+/* Hidden placeholder */
+select option[disabled]:first-child {
+	display: none;
+}
+.form-control { font-size: 13px; box-shadow: none;}
+// .form-control::-moz-placeholder {
+//   color: red;
+//   opacity: 1; }
+
+// .form-control:-ms-input-placeholder {
+//   color: red; }
+
+// .form-control::-webkit-input-placeholder {
+//   color: red; }
+
+//Others
+.date-input-group {
+	display: flex;
+	.form-control { width:45%;}
+	label { 
+		padding: 5px 18px;
+		font-size: 14px;
+	}
+}
+
+//buttons section
+.search-clear-btns {
+	text-align: center;
+	padding:35px 0;
+}
+
+.search-btn {
+	background:$blue;
+	border:none;
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color:#fff;
+	padding:15px 25px;
+	border-radius: 4px;
+	display: inline-flex;
+	justify-content:center;
+	margin-right: 25px;
+	box-shadow: 0px 2px 7px 1px rgba(153, 177, 200, 0.38);
+	img { margin: 3px 0 0 10px;}
+}
+
+.clear-btn {
+	background-color: #fff;
+	border:none;
+	font-size: 13px;
+	text-decoration: underline;
+	color:$blue;
+	font-weight: 600;
+	display: inline-flex;
+	align-items:center;
+	img { padding-right:5px;}
+}
+.clear-btn.focus { border:none;}
+
+//footer
+.epadd-version {
+	text-align: center;
+
+	border-top:1px solid #eaeaea;
+	padding:15px 0;
+}
+
+
+//padding for input elements 
+
+.margin-btm .form-group {
+	 margin-bottom: 10px;
+}
+.margin-btm { margin-bottom: 17px;}
+
+button, html input[type="button"] 
+{
+	outline:none;
+}

@@ -58,12 +58,7 @@
 	return;
 } %>
 
-<%
-	AddressBook ab = archive.addressBook;
-	String bestName = ab.getBestNameForSelf();
-%>
-
-<%writeProfileBlock(out, bestName, "", "Lexicon: " + lexiconName);%>
+<%writeProfileBlock(out, archive, "", "Lexicon: " + lexiconName);%>
 <br/>
 
 <div align="center">

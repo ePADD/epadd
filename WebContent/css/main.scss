@@ -1,0 +1,11 @@
+@import 'plugins/_plugins';
+@import 'base/_base';
+@import 'layout/_layout';
+@import 'modules/_modules';
+
+
+.header {
+	background-color: $blue;
+	height:55px;
+}	
+

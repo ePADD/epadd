@@ -1,0 +1,61 @@
+
+// Results found section
+.message-box {
+	background:$grey;
+	min-height: 100vh;
+}
+
+.declare-results {
+	position: relative;
+	padding:20px 15px;
+	display: flex;
+	align-items:center;
+	border-bottom: 1px solid #e1e1e4;
+	.col-sm-2, .col-sm-10 { padding:0;}	
+}
+.results-found {
+	font-weight: 300;
+}
+
+.search-results {
+	li {
+		cursor: pointer;
+		font-size: 13px;
+		background: #eaeaee;
+		padding: 3px 10px 4px 11px;
+		margin: 5px 7px 5px 0px;
+		border-radius: 2px;
+
+		.close { 
+			margin: -3px 0 0 8px;
+			img { height: 11px; }
+		}
+
+
+	}
+}
+
+
+.search-results li:hover .close img {
+  background: #999;
+  border-radius: 50%;
+}
+
+
+
+//Message view with pagination
+
+.msg-pagination {
+	.corsp-menu {
+		.form-group	 { margin-bottom: 0; }
+		select { 
+			width:130px;
+			margin-left:15px;
+		}
+
+		.bootstrap-select>.dropdown-toggle {
+			width:140px;
+		}
+	}
+}
+
