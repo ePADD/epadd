@@ -192,7 +192,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
 <p>
 <%
-	writeProfileBlock(out, archive, "", heading);
+	writeProfileBlock(out, archive, heading, "");
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">

@@ -35,7 +35,7 @@
 
 <%
 	AddressBook ab = archive.addressBook;
-	writeProfileBlock(out, archive, "", "All Correspondents");
+	writeProfileBlock(out, archive, "All Correspondents", "");
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">

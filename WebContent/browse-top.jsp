@@ -131,7 +131,7 @@
 				<a href="image-attachments">
 					<i class="icon-browsetoparrow"></i>
 					<img src="images/image-attachment.svg"/>
-					<p class="cta-text-1">Image attachments (<%=nImageAttachments%>)</p>
+					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
 					<p class="cta-text-2">Image attachments (<%=nImageAttachments%>)</p>
 				</a>
 		</div>
@@ -140,7 +140,7 @@
 				<a href="attachments?type=doc">
 					<i class="icon-browsetoparrow"></i>
 					<img src="images/doc-attachment.svg"/>
-					<p class="cta-text-1">Document attachments (<%=nDocAttachments%>)</p>
+					<p class="cta-text-1">Document attachments (<span id="nDocAttachments"><%=nDocAttachments%></span>)</p>
 					<p class="cta-text-2">Document attachments (<%=nDocAttachments%>)</p>
 				</a>		
 		</div>
@@ -152,7 +152,7 @@
 					<i class="icon-browsetoparrow"></i>
 				<!--	<i class="fa fa-paperclip" style="font-size:30px"></i> -->
 					<img src="images/other-attachment.svg"/>
-					<p class="cta-text-1">Other attachments (<%=(nAttachments - nImageAttachments - nDocAttachments)%>)</p>
+					<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments - nDocAttachments)%></span>)</p>
 					<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments - nDocAttachments)%>)</p>
 				</a>
 		</div>

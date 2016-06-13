@@ -75,8 +75,8 @@
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">
  			<li style="display:inline"><a target="_blank" href="https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc/edit"><img src="images/header-helpicon.svg"/></a></li>
 			<li class="dropdown" id="options">
-				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href="#">
-		 			<img src="images/header-menuicon.svg"/>
+				<a id="more-options" title="Options" class="dropdown-toggle" data-toggle="dropdown" href="#">
+		 			<img title="More options" src="images/header-menuicon.svg"/>
 		 		</a>
 		 		<ul class="dropdown-menu">
 		 			<%

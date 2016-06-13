@@ -60,7 +60,7 @@
 <%!
 private static String dumpForContact(Contact c, String description) {
 	StringBuilder sb = new StringBuilder();
-	String mailingListOutput = (c.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.DEFINITE)) != 0 ? "ML" : "";
+	String mailingListOutput = (c.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.USER_ASSIGNED)) != 0 ? "ML" : "";
 	sb.append ("-- " + mailingListOutput + " " + description + "\n");
 
 	// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
