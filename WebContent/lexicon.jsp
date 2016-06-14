@@ -131,8 +131,6 @@
 </div>
 <p>
 <br/>
-<% } // lex != null %>
-
 	<script>
 		$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
 		$('#create-lexicon').click (function() {
@@ -143,6 +141,7 @@
 		});
 	</script>
 
+<% } // lex != null %> 
 	<jsp:include page="footer.jsp"/>
 </body>
 </html>
