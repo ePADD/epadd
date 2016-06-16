@@ -1,8 +1,121 @@
 <html>
 <title>ePADD developers guide</title>
-<body style="font-family:sans-serif">
+<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Cabin" rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Hammersmith+One" rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Lato" rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Lato" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Oswald" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Roboto-Condensed" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Source-Sans-Pro" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=PT-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Roboto-Slab" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Droid-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Droid-Serif" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Arimo" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Merriweather" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Fjalla-One" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Noto-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Titillium-Web" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=PT-Serif" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Dosis" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Bitter" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Alegreya-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Cabin" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Lobster" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Hind" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Arvo" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Noto-Serif" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Nunito" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Josefin-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Libre-Baskerville" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Exo-2" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Asap" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Merriweather-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu-Condensed" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Signika" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Crimson-Text" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Catamaran" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Quicksand" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Varela-Round" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Archivo-Narrow" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Cuprum" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Vollkorn" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Play" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Poppins" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Maven-Pro" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Karla" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Exo" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=PT-Sans-Caption" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Rokkitt" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Orbitron" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Rubik" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Roboto-Mono" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Crete-Round" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Fira-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Monda" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Noticia-Text" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Ropa-Sans" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Kaushan-Script" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=Istok-Web-italic-700" rel='stylesheet' type='text/css'/>
+<link href="https://fonts.googleapis.com/css?family=BenchNine" rel='stylesheet' type='text/css'/>
+<body style="margin-top: 50px;margin-left:5%; margin-right: 5%; margin-bottom: 50px;font-family:Hind;sans-serif">
+
+<script>
+"use strict";
+var params = ['font', 'color', 'bgcolor'];
+var currentIdx = {}, cssprop = {};
+$(params).each(function(i, e) { currentIdx[e] = 0; cssprop[e] = e;});
+cssprop['font'] = 'font-family';
+cssprop['bgcolor'] = 'background-color';
+
+var font = ['Hind', 'Catamaran', 'Roboto', 'Lato', 'Oswald', 'Roboto-Condensed', 'Source-Sans-Pro', 'Raleway', 'PT-Sans', 'Roboto-Slab', 'Droid-Sans', 'Ubuntu', 'Droid-Serif', 'Arimo', 'Merriweather', 'Fjalla-One', 'Noto-Sans', 'Titillium-Web', 'PT-Serif', 'Dosis', 'Bitter', 'Alegreya-Sans', 'Cabin', 'Lobster', 'Arvo', 'Noto-Serif', 'Nunito', 'Josefin-Sans', 'Libre-Baskerville', 'Exo-2', 'Asap', 'Merriweather-Sans', 'Pacifico', 'Ubuntu-Condensed', 'Signika', 'Crimson-Text', 'Quicksand', 'Varela-Round', 'Archivo-Narrow', 'Cuprum', 'Vollkorn', 'Play', 'Poppins', 'Maven-Pro', 'Karla', 'Exo', 'PT-Sans-Caption', 'Rokkitt', 'Orbitron', 'Rubik', 'Roboto-Mono', 'Crete-Round', 'Fira-Sans', 'Monda', 'Comfortaa', 'Noticia-Text', 'Ropa-Sans', 'Kaushan-Script', 'Istok-Web-italic-700', 'BenchNine'];
+var color = ['red', 'green', 'blue', 'white', 'gray', 'black'];
+var bgcolor = ['white', 'mauve', 'magenta', 'orange', 'purple', 'gray'];
+
+function next(param) {
+    var proparray = window[param];
+    currentIdx[param] = (currentIdx[param] + 1) % proparray.length;
+    var propval = proparray[currentIdx[param]];
+    $('body').css(cssprop[param], propval);
+    $('#' + param).html(param + ':' + propval).fadeIn();
+};
+
+function prev(param) {
+    var proparray = window[param];
+    currentIdx[param] = (currentIdx[param] - 1);
+	if (currentIdx[param] < 0)
+        currentIdx[param] = proparray.length - 1;
+    var propval = proparray[currentIdx[param]];
+    $('body').css(cssprop[param], propval);
+    $('#' + param).html(param + ':' + propval).fadeIn();
+};
+
+$(document).ready(function(){ $(params).each (function(i, e) { next(e); })});
+$(document).click(function(){ next('font'); } );
+
+$(document).keydown(function(event) { 
+    if (event.keyCode == 39) { next('font'); }
+    if (event.keyCode == 37) { prev('font'); }
+    if (event.keyCode == 38) { next('color'); }
+    if (event.keyCode == 36) { prev('color'); }
+    if (event.keyCode == 75) { next('bgcolor'); }
+    if (event.keyCode == 74) { prev('bgcolor'); }
+    return true;
+});
+</script>
 
 <h1> ePADD Developers guide </h1>
+<h3>
+<span style="display:none;position:absolute; top:0;padding:2px 5px; background:royalblue; opacity:0.5;color: white;" id="font"></span>
+<span style="display:none;position:absolute; top:0;padding:2px 5px; margin-left: 200px; background:royalblue; opacity:0.5;color: white;" id="color"></span>
+<span style="display:none;position:absolute; top:0;padding:2px 5px; margin-left: 400px; background:royalblue; opacity:0.5;color: white;" id="bgcolor"></span>
+</h3>
 
 <h3>Building ePADD</h3>
 <p>
