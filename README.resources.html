@@ -1,42 +1,85 @@
 <html>
 <title>ePADD developers guide</title>
 <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
-<body style="margin-top: 50px;margin-left:5%; margin-right: 5%; margin-bottom: 50px;font-family:Hind;sans-serif">
+<style>
+    .param { display:inline-block; margin: 2px 10px; cursor: hand; padding: 5px 5px; background:black; opacity:0.7;color: white; }
+    .selected-param { border: solid 5px red; font-size:120%; }
+</style>
+
+<body style="margin-left:5%; margin-right: 5%; margin-bottom: 50px;font-family:Hind;sans-serif">
 
 <script>
 "use strict";
-var params = ['font', 'color', 'bgcolor'];
+
+//////////// Configuration
+
+var params = ['font', 'color', 'bgcolor', 'weight', 'align', 'line_height', 'letter_spacing'];
+var params = ['font', 'color', 'bgcolor', 'align'];
 var currentParam = params[0];
-var currentIdx = {}, cssprop = {};
-$(params).each(function(i, e) { currentIdx[e] = 0; cssprop[e] = e;});
+var currentIdx = {}, cssprop = {}, paramDisplayName = {};
+$(params).each(function(i, e) { currentIdx[e] = 0; cssprop[e] = e; paramDisplayName[e] = e;});
+
 cssprop['font'] = 'font-family';
+cssprop['weight'] = 'font-weight';
 cssprop['bgcolor'] = 'background-color';
+cssprop['align'] = 'text-align';
+cssprop['line_height'] = 'line-height';
+cssprop['letter_spacing'] = 'letter-spacing';
+
+paramDisplayName['font'] = 'Font';
+paramDisplayName['color'] = 'Color';
+paramDisplayName['bgcolor'] = 'Background';
 
 var font = ['Hind', 'Catamaran', 'Montserrat', 'Roboto', 'Lato', 'Oswald', 'Roboto-Condensed', 'Source-Sans-Pro', 'Raleway', 'PT-Sans', 'Roboto-Slab', 'Droid-Sans', 'Ubuntu', 'Droid-Serif', 'Arimo', 'Merriweather', 'Fjalla-One', 'Noto-Sans', 'Titillium-Web', 'PT-Serif', 'Dosis', 'Bitter', 'Alegreya-Sans', 'Cabin', 'Lobster', 'Arvo', 'Noto-Serif', 'Nunito', 'Josefin-Sans', 'Libre-Baskerville', 'Exo-2', 'Asap', 'Merriweather-Sans', 'Pacifico', 'Ubuntu-Condensed', 'Signika', 'Crimson-Text', 'Quicksand', 'Varela-Round', 'Archivo-Narrow', 'Cuprum', 'Vollkorn', 'Play', 'Poppins', 'Maven-Pro', 'Karla', 'Exo', 'PT-Sans-Caption', 'Rokkitt', 'Orbitron', 'Rubik', 'Roboto-Mono', 'Crete-Round', 'Fira-Sans', 'Monda', 'Comfortaa', 'Noticia-Text', 'Ropa-Sans', 'Kaushan-Script', 'Istok-Web-italic-700', 'BenchNine'];
 var color = ['black', 'red', 'green', 'blue', 'white', 'gray', 'black'];
 var bgcolor = ['white', 'magenta', 'orange', 'purple', 'gray'];
+var weight = ['100', '200', '400', '800'];
+var align = ['left', 'right', 'center'];
+var line_height = ['1em', '1.5em', '2em', '2.5em', '3em'];
+var letter_spacing = ['0.5px', '1px', '1.5px', '2px', '2.5px', '3px'];
+
+//////////// End configuration
+
+function update_param (param) {
+    var proparray = window[param];
+    var propval = proparray[currentIdx[param]];
+    $('body').css(cssprop[param], propval);
+    $('#' + param).html(paramDisplayName[param] + ': ' + propval + ' (' + (currentIdx[param]+1) + '/' + proparray.length + ")").fadeIn();
+}
 
 function next(param) {
     var proparray = window[param];
     currentIdx[param] = (currentIdx[param] + 1) % proparray.length;
-    var propval = proparray[currentIdx[param]];
-    $('body').css(cssprop[param], propval);
-    $('#' + param).html(param + ':' + propval).fadeIn();
-};
+    update_param (param);
+}
 
 function prev(param) {
     var proparray = window[param];
     currentIdx[param] = (currentIdx[param] - 1);
 	if (currentIdx[param] < 0)
         currentIdx[param] = proparray.length - 1;
-    var propval = proparray[currentIdx[param]];
-    $('body').css(cssprop[param], propval);
-    $('#' + param).html(param + ':' + propval).fadeIn();
-};
+    update_param (param);
+}
 
-$(document).ready(function(){ 
+// can be called with either an event or a string 
+function focus_param(e) { 
+    currentParam = (e.target) ? $(e.target).attr('id') : e;
+	$('.param').removeClass('selected-param'); 
+	$('#' + currentParam).addClass('selected-param'); 
+    return false;
+}
+
+$(document).ready(function() { 
     $(font).each(function (i, e) { $('head').append('<link href="https://fonts.googleapis.com/css?family=' + e +'" rel="stylesheet" type="text/css"/>'); });
-    // $(params).each (function(i, e) { next(e); });
+    $('body').prepend ('<h3 class="param-legend"></h3>');
+    $(params).each(function (i, param) { 
+         $('h3.param-legend').append('<div class="param" id="' + param + '"></div>');  
+    });
+
+    // initialize all the params
+    $(params).each(function (i, param) { update_param(param); });
+    $('.param').click(focus_param);
+    $('#' + params[0]).addClass('selected-param');
 });
 
 $(document).click(function(){ next(currentParam); } );
@@ -44,21 +87,15 @@ $(document).click(function(){ next(currentParam); } );
 $(document).keydown(function(event) { 
     if (event.keyCode == 39) { next(currentParam); }
     if (event.keyCode == 37) { prev(currentParam); }
-    if (event.keyCode == 66) { currentParam = 'bgcolor'; next(currentParam); } 
-    if (event.keyCode == 70) { currentParam = 'font'; next(currentParam); } 
-    if (event.keyCode == 67) { currentParam = 'color'; next(currentParam); } 
+    if (event.keyCode == 66) { currentParam = 'bgcolor';  focus_param (currentParam); } 
+    if (event.keyCode == 70) { currentParam = 'font';  focus_param (currentParam); } 
+    if (event.keyCode == 67) { currentParam = 'color'; focus_param (currentParam); } 
 
     if (event.keyCode == 75) { next(currentParam); } // k
     if (event.keyCode == 74) { prev(currentParam); } // j
     return true;
 });
 </script>
-
-<h3 style="position:absolute; top:0; width:100%;">
-    <span style="padding:2px 5px; background:royalblue; opacity:0.7;color: white;" id="font"></span>
-    <span style="padding:2px 5px; margin-left: 200px; background:royalblue; opacity:0.7;color: white;" id="color"></span>
-    <span style="padding:2px 5px; margin-left: 400px; background:royalblue; opacity:0.7;color: white;" id="bgcolor"></span>
-</h3>
 
 <h1> ePADD Developers guide </h1>
 <h3>Building ePADD</h3>
