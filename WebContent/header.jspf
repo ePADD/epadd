@@ -82,8 +82,7 @@
 		 			<%
 						boolean enableOptions = haveArchive && (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode());
 						if (enableOptions) { %>
-						<li><a href="set-images"><i class="menu-icon fa fa-file-image-o fa-fw"></i>Set Images
-						</a></li>
+						<li><a href="set-images"><i class="menu-icon fa fa-file-image-o fa-fw"></i>Set Images</a></li>
 						<li><a href="edit-correspondents"><i class="menu-icon fa fa-pencil fa-fw"></i>Edit Correspondents</a></li>
 					<% } %>
                         <li><a href="browse-finetypes.jsp"><i class="menu-icon fa fa-tachometer fa-fw"></i>Fine-grained types</a></li>
