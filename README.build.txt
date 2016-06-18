@@ -33,5 +33,9 @@ Notes:
 
 The muse project contains most of the Java based code. It is the core engine used in ePADD.  The epadd project contains primarily the frontend screens for the application (in the WebContent directory) and creates a deployable WAR file.  epadd-launcher bundles up the epadd.war into a standalone, runnable jar using an embedded Tomcat server.
 
-3. To run automated test cases, go to epadd-launcher and type
-mvn -f pom-test.xml test
+3. To check whether the program built correctly, you can try to run:
+java -Xmx2g -jar epadd-standalone.jar
+
+4. To run automated test cases, first quit all running instances of ePADD. Then go to epadd-launcher, edit config.properties with the appropriate paths for your system and type mvn -f pom-test.xml test
+The script in epadd-launcher/src/test/resources/feature/epadd.feature will be run.
+

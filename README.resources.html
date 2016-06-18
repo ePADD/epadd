@@ -13,7 +13,7 @@
 
 //////////// Configuration
 
-var params = ['font', 'color', 'bgcolor', 'weight', 'align', 'line_height', 'letter_spacing'];
+var params = ['font', 'color', 'bgcolor', 'weight', 'align', 'line_height', 'line'];
 var params = ['font', 'color', 'bgcolor', 'align'];
 var currentParam = params[0];
 var currentIdx = {}, cssprop = {}, paramDisplayName = {};
@@ -29,13 +29,15 @@ cssprop['letter_spacing'] = 'letter-spacing';
 paramDisplayName['font'] = 'Font';
 paramDisplayName['color'] = 'Color';
 paramDisplayName['bgcolor'] = 'Background';
+paramDisplayName['line_height'] = 'Line spacing';
+paramDisplayName['letter_spacing'] = 'Letter spacing';
 
-var font = ['Hind', 'Catamaran', 'Montserrat', 'Roboto', 'Lato', 'Oswald', 'Roboto-Condensed', 'Source-Sans-Pro', 'Raleway', 'PT-Sans', 'Roboto-Slab', 'Droid-Sans', 'Ubuntu', 'Droid-Serif', 'Arimo', 'Merriweather', 'Fjalla-One', 'Noto-Sans', 'Titillium-Web', 'PT-Serif', 'Dosis', 'Bitter', 'Alegreya-Sans', 'Cabin', 'Lobster', 'Arvo', 'Noto-Serif', 'Nunito', 'Josefin-Sans', 'Libre-Baskerville', 'Exo-2', 'Asap', 'Merriweather-Sans', 'Pacifico', 'Ubuntu-Condensed', 'Signika', 'Crimson-Text', 'Quicksand', 'Varela-Round', 'Archivo-Narrow', 'Cuprum', 'Vollkorn', 'Play', 'Poppins', 'Maven-Pro', 'Karla', 'Exo', 'PT-Sans-Caption', 'Rokkitt', 'Orbitron', 'Rubik', 'Roboto-Mono', 'Crete-Round', 'Fira-Sans', 'Monda', 'Comfortaa', 'Noticia-Text', 'Ropa-Sans', 'Kaushan-Script', 'Istok-Web-italic-700', 'BenchNine'];
+var font = ['Poppins', 'Hind', 'Catamaran', 'Montserrat', 'Roboto', 'Lato', 'Oswald', 'Raleway', 'Ubuntu', 'Arimo', 'Merriweather', 'Dosis', 'Bitter',  'Cabin', 'Lobster', 'Arvo', 'Nunito', 'Asap', 'Merriweather-Sans', 'Pacifico', 'Signika', 'Quicksand', 'Cuprum', 'Vollkorn', 'Play', 'Karla', 'Exo', 'Rokkitt', 'Orbitron', 'Rubik', 'Monda', 'Comfortaa',   'BenchNine'];
 var color = ['black', 'red', 'green', 'blue', 'white', 'gray', 'black'];
 var bgcolor = ['white', 'magenta', 'orange', 'purple', 'gray'];
 var weight = ['100', '200', '400', '800'];
 var align = ['left', 'right', 'center'];
-var line_height = ['1em', '1.5em', '2em', '2.5em', '3em'];
+var line_height = ['0.5em', '1em', '1.5em', '2em', '2.5em', '3em'];
 var letter_spacing = ['0.5px', '1px', '1.5px', '2px', '2.5px', '3px'];
 
 //////////// End configuration
