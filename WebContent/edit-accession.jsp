@@ -121,6 +121,22 @@
 				</textarea>
 			</div>
 		</div>
+		<div class="div-input-field">
+			<div class="input-field-label">Rights and Conditions</div>
+			<br/>
+			<div class="input-field">
+				<textarea style="resize:vertical;height:200px;" class="form-control" type="text" name="rights"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.rights)%>
+				</textarea>
+			</div>
+		</div>
+		<div class="div-input-field">
+			<div class="input-field-label">Notes</div>
+			<br/>
+			<div class="input-field">
+				<textarea style="resize:vertical;height:200px;" class="form-control" type="text" name="notes"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.notes)%>
+				</textarea>
+			</div>
+		</div>
 		<br/>
 		<br/>
 		<div style="margin-left:40px">

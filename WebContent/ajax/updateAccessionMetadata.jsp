@@ -92,6 +92,8 @@ try {
 	archive.processingMetadata.collectionID = request.getParameter("collectionID");
 	archive.processingMetadata.accessionID = request.getParameter("accessionID");
     archive.processingMetadata.contactEmail = request.getParameter("contactEmail");
+    archive.processingMetadata.rights = request.getParameter("rights");
+    archive.processingMetadata.notes = request.getParameter("notes");
 
 	archive.processingMetadata.findingAidLink = request.getParameter("findingAidLink");
 	archive.processingMetadata.catalogRecordLink = request.getParameter("catalogRecordLink");

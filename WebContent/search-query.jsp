@@ -43,8 +43,8 @@
 
 <div style="text-align:center; margin:auto; width:600px;">
 	<div style="width:100%;margin-bottom:20px;">
-		<span id="simple-search-header"  class="underlined-header search-header" >Simple search</span>
-		<span id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</span>
+		<a id="simple-search-header"  class="underlined-header search-header" >Simple search</a>
+		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>
 	</div>
 
 	<div id="simple-search"style="text-align:center">
