@@ -4,16 +4,17 @@
 	JSPHelper.checkContainer(request); // do this early on so we are set up
   request.setCharacterEncoding("UTF-8");
 %>
+<%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.ie.InternalAuthorityAssigner"%>
-<%@page language="java" import="edu.stanford.muse.util.Pair"%>
-<%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@page language="java" import="edu.stanford.muse.datacache.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@page language="java" import="edu.stanford.muse.index.Searcher"%>
+<%@page language="java" import="edu.stanford.muse.util.DetailedFacetItem"%>
+<%@page language="java" import="edu.stanford.muse.util.EmailUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
-<%@page language="java" import="edu.stanford.muse.ie.InternalAuthorityAssigner"%>
+<%@page language="java" import="edu.stanford.muse.util.Util"%>
+<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@ page import="java.util.*" %>
 
 <%@include file="getArchive.jspf" %>
 
@@ -121,8 +122,12 @@ if (ModeConfig.isPublicMode()) {
 		assignauthorities = InternalAuthorityAssigner.load(archive);
 		request.getSession().setAttribute("authorities", assignauthorities);
 	}
-	 
-	 Pair<Collection<Document>,Collection<Blob>> search_result = JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false);
+
+	Pair<Collection<Document>, Collection<Blob>> search_result =
+			(request.getParameter("adv-search") == null) ?
+					JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false) :
+					Searcher.searchDocs(archive, request, false);
+
 	 Collection<Document> docs = search_result.first;
 
     //Collections.sort(docs);//order by time
@@ -684,6 +689,8 @@ $('.flag').click (function(e) {
 	$target.toggleClass('flag-enabled');
 	apply(e, false);
 });
+
+$('#annotation_div').focusout(function (e) { apply(e, false); });
 
 $('#apply').click(function(e) { apply(e, false);});
 $('#applyToAll').click(function(e) { apply(e, true);});

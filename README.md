@@ -120,6 +120,7 @@ Under Apache License 2.0:
 - Java SE Platform Products © Oracle - Oracle BCL
 - Launch4j © Grzegorz Kowal BSD 3-clause license and MIT license 
 - Font Awesome © Dave Gandy MIT license, SIL OFL 1.1
+- Jquery-autocomplete © Tomas Kirda under MIY-style license.
 - Jsoup 
 
 Cooliris Image wall (Special thanks to Soujanya Bhumkar, Austin Shoemaker and team for making the software available to us)

@@ -1,4 +1,5 @@
 <%@ page import="java.util.Collection" %>
+<%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -15,16 +16,32 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<jsp:include page="css/css.jsp"/>
+
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	<!--
+        <style>
+            td > div {
+                padding: 5px;
+            }
+            .option { margin-right:15px;}
+        </style>
+        -->
 	<style>
-		td > div {
-			padding: 5px;
+		.autocomplete-suggestions {
+			background-color: white;
+			color: #999;
+			border: 1px solid rgba(0, 0, 0, 0.15);
+			border-radius: 4px;
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+			cursor: pointer;
 		}
-		.option { margin-right:15px;}
+		.autocomplete-suggestion {
+			border-bottom: 1px solid #eaeaea;
+			padding: 8px 10px;
+			margin: 0px 10px;
+		}
 	</style>
-	-->
 		<title>Advanced Search</title>
 		<meta name="description" content="">
 	<link rel="stylesheet" href="css/main.css">
@@ -36,6 +53,8 @@
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
+		<form id="adv-search-form" action="browse" method="get">
+		<input type="hidden" name="adv-search"/>
 		<!--container-->
 		<div class="container">
 			<!--row-->
@@ -116,11 +135,11 @@
 
 					<div class="row">
 						<!--message-->
-						<div class="margin-btm  col-sm-6">
+						<div class="margin-btm  col-sm12">
 
 							<!--input form-->
 							<div class="form-group">
-								<label for="term">Message</label>
+								<label for="term">Query</label>
 								<input name="term" id="term" type="text" class="form-control">
 							</div>
 
@@ -132,47 +151,45 @@
 
 									<div class="checkbox-inline">
 										<label>
-											<input type="checkbox" name="termRegex">
-											<span class="label-text">Reg Ex</span>
+											<input type="checkbox" name="termBody" checked>
+											<span class="label-text">Search body</span>
 										</label>
 									</div>
 
 									<div class="checkbox-inline">
 										<label>
-											<input type="checkbox" name="termOriginalContentOnly">
-											<span class="label-text">Limit to Orig</span>
+											<input type="checkbox" name="termSubject" checked>
+											<span class="label-text">Search subject</span>
 										</label>
 									</div>
+
+									<div class="checkbox-inline">
+										<label>
+											<input type="checkbox" name="termAttachments" checked>
+											<span class="label-text">Search attachments</span>
+										</label>
+									</div>
+
+									<div class="checkbox-inline">
+										<label>
+											<input type="checkbox" name="termOriginalBody" checked>
+											<span class="label-text">Search original text</span>
+										</label>
+									</div>
+
+
+									<div class="checkbox-inline">
+										<label>
+											<input type="checkbox" name="termRegex">
+											<span class="label-text">Regular Expression</span>
+										</label>
+									</div>
+
 								</fieldset>
 							</div>
 						</div>
 						<!--/message-->
-						<!--subject-->
-						<div class=" margin-btm  col-sm-6">
 
-							<!--input box-->
-							<div class="form-group">
-								<label for="subjectTerm">Subject</label>
-								<input id="subjectTerm" name="subjectTerm" type="text" class="form-control">
-							</div>
-
-							<!--checkboxes-->
-							<div class="checkbox-wraper">
-								<fieldset>
-									<legend class="sr-only">Subject filters</legend>
-
-									<div class="checkbox-inline">
-										<label>
-											<input type="checkbox" name="subjectTermRegex">
-											<span class="label-text">Reg Ex</span>
-										</label>
-									</div>
-
-								</fieldset>
-							</div>
-
-						</div>
-						<!--/subject-->
 					</div>
 
 					<div class="row">
@@ -191,16 +208,38 @@
 
 					<!--To-->
 					<div class="row">
-						<div class="form-group col-sm-6">
-							<label for="to">To</label>
-							<input id="to" type="text" class="form-control">
+						<div class="form-group col-sm-12">
+							<label for="correspondent">Name or email</label>
+							<input id="correspondent" name="correspondent" type="text" class="form-control">
 						</div>
-						<!--cc/Bcc-->
-						<div class="form-group col-sm-6">
-							<label for="cc-bcc">CC/BCC</label>
-							<input id="cc-bcc" type="text" class="form-control">
+
+						<div class="checkbox-inline">
+							<label style="margin-left:10px;">
+								<input type="checkbox" name="correspondentTo" checked>
+								<span class="label-text">To</span>
+							</label>
+						</div>
+						<div class="checkbox-inline">
+							<label style="margin-left:10px;">
+								<input type="checkbox" name="correspondentFrom" checked>
+								<span class="label-text">From</span>
+							</label>
+						</div>
+						<div class="checkbox-inline">
+							<label style="margin-left:10px;">
+								<input type="checkbox" name="correspondentCc" checked>
+								<span class="label-text">Cc</span>
+							</label>
+						</div>
+						<div class="checkbox-inline">
+							<label style="margin-left:10px;">
+								<input type="checkbox" name="correspondentBcc" checked>
+								<span class="label-text">Bcc</span>
+							</label>
 						</div>
 					</div>
+
+					<br/>
 
 					<div class="row">
 						<!--mailing list-->
@@ -211,18 +250,18 @@
 								<legend class="sr-only">Mailing lists</legend>
 
 								<label class="radio-inline">
-									<input type="radio" name="mailingListState">
-									<span class="text-radio">None</span>
+									<input type="radio" name="mailingListState" value="yes">
+									<span class="text-radio">Yes</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="mailingListState">
-									<span class="text-radio">At least one</span>
+									<input type="radio" name="mailingListState" value="no">
+									<span class="text-radio">No</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="mailingListState">
-									<span class="text-radio">All</span>
+									<input type="radio" name="mailingListState" value="either" checked>
+									<span class="text-radio">Either</span>
 								</label>
 
 							</fieldset>
@@ -236,46 +275,10 @@
 				<div class="attachment search-wraper clearfix">
 					<h4>Attachment</h4>
 
-					<fieldset class="show-form">
-						<legend class="sr-only">Show attachment</legend>
-						<div class="checkbox-inline">
-							<label>
-								<input type="checkbox" name="show-check">
-								<span class="label-text">Has Attachment</span>
-							</label>
-						</div>
-					</fieldset>
-
 					<!--form-wraper-->
 					<div class="form-wraper clearfix">
 
 						<div class="row">
-							<!--Content-->
-							<div class="margin-btm  col-sm-6">
-
-								<!--input box-->
-								<div class="form-group">
-									<label for="attachmentTerm">Content</label>
-									<input name="attachmentTerm" id="attachmentTerm" type="text" class="form-control">
-								</div>
-
-								<!--checkboxes-->
-								<div class="checkbox-wraper">
-									<fieldset>
-										<legend class="sr-only">content filters
-										</legend>
-
-										<div class="checkbox-inline">
-											<label>
-												<input name="attachmentRegex" id="attachmentRegex" type="checkbox">
-												<span class="label-text">Reg Ex</span>
-											</label>
-										</div>
-									</fieldset>
-								</div>
-
-							</div>
-							<!--/Content-->
 
 							<!--File Name-->
 							<div class="margin-btm col-sm-6">
@@ -293,7 +296,7 @@
 
 										<div class="checkbox-inline">
 											<label>
-												<input name="attachmentFilename" type="checkbox" name="check-attachment">
+												<input name="attachmentFilenameRegex" type="checkbox" name="check-attachment">
 												<span class="label-text">Reg Ex</span>
 											</label>
 										</div>
@@ -302,34 +305,7 @@
 								</div>
 
 							</div>
-						</div>
 
-						<div class="row">
-							<!--Type-->
-							<div class="form-group col-sm-6">
-								<label for="attachmentType">Type</label>
-								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker"
-										title="Select" multiple>
-									<option value="avi,mp4">Video (avi, mp4, etc.)</option>
-									<option value="mp3,ogg">Audio (mp3, etc.)</option>
-									<option value="jpg,png,gif,bmp">Graphics (jpg, png, bmp, gif, etc.)</option>
-									<option value="fmp,db,mdb,accdb">Database (fmp, db, mdb, accdb, etc.)</option>
-									<option value="ppt,pptx,key">Presentation (ppt, pptx, etc.)</option>
-									<option value="xls,xlsx,numbers">Spreadsheet (pptx, ppt, etc.)</option>
-									<option value="doc,docx,pages">Document (doc, docx, pdf, etc.)</option>
-									<option value="html,css,js">Internet file (html, etc.)</option>
-									<option value="zip,7z,tar,tgz">Zip (zip, 7zip, tar, ar, etc.)</option>
-								</select>
-							</div>
-
-							<!--Extension-->
-							<div class="form-group col-sm-6">
-								<label for="attachmentExtension">Other extension</label>
-								<input name="attachmentExtension" id="attachmentExtension" type="text" class="form-control">
-							</div>
-						</div>
-
-						<div class="row">
 							<!--File Size-->
 							<div class="form-group col-sm-6">
 								<label for="attachmentFilesize">File Size</label>
@@ -343,6 +319,35 @@
 								</select>
 							</div>
 						</div>
+
+						<div class="row">
+							<!--Type-->
+							<div class="form-group col-sm-6">
+								<label for="attachmentType">Type</label>
+								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker"
+										title="Select" multiple>
+									<option value="avi;mp4">Video (avi, mp4, etc.)</option>
+									<option value="mp3;ogg">Audio (mp3, etc.)</option>
+									<option value="jpg;png;gif;bmp">Graphics (jpg, png, bmp, gif, etc.)</option>
+									<option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb, etc.)</option>
+									<option value="ppt;pptx;key">Presentation (ppt, pptx, etc.)</option>
+									<option value="xls;xlsx;numbers">Spreadsheet (pptx, ppt, etc.)</option>
+									<option value="doc;docx;pages">Document (doc, docx, pdf, etc.)</option>
+									<option value="html;css;js">Internet file (html, etc.)</option>
+									<option value="zip;7z;tar;tgz">Zip (zip, 7zip, tar, ar, etc.)</option>
+								</select>
+							</div>
+
+							<!--Extension-->
+							<div class="form-group col-sm-6">
+								<label for="attachmentExtension">Other extension</label>
+								<input name="attachmentExtension" id="attachmentExtension" type="text" class="form-control">
+							</div>
+						</div>
+
+						<div class="row">
+
+						</div>
 					</div>
 				</div>
 				<!--/Attachment-->
@@ -351,16 +356,6 @@
 				<div class=" actions search-wraper clearfix">
 
 					<h4>Actions</h4>
-
-					<fieldset class="show-form">
-						<legend class="sr-only">Show actions</legend>
-						<div class="checkbox-inline">
-							<label>
-								<input type="checkbox" name="show-check">
-								<span class="label-text">Include Action</span>
-							</label>
-						</div>
-					</fieldset>
 
 					<!--form-wraper-->
 					<div class="form-wraper clearfix">
@@ -379,17 +374,17 @@
 								<legend class="sr-only">Reviewed flters</legend>
 
 								<label class="radio-inline">
-									<input type="radio" name="reviewed">
+									<input value="yes" type="radio" name="reviewed">
 									<span class="text-radio">Yes</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="reviewed">
+									<input value="no" type="radio" name="reviewed">
 									<span class="text-radio">No</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="reviewed" checked>
+									<input value="either" type="radio" name="reviewed" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -405,17 +400,17 @@
 								<legend class="sr-only">Restricted filters</legend>
 
 								<label class="radio-inline">
-									<input type="radio" name="transferWithRestrictions">
+									<input value="yes" type="radio" name="transferWithRestrictions">
 									<span class="text-radio">Yes</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="transferWithRestrictions">
+									<input value="no" type="radio" name="transferWithRestrictions">
 									<span class="text-radio">No</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="transferWithRestrictions" checked>
+									<input value="either" type="radio" name="transferWithRestrictions" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -425,23 +420,23 @@
 
 						<!--Transfer-->
 						<div class="form-group col-sm-6">
-							<label for="doNotTransfer">Transfer</label>
+							<label for="doNotTransfer">Not transferred</label>
 
 							<fieldset id="doNotTransfer" name="transfer" class="comman-radio">
 								<legend class="sr-only">Transfer filters</legend>
 
 								<label class="radio-inline">
-									<input type="radio" name="doNotTransfer">
+									<input value="yes" type="radio" name="doNotTransfer">
 									<span class="text-radio">Yes</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="doNotTransfer">
+									<input value="no" type="radio" name="doNotTransfer">
 									<span class="text-radio">No</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="doNotTransfer" checked>
+									<input value="either" type="radio" name="doNotTransfer" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -461,9 +456,9 @@
 						<div class="form-group col-sm-6">
 							<label for="time-range">Time Range</label>
 							<div id="time-range" class="date-input-group">
-								<input name="startDate" type="date" class="form-control" placeholder="YYYY / MM / DD">
-								<label for="to">To</label>
-								<input name="endDate" type="date" class="form-control" placeholder="YYYY / MM / DD">
+								<input name="startDate" type="date" min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+								<label for="endDate">To</label>
+								<input id="endDate" name="endDate" type="date"  min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
 							</div>
 						</div>
 
@@ -474,18 +469,18 @@
 								<legend class="sr-only">Message Direction filters
 								</legend>
 								<label class="radio-inline">
-									<input type="radio" name="direction">
+									<input value="in" type="radio" name="direction">
 									<span class="text-radio">Incoming</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="direction">
+									<input value="out" type="radio" name="direction">
 									<span class="text-radio">Outgoing</span>
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="direction">
-									<span class="text-radio">Both</span>
+									<input value="either" type="radio" name="direction" checked>
+									<span class="text-radio">Either</span>
 								</label>
 							</fieldset>
 						</div>
@@ -494,14 +489,20 @@
 					<!--Email Source-->
 					<div class="row">
 						<div class="form-group col-sm-6">
-							<label for="email-source">Email Source</label>
-							<input name="emailSource" id="email-source" type="text" class="form-control">
+							<label for="emailSource">Email Source</label>
+							<select id="emailSource" name="emailSource" class="form-control selectpicker" name="Choose-source">
+								<option value="" selected disabled>Select</option>
+								<% Collection<String> emailSources = EmailUtils.getAllEmailSourcesInDocs((Collection) archive.getAllDocs());
+									for (String emailSource : emailSources) { %>
+										<option value="<%=emailSource%>"><%=emailSource%></option>
+								<% }%>
+							</select>
 						</div>
 
 						<!--Message Folder-->
 						<div class="form-group col-sm-6">
-							<label for="Message Folder">Message Folder</label>
-							<input name="folder" id="Message Folder" type="text" class="form-control">
+							<label for="messageFolder">Message Folder</label>
+							<input name="folder" id="messageFolder" type="text" class="form-control">
 						</div>
 
 					</div>
@@ -524,10 +525,10 @@
 							<label for="lexiconCategory">Lexicons Category</label>
 							<select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker" name="Choose-file">
 								<option value="" selected disabled>Select</option>
-								<option value="1">placeholder1</option>
-								<option value="2">placeholder2</option>
-								<option value="3">placeholder3</option>
-								<option value="4">placeholder4</option>
+
+								<option value="2">Category 2</option>
+								<option value="3">Category 3</option>
+								<option value="4">Category 4</option>
 							</select>
 						</div>
 					</div>
@@ -544,13 +545,14 @@
 							<label for="sortBy">Sort results by</label>
 							<select id="sortBy" class="form-control selectpicker" name="sortBy">
 								<option value="" selected disabled>Select</option>
-								<option value="relevance">Relevance</option>
+								<option value="relevance">Most relevant</option>
 								<option value="recent">Newest first</option>
 								<option value="chronological">Oldest first</option>
 							</select>
 						</div>
 
 						<!--checkboxes-->
+						<!--
 						<div class="checkbox-wraper">
 							<fieldset>
 								<legend class="sr-only">Save this search</legend>
@@ -563,6 +565,7 @@
 								</div>
 							</fieldset>
 						</div>
+						-->
 					</div>
 					</div>
 				</div>
@@ -571,13 +574,13 @@
 				<!--Search and clear form buttons-->
 				<div class="search-clear-btns">
 					<!--search btn-->
-					<button type="submit" class="search-btn">
+					<button id="search-button" ype="submit" class="search-btn">
 						<h5>Search</h5>
 						<img src="images/search-icon.png" allt="search-icon">
 					</button>
 
 					<!--clear btn-->
-					<button id="clear-form" type="submit" class="clear-btn">
+					<button id="clear-form" class="clear-btn">
 						<img src="images/Clear Form.png" alt="clear-icon">
 						<h5>Clear Form</h5>
 					</button>
@@ -586,15 +589,18 @@
 
 			</div>
 			<!--/row-->
+		</form>
 		</div>
 		<!--/container-->
 	</div>
 	<!--/Advanced Search-->
 
 
-	   <!--scripts-->
-	   	<script  src="js/jquery-1.12.1.min.js"></script>
-	   	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
+   <!--scripts-->
+	<script  src="js/jquery-1.12.1.min.js"></script>
+	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+
+	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
 <!--	   	<script src="js/bootstrap.min.js"></script> -->
 	   	<script src="js/main.js"></script>
 	   	<script src="js/modernizr.min.js"></script>
@@ -605,6 +611,87 @@
 		</script>
 	   	<!-- selectpicker -->
 		<script src="js/selectpicker.js"></script>
+	<script>
+		$('#clear-form').click(function() {
+			$('#adv-search.form input').val();
+			return false;
+		});
+
+		$('#search-button').click(function() {
+			$('#adv-search.form').submit();
+		});
+
+		var autocomplete_params = {
+			serviceUrl: 'ajax/correspondentAutoComplete.jsp',
+			onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
+			preventBadQueries: false,
+			showNoSuggestionNotice: true,
+			preserveInput: true,
+			ajaxSettings: {
+				"timeout":3000,
+				dataType: "json"
+			},
+			dataType: "text",
+			//100ms
+			deferRequestsBy: 100,
+			onSelect: function(suggestion) {
+				var existingvalue = $(this).val();
+				var idx = existingvalue.lastIndexOf(';');
+				if (idx <= 0)
+					$(this).val(suggestion.name);
+				else
+					$(this).val (existingvalue.substring (0, idx+1) + ' ' + suggestion.name); // take everything up to the last ";" and replace after that
+			},
+			onHint: function (hint) {
+				$('#autocomplete-ajax-x').val(hint);
+			},
+			onInvalidateSelection: function() {
+				epadd.log('You selected: none');
+			}
+		};
+
+		$('#correspondent').autocomplete(autocomplete_params);
+
+		var emailSourceAutoCompleteParams = $.extend({}, autocomplete_params);
+		emailSourceAutoCompleteParams.serviceUrl = 'ajax/emailSourceAutoComplete.jsp';
+		$('#emailSource').autocomplete(emailSourceAutoCompleteParams);
+
+		var folderAutoCompleteParams = $.extend({}, autocomplete_params);
+		folderAutoCompleteParams.serviceUrl = 'ajax/folderAutoComplete.jsp';
+		$('#messageFolder').autocomplete(folderAutoCompleteParams);
+
+		var annotationAutoCompleteParams = $.extend({}, autocomplete_params);
+		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp';
+		$('#annotation').autocomplete(annotationAutoCompleteParams);
+
+		$('#lexiconName').change(function() {
+			$options = $('#lexiconCategory option');
+			$options.each (function (i, e) { if (i > 0) $(e).remove(); }); // remove all except the first option (which is "select")
+
+			cats = ['a', 'b', 'c'];
+			for (var i = 0; i < cats.length; i++) {
+				$('#lexiconCategory').append('<option value="' + cats[i] + '">' + $('#lexiconName').val() + ":" + cats[i] + '</option>');
+			}
+			$('.selectpicker').selectpicker('refresh');
+		});
+
+		$('#clear-form').click(function() {
+			$('input[type="text"]').val('');
+
+//			$('input[name="mailingListState"]').val(["either"]);
+//			$('input[name="reviewed"]').val(["either"]);
+//			$('input[name="doNotTransfer"]').val(["either"]);
+//			$('input[name="transferWithRestrictions"]').val(["either"]);
+
+			$('input[name="termSubject"], input[name="termBody"], input[name="termAttachments"], input[name="termOriginalBody"]').prop('checked', true);
+			$('input[name="termRegex"]').prop('checked', false);
+
+			$('input[name="correspondentTo"], input[name="correspondentFrom"], input[name="correspondentCc"], input[name="correspondentBcc"]').prop('checked', true);
+			$('#termSubject, #termBody, #termOriginalBody, #termAttachments').prop('checked', true);
+			// TODO: reset the other fields also, esp. the select picker
+		});
+
+	</script>
   
 	</body>
 </html>
