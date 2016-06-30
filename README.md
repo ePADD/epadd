@@ -18,14 +18,14 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 
 **System Requirements**
 
-OS: Windows 7 SP1 / 8.1, Mac OS X  10.9 / 10.10
+OS: Windows 7 SP1 / 8.1 / 10, Mac OS X  10.9 / 10.10
 Memory:  4096 MB RAM (2048 MB RAM allocated to the application by default)
 Browser:  Chrome 41/42, Firefox 38/39 
 Windows installations: Java Runtime Environment 7u55 or later required. 
 
 **Installation** 
 
-ePADD has been tested on and optimized for Windows 7 SP1 / 8.1 and  Mac OS X  10.9 / 10.10. Please follow the instructions below for your operating system.
+ePADD has been tested on and optimized for Windows 7 SP1 / 8.1 / 10 and  Mac OS X  10.9 / 10.10. Please follow the instructions below for your operating system.
 
 *Installing ePADD on Windows*
 
@@ -37,8 +37,7 @@ In order for functionality for authority reconciliation to perform correctly, yo
 
 Note: This directory houses many customizable files discussed further elsewhere in the user guide, and also includes a file, “config.PROPERTIES,” which can be edited to update the contact information for your repository’s Administrator in case of system errors. 
 
-Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. 
-Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
+Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
@@ -51,8 +50,7 @@ In order for functionality related to authority reconciliation to perform correc
 
 This directory houses many customizable files discussed further elsewhere in the user guide, and also includes a file, “config.properties,” which can be edited to update the contact information for your repository’s Administrator in case of system errors. 
 
-Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. 
-In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
+Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
@@ -80,20 +78,37 @@ Unless otherwise indicated, software items in this repository are distributed un
 - Saumya Sarangi, Lollypop Design;
 - Mandeep RJ, Lollypop Design
 
-*Initial specifications (requirements and wireframes):*
-- Daniel Hartwig, Stanford University Libraries;
-- Daniel Jarvis, Hoover Institute, Stanford;
-- Lisa Miller, Hoover Institute, Stanford;
-- Aimee Morgan, formerly Stanford University Libraries;
-- Laura O'Hara, formerly SLAC National Accelerator Laboratory
+*Testing and Collaboration (Phase 2):*
+- Laura Uglean Jackson, University of California, Irvine;
+- Skip Kendall, Harvard University;
+- Margo Padilla, Metropolitan New York Library Council (METRO);
+- Christopher Prom, University of Illinois at Urbana-Champaign
 
-*Testing and Collaboration:*
+*Advisory Board (Phase 2):*
+- Sherri Berger, California Digital Library;
+- Andrew Byers, Duke University;
+- Jackie Dooley, OCLC Research;
+- Mike Giarlo, Stanford University;
+- Marie Hicks, Illinois Institute of Technology;
+- Peter Hirtle, Cornell University;
+- Jeremy Leighton John, British Library;
+- Cal Lee, University of North Carolina, Chapel Hill;
+- Evelyn McLellan, Artefactual;
+- Mark Matienzo, Digital Public Library of America;
+- T. Christian Miller, ProPublica;
+- Jessica Moran, National Library of New Zealand;
+- David Rosenthal, Stanford University;
+- Marc A. Smith, Social Media Research Foundation;
+- Terry Winograd, Stanford University;
+- Kam Woods, University of North Carolina, Chapel Hill
+
+*Testing and Collaboration (Phase 1):*
 Donald Mennerich, New York University Libraries;
 Susan Thomas, Bodleian Library, Oxford University;
 Riccardo Ferrante and Lynda Schmitz Fuhrig, Smithsonian Institution Archives;
 Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University
 
-*Advisors (Phase 1):*
+*Advisory Board (Phase 1):*
 - Jeremy Leighton John, British Library;
 - Monica S. Lam, Stanford University;
 - Phillip R. Malone, Stanford University;
@@ -103,12 +118,19 @@ Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University
 - Ben Shneiderman, University of Maryland;
 - Jeff Ubois, Macarthur Foundation
 
+*Initial specifications (requirements and wireframes):*
+- Daniel Hartwig, Stanford University Libraries;
+- Daniel Jarvis, Hoover Institute, Stanford;
+- Lisa Miller, Hoover Institute, Stanford;
+- Aimee Morgan, formerly Stanford University Libraries;
+- Laura O'Hara, formerly SLAC National Accelerator Laboratory
+
 *Funding:*
+- Instiute for Museum and Library Services (ePADD Phase 2)
 - National Historical Publications & Records Commission (ePADD Phase 1);
-- Payton J. Treat Fund from the Stanford University Libraries ;
-- U.S. National Science Foundation (for Muse);
-- Mobisocial Laboratory at Stanford University (for Muse);
-- Instiute for Museum and Library Services (ePADD phase 2)
+- Payton J. Treat Fund from the Stanford University Libraries (ePADD Phase 1);
+- U.S. National Science Foundation (Muse);
+- Mobisocial Laboratory at Stanford University (Muse)
 
 *Software:*
 
