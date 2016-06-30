@@ -103,10 +103,10 @@ Unless otherwise indicated, software items in this repository are distributed un
 - Kam Woods, University of North Carolina, Chapel Hill
 
 *Testing and Collaboration (Phase 1):*
-Donald Mennerich, New York University Libraries;
-Susan Thomas, Bodleian Library, Oxford University;
-Riccardo Ferrante and Lynda Schmitz Fuhrig, Smithsonian Institution Archives;
-Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University
+- Donald Mennerich, New York University Libraries;
+- Susan Thomas, Bodleian Library, Oxford University;
+- Riccardo Ferrante and Lynda Schmitz Fuhrig, Smithsonian Institution Archives;
+- Terry Catapano, Stephen Davis, and Dina Sokolova, Columbia University
 
 *Advisory Board (Phase 1):*
 - Jeremy Leighton John, British Library;
