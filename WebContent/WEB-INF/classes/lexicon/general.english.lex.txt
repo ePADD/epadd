@@ -1,7 +1,9 @@
-Achievements:award|prize|medal|fellowship|certificate
+Award:award|prize|medal|fellowship|certificate
 
-Family: father|dad|dada|daddy|papa|pappa|pop|"old man"|mother|mama|mamma|mom|momma|mommy|mammy|mum|mummy|"father in law"|"mother in law"|"brother in law"|"sister in law"|stepfather|stepmother|husband|wife|son|boy|daughter|girl|sister|brother|cousin|grandfather|grandmother|grandson|granddaughter|genealogy|reunion
+Family:father|dad|dada|daddy|pa|papa|pappa|pop|old-man|mother|ma|mama|mamma|mom|momma|mommy|mammy|mum|mummy|father-in-law|mother-in-law|brother-in-law|sister-in-law|stepfather|stepmother|husband|wife|son|boy|daughter|girl|sister|brother|cousin|grandfather|grandmother|grandson|granddaughter|genealogy|reunion
 
-Academics: teaching|learning|research|university|college|school|education|fellowship|professor|graduate
+Academics:teaching|learning|research|university|college|school|institute|education|fellowship|professor|graduate|tenure
 
-Publications: book|chapter|article|draft|submission|review|festschrift|poetry|prose|writing
+Publications:book|chapter|article|draft|submission|review|festschrift|poetry|prose|writing|blog
+
+ProfessionalActivities:Conference|conferences|association|academy|presentation|service|committee|"task force"

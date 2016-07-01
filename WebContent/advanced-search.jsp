@@ -89,8 +89,16 @@
 						<img src="images/requered.png" alt="">
 						<p>
 							Use <strong>+</strong> (no space) before a word to make it <strong>required.</strong>
+							<br/><br/>
+							Adding a semicolon in any free text field will return results that contain any of the selected terms.
+							<br/><br/>
+							Selection across categories will return results that meet ALL of the selected options.
+							<br/><br/>
+							Selecting multiple checkboxes (where available) will search return results that meet any of the selected options.
+
 						</p>
 					</div>
+
 
 					<!--Boolean-->
 					<div class="search-tips">
@@ -131,7 +139,7 @@
 				<!--Text-->
 				<div class="text search-wraper">
 
-					<h4>Search text</h4><br/>
+					<h4>Text</h4><br/>
 
 					<div class="row">
 						<!--message-->
@@ -139,7 +147,7 @@
 
 							<!--input form-->
 							<div class="form-group">
-								<label for="term">Query</label>
+								<label for="term">Terms</label>
 								<input name="term" id="term" type="text" class="form-control">
 							</div>
 
@@ -204,7 +212,7 @@
 
 				<!--Correspondent-->
 				<div class="correspondent search-wraper">
-					<h4>Correspondent</h4>
+					<h4>Correspondents</h4>
 
 					<!--To-->
 					<div class="row">
@@ -273,7 +281,7 @@
 
 				<!--Attachment-->
 				<div class="attachment search-wraper clearfix">
-					<h4>Attachment</h4>
+					<h4>Attachments</h4>
 
 					<!--form-wraper-->
 					<div class="form-wraper clearfix">
@@ -309,7 +317,7 @@
 							<!--File Size-->
 							<div class="form-group col-sm-6">
 								<label for="attachmentFilesize">File Size</label>
-								<select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker" name="Choose-file">
+								<select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
 									<option value="" selected disabled>Choose File Size</option>
 									<option value="1">&lt; 5KB</option>
 									<option value="2">5-20KB</option>
@@ -326,15 +334,15 @@
 								<label for="attachmentType">Type</label>
 								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker"
 										title="Select" multiple>
-									<option value="avi;mp4">Video (avi, mp4, etc.)</option>
-									<option value="mp3;ogg">Audio (mp3, etc.)</option>
-									<option value="jpg;png;gif;bmp">Graphics (jpg, png, bmp, gif, etc.)</option>
-									<option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb, etc.)</option>
-									<option value="ppt;pptx;key">Presentation (ppt, pptx, etc.)</option>
-									<option value="xls;xlsx;numbers">Spreadsheet (pptx, ppt, etc.)</option>
-									<option value="doc;docx;pages">Document (doc, docx, pdf, etc.)</option>
-									<option value="html;css;js">Internet file (html, etc.)</option>
-									<option value="zip;7z;tar;tgz">Zip (zip, 7zip, tar, ar, etc.)</option>
+									<option value="avi;mp4">Video (avi, mp4)</option>
+									<option value="mp3;ogg">Audio (mp3, ogg)</option>
+									<option value="jpg;png;gif;bmp">Graphics (jpg, png, gif, bmp)</option>
+									<option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb)</option>
+									<option value="ppt;pptx;key">Presentation (ppt, pptx, key)</option>
+									<option value="xls;xlsx;numbers">Spreadsheet (xls, xlsx, numbers)</option>
+									<option value="doc;docx;pages">Document (doc, docx, pages)</option>
+									<option value="htm;html;css;js">Internet file (htm, html, css,js)</option>
+									<option value="zip;7z;tar;tgz">Compressed (zip, 7z, tar, tgz)</option>
 								</select>
 							</div>
 
@@ -449,7 +457,7 @@
 
 				<!--Others-->
 				<div class="others search-wraper">
-					<h4>Others</h4>
+					<h4>Miscellaneous</h4>
 					<div class="row">
 
 						<!--Time Range-->
@@ -522,13 +530,9 @@
 
 						<!--Lexicons Category-->
 						<div class="form-group col-sm-6">
-							<label for="lexiconCategory">Lexicons Category</label>
+							<label for="lexiconCategory">Lexicon: Category</label>
 							<select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker" name="Choose-file">
 								<option value="" selected disabled>Select</option>
-
-								<option value="2">Category 2</option>
-								<option value="3">Category 3</option>
-								<option value="4">Category 4</option>
 							</select>
 						</div>
 					</div>
@@ -664,15 +668,43 @@
 		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp';
 		$('#annotation').autocomplete(annotationAutoCompleteParams);
 
+		var attachmentAutoCompleteParams = $.extend({}, autocomplete_params);
+		attachmentAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp';
+		$('#attachmentFilename').autocomplete(attachmentAutoCompleteParams);
+
+		var attachmentExtAutoCompleteParams = $.extend({}, autocomplete_params);
+		attachmentExtAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp?extensions=true';
+		$('#attachmentExtension').autocomplete(attachmentExtAutoCompleteParams);
+
 		$('#lexiconName').change(function() {
 			$options = $('#lexiconCategory option');
 			$options.each (function (i, e) { if (i > 0) $(e).remove(); }); // remove all except the first option (which is "select")
 
-			cats = ['a', 'b', 'c'];
-			for (var i = 0; i < cats.length; i++) {
-				$('#lexiconCategory').append('<option value="' + cats[i] + '">' + $('#lexiconName').val() + ":" + cats[i] + '</option>');
-			}
-			$('.selectpicker').selectpicker('refresh');
+			$.ajax({type: 'POST',
+				dataType: 'json',
+				url: 'ajax/getLexiconCategories.jsp',
+				data: {lexicon: $('#lexiconName').val() },
+				cache: false,
+				success: function (response) {
+					if (response && (response.status == 0)) {
+						var status = 'Success! ' + response.message;
+						var cats = response.categories;
+						for (var i = 0; i < cats.length; i++) {
+							$('#lexiconCategory').append('<option value="' + cats[i] + '">' + cats[i] + '</option>');
+						}
+						$('.selectpicker').selectpicker('refresh');
+					}
+					else {
+						if (response)
+							alert('Error! Code ' + response.status + ', Message ' + response.error);
+						else
+							alert ('Error! No response from ePADD.');
+					}
+				},
+				error: function() {
+					epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu.");
+				}});
+
 		});
 
 		$('#clear-form').click(function() {

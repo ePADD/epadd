@@ -1,0 +1,4 @@
+Teaching:Student|students|syllabus|thesis|theses|dissertation|recommendation
+Research:Research|publication|publications|journal|article|lab|laboratory|theory
+Publications:book|chapter|article|draft|submission|review|festschrift|poetry|prose|writing
+Professional Activities:Conference|conferences|association|academy|award|prize|presentation|service|committee|"task force"

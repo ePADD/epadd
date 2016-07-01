@@ -68,7 +68,7 @@
         JSONArray j = new JSONArray();
         if(FeatureDictionary.OTHER == type || desc.get(type)==null)
             continue;
-        j.put(0, "<a href='finetypes.jsp?type="+type+"' target='_blank'>"+desc.get(type)+"</a>");
+        j.put(0, "<a href='finetypes?type="+type+"' target='_blank'>"+desc.get(type)+"</a>");
         j.put(1, archive.processingMetadata.entityCounts.get(type));
         resultArray.put(count++, j);
     }

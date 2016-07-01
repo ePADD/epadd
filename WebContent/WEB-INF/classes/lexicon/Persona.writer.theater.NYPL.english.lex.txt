@@ -1,0 +1,7 @@
+Performances:show|performance|workshop|"tryout"|tryout|matinee|preview|previews|play|improv|tour|"bus and truck"|bus-and-truck|union|non-union|"non union"|equity|Broadway|Off-Broadway|stage|"give notes"|"gave notes"|feedback|production|licensing|licensed|sides
+
+Conception:development|"work in progress"|work-in-progress|draft|drafts|idea|concept|project|piece|scene|score|sketch|skit|script|rehearsal|rehearsals|run-through|"run through"|auditions|notes|idea|ideas
+
+Collaborators:producer|lyricist|director|publisher|musician|designer|actor|actress|actors|scenic|costume|costumes|lighting|set|sets|talks|worked|working|collaborate
+
+management:contract|contracts|press|pressagent|PR|publicist|investors|investment|backers|funder|agreement

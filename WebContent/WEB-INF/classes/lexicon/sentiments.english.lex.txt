@@ -65,6 +65,8 @@ despair: suicide|suicides|desperate|desperation|frustrate|frustrated|frustrating
 
 fear: afraid|fear|nervous|petrified|petrify|petrifying|horror|horrified|nightmare|nightmarish
 
+racy: sex|sexy|nsfw|erotic|erection|copulate|copulation|intercourse|horny|outercourse|aroused|boner|butt|condom|titillate|lechery|virginity|cunt|vagina|panties|chastity|lascivious|sexcapade|sexual|kinky|bondage|coitus|carnal|blowjob|"blow job"|cunnilingus|genital|nipple|tits|foreplay|lovemaking|extramarital|orgiastic|salacious|aphrodisiac|prurient|lustful|risque|"sex starved"|fornicate|sodomy|ejaculate|masturbate|adultery|incest|fondling|necking|petting|penis|semen|fetish|voyeur|slut|nude|nudity|nyphomaniac|porn|pubic|titties|whore|pornographic|raunchy|dick|testicle
+
 emergency: emergency|accident|critical|flashpoint|catastrophe|crisis|panic
 
 shock: shock|shocking|shocks|thunderstruck|stupefied|flabbergasted|dumbstruck|dumbfounded

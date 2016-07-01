@@ -181,7 +181,7 @@
 		<url-pattern>/correspondents</url-pattern>
 	</servlet-mapping>
 	
-		<servlet>
+	<servlet>
 		<servlet-name>entities</servlet-name>
 		<jsp-file>/entities.jsp</jsp-file>
 	</servlet>
@@ -189,7 +189,34 @@
 		<servlet-name>entities</servlet-name>
 		<url-pattern>/entities</url-pattern>
 	</servlet-mapping>
-	
+
+	<servlet>
+		<servlet-name>by-folder</servlet-name>
+		<jsp-file>/by-folder.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>by-folder</servlet-name>
+		<url-pattern>/by-folder</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>finetypes</servlet-name>
+		<jsp-file>/finetypes.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>finetypes</servlet-name>
+		<url-pattern>/finetypes</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>browse-finetypes</servlet-name>
+		<jsp-file>/browse-finetypes.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>browse-finetypes</servlet-name>
+		<url-pattern>/browse-finetypes</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>lexicon</servlet-name>
 		<jsp-file>/lexicon.jsp</jsp-file>

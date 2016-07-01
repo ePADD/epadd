@@ -1,0 +1,5 @@
+Genre:book|chapter|article|poetry|poem|prose|essay|writing|festschrift|piece|monograph|magazine|journal|chapbook
+
+Writing/publishing process:research|notes|draft|submission|manuscript|typescript|galleys|proofs|jacket|blurb|art|design|illustration|edit|copy|factcheck|revise|revision|publish|publication|publisher|volume
+
+Publicity:review|press|tour|talk|reading|interview|schedule|speak|speech|appearance|party|event

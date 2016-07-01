@@ -1,0 +1,16 @@
+complaint:"sexual assault"|harass|"sexual harassment"|"sex discrimination"|"gender discrimination"|discrimination|cheat|"academic fraud"|fraud|theft|concealment|toxicant|drunk|"underage drinking"|underage|"underage drink"|"unwarranted advances"|racism|racist|sexist|sexism|homophobia|homophobic|"anti semitic"|plagiarize|"physically threaten"
+
+Legal_litigation:lawsuit|"legal action"|"university counsel"|litigation
+
+financial:pcard|"procurement card"|procurement|shortfall|payout
+
+task_forces:"duke community standard"|"LGBT task force"|"student bias response advisory board"|"office of student conduct"|"academic integrity council"
+
+APT:APT|"appointment promotion and tenure"|"appointment and promotion"|"tenure appeal"|"tenure denied"|"tenure denial"|"denied tenure"
+
+contract_salary:salary|"contract renewal"|compensation|stipend
+
+performance_evaluation:"performance appraisal"|"performance evaluation"|"performance review"|"annual review"
+
+duke_scandal:"student judicial committee"
+

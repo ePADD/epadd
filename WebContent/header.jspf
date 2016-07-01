@@ -82,14 +82,15 @@
 		 			<%
 						boolean enableOptions = haveArchive && (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode());
 						if (enableOptions) { %>
-						<li><a href="set-images"><i class="menu-icon fa fa-file-image-o fa-fw"></i>Set Images</a></li>
-						<li><a href="edit-correspondents"><i class="menu-icon fa fa-pencil fa-fw"></i>Edit Correspondents</a></li>
-					<% } %>
-                        <li><a href="browse-finetypes.jsp"><i class="menu-icon fa fa-tachometer fa-fw"></i>Fine-grained types</a></li>
-					<% if (enableOptions) { %>
-						<li><a href="bulk-flags"><i class="menu-icon fa fa-flag fa-fw"></i>Bulk apply flags</a></li>
-						<li><a href="report"><i class="menu-icon fa fa-tachometer fa-fw"></i>Archive Statistics</a></li>
-					<% } %>
+							<li><a href="set-images"><i class="menu-icon fa fa-file-image-o fa-fw"></i>Set Images</a></li>
+							<li><a href="edit-correspondents"><i class="menu-icon fa fa-pencil fa-fw"></i>Edit Correspondents</a></li>
+						<% } %>
+                        <li><a href="browse-finetypes"><i class="menu-icon fa fa-tachometer fa-fw"></i>Fine-grained types</a></li>
+						<li><a href="by-folder"><i class="menu-icon fa fa-folder fa-fw"></i>Browse folders</a></li>
+						<% if (enableOptions) { %>
+							<li><a href="bulk-flags"><i class="menu-icon fa fa-flag fa-fw"></i>Bulk apply flags</a></li>
+							<li><a href="report"><i class="menu-icon fa fa-tachometer fa-fw"></i>Archive Statistics</a></li>
+						<% } %>
 		 			 <li><a id="settings" href="settings"><i class="menu-icon fa fa-gear fa-fw"></i>Settings</a></li>
 		 			 <li><a id="about" href="about"><i class="menu-icon fa fa-user fa-fw"></i>About ePADD</a></li>
 		 		</ul>

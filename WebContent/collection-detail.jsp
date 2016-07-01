@@ -83,7 +83,13 @@
 %>
 
 <div class="collection-detail">
-    <div class="heading"> <%=ownerName%>, Email Series</div>
+    <div class="heading">
+        <% if (!Util.nullOrEmpty(pm.collectionTitle)) { %>
+            <%=pm.collectionTitle%>
+        <% } else { %>
+             <%=ownerName%>, Email Series
+        <% } %>
+    </div>
     <p>
     <div class="banner-img" style="background-image:url('<%=url%>')">
     </div>
@@ -150,13 +156,28 @@
 
     <div class="related-links">
         <div class="banner-img-text-block">
+
             <div class="banner-img-text-large">
                 About <%=ownerName%>
             </div>
+
             <br/>
             <%=Util.nullOrEmpty(pm.about) ? "No text assigned" : Util.escapeHTML(pm.about)%>
 
-            <div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
+            <br/>
+            <br/>
+
+            <div style="font-weight:bold">Rights and Conditions</div>
+                <%=Util.nullOrEmpty(pm.rights) ? "No rights and conditions assigned" : Util.escapeHTML(pm.rights)%>
+
+            <% if (!Util.nullOrEmpty(pm.notes)) { %>
+                <br><br>
+                <div style="font-weight:bold">Notes</div>
+                    <%= Util.escapeHTML(pm.notes)%>
+                </div>
+            <% } %>
+
+<div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
 
             <div id="stats"></div>
 

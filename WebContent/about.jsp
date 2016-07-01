@@ -33,6 +33,8 @@
       For more information about ePADD, including links to an installation and user guide, mailing list registration, and community forum support, please visit <a href="https://library.stanford.edu/projects/epadd">this page</a>.
 </p>
 <h1>Credits</h1>
+For a full list of credits, please <a href="https://library.stanford.edu/projects/epadd/about">click here</a>.
+      <!--
       <p>
       <p></p>
       <div class="block">
@@ -93,10 +95,10 @@
       <a href="http://mobisocial.stanford.edu">Mobisocial Laboratory</a> at Stanford University (for Muse)<br/>
       <p>
       <p>
-
+-->
       <h1>Software</h1><p>
       Under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>:<br/>
-      <a href="http://apache.org">Apache</a> Commons (fileupload, lang3, io, httpclient, cli, codec), tika, opennlp, tomcat, maven, ant © Apache Software Foundation<br/>
+      <a href="http://apache.org">Apache</a> Commons (fileupload, lang3, io, httpclient, cli, codec), lucene, tika, opennlp, tomcat, maven, ant © Apache Software Foundation<br/>
       <a href="http://mobisocial.stanford.edu">Muse</a> © Mobisocial Laboratory, Stanford University <br/>
       <a href="https://code.google.com/p/google-gson/">Google Gson</a> © Google<br/>
       <a href="http://opencsv.sourceforge.net">OpenCSV</a> © Glen Smith and others <br/>
@@ -104,10 +106,12 @@
       <a href="java.oracle.com">Java SE Platform Products</a> © Oracle - <a href="http://www.oracle.com/technetwork/java/javase/terms/license/index.html">Oracle BCL</a><br/>
       <a href="http://launch4j.sourceforge.net/">Launch4j</a> © Grzegorz Kowal <a href="http://opensource.org/licenses/BSD-3-Clause">BSD 3-clause license and <a href="http://opensource.org/licenses/mit-license.html">MIT license</a> <br/>
       <a href="http://fontawesome.io">Font Awesome</a> © Dave Gandy <a href="http://opensource.org/licenses/mit-license.html">MIT license</a>, <a href="http://scripts.sil.org/OFL">SIL OFL 1.1</a><br/>
-      Jsoup <br/>
+      <a href="http://fontawesome.io">Bootstrap</a> © Twitter <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE">MIT license</a><br/>
+      <a href="http://jsoup.org">Jsoup</a> © Jonathan Hedley <a href="https://jsoup.org/license">MIT License</a><br/>
+      <a href="http://d3js.org">D3.js</a> © Mike Bostock <a href="https://opensource.org/licenses/BSD-3-Clause">BSD 3-clause License<br/>
+      <a href="http://jquery.org">jQuery</a> © jQuery Foundation <a href=https://jquery.org/license/">MIT License</a>
       <p></p>
       <a href="https://github.com/cooliris/embed-wall">Cooliris Image wall</a> (Special thanks to Soujanya Bhumkar, Austin Shoemaker and team for making the software available to us)<br/>
-
       Copyright (c) 2015 Yahoo, Inc.
 
       This software is provided 'as-is', without any express or implied

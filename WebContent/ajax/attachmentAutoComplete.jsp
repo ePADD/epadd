@@ -6,7 +6,7 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.Collection"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="java.util.Set"%>
+<%@ page import="java.util.Collection"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%>
 <% 
 	String query = request.getParameter("query");
 	query = query.toLowerCase();
@@ -15,6 +15,8 @@
             query = query.substring(query.lastIndexOf(";")+1);
         query = query.trim();
     }
+
+    boolean extensions = request.getParameter("extensions") != null;
 
 	JSONObject obj = new JSONObject();
 	obj.put("query", query);
@@ -26,17 +28,26 @@
 
 	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (!Util.nullOrEmpty(query) && archive != null) {
-        Set<String>	annotations = EmailUtils.getAllAnnotationsInDocs((Collection) archive.getAllDocs());
+        Set<String>	blobNames = EmailUtils.getAllBlobNamesInDocs((Collection) archive.getAllDocs());
         int suggestionCount = 0;
         Set<String> seen = new LinkedHashSet<>();
+        if (blobNames != null) {
+            for (String blobName: blobNames) {
+                if (blobName == null)
+                    continue;
+                if (extensions)
+                    blobName = Util.getExtension(blobName);
+                if (blobName == null)
+                    continue;
+                if (blobName.toLowerCase().contains(query)) {
+                    // avoid showing the same suggestion twice
+                    if (seen.contains(blobName.toLowerCase()))
+                        continue;
+                    seen.add(blobName.toLowerCase());
 
-        if (annotations != null) {
-            for (String annotation: annotations) {
-                if (annotation.toLowerCase().contains(query)) {
                     JSONObject s = new JSONObject();
-                    s.put("value", annotation);
-                    s.put("name", annotation);
-                    s.put("annotation", annotation);
+                    s.put("value", blobName);
+                    s.put("name", blobName);
                     suggestions.put(s);
                     if (++suggestionCount > MAX_SUGGESTIONS)
                         break;

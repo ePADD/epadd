@@ -1,0 +1,2 @@
+Politics:president|"Vicente Fox"|"Hugo Chavez"|ballot|march|party|electoral|Washington|"prime minister"|"Lopez Obrador"|"White House"|reform|campaign|democratic|army|representative|government|politics|state
+Travel:Mexico|ÒMexico City"|global|Venezuela|"Latin America"|Oaxaca|Spanish|Chiapas|Cancun|airport
