@@ -185,18 +185,21 @@ a.hilitedTerm, .hilitedTerm {
 	color: black;
 	border-bottom: 2px solid #000;
 	border-bottom-color: red;
+	cursor: pointer;
 }
 
 .custom-org{
 	color: black;
 	border-bottom: 2px solid #000;
 	border-bottom-color: blue;
+	cursor: pointer;
 }
 
 .custom-loc{
 	color: black;
 	border-bottom: 2px solid #000;
  	border-bottom-color: green;
+	cursor: pointer;
 }
 
 .resolutions{

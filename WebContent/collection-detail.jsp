@@ -181,7 +181,6 @@
 
             <div id="stats"></div>
 
-        </div>
         <p></p>
         <%
             // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
