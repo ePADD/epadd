@@ -70,9 +70,9 @@ docs = newDocs;
 writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
 <div id="nav3" style="display:inline-block;margin-left:170px;">
 	<nav>
-		<a href="export-review-processing">Messages to transfer</a> <br/>
-		<a href="export-review-processing?type=doNotTransfer">Do not transfer</a> <br/>
-		<a href="export-review-processing?type=transferWithRestrictions">Transfer with restrictions</a><br/>
+		<a href="export-review-processing">Messages to deliver</a> <br/>
+		<a href="export-review-processing?type=doNotDeliver">Do not deliver</a> <br/>
+		<a href="export-review-processing?type=deliverWithRestrictions">Deliver with restrictions</a><br/>
 	</nav>
 </div>
 <br/>
@@ -91,14 +91,6 @@ if ("doNotDeliver".equals(type)) {
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 	<br/><% out.flush(); %>
 
-	<div id="nav3" style="display:none">
-		<nav>
-			<a href="export-review-processing">Messages to deliver</a> &bull;
-			<a href="export-review-processing?type=doNotDeliver">Messages not to deliver</a> &bull;
-			<a href="export-review-processing?type=deliverWithRestrictions">Restricted messages</a>
-		</nav>
-		<br/>
-	</div>
     <div style="text-align: center">
         <button class="btn btn-cta" onclick="window.location='export-mbox'">Export all to mbox <i class="icon-arrowbutton"></i> </button>
     </div>

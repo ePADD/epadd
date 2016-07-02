@@ -1,1 +1,1 @@
-ePADD version June 8, 2016
+ePADD version Release 2, beta1

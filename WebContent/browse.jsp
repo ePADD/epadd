@@ -355,7 +355,7 @@ if (ModeConfig.isPublicMode()) {
 
 	// has indexer indexed these docs ? if so, we can use the clusters in the indexer.
 	// but it may not have, in which case, we just split up the docs into monthly intervals.
-	Set<String> selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(archive.indexer, docs, request.getParameterValues("sentiment"));
+	Set<String> selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(archive.indexer, docs, request.getParameterValues("lexiconCategory"));
 	if (selectedPrefixes == null)
 		selectedPrefixes = new LinkedHashSet<>();
     else{
@@ -402,14 +402,16 @@ if (ModeConfig.isPublicMode()) {
 
     Pair<DataSet, String> pair = null;
 	try {
-        String sortBy = request.getParameter("sort_by");
+        String sortBy = request.getParameter("sortBy");
 
 		// note: we currently do not support clustering for "recent" type, only for the chronological type. might be easy to fix if needed in the future.
-		if ("recent".equals(sortBy) || "relevance".equals(sortBy))
+		if ("recent".equals(sortBy) || "relevance".equals(sortBy) || "chronological".equals(sortBy))
             pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments, MultiDoc.ClusteringType.NONE);
-	    else
-            pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
-
+	    else {
+			// this path should not be used as it sorts the docs in some order
+			// (old code meant to handle clustered docs, so that tab can jump from cluster to cluster. not used now)
+			pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, selectedPrefixes, highlightTermsUnstemmed, highlightAttachments);
+		}
     }catch(Exception e){
 		Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
 	}
