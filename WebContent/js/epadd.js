@@ -41,11 +41,6 @@ epadd.do_search = function(e) {
 	window.open ('browse?term=\"' + term + '\"');
 };
 
-//do a search on the text of the element that was clicked
-epadd.do_sentiment_search = function(e) {
-	var term = $(e.target).text();
-	window.open ('browse?sentiment=' + term);
-};
 
 // fixes field names in account divs in prep for collect_input_fields
 // the form field names must be numbered incrementally, e.g. loginName0, password0, mboxDir1, etc.

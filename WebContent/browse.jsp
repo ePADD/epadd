@@ -157,9 +157,16 @@ if (ModeConfig.isPublicMode()) {
 
 	 String jog_contents_class = "";
 	 jog_contents_class = "message";
-		String origQueryString = request.getQueryString();
-		if (origQueryString == null)
-			origQueryString = "";
+	String origQueryString = request.getQueryString();
+	if (origQueryString == null)
+		origQueryString = "";
+
+	 // make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
+	 if (origQueryString.indexOf("adv-search=") == -1) {
+		 if (origQueryString.length() >0)
+			 origQueryString += "&";
+		 origQueryString += "adv-search=1";
+	 }
 
 	 String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 	 int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);

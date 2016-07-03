@@ -35,11 +35,18 @@
 		// we're using a simple datatables data source here, because this will be a small table
 		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
 		$(document).ready(function() {
-		  //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging,
-		  var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
-		  oTable.fnSort( [ [1,'desc'] ] );
-		  $('#table').show();		  
-		  $('.search').click(epadd.do_sentiment_search);
+			function do_sentiment_search(e) {
+			  var cat = $(e.target).text();
+			  window.open ('browse?adv-search=1&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
+			};
+
+			//if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
+			var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+			oTable.fnSort( [ [1,'desc'] ] );
+			$('#table').show();
+
+			// attach the click handlers
+			$('.search').click(do_sentiment_search);
 		} );
 	</script>
 </head>
@@ -105,7 +112,7 @@
 			<script>function changeLexicon() {	window.location = 'lexicon?name=' +	$('#lexiconName').val(); }</script>
 
 			<div style="text-align:center">
-			<select id="lexiconName" onchange="changeLexicon()">
+			<select id="lexiconName" onchange="changeLexicon()" class="selectpicker">
 			<% for (String n: lexiconNames) { %>
 				%> <option <%=name.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
 			<% } %>
