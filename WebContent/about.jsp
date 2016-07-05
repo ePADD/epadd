@@ -23,8 +23,12 @@
 
   <div style="margin-left:160px;margin-right:160px">
       <p>
-    <span>ePADD version <% out.println(edu.stanford.epadd.Version.version);%></span>
-      © Stanford University
+    <span>ePADD version <%= edu.stanford.epadd.Version.version%>  © Stanford University
+        <p>Build information:
+        ePADD <%= edu.stanford.epadd.Version.buildInfo%> </span><br/>
+        Muse version <%=edu.stanford.muse.util.Version.version %> <%=edu.stanford.muse.util.Version.buildInfo%>
+
+          © Stanford University
       <p>
       The ePADD logo, project documentation (including installation and user guide), and other non-software products of the ePADD team are subject to the Creative Commons Attribution 2.0 Generic license (CC By 2.0).
         <p>
