@@ -77,8 +77,10 @@
 				int nRows = query.length()/120 + 1;
 				%>
 				<p>
-				<b><%=sentiment%></b><br/>
-				<textarea style="padding:5px" cols="120" rows="<%=nRows%>" name="<%=sentiment%>" ><%=query%></textarea>
+				<div class="lexiconCategory">
+					<b><%=sentiment%></b> (<a target="_blank" class="test-lexicon" href="#">Test</a>)<br/>
+					<textarea style="padding:5px" cols="120" rows="<%=nRows%>" name="<%=sentiment%>" ><%=query%></textarea>
+				</div>
 				<%
 			}
 		}
@@ -92,41 +94,67 @@
 		%>
 	</div> <!--  categories -->
 	<p>
-
+<br/>
 	<button id="add-category" class="btn-default" class="tools-pushbutton" ><i class="fa fa-plus"></i> Add a category</button>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save Lexicon</button>
 
 	<script type="text/javascript">
-		function addCategory()
-		{
-			var name = prompt ("Category name");
-			if (name == null || name.length == 0)
-				return;
+		$(document).ready(function() {
+			function addCategory() {
+				var name = prompt("Category name");
+				if (name == null || name.length == 0)
+					return;
 
-			var html = '<p><b>' + name + '</b> <br/> <textarea cols="120" rows="2" name="' + name + '" placeholder="Enter some words or phrases, separated by |">';
-			$('#categories').append(html);
-			$('#save-button').fadeIn(); // always show, otherwise it may be hidden if we started with 0 categories
-			var areas = $('textarea');
-			areas[areas.length-1].focus(); // focus on the last (just added) textarea
-		}
+				// target = _blank is important here, otherwise the user will navigate off the page, and may not have saved the new category!
+				var html = '<br/><div class="lexiconCategory"> <b>' + name + '</b> (<a target="_blank" class="test-lexicon" href="#">Test</a>) <br/><textarea cols="120" rows="2" name="' + name + '" placeholder="Enter some words or phrases, separated by |"/></div>';
+				$('#categories').append(html);
+				$('#save-button').fadeIn(); // always show, otherwise it may be hidden if we started with 0 categories
+				var areas = $('textarea');
+				areas[areas.length - 1].focus(); // focus on the last (just added) textarea
+			}
 
-		$('#add-category').click(addCategory);
-		$('#save-button').click (function() {
-			var post_params = {};
-			// read all the text areas and put them in post_params;
-			$('#categories textarea').each(function(i, o) { post_params[$(o).attr('name')] = $(o).val(); });
-			post_params.lexicon = '<%=lexiconName%>';
-			post_params.language = 'english';
-			$('#save-button .fa').addClass('fa-spin');
-			$.ajax ({
-				url: 'ajax/save-lexicon.jsp',
-				type:'POST',
-				dataType: 'json',
-				data: post_params,
-				success: function(j) { $('#save-button .fa').removeClass('fa-spin'); epadd.alert('Lexicon with ' + j.nCategories + ' categories saved.');},
-				error: function(j) { $('#save-button .fa').removeClass('fa-spin'); epadd.alert ('Sorry! There was an error saving the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');}
+			$('#add-category').click(addCategory);
+			$('#save-button').click(function () {
+				var post_params = {};
+				// read all the text areas and put them in post_params;
+				$('#categories textarea').each(function (i, o) {
+					post_params[$(o).attr('name')] = $(o).val();
+				});
+				post_params.lexicon = '<%=lexiconName%>';
+				post_params.language = 'english';
+				$('#save-button .fa').addClass('fa-spin');
+				$.ajax({
+					url: 'ajax/save-lexicon.jsp',
+					type: 'POST',
+					dataType: 'json',
+					data: post_params,
+					success: function (j) {
+						$('#save-button .fa').removeClass('fa-spin');
+						epadd.alert('Lexicon with ' + j.nCategories + ' categories saved.');
+					},
+					error: function (j) {
+						$('#save-button .fa').removeClass('fa-spin');
+						epadd.alert('Sorry! There was an error saving the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+					}
+				});
 			});
+
+			var test_lexicon = function(e) {
+				var $lexicon = $(e.target).closest('.lexiconCategory');
+				var lexiconTerms = $('textarea', $lexicon).val();
+				if (!lexiconTerms)
+					return;
+				var lexiconTermsArr = lexiconTerms.split('|');
+
+				var url = 'multi-search?';
+				for (var i = 0; i < lexiconTermsArr.length; i++) {
+					url += 'term=' + lexiconTermsArr[i] + '&'; // there will be a trailing &, that's ok
+				}
+				$(e.target).attr('href', url);
+				return true;
+			};
+			$('.test-lexicon').live('click', test_lexicon); // .live is important because we want it to work with new categories added on the page
 		});
 	</script>
 </div>

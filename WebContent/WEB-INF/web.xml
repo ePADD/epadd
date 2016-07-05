@@ -299,6 +299,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>multi-search</servlet-name>
+		<jsp-file>/multi-search.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>multi-search</servlet-name>
+		<url-pattern>/multi-search</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>query-generator</servlet-name>
 		<jsp-file>/query-generator.jsp</jsp-file>
 	</servlet>

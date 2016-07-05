@@ -268,7 +268,7 @@
 								</label>
 
 								<label class="radio-inline">
-									<input type="radio" name="mailingListState" value="either" checked>
+									<input id="mailingListState-either" type="radio" name="mailingListState" value="either" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -304,14 +304,13 @@
 
 										<div class="checkbox-inline">
 											<label>
-												<input name="attachmentFilenameRegex" type="checkbox" name="check-attachment">
+												<input id="attachmentFilenameRegex" name="attachmentFilenameRegex" type="checkbox">
 												<span class="label-text">Reg Ex</span>
 											</label>
 										</div>
 
 									</fieldset>
 								</div>
-
 							</div>
 
 							<!--File Size-->
@@ -392,7 +391,7 @@
 								</label>
 
 								<label class="radio-inline">
-									<input value="either" type="radio" name="reviewed" checked>
+									<input id="reviewed-either"  value="either" type="radio" name="reviewed" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -418,7 +417,7 @@
 								</label>
 
 								<label class="radio-inline">
-									<input value="either" type="radio" name="transferWithRestrictions" checked>
+									<input id="transferWithRestrictions-either" value="either" type="radio" name="transferWithRestrictions" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -444,7 +443,7 @@
 								</label>
 
 								<label class="radio-inline">
-									<input value="either" type="radio" name="doNotTransfer" checked>
+									<input id="doNotTransfer-either" value="either" type="radio" name="doNotTransfer" checked>
 									<span class="text-radio">Either</span>
 								</label>
 
@@ -487,7 +486,7 @@
 								</label>
 
 								<label class="radio-inline">
-									<input value="either" type="radio" name="direction" checked>
+									<input id="direction-either" value="either" type="radio" name="direction" checked>
 									<span class="text-radio">Either</span>
 								</label>
 							</fieldset>
@@ -671,10 +670,13 @@
 		var attachmentAutoCompleteParams = $.extend({}, autocomplete_params);
 		attachmentAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp';
 		$('#attachmentFilename').autocomplete(attachmentAutoCompleteParams);
-
-		var attachmentExtAutoCompleteParams = $.extend({}, autocomplete_params);
-		attachmentExtAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp?extensions=true';
-		$('#attachmentExtension').autocomplete(attachmentExtAutoCompleteParams);
+		$('#attachmentFilenameRegex').change(function() {
+			if (this.checked) {
+				$('#attachmentFilename').autocomplete().disable();
+			} else {
+				$('#attachmentFilename').autocomplete().enable();
+			}
+		});
 
 		$('#lexiconName').change(function() {
 			$options = $('#lexiconCategory option');
@@ -720,7 +722,11 @@
 
 			$('input[name="correspondentTo"], input[name="correspondentFrom"], input[name="correspondentCc"], input[name="correspondentBcc"]').prop('checked', true);
 			$('#termSubject, #termBody, #termOriginalBody, #termAttachments').prop('checked', true);
+			$('#doNotTransfer-either, #reviewed-either, #transferWithRestrictions-either, #direction-either, #mailingListState-either').prop ('checked', true);
 			// TODO: reset the other fields also, esp. the select picker
+			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy').prop ('selectedIndex', 0);
+			$('#attachmentType').prop ('selectedIndex', -1); // 0 for this one is not ok
+			$('.selectpicker').selectpicker('refresh');
 		});
 
 	</script>
