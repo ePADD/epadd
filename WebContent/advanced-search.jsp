@@ -200,13 +200,14 @@
 
 					</div>
 
+					<!--
 					<div class="row">
-						<!--Entity-->
 						<div class="form-group col-sm-12">
 							<label for="entity">Entity</label>
 							<input id="entity" name="entity" type="text" class="form-control">
 						</div>
 					</div>
+					-->
 				</div>
 				<!--/Text-->
 
