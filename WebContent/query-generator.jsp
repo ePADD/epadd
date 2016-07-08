@@ -27,18 +27,48 @@ if (ModeConfig.isPublicMode()) {
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>	
 </head>
-<body>
+<body style="background-color:#f5f5f8; color: #333">
 <jsp:include page="header.jspf"/>
-<div style="margin:1% 5%">
 
-<p>
+<br/>
+<br/>
+<style>
+    input[type="checkbox"] + .label-text:before {
+        background-color: #ddd588;
+        color:#fff;
+        width:14px;
+        height:14px;
+        font-size: 19px;
+        margin-right:10px;
+    }
+</style>
+<div class="container">
+	<div class="row">
+		<div class="col-md-9 col-md-offset-1 epadd-flex">
+			<div class="col-md-6">
+				<h1>Query generator results</h1>
+			</div>
+			<div class="col-md-6 text-right">
+						<label>
+							<span style="background-color: #e7df9a;">Matched entities</span>
+						</label>
+						<label style="margin-left:10px">
+							<span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
+						</label>
+			</div>
+		</div>
+	</div>
 
-<%
-    String req = request.getParameter("refText");
-    out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
-
-%>
+    <div class="row">
+        <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px;">
+            <%
+                String req = request.getParameter("refText");
+                out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
+            %>
+        </div>
+    </div>
 </div>
+
 <script type="text/javascript">
 	window.MUSE_URL = "<%=request.getContextPath()%>" // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
     if(window.MUSE_URL==null)

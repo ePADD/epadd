@@ -378,8 +378,8 @@ main = function(evt) {
 				  #callout, #callout a, .term {color: white; text-transform:uppercase;font-family:"Gill Sans",Calibri,Helvetica,Arial,Times;font-size:10pt;font-weight:normal;} \
 				  .term:hover {text-decoration:underline}';
 
-		styles += '.muse-highlight { background-color: yellow; color: black; cursor:hand; cursor:pointer;} \
-				   .muse-soft-highlight {  background-color: lightyellow; color: black; cursor: hand;cursor:pointer;} \
+		styles += '.muse-highlight { background-color: #e7df9a; color: black; cursor:hand; cursor:pointer;} \
+				   .muse-soft-highlight {  background-color:  #e7df9a; color: black; cursor: hand;cursor:pointer;} \
 				   .muse-NER-name { border-bottom: 1px red dotted; }';
 		
 		styles += '#callout-menu { position:absolute; top:5px; right:0px}';
