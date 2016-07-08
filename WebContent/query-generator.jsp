@@ -25,49 +25,78 @@ if (ModeConfig.isPublicMode()) {
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<jsp:include page="css/css.jsp"/>
-	<script src="js/epadd.js"></script>	
+	<script src="js/epadd.js"></script>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body style="background-color:#f5f5f8; color: #333">
 <jsp:include page="header.jspf"/>
+<script>epadd.nav_mark_active('Search');</script>
 
-<br/>
-<br/>
-<style>
-    input[type="checkbox"] + .label-text:before {
-        background-color: #ddd588;
-        color:#fff;
-        width:14px;
-        height:14px;
-        font-size: 19px;
-        margin-right:10px;
-    }
-</style>
-<div class="container">
-	<div class="row">
-		<div class="col-md-9 col-md-offset-1 epadd-flex">
-			<div class="col-md-6">
-				<h1>Query generator results</h1>
-			</div>
-			<div class="col-md-6 text-right">
-						<label>
-							<span style="background-color: #e7df9a;">Matched entities</span>
-						</label>
-						<label style="margin-left:10px">
-							<span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
-						</label>
-			</div>
-		</div>
-	</div>
+<div class="appraisal-bulk-search">
 
-    <div class="row">
-        <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px;">
-            <%
-                String req = request.getParameter("refText");
-                out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
-            %>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9 col-md-offset-1 epadd-flex">
+                <div class="col-md-6">
+                    <h1>Query generator results</h1>
+                </div>
+                <div class="col-md-6 text-right">
+                    <label>
+                        <span style="background-color: #e7df9a;">Matched entities</span>
+                    </label>
+                    <label style="margin-left:10px">
+                        <span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px">
+                <%
+                    String req = request.getParameter("refText");
+                    out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
+                %>
+            </div>
         </div>
     </div>
+    <div id="myModal" class="modal fade popup-epadd" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="header-popup">
+                    <h2 class="text-left" id="search-term">Steve Wozniak</h2>
+                    <div>
+                        <a data-dismiss="modal">
+                            <img src="images/close.png" alt="close">
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="mail-subject">
+                        <div>Jan 22,2002.</div>
+                        <div>From: <span>raj@gmail.com,</span> To: <span>mandeep@gmail.com</span></div>
+                        <div>Subject: <span>Duncan reading group</span></div>
+                    </div>
+                </div>
+                <div class="search-clear-btns">
+                    <!--search btn-->
+                    <button type="submit" class="search-btn">
+                        <h5>VIEW <span id="nHits">0</span> MESSAGES</h5>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
 </div>
+</div>
+
+<a id="hit-clicker" data-toggle="modal" href="#myModal">Click</a>
+<!-- Pop-up section -->
 
 <script type="text/javascript">
 	window.MUSE_URL = "<%=request.getContextPath()%>" // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';

@@ -44,99 +44,15 @@ if (typeof unsafeWindow == 'undefined')
 
 LOG ('Running lens on ' + document.URL + (RUNNING_IN_PLUGIN ? ' (in plugin)' : ''));
 
-// Add jQuery to the page
-inject_jquery = function() {
-	if (RUNNING_IN_PLUGIN)	{
-		// directly call main, no need for injecting jq
-	    $_ = $;
-	    main();
-	    return;
-	}
-
-	var saved$ = null; // will save the original jq if page already has it
-	
-	function wait_for_prettyphoto_and_call_main() {
-		if (typeof unsafeWindow.jQuery.fn.prettyPhoto == 'undefined') {
-			window.setTimeout(wait_for_prettyphoto_and_call_main, 100); // jq not loaded, try again in 100ms
-		} else {
-			LOG ('ok, pretty photo loaded up ' + unsafeWindow.jQuery.prettyPhoto.version);
-			
-			// now, make our version of jq invisible and restore the original version if it exists
-			$_ = unsafeWindow.jQuery.noConflict(true); // $_ is our version of jq, regardless of whether page had its own.	
-			if (saved$ != null) {
-				LOG ('restoring original version of jquery on page: ' + saved$().jquery);
-				unsafeWindow.$ = unsafeWindow.jQuery = saved$; // restore saved
-			} else {
-				LOG ('cool, no previous version of jquery on page');
-			}
-			if (document.URL.indexOf("youtube") >= 0) { 
-				prefetchYoutube();
-				window.setTimeout(main,3300); // 3500);
-			} else
-				window.setTimeout(main,300);
-		}
-	}
-	
-    // function that polls and waits for jq to show up before dispatching to main
-	function wait_for_jquery_and_call_main() {
-		if (typeof unsafeWindow.jQuery == 'undefined') {
-			window.setTimeout(wait_for_jquery_and_call_main, 100); // jq not loaded, try again in 100ms
-		} else {
-			// we have to install prettyPhoto also now
-			LOG ('new jquery loaded, version is ' + unsafeWindow.jQuery().jquery + '. now injecting pretty photo');
-			function inject_prettyphoto() {
-				var GM_Head = document.getElementsByTagName('head')[0] || document.documentElement || document.body;
-				var GM_JQPP = document.createElement('script');
-				GM_JQPP.src = window.MUSE_URL + '/js/jquery.prettyPhoto.js';
-				GM_JQPP.type = 'text/javascript';
-				GM_JQPP.async = true;
-				GM_Head.insertBefore(GM_JQPP, GM_Head.lastChild);
-				var myStylesLocation = window.MUSE_URL + '/css/prettyPhoto.css';
-				unsafeWindow.jQuery('<link rel="stylesheet" type="text/css" href="' + myStylesLocation + '" >').appendTo("head");           
-			}
-			// we have to wait now for prettyphoto also, because we want it to be associated with our version of jq
-			$ = jQuery = unsafeWindow.jQuery;
-			inject_prettyphoto();
-			wait_for_prettyphoto_and_call_main();
-		}	
-	}
-	
-	function inject_jq_script() {
-		LOG ("injecting jq");
-        var jq_scr = document.createElement('script');
-//        jq_scr.src = window.MUSE_URL + '/js/jquery/jquery.js';
-        jq_scr.src = window.MUSE_URL + '/js/jquery.js';
-        jq_scr.type = 'text/javascript';
-        jq_scr.async = true;
-	    var heads = document.getElementsByTagName('head');
-        if (heads.length > 0)
-            head = heads[0];
-        else
-            head = document.documentElement || document.body;
-		head.insertBefore(jq_scr, head.firstChild);
-	}
-
-	if (typeof unsafeWindow.jQuery == 'undefined') {
-		inject_jq_script();
-	} else {
-		// see http://blog.nemikor.com/2009/10/03/using-multiple-versions-of-jquery/ for noconflict explanation
-		saved$ = unsafeWindow.jQuery.noConflict(true); // first save away the original jq if page already has it			
-		LOG ('saving away original version of jquery on page: ' + saved$().jquery);
-		inject_jq_script();
-	}
-	
-	LOG ("Waiting for jquery in URL:" + document.URL);
-	wait_for_jquery_and_call_main();
-};
-
 init = function() {
 	if ((document.URL.indexOf(".js") == document.URL.length-3) || (document.URL.indexOf(".css") == document.URL.length-4)) {
 		LOG ("skipping injecting jq into " + document.URL);
 		return;
 	}
-	inject_jquery();
+    $_ = $;
+    main();
+    return;
 };
-
 
 function inject_html(html) {
 	var div = document.createElement('div');
@@ -465,17 +381,6 @@ main = function(evt) {
 			}
 		});
 
-	function inject_prettyphoto() {
-		var GM_Head = document.getElementsByTagName('head')[0] || document.documentElement || document.body;
-		var GM_JQPP = document.createElement('script');
-		GM_JQPP.src = window.MUSE_URL + '/js/jquery.prettyPhoto.js';
-		GM_JQPP.type = 'text/javascript';
-		GM_JQPP.async = true;
-		GM_Head.insertBefore(GM_JQPP, GM_Head.lastChild);
-		var myStylesLocation = window.MUSE_URL + '/css/prettyPhoto.css';
-		$_('<link rel="stylesheet" type="text/css" href="' + myStylesLocation + '" >').appendTo("head");           
-	}
-
 	// utility function to print s, subject to a maxChars limit
 	function ellipsize(s, maxChars) {
 		if (s == null)
@@ -490,28 +395,6 @@ main = function(evt) {
 			return s;
 	}
 
-// start pretty photo, but wait for it to be come available first
-function start_prettyphoto() {
-	if (typeof $_.prettyPhoto == 'undefined')
-		window.setTimeout (start_prettyphoto, 100);
-	else
-    {
-        // muse-details is the div with the popup html.
-//		$_('.muse-highlight').prettyPhoto({theme: 'dark_rounded', opacity: "0.3"});
-
-        // muse-clicker is the div that is meant just to issue clicks. not displayed on page, but click() fired through jquery. 
-        // upon click, it always shows the same div, which is the muse-details div. this div is populated appropriately before the click is fired.
-        var $clickdiv = $_('<a id="muse-clicker" title="Message Details" href="#muse-details" alt="ALT"></a>'); // funnily, the title for this clicker needs to be set, otherwise pretty photo shows an undefined at bottom left
-        $_('body').append($clickdiv);
-        var $div = $_('<div style="font-size:11px; max-height:250px;display:none" class="muse-details" title="Message Details" style="align:left;display:none" id="muse-details"/>');
-        var $child = $_('<div id="muse-pointers" style="font-size:12px" title="Message Details" alt="alt"/>');
-        $div.append($child);
-        $_('body').append($div);
-LOG ('pretty photo started');
-		$_('#muse-clicker').prettyPhoto({theme: 'light_rounded', opacity: "0.3"});
-LOG ('pretty photo clicker started');
-    }
-}
 
 // highlight contents
 // decoratedWithoutBreak is an internal counter counting how many nodes we've decorated since the last break ("timeout")
@@ -824,30 +707,31 @@ var handleTermMenu = function(event, visible) {
 // when this is called, hit_details.messages must be populated
 var open_popup = function(hit_details) 
 {
-    var popup = '';
-    // show up to 6 messages
-    for (var m = 0; m < hit_details.messages.length && m < 6; m++) {
+    $('#search-term').html(hit_details.text);
+	$('#nHits').html(hit_details.messages.length);
+
+	var popup = '';
+    // show up to 5 messages
+    for (var m = 0; m < hit_details.messages.length && m < 5; m++) {
     	var mesg = hit_details.messages[m];
     	var plus_mesg = (mesg.to.length <= 1) ? '': ' (+' + (mesg.to.length-1) + ')';
         var title = (typeof mesg.contents != 'undefined') ? mesg.contents : '';
         title = title.replace(/"/g, "&quot;");
         title = title.replace(/\n/g, " ");
-        popup += "<p title=\"" + title + "\">" + mesg.date + " | "
-        	   + "From: " + ((mesg.from.length > 0) ? mesg.from[0].email : '???')
-        	   + " | To: " + ((mesg.to.length > 0) ? mesg.to[0].email + plus_mesg : '???')
-               + "<br/>Subject: " + ellipsize(hit_details.messages[m].subject, 46);
-        	   + "</p>";
+		popup += '<div class="mail-subject">'
+		       + '<div>' + mesg.date + '</div>'
+        	   + '<div>From: <span>' + ((mesg.from.length > 0) ? mesg.from[0].email : '???') + '</span>'
+        	   + " To: <span>" + ((mesg.to.length > 0) ? mesg.to[0].email + plus_mesg : '???') + '</span></div>'
+               + "<div>Subject: <span>" + ellipsize(hit_details.messages[m].subject, 46) + '</span></div>';
+        	   + "</div>";
     }
-    popup += '<p><a href=\'' + hit_details.url + '\' target="_">View ' + hit_details.nMessages + ' message' + (hit_details.nMessages > 1 ? 's':'') + '</a><hr/>';
+	$('.modal-body').html(popup);
+    $('#myModal').modal();
 
-    $_('#muse-pointers').html(popup);
-    LOG ('pop html is ' + popup);
-    $_('#muse-details').attr('title', hit_details.text);  // this title is not showing up, but if we don't have this, it says "undefined"...
-    $_('#muse-details').attr('alt', hit_details.text);  // this title is not showing up, but if we don't have this, it says "undefined"...
-    $_('#muse-pointers').attr('title', hit_details.text); 
-    $_('#muse-clicker').attr('title', '&nbsp;&nbsp;' + hit_details.text);
-    $_('#muse-clicker').click();
-    LOG ("click sent to open muse hits: " + $_('#muse-clicker').length);
+	$('#hit-clicker').click();
+
+	LOG ("click sent to open modal");
+	return true;
 };
 
 var HIT_CLICKED = function(e, hit_details) {
@@ -857,7 +741,7 @@ var HIT_CLICKED = function(e, hit_details) {
     LOG ("showing messages in popup, hit_details = " + hit_details);
     // if hit_details.messages are available, just go with that
     if (typeof hit_details.messages != 'undefined' && hit_details.messages.length > 0)
-    	open_popup(hit_details);
+    	return open_popup(hit_details);
     else
     {
     	var jqXHR = $_.ajax({
@@ -1152,7 +1036,6 @@ function decoratePage(hits) {
 
 	LOG ('total time to decorate page = ' + (now_millis-decorate_start_millis) + 'ms');
 	LOG ('total elapsed time on page = ' + (now_millis-startTime) + 'ms');
-	start_prettyphoto();
 }
 
 }; // end main
