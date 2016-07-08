@@ -34,11 +34,17 @@
 <jsp:include page="header.jspf"/>
 
 <%writeProfileBlock(out, archive, "Edit address book", "");%>
-<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px;margin-top:20px;">
-	<select id="sort-order">
-		<option <%=!alphaSort?"selected":""%> value="volume">Sort by email volume</option>
-		<option <%=alphaSort?"selected":""%> value="alpha">Sort alphabetically</option>
-	</select>
+<br/>
+<br/>
+<div style="text-align:center;margin-left:40%;width:20%;">
+	<div class="form-group">
+		<label for="sort-order">Sort order</label>
+		<select id="sort-order" name="sort-order" class="form-control selectpicker">
+			<option <%=!alphaSort ? "selected" : ""%> value="volume">Sort by email volume</option>
+			<option <%=alphaSort ? "selected" : ""%> value="alpha">Sort alphabetically</option>
+		</select>
+	</div>
+
 </div>
 
 <script>
