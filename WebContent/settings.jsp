@@ -36,14 +36,21 @@
 	
 <% if (!ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode()) { %>
 	<div style="font-size:small;margin-top:15px;text-transform:uppercase; ">
-		Module:
-		<select name="mode" id="mode-select">
-			<option value="appraisal" <%=ModeConfig.isAppraisalMode() ? "selected":""%> >APPRAISAL</option>
-			<option value="processing" <%=ModeConfig.isProcessingMode() ? "selected":""%> >PROCESSING</option>
-			<option value="discovery" <%=ModeConfig.isDiscoveryMode() ? "selected":""%> >DISCOVERY</option>
-			<option value="delivery" <%=ModeConfig.isDeliveryMode() ? "selected":""%> >DELIVERY</option>
-		</select>
-	</div>
+	<br/>
+
+
+		<div class="row">
+			<div class="form-group col-sm-3">
+				<label for="mode-select">ePADD Module</label>
+				<select id="mode-select" name="attachmentFilesize" class="form-control selectpicker">
+					<option value="" selected disabled>Choose Module</option>
+					<option value="appraisal" <%=ModeConfig.isAppraisalMode() ? "selected" : ""%> >APPRAISAL</option>
+					<option value="processing" <%=ModeConfig.isProcessingMode() ? "selected" : ""%> >PROCESSING</option>
+					<option value="discovery" <%=ModeConfig.isDiscoveryMode() ? "selected" : ""%> >DISCOVERY</option>
+					<option value="delivery" <%=ModeConfig.isDeliveryMode() ? "selected" : ""%> >DELIVERY</option>
+				</select>
+			</div>
+		</div>
 <% } %>
 
 <script>

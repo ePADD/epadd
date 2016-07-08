@@ -44,16 +44,6 @@
 <%
 String type=request.getParameter("type");
 
-if ("person".equals(type)) { %>
-	<script>epadd.select_link('#nav3', 'People');</script>
-<% }
-if ("organization".equals(type)) { %>
-	<script>epadd.select_link('#nav3', 'Organizations');</script>
-<% }
-if ("location".equals(type)) { %>
-	<script>epadd.select_link('#nav3', 'Locations');</script>
-<% } %>
-
 		<%
 	AddressBook ab = archive.addressBook;
 	String et = "";

@@ -112,11 +112,16 @@
 			<script>function changeLexicon() {	window.location = 'lexicon?name=' +	$('#lexiconName').val(); }</script>
 
 			<div style="text-align:center">
-			<select id="lexiconName" onchange="changeLexicon()" class="selectpicker">
-			<% for (String n: lexiconNames) { %>
-				%> <option <%=name.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
-			<% } %>
-			</select>
+
+					<div class="form-group" style="width:20%; margin-left:40%">
+						<label for="lexiconName">Choose Lexicon</label>
+						<select id="lexiconName" name="lexiconName" class="form-control selectpicker">
+							<% for (String n: lexiconNames) { %>
+							%> <option <%=name.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
+							<% } %>
+						</select>
+					</div>
+
 			</div>
 			<br/>
 	<% } %>
@@ -139,6 +144,7 @@
 <p>
 <br/>
 	<script>
+		$('#lexiconName').change (changeLexicon);
 		$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
 		$('#create-lexicon').click (function() {
 			var lexiconName = prompt ('Enter the name of the new lexicon:');
