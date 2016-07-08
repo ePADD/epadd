@@ -3475,7 +3475,8 @@ input[type="button"].btn-block {
     .nav > li > a {
       position: relative;
       display: block;
-      padding: 10px 15px; }
+      font-size: 14px;
+      padding: 15px 0px; }
       .nav > li > a:hover, .nav > li > a:focus {
         text-decoration: none;
         background-color: #eeeeee; }

@@ -82,7 +82,7 @@ if (ModeConfig.isPublicMode()) {
                 </div>
                 <div class="search-clear-btns">
                     <!--search btn-->
-                    <button type="submit" class="search-btn">
+                    <button id="submit-button" type="submit" class="search-btn">
                         <h5>VIEW <span id="nHits">0</span> MESSAGES</h5>
                     </button>
                 </div>
@@ -95,13 +95,17 @@ if (ModeConfig.isPublicMode()) {
 </div>
 </div>
 
-<a id="hit-clicker" data-toggle="modal" href="#myModal">Click</a>
 <!-- Pop-up section -->
 
 <script type="text/javascript">
 	window.MUSE_URL = "<%=request.getContextPath()%>" // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
     if(window.MUSE_URL==null)
         window.MUSE_URL="";
+    var handle_submit = function() {
+        window.open('browse?term="' + $('#search-term').html() + '"');
+    };
+
+    $('#submit-button').click(handle_submit);
 </script>
 <script type="text/javascript" src="js/muse-lens.user.js"></script>
 <jsp:include page="footer.jsp"/>

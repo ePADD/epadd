@@ -711,8 +711,8 @@ var open_popup = function(hit_details)
 	$('#nHits').html(hit_details.messages.length);
 
 	var popup = '';
-    // show up to 5 messages
-    for (var m = 0; m < hit_details.messages.length && m < 5; m++) {
+    // show up to 4 messages
+    for (var m = 0; m < hit_details.messages.length && m < 4; m++) {
     	var mesg = hit_details.messages[m];
     	var plus_mesg = (mesg.to.length <= 1) ? '': ' (+' + (mesg.to.length-1) + ')';
         var title = (typeof mesg.contents != 'undefined') ? mesg.contents : '';
@@ -726,9 +726,9 @@ var open_popup = function(hit_details)
         	   + "</div>";
     }
 	$('.modal-body').html(popup);
-    $('#myModal').modal();
+    $('#myModal').modal('show');
 
-	$('#hit-clicker').click();
+//	$('#hit-clicker').click();
 
 	LOG ("click sent to open modal");
 	return true;
