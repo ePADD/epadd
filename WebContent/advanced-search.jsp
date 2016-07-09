@@ -200,14 +200,12 @@
 
 					</div>
 
-					<!--
 					<div class="row">
 						<div class="form-group col-sm-12">
 							<label for="entity">Entity</label>
 							<input id="entity" name="entity" type="text" class="form-control">
 						</div>
 					</div>
-					-->
 				</div>
 				<!--/Text-->
 
@@ -663,6 +661,10 @@
 		var folderAutoCompleteParams = $.extend({}, autocomplete_params);
 		folderAutoCompleteParams.serviceUrl = 'ajax/folderAutoComplete.jsp';
 		$('#messageFolder').autocomplete(folderAutoCompleteParams);
+
+		var entitiesAutoCompleteParams = $.extend({}, autocomplete_params);
+		entitiesAutoCompleteParams.serviceUrl = 'ajax/entitiesAutoComplete.jsp';
+		$('#entity').autocomplete(entitiesAutoCompleteParams);
 
 		var annotationAutoCompleteParams = $.extend({}, autocomplete_params);
 		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp';

@@ -56,13 +56,6 @@
 
 			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
 
-			<!--
-<input type="radio" name="searchType" value="correspondents"/> 
-<span class="option" title="<%=edu.stanford.muse.util.Messages.getMessage("messages", "search.correspondents.help")%>">
-	Correspondents
-</span>
-&nbsp;
--->
 		</form>
 	</div>
 <p>

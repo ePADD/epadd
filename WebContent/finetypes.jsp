@@ -117,5 +117,8 @@
         } );
     </script>
 
+    <br/>
+    <br/>
+    <br/>
     <jsp:include page="footer.jsp"/>
 </body>
