@@ -1,12 +1,11 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page import="edu.stanford.muse.index.Archive"%>
-<%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.Collection"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="java.util.Set"%>
+<%@ page import="java.util.Set"%>
 <% 
 	String query = request.getParameter("query");
 	query = query.toLowerCase();
@@ -26,9 +25,8 @@
 
 	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (!Util.nullOrEmpty(query) && archive != null) {
-        Set<String>	annotations = EmailUtils.getAllAnnotationsInDocs((Collection) archive.getAllDocs());
+        Set<String>	annotations = archive.getAllAnnotations();
         int suggestionCount = 0;
-        Set<String> seen = new LinkedHashSet<>();
 
         if (annotations != null) {
             for (String annotation: annotations) {

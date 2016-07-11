@@ -498,7 +498,7 @@
 							<label for="emailSource">Email Source</label>
 							<select id="emailSource" name="emailSource" class="form-control selectpicker" name="Choose-source">
 								<option value="" selected disabled>Select</option>
-								<% Collection<String> emailSources = EmailUtils.getAllEmailSourcesInDocs((Collection) archive.getAllDocs());
+								<% Collection<String> emailSources = archive.getAllEmailSources();
 									for (String emailSource : emailSources) { %>
 										<option value="<%=emailSource%>"><%=emailSource%></option>
 								<% }%>

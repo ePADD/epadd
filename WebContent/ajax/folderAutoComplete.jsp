@@ -25,7 +25,7 @@
 
 	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (!Util.nullOrEmpty(query) && archive != null) {
-        Set<String>	folders = EmailUtils.getAllFoldersInDocs((Collection) archive.getAllDocs());
+        Set<String>	folders = archive.getAllFolders();
         int suggestionCount = 0;
         if (folders != null) {
             for (String folder: folders) {

@@ -76,6 +76,8 @@ if (docs != null)
 	nMessages= docs.size();
 }
 
+archive.clearAllAnnotationsCache();
+
 JSONObject obj = new JSONObject();
 obj.put("nMessages", nMessages);    	
 out.println (obj);

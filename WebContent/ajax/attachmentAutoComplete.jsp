@@ -28,7 +28,7 @@
 
 	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (!Util.nullOrEmpty(query) && archive != null) {
-        Set<String>	blobNames = EmailUtils.getAllBlobNamesInDocs((Collection) archive.getAllDocs());
+        Set<String>	blobNames = archive.getAllBlobNames();
         int suggestionCount = 0;
         Set<String> seen = new LinkedHashSet<>();
         if (blobNames != null) {

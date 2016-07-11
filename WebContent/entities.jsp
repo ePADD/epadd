@@ -42,10 +42,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-String type=request.getParameter("type");
-
-		<%
-	AddressBook ab = archive.addressBook;
+    String type=request.getParameter("type");
 	String et = "";
     Short ct = FeatureDictionary.PERSON;
 	if(edu.stanford.muse.ner.NER.EPER.equals(type)||"person".equals(type)) {

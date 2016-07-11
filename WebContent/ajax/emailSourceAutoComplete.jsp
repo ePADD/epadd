@@ -1,12 +1,11 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page import="edu.stanford.muse.index.Archive"%>
-<%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.Collection"%><%@ page import="java.util.Set"%>
+<%@ page import="java.util.Set"%>
 <% 
 	String query = request.getParameter("query");
 	query = query.toLowerCase();
@@ -26,7 +25,7 @@
 
 	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (!Util.nullOrEmpty(query) && archive != null) {
-        Set<String>	emailSources = EmailUtils.getAllEmailSourcesInDocs((Collection) archive.getAllDocs());
+        Set<String>	emailSources = archive.getAllEmailSources();
         int suggestionCount = 0;
         if (emailSources != null) {
             for (String emailSource: emailSources) {
