@@ -145,7 +145,7 @@ if (ModeConfig.isPublicMode()) {
  <div class="browsepage" style="min-width:1220px">
 
  <%
-	 Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive, lexicon);
+	 Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive);
 	 //returns sorted collection
 	 //Collection<DetailedFacetItem> locSubjects = TopicsSearcher.getMentions(docs,archive);
 	 //if(locSubjects!=null)
@@ -167,6 +167,13 @@ if (ModeConfig.isPublicMode()) {
 			 origQueryString += "&";
 		 origQueryString += "adv-search=1";
 	 }
+
+	 // remove all the either's because they are not needed, and could mask a real facet selection coming in below
+	 origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
 
 	 String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 	 int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);
@@ -203,9 +210,7 @@ if (ModeConfig.isPublicMode()) {
 			continue;
 
 		String facetTitle = Util.escapeHTML(facet);
-		if ("sentiments".equals(facetTitle))
-			facetTitle = "lexicon";
-		if ("people".equals(facetTitle))
+		if ("correspondent".equals(facetTitle))
 			facetTitle = "correspondents";
 
 		facetTitle = Util.capitalizeFirstLetter(facetTitle);

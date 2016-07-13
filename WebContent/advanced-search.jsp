@@ -1,5 +1,5 @@
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Collection" %>
-<%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -171,27 +171,30 @@
 										</label>
 									</div>
 
-									<div class="checkbox-inline">
-										<label>
-											<input type="checkbox" name="termAttachments" checked>
-											<span class="label-text">Search attachments</span>
-										</label>
-									</div>
+                                    <% if (!ModeConfig.isDiscoveryMode()) { %>
+                                        <div class="checkbox-inline">
+                                            <label>
+                                                <input type="checkbox" name="termAttachments" checked>
+                                                <span class="label-text">Search attachments</span>
+                                            </label>
+                                        </div>
 
-									<div class="checkbox-inline">
-										<label>
-											<input type="checkbox" name="termOriginalBody" checked>
-											<span class="label-text">Search original text</span>
-										</label>
-									</div>
+                                        <div class="checkbox-inline">
+                                            <label>
+                                                <input type="checkbox" name="termOriginalBody" checked>
+                                                <span class="label-text">Search original text</span>
+                                            </label>
+                                        </div>
+                                    <% } %>
 
-
+                                    <!--
 									<div class="checkbox-inline">
 										<label>
 											<input type="checkbox" name="termRegex">
 											<span class="label-text">Regular Expression</span>
 										</label>
 									</div>
+									-->
 
 								</fieldset>
 							</div>
@@ -279,7 +282,9 @@
 				<!--/Correspondent-->
 
 				<!--Attachment-->
-				<div class="attachment search-wraper clearfix">
+                <% if (!ModeConfig.isDiscoveryMode()) { %>
+
+                <div class="attachment search-wraper clearfix">
 					<h4>Attachments</h4>
 
 					<!--form-wraper-->
@@ -356,10 +361,14 @@
 						</div>
 					</div>
 				</div>
-				<!--/Attachment-->
+                <% } %>
+
+                <!--/Attachment-->
 
 				<!--Actions-->
-				<div class=" actions search-wraper clearfix">
+                <% if (!ModeConfig.isDiscoveryMode()) { %>
+
+                <div class=" actions search-wraper clearfix">
 
 					<h4>Actions</h4>
 
@@ -399,58 +408,88 @@
 						<!--/Reviwed-->
 
 						<!--Restricted-->
-						<div class="form-group col-sm-6">
-							<label for="transferWithRestrictions">Restricted</label>
+                        <% if (!ModeConfig.isDeliveryMode()) { %>
 
-							<fieldset id="transferWithRestrictions" name="transferWithRestrictions" class="comman-radio">
-								<legend class="sr-only">Restricted filters</legend>
+                            <div class="form-group col-sm-6">
+                                <label for="transferWithRestrictions">Restricted</label>
 
-								<label class="radio-inline">
-									<input value="yes" type="radio" name="transferWithRestrictions">
-									<span class="text-radio">Yes</span>
-								</label>
+                                <fieldset id="transferWithRestrictions" name="transferWithRestrictions" class="comman-radio">
+                                    <legend class="sr-only">Restricted filters</legend>
 
-								<label class="radio-inline">
-									<input value="no" type="radio" name="transferWithRestrictions">
-									<span class="text-radio">No</span>
-								</label>
+                                    <label class="radio-inline">
+                                        <input value="yes" type="radio" name="transferWithRestrictions">
+                                        <span class="text-radio">Yes</span>
+                                    </label>
 
-								<label class="radio-inline">
-									<input id="transferWithRestrictions-either" value="either" type="radio" name="transferWithRestrictions" checked>
-									<span class="text-radio">Either</span>
-								</label>
+                                    <label class="radio-inline">
+                                        <input value="no" type="radio" name="transferWithRestrictions">
+                                        <span class="text-radio">No</span>
+                                    </label>
 
-							</fieldset>
-						</div>
-						<!--/Restricted-->
+                                    <label class="radio-inline">
+                                        <input id="transferWithRestrictions-either" value="either" type="radio" name="transferWithRestrictions" checked>
+                                        <span class="text-radio">Either</span>
+                                    </label>
 
-						<!--Transfer-->
-						<div class="form-group col-sm-6">
-							<label for="doNotTransfer">Not transferred</label>
+                                </fieldset>
+                            </div>
+                            <!--/Restricted-->
 
-							<fieldset id="doNotTransfer" name="transfer" class="comman-radio">
-								<legend class="sr-only">Transfer filters</legend>
+                            <!--Transfer-->
+                            <div class="form-group col-sm-6">
+                                <label for="doNotTransfer">Not transferred</label>
 
-								<label class="radio-inline">
-									<input value="yes" type="radio" name="doNotTransfer">
-									<span class="text-radio">Yes</span>
-								</label>
+                                <fieldset id="doNotTransfer" name="transfer" class="comman-radio">
+                                    <legend class="sr-only">Transfer filters</legend>
 
-								<label class="radio-inline">
-									<input value="no" type="radio" name="doNotTransfer">
-									<span class="text-radio">No</span>
-								</label>
+                                    <label class="radio-inline">
+                                        <input value="yes" type="radio" name="doNotTransfer">
+                                        <span class="text-radio">Yes</span>
+                                    </label>
 
-								<label class="radio-inline">
-									<input id="doNotTransfer-either" value="either" type="radio" name="doNotTransfer" checked>
-									<span class="text-radio">Either</span>
-								</label>
+                                    <label class="radio-inline">
+                                        <input value="no" type="radio" name="doNotTransfer">
+                                        <span class="text-radio">No</span>
+                                    </label>
 
-							</fieldset>
-						</div>
+                                    <label class="radio-inline">
+                                        <input id="doNotTransfer-either" value="either" type="radio" name="doNotTransfer" checked>
+                                        <span class="text-radio">Either</span>
+                                    </label>
+
+                                </fieldset>
+                            </div>
 						<!--/Transfer-->
-					</div>
+                        <% } else { %>
+                            <!--Cart-->
+                            <div class="form-group col-sm-6">
+                                <label for="inCart">In cart</label>
+
+                                <fieldset id="inCart" name="inCart" class="comman-radio">
+                                    <legend class="sr-only">Transfer filters</legend>
+
+                                    <label class="radio-inline">
+                                        <input value="yes" type="radio" name="inCart">
+                                        <span class="text-radio">Yes</span>
+                                    </label>
+
+                                    <label class="radio-inline">
+                                        <input value="no" type="radio" name="inCart">
+                                        <span class="text-radio">No</span>
+                                    </label>
+
+                                    <label class="radio-inline">
+                                        <input id="inCart-either" value="either" type="radio" name="inCart" checked>
+                                        <span class="text-radio">Either</span>
+                                    </label>
+
+                                </fieldset>
+                            </div>
+                             <!--/Cart-->
+                        <% } %>
+                    </div>
 				</div>
+                <% } %>
 				<!--/Actions-->
 
 				<!--Others-->
@@ -512,28 +551,30 @@
 						</div>
 
 					</div>
-					<div class="row">
-						<!--Lexicons-->
-						<div class="form-group col-sm-6">
-							<label for="lexiconName">Lexicons</label>
-							<select id="lexiconName" name="lexiconName" class="form-control selectpicker" name="Choose-file">
-								<option value="" selected disabled>Select</option>
-								<% Collection<String> lexiconNames = archive.getAvailableLexicons();
-									for (String lexiconName : lexiconNames) { %>
-								<option value="<%=lexiconName%>"><%=lexiconName%>
-								</option>
-								<% }%>
-							</select>
-						</div>
+                    <% if (!ModeConfig.isDiscoveryMode()) { %>
+                        <div class="row">
+                            <!--Lexicons-->
+                            <div class="form-group col-sm-6">
+                                <label for="lexiconName">Lexicons</label>
+                                <select id="lexiconName" name="lexiconName" class="form-control selectpicker" name="Choose-file">
+                                    <option value="" selected disabled>Select</option>
+                                    <% Collection<String> lexiconNames = archive.getAvailableLexicons();
+                                        for (String lexiconName : lexiconNames) { %>
+                                    <option value="<%=lexiconName%>"><%=lexiconName%>
+                                    </option>
+                                    <% }%>
+                                </select>
+                            </div>
 
-						<!--Lexicons Category-->
-						<div class="form-group col-sm-6">
-							<label for="lexiconCategory">Lexicon: Category</label>
-							<select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker" name="Choose-file">
-								<option value="" selected disabled>Select</option>
-							</select>
-						</div>
-					</div>
+                            <!--Lexicons Category-->
+                            <div class="form-group col-sm-6">
+                                <label for="lexiconCategory">Lexicon: Category</label>
+                                <select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker" name="Choose-file">
+                                    <option value="" selected disabled>Select</option>
+                                </select>
+                            </div>
+                        </div>
+                    <% } %>
 				</div>
 				<!--/Others-->
 
@@ -680,6 +721,10 @@
 				$('#attachmentFilename').autocomplete().enable();
 			}
 		});
+
+		var attachmentExtAutoCompleteParams = $.extend({}, autocomplete_params);
+		attachmentExtAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp?extensions=1';
+		$('#attachmentExtension').autocomplete(attachmentExtAutoCompleteParams);
 
 		$('#lexiconName').change(function() {
 			$options = $('#lexiconCategory option');
