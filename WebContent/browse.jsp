@@ -380,6 +380,27 @@ if (ModeConfig.isPublicMode()) {
 	String searchType = request.getParameter("searchType");
 	// warning: remember to convert, otherwise will not work for i18n queries!
 	String[] searchTerms = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("term"));
+
+    // for adv. search only: if any entities are specified, add them to search terms too, so that they can be highlighted properly
+    if (request.getParameter("adv-search") != null) {
+        String[] entities = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("entity"));
+        if (entities.length > 0) {
+            List<String> searchTermsList = new ArrayList();
+            for (String s: searchTerms) // can't use Arrays.asList here, it can't be added to later
+                searchTermsList.add(s);
+
+            // add all the entities to search terms...
+            for (String e : entities) {
+                Set<String> list = Searcher.splitFieldForOr(e);
+                if (list != null)
+                    searchTermsList.addAll(list);
+            }
+
+            // and convert back to an array
+            searchTerms = searchTermsList.toArray(new String[0]);
+        }
+    }
+
 	Set<String> highlightTermsUnstemmed = new LinkedHashSet<>();
 	if (searchTerms != null && searchTerms.length > 0)
 		for (String s: searchTerms) {
