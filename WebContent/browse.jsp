@@ -384,7 +384,7 @@ if (ModeConfig.isPublicMode()) {
     // for adv. search only: if any entities are specified, add them to search terms too, so that they can be highlighted properly
     if (request.getParameter("adv-search") != null) {
         String[] entities = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("entity"));
-        if (entities.length > 0) {
+        if (entities != null && entities.length > 0) {
             List<String> searchTermsList = new ArrayList();
             for (String s: searchTerms) // can't use Arrays.asList here, it can't be added to later
                 searchTermsList.add(s);
