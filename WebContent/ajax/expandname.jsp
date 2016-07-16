@@ -16,7 +16,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.regex.Pattern"%>
-<%@ page import="edu.stanford.muse.ner.NER"%>
+<%@ page import="edu.stanford.muse.ner.NER"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%><%@ page import="java.util.ArrayList"%><%@ page import="edu.stanford.muse.util.Span"%>
 <%/*Given a name; resolves it to multiple word name if the name is single word and also anotates the multiple word name with external(if there is an authorised database id) or internal(If there is a contact in addressbook with that name.)
 	Input: name that is to be expanded/annotated; docId of the document in which name is to be expanded/annotated. 
 	Output: If expanded possible multiple word names with authority type annotations in decreasing order of confidence(Max: 5)
@@ -51,18 +51,18 @@
 			JSPHelper.log.info("Wrong docId!");
 			return;
 		} else {
-			String etype = NER.EPER, otype = NER.EORG, ptype = NER.ELOC;
-
-			List<String> persons = archive.getEntitiesInDoc(ed, etype);
-			List<String> orgs = archive.getEntitiesInDoc(ed, otype);
-			List<String> places = archive.getEntitiesInDoc(ed, ptype);
-			Pattern pat = Pattern.compile("[A-Z]+");	
-			
+            List<String> persons = new ArrayList<>(), orgs = new ArrayList<>(), places = new ArrayList<>();
 			short et = -1;
-			if(persons.contains(name)) et = EntityFeature.PERSON;
-			else if(pat.matcher(name).matches()) et = EntityFeature.ACRONYM;
-			else if(orgs.contains(name)) et = EntityFeature.ORG;
-			else if(places.contains(name)) et = EntityFeature.PLACE;
+			Span[] spans = archive.getAllNamesInDoc(ed, true);
+			for(Span sp: spans){
+			    if(sp.text.equals(name)){
+			        et = FeatureDictionary.getCoarseType(sp.type);
+			        break;
+			    }
+			}
+
+			Pattern pat = Pattern.compile("[A-Z]+");
+			if(pat.matcher(name).matches()) et = EntityFeature.ACRONYM;
 
 			JSPHelper.log.info("Type of name: "+name+" -> " + et);
 			//we only try to expand these types
