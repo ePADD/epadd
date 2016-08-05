@@ -109,6 +109,7 @@
 					<include>browse-top.jsp</include>
 					<include>browse.jsp</include>
 					<include>search-query.jsp</include>
+					<include>advanced-search.jsp</include>
 					<include>version.jsp</include>
 					<include>collections.jsp</include>
 					<include>collection-detail.jsp</include>
@@ -143,6 +144,11 @@
 					<include>ajax/loadArchive.jsp</include>
 					<include>ajax/muselog.jsp</include>
 					<include>ajax/releaseDataset.jsp</include>
+                    <include>ajax/emailSourceAutoComplete.jsp</include>
+                    <include>ajax/attachmentAutoComplete.jsp</include>
+                    <include>ajax/entitiesAutoComplete.jsp</include>
+                    <include>ajax/correspondentAutoComplete.jsp</include>
+                    <include>ajax/folderAutoComplete.jsp</include>
         		</includes>
             </resource>
           </webResources>

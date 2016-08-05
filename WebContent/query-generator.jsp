@@ -83,7 +83,8 @@ if (ModeConfig.isPublicMode()) {
                 <div class="search-clear-btns">
                     <!--search btn-->
                     <button id="submit-button" type="submit" class="search-btn">
-                        <h5>VIEW <span id="nHits">0</span> MESSAGES</h5>
+                        <h5>VIEW ALL MESSAGES</h5>
+<!--                        <h5>VIEW <span id="nHits">0</span> MESSAGES</h5> -->
                     </button>
                 </div>
 
