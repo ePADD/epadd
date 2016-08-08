@@ -20,4 +20,3 @@ member@
 delivery@
 email@
 messages-noreply@
-notification

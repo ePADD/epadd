@@ -174,6 +174,14 @@ if (ModeConfig.isPublicMode()) {
 	 origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
 	 origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
 	 origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "attachmentFilename=");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "annotation=");
+	 origQueryString = Util.excludeUrlParam(origQueryString, "folder=");
+	 // entity=&correspondent=&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&attachmentFilename=&attachmentExtension=&annotation=&startDate=&endDate=&folder=&lexiconName=general&lexiconCategory=Award&attachmentExtension=gif
 
 	 String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 	 int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);
@@ -194,7 +202,7 @@ if (ModeConfig.isPublicMode()) {
 
 	for (String facet: facets.keySet())
 	{
-		List<DetailedFacetItem> items = new ArrayList<DetailedFacetItem>(facets.get(facet));
+		List<DetailedFacetItem> items = new ArrayList<>(facets.get(facet));
 		if (items.size() == 0)
 			continue; // don't show facet if it has no items.
 
