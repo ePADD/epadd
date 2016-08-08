@@ -63,7 +63,10 @@
         params.put("termSubject", "on");
         params.put("termBody", "on");
         params.put("termAttachments", "on");
-        Pair<Set<Document>, Set<Blob>> p = Searcher.searchForTerm (archive, params, term);
+		String searchTerm = term;
+		if (!(searchTerm.length() > 2 && searchTerm.startsWith("\"") && searchTerm.endsWith("\"")))
+			searchTerm = "\"" + searchTerm + "\"";
+        Pair<Set<Document>, Set<Blob>> p = Searcher.searchForTerm (archive, params, searchTerm);
         int nDocs = p.getFirst().size();
         JSONArray j = new JSONArray();
         j.put (0, Util.escapeHTML(term));

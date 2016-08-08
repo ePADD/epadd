@@ -38,7 +38,11 @@ epadd.pluralize = function(count, description)
 // do a search on the text of the element that was clicked
 epadd.do_search = function(e) {
 	var term = $(e.target).text();
-	window.open ('browse?adv-search=1&term=\"' + term + '\"&termBody=on&termSubject=on&termAttachments=on');
+	// if term is not already quoted, quote it now
+	if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"'))
+		term = '"' + term + '"';
+
+	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
 
 
