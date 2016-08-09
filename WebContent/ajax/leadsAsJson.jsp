@@ -7,7 +7,7 @@
 <%@page language="java" import="edu.stanford.muse.lens.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="java.util.Calendar"%>
-<%@page language="java" import="java.text.SimpleDateFormat"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%>
+<%@page language="java" import="java.text.SimpleDateFormat"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%><%@ page import="edu.stanford.muse.ner.tokenizer.CICTokenizer"%>
 <%//Archive needs to be loaded since NER is archive dependant%>
 <%@include file="../getArchive.jspf" %>
 <%@include file="../getNERModel.jspf" %>
@@ -40,45 +40,44 @@ try {
 		return;
 	}
 
-	List<Pair<String,Float>> names = new ArrayList<Pair<String,Float>>();
-	List<Pair<String,Integer>> namesFromArchive = null;
-	Map<String, Float> termFreqMap = new LinkedHashMap<String, Float>();
-	List<JSONObject> list=null;
+	Map<String, Float> termFreqMap = new LinkedHashMap<>();
+	List<JSONObject> list;
 	
-	boolean normalizeByLength = request.getParameter("normalizeByLength") != null;
 	long ner_start_millis = System.currentTimeMillis();
 
-	Pair<Map<Short, Map<String,Double>>, List<Triple<String, Integer, Integer>>> p = nerModel.find(text);
-	if(p!=null){
-	    Map<Short,Map<String,Double>> map = p.getFirst();
-	    if(map!=null){
-	        for(Short k: map.keySet()){
-	            if(FeatureDictionary.OTHER==k)
-                    continue;
-	            JSPHelper.log.info("Entity type: "+k+", "+map.get(k).size());
-	            for(String e: map.get(k).keySet()){
-	                if(map.get(k).get(e)>1.0E-4)
-	                names.add(new Pair<>(e,new Float(1.0)));
-	            }
-	        }
-	    }
-	}
-	//names = POS.namesFromPOS(text);
+//it is not efficient to recognize entities every time, especially since it lags the page by a minute for the first loading of the page.
+//The delay is due to loading of DBpedia into memory.
+//	Pair<Map<Short, Map<String,Double>>, List<Triple<String, Integer, Integer>>> p = nerModel.find(text);
+//	if(p!=null){
+//	    Map<Short,Map<String,Double>> map = p.getFirst();
+//	    if(map!=null){
+//	        for(Short k: map.keySet()){
+//	            if(FeatureDictionary.OTHER==k)
+//                    continue;
+//	            JSPHelper.log.info("Entity type: "+k+", "+map.get(k).size());
+//	            for(String e: map.get(k).keySet()){
+//	                if(map.get(k).get(e)>1.0E-4)
+//	                names.add(new Pair<>(e,new Float(1.0)));
+//	            }
+//	        }
+//	    }
+//	}
+    List<Triple<String,Integer,Integer>> tokens = new CICTokenizer().tokenize(text, false);
+    //tokens.forEach(tok->termFreqMap.put(tok.getFirst(),termFreqMap.getOrDefault(tok.getFirst(),0f)+1f));
+    for(Triple<String,Integer,Integer> tok: tokens)
+        termFreqMap.put(tok.getFirst(),termFreqMap.getOrDefault(tok.getFirst(),0f)+1f);
+
+    List<Pair<String,Float>> names = new ArrayList<>();
+    //termFreqMap.entrySet().forEach(e->names.add(new Pair<>(e.getKey(),e.getValue())));
+    for(Map.Entry e: termFreqMap.entrySet())
+        names.add(new Pair<>((String)e.getKey(),(Float)e.getValue()));
+
 	long ner_end_millis = System.currentTimeMillis();
 	JSPHelper.log.info("NER time " + (ner_end_millis - ner_start_millis) + " ms");
 
 	String DATE_FORMAT = "yyyyMMdd";
-	SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-	Calendar calendar = Calendar.getInstance();
-	JSPHelper.log.info(names.size() + " unique name(s) identified");
+	JSPHelper.log.info(termFreqMap.size() + " unique name(s) identified");
 
-	for (Pair<String, Float> pair: names)
-	{
-		String name = pair.getFirst();
-		Float count = pair.getSecond();
-		termFreqMap.put(name, 1.0f);
-	}
-		
 	LensPrefs lensPrefs = (LensPrefs) JSPHelper.getSessionAttribute(session, "lensPrefs");
 	if (lensPrefs == null)
 	{
@@ -101,7 +100,7 @@ try {
 	} catch (Exception e) {
 		JSPHelper.log.warn ("Exception getting lens hits " + e);
 		Util.print_exception(e, JSPHelper.log);
-		list = new ArrayList<JSONObject>();
+		list = new ArrayList<>();
 	}
 	JSPHelper.log.info (list.size() + " hits after sorting");
 

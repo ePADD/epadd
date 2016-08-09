@@ -52,7 +52,7 @@ if (ModeConfig.isPublicMode()) {
         </div>
 
         <div class="row">
-            <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px">
+            <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px; height: auto">
                 <%
                     String req = request.getParameter("refText");
                     out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
