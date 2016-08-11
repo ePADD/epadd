@@ -8,6 +8,7 @@
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--	
     Use this page to train and recognise fine grainied entity types, 
@@ -59,17 +60,16 @@
         Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
-        int di=0;
         for(Document doc: archive.getAllDocs()){
-            Map<Short,Map<String,Double>> es = NER.getEntities(archive.getDoc(doc),true);
-            for(String e: es.get(type).keySet()) {
-                double s = es.get(type).get(e);
+            Span[] es = archive.getNamesOfATypeInDoc(doc,true,type);
+            for(Span name: es){
+                double s = name.typeScore;
                 if(s<theta)
                     continue;
-                if (!entities.containsKey(e))
-                    entities.put(e, new Entity(e, s));
+                if (!entities.containsKey(name.text))
+                    entities.put(name.text, new Entity(name.text, s));
                 else
-                    entities.get(e).freq++;
+                    entities.get(name.text).freq++;
             }
         }
         Map<Entity, Double> vals = new LinkedHashMap<>();

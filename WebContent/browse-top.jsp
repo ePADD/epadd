@@ -65,10 +65,10 @@
 		statsAvailable = true;
 	String pC="",oC="",lC="", nS="";
 	if(statsAvailable){
-		pC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PERSON)+")";
-		oC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.ORGANISATION )+")";
-		lC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PLACE)+")";
-	}
+		pC=" ("+archive.processingMetadata.entityCounts.getOrDefault(FeatureDictionary.PERSON,0)+")";
+		oC=" ("+archive.processingMetadata.entityCounts.getOrDefault(FeatureDictionary.ORGANISATION,0)+")";
+		lC=" ("+archive.processingMetadata.entityCounts.getOrDefault(FeatureDictionary.PLACE,0)+")";
+   }
 	if(archive.processingMetadata.numPotentiallySensitiveMessages>=0)
 		nS = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
 
@@ -90,7 +90,7 @@
 	</div>
 	
 	<div class="cta-box text-center margin30">
-			<a href="entities?type=en_person">
+			<a href="entities?type=person">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/person.svg"/>
 			<p class="cta-text-1">Persons<%=pC%></p>
@@ -103,7 +103,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="entities?type=en_org">
+		<a href="entities?type=org">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
 			<p class="cta-text-1">Organizations<%=oC%></p>
@@ -116,7 +116,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="entities?type=en_loc">
+		<a href="entities?type=place">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/location.svg"/>
 			<p class="cta-text-1">Locations<%=lC%></p>
