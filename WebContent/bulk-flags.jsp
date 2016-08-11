@@ -93,7 +93,7 @@
                    out.println(matches.size() + " messages matched<br><br/>");
 
                    // create a dataset out of the matched docs
-                   DataSet dataset = new DataSet(matches, archive, datasetName, null, null, null, null);
+                   DataSet dataset = new DataSet(matches, archive, datasetName, null, null, null);
                    session.setAttribute(datasetName, dataset);
                    session.setAttribute("docs-" + datasetName, new ArrayList<Document>(matches));
                } catch (Exception e) {

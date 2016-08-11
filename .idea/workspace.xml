@@ -4,11 +4,8 @@
     <list default="true" id="edc54397-54b7-4c13-ad0a-ec2a06368211" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/wpmine/Wordnet.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/WEB-INF/classes/taboo-names" afterPath="$PROJECT_DIR$/WebContent/WEB-INF/classes/taboo-names" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/WEB-INF/classes/words.5000" afterPath="$PROJECT_DIR$/WebContent/WEB-INF/classes/words.5000" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/WEB-INF/web.xml" afterPath="$PROJECT_DIR$/WebContent/WEB-INF/web.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" afterPath="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" afterPath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/browse.jsp" afterPath="$PROJECT_DIR$/WebContent/browse.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/bulk-flags.jsp" afterPath="$PROJECT_DIR$/WebContent/bulk-flags.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java" />
     </list>
@@ -41,22 +38,27 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="leadsAsJson.jsp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="leadsAsJson.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6943574">
-              <caret line="89" column="5" selection-start-line="89" selection-start-column="5" selection-end-line="89" selection-end-column="5" />
+            <state vertical-scroll-proportion="-8.583333">
+              <caret line="54" column="31" selection-start-line="54" selection-start-column="31" selection-end-line="54" selection-end-column="31" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="web.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/web.xml">
+      <file leaf-file-name="browse.jsp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.625">
-              <caret line="131" column="47" selection-start-line="131" selection-start-column="47" selection-end-line="131" selection-end-column="47" />
-              <folding />
+            <state vertical-scroll-proportion="1.495283">
+              <caret line="835" column="7" selection-start-line="835" selection-start-column="7" selection-end-line="835" selection-end-column="7" />
+              <folding>
+                <element signature="e#8844#8863#0#JAVA" expanded="true" />
+                <element signature="e#9984#9992#0#JAVA" expanded="true" />
+                <element signature="e#10068#10076#0#JAVA" expanded="true" />
+                <element signature="e#12755#12763#0#JAVA" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -84,11 +86,9 @@
       <file leaf-file-name="DictUtils.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.611111">
+            <state vertical-scroll-proportion="0.0">
               <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-              <folding>
-                <element signature="e#9354#9381#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -106,7 +106,7 @@
       <file leaf-file-name="JSPHelper.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-16.703703">
+            <state vertical-scroll-proportion="0.0">
               <caret line="422" column="0" selection-start-line="422" selection-start-column="0" selection-end-line="422" selection-end-column="0" />
               <folding />
             </state>
@@ -116,9 +116,11 @@
       <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.185185">
+            <state vertical-scroll-proportion="0.0">
               <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
-              <folding />
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -136,7 +138,7 @@
       <file leaf-file-name="getNERModel.jspf" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/getNERModel.jspf">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.5">
+            <state vertical-scroll-proportion="0.0">
               <caret line="20" column="2" selection-start-line="20" selection-start-column="2" selection-end-line="20" selection-end-column="2" />
               <folding />
             </state>
@@ -204,7 +206,6 @@
         <option value="$PROJECT_DIR$/WebContent/query-generator.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
         <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/bannedStartStringsForEmailAddresses.txt" />
-        <option value="$PROJECT_DIR$/WebContent/browse.jsp" />
         <option value="$PROJECT_DIR$/WebContent/js/epadd.js" />
         <option value="$PROJECT_DIR$/WebContent/multi-search.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/IndexUtils.java" />
@@ -215,6 +216,7 @@
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/wpmine/Wordnet.java" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java" />
         <option value="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/browse.jsp" />
       </list>
     </option>
   </component>
@@ -241,7 +243,7 @@
     <option name="x" value="1280" />
     <option name="y" value="23" />
     <option name="width" value="1920" />
-    <option name="height" value="1177" />
+    <option name="height" value="1173" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -954,6 +956,7 @@
       <workItem from="1470677847527" duration="10300000" />
       <workItem from="1470720798455" duration="13732000" />
       <workItem from="1470857011015" duration="6988000" />
+      <workItem from="1470953129949" duration="1207000" />
     </task>
     <servers />
   </component>
@@ -969,7 +972,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="286647000" />
+    <option name="totallyTimeSpent" value="287854000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -981,8 +984,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1280" y="23" width="1920" height="1177" extended-state="6" />
-    <editor active="false" />
+    <frame x="1280" y="23" width="1920" height="1173" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -1004,7 +1007,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23642172" sideWeight="0.52" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3640553" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36355227" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1253,7 +1256,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="489" column="33" selection-start-line="489" selection-start-column="33" selection-end-line="489" selection-end-column="33" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1291,72 +1293,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="1504" column="0" selection-start-line="1504" selection-start-column="0" selection-end-line="1504" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#65553#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#7423#7424#0" expanded="false" />
-            <element signature="e#7467#7468#0" expanded="false" />
-            <element signature="e#7654#7655#0" expanded="false" />
-            <element signature="e#7690#7691#0" expanded="false" />
-            <element signature="e#9169#9170#0" expanded="false" />
-            <element signature="e#9217#9218#0" expanded="false" />
-            <element signature="e#9573#9574#0" expanded="false" />
-            <element signature="e#9631#9632#0" expanded="false" />
-            <element signature="e#9808#9809#0" expanded="false" />
-            <element signature="e#9863#9864#0" expanded="false" />
-            <element signature="e#9909#9910#0" expanded="false" />
-            <element signature="e#9984#9985#0" expanded="false" />
-            <element signature="e#10029#10030#0" expanded="false" />
-            <element signature="e#10080#10081#0" expanded="false" />
-            <element signature="e#10154#10155#0" expanded="false" />
-            <element signature="e#10218#10219#0" expanded="false" />
-            <element signature="e#10719#10720#0" expanded="false" />
-            <element signature="e#10766#10767#0" expanded="false" />
-            <element signature="e#10842#10843#0" expanded="false" />
-            <element signature="e#10886#10887#0" expanded="false" />
-            <element signature="e#10934#10935#0" expanded="false" />
-            <element signature="e#10970#10971#0" expanded="false" />
-            <element signature="e#13419#13420#0" expanded="false" />
-            <element signature="e#13457#13458#0" expanded="false" />
-            <element signature="e#13805#13806#0" expanded="false" />
-            <element signature="e#13847#13848#0" expanded="false" />
-            <element signature="e#14016#14017#0" expanded="false" />
-            <element signature="e#14066#14067#0" expanded="false" />
-            <element signature="e#14182#14183#0" expanded="false" />
-            <element signature="e#14214#14215#0" expanded="false" />
-            <element signature="e#14253#14254#0" expanded="false" />
-            <element signature="e#14285#14286#0" expanded="false" />
-            <element signature="e#14328#14329#0" expanded="false" />
-            <element signature="e#14362#14363#0" expanded="false" />
-            <element signature="e#18210#18211#0" expanded="false" />
-            <element signature="e#18260#18261#0" expanded="false" />
-            <element signature="e#18315#18316#0" expanded="false" />
-            <element signature="e#18361#18362#0" expanded="false" />
-            <element signature="e#21992#21993#0" expanded="false" />
-            <element signature="e#22033#22034#0" expanded="false" />
-            <element signature="e#22124#22125#0" expanded="false" />
-            <element signature="e#22154#22155#0" expanded="false" />
-            <element signature="e#22653#22654#0" expanded="false" />
-            <element signature="e#22719#22720#0" expanded="false" />
-            <element signature="e#22822#22823#0" expanded="false" />
-            <element signature="e#22891#22892#0" expanded="false" />
-            <element signature="e#24401#24402#0" expanded="false" />
-            <element signature="e#24455#24456#0" expanded="false" />
-            <element signature="e#28620#28621#0" expanded="false" />
-            <element signature="e#28672#28673#0" expanded="false" />
-            <element signature="e#30601#30602#0" expanded="false" />
-            <element signature="e#30650#30651#0" expanded="false" />
-            <element signature="e#47261#47262#0" expanded="false" />
-            <element signature="e#47338#47339#0" expanded="false" />
-            <element signature="e#54838#54839#0" expanded="false" />
-            <element signature="e#54870#54871#0" expanded="false" />
-            <element signature="e#55343#55344#0" expanded="false" />
-            <element signature="e#55386#55387#0" expanded="false" />
-            <element signature="e#60248#60249#0" expanded="false" />
-            <element signature="e#60302#60303#0" expanded="false" />
-            <element signature="e#62582#62583#0" expanded="false" />
-            <element signature="e#62619#62620#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1410,19 +1346,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33144477">
-          <caret line="147" column="89" selection-start-line="147" selection-start-column="68" selection-end-line="147" selection-end-column="89" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/advanced-search.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5566879">
           <caret line="526" column="53" selection-start-line="526" selection-start-column="53" selection-end-line="526" selection-end-column="53" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1444,7 +1371,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.34351146">
           <caret line="38" column="20" selection-start-line="38" selection-start-column="20" selection-end-line="38" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1452,7 +1378,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1460,7 +1385,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.022900764">
           <caret line="3463" column="11" selection-start-line="3463" selection-start-column="2" selection-end-line="3463" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1468,13 +1392,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="42" column="5" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/web.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.625">
+        <state vertical-scroll-proportion="0.0">
           <caret line="131" column="47" selection-start-line="131" selection-start-column="47" selection-end-line="131" selection-end-column="47" />
           <folding />
         </state>
@@ -1498,11 +1421,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.611111">
+        <state vertical-scroll-proportion="0.0">
           <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-          <folding>
-            <element signature="e#9354#9381#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1516,7 +1437,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.703703">
+        <state vertical-scroll-proportion="0.0">
           <caret line="422" column="0" selection-start-line="422" selection-start-column="0" selection-end-line="422" selection-end-column="0" />
           <folding />
         </state>
@@ -1532,7 +1453,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/getNERModel.jspf">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.5">
+        <state vertical-scroll-proportion="0.0">
           <caret line="20" column="2" selection-start-line="20" selection-start-column="2" selection-end-line="20" selection-end-column="2" />
           <folding />
         </state>
@@ -1540,9 +1461,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.185185">
+        <state vertical-scroll-proportion="0.0">
           <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1556,9 +1479,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6943574">
-          <caret line="89" column="5" selection-start-line="89" selection-start-column="5" selection-end-line="89" selection-end-column="5" />
+        <state vertical-scroll-proportion="-8.583333">
+          <caret line="54" column="31" selection-start-line="54" selection-start-column="31" selection-end-line="54" selection-end-column="31" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.495283">
+          <caret line="835" column="7" selection-start-line="835" selection-start-column="7" selection-end-line="835" selection-end-column="7" />
+          <folding>
+            <element signature="e#8844#8863#0#JAVA" expanded="true" />
+            <element signature="e#9984#9992#0#JAVA" expanded="true" />
+            <element signature="e#10068#10076#0#JAVA" expanded="true" />
+            <element signature="e#12755#12763#0#JAVA" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
