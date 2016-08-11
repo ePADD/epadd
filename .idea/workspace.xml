@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="edc54397-54b7-4c13-ad0a-ec2a06368211" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/wpmine/Wordnet.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/browse.jsp" afterPath="$PROJECT_DIR$/WebContent/browse.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/bulk-flags.jsp" afterPath="$PROJECT_DIR$/WebContent/bulk-flags.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java" />
     </list>
     <ignored path="epadd.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,11 +44,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="browse.jsp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="browse.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.495283">
-              <caret line="835" column="7" selection-start-line="835" selection-start-column="7" selection-end-line="835" selection-end-column="7" />
+            <state vertical-scroll-proportion="-9.625">
+              <caret line="787" column="53" selection-start-line="787" selection-start-column="53" selection-end-line="787" selection-end-column="53" />
               <folding>
                 <element signature="e#8844#8863#0#JAVA" expanded="true" />
                 <element signature="e#9984#9992#0#JAVA" expanded="true" />
@@ -63,42 +59,51 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="Indexer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Indexer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="1088" column="0" selection-start-line="1088" selection-start-column="0" selection-end-line="1088" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#77776#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NER.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/NER.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.6666665">
+              <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BlobStore.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.7598736">
+              <caret line="380" column="22" selection-start-line="380" selection-start-column="22" selection-end-line="380" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#19655#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="CICTokenizer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="180" column="0" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="taboo-names" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/taboo-names">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DictUtils.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Wordnet.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/wpmine/Wordnet.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-              <folding />
+              <caret line="172" column="0" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#18343#18344#0" expanded="false" />
+                <element signature="e#18356#18357#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -156,7 +161,7 @@
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="SYNC" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../muse" />
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
@@ -956,7 +961,7 @@
       <workItem from="1470677847527" duration="10300000" />
       <workItem from="1470720798455" duration="13732000" />
       <workItem from="1470857011015" duration="6988000" />
-      <workItem from="1470953129949" duration="1207000" />
+      <workItem from="1470953129949" duration="3939000" />
     </task>
     <servers />
   </component>
@@ -972,7 +977,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="287854000" />
+    <option name="totallyTimeSpent" value="290586000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -989,7 +994,7 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2248848" sideWeight="0.49030694" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22479185" sideWeight="0.49030694" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32398754" sideWeight="0.5170394" order="0" side_tool="true" content_ui="tabs" />
@@ -1105,20 +1110,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/WebContent/settings.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.1176472">
-          <caret line="78" column="50" selection-start-line="78" selection-start-column="50" selection-end-line="78" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/ner.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="5.0416665">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/ajax/nertrainandrecognise.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-11.875">
@@ -1252,13 +1243,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/NER.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="489" column="33" selection-start-line="489" selection-start-column="33" selection-end-line="489" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/WebContent/ajax/leadsAsJson.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1293,6 +1277,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="1504" column="0" selection-start-line="1504" selection-start-column="0" selection-end-line="1504" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#7328#7329#0" expanded="false" />
+            <element signature="e#9074#9075#0" expanded="false" />
+            <element signature="e#10875#10876#0" expanded="false" />
+            <element signature="e#21938#21939#0" expanded="false" />
+            <element signature="e#49097#49098#0" expanded="false" />
+            <element signature="e#57783#57784#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1423,15 +1416,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/wpmine/Wordnet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#8397#8398#0" expanded="false" />
+            <element signature="e#8439#8440#0" expanded="false" />
+            <element signature="e#9336#9337#0" expanded="false" />
+            <element signature="e#9398#9399#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1472,8 +1463,12 @@
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="180" column="0" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
-          <folding />
+          <caret line="172" column="0" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#18343#18344#0" expanded="false" />
+            <element signature="e#18356#18357#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1487,13 +1482,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.495283">
-          <caret line="835" column="7" selection-start-line="835" selection-start-column="7" selection-end-line="835" selection-end-column="7" />
+        <state vertical-scroll-proportion="-9.625">
+          <caret line="787" column="53" selection-start-line="787" selection-start-column="53" selection-end-line="787" selection-end-column="53" />
           <folding>
             <element signature="e#8844#8863#0#JAVA" expanded="true" />
             <element signature="e#9984#9992#0#JAVA" expanded="true" />
             <element signature="e#10068#10076#0#JAVA" expanded="true" />
             <element signature="e#12755#12763#0#JAVA" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Indexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1088" column="0" selection-start-line="1088" selection-start-column="0" selection-end-line="1088" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#77776#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/NER.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.6666665">
+          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7598736">
+          <caret line="380" column="22" selection-start-line="380" selection-start-column="22" selection-end-line="380" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#19655#0" expanded="true" />
           </folding>
         </state>
       </provider>
