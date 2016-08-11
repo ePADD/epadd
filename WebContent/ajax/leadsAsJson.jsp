@@ -1,16 +1,15 @@
 <%@ page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="org.json.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.lens.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="java.util.Calendar"%>
-<%@page language="java" import="java.text.SimpleDateFormat"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%><%@ page import="edu.stanford.muse.ner.tokenizer.CICTokenizer"%>
+<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
+<%@page language="java" import="edu.stanford.muse.lens.Lens"%>
+<%@page language="java" import="edu.stanford.muse.lens.LensPrefs"%>
+<%@page language="java" import="edu.stanford.muse.ner.tokenizer.CICTokenizer"%>
+<%@page language="java" import="edu.stanford.muse.util.DictUtils"%>
+<%@page language="java" import="edu.stanford.muse.util.Pair"%>
+<%@page language="java" import="edu.stanford.muse.util.Triple"%>
+<%@page language="java" import="edu.stanford.muse.util.Util"%><%@ page import="edu.stanford.muse.webapp.HTMLUtils"%><%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONArray"%><%@ page import="org.json.JSONObject"%><%@ page import="java.util.*"%><%@ page import="java.util.stream.Collectors"%>
 <%//Archive needs to be loaded since NER is archive dependant%>
 <%@include file="../getArchive.jspf" %>
-<%@include file="../getNERModel.jspf" %>
 
 <%
 JSPHelper.setPageUncacheable(response);
@@ -62,7 +61,34 @@ try {
 //	        }
 //	    }
 //	}
+
+
     List<Triple<String,Integer,Integer>> tokens = new CICTokenizer().tokenize(text, false);
+
+    // filter out noisy single-word tokens (in full dict or 5000 dict, or same stem as 5000 dict)
+    {
+        // if the token is not a multi-word token (doesn't contain space), do some additional checks
+        List<Triple<String,Integer,Integer>> newTokens = new ArrayList<>();
+
+        for (Triple<String,Integer,Integer> t: tokens) {
+            String token = t.getFirst().toLowerCase();
+            if (!token.contains(" ")) {
+                // is a common dict word? then don't include
+                if (DictUtils.commonDictWords5000.contains(token))
+                    continue;
+                if (DictUtils.fullDictWords.contains(token))
+                    continue;
+
+                // has the same stem as a common dict word? don't include
+                String stem = DictUtils.canonicalizeTerm(token, true);
+                if (DictUtils.commonDictWords5000Stems.contains(stem))
+                    continue;
+            }
+            newTokens.add(t);
+        }
+        tokens = newTokens;
+    }
+
     //tokens.forEach(tok->termFreqMap.put(tok.getFirst(),termFreqMap.getOrDefault(tok.getFirst(),0f)+1f));
     for(Triple<String,Integer,Integer> tok: tokens)
         termFreqMap.put(tok.getFirst(),termFreqMap.getOrDefault(tok.getFirst(),0f)+1f);
