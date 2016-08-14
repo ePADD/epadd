@@ -1,6 +1,5 @@
 <%@ page import="edu.stanford.muse.webapp.*" %>
 <%@ page import="edu.stanford.muse.ner.model.NERModel" %>
-<%@ page import="java.io.File" %>
 <%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%--
   User: vihari
