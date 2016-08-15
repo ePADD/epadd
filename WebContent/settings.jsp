@@ -1,6 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@ page import="edu.stanford.muse.ner.*" %>
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -92,7 +93,7 @@
 					int size = archive.getAllDocs().size();
 					if (size > 0) {
 						org.apache.lucene.document.Document doc = archive.getDoc(archive.getAllDocs().get(0));
-						if (doc.get(edu.stanford.muse.ner.NER.EPER) == null)
+						if (doc.get(edu.stanford.muse.ner.NER.NAMES) == null)
 							out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
 					} else
 						out.println ("There are no messages in this archive.<br/>");

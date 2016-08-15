@@ -13,6 +13,7 @@
 <%@ page import="edu.stanford.muse.util.*" %>
 <%@ page import="edu.stanford.muse.email.Contact" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
+<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@include file="getArchive.jspf" %>
 <%!
 
@@ -111,7 +112,15 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 	boolean doSentiments = false, doPeople = false, doEntities = false;
 	String view = request.getParameter("view");
 	String type = request.getParameter("type");
-	String heading = "", tableURL = "";
+    Short ct = FeatureDictionary.PERSON;
+
+    if("en_person".equals(type))
+        ct = FeatureDictionary.PERSON;
+    else if("en_loc".equals(type))
+        ct = FeatureDictionary.PLACE;
+    else ct = FeatureDictionary.ORGANISATION;
+
+    String heading = "", tableURL = "";
 	if ("sentiments".equals(view)) {
 		doSentiments = true;
 		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
@@ -292,8 +301,12 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
 		Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
 		for (EmailDocument ed: docs) {
-			List<String> entities = archive.getEntitiesInDoc(ed, type);
-			Set<String> set = new LinkedHashSet<String>(entities);
+            Set<String> set = new LinkedHashSet<>();
+            Span[] es = archive.getEntitiesInDoc(ed, true);
+            es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
+            es = edu.stanford.muse.ie.Util.filterEntities(es);
+            for(Span sp: es)
+                if(FeatureDictionary.getCoarseType(sp.type)==ct) set.add(sp.text);
 
 			for (String e: set) {
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
@@ -333,8 +346,13 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
 		// now create the actual list of docs for each of the top entities
 		for (EmailDocument ed: docs) {
-			List<String> entities = archive.getEntitiesInDoc(ed, type);
-			Set<String> set = new LinkedHashSet<String>(entities);
+			Span[] es = archive.getEntitiesInDoc(ed, true);//, type);
+            es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
+            es = edu.stanford.muse.ie.Util.filterEntities(es);
+
+            Set<String> set = new LinkedHashSet<>();
+            for(Span sp: es)
+                if(FeatureDictionary.getCoarseType(sp.type)==ct) set.add(sp.text);
 
 			for (String e: set) {
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);

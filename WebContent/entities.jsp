@@ -1,6 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
 <%@ page import="edu.stanford.muse.util.Pair" %>
@@ -9,8 +8,7 @@
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.*" %>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
-<%@ page import="edu.stanford.muse.ner.NER" %>
-<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
+<%@ page import="edu.stanford.muse.util.Span" %>
 <%@include file="getArchive.jspf" %>
 
 <!-- Input: Field name
@@ -45,15 +43,15 @@
     String type=request.getParameter("type");
 	String et = "";
     Short ct = FeatureDictionary.PERSON;
-	if(edu.stanford.muse.ner.NER.EPER.equals(type)||"person".equals(type)) {
+	if("en_person".equals(type)||"person".equals(type)) {
         et = "Person";
         ct = FeatureDictionary.PERSON;
     }
-	else if(edu.stanford.muse.ner.NER.ELOC.equals(type)||"place".equals(type)) {
+	else if("en_loc".equals(type)||"place".equals(type)) {
         et = "Location";
         ct = FeatureDictionary.PLACE;
     }
-	else if(edu.stanford.muse.ner.NER.EORG.equals(type)||"organisation".equals(type)) {
+	else if("en_org".equals(type)||"organisation".equals(type)) {
         et = "Organisation";
         ct = FeatureDictionary.ORGANISATION;
     }
@@ -79,38 +77,22 @@
     double cutoff = 0.001;
     Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
     for (EmailDocument ed: docs) {
-        List<String> entities = new ArrayList<>();
-        Map<Short, Map<String, Double>> es = NER.getEntities(archive.getDoc(ed), true);
-        List<Short> mtypes = Arrays.asList(SequenceModel.mappings.get(ct));
-        for (Short mt : mtypes) {
-            for (String e : es.get(mt).keySet()) {
-                double s = es.get(mt).get(e);
-                if (s < cutoff)
-                    continue;
-                entities.add(e);
-            }
-        }
+        Span[] es = archive.getEntitiesInDoc(ed,true);
+        List<Span> est = new ArrayList<>();
+        for(Span e: es)
+            if(FeatureDictionary.getCoarseType(e.type) == ct)
+                est.add(e);
 
-// 	if(edu.stanford.muse.ie.ie.NER.EPER.equals(type)||edu.stanford.muse.ie.ie.NER.ELOC.equals(type)||edu.stanford.muse.ie.ie.NER.EORG.equals(type)){
-// 		List<String> scores = indexer.getEntitiesInDoc(ed, type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);
-// 		System.err.println("Entities size: "+entities.size()+", scores size: "+scores.size()+", "+type+edu.stanford.muse.ie.ie.NER.SCORE_SUFFIX);
-// 		if(entities.size()==scores.size()){
-// 			entities = Util.filterEntitiesByScore(entities, scores, 0.9);
-// 			System.err.println("Filtered entities with threshold score");
-// 		}else{
-// 			for(String e: entities)
-// 				System.err.println(e);
-// 			for(String s: scores)
-// 				System.err.println(s);
-// 		}
-// 	}
+        Span[] fes = edu.stanford.muse.ie.Util.filterEntitiesByScore(est.toArray(new Span[est.size()]),cutoff);
+
         //filter the entities to remove obvious junk
-        entities = edu.stanford.muse.ie.Util.filterEntities(entities, type);
-	    // note that entities could have repetitons.
+        fes = edu.stanford.muse.ie.Util.filterEntities(fes);
+	    // note that entities could have repetitions.
 	    // so we create a *set* of entities, but after canonicalization.
 	    // canonical to original just uses an arbitrary (first) occurrence of the entity
         Set<String> canonicalEntities = new LinkedHashSet<String>();
-        for (String e: entities) {
+        for (Span esp: fes) {
+            String e = esp.getText();
             String canonicalEntity = IndexUtils.canonicalizeEntity(e);
             if (canonicalToOriginal.get(canonicalEntity) == null)
                 canonicalToOriginal.put(canonicalEntity, e);

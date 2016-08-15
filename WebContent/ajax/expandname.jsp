@@ -16,7 +16,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="java.util.regex.Pattern"%>
-<%@ page import="edu.stanford.muse.ner.NER"%>
+<%@ page import="edu.stanford.muse.ner.NER"%><%@ page import="edu.stanford.muse.util.Span"%><%@ page import="java.util.ArrayList"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%>
 <%/*Given a name; resolves it to multiple word name if the name is single word and also anotates the multiple word name with external(if there is an authorised database id) or internal(If there is a contact in addressbook with that name.)
 	Input: name that is to be expanded/annotated; docId of the document in which name is to be expanded/annotated. 
 	Output: If expanded possible multiple word names with authority type annotations in decreasing order of confidence(Max: 5)
@@ -51,12 +51,19 @@
 			JSPHelper.log.info("Wrong docId!");
 			return;
 		} else {
-			String etype = NER.EPER, otype = NER.EORG, ptype = NER.ELOC;
-
-			List<String> persons = archive.getEntitiesInDoc(ed, etype);
-			List<String> orgs = archive.getEntitiesInDoc(ed, otype);
-			List<String> places = archive.getEntitiesInDoc(ed, ptype);
-			Pattern pat = Pattern.compile("[A-Z]+");	
+            Span[] spans = archive.getEntitiesInDoc(ed, true);
+            Set<String> persons = new HashSet<>(), places = new HashSet<>(), orgs = new HashSet<>();
+			for(Span sp: spans){
+			    if(sp == null) continue;
+			    short ct = FeatureDictionary.getCoarseType(sp.type);
+			    if(ct == FeatureDictionary.PERSON)
+			        persons.add(sp.getText());
+			    else if(ct == FeatureDictionary.PLACE)
+			        places.add(sp.getText());
+			    else
+			        orgs.add(sp.getText());
+			}
+			Pattern pat = Pattern.compile("[A-Z]+");
 			
 			short et = -1;
 			if(persons.contains(name)) et = EntityFeature.PERSON;
@@ -69,7 +76,7 @@
 			if(et == EntityFeature.PERSON || et==EntityFeature.ACRONYM ||
 			    et == EntityFeature.ORG || et == EntityFeature.PLACE) {
 				if(!name.contains(" ")) {
-					List<String> entities = persons;
+					Set<String> entities = persons;
 					EntityFeature ef = new EntityFeature(name, et);
 					List<String> names = ed.getAllNames();
 					List<String> addresses = ed.getAllAddrs();

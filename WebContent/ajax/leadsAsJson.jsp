@@ -7,7 +7,11 @@
 <%@page language="java" import="edu.stanford.muse.util.DictUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.util.Triple"%>
-<%@page language="java" import="edu.stanford.muse.util.Util"%><%@ page import="edu.stanford.muse.webapp.HTMLUtils"%><%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONArray"%><%@ page import="org.json.JSONObject"%><%@ page import="java.util.*"%><%@ page import="java.util.stream.Collectors"%>
+<%@page language="java" import="edu.stanford.muse.util.Util"%>
+<%@ page import="edu.stanford.muse.webapp.HTMLUtils"%>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONArray"%>
+<%@ page import="org.json.JSONObject"%>
+<%@ page import="java.util.*"%>
 <%//Archive needs to be loaded since NER is archive dependant%>
 <%@include file="../getArchive.jspf" %>
 
@@ -80,9 +84,9 @@ try {
                     continue;
 
                 // has the same stem as a common dict word? don't include
-                String stem = DictUtils.canonicalizeTerm(token, true);
-                if (DictUtils.commonDictWords5000Stems.contains(stem))
-                    continue;
+//                String stem = DictUtils.canonicalizeTerm(token, true);
+//                if (DictUtils.commonDictWords5000Stems.contains(stem))
+//                    continue;
             }
             newTokens.add(t);
         }
