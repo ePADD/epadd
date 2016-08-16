@@ -2,12 +2,12 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.ner.Entity" %>
-<%@ page import="edu.stanford.muse.ner.NER" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--	
     Use this page to train and recognise fine grainied entity types, 
@@ -59,15 +59,14 @@
         Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
-        int di=0;
         for(Document doc: archive.getAllDocs()){
-            Map<Short,Map<String,Double>> es = NER.getEntities(archive.getDoc(doc),true);
-            for(String e: es.get(type).keySet()) {
-                double s = es.get(type).get(e);
-                if(s<theta)
+            Span[] es = archive.getEntitiesInDoc(doc,true);
+            for(Span sp: es) {
+                String e = sp.getText();
+                if(sp.type!=type || sp.typeScore<theta)
                     continue;
                 if (!entities.containsKey(e))
-                    entities.put(e, new Entity(e, s));
+                    entities.put(e, new Entity(e, sp.typeScore));
                 else
                     entities.get(e).freq++;
             }
