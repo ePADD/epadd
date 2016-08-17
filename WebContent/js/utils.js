@@ -235,6 +235,7 @@ var manual_assign = function(){
 			//close the popup
 			$(".manual-spinner").hide();
 			$("a.fancybox-item.fancybox-close").click();
+            qtipreinitialise();
 		},
 		beforeSend: function(jqXHR, settings) {
 			jqXHR.id = settings.id;
