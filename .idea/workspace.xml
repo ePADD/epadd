@@ -2,15 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="edc54397-54b7-4c13-ad0a-ec2a06368211" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" afterPath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/browse-top.jsp" afterPath="$PROJECT_DIR$/WebContent/browse-top.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/entities.jsp" afterPath="$PROJECT_DIR$/WebContent/entities.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/ajax/expandname.jsp" afterPath="$PROJECT_DIR$/WebContent/ajax/expandname.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/finetypes.jsp" afterPath="$PROJECT_DIR$/WebContent/finetypes.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/graph.jsp" afterPath="$PROJECT_DIR$/WebContent/graph.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" afterPath="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/settings.jsp" afterPath="$PROJECT_DIR$/WebContent/settings.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" afterPath="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/advanced-search.jsp" afterPath="$PROJECT_DIR$/WebContent/advanced-search.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/browse-finetypes.jsp" afterPath="$PROJECT_DIR$/WebContent/browse-finetypes.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/by-folder.jsp" afterPath="$PROJECT_DIR$/WebContent/by-folder.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/css/epadd.css" afterPath="$PROJECT_DIR$/WebContent/css/epadd.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/finetypes.jsp" afterPath="$PROJECT_DIR$/WebContent/finetypes.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/search-query.jsp" afterPath="$PROJECT_DIR$/WebContent/search-query.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/version.jsp" afterPath="$PROJECT_DIR$/WebContent/version.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" afterPath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/version" afterPath="$PROJECT_DIR$/version" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" />
     </list>
     <ignored path="epadd.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,76 +46,69 @@
     </favorites_list>
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="browse-top.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/browse-top.jsp">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="assign-authorities.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/assign-authorities.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="finetypes.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/finetypes.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="64" column="35" selection-start-line="64" selection-start-column="35" selection-end-line="64" selection-end-column="35" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="graph.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/graph.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="335" column="25" selection-start-line="335" selection-start-column="25" selection-end-line="335" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="entities.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="browse-finetypes.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/browse-finetypes.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="settings.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/settings.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="98" column="63" selection-start-line="98" selection-start-column="63" selection-end-line="98" selection-end-column="63" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Util.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Util.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="319" column="5" selection-start-line="319" selection-start-column="5" selection-end-line="319" selection-end-column="5" />
+            <state vertical-scroll-proportion="-3.7843137">
+              <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="8" />
               <folding>
-                <element signature="e#8790#8791#0" expanded="true" />
-                <element signature="e#8845#8846#0" expanded="true" />
+                <marker date="1465011260000" expanded="true" signature="3199:3210" placeholder="..." />
+                <marker date="1465011260000" expanded="true" signature="6355:6366" placeholder="..." />
+                <marker date="1465011260000" expanded="true" signature="11388:11397" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Entities.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.555555">
+              <caret line="504" column="47" selection-start-line="504" selection-start-column="47" selection-end-line="504" selection-end-column="47" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="advanced-search.jsp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/WebContent/advanced-search.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.43189368">
+              <caret line="210" column="28" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="collections.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/collections.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.4509804">
+              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JSPHelper.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="212" column="51" selection-start-line="212" selection-start-column="47" selection-end-line="212" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -118,17 +117,7 @@
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SequenceModel.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.8428571">
-              <caret line="596" column="59" selection-start-line="596" selection-start-column="59" selection-end-line="596" selection-end-column="59" />
+              <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -137,8 +126,30 @@
       <file leaf-file-name="Archive.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java">
           <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-4.6666665">
+              <caret line="1184" column="53" selection-start-line="1184" selection-start-column="45" selection-end-line="1184" selection-end-column="53" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SimpleSessions.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/SimpleSessions.java">
+          <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="1182" column="61" selection-start-line="1182" selection-start-column="61" selection-end-line="1182" selection-end-column="61" />
+              <caret line="132" column="83" selection-start-line="132" selection-start-column="69" selection-end-line="132" selection-end-column="83" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Sessions.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="53" column="79" selection-start-line="53" selection-start-column="79" selection-end-line="53" selection-end-column="79" />
               <folding />
             </state>
           </provider>
@@ -155,7 +166,7 @@
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="SYNC" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../muse" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
@@ -165,18 +176,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/email/MailingList.java" />
-        <option value="$PROJECT_DIR$/WebContent/export-complete-processing.jsp" />
-        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/email/AddressBook.java" />
-        <option value="$PROJECT_DIR$/WebContent/edit-lexicon.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/about.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/lexicon.jsp" />
         <option value="$PROJECT_DIR$/WebContent/editAddressBook.jsp" />
         <option value="$PROJECT_DIR$/../muse/WebContent/js/muse-lens.user.js" />
         <option value="$PROJECT_DIR$/WebContent/js/muse-lens.user.js" />
         <option value="$PROJECT_DIR$/WebContent/css/main.css" />
-        <option value="$PROJECT_DIR$/WebContent/search-query.jsp" />
-        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" />
         <option value="$PROJECT_DIR$/WebContent/ajax/folderAutoComplete.jsp" />
         <option value="$PROJECT_DIR$/WebContent/ajax/attachmentAutoComplete.jsp" />
         <option value="$PROJECT_DIR$/WebContent/ajax/entitiesAutoComplete.jsp" />
@@ -191,7 +194,6 @@
         <option value="$PROJECT_DIR$/../muse/pom-common.xml" />
         <option value="$PROJECT_DIR$/../muse/src/test/java/MuseTest.java" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/Util.java" />
-        <option value="$PROJECT_DIR$/WebContent/advanced-search.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Searcher.java" />
         <option value="$PROJECT_DIR$/WebContent/query-generator.jsp" />
         <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/bannedStartStringsForEmailAddresses.txt" />
@@ -207,15 +209,24 @@
         <option value="$PROJECT_DIR$/WebContent/browse.jsp" />
         <option value="$PROJECT_DIR$/WebContent/getNERModel.jspf" />
         <option value="$PROJECT_DIR$/../muse/WebContent/getNERModel.jspf" />
-        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
         <option value="$PROJECT_DIR$/WebContent/ajax/expandname.jsp" />
         <option value="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Util.java" />
         <option value="$PROJECT_DIR$/WebContent/browse-top.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/finetypes.jsp" />
         <option value="$PROJECT_DIR$/WebContent/settings.jsp" />
         <option value="$PROJECT_DIR$/WebContent/graph.jsp" />
         <option value="$PROJECT_DIR$/WebContent/entities.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/search-query.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/browse-finetypes.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/finetypes.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/by-folder.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/css/epadd.css" />
+        <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" />
+        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" />
+        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
+        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" />
+        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java" />
+        <option value="$PROJECT_DIR$/WebContent/advanced-search.jsp" />
       </list>
     </option>
   </component>
@@ -243,14 +254,10 @@
       </MavenImportingSettings>
     </option>
   </component>
-  <component name="NamedScopeManager">
-    <order />
-  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="52" />
     <option name="y" value="23" />
-    <option name="width" value="1228" />
-    <option name="height" value="777" />
+    <option name="width" value="1280" />
+    <option name="height" value="773" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -340,7 +347,7 @@
     <property name="project.structure.side.proportion" value="0.36091954" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../epadd-launcher/src/test/resources/features/ePadd.feature" />
-    <property name="SearchEverywhereHistoryKey" value="sequence&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java&#10;Span&#9;PSI&#9;JAVA://edu.stanford.muse.util.Span&#10;browse-fin&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-finetypes.jsp&#10;en&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;NER&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;settings&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/settings.jsp&#10;graph.jsp&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/graph.jsp&#10;finety&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/finetypes.jsp&#10;browse&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-top.jsp&#10;entitie&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;expand&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/ajax/expandname.jsp&#10;getner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/getNERModel.jspf&#10;leads&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/WebContent/ajax/leadsAsJson.jsp&#10;ner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;processingmet&#9;PSI&#9;JAVA://edu.stanford.muse.index.Archive.ProcessingMetadata" />
+    <property name="SearchEverywhereHistoryKey" value="archive.v1&#9;null&#9;null&#10;sequence&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java&#10;Span&#9;PSI&#9;JAVA://edu.stanford.muse.util.Span&#10;browse-fin&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-finetypes.jsp&#10;en&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;NER&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;settings&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/settings.jsp&#10;graph.jsp&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/graph.jsp&#10;finety&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/finetypes.jsp&#10;browse&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-top.jsp&#10;entitie&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;expand&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/ajax/expandname.jsp&#10;getner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/getNERModel.jspf&#10;leads&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/WebContent/ajax/leadsAsJson.jsp&#10;ner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;processingmet&#9;PSI&#9;JAVA://edu.stanford.muse.index.Archive.ProcessingMetadata" />
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
   </component>
@@ -454,6 +461,15 @@
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
       <method />
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
@@ -475,6 +491,15 @@
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
       <method />
     </configuration>
     <configuration default="true" type="Applet" factoryName="Applet">
@@ -807,6 +832,7 @@
       <workItem from="1470857011015" duration="6988000" />
       <workItem from="1470953129949" duration="1207000" />
       <workItem from="1471332216638" duration="446000" />
+      <workItem from="1471362899239" duration="9144000" />
     </task>
     <servers />
   </component>
@@ -822,7 +848,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="294386000" />
+    <option name="totallyTimeSpent" value="303530000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -834,66 +860,67 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="52" y="23" width="1228" height="777" extended-state="6" />
-    <editor active="false" />
+    <frame x="0" y="23" width="1280" height="773" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36299434" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32398754" sideWeight="0.5170394" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23642172" sideWeight="0.52" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22457626" sideWeight="0.49030694" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23591363" sideWeight="0.525" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32892805" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10702875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17285945" sideWeight="0.475" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4661017" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21669106" sideWeight="0.48296058" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22320117" sideWeight="0.49030694" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32398754" sideWeight="0.5170394" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32977098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46559298" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17285945" sideWeight="0.475" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23591363" sideWeight="0.525" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.10702875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23642172" sideWeight="0.52" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36270192" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
+      <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21669106" sideWeight="0.48296058" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32398754" sideWeight="0.5170394" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32892805" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17285945" sideWeight="0.475" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.46696034" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21669106" sideWeight="0.48296058" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36563876" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23642172" sideWeight="0.52" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22580644" sideWeight="0.49030694" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23591363" sideWeight="0.525" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10702875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32398754" sideWeight="0.5170394" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32977098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.10702875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36270192" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22320117" sideWeight="0.49030694" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46559298" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17285945" sideWeight="0.475" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23591363" sideWeight="0.525" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21669106" sideWeight="0.48296058" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23642172" sideWeight="0.52" order="4" side_tool="true" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -947,7 +974,7 @@
           <option name="timeStamp" value="174" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="176" />
+      <option name="time" value="178" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -956,120 +983,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/featuregen/FeatureDictionary.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.111111">
-          <caret line="33" column="75" selection-start-line="33" selection-start-column="75" selection-end-line="33" selection-end-column="75" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Highlighter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/pom-common.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.588235">
-          <caret line="216" column="0" selection-start-line="216" selection-start-column="0" selection-end-line="216" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/CryptoUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="9" selection-start-line="45" selection-start-column="9" selection-end-line="45" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/EmailUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.296296">
-          <caret line="482" column="27" selection-start-line="482" selection-start-column="27" selection-end-line="482" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/SloppyDates.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="226" column="33" selection-start-line="226" selection-start-column="33" selection-end-line="226" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/header.jspf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36272877">
-          <caret line="22" column="29" selection-start-line="22" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/Entity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52238804">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-26.27612">
-          <caret line="64" column="29" selection-start-line="64" selection-start-column="29" selection-end-line="64" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/query-generator.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.54833597">
-          <caret line="93" column="10" selection-start-line="93" selection-start-column="10" selection-end-line="93" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/TimeKeeper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="38" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/WebContent/ajax/multipleLeadsAsJson.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="65" column="33" selection-start-line="65" selection-start-column="20" selection-end-line="65" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/NER.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="489" column="33" selection-start-line="489" selection-start-column="33" selection-end-line="489" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/email/AddressBook.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="508" column="0" selection-start-line="508" selection-start-column="0" selection-end-line="508" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#53472#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#3990#3991#0" expanded="false" />
-            <element signature="e#4033#4034#0" expanded="false" />
-            <element signature="e#12758#12759#0" expanded="false" />
-            <element signature="e#12801#12802#0" expanded="false" />
-            <element signature="e#13625#13626#0" expanded="false" />
-            <element signature="e#13662#13663#0" expanded="false" />
-            <element signature="e#14462#14463#0" expanded="false" />
-            <element signature="e#14525#14526#0" expanded="false" />
-            <element signature="e#43592#43593#0" expanded="false" />
-            <element signature="e#43637#43638#0" expanded="false" />
-            <element signature="e#44870#44871#0" expanded="false" />
-            <element signature="e#44911#44912#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/test/GmailMboxSplitter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1110,13 +1023,6 @@
         <state vertical-scroll-proportion="0.8886139">
           <caret line="872" column="0" selection-start-line="872" selection-start-column="0" selection-end-line="872" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/advanced-search.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5566879">
-          <caret line="526" column="53" selection-start-line="526" selection-start-column="53" selection-end-line="526" selection-end-column="53" />
         </state>
       </provider>
     </entry>
@@ -1175,23 +1081,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="422" column="0" selection-start-line="422" selection-start-column="0" selection-end-line="422" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1212,7 +1101,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="30" column="32" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="32" />
           <folding>
-            <element signature="e#1091#1099#0" expanded="true" />
+            <element signature="e#1091#1099#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1260,31 +1149,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/finetypes.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="64" column="35" selection-start-line="64" selection-start-column="35" selection-end-line="64" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="4.589939">
           <caret line="806" column="38" selection-start-line="806" selection-start-column="38" selection-end-line="806" selection-end-column="38" />
-          <folding>
-            <element signature="e#8844#8863#0#JAVA" expanded="false" />
-            <element signature="e#9984#9992#0#JAVA" expanded="false" />
-            <element signature="e#10068#10076#0#JAVA" expanded="false" />
-            <element signature="e#12755#12763#0#JAVA" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1182" column="61" selection-start-line="1182" selection-start-column="61" selection-end-line="1182" selection-end-column="61" />
           <folding />
         </state>
       </provider>
@@ -1302,17 +1170,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="319" column="5" selection-start-line="319" selection-start-column="5" selection-end-line="319" selection-end-column="5" />
           <folding>
-            <element signature="e#8790#8791#0" expanded="true" />
-            <element signature="e#8845#8846#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#8692#8693#0" expanded="false" />
+            <element signature="e#8741#8742#0" expanded="false" />
+            <element signature="e#17694#17695#0" expanded="false" />
+            <element signature="e#17742#17743#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1340,26 +1203,194 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="605" column="69" selection-start-line="605" selection-start-column="69" selection-end-line="605" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/Span.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33142856">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="62" column="42" selection-start-line="62" selection-start-column="42" selection-end-line="62" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/search-query.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.125">
+          <caret line="64" column="189" selection-start-line="64" selection-start-column="189" selection-end-line="64" selection-end-column="189" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/src.zip!/java/net/PlainSocketImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="104" column="16" selection-start-line="104" selection-start-column="16" selection-end-line="104" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Indexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1090" column="43" selection-start-line="1090" selection-start-column="43" selection-end-line="1090" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/browse-finetypes.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
+        <state vertical-scroll-proportion="-4.6666665">
+          <caret line="38" column="1" selection-start-line="38" selection-start-column="1" selection-end-line="62" selection-end-column="47" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java">
+    <entry file="file://$PROJECT_DIR$/WebContent/finetypes.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.8428571">
-          <caret line="596" column="59" selection-start-line="596" selection-start-column="59" selection-end-line="596" selection-end-column="59" />
+        <state vertical-scroll-proportion="-17.166666">
+          <caret line="71" column="51" selection-start-line="71" selection-start-column="51" selection-end-line="71" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.0392158">
+          <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/FASTSearcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="180" column="0" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33251232">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.41884816">
+          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/css/epadd.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.49019608">
+          <caret line="224" column="39" selection-start-line="224" selection-start-column="39" selection-end-line="224" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/stanford/epadd/Config.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="212" column="51" selection-start-line="212" selection-start-column="47" selection-end-line="212" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/SimpleSessions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="132" column="83" selection-start-line="132" selection-start-column="69" selection-end-line="132" selection-end-column="83" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="53" column="79" selection-start-line="53" selection-start-column="79" selection-end-line="53" selection-end-column="79" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.6666665">
+          <caret line="1184" column="53" selection-start-line="1184" selection-start-column="45" selection-end-line="1184" selection-end-column="53" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/assign-authorities.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.7843137">
+          <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="8" />
+          <folding>
+            <marker date="1465011260000" expanded="true" signature="3199:3210" placeholder="..." />
+            <marker date="1465011260000" expanded="true" signature="6355:6366" placeholder="..." />
+            <marker date="1465011260000" expanded="true" signature="11388:11397" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.555555">
+          <caret line="504" column="47" selection-start-line="504" selection-start-column="47" selection-end-line="504" selection-end-column="47" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/collections.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.4509804">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/advanced-search.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.43189368">
+          <caret line="210" column="28" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
           <folding />
         </state>
       </provider>

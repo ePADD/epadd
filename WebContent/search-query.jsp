@@ -62,7 +62,7 @@
 
 	<div style="display:none" id="query-generator">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
-			<textarea placeholder="Type or paste some text here. Named entities in the text will be looked up in the archive." name="refText" id="refText" cols="80" rows="10"></textarea>
+			<textarea placeholder="Type or paste text here to search the email archive for all matching entities. Following the search, select a highlighted entity to view related messages." name="refText" id="refText" cols="80" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
 				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
@@ -76,7 +76,7 @@
 
 <script>
 	$(document).ready(function() {
-		$('#simple-search-header').addClass('underined-header');
+		$('#simple-search-header').addClass('underlined-header');
 		$('#simple-search-header').click(function() {
 			$('#simple-search-header').addClass('underlined-header');
 			$('#query-generator-header').removeClass('underlined-header');

@@ -45,15 +45,32 @@
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
-        desc.put(FeatureDictionary.PERSON,"PERSON");desc.put(FeatureDictionary.COMPANY,"COMPANY");desc.put(FeatureDictionary.BUILDING,"BUILDING");
-        desc.put(FeatureDictionary.PLACE,"PLACE");desc.put(FeatureDictionary.RIVER,"RIVER");desc.put(FeatureDictionary.ROAD,"ROAD");
-        desc.put(FeatureDictionary.UNIVERSITY,"UNIVERSITY");desc.put(FeatureDictionary.MOUNTAIN,"MOUNTAIN");desc.put(FeatureDictionary.AIRPORT,"AIRPORT");
-        desc.put(FeatureDictionary.ORGANISATION,"ORGANISATION");desc.put(FeatureDictionary.PERIODICAL_LITERATURE,"PERIODICAL_LITERATURE");
-        desc.put(FeatureDictionary.ISLAND,"ISLAND");desc.put(FeatureDictionary.MUSEUM,"MUSEUM");desc.put(FeatureDictionary.BRIDGE,"BRIDGE");
-        desc.put(FeatureDictionary.AIRLINE,"AIRLINE");desc.put(FeatureDictionary.GOVAGENCY,"GOVAGENCY");desc.put(FeatureDictionary.HOSPITAL,"HOSPITAL");
-        desc.put(FeatureDictionary.AWARD,"AWARD");desc.put(FeatureDictionary.THEATRE,"THEATRE");desc.put(FeatureDictionary.LEGISTLATURE,"LEGISTLATURE");
-        desc.put(FeatureDictionary.LIBRARY,"LIBRARY");desc.put(FeatureDictionary.LAWFIRM,"LAWFIRM");desc.put(FeatureDictionary.MONUMENT,"MONUMENT");
-        desc.put(FeatureDictionary.DISEASE,"DISEASE");desc.put(FeatureDictionary.EVENT,"EVENT");
+        desc.put(FeatureDictionary.PERSON, "Person");
+        desc.put(FeatureDictionary.COMPANY, "Company");
+        desc.put(FeatureDictionary.BUILDING, "Building");
+        desc.put(FeatureDictionary.PLACE, "Place");
+        desc.put(FeatureDictionary.RIVER, "River");
+        desc.put(FeatureDictionary.ROAD, "Road");
+        desc.put(FeatureDictionary.UNIVERSITY, "University");
+        desc.put(FeatureDictionary.MOUNTAIN, "Mountain");
+        desc.put(FeatureDictionary.AIRPORT, "Airport");
+        desc.put(FeatureDictionary.ORGANISATION, "Organization");
+        desc.put(FeatureDictionary.PERIODICAL_LITERATURE, "Periodical Literature");
+        desc.put(FeatureDictionary.ISLAND, "Island");
+        desc.put(FeatureDictionary.MUSEUM, "Museum");
+        desc.put(FeatureDictionary.BRIDGE, "Bridge");
+        desc.put(FeatureDictionary.AIRLINE, "Airline");
+        desc.put(FeatureDictionary.GOVAGENCY, "Government Agency");
+        desc.put(FeatureDictionary.HOSPITAL, "Hospital");
+        desc.put(FeatureDictionary.AWARD, "Award");
+        desc.put(FeatureDictionary.THEATRE, "Theatre");
+        desc.put(FeatureDictionary.LEGISTLATURE, "Legislature");
+        desc.put(FeatureDictionary.LIBRARY, "Library");
+        desc.put(FeatureDictionary.LAWFIRM, "Law Firm");
+        desc.put(FeatureDictionary.MONUMENT, "Monument");
+        desc.put(FeatureDictionary.DISEASE, "Disease");
+        desc.put(FeatureDictionary.EVENT, "Event");
+
         Short type = Short.parseShort(request.getParameter("type"));
         out.println("<h1>Type: "+desc.get(type)+"</h1>");
         Archive archive = JSPHelper.getArchive(session);

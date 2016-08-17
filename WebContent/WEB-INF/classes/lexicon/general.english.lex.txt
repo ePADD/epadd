@@ -6,4 +6,4 @@ Academics:teaching|learning|research|university|college|school|institute|educati
 
 Publications:book|chapter|article|draft|submission|review|festschrift|poetry|prose|writing|blog
 
-ProfessionalActivities:Conference|conferences|association|academy|presentation|service|committee|"task force"
+Professional Activities:Conference|conferences|association|academy|presentation|service|committee|"task force"
