@@ -187,14 +187,12 @@
                                         </div>
                                     <% } %>
 
-                                    <!--
 									<div class="checkbox-inline">
 										<label>
 											<input type="checkbox" name="termRegex">
 											<span class="label-text">Regular Expression</span>
 										</label>
 									</div>
-									-->
 
 								</fieldset>
 							</div>

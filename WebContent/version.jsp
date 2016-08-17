@@ -1,1 +1,1 @@
-ePADD version Release 2, beta1
+ePADD version Release 2

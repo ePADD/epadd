@@ -232,7 +232,7 @@ a.hilitedTerm, .hilitedTerm {
 #manualassign .header { font-size: 20px; }
 .fancybox-skin { background-color: white; }
 
-.attachments img { max-width:200px;}
+.attachments img { max-width:200px; margin: 10px; box-shadow: 3px 3px 2px #888888}
 
 .pp-bottom { height: 0px;}
 .pp_bottom .pp_left, .pp_bottom .pp_right,.pp_bottom .pp_middle { height: 0px;}
