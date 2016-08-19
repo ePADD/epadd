@@ -1,1 +1,1 @@
-ePADD version Release 2
+ePADD version Release 2.0 FINAL
