@@ -48,7 +48,7 @@
 
 <div style="margin:auto; width:900px">
     <table id="people" style="display:none">
-        <thead><th>Name</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></thead>
+        <thead><th>Source</th><th>Folder</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></thead>
         <tbody>
         </tbody>
     </table>
@@ -86,13 +86,11 @@
                 source = "";
 
             JSONArray j = new JSONArray();
-            j.put(0, Util.escapeHTML(folder));
-            j.put(1, folderToInCount.get(folder));
-            j.put(2, folderToOutCount.get(folder));
-            j.put(3, folderToTotalCount.get(folder));
-            j.put(4, "/epadd/browse?folder=" + folder); // maybe should do a encode URI component here, in case folder has #, ?, " etc.
-            j.put(5, Util.escapeHTML(folder));
-            j.put(6, Util.escapeHTML(source));
+            j.put(0, Util.escapeHTML(source));
+            j.put(1, Util.escapeHTML(folder));
+            j.put(2, folderToInCount.get(folder));
+            j.put(3, folderToOutCount.get(folder));
+            j.put(4, folderToTotalCount.get(folder));
             resultArray.put(count++, j);
         }
     %>
@@ -101,14 +99,14 @@
         // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
         $(document).ready(function() {
             var clickable_message = function ( data, type, full, meta ) {
-                return '<a target="_blank" title="' + full[5] + '" href="' + full[4] + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+                return '<a target="_blank" title="' + full[1] + '" href="/epadd/browse?folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
             };
 
             $('#people').dataTable({
                 data: correspondents,
                 pagingType: 'simple',
-                order:[[3, 'desc']], // col 12 (outgoing message count), descending
-                columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 1,2,3 ] },{width: "50%", targets: 0},{targets: 0, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+                order:[[4, 'desc']], // col 12 (outgoing message count), descending
+                columnDefs: [{width: "550px", targets: 1}, { className: "dt-right", "targets": [ 2,3,4 ] },{width: "50%", targets: 1},{targets: 1, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
                 fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
             });
         } );
