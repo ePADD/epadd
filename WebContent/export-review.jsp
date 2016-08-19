@@ -73,9 +73,9 @@ writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + des
 
 <div id="nav3" style="display:inline-block;margin-left:170px;">
 	<nav>
-		<a href="export-review">Messages to transfer</a> <br/>
 		<a href="export-review?type=doNotTransfer">Do not transfer</a> <br/>
 		<a href="export-review?type=transferWithRestrictions">Transfer with restrictions</a><br/>
+		<a href="export-review">Messages to transfer</a> <br/>
 	</nav>
 </div>
 <br/>

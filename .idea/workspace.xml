@@ -3,15 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="edc54397-54b7-4c13-ad0a-ec2a06368211" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/ajax/importArchive.jsp" afterPath="$PROJECT_DIR$/WebContent/ajax/importArchive.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/css/css.jsp" afterPath="$PROJECT_DIR$/WebContent/css/css.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-complete.jsp" afterPath="$PROJECT_DIR$/WebContent/export-complete.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-review-processing.jsp" afterPath="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-review.jsp" afterPath="$PROJECT_DIR$/WebContent/export-review.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/header.jspf" afterPath="$PROJECT_DIR$/WebContent/header.jspf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/import.jsp" afterPath="$PROJECT_DIR$/WebContent/import.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/js/epadd.js" afterPath="$PROJECT_DIR$/WebContent/js/epadd.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/settings.jsp" afterPath="$PROJECT_DIR$/WebContent/settings.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" afterPath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
@@ -45,16 +38,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="epadd.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/js/epadd.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.6666665">
-              <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="BlobStore.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -63,18 +46,6 @@
               <folding>
                 <element signature="e#0#19651#0" expanded="true" />
                 <element signature="e#1268#1283#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="entities.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.1960785">
-              <caret line="30" column="28" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="28" />
-              <folding>
-                <marker date="1471318295000" expanded="true" signature="5425:5439" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -103,28 +74,48 @@
       <file leaf-file-name="export-review.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/export-review.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.1666667">
-              <caret line="136" column="0" selection-start-line="136" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
+            <state vertical-scroll-proportion="-1.7820513">
+              <caret line="78" column="0" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="header.jspf" pinned="false" current-in-tab="true">
+      <file leaf-file-name="header.jspf" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/header.jspf">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5497382">
+            <state vertical-scroll-proportion="-8.75">
               <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="export-review-processing.jsp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="folders.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="23.458334">
+              <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="by-folder.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.875">
+              <caret line="73" column="13" selection-start-line="73" selection-start-column="13" selection-end-line="73" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="export-review-processing.jsp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.1960785">
-              <caret line="124" column="7" selection-start-line="124" selection-start-column="7" selection-end-line="124" selection-end-column="7" />
+            <state vertical-scroll-proportion="0.4169014">
+              <caret line="75" column="0" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -218,10 +209,10 @@
         <option value="$PROJECT_DIR$/WebContent/ajax/importArchive.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
         <option value="$PROJECT_DIR$/WebContent/js/epadd.js" />
-        <option value="$PROJECT_DIR$/WebContent/export-review.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
         <option value="$PROJECT_DIR$/WebContent/settings.jsp" />
         <option value="$PROJECT_DIR$/WebContent/header.jspf" />
+        <option value="$PROJECT_DIR$/WebContent/export-review.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
       </list>
     </option>
   </component>
@@ -827,7 +818,7 @@
       <workItem from="1470953129949" duration="1207000" />
       <workItem from="1471332216638" duration="446000" />
       <workItem from="1471362899239" duration="10315000" />
-      <workItem from="1471456418520" duration="15200000" />
+      <workItem from="1471456418520" duration="17158000" />
     </task>
     <servers />
   </component>
@@ -843,7 +834,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="319901000" />
+    <option name="totallyTimeSpent" value="321859000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1104,14 +1095,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.0392158">
-          <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/FASTSearcher.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1123,14 +1106,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33251232">
           <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41884816">
-          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1383,26 +1358,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
+    <entry file="file://$PROJECT_DIR$/WebContent/header.jspf">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.1960785">
-          <caret line="124" column="7" selection-start-line="124" selection-start-column="7" selection-end-line="124" selection-end-column="7" />
+        <state vertical-scroll-proportion="-8.75">
+          <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="23.458334">
+          <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.875">
+          <caret line="73" column="13" selection-start-line="73" selection-start-column="13" selection-end-line="73" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/export-review.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.1666667">
-          <caret line="136" column="0" selection-start-line="136" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
+        <state vertical-scroll-proportion="-1.7820513">
+          <caret line="78" column="0" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/header.jspf">
+    <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5497382">
-          <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+        <state vertical-scroll-proportion="0.4169014">
+          <caret line="75" column="0" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
           <folding />
         </state>
       </provider>
