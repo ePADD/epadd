@@ -3,20 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="edc54397-54b7-4c13-ad0a-ec2a06368211" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" afterPath="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/advanced-search.jsp" afterPath="$PROJECT_DIR$/WebContent/advanced-search.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/browse-finetypes.jsp" afterPath="$PROJECT_DIR$/WebContent/browse-finetypes.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/by-folder.jsp" afterPath="$PROJECT_DIR$/WebContent/by-folder.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/css/epadd.css" afterPath="$PROJECT_DIR$/WebContent/css/epadd.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/finetypes.jsp" afterPath="$PROJECT_DIR$/WebContent/finetypes.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/search-query.jsp" afterPath="$PROJECT_DIR$/WebContent/search-query.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/version.jsp" afterPath="$PROJECT_DIR$/WebContent/version.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/ajax/importArchive.jsp" afterPath="$PROJECT_DIR$/WebContent/ajax/importArchive.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/css/css.jsp" afterPath="$PROJECT_DIR$/WebContent/css/css.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-complete.jsp" afterPath="$PROJECT_DIR$/WebContent/export-complete.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-review-processing.jsp" afterPath="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-review.jsp" afterPath="$PROJECT_DIR$/WebContent/export-review.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/header.jspf" afterPath="$PROJECT_DIR$/WebContent/header.jspf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/import.jsp" afterPath="$PROJECT_DIR$/WebContent/import.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/js/epadd.js" afterPath="$PROJECT_DIR$/WebContent/js/epadd.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/settings.jsp" afterPath="$PROJECT_DIR$/WebContent/settings.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" afterPath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/version" afterPath="$PROJECT_DIR$/version" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" />
     </list>
     <ignored path="epadd.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,109 +45,106 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="assign-authorities.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/assign-authorities.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.7843137">
-              <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="8" />
-              <folding>
-                <marker date="1465011260000" expanded="true" signature="3199:3210" placeholder="..." />
-                <marker date="1465011260000" expanded="true" signature="6355:6366" placeholder="..." />
-                <marker date="1465011260000" expanded="true" signature="11388:11397" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Entities.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.555555">
-              <caret line="504" column="47" selection-start-line="504" selection-start-column="47" selection-end-line="504" selection-end-column="47" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="advanced-search.jsp" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/WebContent/advanced-search.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.43189368">
-              <caret line="210" column="28" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="collections.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/collections.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.4509804">
-              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JSPHelper.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="212" column="51" selection-start-line="212" selection-start-column="47" selection-end-line="212" selection-end-column="51" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NER.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Archive.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java">
+      <file leaf-file-name="epadd.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/js/epadd.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-4.6666665">
-              <caret line="1184" column="53" selection-start-line="1184" selection-start-column="45" selection-end-line="1184" selection-end-column="53" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SimpleSessions.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/SimpleSessions.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="132" column="83" selection-start-line="132" selection-start-column="69" selection-end-line="132" selection-end-column="83" />
+              <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Sessions.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java">
+      <file leaf-file-name="BlobStore.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="53" column="79" selection-start-line="53" selection-start-column="79" selection-end-line="53" selection-end-column="79" />
+              <caret line="114" column="5" selection-start-line="114" selection-start-column="5" selection-end-line="114" selection-end-column="5" />
+              <folding>
+                <element signature="e#0#19651#0" expanded="true" />
+                <element signature="e#1268#1283#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="entities.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.1960785">
+              <caret line="30" column="28" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="28" />
+              <folding>
+                <marker date="1471318295000" expanded="true" signature="5425:5439" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="importArchive.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/ajax/importArchive.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.0">
+              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="export-complete.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/export-complete.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.8431373">
+              <caret line="84" column="41" selection-start-line="84" selection-start-column="35" selection-end-line="84" selection-end-column="41" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="export-review.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/export-review.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.1666667">
+              <caret line="136" column="0" selection-start-line="136" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="header.jspf" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/WebContent/header.jspf">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5497382">
+              <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="export-review-processing.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.1960785">
+              <caret line="124" column="7" selection-start-line="124" selection-start-column="7" selection-end-line="124" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/settings.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.7843137">
+              <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="export-mbox.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/export-mbox.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -176,20 +171,12 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/WebContent/editAddressBook.jsp" />
-        <option value="$PROJECT_DIR$/../muse/WebContent/js/muse-lens.user.js" />
-        <option value="$PROJECT_DIR$/WebContent/js/muse-lens.user.js" />
-        <option value="$PROJECT_DIR$/WebContent/css/main.css" />
-        <option value="$PROJECT_DIR$/WebContent/ajax/folderAutoComplete.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/ajax/attachmentAutoComplete.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/ajax/entitiesAutoComplete.jsp" />
         <option value="$PROJECT_DIR$/WebContent/ajax/applyFlags.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/NER.java" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/EmailUtils.java" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Indexer.java" />
         <option value="$PROJECT_DIR$/WebContent/ajax/emailSourceAutoComplete.jsp" />
         <option value="$PROJECT_DIR$/WebContent/ajax/annotationAutoComplete.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
         <option value="$PROJECT_DIR$/../muse/WebContent/newBrowse.jsp" />
         <option value="$PROJECT_DIR$/../muse/pom-common.xml" />
         <option value="$PROJECT_DIR$/../muse/src/test/java/MuseTest.java" />
@@ -197,7 +184,6 @@
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Searcher.java" />
         <option value="$PROJECT_DIR$/WebContent/query-generator.jsp" />
         <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/bannedStartStringsForEmailAddresses.txt" />
-        <option value="$PROJECT_DIR$/WebContent/js/epadd.js" />
         <option value="$PROJECT_DIR$/WebContent/multi-search.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/IndexUtils.java" />
         <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/taboo-names" />
@@ -213,7 +199,6 @@
         <option value="$PROJECT_DIR$/WebContent/ajax/leadsAsJson.jsp" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Util.java" />
         <option value="$PROJECT_DIR$/WebContent/browse-top.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/settings.jsp" />
         <option value="$PROJECT_DIR$/WebContent/graph.jsp" />
         <option value="$PROJECT_DIR$/WebContent/entities.jsp" />
         <option value="$PROJECT_DIR$/WebContent/search-query.jsp" />
@@ -223,10 +208,20 @@
         <option value="$PROJECT_DIR$/WebContent/css/epadd.css" />
         <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" />
-        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java" />
         <option value="$PROJECT_DIR$/WebContent/advanced-search.jsp" />
+        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" />
+        <option value="$PROJECT_DIR$/WebContent/css/css.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/export-complete.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/import.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/ajax/importArchive.jsp" />
+        <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
+        <option value="$PROJECT_DIR$/WebContent/js/epadd.js" />
+        <option value="$PROJECT_DIR$/WebContent/export-review.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/settings.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/header.jspf" />
       </list>
     </option>
   </component>
@@ -349,7 +344,6 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../epadd-launcher/src/test/resources/features/ePadd.feature" />
     <property name="SearchEverywhereHistoryKey" value="archive.v1&#9;null&#9;null&#10;sequence&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java&#10;Span&#9;PSI&#9;JAVA://edu.stanford.muse.util.Span&#10;browse-fin&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-finetypes.jsp&#10;en&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;NER&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;settings&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/settings.jsp&#10;graph.jsp&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/graph.jsp&#10;finety&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/finetypes.jsp&#10;browse&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-top.jsp&#10;entitie&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;expand&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/ajax/expandname.jsp&#10;getner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/getNERModel.jspf&#10;leads&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/WebContent/ajax/leadsAsJson.jsp&#10;ner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;processingmet&#9;PSI&#9;JAVA://edu.stanford.muse.index.Archive.ProcessingMetadata" />
     <property name="recentsLimit" value="5" />
-    <property name="FullScreen" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
@@ -832,7 +826,8 @@
       <workItem from="1470857011015" duration="6988000" />
       <workItem from="1470953129949" duration="1207000" />
       <workItem from="1471332216638" duration="446000" />
-      <workItem from="1471362899239" duration="9144000" />
+      <workItem from="1471362899239" duration="10315000" />
+      <workItem from="1471456418520" duration="15200000" />
     </task>
     <servers />
   </component>
@@ -848,7 +843,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="303530000" />
+    <option name="totallyTimeSpent" value="319901000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -883,7 +878,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23642172" sideWeight="0.52" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36270192" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36270192" sideWeight="0.49676898" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -939,7 +934,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java</url>
-          <line>484</line>
+          <line>485</line>
           <properties />
           <option name="timeStamp" value="78" />
         </line-breakpoint>
@@ -951,13 +946,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java</url>
-          <line>228</line>
+          <line>229</line>
           <properties />
           <option name="timeStamp" value="91" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java</url>
-          <line>233</line>
+          <line>234</line>
           <properties />
           <option name="timeStamp" value="92" />
         </line-breakpoint>
@@ -968,13 +963,19 @@
           <option name="timeStamp" value="100" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java</url>
-          <line>410</line>
+          <url>file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java</url>
+          <line>326</line>
           <properties />
-          <option name="timeStamp" value="174" />
+          <option name="timeStamp" value="181" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java</url>
+          <line>105</line>
+          <properties />
+          <option name="timeStamp" value="189" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="178" />
+      <option name="time" value="193" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -983,129 +984,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/test/GmailMboxSplitter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="17" column="48" selection-start-line="17" selection-start-column="48" selection-end-line="17" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/bannedStartStringsForEmailAddresses.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="21" column="17" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/multi-search.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.84210527">
-          <caret line="73" column="37" selection-start-line="73" selection-start-column="37" selection-end-line="73" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/js/epadd.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.59151196">
-          <caret line="38" column="31" selection-start-line="38" selection-start-column="31" selection-end-line="38" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Searcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="179" column="61" selection-start-line="179" selection-start-column="52" selection-end-line="179" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/IndexUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8886139">
-          <caret line="872" column="0" selection-start-line="872" selection-start-column="0" selection-end-line="872" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/opennlp/opennlp-tools/1.5.3/opennlp-tools-1.5.3.jar!/opennlp/tools/util/Span.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.077120826">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/lens-kill.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/wpmine/WPReader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/dict.words.full">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.022900764">
-          <caret line="3463" column="11" selection-start-line="3463" selection-start-column="2" selection-end-line="3463" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/words.5000">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="42" column="5" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/web.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="131" column="47" selection-start-line="131" selection-start-column="47" selection-end-line="131" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/Util.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.09915014">
-          <caret line="2868" column="68" selection-start-line="2868" selection-start-column="68" selection-end-line="2868" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/WEB-INF/classes/taboo-names">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/tokenizer/CICTokenizer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="180" column="0" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#18343#18344#0" expanded="false" />
-            <element signature="e#18356#18357#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/DictUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="32" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="32" />
-          <folding>
-            <element signature="e#1091#1099#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/getNERModel.jspf">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2515244">
@@ -1149,22 +1027,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="4.589939">
-          <caret line="806" column="38" selection-start-line="806" selection-start-column="38" selection-end-line="806" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/browse-top.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Util.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1179,26 +1041,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/settings.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="98" column="63" selection-start-line="98" selection-start-column="63" selection-end-line="98" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/graph.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="335" column="25" selection-start-line="335" selection-start-column="25" selection-end-line="335" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1231,7 +1077,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="104" column="16" selection-start-line="104" selection-start-column="16" selection-end-line="104" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1271,7 +1116,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="180" column="0" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1279,7 +1123,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33251232">
           <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1307,18 +1150,54 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/assign-authorities.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="8" />
+          <folding>
+            <marker date="1465011260000" expanded="true" signature="3199:3210" placeholder="..." />
+            <marker date="1465011260000" expanded="true" signature="6355:6366" placeholder="..." />
+            <marker date="1465011260000" expanded="true" signature="11388:11397" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="504" column="47" selection-start-line="504" selection-start-column="47" selection-end-line="504" selection-end-column="47" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/Config.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="75" column="38" selection-start-line="75" selection-start-column="27" selection-end-line="75" selection-end-column="38" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="212" column="51" selection-start-line="212" selection-start-column="47" selection-end-line="212" selection-end-column="51" />
+          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#11621#11622#0" expanded="false" />
+            <element signature="e#11676#11677#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="53" column="79" selection-start-line="53" selection-start-column="79" selection-end-line="53" selection-end-column="79" />
           <folding />
         </state>
       </provider>
@@ -1331,66 +1210,199 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java">
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/Blob.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="53" column="79" selection-start-line="53" selection-start-column="79" selection-end-line="53" selection-end-column="79" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.6666665">
-          <caret line="1184" column="53" selection-start-line="1184" selection-start-column="45" selection-end-line="1184" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ner/NER.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/assign-authorities.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.7843137">
-          <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="8" />
-          <folding>
-            <marker date="1465011260000" expanded="true" signature="3199:3210" placeholder="..." />
-            <marker date="1465011260000" expanded="true" signature="6355:6366" placeholder="..." />
-            <marker date="1465011260000" expanded="true" signature="11388:11397" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/Entities.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.555555">
-          <caret line="504" column="47" selection-start-line="504" selection-start-column="47" selection-end-line="504" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/collections.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.4509804">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state vertical-scroll-proportion="-7.740741">
+          <caret line="72" column="14" selection-start-line="72" selection-start-column="13" selection-end-line="72" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/advanced-search.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43189368">
-          <caret line="210" column="28" selection-start-line="210" selection-start-column="28" selection-end-line="210" selection-end-column="28" />
+        <state vertical-scroll-proportion="-5.7083335">
+          <caret line="200" column="0" selection-start-line="200" selection-start-column="0" selection-end-line="200" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/JSPHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1173" column="0" selection-start-line="1173" selection-start-column="0" selection-end-line="1173" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/IndexUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1279" column="0" selection-start-line="1279" selection-start-column="0" selection-end-line="1279" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/browse.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.166667">
+          <caret line="836" column="0" selection-start-line="836" selection-start-column="0" selection-end-line="836" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/util/Util.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1597" column="26" selection-start-line="1597" selection-start-column="26" selection-end-line="1597" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/collections.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.7916665">
+          <caret line="124" column="7" selection-start-line="124" selection-start-column="7" selection-end-line="124" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/browse-top.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="7.0833335">
+          <caret line="151" column="40" selection-start-line="151" selection-start-column="37" selection-end-line="151" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/css/fonts/font-awesome/css/font-awesome.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.6470587">
+          <caret line="9" column="1" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/css/css.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.875">
+          <caret line="3" column="61" selection-start-line="3" selection-start-column="61" selection-end-line="3" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/import.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.25">
+          <caret line="64" column="42" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.0.1/commons-io-2.0.1.jar!/org/apache/commons/io/FileUtils.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5778364">
+          <caret line="526" column="0" selection-start-line="526" selection-start-column="0" selection-end-line="526" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.3333335">
+          <caret line="885" column="24" selection-start-line="885" selection-start-column="24" selection-end-line="885" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.1960785">
+          <caret line="30" column="28" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="28" />
+          <folding>
+            <marker date="1471318295000" expanded="true" signature="5425:5439" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/js/epadd.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.6666665">
+          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="114" column="5" selection-start-line="114" selection-start-column="5" selection-end-line="114" selection-end-column="5" />
+          <folding>
+            <element signature="e#0#19651#0" expanded="true" />
+            <element signature="e#1268#1283#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/export-mbox.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/export-complete-processing.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.37958115">
+          <caret line="46" column="99" selection-start-line="46" selection-start-column="92" selection-end-line="46" selection-end-column="99" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/ajax/importArchive.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.0">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/export-complete.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.8431373">
+          <caret line="84" column="41" selection-start-line="84" selection-start-column="35" selection-end-line="84" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/settings.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.7843137">
+          <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.1960785">
+          <caret line="124" column="7" selection-start-line="124" selection-start-column="7" selection-end-line="124" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/export-review.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.1666667">
+          <caret line="136" column="0" selection-start-line="136" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/header.jspf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5497382">
+          <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
           <folding />
         </state>
       </provider>

@@ -39,8 +39,11 @@ epadd.pluralize = function(count, description)
 epadd.do_search = function(e) {
 	var term = $(e.target).text();
 	// if term is not already quoted, quote it now
-	if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"'))
-		term = '"' + term + '"';
+	if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
+		// not in quotes. encode URI and then add quotes
+		term = '"' + encodeURIComponent(term) + '"'; // remember to encodeURIComponent, otherwise it fails on names with &. Also don't use encodeURI because it doesn't escape &
+	}
+	// otherwise let term be as is.
 
 	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
@@ -302,10 +305,15 @@ epadd.nav_mark_active = function(text) {
 	$x.addClass('nav-active');
 };
 
-/** needs a stats field to update stats in */
+/** needs a stats field to update stats in. if successive, will navigate the browser to /collections */
 epadd.load_archive = function(e, dir) {
-	var $spinner = $('.spinner', $(e.target));
+	var $spinner = $('.fa-spinner', $(e.target));
+	$spinner.show();
 	$spinner.addClass('fa-spin');
+
+	$('#gobutton').fadeOut();
+	$('#spinner-div').fadeIn();
+
 	// close the file picker first in case its open
 	if (window.fp)
 		fp.close();
@@ -331,9 +339,10 @@ epadd.load_archive = function(e, dir) {
 				$spinner.removeClass('fa-spin');
 			}
 	},
-	error: function() { 
+	error: function() {
+		$('#gobutton').fadeIn();
+		$('#spinner-div').fadeOut();
 		epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.");
-		$spinner.removeClass('fa-spin');
 	}});
 };
 
@@ -367,7 +376,7 @@ epadd.deleteArchive = function(e) {
 	if (!c)
 		return;
 	var $spinner = $('.spinner', $(e.target));
-	$spinner.addClass('fa-spin');
+	$spinner.addClass('fa-spin'); // revisit this -- fa-spin did not work for loadArchive() after new fa version
 
 	$.ajax({
 		type: 'POST',

@@ -7,7 +7,6 @@
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
 <%@ page language="java" import="edu.stanford.epadd.Config"%>
-
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
@@ -34,6 +33,8 @@ String targetDir = Config.REPO_DIR_PROCESSING + File.separator + archiveName;
 if (!targetDir.equals(baseDir))
 {
 	try {
+	    // delete the existing directory -- Q: should we give user a warning??
+	    FileUtils.deleteDirectory(new File(targetDir));
 		FileUtils.copyDirectory(new File(baseDir), new File(targetDir), true /* preserve file date */);
 		result.put("status", 0);
 		result.put ("message", "Import completed successfully.");
@@ -43,4 +44,5 @@ if (!targetDir.equals(baseDir))
 	}
 	out.println (result.toString(4));
 }
+
 %>
