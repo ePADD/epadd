@@ -58,7 +58,7 @@
         out.flush(); // make sure spinner is seen
         Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
         JSONArray resultArray = new JSONArray();
-
+        Map<String, String> folderToSource = new LinkedHashMap<>();
         Map<String, Integer> folderToInCount = new LinkedHashMap<>(), folderToOutCount = new LinkedHashMap<>(), folderToTotalCount =  new LinkedHashMap<>();
         for (EmailDocument ed: docs) {
             String folder = ed.folderName;
@@ -75,17 +75,24 @@
 
             Integer I = folderToTotalCount.get(folder);
             folderToTotalCount.put (folder, (I == null) ? 1 : I+1);
+            if (ed.emailSource != null)
+                folderToSource.put (folder, ed.emailSource);
         }
 
         int count = 0;
         for (String folder: folderToTotalCount.keySet()) {
+            String source = folderToSource.get(folder);
+            if (source == null)
+                source = "";
+
             JSONArray j = new JSONArray();
             j.put(0, Util.escapeHTML(folder));
             j.put(1, folderToInCount.get(folder));
             j.put(2, folderToOutCount.get(folder));
             j.put(3, folderToTotalCount.get(folder));
-            j.put(4, "/epadd/browse?folder=" + folder);
+            j.put(4, "/epadd/browse?folder=" + folder); // maybe should do a encode URI component here, in case folder has #, ?, " etc.
             j.put(5, Util.escapeHTML(folder));
+            j.put(6, Util.escapeHTML(source));
             resultArray.put(count++, j);
         }
     %>

@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="edc54397-54b7-4c13-ad0a-ec2a06368211" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-review-processing.jsp" afterPath="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/export-review.jsp" afterPath="$PROJECT_DIR$/WebContent/export-review.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" afterPath="$PROJECT_DIR$/src/java/edu/stanford/epadd/Version.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/by-folder.jsp" afterPath="$PROJECT_DIR$/WebContent/by-folder.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebContent/finetypes.jsp" afterPath="$PROJECT_DIR$/WebContent/finetypes.jsp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" afterPath="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/index/Archive.java" />
     </list>
@@ -38,19 +36,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="BlobStore.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/datacache/BlobStore.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="114" column="5" selection-start-line="114" selection-start-column="5" selection-end-line="114" selection-end-column="5" />
-              <folding>
-                <element signature="e#0#19651#0" expanded="true" />
-                <element signature="e#1268#1283#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="importArchive.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/ajax/importArchive.jsp">
           <provider selected="true" editor-type-id="text-editor">
@@ -94,9 +79,33 @@
       <file leaf-file-name="folders.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="23.458334">
-              <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
+            <state vertical-scroll-proportion="-5.9166665">
+              <caret line="174" column="28" selection-start-line="174" selection-start-column="28" selection-end-line="174" selection-end-column="28" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="entities.jsp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.215686">
+              <caret line="152" column="138" selection-start-line="152" selection-start-column="102" selection-end-line="152" selection-end-column="138" />
+              <folding>
+                <marker date="1471318295000" expanded="true" signature="5425:5439" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="finetypes.jsp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/WebContent/finetypes.jsp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.49295774">
+              <caret line="113" column="49" selection-start-line="113" selection-start-column="49" selection-end-line="113" selection-end-column="49" />
+              <folding>
+                <marker date="1471633464000" expanded="true" signature="5883:5897" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -104,18 +113,8 @@
       <file leaf-file-name="by-folder.jsp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.875">
-              <caret line="73" column="13" selection-start-line="73" selection-start-column="13" selection-end-line="73" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="export-review-processing.jsp" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4169014">
-              <caret line="75" column="0" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
+            <state vertical-scroll-proportion="-8.75">
+              <caret line="99" column="58" selection-start-line="99" selection-start-column="58" selection-end-line="99" selection-end-column="58" />
               <folding />
             </state>
           </provider>
@@ -126,16 +125,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-3.7843137">
               <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="export-mbox.jsp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WebContent/export-mbox.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -194,8 +183,6 @@
         <option value="$PROJECT_DIR$/WebContent/entities.jsp" />
         <option value="$PROJECT_DIR$/WebContent/search-query.jsp" />
         <option value="$PROJECT_DIR$/WebContent/browse-finetypes.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/finetypes.jsp" />
-        <option value="$PROJECT_DIR$/WebContent/by-folder.jsp" />
         <option value="$PROJECT_DIR$/WebContent/css/epadd.css" />
         <option value="$PROJECT_DIR$/WebContent/WEB-INF/classes/lexicon/general.english.lex.txt" />
         <option value="$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/webapp/Sessions.java" />
@@ -213,6 +200,8 @@
         <option value="$PROJECT_DIR$/WebContent/header.jspf" />
         <option value="$PROJECT_DIR$/WebContent/export-review.jsp" />
         <option value="$PROJECT_DIR$/WebContent/export-review-processing.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/by-folder.jsp" />
+        <option value="$PROJECT_DIR$/WebContent/finetypes.jsp" />
       </list>
     </option>
   </component>
@@ -333,7 +322,7 @@
     <property name="project.structure.side.proportion" value="0.36091954" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../epadd-launcher/src/test/resources/features/ePadd.feature" />
-    <property name="SearchEverywhereHistoryKey" value="archive.v1&#9;null&#9;null&#10;sequence&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java&#10;Span&#9;PSI&#9;JAVA://edu.stanford.muse.util.Span&#10;browse-fin&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-finetypes.jsp&#10;en&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;NER&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;settings&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/settings.jsp&#10;graph.jsp&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/graph.jsp&#10;finety&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/finetypes.jsp&#10;browse&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-top.jsp&#10;entitie&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;expand&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/ajax/expandname.jsp&#10;getner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/getNERModel.jspf&#10;leads&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/WebContent/ajax/leadsAsJson.jsp&#10;ner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;processingmet&#9;PSI&#9;JAVA://edu.stanford.muse.index.Archive.ProcessingMetadata" />
+    <property name="SearchEverywhereHistoryKey" value="data-process=&quot;pp&quot;&#9;null&#9;null&#10;archive.v1&#9;null&#9;null&#10;sequence&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/model/SequenceModel.java&#10;Span&#9;PSI&#9;JAVA://edu.stanford.muse.util.Span&#10;browse-fin&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-finetypes.jsp&#10;en&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;NER&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;settings&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/settings.jsp&#10;graph.jsp&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/graph.jsp&#10;finety&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/finetypes.jsp&#10;browse&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/browse-top.jsp&#10;entitie&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/entities.jsp&#10;expand&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/ajax/expandname.jsp&#10;getner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/epadd/WebContent/getNERModel.jspf&#10;leads&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/WebContent/ajax/leadsAsJson.jsp&#10;ner&#9;FILE&#9;file:///Users/vihari/repos/epadd-git/muse/src/java/edu/stanford/muse/ner/NER.java&#10;processingmet&#9;PSI&#9;JAVA://edu.stanford.muse.index.Archive.ProcessingMetadata" />
     <property name="recentsLimit" value="5" />
   </component>
   <component name="RecentsManager">
@@ -818,7 +807,7 @@
       <workItem from="1470953129949" duration="1207000" />
       <workItem from="1471332216638" duration="446000" />
       <workItem from="1471362899239" duration="10315000" />
-      <workItem from="1471456418520" duration="17158000" />
+      <workItem from="1471456418520" duration="19410000" />
     </task>
     <servers />
   </component>
@@ -834,7 +823,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="321859000" />
+    <option name="totallyTimeSpent" value="324111000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1087,14 +1076,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/finetypes.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.166666">
-          <caret line="71" column="51" selection-start-line="71" selection-start-column="51" selection-end-line="71" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../muse/src/java/edu/stanford/muse/ie/FASTSearcher.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1289,16 +1270,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.1960785">
-          <caret line="30" column="28" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="28" />
-          <folding>
-            <marker date="1471318295000" expanded="true" signature="5425:5439" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/js/epadd.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-4.6666665">
@@ -1366,22 +1337,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="23.458334">
-          <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.875">
-          <caret line="73" column="13" selection-start-line="73" selection-start-column="13" selection-end-line="73" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/export-review.jsp">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.7820513">
@@ -1392,9 +1347,45 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WebContent/export-review-processing.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4169014">
-          <caret line="75" column="0" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
+        <state vertical-scroll-proportion="-2.9019608">
+          <caret line="75" column="10" selection-start-line="75" selection-start-column="10" selection-end-line="75" selection-end-column="10" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/folders.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.9166665">
+          <caret line="174" column="28" selection-start-line="174" selection-start-column="28" selection-end-line="174" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/by-folder.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.75">
+          <caret line="99" column="58" selection-start-line="99" selection-start-column="58" selection-end-line="99" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/entities.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.215686">
+          <caret line="152" column="138" selection-start-line="152" selection-start-column="102" selection-end-line="152" selection-end-column="138" />
+          <folding>
+            <marker date="1471318295000" expanded="true" signature="5425:5439" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebContent/finetypes.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49295774">
+          <caret line="113" column="49" selection-start-line="113" selection-start-column="49" selection-end-line="113" selection-end-column="49" />
+          <folding>
+            <marker date="1471633464000" expanded="true" signature="5883:5897" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
