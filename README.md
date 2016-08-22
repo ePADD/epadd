@@ -18,14 +18,14 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 
 **System Requirements**
 
-OS: Windows 7 SP1 / 8.1 / 10, Mac OS X  10.9 / 10.10
+OS: Windows 7 SP1 / 10, Mac OS X  10.10 / 10.11
 Memory:  4096 MB RAM (2048 MB RAM allocated to the application by default)
-Browser:  Chrome 41/42, Firefox 38/39 
-Windows installations: Java Runtime Environment 7u55 or later required. 
+Browser:  Chrome 50/51, Firefox 47/48 
+Windows installations: Java Runtime Environment 8u101 or later required. 
 
 **Installation** 
 
-ePADD has been tested on and optimized for Windows 7 SP1 / 8.1 / 10 and  Mac OS X  10.9 / 10.10. Please follow the instructions below for your operating system.
+ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.10 / 10.11. Please follow the instructions below for your operating system.
 
 *Installing ePADD on Windows*
 
