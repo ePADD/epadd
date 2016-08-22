@@ -39,7 +39,7 @@ Note: This directory houses many customizable files discussed further elsewhere 
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
-Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Command Prompt, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM you wish to allocate.
+Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Command Prompt, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM (in GB) you wish to allocate.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
@@ -54,7 +54,7 @@ This directory houses many customizable files discussed further elsewhere in the
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
-Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Terminal, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM you wish to allocate.
+Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Terminal, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM (in GB) you wish to allocate.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
