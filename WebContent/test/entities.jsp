@@ -116,7 +116,7 @@ Options:
             if(di++>md)
                 break;
             //System.err.println("120");
-            Map<Short,Map<String,Double>> es = NER.getEntities(archive.getDoc(doc),true);
+            Map<Short,Map<String,Double>> es = NER.getEntities(archive.getLuceneDoc(doc),true);
             //System.err.println("122");
             for(Short type: inc)
                 if(!exc.contains(type)){

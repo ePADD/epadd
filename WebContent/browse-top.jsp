@@ -89,7 +89,7 @@
 	</div>
 	
 	<div class="cta-box text-center margin30">
-			<a href="entities?type=en_person">
+			<a href="finetypes.jsp?type=0">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/person.svg"/>
 			<p class="cta-text-1">Persons<%=pC%></p>
@@ -102,7 +102,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="entities?type=en_org">
+		<a href="finetypes.jsp?type=11">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
 			<p class="cta-text-1">Organizations<%=oC%></p>
@@ -115,7 +115,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="entities?type=en_loc">
+		<a href="finetypes.jsp?type=3">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/location.svg"/>
 			<p class="cta-text-1">Locations<%=lC%></p>

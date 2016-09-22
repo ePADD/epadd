@@ -1,14 +1,13 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.DatedDocument"%>
-<%@page language="java" import="edu.stanford.muse.index.Indexer"%>
-<%@ page import="edu.stanford.muse.index.Lexicon" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.LinkedHashSet" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
+<%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -90,7 +89,7 @@
 		if (lex == null)
 		{
 			// if not in session either, simply look for default
-			name = "general";
+			name = "default";
 			lex = archive.getLexicon(name);
 		}
 	}

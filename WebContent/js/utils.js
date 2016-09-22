@@ -7,24 +7,31 @@ initialiseqtip = function(){
         style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: 2,color: 'black'}}
     };
 
+    //NOt able to avoid the random id assignment, it is required because the content is appended later through script
+    var x = 1;
     //There can be many nested spans, in that case just consider the outer most span element
-	$('div.muse-doc-body span[data-ignore!=][title!=]')
-        .filter(function(){
-            return this.parentNode.tagName!=="SPAN"
-        })
-        .qtip(qtip_params);
+	$('div.muse-doc-body .expand')
+        .map(function(){
+            var docId = $(this).attr("data-docid");
+            var name = $(this).attr("data-text");
+            var rid = name.replace(/ /g,"_");//Math.sin(x++).toString().substr(6)
+            $(this).attr("title","<div class='resolutions' data-id='"+rid+"'><img src='images/spinner.gif' style='height:15px'/><script>expand('"+name+"','"+docId+"','"+rid+"');</script>");
+        });
+    $('div.muse-doc-body .expand').qtip(qtip_params);
 
-    $('div.muse-doc-header span[data-ignore!=][title!=]')
-        .filter(function(){
-            //dont add qtip to highlighted terms in the header like emaill addresses
-            return this.parentNode.tagName!=="SPAN" && this.className.contains("custom");
-        })
-        .qtip(qtip_params);
+    $('div.muse-doc-header .expand')
+        .map(function(){
+            var docId = $(this).attr("data-docid");
+            var name = $(this).attr("data-text");
+            var rid = name.replace(/ /g,"_");//Math.sin(x++).toString().substr(6);
+            $(this).attr("title","<div class='resolutions' data-id='"+rid+"'><img src='images/spinner.gif' style='height:15px'/><script>expand('"+name+"','"+docId+"','"+rid+"');</script>");
+        });
+    $('div.muse-doc-header .expand').qtip(qtip_params);
 };
 
+//this method is to be called only from the script in a title div
 expand = function(name,docId,id){
 	epadd.log("Expanding name: "+name);
-	epadd.log(docId+", "+id);
 	$.ajax({
 		type: "POST",
 		url: "./ajax/expandname.jsp",
@@ -39,7 +46,15 @@ expand = function(name,docId,id){
 			json = JSON.parse(data);
 	        if(typeof(json.result)==="undefined")
                 json.result = "No confident matches!";
-			$("#expand_"+id).html(json.result);
+            //http://stackoverflow.com/questions/9209823/what-is-the-current-element-in-javascript/9210011#9210011
+            //The last scripTag is always the current one
+            var scriptTag = document.getElementsByTagName('script');
+            scriptTag = scriptTag[scriptTag.length - 1];
+
+            var parent = scriptTag.parentNode;
+            //$(parent).html(json.result);
+            $("[data-id="+id+"]").html(json.result);
+            return json;
             //reinitialiseqtip();
 		},
 	    error: function(jqXHR,exception, error){

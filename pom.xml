@@ -87,6 +87,8 @@
 	    <configuration>
 	      <webAppSourceDirectory>${basedir}/WebContent</webAppSourceDirectory>
 	      <excludes>**\/*test\/**</excludes>
+	      <sourceVersion>1.8</sourceVersion>
+	      <targetVersion>1.8</targetVersion>
 	    </configuration>
 	  </execution>
 	</executions>
@@ -100,6 +102,9 @@
 	  <excludes>
 	    <exclude>**/edu/stanford/epadd/launcher/*.java</exclude>
 	  </excludes>
+	  <encoding>UTF-8</encoding>
+          <source>1.8</source>
+          <target>1.8</target>
 	</configuration>
       </plugin>
       <plugin>

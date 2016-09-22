@@ -84,7 +84,6 @@
                 est.add(e);
 
         Span[] fes = edu.stanford.muse.ie.Util.filterEntitiesByScore(est.toArray(new Span[est.size()]),cutoff);
-
         //filter the entities to remove obvious junk
         fes = edu.stanford.muse.ie.Util.filterEntities(fes);
 	    // note that entities could have repetitions.

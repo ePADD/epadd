@@ -10,9 +10,7 @@
 <%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--	
-    Use this page to train and recognise fine grainied entity types, 
-    this is part of experimental module and not properly tested 
-    across many archives
+    Browse page for enbtities based on fine types
 -->
 
 <link href="css/epadd.css" rel="stylesheet" type="text/css"/>
@@ -72,7 +70,7 @@
         desc.put(FeatureDictionary.EVENT, "Event");
 
         Short type = Short.parseShort(request.getParameter("type"));
-        out.println("<h1>Type: "+desc.get(type)+"</h1>");
+        out.println("<h1>Type: "+FeatureDictionary.desc.get(type)+"</h1>");
         Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
@@ -85,7 +83,7 @@
                 if (!entities.containsKey(e))
                     entities.put(e, new Entity(e, sp.typeScore));
                 else
-                    entities.get(e).freq++;
+                    entities.get(e.text).freq++;
             }
         }
         Map<Entity, Double> vals = new LinkedHashMap<>();
@@ -101,8 +99,6 @@
         int count = 0;
 	    for (Pair<Entity, Double> p: lst) {
 	        count++;
-//            if (++count > max)
-//                break;
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
             j.put (0, "<a target='_blank' href='"+url+"/browse?term=\""+entity+"\"'>"+entity+"</a>");

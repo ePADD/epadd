@@ -114,63 +114,63 @@
     // archive is null if we haven't been able to read an existing dataset
 
     Pair<Collection<Document>, Collection<Blob>> search_result = (request.getParameter("adv-search") == null) ?
-                    JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false) :
-                    Searcher.searchDocs(archive, request, false);
+            JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false) :
+            Searcher.searchDocs(archive, request, false);
 
     Collection<Document> docs = search_result.first;
 
 
     //Collections.sort(docs);//order by time
-	 Collection<Blob> highlightAttachments = search_result.second;
-	 Lexicon lexicon = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
-	 if (lexicon == null)
-	 {
-		lexicon = archive.getLexicon("default");
-		session.setAttribute("lexicon", lexicon);	
-	 }
-	 
-	 Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive);
-	 //returns sorted collection
-	 //Collection<DetailedFacetItem> locSubjects = TopicsSearcher.getMentions(docs,archive);
-	 //if(locSubjects!=null)
-		//facets.put("mentions", locSubjects);
+    Collection<Blob> highlightAttachments = search_result.second;
+    Lexicon lexicon = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
+    if (lexicon == null)
+    {
+        lexicon = archive.getLexicon("default");
+        session.setAttribute("lexicon", lexicon);
+    }
 
-	 boolean jogDisabled = true;
+    Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive);
+    //returns sorted collection
+    //Collection<DetailedFacetItem> locSubjects = TopicsSearcher.getMentions(docs,archive);
+    //if(locSubjects!=null)
+    //facets.put("mentions", locSubjects);
 
-	 // now docs is the selected docs
+    boolean jogDisabled = true;
 
-	 String jog_contents_class = "";
-	 jog_contents_class = "message";
-	String origQueryString = request.getQueryString();
-	if (origQueryString == null)
-		origQueryString = "";
+    // now docs is the selected docs
 
-	 // make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
-	 if (origQueryString.indexOf("adv-search=") == -1) {
-		 if (origQueryString.length() >0)
-			 origQueryString += "&";
-		 origQueryString += "adv-search=1";
-	 }
+    String jog_contents_class = "";
+    jog_contents_class = "message";
+    String origQueryString = request.getQueryString();
+    if (origQueryString == null)
+        origQueryString = "";
 
-	 // remove all the either's because they are not needed, and could mask a real facet selection coming in below
-	 origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "attachmentFilename=");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "annotation=");
-	 origQueryString = Util.excludeUrlParam(origQueryString, "folder=");
-	 // entity=&correspondent=&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&attachmentFilename=&attachmentExtension=&annotation=&startDate=&endDate=&folder=&lexiconName=general&lexiconCategory=Award&attachmentExtension=gif
+    // make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
+    if (origQueryString.indexOf("adv-search=") == -1) {
+        if (origQueryString.length() >0)
+            origQueryString += "&";
+        origQueryString += "adv-search=1";
+    }
 
-	 String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
-	 int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);
+    // remove all the either's because they are not needed, and could mask a real facet selection coming in below
+    origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
+    origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
+    origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
+    origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
+    origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
+    origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+    origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
+    origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
+    origQueryString = Util.excludeUrlParam(origQueryString, "attachmentFilename=");
+    origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+    origQueryString = Util.excludeUrlParam(origQueryString, "annotation=");
+    origQueryString = Util.excludeUrlParam(origQueryString, "folder=");
+    // entity=&correspondent=&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&attachmentFilename=&attachmentExtension=&annotation=&startDate=&endDate=&folder=&lexiconName=general&lexiconCategory=Award&attachmentExtension=gif
+
+    String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+    int nAttachments = EmailUtils.countAttachmentsInDocs((Collection) docs);
     if (Util.nullOrEmpty(docs)) { %>
-        <div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
+<div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
 <%} else { %>
 <div class="browsepage" style="min-width:1220px">
 
