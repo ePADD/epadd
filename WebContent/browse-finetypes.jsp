@@ -55,7 +55,6 @@
     desc.put(FeatureDictionary.HOSPITAL, "Hospital");
     desc.put(FeatureDictionary.AWARD, "Award");
     desc.put(FeatureDictionary.THEATRE, "Theatre");
-    desc.put(FeatureDictionary.LEGISTLATURE, "Legislature");
     desc.put(FeatureDictionary.LIBRARY, "Library");
     desc.put(FeatureDictionary.LAWFIRM, "Law Firm");
     desc.put(FeatureDictionary.MONUMENT, "Monument");
