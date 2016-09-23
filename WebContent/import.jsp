@@ -57,12 +57,14 @@
 		var fp = new FilePicker($('#filepicker'), roots);
 	</script>
 	<div style="text-align: center;">
-		<button class="btn btn-cta" id="gobutton">Import accession <span class="spinner"><i class="icon-arrowbutton"></i></span> </button>
+		<div id="spinner-div" style="text-align:center;display:none"><i class="fa fa-spin fa-spinner"></i></div>
+		<button class="btn btn-cta" id="gobutton">Import accession <i class="icon-arrowbutton"></i> </button>
 	</div>
 
 	<script type="text/javascript">
 		$('#gobutton').click(function(e) {
 			epadd.load_archive(e, $('#sourceDir').val());
+			// should not reach here, because load_archive redirect, but just in case...
 			return false;
 		});
 	</script>

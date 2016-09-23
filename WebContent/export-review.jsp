@@ -73,19 +73,15 @@ writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + des
 
 <div id="nav3" style="display:inline-block;margin-left:170px;">
 	<nav>
-		<a href="export-review">Messages to transfer</a> <br/>
 		<a href="export-review?type=doNotTransfer">Do not transfer</a> <br/>
 		<a href="export-review?type=transferWithRestrictions">Transfer with restrictions</a><br/>
+		<a href="export-review">Messages to transfer</a> <br/>
 	</nav>
 </div>
 <br/>
 
 <br/>
 
-<div style="text-align: center">
-    <button class="btn btn-cta" onclick="window.location='export-mbox'">Export all to mbox <i class="icon-arrowbutton"></i> </button>
-    <br>
-</div>
 <div style="margin:auto; width:900px">
 
 	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
@@ -123,10 +119,10 @@ for (EmailDocument ed: docs)
 </table>
 <p>
 <br/>
-<div id="export-button" style="display:none;margin:auto;text-align:center">
+<div id="export-buttons" style="display:none;margin:auto;text-align:center">
 <% if (Util.nullOrEmpty(type)) { %>
 	<button class="btn btn-cta" onclick="window.location='export'">Export <i class="icon-arrowbutton"></i> </button>
-<% } %>
+	<% } %>
 </div>
 </div>
 <p>
@@ -145,7 +141,7 @@ for (EmailDocument ed: docs)
 			pagingType: 'simple',
 			columnDefs: [{width: "540px", targets: 0},{targets: 0,render:clickable_message}],
 			order:[[1, 'asc']], // col 1 (date), ascending
-			fnInitComplete: function() { $('#spinner-div').hide(); $('#messages').fadeIn(); $('#nav3').fadeIn(); $('#export-button').fadeIn()}
+			fnInitComplete: function() { $('#spinner-div').hide(); $('#messages').fadeIn(); $('#nav3').fadeIn(); $('#export-buttons').fadeIn()}
 		});
 	} );
 </script>

@@ -60,7 +60,7 @@
 					<li style="display:inline"><a href="export-review?type=doNotTransfer">Export</a></li>
 				<% } %>
 				<% if (ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="export-review-processing?type=doNotTransfer">Export</a></li>
+					<li style="display:inline"><a href="export-review-processing?type=doNotDeliver">Export</a></li>
 				<% } %>
 				<% if (ModeConfig.isDeliveryMode()) { %>
 					<li style="display:inline"><a href="review-cart">Cart</a></li>

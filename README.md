@@ -18,14 +18,14 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 
 **System Requirements**
 
-OS: Windows 7 SP1 / 8.1 / 10, Mac OS X  10.9 / 10.10
-Memory:  4096 MB RAM (2048 MB RAM allocated to the application by default)
-Browser:  Chrome 41/42, Firefox 38/39 
-Windows installations: Java Runtime Environment 7u55 or later required. 
+OS: Windows 7 SP1 / 10, Mac OS X  10.10 / 10.11
+Memory:  8 GB RAM (4 GB RAM allocated to the application by default)
+Browser:  Chrome 50/51, Firefox 47/48 
+Windows installations: Java Runtime Environment 8u101 or later required. 
 
 **Installation** 
 
-ePADD has been tested on and optimized for Windows 7 SP1 / 8.1 / 10 and  Mac OS X  10.9 / 10.10. Please follow the instructions below for your operating system.
+ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.10 / 10.11. Please follow the instructions below for your operating system.
 
 *Installing ePADD on Windows*
 
@@ -39,6 +39,8 @@ Note: This directory houses many customizable files discussed further elsewhere 
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
+Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Command Prompt, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM (in GB) you wish to allocate.
+
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
 *Installing ePADD on OSX*
@@ -51,6 +53,8 @@ In order for functionality related to authority reconciliation to perform correc
 This directory houses many customizable files discussed further elsewhere in the user guide, and also includes a file, “config.properties,” which can be edited to update the contact information for your repository’s Administrator in case of system errors. 
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
+
+Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Terminal, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM (in GB) you wish to allocate.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 

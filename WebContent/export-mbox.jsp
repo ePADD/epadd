@@ -27,8 +27,13 @@
 
 <div class="panel" style="padding-left:10%">
     <%
-        List<EmailDocument> selectedDocs = (List<EmailDocument>)JSPHelper.getSessionAttribute(request.getSession(), "action-docs");
-        JSPHelper.log.info ("original browse set has " + selectedDocs.size() + " docs");
+        List<EmailDocument> selectedDocs = null;
+        if (!ModeConfig.isDeliveryMode())
+              selectedDocs = (List<EmailDocument>) JSPHelper.getSessionAttribute(request.getSession(), "action-docs");
+        else // in appraisal/processing modes, export everything. in discovery, this jsp is not included
+            selectedDocs = (List) archive.getAllDocs();
+
+        JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
         // either we do tags (+ or -) from selectedTags
         // or we do all docs from allDocs

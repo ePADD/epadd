@@ -78,13 +78,14 @@
 		<div id="advanced_options">
 
 		<% if (!ModeConfig.isDiscoveryMode()) { %>
-			<p><button class="btn btn-default" id='reset-reviewed' style='cursor:pointer'><i class="fa fa-eye"></i> Reset reviewed status</button>
+			<p><button class="btn-default" id='reset-reviewed' style='cursor:pointer'><i class="fa fa-eye"></i> Reset reviewed status</button>
 		<% } %>
 
 		<p><button class="btn-default" id="unload-archive"><i class="fa fa-eject"></i> Unload Archive</button>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 					<p><button id="delete-archive" class="btn-default"><span class="spinner"><i class="fa fa-trash"></i></span> Delete Archive</button>
+					<p><button class="btn-default" onclick="window.location='export-mbox'"><i class="fa fa-save"></i> Export archive to mbox</button>
 				<%	} %>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
