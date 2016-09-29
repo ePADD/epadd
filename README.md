@@ -29,7 +29,7 @@ ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.
 
 *Installing ePADD on Windows*
 
-Please download the latest ePADD distribution files (.exe) from https://github.com/ePADD/epadd/releases/. You will need to have Java 1.7 or later installed on your machine for ePADD to work properly.
+Please download the latest ePADD distribution files (.exe) from https://github.com/ePADD/epadd/releases/. You will need to have Java 1.8 or later installed on your machine for ePADD to work properly.
 
 When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it. The ePADD Appraisal Module directory is located at c:\users\<username>\epadd-appraisal. 
 
