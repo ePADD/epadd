@@ -55,7 +55,7 @@
 	<%
 		out.flush(); // make sure spinner is seen
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-		JSONArray resultArray = ab.getCountsAsJson(docs);
+		JSONArray resultArray = ab.getCountsAsJson(docs, true /* except owner */);
 	%>
 	<script>
 	var correspondents = <%=resultArray.toString(4)%>;

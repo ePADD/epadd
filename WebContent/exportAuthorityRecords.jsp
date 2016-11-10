@@ -3,7 +3,7 @@
 	String exportType = request.getParameter("exportType");
 	edu.stanford.muse.index.Archive archive = edu.stanford.muse.webapp.JSPHelper.getArchive(session);
     try{
-		String csv = edu.stanford.muse.ie.AuthorisedAuthorities.exportRecords(archive,exportType);
+		String csv = archive.getAuthoritiesAsCSV();
         out.println(csv);
 	}catch(Exception e){
 		e.printStackTrace();

@@ -86,7 +86,6 @@
 	out.flush();
 	archive.export(docsToExport, false, folder, "default");
 
-	String csv = AuthorisedAuthorities.exportRecords(archive, "csv");
 
 	try {
 		String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
