@@ -86,13 +86,16 @@
 	out.flush();
 	archive.export(docsToExport, false, folder, "default");
 
-	String csv = AuthorisedAuthorities.exportRecords(archive, "csv");
-
 	try {
-		String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
-		FileWriter fw = new FileWriter(new File(filename));
-		fw.write(csv);
-		fw.close();
+        String csv = AuthorisedAuthorities.getAuthoritiesAsCSV (archive);
+        if (!Util.nullOrEmpty(csv)) {
+            String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
+            FileWriter fw = new FileWriter(new File(filename));
+            fw.write(csv);
+            fw.close();
+        } else {
+            JSPHelper.log.info ("No authorities information in this archive");
+        }
 	} catch(Exception e) {
 		out.println ("Warning: unable to write authorities CSV file into " + file);
 		JSPHelper.log.warn(e);
@@ -105,10 +108,13 @@
 	archive.export(docsToExport, true /* public mode */, folderPublic, "default");
 
 	try {
-		String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
-		FileWriter fw = new FileWriter(new File(filename));
-		fw.write(csv);
-		fw.close();
+        String csv = AuthorisedAuthorities.getAuthoritiesAsCSV (archive);
+        if (!Util.nullOrEmpty(csv)) {
+            String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
+            FileWriter fw = new FileWriter(new File(filename));
+            fw.write(csv);
+            fw.close();
+        }
 	} catch(Exception e) {
 		out.println ("Warning: unable to write authorities CSV file into " + file);
 		JSPHelper.log.warn(e);

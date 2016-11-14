@@ -45,7 +45,7 @@ try {
 	{
 		String name = (String) names.next();
 		List<String> ids = new ArrayList<String>(),types = new ArrayList<String>();
-		JSONArray sources = (JSONArray)obj.getJSONArray(name);
+		JSONArray sources = obj.getJSONArray(name);
 		JSONArray sn = (JSONArray)sources.get(1);
 		JSONArray l = (JSONArray)sources.get(0);
 		for(int i=0;i<sn.length();i++){

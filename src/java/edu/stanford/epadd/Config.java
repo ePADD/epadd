@@ -16,10 +16,21 @@ public class Config {
 	public static String	admin, holder, holderContact, holderReadingRoom;
 
 	/* default location for dir under which archives are imported/stored. Should not end in File.separator */
-	public final static String	REPO_DIR_APPRAISAL			= System.getProperty("user.home") + java.io.File.separator + "epadd-appraisal"; // this needs to be in sync with system property muse.dirname?
-	public final static String	REPO_DIR_PROCESSING			= System.getProperty("user.home") + java.io.File.separator + "epadd-processing";
-	public final static String	REPO_DIR_DISCOVERY			= System.getProperty("user.home") + java.io.File.separator + "epadd-discovery";
-	public final static String	REPO_DIR_DELIVERY			= System.getProperty("user.home") + java.io.File.separator + "epadd-delivery";
+	public final static String	REPO_DIR_APPRAISAL;
+	public final static String	REPO_DIR_PROCESSING;
+	public final static String	REPO_DIR_DISCOVERY;
+	public final static String	REPO_DIR_DELIVERY;
+
+	static {
+		String epaddBaseDir = System.getProperty("epadd.base.dir");
+		if (Util.nullOrEmpty(epaddBaseDir))
+			epaddBaseDir = System.getProperty("user.home");
+
+		REPO_DIR_APPRAISAL			= epaddBaseDir + java.io.File.separator + "epadd-appraisal"; // this needs to be in sync with system property muse.dirname?
+		REPO_DIR_PROCESSING			= epaddBaseDir + java.io.File.separator + "epadd-processing";
+		REPO_DIR_DISCOVERY			= epaddBaseDir + java.io.File.separator + "epadd-discovery";
+		REPO_DIR_DELIVERY			= epaddBaseDir + java.io.File.separator + "epadd-delivery";
+	}
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
@@ -48,10 +59,7 @@ public class Config {
 			}
 		}
 
-		admin = props.getProperty("admin", "Peter Chan, pchan3@stanford.edu");
-		holder = props.getProperty("holder", "The Department of Special Collections and University Archives of Stanford University");
-		holderContact = props.getProperty("holderContact", "speccollref@stanford.edu");
-		holderReadingRoom = props.getProperty("holderReadingRoom", "Stanford University Special Collections Reading Room");
+
 	}
 
 	public static void main (String args[]) {

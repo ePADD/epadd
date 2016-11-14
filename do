@@ -1,6 +1,7 @@
 #!/bin/csh -fe
 ant
 cd ../muse
+mvn clean
 mvn -f pom-common.xml
 mvn -f pom-jar.xml
 mvn # this step is needed
