@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.epadd.Config"%>
+<%@page language="java" import="edu.stanford.muse.Config"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.ie.AuthorisedAuthorities"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
@@ -87,7 +87,7 @@
 	archive.export(docsToExport, false, folder, "default");
 
 	try {
-        String csv = AuthorisedAuthorities.getAuthoritiesAsCSV (archive);
+        String csv = archive.getAuthoritiesAsCSV ();
         if (!Util.nullOrEmpty(csv)) {
             String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
             FileWriter fw = new FileWriter(new File(filename));
@@ -108,7 +108,7 @@
 	archive.export(docsToExport, true /* public mode */, folderPublic, "default");
 
 	try {
-        String csv = AuthorisedAuthorities.getAuthoritiesAsCSV (archive);
+        String csv = archive.getAuthoritiesAsCSV();
         if (!Util.nullOrEmpty(csv)) {
             String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
             FileWriter fw = new FileWriter(new File(filename));

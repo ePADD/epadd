@@ -7,7 +7,6 @@
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.ie.FASTReader"%>
 <%@page language="java" import="edu.stanford.muse.ie.FASTPerson"%>
-<%@page language="java" import="edu.stanford.epadd.Config"%>
 
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="org.json.*"%><%@ page import="edu.stanford.muse.ie.InternalAuthorityAssigner"%>

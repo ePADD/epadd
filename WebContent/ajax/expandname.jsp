@@ -12,11 +12,8 @@
 <%@ page import="edu.stanford.muse.util.Pair"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.HashSet"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.Set"%>
 <%@ page import="java.util.regex.Pattern"%>
-<%@ page import="edu.stanford.muse.ner.NER"%><%@ page import="edu.stanford.muse.util.Span"%><%@ page import="java.util.ArrayList"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%>
+<%@ page import="edu.stanford.muse.ner.NER"%><%@ page import="edu.stanford.muse.util.Span"%><%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary"%><%@ page import="edu.stanford.muse.ie.Authority"%><%@ page import="java.util.*"%>
 <%/*Given a name; resolves it to multiple word name if the name is single word and also anotates the multiple word name with external(if there is an authorised database id) or internal(If there is a contact in addressbook with that name.)
 	Input: name that is to be expanded/annotated; docId of the document in which name is to be expanded/annotated. 
 	Output: If expanded possible multiple word names with authority type annotations in decreasing order of confidence(Max: 5)
@@ -72,9 +69,10 @@
 			else if(places.contains(name)) et = EntityFeature.PLACE;
 
 			JSPHelper.log.info("Type of name: "+name+" -> " + et);
+            Map<String, Authority> cnameToAuthority = archive.getAuthorities();
+
 			//we only try to expand these types
-			if(et == EntityFeature.PERSON || et==EntityFeature.ACRONYM ||
-			    et == EntityFeature.ORG || et == EntityFeature.PLACE) {
+			if(et == EntityFeature.PERSON || et==EntityFeature.ACRONYM ||  et == EntityFeature.ORG || et == EntityFeature.PLACE) {
 				if(!name.contains(" ")) {
 					Set<String> entities = persons;
 					EntityFeature ef = new EntityFeature(name, et);
@@ -133,8 +131,8 @@
 							String recordType = "";
 							if (archive.addressBook.lookupByName(d) != null)
 								recordType += internalRecordHtml;
-		
-							if (AuthorisedAuthorities.cnameToDefiniteID != null && AuthorisedAuthorities.cnameToDefiniteID.get(IndexUtils.canonicalizeEntity(d)) != null)
+
+							if (cnameToAuthority != null && cnameToAuthority.get(IndexUtils.canonicalizeEntity(d)) != null)
 								recordType += externalRecordHtml;
 		
 							html += "<li><a href='" + href + "' style='color:black'>" + d + "</a>&nbsp"
@@ -156,11 +154,11 @@
 					String html = name;
 					String d = IndexUtils.canonicalizeEntity(name);
 					if (archive.addressBook.lookupByName(d) != null)
-						html += "&nbsp"+internalRecordHtml;
-					if (AuthorisedAuthorities.cnameToDefiniteID != null && AuthorisedAuthorities.cnameToDefiniteID.get(IndexUtils.canonicalizeEntity(d)) != null)
-						html += "&nbsp"+externalRecordHtml;
+						html += "&nbsp" + internalRecordHtml;
+					if (cnameToAuthority != null && cnameToAuthority.get(IndexUtils.canonicalizeEntity(d)) != null)
+						html += "&nbsp" + externalRecordHtml;
 
-					result.put("result","");
+					result.put("result", html);
 				}
 			}
 		}

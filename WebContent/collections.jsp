@@ -5,7 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.epadd.Config"%>
+<%@page language="java" import="edu.stanford.muse.Config"%>
 
 <html>
 <head>

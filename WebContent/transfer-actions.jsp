@@ -71,7 +71,7 @@
             return false;
         }
         var roots = <%=json%>;
-        new FilePicker($('#filepicker-button'), roots);
+        new FilePicker($('#filepicker'), roots);
     </script>
     <p>
     <p>

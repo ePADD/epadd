@@ -31,14 +31,15 @@
     <jsp:include page="header.jspf"/>
 
 
+	<div style="margin-left:10%">
     <%
         String transferActionsArchiveDir = request.getParameter("dir");
         String status = archive.transferActionsFrom (transferActionsArchiveDir);
-        out.println (status);
+        out.println (status.replaceAll("\\n", "<br/>"));
         out.flush();
         SimpleSessions.saveArchive(session); // save .session file.
         out.println ("<br/>Current archive saved in: " + archive.baseDir);
     %>
-
+	</div>
 </body>
 </html>

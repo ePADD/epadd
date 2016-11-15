@@ -28,7 +28,7 @@ if (archive == null)
 }
 
 try {
-	Map<String,Authority> cnameToAuthority = AuthorisedAuthorities.cnameToDefiniteID;
+	Map<String,Authority> cnameToAuthority = archive.getAuthorities();
 	
 	// the input "authorities" param is a json string like this:
 	// {names: ['n1', 'n2'], ids: ['f1', 'f2'], types: ['fast', 'viaf']}
