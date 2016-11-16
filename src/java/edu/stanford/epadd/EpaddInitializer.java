@@ -37,11 +37,16 @@ public class EpaddInitializer implements ServletContextListener {
 				throw new RuntimeException();
 			}
 			edu.stanford.muse.util.Version.appName = "epadd";
-			Archive.LEXICONS = new String[]{"general.english.lex.txt", "sensitive.english.lex.txt", "sentiments.english.lex.txt", "Persona.academic.administrator.sensitive.duke.english.lex.txt", "Persona.journalist.activist.politics.and.travel.UCB.english.lex.txt",
-					"Persona.author.princeton.english.lex.txt","Persona.writer.theater.NYPL.english.lex.txt",
+			Archive.LEXICONS = new String[]{"general.english.lex.txt", "sensitive.english.lex.txt", "sentiments.english.lex.txt",
+					"Persona.academic.administrator.sensitive.duke.english.lex.txt",
+					"Persona.author.princeton.english.lex.txt",
 					"Persona.composer.NYPL.english.lex.txt",
 					"Persona.environmental.artist.projects.stanford.english.lex.txt",
-					"Persona.faculty.UCI.english.lex.txt"};
+					"Persona.faculty.UCI.english.lex.txt",
+					"Persona.journalist.activist.politics.and.travel.UCB.english.lex.txt",
+					"Persona.microbiologist.UIUC.english.lex.txt",
+					"Persona.writer.theater.NYPL.english.lex.txt"
+			};
 
 			System.err.println("muse.log system variable is: "+System.getProperty("muse.log"));
 		} catch (Exception e) {

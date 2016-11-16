@@ -51,6 +51,13 @@
 		<form method="get" action="browse">
 
 			<input name="term" size="80" placeholder="search query"/>
+			<div style="display:none">
+				<input type="hidden" name="adv-search"/>
+				<input type="checkbox" name="termBody" checked>
+				<input type="checkbox" name="termSubject" checked>
+				<input type="checkbox" name="termAttachments" checked>
+				<input type="checkbox" name="termOriginalBody" checked>
+			</div>
 			<br/>
 			<br/>
 
