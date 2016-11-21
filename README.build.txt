@@ -39,3 +39,11 @@ java -Xmx2g -jar epadd-standalone.jar
 4. To run automated test cases, first quit all running instances of ePADD. Then go to epadd-launcher, edit config.properties with the appropriate paths for your system and type mvn -f pom-test.xml test
 The script in epadd-launcher/src/test/resources/feature/epadd.feature will be run.
 
+5. To run the epadd-launcher in a debugger, add the following files to a temp directory and then add that directory to the classpath:
+crossdomain.xml	
+epadd.war	
+index.html	
+muse-icon.png
+
+Running TomcatMain as the main class with the VM argument -splash:lib/splash-image.png will give exactly the same behaviour as running epadd-standalone.jar
+
