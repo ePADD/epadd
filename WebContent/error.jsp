@@ -29,9 +29,9 @@
 <div style="margin-left:170px">
 Sorry! ePADD error.
 <% if (ModeConfig.isDiscoveryMode()) { %>
-    Please contact <%=edu.stanford.epadd.Config.admin %>.
+    Please contact <%=edu.stanford.muse.Config.admin %>.
 <% } else { %>
-    Please see the <a href="debug">debug log</a>, and email it to <%=edu.stanford.epadd.Config.admin %>
+    Please see the <a href="debug">debug log</a>, and email it to <%=edu.stanford.muse.Config.admin %>
     We'll get back to you as soon as possible.
     <% out.println ("<br/>Error code:" + request.getAttribute("javax.servlet.error.status_code") + " type: " + request.getAttribute("javax.servlet.error.exception_type")); %>
 <% } %>

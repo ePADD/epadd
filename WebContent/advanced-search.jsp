@@ -187,13 +187,14 @@
                                         </div>
                                     <% } %>
 
+									<!--
 									<div class="checkbox-inline">
 										<label>
 											<input type="checkbox" name="termRegex">
 											<span class="label-text">Regular Expression</span>
 										</label>
 									</div>
-
+									-->
 								</fieldset>
 							</div>
 						</div>
@@ -333,17 +334,17 @@
 							<!--Type-->
 							<div class="form-group col-sm-6">
 								<label for="attachmentType">Type</label>
-								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker"
-										title="Select" multiple>
-									<option value="avi;mp4">Video (avi, mp4)</option>
-									<option value="mp3;ogg">Audio (mp3, ogg)</option>
+								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
+									<option value="" selected disabled>Select</option>
 									<option value="jpg;png;gif;bmp">Graphics (jpg, png, gif, bmp)</option>
-									<option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb)</option>
+									<option value="doc;docx;pages">Document (doc, docx, pages)</option>
 									<option value="ppt;pptx;key">Presentation (ppt, pptx, key)</option>
 									<option value="xls;xlsx;numbers">Spreadsheet (xls, xlsx, numbers)</option>
-									<option value="doc;docx;pages">Document (doc, docx, pages)</option>
-									<option value="htm;html;css;js">Internet file (htm, html, css,js)</option>
+									<option value="htm;html;css;js">Internet file (htm, html, css, js)</option>
 									<option value="zip;7z;tar;tgz">Compressed (zip, 7z, tar, tgz)</option>
+									<option value="mp3;ogg">Audio (mp3, ogg)</option>
+									<option value="avi;mp4">Video (avi, mp4)</option>
+									<option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb)</option>
 								</select>
 							</div>
 
@@ -533,7 +534,7 @@
 					<div class="row">
 						<div class="form-group col-sm-6">
 							<label for="emailSource">Email Source</label>
-							<select id="emailSource" name="emailSource" class="form-control selectpicker" name="Choose-source">
+							<select id="emailSource" name="emailSource" class="form-control selectpicker">
 								<option value="" selected disabled>Select</option>
 								<% Collection<String> emailSources = archive.getAllEmailSources();
 									for (String emailSource : emailSources) { %>
@@ -554,7 +555,7 @@
                             <!--Lexicons-->
                             <div class="form-group col-sm-6">
                                 <label for="lexiconName">Lexicons</label>
-                                <select id="lexiconName" name="lexiconName" class="form-control selectpicker" name="Choose-file">
+                                <select id="lexiconName" name="lexiconName" class="form-control selectpicker">
                                     <option value="" selected disabled>Select</option>
                                     <% Collection<String> lexiconNames = archive.getAvailableLexicons();
                                         for (String lexiconName : lexiconNames) { %>
@@ -567,7 +568,7 @@
                             <!--Lexicons Category-->
                             <div class="form-group col-sm-6">
                                 <label for="lexiconCategory">Lexicon: Category</label>
-                                <select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker" name="Choose-file">
+                                <select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker">
                                     <option value="" selected disabled>Select</option>
                                 </select>
                             </div>

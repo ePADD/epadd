@@ -28,7 +28,7 @@ if (archive == null)
 }
 
 try {
-	Map<String,Authority> cnameToAuthority = AuthorisedAuthorities.cnameToDefiniteID;
+	Map<String,Authority> cnameToAuthority = archive.getAuthorities();
 	
 	// the input "authorities" param is a json string like this:
 	// {names: ['n1', 'n2'], ids: ['f1', 'f2'], types: ['fast', 'viaf']}
@@ -45,7 +45,7 @@ try {
 	{
 		String name = (String) names.next();
 		List<String> ids = new ArrayList<String>(),types = new ArrayList<String>();
-		JSONArray sources = (JSONArray)obj.getJSONArray(name);
+		JSONArray sources = obj.getJSONArray(name);
 		JSONArray sn = (JSONArray)sources.get(1);
 		JSONArray l = (JSONArray)sources.get(0);
 		for(int i=0;i<sn.length();i++){

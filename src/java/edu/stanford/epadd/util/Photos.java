@@ -1,6 +1,5 @@
 package edu.stanford.epadd.util;
 
-import edu.stanford.epadd.Config;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.webapp.JSPHelper;
 
@@ -53,17 +52,17 @@ public class Photos
 
 		if ("processing".equalsIgnoreCase(mode))
 		{
-			baseDir = edu.stanford.epadd.Config.REPO_DIR_PROCESSING;
+			baseDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING;
 			filePath = baseDir + File.separator + filename;
 		}
 		else if ("discovery".equalsIgnoreCase(mode))
 		{
-			baseDir = edu.stanford.epadd.Config.REPO_DIR_DISCOVERY;
+			baseDir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY;
 			filePath = baseDir + File.separator + filename;
 		}
 		else if ("delivery".equalsIgnoreCase(mode))
 		{
-			baseDir = Config.REPO_DIR_DELIVERY;
+			baseDir = edu.stanford.muse.Config.REPO_DIR_DELIVERY;
 			filePath = baseDir + File.separator + filename;
 		}
 		else

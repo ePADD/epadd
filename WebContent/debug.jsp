@@ -29,7 +29,7 @@
 
 <div id="main" style="margin:1% 5%">
 <br/>
-We are sorry you encountered a problem with ePADD. Please save this page and send it <%=edu.stanford.epadd.Config.admin %> to help us fix the problem.<br/>
+We are sorry you encountered a problem with ePADD. Please save this page and send it <%=edu.stanford.muse.Config.admin %> to help us fix the problem.<br/>
 
 <hr style="color:rgba(0,0,0,0.2)"/>
 <b>ePADD version <%=edu.stanford.epadd.Version.version%></b>

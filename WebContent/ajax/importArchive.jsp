@@ -6,7 +6,6 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page language="java" import="edu.stanford.epadd.Config"%>
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
@@ -29,7 +28,7 @@ if (!new File(baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separato
 }
 
 String archiveName = Util.filePathTailByPlatformSeparator(baseDir);
-String targetDir = Config.REPO_DIR_PROCESSING + File.separator + archiveName;
+String targetDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + archiveName;
 if (!targetDir.equals(baseDir))
 {
 	try {

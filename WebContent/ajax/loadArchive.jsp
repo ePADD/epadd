@@ -25,14 +25,13 @@
             return;
         }
 
-
         dir = dir + java.io.File.separator; //  + "user"; // wish this was cleaner
         if (ModeConfig.isProcessingMode())
-          dir = edu.stanford.epadd.Config.REPO_DIR_PROCESSING + File.separator + dir;
+          dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + dir;
         else if (ModeConfig.isDeliveryMode())
-            dir = edu.stanford.epadd.Config.REPO_DIR_DELIVERY + File.separator + dir;
+            dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + dir;
         else if (ModeConfig.isDiscoveryMode())
-            dir = edu.stanford.epadd.Config.REPO_DIR_DISCOVERY + File.separator + dir;
+            dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dir;
         JSPHelper.log.info("Loading archive from: "+dir);
 
         Archive archive = SimpleSessions.readArchiveIfPresent(dir);
