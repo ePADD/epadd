@@ -1,7 +1,6 @@
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.ner.Entity" %>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
@@ -11,6 +10,7 @@
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--	
     Browse page for enbtities based on fine types
@@ -46,33 +46,11 @@
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
-        desc.put(FeatureDictionary.PERSON, "Person");
-        desc.put(FeatureDictionary.COMPANY, "Company");
-        desc.put(FeatureDictionary.BUILDING, "Building");
-        desc.put(FeatureDictionary.PLACE, "Place");
-        desc.put(FeatureDictionary.RIVER, "River");
-        desc.put(FeatureDictionary.ROAD, "Road");
-        desc.put(FeatureDictionary.UNIVERSITY, "University");
-        desc.put(FeatureDictionary.MOUNTAIN, "Mountain");
-        desc.put(FeatureDictionary.AIRPORT, "Airport");
-        desc.put(FeatureDictionary.ORGANISATION, "Organization");
-        desc.put(FeatureDictionary.PERIODICAL_LITERATURE, "Periodical Literature");
-        desc.put(FeatureDictionary.ISLAND, "Island");
-        desc.put(FeatureDictionary.MUSEUM, "Museum");
-        desc.put(FeatureDictionary.BRIDGE, "Bridge");
-        desc.put(FeatureDictionary.AIRLINE, "Airline");
-        desc.put(FeatureDictionary.GOVAGENCY, "Government Agency");
-        desc.put(FeatureDictionary.HOSPITAL, "Hospital");
-        desc.put(FeatureDictionary.AWARD, "Award");
-        desc.put(FeatureDictionary.THEATRE, "Theatre");
-        desc.put(FeatureDictionary.LIBRARY, "Library");
-        desc.put(FeatureDictionary.LAWFIRM, "Law Firm");
-        desc.put(FeatureDictionary.MONUMENT, "Monument");
-        desc.put(FeatureDictionary.DISEASE, "Disease");
-        desc.put(FeatureDictionary.EVENT, "Event");
+        for(NEType.Type t: NEType.Type.values())
+            desc.put(t.getCode(), t.toString());
 
         Short type = Short.parseShort(request.getParameter("type"));
-        out.println("<h1>Type: "+FeatureDictionary.desc.get(type)+"</h1>");
+        out.println("<h1>Type: "+desc.get(type)+"</h1>");
         Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;

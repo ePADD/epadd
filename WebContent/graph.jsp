@@ -13,7 +13,7 @@
 <%@ page import="edu.stanford.muse.util.*" %>
 <%@ page import="edu.stanford.muse.email.Contact" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
 <%!
 
@@ -112,13 +112,13 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 	boolean doSentiments = false, doPeople = false, doEntities = false;
 	String view = request.getParameter("view");
 	String type = request.getParameter("type");
-    Short ct = FeatureDictionary.PERSON;
+    Short ct = NEType.Type.PERSON.getCode();
 
     if("en_person".equals(type))
-        ct = FeatureDictionary.PERSON;
+        ct = NEType.Type.PERSON.getCode();
     else if("en_loc".equals(type))
-        ct = FeatureDictionary.PLACE;
-    else ct = FeatureDictionary.ORGANISATION;
+        ct = NEType.Type.PLACE.getCode();
+    else ct = NEType.Type.ORGANISATION.getCode();
 
     String heading = "", tableURL = "";
 	if ("sentiments".equals(view)) {
@@ -306,7 +306,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
             es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
             es = edu.stanford.muse.ie.Util.filterEntities(es);
             for(Span sp: es)
-                if(FeatureDictionary.getCoarseType(sp.type)==ct) set.add(sp.text);
+                if(NEType.getCoarseType(sp.type).getCode()==ct) set.add(sp.text);
 
 			for (String e: set) {
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
@@ -352,7 +352,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
             Set<String> set = new LinkedHashSet<>();
             for(Span sp: es)
-                if(FeatureDictionary.getCoarseType(sp.type)==ct) set.add(sp.text);
+                if(NEType.getCoarseType(sp.type).getCode()==ct) set.add(sp.text);
 
 			for (String e: set) {
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);

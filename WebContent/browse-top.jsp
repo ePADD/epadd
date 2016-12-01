@@ -3,7 +3,6 @@
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
@@ -11,6 +10,7 @@
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.List" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -64,9 +64,9 @@
 		statsAvailable = true;
 	String pC="",oC="",lC="", nS="";
 	if(statsAvailable){
-		pC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PERSON)+")";
-		oC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.ORGANISATION )+")";
-		lC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PLACE)+")";
+		pC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
+		oC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode() )+")";
+		lC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PLACE.getCode())+")";
 	}
 	if(archive.processingMetadata.numPotentiallySensitiveMessages>=0)
 		nS = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
