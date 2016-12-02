@@ -12,7 +12,7 @@
 
 <%@page language="java" import="org.json.*"%>
 <%@ page import="java.io.File" %>
-<%@ page import="edu.stanford.muse.ner.model.BMMModel" %>
+<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%
@@ -30,12 +30,12 @@ if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
 
 if(archive!=null){
     try {
-        String modelFile = BMMModel.modelFileName;
-        BMMModel nerModel = (BMMModel) session.getAttribute("ner");
+        String modelFile = SequenceModel.RULES_DIRNAME;
+        SequenceModel nerModel = (SequenceModel) session.getAttribute("ner");
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
         try {
-            nerModel = BMMModel.loadModel(modelFile);
+            nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
         } catch (IOException e) {
             Util.print_exception("Could not load the sequence model from: " + modelFile, e, JSPHelper.log);
         }

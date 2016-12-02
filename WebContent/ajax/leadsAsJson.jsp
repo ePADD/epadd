@@ -3,7 +3,7 @@
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.lens.Lens"%>
 <%@page language="java" import="edu.stanford.muse.lens.LensPrefs"%>
-<%@page language="java" import="edu.stanford.muse.ner.tokenizer.CICTokenizer"%>
+<%@page language="java" import="edu.stanford.muse.ner.tokenize.CICTokenizer"%>
 <%@page language="java" import="edu.stanford.muse.util.DictUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.util.Triple"%>
@@ -67,7 +67,7 @@ try {
 //	}
 
 
-    List<Triple<String,Integer,Integer>> tokens = new CICTokenizer().tokenize(text, false);
+    List<Triple<String,Integer,Integer>> tokens = new CICTokenizer().tokenize(text);
 
     // filter out noisy single-word tokens (in full dict or 5000 dict, or same stem as 5000 dict)
     {
