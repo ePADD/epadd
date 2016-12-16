@@ -108,7 +108,7 @@
 
 		boolean onlyOneLexicon = (lexiconNames.size() == 1);
 		// common case is only one lexicon, don't show load lexicon in this case.
-		if (lexiconNames.size() > 1) { %>
+		if (onlyOneLexicon > 1) { %>
 			<script>function changeLexicon() {	window.location = 'lexicon?name=' +	$('#lexiconName').val(); }</script>
 
 			<div style="text-align:center">
@@ -144,13 +144,15 @@
 <p>
 <br/>
 	<script>
-		$('#lexiconName').change (changeLexicon);
-		$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
-		$('#create-lexicon').click (function() {
-			var lexiconName = prompt ('Enter the name of the new lexicon:');
-			if (!lexiconName)
-				return;
-			window.location = 'edit-lexicon?lexicon=' + lexiconName;
+		$(document).ready (function() {
+			$('#lexiconName').change (changeLexicon);
+			$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
+			$('#create-lexicon').click (function() {
+				var lexiconName = prompt ('Enter the name of the new lexicon:');
+				if (!lexiconName)
+					return;
+				window.location = 'edit-lexicon?lexicon=' + lexiconName;
+			});
 		});
 	</script>
 

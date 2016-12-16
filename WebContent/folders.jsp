@@ -104,7 +104,7 @@
     				</div>
 					<br/>
 					<div class="select_all_folders" style="display:none;text-align:center">
-						<button type="button" class="btn-default select_all_button" style="display:none"><i class="fa fa-files-o"></i> Select all folders</button>
+						<button id="selectall<%=accountIdx%>" type="button" class="btn-default select_all_button" style="display:none"><i class="fa fa-files-o"></i> Select all folders</button>
 					</div>
 				</div>
    			</div>

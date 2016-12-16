@@ -220,6 +220,7 @@ if (archive != null) {
 			var $clone = $($logins[0]).clone();
 			$clone.insertAfter($logins[$logins.length-1]);
 			$('input', $clone).val(''); // clear the fields so we don't carry over what the cloned fields had
+			epadd.fix_login_account_numbers();
 		}
 
 		function add_private_server() {
@@ -229,6 +230,7 @@ if (archive != null) {
 			$clone.insertAfter($logins[$logins.length-1]);
 			$('input', $clone).val(''); // clear the fields so we don't carry over what the cloned fields had
 			$('<br/>').insertAfter($logins[$logins.length-1]);
+			epadd.fix_login_account_numbers();
 		}
 		var fps = []; // array of file pickers, could have multiple open at the same time, in theory.
 		var $account0 = $($('#mboxes .account')[0]);
@@ -248,6 +250,7 @@ if (archive != null) {
 			$('<br/>').insertAfter($lasta);
 
 			fps.push(new FilePicker($clone, roots));
+			epadd.fix_login_account_numbers();
 			return false;
 		}
 

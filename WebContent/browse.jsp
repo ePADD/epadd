@@ -25,7 +25,7 @@
 // good to give a meaningful title to the browser tab since a lot of them may be open
     String term = request.getParameter("term");
     term = JSPHelper.convertRequestParamToUTF8(term);
-    String sentiments[] = request.getParameterValues("sentiment");
+    String sentiments[] = request.getParameterValues("lexiconCategory");
     String[] persons = request.getParameterValues("person");
     String[] attachments = request.getParameterValues("attachment");
     int month = HTMLUtils.getIntParam(request, "month", -1);
@@ -47,7 +47,7 @@
             title = "Search: " + term;
         else if (cluster != -1)
             title = "Cluster " + cluster;
-        else if (sentimentSummary != null)
+        else if (!Util.nullOrEmpty(sentimentSummary))
             title = sentimentSummary;
         else if (attachments != null && attachments.length > 0)
             title = attachments[0];

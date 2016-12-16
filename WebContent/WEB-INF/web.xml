@@ -38,6 +38,13 @@
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+	<!--  treat jspf files as jsp so that they get translated. See http://www.coderanch.com/t/171516/java-Web-Component-SCWCD/certification/jspf-file-behaving-jsp-file-->
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jspf</url-pattern>
+		</jsp-property-group>
+	</jsp-config>
+
 	<servlet>
 		<servlet-name>ner</servlet-name>
 		<jsp-file>/ner.jsp</jsp-file>
@@ -65,12 +72,6 @@
 		<url-pattern>/collection-detail</url-pattern>
 	</servlet-mapping>
 
-	<!--  treat jspf files as jsp so that they get translated. See http://www.coderanch.com/t/171516/java-Web-Component-SCWCD/certification/jspf-file-behaving-jsp-file-->
-	<jsp-config>
-	<jsp-property-group>
-		<url-pattern>*.jspf</url-pattern>
-	</jsp-property-group>
-	</jsp-config>
 
 	<servlet>
 		<servlet-name>assignauthorities-top</servlet-name>
