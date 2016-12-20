@@ -8,48 +8,29 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+	<!--scripts-->
+	<script  src="js/jquery-1.12.1.min.js"></script>
+	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
-	<script src="js/jquery.js"></script>
+	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+	<script src="js/selectpicker.js"></script>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<jsp:include page="css/css.jsp"/>
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	<!--
-        <style>
-            td > div {
-                padding: 5px;
-            }
-            .option { margin-right:15px;}
-        </style>
-        -->
-	<style>
-		.autocomplete-suggestions {
-			background-color: white;
-			color: #999;
-			border: 1px solid rgba(0, 0, 0, 0.15);
-			border-radius: 4px;
-			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-			cursor: pointer;
-		}
-		.autocomplete-suggestion {
-			border-bottom: 1px solid #eaeaea;
-			padding: 8px 10px;
-			margin: 0px 10px;
-		}
-	</style>
 		<title>Advanced Search</title>
 		<meta name="description" content="">
 	<link rel="stylesheet" href="css/main.css">
 </head>
-	<body>
+<body>
 	<jsp:include page="header.jspf"/>
 	<script>epadd.nav_mark_active('Search');</script>
-
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
@@ -638,21 +619,13 @@
 	<!--/Advanced Search-->
 
 
-   <!--scripts-->
-	<script  src="js/jquery-1.12.1.min.js"></script>
-	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
-	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
-<!--	   	<script src="js/bootstrap.min.js"></script> -->
-	   	<script src="js/main.js"></script>
-	   	<script src="js/modernizr.min.js"></script>
 		<script>
 			$('#clear-form').click(function() {
 				$('input').val('');
 			});
 		</script>
 	   	<!-- selectpicker -->
-		<script src="js/selectpicker.js"></script>
 	<script>
 		$('#clear-form').click(function() {
 			$('#adv-search.form input').val();

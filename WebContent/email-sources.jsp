@@ -12,17 +12,18 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Specify Email Sources</title>
-
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
-	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-	<script src="jqueryFileTree/jqueryFileTree.js"></script>
-	
+
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
+	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
 	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/jquery.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="jqueryFileTree/jqueryFileTree.js"></script>
+	<script src="js/filepicker.js"></script>
+
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	<style>
@@ -33,6 +34,8 @@
 </head>
 <body style="background-color:white;">
 <jsp:include page="header.jspf"/>
+<jsp:include page="div_filepicker.jspf"/>
+
 <script>epadd.nav_mark_active('Import');</script>
 
 <%@include file="profile-block.jspf"%>
@@ -153,16 +156,6 @@ if (archive != null) {
 	</div> <!--  end servers -->
 </section>
 
-	<%
-		java.io.File[] rootFiles = java.io.File.listRoots();
-		List<String> roots = new ArrayList<String>();
-		for (java.io.File f: rootFiles)
-			roots.add(f.toString());
-		String json = new Gson().toJson(roots);
-	%>
-	<script> var roots = <%=json%>;</script>
-	<script src="js/filepicker.js"></script>
-
 
 	<section>
 		<div id="mboxes" class="accounts panel">
@@ -177,13 +170,10 @@ if (archive != null) {
 					<br/>
 					<div class="input-field">
 						<input class="dir form-control" type="text" name="mboxDir2"/> <br/>
-						<button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
+						<button onclick="return false;" class="browse-button btn-default"><i class="fa fa-file"></i>
 							<span>Browse</span>
 						</button>
 					</div>
-					<br/>
-					<div class="roots" style="display:none"></div>
-					<div class="browseFolder"></div>
 					<br/>
 				</div>
 				<div class="div-input-field">
@@ -196,12 +186,19 @@ if (archive != null) {
 
 				<br/>
 			</div> <!--  end account -->
+
+
 			<br/>
 			<button  style="margin-left:40px" class="btn-default" onclick="add_mboxdir(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.email-sources.another-mbox")%></button>
 			<br/>
 			<br/>
 		</div>
 	</section>
+
+
+
+	<div style="display:none" class="muse-overlay"></div>
+
 	<div style="text-align:center;margin-top:20px">
 		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false">Continue <i class="icon-arrowbutton"></i> </button>
 	</div>
@@ -232,7 +229,7 @@ if (archive != null) {
 		}
 		var fps = []; // array of file pickers, could have multiple open at the same time, in theory.
 		var $account0 = $($('#mboxes .account')[0]);
-		fps.push(new FilePicker($account0, roots));
+		fps.push(new FilePicker($account0));
 
 		function add_mboxdir() {
 			// first close all accounts, in case they have been expanded etc.

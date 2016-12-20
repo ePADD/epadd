@@ -5,19 +5,18 @@
 
 <html>
 <head>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	
-	<script src="js/jquery.js"></script>
-	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-	<script src="jqueryFileTree/jqueryFileTree.js"></script>
-
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<jsp:include page="css/css.jsp"/>
 	<title>Import accession</title>
-	<script src="js/epadd.js" type="text/javascript"></script>
+	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
+
+	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/jquery.js"></script>
+	<script src="jqueryFileTree/jqueryFileTree.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/filepicker.js" type="text/javascript"></script>
+	<script src="js/epadd.js" type="text/javascript"></script>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
@@ -38,16 +37,21 @@
 			</div>
 			<br/>
 			<div class="roots" style="display:none"></div>
-			<div class="browseFolder"></div>
+			<div class="browseFolder">
+				<button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
+					<span>Ok</span>
+				</button>
+			</div>
 			<br/>
 		</div>
 	</div>
-	<br/>
+
+    <br/>
 	<br/>
 	
 	<%
 	java.io.File[] rootFiles = java.io.File.listRoots(); 
-	List<String> roots = new ArrayList<String>();
+	List<String> roots = new ArrayList<>();
 	for (java.io.File f: rootFiles)
 		roots.add(f.toString());
 	String json = new Gson().toJson(roots);

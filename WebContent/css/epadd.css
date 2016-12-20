@@ -146,9 +146,11 @@ a.hilitedTerm, .hilitedTerm {
 
 .folderEntry input[type=checkbox] {margin-right: 10px;}
 
-.browseFolder {
-	border: solid 1px rgba(0,0,0,0.2); font-size:80%; padding:5px; margin:5px; display:none; height:250px;overflow:auto;
-}
+.browseFolder { padding: 10px 25px; min-height: 250px; overflow:auto; }
+.path-component { color: #0075bb; padding-right: 10px;}
+.path-component:hover { text-decoration: underline; cursor: pointer;}
+.path-components { padding: 15px 25px 15px 25px; }
+ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 
 .resolved,.unresolved,.custom{
 	cursor: pointer;
@@ -240,3 +242,17 @@ a.hilitedTerm, .hilitedTerm {
 
 /**highlight attachment in browse page*/
 .highlight{background-color: yellow}
+
+.autocomplete-suggestions {
+	background-color: white;
+	color: #999;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	cursor: pointer;
+}
+.autocomplete-suggestion {
+	border-bottom: 1px solid #eaeaea;
+	padding: 8px 10px;
+	margin: 0px 10px;
+}
