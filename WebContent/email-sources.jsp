@@ -244,7 +244,7 @@ if (archive != null) {
 			$clone.insertAfter($lasta);
 			$('<br/>').insertAfter($lasta);
 
-			fps.push(new FilePicker($clone, roots));
+			fps.push(new FilePicker($clone));
 			return false;
 		}
 
