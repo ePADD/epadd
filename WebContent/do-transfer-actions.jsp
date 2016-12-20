@@ -1,9 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="com.google.gson.Gson"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@page language="java" import="java.util.ArrayList"%>
-<%@page language="java" import="java.util.List"%>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@include file="getArchive.jspf" %>
 
