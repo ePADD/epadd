@@ -84,7 +84,12 @@
 	archive.processingMetadata.numPotentiallySensitiveMessages = -1;
 	out.println ("Exporting delivery mode archive...<br/>");
 	out.flush();
-	archive.export(docsToExport, false, folder, "default");
+	try {
+		archive.export(docsToExport, false, folder, "default");
+	} catch (Exception e) {
+		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
+		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");
+	}
 
 	try {
         String csv = archive.getAuthoritiesAsCSV ();

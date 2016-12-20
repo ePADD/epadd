@@ -9,25 +9,22 @@
 <html>
 <head>
 	<title>Export</title>
-
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
-
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-	<script src="jqueryFileTree/jqueryFileTree.js"></script>
-		
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <jsp:include page="css/css.jsp"/>
 
-	<jsp:include page="css/css.jsp"/>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="jqueryFileTree/jqueryFileTree.js"></script>
 	<script src="js/epadd.js"></script>
 	<script src="js/filepicker.js"></script>
 </head>
 
 <body>
     <jsp:include page="header.jspf"/>
+    <jsp:include page="div_filepicker.jspf"/>
     <script>epadd.nav_mark_active('Export');</script>
 
     <%
@@ -44,12 +41,10 @@
             <div class="input-field-label"><i class="fa fa-folder-o"></i> Export folder</div>
             <div class="input-field">
                 <input id="dir" class="dir form-control" type="text" name="dir"/><br/>
-                <button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
+                <button class="browse-button btn-default"><i class="fa fa-file"></i>
                     <span>Browse</span>
                 </button>
             </div>
-            <div class="roots" style="display:none"></div>
-            <div class="browseFolder"></div>
             <br/>
             <div style="text-align:center">
                 <button type="button" class="btn btn-cta" onclick="submit(); return false;">
@@ -59,20 +54,13 @@
 
         </div>
     </div>
-    <%
-    java.io.File[] rootFiles = java.io.File.listRoots();
-    List<String> roots = new ArrayList<String>();
-    for (java.io.File f: rootFiles)
-        roots.add(f.toString());
-    String json = new Gson().toJson(roots);
-    %>
+
     <script>
         function submit() {
             window.location = 'export-complete?dir=' + $('#filepicker .dir').val();
             return false;
         }
-        var roots = <%=json%>;
-        new FilePicker($('#filepicker'), roots);
+        new FilePicker($('#filepicker'));
     </script>
     <p>
     <p>

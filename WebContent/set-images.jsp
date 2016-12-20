@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Set Images</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-    <script src="js/jquery.js"></script>
-
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <jsp:include page="css/css.jsp"/>
-    <title>Upload Images</title>
+
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
-    <script src="js/filepicker.js" type="text/javascript"></script>
 </head>
 <body>
     <jsp:include page="header.jspf"/>
+
     <script>epadd.nav_mark_active('Collections');</script>
 
     <!-- need status window on this page because upload might take some time, also to alert to errors -->
     <script type="text/javascript" src="js/statusUpdate.js"></script>
     <%@include file="div_status.jspf"%>
-
 
     <div style="margin-left:170px">
         You can upload images that represent the archive here. Only PNG format files are currently supported.

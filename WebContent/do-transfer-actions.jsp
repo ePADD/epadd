@@ -24,7 +24,6 @@
 
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>
-	<script src="js/filepicker.js"></script>
 </head>
 
 <body>

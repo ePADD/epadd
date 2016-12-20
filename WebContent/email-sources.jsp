@@ -170,7 +170,7 @@ if (archive != null) {
 					<br/>
 					<div class="input-field">
 						<input class="dir form-control" type="text" name="mboxDir2"/> <br/>
-						<button onclick="return false;" class="browse-button btn-default"><i class="fa fa-file"></i>
+						<button class="browse-button btn-default"><i class="fa fa-file"></i>
 							<span>Browse</span>
 						</button>
 					</div>

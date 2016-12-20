@@ -306,7 +306,7 @@ epadd.nav_mark_active = function(text) {
 };
 
 /** needs a stats field to update stats in. if successive, will navigate the browser to /collections */
-epadd.load_archive = function(e, dir) {
+epadd.import_archive = function(e, dir) {
 	var $spinner = $('.fa-spinner', $(e.target));
 	$spinner.show();
 	$spinner.addClass('fa-spin');
@@ -326,22 +326,24 @@ epadd.load_archive = function(e, dir) {
 	cache: false,
 	success: function (response, textStatus) {
 		$spinner.removeClass('fa-spin');
+		$('#spinner-div').fadeOut();
+		$('#gobutton').fadeIn();
+
 		if (response && (response.status == 0)) {
-				var status = 'Success! ' + response.message;
-				epadd.log ('loading archive status: ' + status);
-				window.location = './collections';
-			}
-			else {
-				if (response)
-					epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
-				else
-					epadd.alert('Error! No response from ePADD.');
-				$spinner.removeClass('fa-spin');
-			}
+			var status = 'Success! ' + response.message;
+			epadd.log ('loading archive status: ' + status);
+			window.location = './collections';
+		}
+		else {
+			if (response)
+				epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
+			else
+				epadd.alert('Error! No response from ePADD.');
+		}
 	},
 	error: function() {
-		$('#gobutton').fadeIn();
 		$('#spinner-div').fadeOut();
+		$('#gobutton').fadeIn();
 		epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.");
 	}});
 };

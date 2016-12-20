@@ -73,7 +73,12 @@
 	}
     JSPHelper.log.info("Exporting #"+docsToExport.size()+" docs");
 	// to do: need a progress bar here
-	archive.export(docsToExport, false /* public mode */, folder, "default");
+	try {
+		archive.export(docsToExport, false /* public mode */, folder, "default");
+	} catch (Exception e) {
+		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
+		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");
+	}
 %>
 <!-- Archive exported to <%=""%> -->
 	ePADD archive exported to: <%=Util.escapeHTML(folder) %>

@@ -150,20 +150,19 @@ for (FileItem item : items)
 }
 session.removeAttribute("statusProvider");
        %>
-       <html lang="en">
-       <head>
+<html lang="en">
+    <head>
+       <title>Upload Images</title>
        <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-       <script src="js/jquery.js"></script>
+        <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+        <jsp:include page="css/css.jsp"/>
 
-       <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+       <script src="js/jquery.js"></script>
        <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-       <jsp:include page="css/css.jsp"/>
-       <title>Upload Images</title>
-       <script src="js/epadd.js" type="text/javascript"></script>
-       <script src="js/filepicker.js" type="text/javascript"></script>
-       </head>
-       <body>
+        <script src="js/epadd.js" type="text/javascript"></script>
+    </head>
+   <body>
        <jsp:include page="header.jspf"/>
        <script>epadd.nav_mark_active('Collections');</script>
         <div style="margin-left:170px">
@@ -181,5 +180,5 @@ session.removeAttribute("statusProvider");
 
        <jsp:include page="footer.jsp"/>
 
-       </body>
-       </html>
+   </body>
+</html>
