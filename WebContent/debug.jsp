@@ -13,13 +13,13 @@
 	
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	
-	<script src="js/jquery.js" type="text/javascript"></script> 
-	<script src="js/jquery/jquery.tools.min.js" type="text/javascript"></script>
-
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
 	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/jquery.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.tools.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+
 	<script src="js/muse.js" type="text/javascript"></script>
 	<script src="js/epadd.js"></script>
 </head>
@@ -29,7 +29,7 @@
 
 <div id="main" style="margin:1% 5%">
 <br/>
-We are sorry you encountered a problem with ePADD. Please save this page and send it <%=edu.stanford.muse.Config.admin %> to help us fix the problem.<br/>
+If you have encountered a problem, please save this page and send it <%=edu.stanford.muse.Config.admin %> to help us fix the problem.<br/>
 
 <hr style="color:rgba(0,0,0,0.2)"/>
 <b>ePADD version <%=edu.stanford.epadd.Version.version%></b>
@@ -44,24 +44,24 @@ Built on Muse version <%=Version.version %> <%=Version.buildInfo%></b>
 
 	<p>
 
-    <b>Browser</b><p/>
+    <b>Browser</b><br/>
     <%= request.getHeader("User-agent")%>
-	<p>
-    <b>Memory status</b><p/>
+
+	<br/><br/>
+
+    <b>Memory status</b><br/>
     <%=Util.getMemoryStats()%><br/>
 
-	<br/>
+	<br/><br/>
 
-    <b>System properties</b><p/>
+	<b>System properties</b><br/>
 
 	<%
-		java.util.Hashtable properties = System.getProperties();
-		for (Object obj: properties.entrySet())
+		java.util.Properties properties = System.getProperties();
+		for (String key: properties.stringPropertyNames())
 		{
-			java.util.Map.Entry entry = (java.util.Map.Entry) obj;
-			String key = (String) entry.getKey();
-			Object val = (Object) entry.getValue();
-			out.println("<b>" + key + "</b>: " + val + "<br>");
+			String val = properties.getProperty(key);
+			out.println("<b>" + Util.escapeHTML (key) + "</b>: " + Util.escapeHTML (val) + "<br>");
 		}
 	%>
 	<br/>

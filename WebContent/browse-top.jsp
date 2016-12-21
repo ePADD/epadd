@@ -92,8 +92,8 @@
 			<a href="finetypes.jsp?type=0">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/person.svg"/>
-			<p class="cta-text-1">Persons<%=pC%></p>
-			<p class="cta-text-2">Persons<%=pC%></p>
+			<p class="cta-text-1">Person entities<%=pC%></p>
+			<p class="cta-text-2">Person entities<%=pC%></p>
 			</a>
 	</div>
 
@@ -105,23 +105,22 @@
 		<a href="finetypes.jsp?type=11">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
-			<p class="cta-text-1">Organizations<%=oC%></p>
-			<p class="cta-text-2">Organizations<%=oC%></p>
+			<p class="cta-text-1">Other entities<%=oC%></p>
+			<p class="cta-text-2">Other entities<%=oC%></p>
 		</a>
 	</div>
 
 	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<br/>
-	<% } %>
-
-	<div class="cta-box text-center margin30">
-		<a href="finetypes.jsp?type=3">
-			<i class="icon-browsetoparrow"></i>
-			<img src="images/location.svg"/>
-			<p class="cta-text-1">Locations<%=lC%></p>
-			<p class="cta-text-2">Locations<%=lC%></p>
-		</a>
-	</div>	
+        <div class="cta-box text-center margin30">
+            <a href="finetypes.jsp?type=3">
+                <i class="icon-browsetoparrow"></i>
+                <img src="images/location.svg"/>
+                <p class="cta-text-1">Folder view<%=lC%></p>
+                <p class="cta-text-2">Folder view<%=lC%></p>
+            </a>
+        </div>
+    <% } %>
 
 	<% if (ModeConfig.isDiscoveryMode()) { %>
 		<br/>
@@ -135,26 +134,16 @@
 				</a>
 		</div>
 
-		<div class="cta-box text-center margin30">
-				<a href="attachments?type=doc">
-					<i class="icon-browsetoparrow"></i>
-					<img src="images/doc-attachment.svg"/>
-					<p class="cta-text-1">Document attachments (<span id="nDocAttachments"><%=nDocAttachments%></span>)</p>
-					<p class="cta-text-2">Document attachments (<%=nDocAttachments%>)</p>
-				</a>		
-		</div>
 
-		<br/>
-
-		<div class="cta-box text-center margin30">
-				<a href="attachments?type=nondoc">
-					<i class="icon-browsetoparrow"></i>
-				<!--	<i class="fa fa-paperclip" style="font-size:30px"></i> -->
-					<img src="images/other-attachment.svg"/>
-					<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments - nDocAttachments)%></span>)</p>
-					<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments - nDocAttachments)%>)</p>
-				</a>
-		</div>
+	<div class="cta-box text-center margin30">
+		<a href="image-attachments">
+			<i class="icon-browsetoparrow"></i>
+			<img src="images/other-attachment.svg"/>
+			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
+			<p class="cta-text-2">Other attachments (<%=nImageAttachments%>)</p>
+		</a>
+	</div>
+	<br/>
 
 		<div class="cta-box text-center margin30">
 			<a href="lexicon">
@@ -175,6 +164,16 @@
 				</a>
 			</div>
 		<% } %>
+
+		<div class="cta-box text-center margin30">
+			<a href="settings">
+				<i class="icon-browsetoparrow"></i>
+				<img src="images/sensitive-message.svg"/>
+				<p class="cta-text-1">Settings</p>
+				<p class="cta-text-2">Settings</p>
+			</a>
+		</div>
+
 	<% } %>
 
 </div> <!--  allCards -->

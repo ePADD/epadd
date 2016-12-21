@@ -25,7 +25,14 @@ epadd.log = function(mesg, log_on_server)
 
 };
 
-epadd.alert = function(s) { $('#alert-modal .modal-body').html(s); $('#alert-modal').modal(); }
+// s is the message, f is the function to be called when the modal is dismissed
+epadd.alert = function(s, f) {
+	$('#alert-modal .modal-body').html(s);
+	if (f) {
+		$('#alert-modal').on('hidden.bs.modal', f);
+	}
+	$('#alert-modal').modal();
+}
 
 epadd.pluralize = function(count, description)
 {
@@ -367,7 +374,7 @@ epadd.unloadArchive = function() {
 			type: 'POST',
 			url: "ajax/kill-session.jsp",
 			dataType: "json",
-			success: function(data) { epadd.alert('Archive unloaded successfully!'); window.location.reload();},
+			success: function(data) { epadd.alert('Archive unloaded successfully!', function() { window.location.reload(); });},
 			error: function(jq, textStatus, errorThrown) { var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
 	});
 };
@@ -384,7 +391,7 @@ epadd.deleteArchive = function(e) {
 		type: 'POST',
 		url: "ajax/delete-archive.jsp",
 		dataType: "json",
-		success: function(data) { $spinner.removeClass('fa-spin'); epadd.alert('Archive deleted successfully!'); window.location.reload();},
+		success: function(data) { $spinner.removeClass('fa-spin'); epadd.alert('Archive deleted successfully!', function() { window.location.reload(); });},
 		error: function(jq, textStatus, errorThrown) { $spinner.removeClass('fa-spin'); var message = ("Error deleting archive, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace()); epadd.log (message); epadd.alert(message); }
 	});
 };

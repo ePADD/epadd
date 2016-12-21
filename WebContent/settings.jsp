@@ -22,6 +22,8 @@
 </head>
 <body style="color:gray;">
 <jsp:include page="header.jspf"/>
+<jsp:include page="alert.jspf"/>
+
 <p>
 <script>
 	epadd.select_link('#nav1', 'Settings');
@@ -32,43 +34,10 @@
 <p>
 
 <% if (!ModeConfig.isDiscoveryMode()) { %>
-	Click <a href="debug">here</a> to view the ePADD log which can be used for reporting a problem. <br>
 <% } %>
 	
-<% if (!ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode()) { %>
-	<div style="font-size:small;margin-top:15px;text-transform:uppercase; ">
-	<br/>
 
 
-		<div class="row">
-			<div class="form-group col-sm-3">
-				<label for="mode-select">ePADD Module</label>
-				<select id="mode-select" name="attachmentFilesize" class="form-control selectpicker">
-					<option value="" selected disabled>Choose Module</option>
-					<option value="appraisal" <%=ModeConfig.isAppraisalMode() ? "selected" : ""%> >APPRAISAL</option>
-					<option value="processing" <%=ModeConfig.isProcessingMode() ? "selected" : ""%> >PROCESSING</option>
-					<option value="discovery" <%=ModeConfig.isDiscoveryMode() ? "selected" : ""%> >DISCOVERY</option>
-					<option value="delivery" <%=ModeConfig.isDeliveryMode() ? "selected" : ""%> >DELIVERY</option>
-				</select>
-			</div>
-		</div>
-<% } %>
-
-<script>
-	// we assume jq is always loaded onto any page that includes this header
-	$('#mode-select').change(function() {
-		var val = $('#mode-select').val();
-		epadd.log ('changing mode to ' + val);
-		$.ajax({
-			url:'ajax/changeMode.jsp',
-			type: 'POST',
-			data: {mode:val},
-			dataType: 'json',
-			success: function() { if (val == 'appraisal') { window.location="./browse-top"; } else { window.location = './collections';}},
-			error: function() { epadd.alert('Unable to change mode, sorry!'); }
-		});
-	});
-</script>
 
 	<br/>
 	<%
@@ -78,39 +47,64 @@
 		<div id="advanced_options">
 
 		<% if (!ModeConfig.isDiscoveryMode()) { %>
-			<p><button class="btn-default" id='reset-reviewed' style='cursor:pointer'><i class="fa fa-eye"></i> Reset reviewed status</button>
-		<% } %>
+            <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+			    <p><button onclick="window.location='set-images';" class="btn-default" style='cursor:pointer' ><i class="fa fa-picture-o"></i> Set Images</button>
+            <% } %>
 
-		<p><button class="btn-default" id="unload-archive"><i class="fa fa-eject"></i> Unload Archive</button>
+			<p><button onclick="window.location='bulk-flags?allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set default actions</button>
+
+			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+				<p><button onclick="window.location.href='ner'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
+                <p><button onclick="window.location='report';" class="btn-default"  style='cursor:pointer'><i class="fa fa-flag"></i> Data quality report</button>
+				<%
+				/*
+						int size = archive.getAllDocs().size();
+						if (size > 0) {
+							org.apache.lucene.document.Document doc = archive.getLuceneDoc(archive.getAllDocs().get(0).id);
+							if (doc == null || doc.get(edu.stanford.muse.ner.NER.NAMES) == null)
+								out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
+						} else
+							out.println ("There are no messages in this archive.<br/>");
+							*/
+
+				//		out.println("Recompute numbers that are displayed on the landing page by clicking <a id='recompute' style='cursor:pointer'>here</a> <img id='recompute-stat' src='images/spinner.gif' style='display:none'/>");
+				} %>
+
+    <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
+
+<!--                <p><button onclick="window.location='debug';" class="btn-default"  style='cursor:pointer'><i class="fa fa-flag"></i> Debug Log</button> -->
+                <p><button class="btn-default" id="unload-archive"><i class="fa fa-eject"></i> Unload Archive</button>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-					<p><button id="delete-archive" class="btn-default"><span class="spinner"><i class="fa fa-trash"></i></span> Delete Archive</button>
-					<p><button class="btn-default" onclick="window.location='export-mbox'"><i class="fa fa-save"></i> Export archive to mbox</button>
+						<p><button id="delete-archive" class="btn-default"><span class="spinner"><i class="fa fa-trash"></i></span> Delete Archive</button>
+						<!-- <p><button class="btn-default" onclick="window.location='export-mbox'"><i class="fa fa-save"></i> Export archive to mbox</button> -->
 				<%	} %>
 
-				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-					<p><button onclick="window.location.href='ner'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
-					<%
-					int size = archive.getAllDocs().size();
-					if (size > 0) {
-						org.apache.lucene.document.Document doc = archive.getLuceneDoc(archive.getAllDocs().get(0).id);
-						if (doc.get(edu.stanford.muse.ner.NER.NAMES) == null)
-							out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
-					} else
-						out.println ("There are no messages in this archive.<br/>");
+<!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
 
-		//		out.println("Recompute numbers that are displayed on the landing page by clicking <a id='recompute' style='cursor:pointer'>here</a> <img id='recompute-stat' src='images/spinner.gif' style='display:none'/>");
-				} %>
-				<% if (!ModeConfig.isDiscoveryMode()) { %>
-					<p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button>
-				<% } %>
-                <% if ( ModeConfig.isAppraisalMode()||ModeConfig.isProcessingMode()) {%>
-                    <!-- Add a relevant icon -->
-                    <p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-flags?allDocs=1'">Set bulk flags</button>
-                <% } %>
-			<%--<p><button class="btn btn-default" id="featuresIndex" style='cursor:pointer'><i class="fa fa-refresh"></i> Build cache for internal authority assignment</button>--%>
-		</div>
+                <% if (!ModeConfig.isDeliveryMode()) { %>
+                <div style="font-size:small;margin-top:15px;text-transform:uppercase; ">
+                    <br/>
+                    <div class="row">
+                        <div class="form-group col-sm-3">
+                            <span class="badge" style="background-color:rgb(191,19,19)">Advanced</span><br/>
+                            <label for="mode-select">Select ePADD Module</label><br>
+
+                            <select id="mode-select" name="attachmentFilesize" class="form-control selectpicker">
+                                <option value="" selected disabled>Choose Module</option>
+                                <option value="appraisal" <%=ModeConfig.isAppraisalMode() ? "selected" : ""%> >APPRAISAL</option>
+                                <option value="processing" <%=ModeConfig.isProcessingMode() ? "selected" : ""%> >PROCESSING</option>
+                                <option value="discovery" <%=ModeConfig.isDiscoveryMode() ? "selected" : ""%> >DISCOVERY</option>
+                                <option value="delivery" <%=ModeConfig.isDeliveryMode() ? "selected" : ""%> >DELIVERY</option>
+                            </select>
+                        </div>
+                    </div>
+                    <% } %>
+
+            </div>
 	<% } /* archive != null */ %>
+
+        <% } %>
 
 	<script>
 		$("#recompute").click(function(e){
@@ -139,26 +133,23 @@
 			$("#recompute-stat").css('display','block');
 		});
 
-		$("#reset-reviewed").click(function(e){
-			var $spinner = $('.fa', $(e.target));
-			$spinner.addClass('fa-spin');
-			$.ajax({
-				url: 'ajax/applyFlags.jsp?allDocs=1&setReviewed=0',
-				success: function(){$spinner.removeClass('fa-spin');},
-				error: function(){$spinner.removeClass('fa-spin');epadd.alert('Unable to reset reviewed flag, sorry!');}
-			});
-			$("#recompute-stat").css('display','block');
-		});
-
 		$("#unload-archive").click(epadd.unloadArchive);
 		$("#delete-archive").click(epadd.deleteArchive);
-	</script>
-	<!--
-	<h2>Experimental features </h2>
-	<p>
-	<button class="btn-default" onclick="window.location='finetypes.jsp';">Infer fine grained types</button>
-	-->
-<p>
+
+        // we assume jq is always loaded onto any page that includes this header
+        $('#mode-select').change(function() {
+            var val = $('#mode-select').val();
+            epadd.log ('changing mode to ' + val);
+            $.ajax({
+                url:'ajax/changeMode.jsp',
+                type: 'POST',
+                data: {mode:val},
+                dataType: 'json',
+                success: function() { if (val == 'appraisal') { window.location="./browse-top"; } else { window.location = './collections';}},
+                error: function() { epadd.alert('Unable to change mode, sorry!'); }
+            });
+        });
+    </script>
 
 </div>
 </body>

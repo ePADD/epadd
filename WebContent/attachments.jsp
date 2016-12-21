@@ -84,6 +84,7 @@
             List<Blob> a = doc.attachments;
             if (a != null) {
                 for (Blob b : a) {
+					/*
                     if (selectDocType) {
                         if (Util.is_doc_filename(b.filename)) {
                             allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
@@ -95,11 +96,15 @@
                             allBlobsSet.add(b);
                         }
                     }
+                    */
+					allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
+					allBlobsSet.add(b);
                 }
             }
         }
 
-        writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment") + " (" + allBlobsSet.size() + " unique)");
+//        writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment") + " (" + allBlobsSet.size() + " unique)");
+		writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Non-image attachment") + " (" + allBlobsSet.size() + " unique)");
 
 		if (allAttachments.size() > 0) { %>
 			<br/>
