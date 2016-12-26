@@ -197,7 +197,6 @@ if (archive != null) {
 
 
 
-	<div style="display:none" class="muse-overlay"></div>
 
 	<div style="text-align:center;margin-top:20px">
 		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false">Continue <i class="icon-arrowbutton"></i> </button>

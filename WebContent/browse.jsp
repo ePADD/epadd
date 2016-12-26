@@ -113,9 +113,13 @@
     String bestName = archive.addressBook.getBestNameForSelf();
     // archive is null if we haven't been able to read an existing dataset
 
+    /*
     Pair<Collection<Document>, Collection<Blob>> search_result = (request.getParameter("adv-search") == null) ?
             JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false) :
             Searcher.searchDocs(archive, request, false);
+    */
+
+    Pair<Collection<Document>, Collection<Blob>> search_result = Searcher.searchDocs(archive, request, false);
 
     Collection<Document> docs = search_result.first;
 

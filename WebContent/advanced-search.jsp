@@ -4,11 +4,43 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <title>Advanced Search</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	<!--scripts-->
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- main.css from Lollypop has reset some of the btn-cta styles, which we didn't want ! :-( -->
+    <style>
+        .btn-cta {
+            color: #fff;
+            background-color: #0075bb;
+            text-shadow: none;
+            border-radius: 3px;
+            -moz-transition: 0.3s ease;
+            transition: 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.15);
+            height: 47px;
+            padding-top: 10px;
+            /*	width:120px; */
+        }
+        .btn-cta i{ opacity:0.5  }
+        .btn-cta:hover, .btn-cta:focus {
+            background-color: #0075bb;
+            color: #fff;
+            box-shadow:0px 0px 0px rgba(0,0,0,0.15);
+
+            -moz-transition:0.3s ease;
+            transition:0.3s ease;
+        }
+        .btn-cta:hover i{ opacity:1;}
+    </style>
+    <!--scripts-->
 	<script  src="js/jquery-1.12.1.min.js"></script>
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
@@ -17,16 +49,9 @@
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 	<script src="js/selectpicker.js"></script>
-
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-
-	<jsp:include page="css/css.jsp"/>
-
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-		<title>Advanced Search</title>
-		<meta name="description" content="">
-	<link rel="stylesheet" href="css/main.css">
+
 </head>
 <body>
 	<jsp:include page="header.jspf"/>
@@ -34,8 +59,8 @@
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
-		<form id="adv-search-form" action="browse" method="get">
-		<input type="hidden" name="adv-search"/>
+		<form id="adv-search-form" action="browse" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="adv-search" value="1"/>
 		<!--container-->
 		<div class="container">
 			<!--row-->
@@ -182,7 +207,7 @@
 						<!--/message-->
 
 					</div>
-
+                    <br/>
 					<div class="row">
 						<div class="form-group col-sm-12">
 							<label for="entity">Entity</label>
@@ -230,6 +255,13 @@
 					</div>
 
 					<br/>
+
+                    <div class="row">
+                        <div class="form-group col-sm-12">
+                            <label for="emailAddressList">Upload email addresses</label>
+                            <input id="emailAddressList" type="file" name="emailAddressList" type="text" class="form-control">
+                        </div>
+                    </div>
 
 					<div class="row">
 						<!--mailing list-->
@@ -596,16 +628,12 @@
 
 				<!--Search and clear form buttons-->
 				<div class="search-clear-btns">
-					<!--search btn-->
-					<button id="search-button" ype="submit" class="search-btn">
-						<h5>Search</h5>
-						<img src="images/search-icon.png" allt="search-icon">
-					</button>
 
+                    <button class="btn btn-cta" type="submit" id="search-button">Search <i class="icon-arrowbutton"></i> </button>
 					<!--clear btn-->
-					<button id="clear-form" class="clear-btn">
+					<button style="margin-left:20px" id="clear-form" class="clear-btn">
 						<img src="images/Clear Form.png" alt="clear-icon">
-						<h5>Clear Form</h5>
+						Clear Form
 					</button>
 				</div>
 				<!--/Search and clear form buttons-->
