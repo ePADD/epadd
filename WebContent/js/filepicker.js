@@ -10,17 +10,31 @@ $.fn.scrollView = function () {
     });
 };
 
+
 // $basediv is the top_level div that has the following:
 // a div.browseFolder where the jquery filetree is displayed
 // a single input.dir in which the path of the selected folder is stored
-// a button to which browse actions will be assigned.
+// a button.browse-button to which browse actions will be assigned.
+// optionally a button.go-button to which the class "faded" will be added/removed based on non-empty/empty value of the dir
 function FilePicker($basediv) {
+	var $go_button;
+
+	function update_go_button_status(val) {
+		console.log ('val change: ' + val);
+		if (val && val.length > 0) {
+			$go_button.removeClass('faded');
+		} else {
+			$go_button.addClass('faded');
+		}
+
+	}
 
 	var $browsebutton = $('button.browse-button', $basediv); // there should be only one button under the basediv...
 	var $confirm_button = $('button.confirm-button'); // there should be only one button under the basediv...
 	var $cancel_button = $('button.cancel-button'); // there should be only one button under the basediv...
 
 	var $target_dir = $('input.dir', $basediv); // this is the actual text field that holds the dir
+	$go_button = $('.go-button', $basediv);
 
 	var that = this;
 	var current_path;
@@ -39,6 +53,7 @@ function FilePicker($basediv) {
 		},
 		update_current_path: function() {
 			$target_dir.val (current_path);
+			update_go_button_status (current_path);
 
 			// repaint the path components on screen
 			$('.path-components').html(''); // clear the existing path components
@@ -59,7 +74,7 @@ function FilePicker($basediv) {
 				$('.path-components').append (html);
 			}
 			// set up so as to refresh the whole filetree if one of the path components is clicked
-			$('.path-component').click (function(e) { var new_path = $(e.target).attr('data-path'); epadd.log ("new path"); this.browse_root(new_path);}.bind(this));
+			$('.path-component').click (function(e) { var new_path = $(e.target).attr('data-path'); this.browse_root(new_path);}.bind(this));
 		},
 		open: function () {
 			$('#filepicker-modal').modal();
@@ -82,6 +97,7 @@ function FilePicker($basediv) {
 			var that = this; // needed because this in event handler below does not refer to this
 			var $browse_folder = $('.browseFolder'); // this is the file selection div
 			$browse_folder.fileTree({ folderEvent: 'dblclick', multiFolder: true, root: root, script:'jqueryFileTree/connectors/jqueryFileTree.jsp' },
+
 			function(file, file_not_dir) {
 				current_path = file;
 				that.update_current_path();
@@ -100,10 +116,19 @@ function FilePicker($basediv) {
 			return false;
 		}
 	};
-	
+
+
 	$browsebutton.click(o.click_handler.bind(o));
 	$cancel_button.click(o.cancel.bind(o));
 	$confirm_button.click(o.close.bind(o)); // simply close, the input field has already been updated
+
+	if ($go_button.length > 0) {
+		// if go button present, add class faded iff the value in $target_dir is empty
+		$target_dir.on("change paste keyup", function () {
+			var val = $(this).val();
+			update_go_button_status(val);
+		});
+	}
 
 	return o;
 }

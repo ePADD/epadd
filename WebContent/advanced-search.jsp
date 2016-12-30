@@ -256,12 +256,14 @@
 
 					<br/>
 
+                    <!--
                     <div class="row">
                         <div class="form-group col-sm-12">
                             <label for="emailAddressList">Upload email addresses</label>
                             <input id="emailAddressList" type="file" name="emailAddressList" type="text" class="form-control">
                         </div>
                     </div>
+                    -->
 
 					<div class="row">
 						<!--mailing list-->

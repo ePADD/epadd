@@ -50,6 +50,7 @@
         String rootDir = JSPHelper.getRootDir(request);
         new File(rootDir).mkdirs();
         String userKey = JSPHelper.getUserKey(session);
+
         String name = request.getParameter("name");
         if (Util.nullOrEmpty(name))
             name = String.format("%08x", EmailUtils.rng.nextInt());

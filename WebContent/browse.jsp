@@ -115,7 +115,7 @@
 
     /*
     Pair<Collection<Document>, Collection<Blob>> search_result = (request.getParameter("adv-search") == null) ?
-            JSPHelper.selectDocsWithHighlightAttachments(request, session, false /* onlyFilteredDocs */, false) :
+            JSPHelper.selectDocsWithHighlightAttachments(request, session, false, false) :
             Searcher.searchDocs(archive, request, false);
     */
 
