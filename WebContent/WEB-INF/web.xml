@@ -370,10 +370,9 @@
 		<url-pattern>/export-review</url-pattern>
 	</servlet-mapping>
 
-
 	<servlet>
 		<servlet-name>export-authorities</servlet-name>
-		<jsp-file>/exportAuthorityRecords.jsp</jsp-file>
+		<jsp-file>/export-authorities.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>export-authorities</servlet-name>

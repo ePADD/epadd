@@ -117,31 +117,6 @@
 			return false; /* to suppress other button actions */
 	 };
 
-      //assign authoriities page may contain lot of data that is loaded over time, it is not a good idea to redirect the page and lose all the data
-      //hence, we create a new window and set the data
-      var export_authorities = function(e){
-          window.location.href = "export-authorities.jsp";
-//		 $.ajax({type: 'POST',
-//				dataType: 'json',
-//				url: 'ajax/export-authorities.jsp',
-//				data: { exportType : "csv" },
-//				cache: false,
-//				success: function (response, textStatus) {
-//					epadd.log(response);
-//					var newWindow = window.open();
-//					newWindow.document.write(response);
-//					$('.fa-spinner').hide();
-//				},
-//				error: function(data) {
-//					epadd.log(data);
-//					var newWindow = window.open();
-//					alert(data.responseText);
-//					//alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to the ePADD development team.");
-//					$('img[src="images/spinner.gif').hide(); // hide the spinner otherwise it continues on the page even after this crash
-//					$('.fa-spinner').hide();
-//				}});
-	 };
-
       //@arg randId - a randum id that identifies an element in the row
       sort = function(randId) {
           rowNo = $("#"+randId).closest("tr").index();
@@ -369,9 +344,8 @@
 	<br/>
 	<br/>
 	
-	<div>
+	<div style="width:100%;text-align:center">
 		<button class='btn btn-cta' id="save_button">Save <i class="icon-arrowbutton"></i></button>
-		<button class='btn btn-cta' id="export_button" style='float:right'>Export <i class="icon-arrowbutton"></i></button>
 	</div>
 	
 	<div id="stats"></div>

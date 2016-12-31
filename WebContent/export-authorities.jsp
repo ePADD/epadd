@@ -64,13 +64,15 @@
     try {
 		String csv = archive.getAuthoritiesAsCSV();
         pw.println(csv);
+        pw.close();
 	} catch(Exception e){
+        Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
 		e.printStackTrace();
-		pw.println(e.getMessage());
+		out.println(e.getMessage());
+        return;
     }
 %>
 
-%>
 <script>$('#spinner-div').hide();</script>
 <p>
 		<p>

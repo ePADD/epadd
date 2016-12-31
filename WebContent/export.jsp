@@ -40,7 +40,7 @@
 
         .mini-box .review-messages  {  display: none; margin-top: 10px;}
 
-        .mini-box-icon { display: inline-block; width: 35px; vertical-align:top; font-size: 175%;}
+        .mini-box-icon { color: #f2c22f; display: inline-block; width: 35px; vertical-align:top; font-size: 175%;}
         .mini-box-description .number { font-size: 22px; margin-bottom:5px; }
         .mini-box-description { font-size: 14px;  display: inline-block; width: 100px; vertical-align:top; }
 
@@ -87,6 +87,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 %>
     Error: Export is only available in processing or appraisal modes!
 <%
+    return;
 }
 
     int messagesToExport = 0, annotatedMessages = 0, restrictedMessages = 0, messagesNotToExport = 0;
@@ -179,16 +180,30 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 </div>
             </div>
 
-            <div class="one-line" id="export-mbox">
-                <div class="form-group col-sm-8" >
-                    <label for="export-mbox-file">Export to mbox</label>
-                    <input id="export-mbox-file" class="dir form-control" type="text" name="name" value=""/>
+            <% if (ModeConfig.isProcessingMode()) { %>
+                <div class="one-line" id="export-mbox">
+                    <div class="form-group col-sm-8" >
+                        <label for="export-mbox-file">Export to mbox</label>
+                        <input id="export-mbox-file" class="dir form-control" type="text" name="name" value=""/>
+                    </div>
+                    <div class="form-group col-sm-4 picker-buttons">
+                        <button id="export-mbox-browse" class="btn-default browse-button">Browse</button>
+                        <button id="export-mbox-do" style="margin-left: 10px;" class="go-button faded btn-default">Export</button>
+                    </div>
                 </div>
-                <div class="form-group col-sm-4 picker-buttons">
-                    <button id="export-mbox-browse" class="btn-default browse-button">Browse</button>
-                    <button id="export-mbox-do" style="margin-left: 10px;" class="go-button faded btn-default">Export</button>
-                </div>
-            </div>
+
+                <script>
+                $('#export-mbox .go-button').click (function(e) {
+                    var $button = $(e.target);
+                    if ($button.hasClass('faded'))
+                        return false; // do nothing;
+                    var baseUrl = 'export-mbox';
+                    var dir = $('.dir', $('#export-mbox')).val();
+                    if (dir && dir.length > 0)
+                        window.location = baseUrl + '?dir=' + dir;
+                });
+                </script>
+            <% } %>
 
 		</div>
 	</section>
@@ -296,15 +311,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 window.location = baseUrl + '?dir=' + dir;
         });
 
-        $('#export-mbox .go-button').click (function(e) {
-            var $button = $(e.target);
-            if ($button.hasClass('faded'))
-                return false; // do nothing;
-            var baseUrl = 'export-mbox';
-            var dir = $('.dir', $('#export-mbox')).val();
-            if (dir && dir.length > 0)
-                window.location = baseUrl + '?dir=' + dir;
-        });
+
 
         var autocomplete_params = {
             serviceUrl: 'ajax/attachmentAutoComplete.jsp?extensions=1',
