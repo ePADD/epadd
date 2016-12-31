@@ -20,7 +20,6 @@ function FilePicker($basediv) {
 	var $go_button;
 
 	function update_go_button_status(val) {
-		console.log ('val change: ' + val);
 		if (val && val.length > 0) {
 			$go_button.removeClass('faded');
 		} else {
@@ -123,6 +122,9 @@ function FilePicker($basediv) {
 	$confirm_button.click(o.close.bind(o)); // simply close, the input field has already been updated
 
 	if ($go_button.length > 0) {
+		var val = $target_dir.val();
+		update_go_button_status(val); // update once at the very beginning too. otherwise, the browser auto-fills in the dir field, but the go-button remains faded
+
 		// if go button present, add class faded iff the value in $target_dir is empty
 		$target_dir.on("change paste keyup", function () {
 			var val = $(this).val();

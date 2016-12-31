@@ -35,7 +35,7 @@ button .bs-caret,
 }
 
 .btn.dropdown-toggle.btn-default{
-    background: #fff url("images/angle-up.png") no-repeat;
+    background: #fff url("../images/angle-up.png") no-repeat;
     background-position: top 12px right 15px;
     background-size: 12px 8px;
     color:#999999;

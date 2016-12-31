@@ -120,10 +120,10 @@
       //assign authoriities page may contain lot of data that is loaded over time, it is not a good idea to redirect the page and lose all the data
       //hence, we create a new window and set the data
       var export_authorities = function(e){
-          window.location.href = "exportAuthorityRecords.jsp?exportType=csv";
+          window.location.href = "export-authorities.jsp";
 //		 $.ajax({type: 'POST',
 //				dataType: 'json',
-//				url: 'ajax/exportAuthorityRecords.jsp',
+//				url: 'ajax/export-authorities.jsp',
 //				data: { exportType : "csv" },
 //				cache: false,
 //				success: function (response, textStatus) {

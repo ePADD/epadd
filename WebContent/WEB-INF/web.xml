@@ -370,6 +370,16 @@
 		<url-pattern>/export-review</url-pattern>
 	</servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>export-authorities</servlet-name>
+		<jsp-file>/exportAuthorityRecords.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-authorities</servlet-name>
+		<url-pattern>/export-authorities</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>export-complete</servlet-name>
 		<jsp-file>/export-complete.jsp</jsp-file>

@@ -85,8 +85,6 @@ writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + des
 	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 	<br/><% out.flush(); %>
 
-
-
 	<table id="messages" style="display:none">
 	<thead><tr><th>Subject</th><th>Date</th><th>Annotation</th></tr></thead>
 	<tbody>
