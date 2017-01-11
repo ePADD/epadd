@@ -250,6 +250,22 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 </div>
             </div>
 
+            <script>
+                $('#export-attach .go-button').click (function(e) {
+                    var $button = $(e.target);
+                    if ($button.hasClass('faded'))
+                        return false; // do nothing;
+
+                    var ext = $('#attachmentExtension').val();
+                    var type = $('#attachmentType').val();
+
+                    var baseUrl = 'export-attachments';
+                    var dir = $('.dir', $('#export-attach')).val();
+                    if (dir && dir.length > 0)
+                        window.location = baseUrl + '?dir=' + dir + '&type=' + type + '&ext=' + ext;
+                });
+            </script>
+
             <br/>
         </div>
     </section>

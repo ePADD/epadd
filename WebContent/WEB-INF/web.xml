@@ -325,15 +325,6 @@
 		<url-pattern>/status</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>export-processing</servlet-name>
-		<jsp-file>/export-processing.jsp</jsp-file>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>export-processing</servlet-name>
-		<url-pattern>/export-processing</url-pattern>
-	</servlet-mapping>
-
     <servlet>
         <servlet-name>export-mbox</servlet-name>
         <jsp-file>/export-mbox.jsp</jsp-file>
@@ -344,12 +335,12 @@
     </servlet-mapping>
 
 	<servlet>
-		<servlet-name>export-review-processing</servlet-name>
-		<jsp-file>/export-review-processing.jsp</jsp-file>
+		<servlet-name>export-attachments</servlet-name>
+		<jsp-file>/export-attachments.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>export-review-processing</servlet-name>
-		<url-pattern>/export-review-processing</url-pattern>
+		<servlet-name>export-attachments</servlet-name>
+		<url-pattern>/export-attachments</url-pattern>
 	</servlet-mapping>
 
  	<servlet>
