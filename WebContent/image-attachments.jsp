@@ -26,6 +26,7 @@
 
     <script src="js/jquery.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/modernizr.min.js"></script>
     <script src="js/selectpicker.js"></script>
 	<script src="js/epadd.js"></script>
 	<script type="text/javascript" src="js/muse.js"></script>
@@ -50,7 +51,10 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    Set<Blob> allAttachments = Searcher.selectBlobs (archive, request);
+    List<Pair<Blob, EmailDocument>> allAttachmentsPairsList = Searcher.selectBlobs (archive, request);
+    Set<Blob> allAttachments = new LinkedHashSet<>();
+    for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList)
+        allAttachments.add (p.getFirst());
     int nEntriesForPiclens = 0;
     String piclensRSSFilename = "";
 
@@ -126,6 +130,7 @@
                             <option value="3">20-100KB</option>
                             <option value="4">100KB-2MB</option>
                             <option value="5">&gt; 2MB</option>
+                            <option value="6">Any</option>
                         </select>
                     </div>
                 </div>

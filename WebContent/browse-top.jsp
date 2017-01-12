@@ -136,7 +136,7 @@
 
 
 	<div class="cta-box text-center margin30">
-		<a href="image-attachments">
+		<a href="attachments">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/other-attachment.svg"/>
 			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
