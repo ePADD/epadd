@@ -10,17 +10,22 @@
 	<title>Processing: Assign authorities</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>	
+	<script src="js/jquery.dataTables.min.js"></script>
 
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
+	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
 	<link href="css/suggester.css" rel="stylesheet" />
-	
+
+
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/jquery.mockjax.js" type="text/javascript"></script>
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
 
-	<jsp:include page="css/css.jsp"/>
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
@@ -28,8 +33,7 @@
 	<script src="js/utils.js" type="text/javascript"></script>	
 	<script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
 	<script type="text/javascript" src="js/fancyBox/source/jquery.fancybox.js"></script>
-	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
-	
+
 	<style type="text/css">
       .js #table {display: none;}
       .search {cursor:pointer;}
@@ -223,6 +227,37 @@
 <script>epadd.nav_mark_active('Authorities');</script>
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
+
+<!--sidebar content-->
+<!--
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<nav class="menu1" role="navigation">
+	<h2>Assign authorities</h2>
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<div class="search-tips">
+		<img src="images/pharse.png" alt="">
+		<p>
+			Text from Josh here.
+		</p>
+	</div>
+
+	<div class="search-tips">
+		<img src="images/requered.png" alt="">
+		<p>
+			More text
+		</p>
+	</div>
+
+
+</nav>
+-->
+<!--/sidebar-->
 
 <script>
 	bi=0;

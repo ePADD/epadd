@@ -8,12 +8,16 @@
 	<title>ePADD Settings</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
+	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+
 	<script src="js/jquery.js"></script>
 
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
 
-	<jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>
 	<script src="js/stacktrace.js"></script>
 	<style>
@@ -33,11 +37,37 @@
 	<p>
 <p>
 
-<% if (!ModeConfig.isDiscoveryMode()) { %>
-<% } %>
-	
+	<!--sidebar content-->
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<nav class="menu1" role="navigation">
+	<h2>Settings Tips</h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<!--phrase-->
+	<div class="search-tips">
+		<img src="images/pharse.png" alt="">
+		<p>
+			Text from Josh here.
+		</p>
+	</div>
+
+	<!--requered-->
+	<div class="search-tips">
+		<img src="images/requered.png" alt="">
+		<p>
+			More text
+		</p>
+	</div>
 
 
+</nav>
+<!--/sidebar-->
 
 	<br/>
 	<%

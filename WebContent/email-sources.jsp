@@ -18,11 +18,14 @@
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
 	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
 
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="jqueryFileTree/jqueryFileTree.js"></script>
 	<script src="js/filepicker.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
@@ -30,6 +33,7 @@
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px; vertical-align: top;}
 		.input-field {width:350px;}
 		.input-field-label {font-size: 12px;}
+
 	</style>
 </head>
 <body style="background-color:white;">
@@ -52,6 +56,36 @@ if (archive != null) {
 	writeProfileBlock(out, archive, "", "Import email into this archive");
 }
 %>
+
+<!--sidebar content-->
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<nav class="menu1" role="navigation">
+	<h2>Import Tips</h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<!--phrase-->
+	<div class="search-tips">
+		<img src="images/pharse.png" alt="">
+		<p>
+			Text from Josh here.
+		</p>
+	</div>
+
+	<!--requered-->
+	<div class="search-tips">
+		<img src="images/requered.png" alt="">
+		<p>
+			More text
+		</p>
+	</div>
+</nav>
+<!--/sidebar-->
 
 <p>
 

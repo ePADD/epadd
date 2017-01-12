@@ -8,28 +8,35 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
 <head>
 	<title>Lexicon</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	
+
+	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<jsp:include page="css/css.jsp"/>
+	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-	
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	
-	<jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>
 	
 	<style type="text/css">
      .js #table  {display: none;}
       .search {cursor:pointer;}
     </style>
+
 	<script type="text/javascript" charset="utf-8">
 		// we're using a simple datatables data source here, because this will be a small table
 		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
@@ -58,6 +65,36 @@
 	AddressBook ab = archive.addressBook;
 %>
 <%writeProfileBlock(out, archive, "", "Lexicon Hits");%>
+
+<!--sidebar content-->
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<nav class="menu1" role="navigation">
+	<h2>Lexicon Tips</h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<!--phrase-->
+	<div class="search-tips">
+		<img src="images/pharse.png" alt="">
+		<p>
+			Text from Josh here.
+		</p>
+	</div>
+
+	<!--requered-->
+	<div class="search-tips">
+		<img src="images/requered.png" alt="">
+		<p>
+			More text
+		</p>
+	</div>
+</nav>
+<!--/sidebar-->
 
 <div style="text-align:center">
 	<button class="btn-default" onclick="window.location = 'graph?view=sentiments';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
@@ -89,6 +126,7 @@
 		if (lex == null)
 		{
 			// if not in session either, simply look for default
+			Config.get
 			name = "default";
 			lex = archive.getLexicon(name);
 		}
