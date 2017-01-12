@@ -115,6 +115,7 @@
 		lex = archive.getLexicon(name);
 	else
 	{
+        /*
 		// if no url param, look for lexicon in session
 		lex = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
 		if (lex != null)
@@ -122,12 +123,11 @@
 			name = lex.name;
 			lex = archive.getLexicon(name); // re-read it from the disk. we may have come here just after updating it.
 		}
-
+        */
 		if (lex == null)
 		{
 			// if not in session either, simply look for default
-			Config.get
-			name = "default";
+			name = Config.DEFAULT_LEXICON;
 			lex = archive.getLexicon(name);
 		}
 	}
@@ -135,7 +135,7 @@
 	if (lex == null) {
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(name) + "</div>");
 	} else {
-		session.setAttribute("lexicon", lex);
+//		session.setAttribute("lexicon", lex);
 		Map<String, Integer> map = lex.getLexiconCounts(indexer, true);
 		Collection<String> lexiconNames = archive.getAvailableLexicons();
 		if (ModeConfig.isDeliveryMode()) {

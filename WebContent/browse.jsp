@@ -118,7 +118,6 @@
             JSPHelper.selectDocsWithHighlightAttachments(request, session, false, false) :
             Searcher.searchDocs(archive, request, false);
     */
-
     Pair<Collection<Document>, Collection<Blob>> search_result = Searcher.searchDocs(archive, request, false);
 
     Collection<Document> docs = search_result.first;

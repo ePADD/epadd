@@ -52,8 +52,6 @@
         .go-button, .go-button:hover { background-color: #0075bb; color: #fff; }  /* saumya wants this always filled in, not just on hover */
 
         .btn-default { height: 37px; }
-        .panel { background-color: #f5f5f8;  border: 1px solid #eaeaea;  padding:25px 30px;  border-radius: 4px;  margin-bottom: 25px; } /* taken from search-wraper in adv. search.scss */
-        .panel-heading { font-size: 16px; font-weight: 400; /* weight 400 is equal to open sans regular */ margin-bottom:20px; color: #404040;} /* taken from h4/search-wrapper in adv. search.scss */
          label {  font-size: 14px; padding-bottom: 13px; font-weight: 400; color: #404040; } /* taken from form-group label in adv.search.scss */
         .faded { opacity: 0.5; }
         .one-line::after {  content:"";  display:block;  clear:both; }  /* clearfix needed, to take care of floats: http://stackoverflow.com/questions/211383/what-methods-of-clearfix-can-i-use */
