@@ -1,5 +1,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="java.util.Set" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -59,7 +61,7 @@
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
-		<form id="adv-search-form" action="browse" method="post" enctype="multipart/form-data">
+		<form id="adv-search-form" action="browse" method="post">
 		<input type="hidden" name="adv-search" value="1"/>
 		<!--container-->
 		<div class="container">
@@ -589,7 +591,21 @@
                             </div>
                         </div>
                     <% } %>
-				</div>
+
+					<div class="row">
+						<!--Lexicons-->
+						<div class="form-group col-sm-6">
+							<label for="entityType">Entity type</label>
+							<select id="entityType" name="entityType" class="form-control selectpicker">
+								<option value="" selected disabled>Select</option>
+								<% Set<NEType.Type> entityTypes = archive.getEntityTypes();
+									for (NEType.Type type : entityTypes) { %>
+										<option value="<%=type.getCode()%>"><%=type.getDisplayName()%></option>
+								<% }%>
+							</select>
+						</div>
+
+					</div>
 				<!--/Others-->
 
 

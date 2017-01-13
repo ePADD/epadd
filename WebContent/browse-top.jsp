@@ -102,7 +102,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="finetypes.jsp?type=11">
+		<a href="browse-finetypes">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
 			<p class="cta-text-1">Other entities<%=oC%></p>

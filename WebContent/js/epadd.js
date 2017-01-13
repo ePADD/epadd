@@ -52,9 +52,9 @@ epadd.do_search = function(e) {
 	}
 	// otherwise let term be as is.
 
-	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
+	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on'); // since this function is used from entities page, we don't want to match attachments (?)
+//	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
-
 
 // fixes field names in account divs in prep for collect_input_fields
 // the form field names must be numbered incrementally, e.g. loginName0, password0, mboxDir1, etc.

@@ -36,13 +36,13 @@
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
     for(NEType.Type t: NEType.Type.values())
-        desc.put(t.getCode(), t.toString());
+        desc.put(t.getCode(), t.getDisplayName());
 
     JSONArray resultArray = new JSONArray();
     int count = 0;
     for(Short type: desc.keySet()){
         JSONArray j = new JSONArray();
-        if(NEType.Type.OTHER.getCode() == type || desc.get(type)==null)
+        if(NEType.Type.OTHER.getCode() == type || NEType.Type.PERSON.getCode() == type || desc.get(type)==null)
             continue;
         j.put(0, "<a href='finetypes?type="+type+"' target='_blank'>"+desc.get(type)+"</a>");
         j.put(1, archive.processingMetadata.entityCounts.get(type));

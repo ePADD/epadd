@@ -7,47 +7,45 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.net.URLEncoder" %>
-<%@ page import="java.util.LinkedHashMap" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="java.util.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!--	
-    Browse page for enbtities based on fine types
+<!--
+Browse page for enbtities based on fine types
 -->
-
-<link href="css/epadd.css" rel="stylesheet" type="text/css"/>
-<script src="js/jquery.js"></script>
-<script src="js/muse.js"></script>
-<script src="js/epadd.js"></script>
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
+<html>
 <head>
     <title>Entities</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
-    <script src="js/jquery.js"></script>
-    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-    <script src="js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <!-- Optional theme -->
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <jsp:include page="css/css.jsp"/>
+    <link href="css/epadd.css" rel="stylesheet" type="text/css"/>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/statusUpdate.js"></script>
+    <script src="js/muse.js"></script>
+    <script src="js/epadd.js"></script>
+
     <script src="js/epadd.js"></script>
     <style type="text/css">
         .js #entities {display: none;}
     </style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
+    <%@include file="div_status.jspf"%>
+    <jsp:include page="header.jspf"/>
+    <script>epadd.nav_mark_active('Browse');</script>
 
 <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
         for(NEType.Type t: NEType.Type.values())
-            desc.put(t.getCode(), t.toString());
+            desc.put(t.getCode(), t.getDisplayName());
 
         Short type = Short.parseShort(request.getParameter("type"));
         out.println("<h1>Type: "+desc.get(type)+"</h1>");
@@ -56,10 +54,16 @@
         double theta = 0.001;
         for(Document doc: archive.getAllDocs()){
             Span[] es = archive.getEntitiesInDoc(doc,true);
+            Set<String> seenInThisDoc = new LinkedHashSet<>();
+
             for(Span sp: es) {
                 String e = sp.getText();
                 if(sp.type!=type || sp.typeScore<theta)
                     continue;
+                if (seenInThisDoc.contains (e.toLowerCase().trim()))
+                    continue;
+                seenInThisDoc.add (e.toLowerCase().trim());
+
                 if (!entities.containsKey(e))
                     entities.put(e, new Entity(e, sp.typeScore));
                 else
