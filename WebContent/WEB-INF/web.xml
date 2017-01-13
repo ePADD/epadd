@@ -281,6 +281,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>bulk-upload</servlet-name>
+		<jsp-file>/bulk-upload.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>bulk-upload</servlet-name>
+		<url-pattern>/bulk-upload</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>search-query</servlet-name>
 		<jsp-file>/search-query.jsp</jsp-file>
 	</servlet>

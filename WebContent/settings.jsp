@@ -84,8 +84,9 @@
 			<p><button onclick="window.location='bulk-flags?allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set default actions</button>
 
 			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload'"><i class="fa fa-upload"></i> Set bulk flags</button>
 				<p><button onclick="window.location.href='ner'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
-                <p><button onclick="window.location='report';" class="btn-default"  style='cursor:pointer'><i class="fa fa-flag"></i> Data quality report</button>
+                <p><button onclick="window.location='report';" class="btn-default"><i class="fa fa-flag"></i> Data quality report</button>
 				<%
 				/*
 						int size = archive.getAllDocs().size();

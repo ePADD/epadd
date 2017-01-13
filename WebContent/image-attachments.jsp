@@ -100,7 +100,7 @@
 <br/>
 <br/>
 
-<div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
+<div id="all_fields" style="margin:auto; width:900px; padding: 10px">
 
     <!-- filter form submits back to the same page -->
     <form action="image-attachments" method="get">

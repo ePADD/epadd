@@ -28,40 +28,32 @@
 <head>
     <title>Bulk Redaction</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
-    <script src="js/jquery.js"></script>
-    <link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-    <script src="jqueryFileTree/jqueryFileTree.js"></script>
 
-    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-    <script src="js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+    <jsp:include page="css/css.jsp"/>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <jsp:include page="css/css.jsp"/>
     <script src="js/epadd.js"></script>
-    <script src="js/filepicker.js" type="text/javascript"></script>
+
     <style type="text/css">
         .js #entities {display: none;}
     </style>
 </head>
 <body>
-<%	AddressBook addressBook = archive.addressBook;
-    String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
-%>
     <jsp:include page="header.jspf"/>
 
-<% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");%>
+    <% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");%>
 
-<br/>
-<br/>
-    <script>
-        submit = function(){
-            window.location = "bulk-flags?filePath="+$("#filePath").val();
-        }
-    </script>
+    <br/>
+    <br/>
     <% String filePath = request.getParameter("filePath");
        String allDocsParam = request.getParameter("allDocs");
        boolean allDocs = allDocsParam!=null && allDocsParam.equals("1");
+       String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 
        out.println("<div style='text-align:center'>");
        if(allDocs || (filePath!=null && (new File(filePath).exists()))) {
@@ -120,44 +112,7 @@
 <%
         out.println("</div>");
        }
-       else if(filePath==null || !(new File(filePath)).exists()){%>
-
-            <div id="filepicker" style="width:900px;padding-left:170px">
-
-                <div class="div-input-field">
-                    <div class="input-field-label"><i class="fa fa-folder-o"></i> CSV File</div>
-                    <div class="input-field">
-                        <input name="filePath" id="filePath" class="dir form-control" type="text" name="sourceDir"/> <br/>
-                        <button onclick="return false;" class="btn-default"><i class="fa fa-file"></i>
-                            <span>Browse</span>
-                        </button>
-                    </div>
-                    <br/>
-                    <div class="roots" style="display:none"></div>
-                    <div class="browseFolder"></div>
-                    <br/>
-                </div>
-            </div>
-
-    <%
-
-            java.io.File[] rootFiles = java.io.File.listRoots();
-            List<String> roots = new ArrayList<String>();
-            for (java.io.File f: rootFiles)
-                roots.add(f.toString());
-            String json = new Gson().toJson(roots);
-%>
-
-        <script>
-            var roots = <%=json%>;
-            var fp = new FilePicker($('#filepicker'), roots);
-        </script>
-
-        <div style="text-align:center;position:relative;top:30px">
-            <button onclick="submit()" class="btn btn-cta" id="gobutton">Submit <span class="spinner"><i class="icon-arrowbutton"></i></span> </button>
-        </div>
-    <%}
-    %>
+        %>
 
     <script>
         $('.select_all_button').click(
