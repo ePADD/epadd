@@ -1,26 +1,25 @@
+// Vihari's functions for authorities and expanding partial names
+
 initialiseqtip = function(){
-	$('.qtip')
-		.remove();
+	$('.qtip').remove();
 	//TODO: use a proper selector
     var qtip_params = {
         hide:{delay:'200',fixed:true},
-        style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: 2,color: 'black'}}
+        style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: '4px',color: 'red'}}
     };
 
-    //NOt able to avoid the random id assignment, it is required because the content is appended later through script
+    //Not able to avoid the random id assignment, it is required because the content is appended later through script
     var x = 1;
     //There can be many nested spans, in that case just consider the outer most span element
-	$('div.muse-doc-body .expand')
-        .map(function(){
+	$('div.muse-doc-body .expand').map(function(){
             var docId = $(this).attr("data-docid");
             var name = $(this).attr("data-text");
-            var rid = name.replace(/ /g,"_");//Math.sin(x++).toString().substr(6)
+            var rid = name.replace(/ /g,"_");
             $(this).attr("title","<div class='resolutions' data-id='"+rid+"'><img src='images/spinner.gif' style='height:15px'/><script>expand('"+name+"','"+docId+"','"+rid+"');</script>");
         });
     $('div.muse-doc-body .expand').qtip(qtip_params);
 
-    $('div.muse-doc-header .expand')
-        .map(function(){
+    $('div.muse-doc-header .expand').map(function(){
             var docId = $(this).attr("data-docid");
             var name = $(this).attr("data-text");
             var rid = name.replace(/ /g,"_");//Math.sin(x++).toString().substr(6);

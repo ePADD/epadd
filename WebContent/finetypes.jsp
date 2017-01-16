@@ -100,6 +100,14 @@ Browse page for enbtities based on fine types
     <tbody>
     </tbody>
 </table>
+
+    <br/>
+    <br/>
+    <br/>
+
+<div style="text-align:center">
+    <button class="btn btn-default" onclick="window.location='edit-entities?type=<%=request.getParameter ("type")%>'">Edit Entities</button>
+</div>
     <script type="text/javascript">
         $(document).ready(function() {
             var click_to_search = function ( data, type, full, meta ) {

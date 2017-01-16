@@ -5,8 +5,6 @@
     request.setCharacterEncoding("UTF-8");
 %>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.ie.InternalAuthorityAssigner"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.index.Searcher"%>
 <%@page language="java" import="edu.stanford.muse.util.DetailedFacetItem"%>
@@ -86,7 +84,7 @@
     <script src="js/jquery.js" type="text/javascript"></script>
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/jquery.qtip.min.css">
     <script src="js/stacktrace.js" type="text/javascript"></script>
 
     <jsp:include page="css/css.jsp"/>
@@ -94,11 +92,9 @@
     <script src="js/epadd.js"></script>
 
     <!-- For tool-tips -->
-    <script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
+    <script type='text/javascript' src='js/jquery.qtip.minjs'></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script type='text/javascript' src='js/utils.js'></script>
-    <!-- <script src="js/jQueryRotateCompressed.2.1.js" type="text/javascript"></script> -->
-    <!-- <script src="js/protovis.js" type="text/javascript"></script> -->
-    <!-- <script src="js/proto_funcs.js" type="text/javascript"></script>  -->
 
     <style> div.facets hr { width: 90%; } </style>
 
