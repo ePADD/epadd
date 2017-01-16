@@ -39,7 +39,7 @@ if (request.getParameter("allDocs") != null)
 else if(session.getAttribute("selectDocs")!=null)
     docs = (Set<Document>)session.getAttribute("selectDocs");
 else
- 	docs = new LinkedHashSet<Document>(JSPHelper.selectDocs(request, session, false /* onlyFilteredDocs */, false));
+ 	docs = new LinkedHashSet<>(JSPHelper.selectDocs(request, session, false /* onlyFilteredDocs */, false));
 
 if (docs != null)
 {
