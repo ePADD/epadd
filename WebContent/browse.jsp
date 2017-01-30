@@ -81,20 +81,19 @@
 
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-    <script src="js/jquery.js" type="text/javascript"></script>
-
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.qtip.min.css">
+    <jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" page="css/epadd.css"/>
+
     <script src="js/stacktrace.js" type="text/javascript"></script>
 
-    <jsp:include page="css/css.jsp"/>
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
-
-    <!-- For tool-tips -->
-    <script type='text/javascript' src='js/jquery.qtip.minjs'></script>
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type='text/javascript' src='js/utils.js'></script>
 
     <style> div.facets hr { width: 90%; } </style>
 

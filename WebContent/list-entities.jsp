@@ -79,13 +79,11 @@ Browse page for enbtities based on fine types
 
         JSONArray resultArray = new JSONArray();
         String url = request.getRequestURL().toString();
-        url = url.substring(0,url.indexOf("/finetypes"));
         int count = 0;
 	    for (Pair<Entity, Double> p: lst) {
 	        count++;
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
-            String encodedURL = URLEncoder.encode(url, "UTF-8");
 
             j.put (0, Util.escapeHTML(entity));
             j.put (1, (float)p.getFirst().score);

@@ -1,6 +1,6 @@
 // Vihari's functions for authorities and expanding partial names
 
-initialiseqtip = function(){
+initialiseqtip_old = function(){
 	$('.qtip').remove();
 	//TODO: use a proper selector
     var qtip_params = {
@@ -26,6 +26,69 @@ initialiseqtip = function(){
             $(this).attr("title","<div class='resolutions' data-id='"+rid+"'><img src='images/spinner.gif' style='height:15px'/><script>expand('"+name+"','"+docId+"','"+rid+"');</script>");
         });
     $('div.muse-doc-header .expand').qtip(qtip_params);
+};
+
+
+var initialiseqtip = function(){
+	$('.qtip').remove();
+	//TODO: use a proper selector
+	var qtip_params = {
+		hide:{delay:'200',fixed:true},
+		style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: '4px',color: 'red'}}
+	};
+
+	//Not able to avoid the random id assignment, it is required because the content is appended later through script
+	var x = 1;
+	//There can be many nested spans, in that case just consider the outer most span element
+	var api;
+
+    api = $('div.muse-doc-body .expand, div.muse-doc-header .expand').qtip(
+		{
+			hide: {delay: '200', fixed: true},
+			style: {
+				width: '450px',
+				padding: 7,
+				color: 'black',
+				textAlign: 'left',
+				border: {radius: '4px', color: 'red'},
+                classes: 'qtip-rounded qtip-shadow qtip-epadd',
+            },
+			content: {
+				text: function(event, api) {
+                    var docId = $(event.target).attr("data-docid");
+                    var name = $(event.target).attr("data-text");
+
+                    $.ajax({
+						url: 'ajax/expand-name.jsp', // Use data-url attribute for the URL
+						dataType: 'json',
+						type: 'get',
+						data: {
+							"name": name,
+							"docId": docId
+						},
+					})
+						.then(function(result) {
+							// Set the tooltip content upon successful retrieval
+                            if (!(result.candidates && result.candidates.length > 0)) {
+                                api.set('content.text', 'No matches');
+                                return;
+                            }
+
+                            var candidates = result.candidates;
+							var str = '';
+							for (var i = 0; i < candidates.length; i++)
+								str += (i+1) + '. ' + candidates[i].candidate + '<br/>';
+
+							api.set('content.text', str);
+						}, function(xhr, status, error) {
+							// Upon failure... set the tooltip content to the status and error value
+							api.set ('context.text', 'sorry there was an error contacting the epadd expander!');
+						});
+
+					return 'Loading...'; // Set some initial text
+				}
+	}
+		});
 };
 
 //this method is to be called only from the script in a title div

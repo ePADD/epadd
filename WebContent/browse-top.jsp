@@ -89,7 +89,7 @@
 	</div>
 	
 	<div class="cta-box text-center margin30">
-			<a href="finetypes.jsp?type=0">
+			<a href="list-entities.jsp?type=0">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/person.svg"/>
 			<p class="cta-text-1">Person entities<%=pC%></p>
@@ -102,7 +102,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="browse-finetypes">
+		<a href="entity-types">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
 			<p class="cta-text-1">Other entities<%=oC%></p>
@@ -113,9 +113,9 @@
 	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<br/>
         <div class="cta-box text-center margin30">
-            <a href="finetypes.jsp?type=3">
+            <a href="by-folder">
                 <i class="icon-browsetoparrow"></i>
-                <img src="images/location.svg"/>
+                <img src="images/folder.svg"/>
                 <p class="cta-text-1">Folder view<%=lC%></p>
                 <p class="cta-text-2">Folder view<%=lC%></p>
             </a>
@@ -156,7 +156,7 @@
 
 		<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
 			<div class="cta-box text-center margin30">
-				<a href="browse?sensitive=true">
+				<a href="browse?sensitive=true&adv-search=1">
 					<i class="icon-browsetoparrow"></i>
 					<img src="images/sensitive-message.svg"/>
 					<p class="cta-text-1">Sensitive messages<%=nS%></p>

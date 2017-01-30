@@ -47,7 +47,7 @@
 <body>
     <jsp:include page="header.jspf"/>
 
-    <% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");%>
+    <% writeProfileBlock(out, archive, "Apply actions to multiple messages", "");%>
 
     <br/>
     <br/>
@@ -94,7 +94,7 @@
     <div style="width:900px;margin-left:170px; position:relative;">
             <div class="panel">
                 <div class="panel-heading">
-                    Apply flags to <%= Util.pluralize (matchedDocs.size(), "message")%>
+                    Apply actions to <%= Util.pluralize (matchedDocs.size(), "message")%>
                 </div>
                 <div class="section">
                     <i title="Do not transfer" id="dnt-flag" class="flag fa fa-ban"></i>

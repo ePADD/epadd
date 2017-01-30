@@ -14,6 +14,28 @@
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 
+	<servlet>
+		<servlet-name>jsp</servlet-name>
+		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+		<init-param>
+			<param-name>fork</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>xpoweredBy</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>compilerSourceVM</param-name>
+			<param-value>1.8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>compilerTargetVM</param-name>
+			<param-value>1.8</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
 	<listener>
 		<listener-class>edu.stanford.epadd.EpaddInitializer</listener-class>
 	</listener>
@@ -200,12 +222,12 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>finetypes</servlet-name>
-		<jsp-file>/finetypes.jsp</jsp-file>
+		<servlet-name>list-entities</servlet-name>
+		<jsp-file>/list-entities.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>finetypes</servlet-name>
-		<url-pattern>/finetypes</url-pattern>
+		<servlet-name>list-entities</servlet-name>
+		<url-pattern>/list-entities</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -218,12 +240,12 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>browse-finetypes</servlet-name>
-		<jsp-file>/browse-finetypes.jsp</jsp-file>
+		<servlet-name>entity-types</servlet-name>
+		<jsp-file>/entity-types.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>browse-finetypes</servlet-name>
-		<url-pattern>/browse-finetypes</url-pattern>
+		<servlet-name>entity-types</servlet-name>
+		<url-pattern>/entity-types</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
