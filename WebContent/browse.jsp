@@ -120,11 +120,10 @@
 
     //Collections.sort(docs);//order by time
     Collection<Blob> highlightAttachments = search_result.second;
-    Lexicon lexicon = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
-    if (lexicon == null)
-    {
-        lexicon = archive.getLexicon("default");
-        session.setAttribute("lexicon", lexicon);
+    Lexicon lexicon = null;
+    String lexiconName = request.getParameter ("lexiconName");
+    if (!Util.nullOrEmpty (lexiconName)) {
+        lexicon = archive.getLexicon(lexiconName);
     }
 
     Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive);
