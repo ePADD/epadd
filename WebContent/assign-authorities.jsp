@@ -10,17 +10,22 @@
 	<title>Processing: Assign authorities</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>	
+	<script src="js/jquery.dataTables.min.js"></script>
 
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
+	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
 	<link href="css/suggester.css" rel="stylesheet" />
-	
+
+
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/jquery.mockjax.js" type="text/javascript"></script>
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
 
-	<jsp:include page="css/css.jsp"/>
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
@@ -28,8 +33,7 @@
 	<script src="js/utils.js" type="text/javascript"></script>	
 	<script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
 	<script type="text/javascript" src="js/fancyBox/source/jquery.fancybox.js"></script>
-	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
-	
+
 	<style type="text/css">
       .js #table {display: none;}
       .search {cursor:pointer;}
@@ -115,31 +119,6 @@
 					$('.fa-spinner').hide();
 				}});
 			return false; /* to suppress other button actions */
-	 };
-
-      //assign authoriities page may contain lot of data that is loaded over time, it is not a good idea to redirect the page and lose all the data
-      //hence, we create a new window and set the data
-      var export_authorities = function(e){
-          window.location.href = "exportAuthorityRecords.jsp?exportType=csv";
-//		 $.ajax({type: 'POST',
-//				dataType: 'json',
-//				url: 'ajax/exportAuthorityRecords.jsp',
-//				data: { exportType : "csv" },
-//				cache: false,
-//				success: function (response, textStatus) {
-//					epadd.log(response);
-//					var newWindow = window.open();
-//					newWindow.document.write(response);
-//					$('.fa-spinner').hide();
-//				},
-//				error: function(data) {
-//					epadd.log(data);
-//					var newWindow = window.open();
-//					alert(data.responseText);
-//					//alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to the ePADD development team.");
-//					$('img[src="images/spinner.gif').hide(); // hide the spinner otherwise it continues on the page even after this crash
-//					$('.fa-spinner').hide();
-//				}});
 	 };
 
       //@arg randId - a randum id that identifies an element in the row
@@ -248,6 +227,37 @@
 <script>epadd.nav_mark_active('Authorities');</script>
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
+
+<!--sidebar content-->
+<!--
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<nav class="menu1" role="navigation">
+	<h2>Assign authorities</h2>
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<div class="search-tips">
+		<img src="images/pharse.png" alt="">
+		<p>
+			Text from Josh here.
+		</p>
+	</div>
+
+	<div class="search-tips">
+		<img src="images/requered.png" alt="">
+		<p>
+			More text
+		</p>
+	</div>
+
+
+</nav>
+-->
+<!--/sidebar-->
 
 <script>
 	bi=0;
@@ -369,9 +379,8 @@
 	<br/>
 	<br/>
 	
-	<div>
+	<div style="width:100%;text-align:center">
 		<button class='btn btn-cta' id="save_button">Save <i class="icon-arrowbutton"></i></button>
-		<button class='btn btn-cta' id="export_button" style='float:right'>Export <i class="icon-arrowbutton"></i></button>
 	</div>
 	
 	<div id="stats"></div>

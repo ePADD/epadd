@@ -14,6 +14,28 @@
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 
+	<servlet>
+		<servlet-name>jsp</servlet-name>
+		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+		<init-param>
+			<param-name>fork</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>xpoweredBy</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>compilerSourceVM</param-name>
+			<param-value>1.8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>compilerTargetVM</param-name>
+			<param-value>1.8</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
 	<listener>
 		<listener-class>edu.stanford.epadd.EpaddInitializer</listener-class>
 	</listener>
@@ -201,21 +223,30 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>finetypes</servlet-name>
-		<jsp-file>/finetypes.jsp</jsp-file>
+		<servlet-name>list-entities</servlet-name>
+		<jsp-file>/list-entities.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>finetypes</servlet-name>
-		<url-pattern>/finetypes</url-pattern>
+		<servlet-name>list-entities</servlet-name>
+		<url-pattern>/list-entities</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>browse-finetypes</servlet-name>
-		<jsp-file>/browse-finetypes.jsp</jsp-file>
+		<servlet-name>edit-entities</servlet-name>
+		<jsp-file>/edit-entities.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>browse-finetypes</servlet-name>
-		<url-pattern>/browse-finetypes</url-pattern>
+		<servlet-name>edit-entities</servlet-name>
+		<url-pattern>/edit-entities</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>entity-types</servlet-name>
+		<jsp-file>/entity-types.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>entity-types</servlet-name>
+		<url-pattern>/entity-types</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -282,6 +313,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>bulk-upload</servlet-name>
+		<jsp-file>/bulk-upload.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>bulk-upload</servlet-name>
+		<url-pattern>/bulk-upload</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>search-query</servlet-name>
 		<jsp-file>/search-query.jsp</jsp-file>
 	</servlet>
@@ -326,15 +366,6 @@
 		<url-pattern>/status</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>export-processing</servlet-name>
-		<jsp-file>/export-processing.jsp</jsp-file>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>export-processing</servlet-name>
-		<url-pattern>/export-processing</url-pattern>
-	</servlet-mapping>
-
     <servlet>
         <servlet-name>export-mbox</servlet-name>
         <jsp-file>/export-mbox.jsp</jsp-file>
@@ -345,12 +376,12 @@
     </servlet-mapping>
 
 	<servlet>
-		<servlet-name>export-review-processing</servlet-name>
-		<jsp-file>/export-review-processing.jsp</jsp-file>
+		<servlet-name>export-attachments</servlet-name>
+		<jsp-file>/export-attachments.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>export-review-processing</servlet-name>
-		<url-pattern>/export-review-processing</url-pattern>
+		<servlet-name>export-attachments</servlet-name>
+		<url-pattern>/export-attachments</url-pattern>
 	</servlet-mapping>
 
  	<servlet>
@@ -369,6 +400,15 @@
 	<servlet-mapping>
 		<servlet-name>export-review</servlet-name>
 		<url-pattern>/export-review</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>export-authorities</servlet-name>
+		<jsp-file>/export-authorities.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-authorities</servlet-name>
+		<url-pattern>/export-authorities</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

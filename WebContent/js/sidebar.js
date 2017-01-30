@@ -147,7 +147,6 @@ $(document).ready(function(){
 		}
 	}
 
-
 	$(function() {
 		toggle1.on("click", function(e) {
 			e.stopPropagation();

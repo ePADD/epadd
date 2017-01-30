@@ -24,14 +24,34 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
+<script>epadd.nav_mark_active('Export');</script>
+<% 	AddressBook addressBook = archive.addressBook;
+	String bestName = addressBook.getBestNameForSelf().trim();
+	writeProfileBlock(out, archive, "", "Export archive");
+%>
+<div style="margin-left:170px">
+<div id="spinner-div" style="display:none;text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 
-<div class="panel" style="padding-left:10%">
-    <%
-        List<EmailDocument> selectedDocs = null;
-        if (!ModeConfig.isDeliveryMode())
-              selectedDocs = (List<EmailDocument>) JSPHelper.getSessionAttribute(request.getSession(), "action-docs");
-        else // in appraisal/processing modes, export everything. in discovery, this jsp is not included
-            selectedDocs = (List) archive.getAllDocs();
+<%
+    String dir = request.getParameter ("dir");
+    File f = new File(dir);
+    String pathToFile;
+    if (f.isDirectory())
+        pathToFile = f.getAbsolutePath() + File.separator + "epadd-export.mbox";
+    else
+        pathToFile = f.getAbsolutePath();
+
+    PrintWriter pw = null;
+    try {
+        pw = new PrintWriter(pathToFile, "UTF-8");
+    } catch (Exception e) {
+        out.println ("Sorry, error opening mbox file: " + e + ". Please see the log file for more details.");
+        Util.print_exception("Error opening mbox file: ", e, JSPHelper.log);
+        return;
+    }
+
+
+        List<EmailDocument> selectedDocs = (List) archive.getAllDocs();
 
         JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
@@ -47,16 +67,19 @@
             JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
         }
 
+        /*
         String rootDir = JSPHelper.getRootDir(request);
         new File(rootDir).mkdirs();
         String userKey = JSPHelper.getUserKey(session);
+
         String name = request.getParameter("name");
         if (Util.nullOrEmpty(name))
             name = String.format("%08x", EmailUtils.rng.nextInt());
         String filename = name + ".mbox.txt";
-        String path = rootDir + File.separator + filename;
 
+        String path = rootDir + File.separator + filename;
         PrintWriter pw = new PrintWriter (path);
+        */
 
         String noAttach = request.getParameter("noattach");
         boolean noAttachments = "on".equals(noAttach);
@@ -68,18 +91,7 @@
 
     <br/>
 
-    An MBOX file with <%=Util.pluralize(selectedDocs.size(), "message")%> is ready. <br/>
-    To save it, right click <a href="<%=userKey%>/<%=filename%>">this link</a> and select "Save Link As...".
-    <% String message;
-        if (selectedDocs.size() > 1000)
-            message = "";
-        else if (selectedDocs.size() > 50)
-            message = "(Left click to view the file. It can be very large!)<br/>";
-        else
-            message = "(Left click to view the file in the browser.)<br/>";
-    %>
-    <%=message%>
-
+    Mbox file saved: <%=pathToFile%>.
     <p></p>
     This file is in mbox format, and can be accessed with many email clients (e.g. <a href="http://www.mozillamessaging.com/">Thunderbird</a>.)
     It can also be viewed with a text editor.<br/>

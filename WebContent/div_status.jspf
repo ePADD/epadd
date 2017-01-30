@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	<div style="display:inline-block;" id="status_cancel">
-		<a style="display:none" id="cancel" href="#"><img src="images/cancel.svg"/></a> <% /* important, has to be called #cancel because statusUpdate.js depends on it */ %>
+		<a style="display:none" id="cancel" href="#"><img title="cancel" src="images/cancel.svg"/></a> <% /* important, has to be called #cancel because statusUpdate.js depends on it */ %>
 	</div>		
 	
 		<div class="time_remaining" style="display:none;color:#adadad"></div>

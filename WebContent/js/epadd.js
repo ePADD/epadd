@@ -25,7 +25,14 @@ epadd.log = function(mesg, log_on_server)
 
 };
 
-epadd.alert = function(s) { $('#alert-modal .modal-body').html(s); $('#alert-modal').modal(); }
+// s is the message, f is the function to be called when the modal is dismissed
+epadd.alert = function(s, f) {
+	$('#alert-modal .modal-body').html(s);
+	if (f) {
+		$('#alert-modal').on('hidden.bs.modal', f);
+	}
+	$('#alert-modal').modal();
+}
 
 epadd.pluralize = function(count, description)
 {
@@ -45,9 +52,9 @@ epadd.do_search = function(e) {
 	}
 	// otherwise let term be as is.
 
-	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
+	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on'); // since this function is used from entities page, we don't want to match attachments (?)
+//	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
-
 
 // fixes field names in account divs in prep for collect_input_fields
 // the form field names must be numbered incrementally, e.g. loginName0, password0, mboxDir1, etc.
@@ -306,7 +313,7 @@ epadd.nav_mark_active = function(text) {
 };
 
 /** needs a stats field to update stats in. if successive, will navigate the browser to /collections */
-epadd.load_archive = function(e, dir) {
+epadd.import_archive = function(e, dir) {
 	var $spinner = $('.fa-spinner', $(e.target));
 	$spinner.show();
 	$spinner.addClass('fa-spin');
@@ -326,22 +333,24 @@ epadd.load_archive = function(e, dir) {
 	cache: false,
 	success: function (response, textStatus) {
 		$spinner.removeClass('fa-spin');
+		$('#spinner-div').fadeOut();
+		$('#gobutton').fadeIn();
+
 		if (response && (response.status == 0)) {
-				var status = 'Success! ' + response.message;
-				epadd.log ('loading archive status: ' + status);
-				window.location = './collections';
-			}
-			else {
-				if (response)
-					epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
-				else
-					epadd.alert('Error! No response from ePADD.');
-				$spinner.removeClass('fa-spin');
-			}
+			var status = 'Success! ' + response.message;
+			epadd.log ('loading archive status: ' + status);
+			window.location = './collections';
+		}
+		else {
+			if (response)
+				epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
+			else
+				epadd.alert('Error! No response from ePADD.');
+		}
 	},
 	error: function() {
-		$('#gobutton').fadeIn();
 		$('#spinner-div').fadeOut();
+		$('#gobutton').fadeIn();
 		epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.");
 	}});
 };
@@ -365,7 +374,7 @@ epadd.unloadArchive = function() {
 			type: 'POST',
 			url: "ajax/kill-session.jsp",
 			dataType: "json",
-			success: function(data) { epadd.alert('Archive unloaded successfully!'); window.location.reload();},
+			success: function(data) { epadd.alert('Archive unloaded successfully!', function() { window.location.reload(); });},
 			error: function(jq, textStatus, errorThrown) { var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
 	});
 };
@@ -382,7 +391,7 @@ epadd.deleteArchive = function(e) {
 		type: 'POST',
 		url: "ajax/delete-archive.jsp",
 		dataType: "json",
-		success: function(data) { $spinner.removeClass('fa-spin'); epadd.alert('Archive deleted successfully!'); window.location.reload();},
+		success: function(data) { $spinner.removeClass('fa-spin'); epadd.alert('Archive deleted successfully!', function() { window.location.reload(); });},
 		error: function(jq, textStatus, errorThrown) { $spinner.removeClass('fa-spin'); var message = ("Error deleting archive, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace()); epadd.log (message); epadd.alert(message); }
 	});
 };

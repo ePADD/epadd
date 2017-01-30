@@ -36,15 +36,16 @@
 <html>
 <head>
 	<title>Lexicons</title>
-
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png"/>
 
-	<script src="js/jquery.js"></script>
-
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css"/>
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-
 	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+
+	<script src="js/jquery.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
 	<script type="text/javascript" src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 </head>
@@ -61,6 +62,37 @@
 <%writeProfileBlock(out, archive, "", "Lexicon: " + lexiconName);%>
 <br/>
 
+<!--sidebar content-->
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<nav class="menu1" role="navigation">
+	<h2>Lexicon Editing Tips</h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<!--phrase-->
+	<div class="search-tips">
+		<img src="images/pharse.png" alt="">
+		<p>
+			Text from Josh here.
+		</p>
+	</div>
+
+	<!--requered-->
+	<div class="search-tips">
+		<img src="images/requered.png" alt="">
+		<p>
+			More text
+		</p>
+	</div>
+
+
+</nav>
+<!--/sidebar-->
 <div align="center">
 	<p>
 

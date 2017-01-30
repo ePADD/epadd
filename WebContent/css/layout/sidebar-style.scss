@@ -110,7 +110,7 @@ input[type="radio"] + .text-radio:before,
     font-style: normal;
     font-variant: normal;
     font-weight: normal;
-    text-transform: normal;
+    text-transform: none;
     line-height: 0.8;
     margin-right: 5px;
     width: 1em;
@@ -199,6 +199,9 @@ ul.dropdown-menu.inner li:first-child {
 }
 
 
+// this is really for selectpicker, not sidebar! -sgh
+
+.advanced-search {
 .btn-default, .btn-default:hover, 
 .btn-default:focus, 
 .btn-default:active,
@@ -216,14 +219,12 @@ ul.dropdown-menu.inner li:first-child {
     background-color: #fff ;
     border-color: #ccc;
 }
-
 .bootstrap-select .dropdown-toggle:focus {
      outline: 0!important; 
      outline: none !important; 
      outline-offset: 0px; 
 
 }
-
 
 button .bs-caret, 
 .bootstrap-select.btn-group.show-tick .dropdown-menu li.selected a span.check-mark {
@@ -257,4 +258,6 @@ button .bs-caret,
 
 .btn-group .dropdown-toggle:active, .btn-group.open .dropdown-toggle {
 	box-shadow: none;
+}
+
 }

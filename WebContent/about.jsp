@@ -114,12 +114,11 @@ For a full list of credits, please <a href="https://library.stanford.edu/project
       <a href="http://jsoup.org">Jsoup</a> © Jonathan Hedley <a href="https://jsoup.org/license">MIT License</a><br/>
       <a href="http://d3js.org">D3.js</a> © Mike Bostock <a href="https://opensource.org/licenses/BSD-3-Clause">BSD 3-clause License<br/>
       <a href="http://jquery.org">jQuery</a> © jQuery Foundation <a href=https://jquery.org/license/">MIT License</a><br/>
+      <a href="https://www.abeautifulsite.net/jquery-file-tree">jQuery File Tree</a> © A Beautiful Site <a href="https://www.abeautifulsite.net/jquery-file-tree#licensing">MIT License</a><br/>
       <a href="https://www.devbridge.com/sourcery/components/jquery-autocomplete/">jQuery AutoComplete</a> © Tomas Kirda <a href="https://github.com/devbridge/jQuery-Autocomplete/blob/master/dist/license.txt">MIT License</a>
       <p></p>
       <a href="https://github.com/cooliris/embed-wall">Cooliris Image wall</a> (Special thanks to Soujanya Bhumkar, Austin Shoemaker and team for making the software available to us)<br/>
       Copyright (c) 2015 Yahoo, Inc.
-
-
 
       This software is provided 'as-is', without any express or implied
       warranty. In no event will the authors be held liable for any damages

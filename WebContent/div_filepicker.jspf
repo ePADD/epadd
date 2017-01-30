@@ -1,0 +1,22 @@
+
+<div id="filepicker-modal" class="modal fade" style="z-index:9999">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header" style="padding:25px;font-size:120%;">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Specify a Location</h4>
+			</div>
+
+			<div class="modal-body" style="padding:0px"> <!-- explicitly override the 20px padding from bootstrap -->
+				<div class="path-components"> </div>
+				<div style="background-color: rgb(240,240,255);" class="browseFolder">
+				</div>
+			</div>
+
+			<div class="modal-footer" style="margin-top:0px"> <!-- explicitly override the 15px margin-top from bootstrap -->
+				<button type="button" class="btn btn-default confirm-button" data-dismiss="modal">Confirm</button>
+				<button type="button" class="btn btn-default cancel-button" data-dismiss="modal ">Cancel</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

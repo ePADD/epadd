@@ -1,60 +1,68 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="java.util.Set" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
 <head>
+    <title>Advanced Search</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="css/main.css">
 
-	<script src="js/jquery.js"></script>
+    <!-- main.css from Lollypop has reset some of the btn-cta styles, which we didn't want ! :-( -->
+    <style>
+        .btn-cta {
+            color: #fff;
+            background-color: #0075bb;
+            text-shadow: none;
+            border-radius: 3px;
+            -moz-transition: 0.3s ease;
+            transition: 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.15);
+            height: 47px;
+            padding-top: 10px;
+            /*	width:120px; */
+        }
+        .btn-cta i{ opacity:0.5  }
+        .btn-cta:hover, .btn-cta:focus {
+            background-color: #0075bb;
+            color: #fff;
+            box-shadow:0px 0px 0px rgba(0,0,0,0.15);
 
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<!-- Optional theme -->
+            -moz-transition:0.3s ease;
+            transition:0.3s ease;
+        }
+        .btn-cta:hover i{ opacity:1;}
+    </style>
+    <!--scripts-->
+	<script  src="js/jquery-1.12.1.min.js"></script>
+	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+
+	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-
-	<jsp:include page="css/css.jsp"/>
-
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+	<script src="js/selectpicker.js"></script>
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	<!--
-        <style>
-            td > div {
-                padding: 5px;
-            }
-            .option { margin-right:15px;}
-        </style>
-        -->
-	<style>
-		.autocomplete-suggestions {
-			background-color: white;
-			color: #999;
-			border: 1px solid rgba(0, 0, 0, 0.15);
-			border-radius: 4px;
-			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-			cursor: pointer;
-		}
-		.autocomplete-suggestion {
-			border-bottom: 1px solid #eaeaea;
-			padding: 8px 10px;
-			margin: 0px 10px;
-		}
-	</style>
-		<title>Advanced Search</title>
-		<meta name="description" content="">
-	<link rel="stylesheet" href="css/main.css">
+
 </head>
-	<body>
+<body>
 	<jsp:include page="header.jspf"/>
 	<script>epadd.nav_mark_active('Search');</script>
 
-
 	<!--Advanced Search-->
 	<div class="advanced-search">
-		<form id="adv-search-form" action="browse" method="get">
-		<input type="hidden" name="adv-search"/>
+		<form id="adv-search-form" action="browse" method="post">
+		<input type="hidden" name="adv-search" value="1"/>
 		<!--container-->
 		<div class="container">
 			<!--row-->
@@ -201,7 +209,7 @@
 						<!--/message-->
 
 					</div>
-
+                    <br/>
 					<div class="row">
 						<div class="form-group col-sm-12">
 							<label for="entity">Entity</label>
@@ -249,6 +257,15 @@
 					</div>
 
 					<br/>
+
+                    <!--
+                    <div class="row">
+                        <div class="form-group col-sm-12">
+                            <label for="emailAddressList">Upload email addresses</label>
+                            <input id="emailAddressList" type="file" name="emailAddressList" type="text" class="form-control">
+                        </div>
+                    </div>
+                    -->
 
 					<div class="row">
 						<!--mailing list-->
@@ -574,7 +591,21 @@
                             </div>
                         </div>
                     <% } %>
-				</div>
+
+					<div class="row">
+						<!--Lexicons-->
+						<div class="form-group col-sm-6">
+							<label for="entityType">Entity type</label>
+							<select id="entityType" name="entityType" class="form-control selectpicker">
+								<option value="" selected disabled>Select</option>
+								<% Set<NEType.Type> entityTypes = archive.getEntityTypes();
+									for (NEType.Type type : entityTypes) { %>
+										<option value="<%=type.getCode()%>"><%=type.getDisplayName()%></option>
+								<% }%>
+							</select>
+						</div>
+
+					</div>
 				<!--/Others-->
 
 
@@ -615,16 +646,12 @@
 
 				<!--Search and clear form buttons-->
 				<div class="search-clear-btns">
-					<!--search btn-->
-					<button id="search-button" ype="submit" class="search-btn">
-						<h5>Search</h5>
-						<img src="images/search-icon.png" allt="search-icon">
-					</button>
 
+                    <button class="btn btn-cta" type="submit" id="search-button">Search <i class="icon-arrowbutton"></i> </button>
 					<!--clear btn-->
-					<button id="clear-form" class="clear-btn">
+					<button style="margin-left:20px" id="clear-form" class="clear-btn">
 						<img src="images/Clear Form.png" alt="clear-icon">
-						<h5>Clear Form</h5>
+						Clear Form
 					</button>
 				</div>
 				<!--/Search and clear form buttons-->
@@ -638,21 +665,13 @@
 	<!--/Advanced Search-->
 
 
-   <!--scripts-->
-	<script  src="js/jquery-1.12.1.min.js"></script>
-	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
-	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
-<!--	   	<script src="js/bootstrap.min.js"></script> -->
-	   	<script src="js/main.js"></script>
-	   	<script src="js/modernizr.min.js"></script>
 		<script>
 			$('#clear-form').click(function() {
 				$('input').val('');
 			});
 		</script>
 	   	<!-- selectpicker -->
-		<script src="js/selectpicker.js"></script>
 	<script>
 		$('#clear-form').click(function() {
 			$('#adv-search.form input').val();

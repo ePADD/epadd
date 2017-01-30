@@ -7,8 +7,8 @@
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="edu.stanford.muse.util.Span" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
 
 <!-- Input: Field name
@@ -42,18 +42,18 @@
 <%
     String type=request.getParameter("type");
 	String et = "";
-    Short ct = FeatureDictionary.PERSON;
+    Short ct = NEType.Type.PERSON.getCode();
 	if("en_person".equals(type)||"person".equals(type)) {
         et = "Person";
-        ct = FeatureDictionary.PERSON;
+        ct = NEType.Type.PERSON.getCode();
     }
 	else if("en_loc".equals(type)||"place".equals(type)) {
         et = "Location";
-        ct = FeatureDictionary.PLACE;
+        ct = NEType.Type.PLACE.getCode();
     }
 	else if("en_org".equals(type)||"organisation".equals(type)) {
         et = "Organisation";
-        ct = FeatureDictionary.ORGANISATION;
+        ct = NEType.Type.ORGANISATION.getCode();
     }
 	writeProfileBlock(out, archive, et + " entities", "");
 			%>
@@ -80,11 +80,10 @@
         Span[] es = archive.getEntitiesInDoc(ed,true);
         List<Span> est = new ArrayList<>();
         for(Span e: es)
-            if(FeatureDictionary.getCoarseType(e.type) == ct)
+            if(NEType.getCoarseType(e.type).getCode() == ct)
                 est.add(e);
 
         Span[] fes = edu.stanford.muse.ie.Util.filterEntitiesByScore(est.toArray(new Span[est.size()]),cutoff);
-
         //filter the entities to remove obvious junk
         fes = edu.stanford.muse.ie.Util.filterEntities(fes);
 	    // note that entities could have repetitions.

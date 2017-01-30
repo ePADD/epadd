@@ -1,9 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="com.google.gson.Gson"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
-<%@page language="java" import="java.util.ArrayList"%>
-<%@page language="java" import="java.util.List"%>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@include file="getArchive.jspf" %>
 
@@ -24,7 +20,6 @@
 
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>
-	<script src="js/filepicker.js"></script>
 </head>
 
 <body>

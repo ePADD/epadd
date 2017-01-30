@@ -11,9 +11,8 @@
 	<title>Export</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-
-	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
     <jsp:include page="css/css.jsp"/>
 
     <script src="js/jquery.js"></script>
@@ -26,9 +25,10 @@
 <body>
     <jsp:include page="header.jspf"/>
     <jsp:include page="div_filepicker.jspf"/>
+    <script>epadd.nav_mark_active('Export');</script>
 
     <%
-        writeProfileBlock(out, archive, "", "Select archive folder to import actions from");
+        writeProfileBlock(out, archive, "", "Select folder for export");
     %>
 
     <p>
@@ -38,17 +38,17 @@
     <% /* all mboxes folders will be in account divs here */ %>
     <div id="filepicker" style="width:900px;padding-left:170px">
         <div class="div-input-field">
-            <div class="input-field-label"><i class="fa fa-folder-o"></i> Folder of v1 archive</div>
+            <div class="input-field-label"><i class="fa fa-folder-o"></i> Export folder</div>
+            <div class="input-field">
                 <input id="dir" class="dir form-control" type="text" name="dir"/><br/>
-                <button class="btn-default browse-button"><i class="fa fa-file"></i>
+                <button class="browse-button btn-default"><i class="fa fa-file"></i>
                     <span>Browse</span>
                 </button>
+            </div>
             <br/>
-            <br/>
-
             <div style="text-align:center">
                 <button type="button" class="btn btn-cta" onclick="submit(); return false;">
-                    Transfer <i class="icon-arrowbutton"></i>
+                    Export <i class="icon-arrowbutton"></i>
                 </button>
             </div>
 
@@ -57,7 +57,7 @@
 
     <script>
         function submit() {
-            window.location = 'do-transfer-actions.jsp?dir=' + $('#filepicker .dir').val();
+            window.location = 'export-complete?dir=' + $('#filepicker .dir').val();
             return false;
         }
         new FilePicker($('#filepicker'));

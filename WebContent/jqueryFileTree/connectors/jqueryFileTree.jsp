@@ -8,9 +8,18 @@
   * 21 April 2008
 */	
     String dir = request.getParameter("dir");
-    if (dir == null) {
-    	return;
-    }
+    if (dir == null || dir.length() == 0) {
+		// modified by SGH. if dir parameter is empty, just list all the roots.
+		out.print("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
+		java.io.File[] rootFiles = java.io.File.listRoots();
+		for (java.io.File f: rootFiles) {
+            String rootFile = f.toString();
+            out.print("<li class=\"directory collapsed\"><a href=\"#\" rel=\"" + rootFile + "/\">"
+                    + f.toString() + "</a></li>");
+        }
+		out.print("</ul>");
+		return;
+	}
 	
 	if (dir.charAt(dir.length()-1) == '\\') {
     	dir = dir.substring(0, dir.length()-1) + "/";

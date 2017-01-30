@@ -1,7 +1,7 @@
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.json.JSONArray" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
 
 <%--
@@ -9,7 +9,6 @@
   User: vihari
   Date: 12/12/15
   Time: 22:20
-  To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <head>
@@ -36,39 +35,16 @@
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
-    desc.put(FeatureDictionary.PERSON, "Person");
-    desc.put(FeatureDictionary.COMPANY, "Company");
-    desc.put(FeatureDictionary.BUILDING, "Building");
-    desc.put(FeatureDictionary.PLACE, "Place");
-    desc.put(FeatureDictionary.RIVER, "River");
-    desc.put(FeatureDictionary.ROAD, "Road");
-    desc.put(FeatureDictionary.UNIVERSITY, "University");
-    desc.put(FeatureDictionary.MOUNTAIN, "Mountain");
-    desc.put(FeatureDictionary.AIRPORT, "Airport");
-    desc.put(FeatureDictionary.ORGANISATION, "Organization");
-    desc.put(FeatureDictionary.PERIODICAL_LITERATURE, "Periodical Literature");
-    desc.put(FeatureDictionary.ISLAND, "Island");
-    desc.put(FeatureDictionary.MUSEUM, "Museum");
-    desc.put(FeatureDictionary.BRIDGE, "Bridge");
-    desc.put(FeatureDictionary.AIRLINE, "Airline");
-    desc.put(FeatureDictionary.GOVAGENCY, "Government Agency");
-    desc.put(FeatureDictionary.HOSPITAL, "Hospital");
-    desc.put(FeatureDictionary.AWARD, "Award");
-    desc.put(FeatureDictionary.THEATRE, "Theatre");
-    desc.put(FeatureDictionary.LEGISTLATURE, "Legislature");
-    desc.put(FeatureDictionary.LIBRARY, "Library");
-    desc.put(FeatureDictionary.LAWFIRM, "Law Firm");
-    desc.put(FeatureDictionary.MONUMENT, "Monument");
-    desc.put(FeatureDictionary.DISEASE, "Disease");
-    desc.put(FeatureDictionary.EVENT, "Event");
+    for(NEType.Type t: NEType.Type.values())
+        desc.put(t.getCode(), t.getDisplayName());
 
     JSONArray resultArray = new JSONArray();
     int count = 0;
-    for(Short type: FeatureDictionary.allTypes){
+    for(Short type: desc.keySet()){
         JSONArray j = new JSONArray();
-        if(FeatureDictionary.OTHER == type || desc.get(type)==null)
+        if(NEType.Type.OTHER.getCode() == type || NEType.Type.PERSON.getCode() == type || desc.get(type)==null)
             continue;
-        j.put(0, "<a href='finetypes?type="+type+"' target='_blank'>"+desc.get(type)+"</a>");
+        j.put(0, "<a href='list-entities?type="+type+"' target='_blank'>"+desc.get(type)+"</a>");
         j.put(1, archive.processingMetadata.entityCounts.get(type));
         resultArray.put(count++, j);
     }

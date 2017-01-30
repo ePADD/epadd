@@ -1,78 +1,51 @@
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.ner.Entity" %>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.net.URLEncoder" %>
-<%@ page import="java.util.LinkedHashMap" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="java.util.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!--	
-    Use this page to train and recognise fine grainied entity types, 
-    this is part of experimental module and not properly tested 
-    across many archives
+<!--
+Browse page for enbtities based on fine types
 -->
-
-<link href="css/epadd.css" rel="stylesheet" type="text/css"/>
-<script src="js/jquery.js"></script>
-<script src="js/muse.js"></script>
-<script src="js/epadd.js"></script>
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
+<html>
 <head>
     <title>Entities</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
-    <script src="js/jquery.js"></script>
-    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-    <script src="js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <!-- Optional theme -->
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <jsp:include page="css/css.jsp"/>
+    <link href="css/epadd.css" rel="stylesheet" type="text/css"/>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/statusUpdate.js"></script>
+    <script src="js/muse.js"></script>
+    <script src="js/epadd.js"></script>
+
     <script src="js/epadd.js"></script>
     <style type="text/css">
         .js #entities {display: none;}
     </style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
+    <%@include file="div_status.jspf"%>
+    <jsp:include page="header.jspf"/>
+    <script>epadd.nav_mark_active('Browse');</script>
 
 <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
-        desc.put(FeatureDictionary.PERSON, "Person");
-        desc.put(FeatureDictionary.COMPANY, "Company");
-        desc.put(FeatureDictionary.BUILDING, "Building");
-        desc.put(FeatureDictionary.PLACE, "Place");
-        desc.put(FeatureDictionary.RIVER, "River");
-        desc.put(FeatureDictionary.ROAD, "Road");
-        desc.put(FeatureDictionary.UNIVERSITY, "University");
-        desc.put(FeatureDictionary.MOUNTAIN, "Mountain");
-        desc.put(FeatureDictionary.AIRPORT, "Airport");
-        desc.put(FeatureDictionary.ORGANISATION, "Organization");
-        desc.put(FeatureDictionary.PERIODICAL_LITERATURE, "Periodical Literature");
-        desc.put(FeatureDictionary.ISLAND, "Island");
-        desc.put(FeatureDictionary.MUSEUM, "Museum");
-        desc.put(FeatureDictionary.BRIDGE, "Bridge");
-        desc.put(FeatureDictionary.AIRLINE, "Airline");
-        desc.put(FeatureDictionary.GOVAGENCY, "Government Agency");
-        desc.put(FeatureDictionary.HOSPITAL, "Hospital");
-        desc.put(FeatureDictionary.AWARD, "Award");
-        desc.put(FeatureDictionary.THEATRE, "Theatre");
-        desc.put(FeatureDictionary.LEGISTLATURE, "Legislature");
-        desc.put(FeatureDictionary.LIBRARY, "Library");
-        desc.put(FeatureDictionary.LAWFIRM, "Law Firm");
-        desc.put(FeatureDictionary.MONUMENT, "Monument");
-        desc.put(FeatureDictionary.DISEASE, "Disease");
-        desc.put(FeatureDictionary.EVENT, "Event");
+        for(NEType.Type t: NEType.Type.values())
+            desc.put(t.getCode(), t.getDisplayName());
 
         Short type = Short.parseShort(request.getParameter("type"));
         out.println("<h1>Type: "+desc.get(type)+"</h1>");
@@ -81,10 +54,16 @@
         double theta = 0.001;
         for(Document doc: archive.getAllDocs()){
             Span[] es = archive.getEntitiesInDoc(doc,true);
+            Set<String> seenInThisDoc = new LinkedHashSet<>();
+
             for(Span sp: es) {
                 String e = sp.getText();
                 if(sp.type!=type || sp.typeScore<theta)
                     continue;
+                if (seenInThisDoc.contains (e.toLowerCase().trim()))
+                    continue;
+                seenInThisDoc.add (e.toLowerCase().trim());
+
                 if (!entities.containsKey(e))
                     entities.put(e, new Entity(e, sp.typeScore));
                 else
@@ -100,15 +79,11 @@
 
         JSONArray resultArray = new JSONArray();
         String url = request.getRequestURL().toString();
-        url = url.substring(0,url.indexOf("/finetypes"));
         int count = 0;
 	    for (Pair<Entity, Double> p: lst) {
 	        count++;
-//            if (++count > max)
-//                break;
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
-            String encodedURL = URLEncoder.encode(url, "UTF-8");
 
             j.put (0, Util.escapeHTML(entity));
             j.put (1, (float)p.getFirst().score);
@@ -123,6 +98,14 @@
     <tbody>
     </tbody>
 </table>
+
+    <br/>
+    <br/>
+    <br/>
+
+<div style="text-align:center">
+    <button class="btn btn-default" onclick="window.location='edit-entities?type=<%=request.getParameter ("type")%>'">Edit Entities</button>
+</div>
     <script type="text/javascript">
         $(document).ready(function() {
             var click_to_search = function ( data, type, full, meta ) {

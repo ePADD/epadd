@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="edu.stanford.muse.email.AddressBook" %>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE html>
 <html>
@@ -46,9 +46,9 @@
 				statsAvailable = true;
 			String pC="",oC="",lC="", nS="";
 			if(statsAvailable){
-				pC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PERSON)+")";
-				oC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.ORGANISATION )+")";
-				lC=" ("+archive.processingMetadata.entityCounts.get(FeatureDictionary.PLACE)+")";
+				pC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
+				oC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode())+")";
+				lC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PLACE.getCode())+")";
 			}
 			AddressBook ab = archive.addressBook;
 			writeProfileBlock(out, archive, "", "Assign authorities");%>

@@ -46,12 +46,15 @@ String type = request.getParameter("type");
 // filter all docs to only get the type requested.
 Collection<EmailDocument> newDocs = new ArrayList<EmailDocument>();
 String description = " to be transferred to the repository";
-	if ("doNotTransfer".equals(type)) {
-		description = "  not to be transferred to the repository";
+if ("doNotTransfer".equals(type)) {
+	description = "  not to be transferred";
 } else if ("transferWithRestrictions".equals(type)) {
-	description = " to be transferred with restrictions to the repository";
-} else {
-	}
+	description = " to be transferred with restrictions";
+} else if ("transfer".equals(type)) {
+	description = " to be transferred";
+} else if ("annotated".equals(type)) {
+	description = " annotated";
+}
 
 for (EmailDocument ed: docs)
 {
@@ -61,8 +64,11 @@ for (EmailDocument ed: docs)
 	} else if ("transferWithRestrictions".equals(type)) {
 		if (ed.transferWithRestrictions)
 			newDocs.add(ed);
-	} else { 
-		if (!ed.doNotTransfer)
+	} else if ("annotated".equals(type)) {
+		if (!Util.nullOrEmpty(ed.comment))
+			newDocs.add(ed);
+	} else if ("transfer".equals(type)) {
+		if (!ed.transferWithRestrictions && !ed.doNotTransfer)
 			newDocs.add(ed);
 	}
 }
@@ -71,14 +77,6 @@ docs = newDocs;
 session.setAttribute("action-docs", docs);
 writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
 
-<div id="nav3" style="display:inline-block;margin-left:170px;">
-	<nav>
-		<a href="export-review?type=doNotTransfer">Do not transfer</a> <br/>
-		<a href="export-review?type=transferWithRestrictions">Transfer with restrictions</a><br/>
-		<a href="export-review">Messages to transfer</a> <br/>
-	</nav>
-</div>
-<br/>
 
 <br/>
 
@@ -86,8 +84,6 @@ writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + des
 
 	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 	<br/><% out.flush(); %>
-
-
 
 	<table id="messages" style="display:none">
 	<thead><tr><th>Subject</th><th>Date</th><th>Annotation</th></tr></thead>

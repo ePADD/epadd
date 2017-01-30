@@ -4,8 +4,6 @@
 	request.setCharacterEncoding("UTF-8");
 %>
 <%@page language="java" import="org.json.JSONArray"%>
-<%@ page import="java.io.File" %>
-<%@ page import="java.io.IOException" %>
 <%@ page import="java.util.*" %>
 <%@page language="java" import="edu.stanford.muse.datacache.BlobStore"%>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
@@ -16,23 +14,27 @@
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@ page import="edu.stanford.muse.index.Searcher" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
-<% 	boolean selectDocType = "doc".equals(request.getParameter("type")); %>
 
 <!DOCTYPE HTML>
 <html lang="en">
-<title><%=selectDocType ? "Document":"Other" %> Attachments</title>
 <head>
+	<title>Other Attachments</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	
+
+	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link href="css/selectpicker.css" rel="stylesheet" type="text/css" media="screen" />
+	<jsp:include page="css/css.jsp"/>
+
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-	
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
-	<jsp:include page="css/css.jsp"/>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/selectpicker.js"></script>
+
 	<script type="text/javascript" src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
@@ -43,6 +45,18 @@
 <script type="text/javascript" charset="utf-8">
 		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
 </script>
+
+    <style>
+        .date-input-group {  display: flex; }
+        .date-input-group .form-control { width:45%;}
+        .date-input-group label {  padding: 5px 18px;  font-size: 14px;  }
+
+        .filter-button { margin-top:38px; margin-right:17px; position:absolute; right: 0px;}
+        .btn-default { height: 37px; }
+         label {  font-size: 14px; padding-bottom: 13px; font-weight: 400; color: #404040; } /* taken from form-group label in adv.search.scss */
+        .one-line::after {  content:"";  display:block;  clear:both; }  /* clearfix needed, to take care of floats: http://stackoverflow.com/questions/211383/what-methods-of-clearfix-can-i-use */
+        .form-group { margin-bottom: 25px;}
+    </style>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
@@ -55,101 +69,152 @@
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
 	JSPHelper.log.info("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
-	
-	Collection<Document> docs = JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false);
+    List<Pair<Blob, EmailDocument>> allAttachmentsPairsList = Searcher.selectBlobs (archive, request);
+    Set<Blob> allAttachments = new LinkedHashSet<>();
+    for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList)
+        allAttachments.add (p.getFirst());
+    allAttachments = allAttachments.stream().filter (b -> !b.is_image()).collect (Collectors.toSet());
 
-	
-	if (docs != null && docs.size() > 0)
-	{
-		String extra_mesg = null;
-		// attachmentsForDocs
-		String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
-		BlobStore store = null;
-		try
-		{
-			store = new BlobStore(attachmentsStoreDir);
-		} catch (IOException ioe)
-		{
-			JSPHelper.log.error("Unable to initialize attachments store in directory: "
-					+ attachmentsStoreDir + " :" + ioe);
-			Util.print_exception(ioe, JSPHelper.log);
-			String url = null;
-		}
+    writeProfileBlock(out, archive, "",  Util.pluralize(allAttachmentsPairsList.size(), "Non-image attachment") + " (" + allAttachments.size() + " unique)");
+%>
 
-		List<Pair<Blob, EmailDocument>> allAttachments = new ArrayList<Pair<Blob, EmailDocument>>();
-		Collection<EmailDocument> eDocs = (Collection) docs;
-        Set<Blob> allBlobsSet = new LinkedHashSet<Blob>();
-        for (EmailDocument doc : eDocs)
-        {
-            List<Blob> a = doc.attachments;
-            if (a != null) {
-                for (Blob b : a) {
-                    if (selectDocType) {
-                        if (Util.is_doc_filename(b.filename)) {
-                            allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
-                            allBlobsSet.add(b);
-                        }
-                    } else {
-                        if (!Util.is_doc_filename(b.filename) && !Util.is_image_filename(b.filename)) {
-                            allAttachments.add(new Pair<Blob, EmailDocument>(b, doc));
-                            allBlobsSet.add(b);
-                        }
-                    }
-                }
+<div id="all_fields" style="margin:auto;width:1000px; padding: 10px">
+
+    <!-- filter form submits back to the same page -->
+    <form action="attachments" method="get">
+        <section>
+            <div class="panel">
+                <div class="panel-heading">Filter attachments</div>
+
+                <div class="one-line">
+                    <div class="form-group col-sm-6">
+                        <label for="attachmentType">Type</label>
+                        <select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
+                            <option value="" selected disabled>Select</option>
+                            <option value="graphics">Graphics (jpg, png, gif, bmp)</option>
+                            <option value="document">Document (doc, docx, pages)</option>
+                            <option value="presentation">Presentation (ppt, pptx, key)</option>
+                            <option value="spreadsheet">Spreadsheet (xls, xlsx, numbers)</option>
+                            <option value="internet">Internet file (htm, html, css, js)</option>
+                            <option value="compressed">Compressed (zip, 7z, tar, tgz)</option>
+                            <option value="audio">Audio (mp3, ogg)</option>
+                            <option value="video">Video (avi, mp4)</option>
+                            <option value="database">Database (fmp, db, mdb, accdb)</option>
+                        </select>
+                    </div>
+
+                    <!--File Size-->
+                    <div class="form-group col-sm-6">
+                        <label for="attachmentFilesize">File Size</label>
+                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
+                            <option value="" selected disabled>Choose File Size</option>
+                            <option value="1">&lt; 5KB</option>
+                            <option value="2">5-20KB</option>
+                            <option value="3">20-100KB</option>
+                            <option value="4">100KB-2MB</option>
+                            <option value="5">&gt; 2MB</option>
+                            <option value="6">Any</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="one-line">
+                    <!--Time Range-->
+                    <div class="form-group col-sm-6">
+                        <label for="time-range">Time Range</label>
+                        <div id="time-range" class="date-input-group">
+                            <input value="<%=request.getParameter ("startDate")%>" id="startDate" name="startDate" type="date" min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+                            <label for="endDate">To</label>
+                            <input value="<%=request.getParameter ("endDate")%>" id="endDate" name="endDate" type="date"  min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+                        </div>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <button type="submit" class="btn-default filter-button">Filter</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </form>
+    <!-- end filter form -->
+
+    <!-- initialize filter fields per request params -->
+    <% {
+        String vals[] = request.getParameterValues ("attachmentFilesize");
+        if (vals != null) {
+            String jsValString = "[";
+            for (String v: vals) { jsValString += "'" + v + "',"; }
+            if (vals.length > 0) {
+                jsValString = jsValString.substring(0, jsValString.length() - 1);
+                jsValString += "]";
             }
-        }
+    %>
+    <script>
+        // need a little delay for this to take effect
+        $(document).ready (function() { setTimeout (function() { $('#attachmentFilesize').selectpicker ('val', <%=jsValString%>); }, 1000); } );
+    </script>
+    <% }
+    }
+    %>
 
-        writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), (selectDocType ? "Document" : "Other") + " Attachment") + " (" + allBlobsSet.size() + " unique)");
+    <% {
+        String vals[] = request.getParameterValues ("attachmentType");
+        if (vals != null) {
+            String jsValString = "[";
+            for (String v: vals) { jsValString += "'" + v + "',"; }
+            if (vals.length > 0) {
+                jsValString = jsValString.substring(0, jsValString.length() - 1);
+                jsValString += "]";
+            }
+    %>
+    <script>
+        // need a little delay for this to take effect
+        $(document).ready (function() { setTimeout (function() { $('#attachmentType').selectpicker ('val', <%=jsValString%>); }, 1000); } );
+    </script>
+    <% }
+    }
+    %>
 
-		if (allAttachments.size() > 0) { %>
-			<br/>
-			<div style="margin:auto; width:1000px">
-				<table id="attachments">
-				<thead><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th></thead>
-				<tbody>
+</div>
 
-				<%
-				int count = 0;
-				BlobStore blobStore = archive.blobStore;
-				for (Pair<Blob, EmailDocument> p: allAttachments) {
-					EmailDocument ed = p.getSecond();
-					String docId = ed.getUniqueId();
-					Blob b = p.getFirst();
-					String contentFileDataStoreURL = blobStore.get_URL(b);
-					String blobURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
-					String messageURL = "browse?docId=" + docId;
-					%>
-						<!--
-					<tr>
-						<td class="link"><a href="<%=messageURL%>"><%=docId%></a></td>
-						<td> <%=ed.dateString() %></td>
-						<td><%=b.size/1000%>KB</td>
-						<td class="link"><a href="<%=blobURL%>"><%=b.filename %></a></td>
-					</tr>
-					-->
-				<%
-					String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
+    <% if (allAttachmentsPairsList.size() > 0) { %>
+        <br/>
+        <div style="margin:auto; width:1000px">
+            <table id="attachments">
+            <thead><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th></thead>
+            <tbody>
 
-					JSONArray j = new JSONArray();
-					j.put (0, Util.escapeHTML(subject));
-					j.put (1, ed.dateString());
-					j.put (2, b.size);
-					j.put (3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
+            <%
+            int count = 0;
+            BlobStore blobStore = archive.blobStore;
+            for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList) {
+                EmailDocument ed = p.getSecond();
+                String docId = ed.getUniqueId();
+                Blob b = p.getFirst();
+                String contentFileDataStoreURL = blobStore.get_URL(b);
+                String blobURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
+                String messageURL = "browse?docId=" + docId;
+                String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
 
-					// urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
-					j.put (4, messageURL);
-					j.put (5, blobURL);
-                    j.put (6, Util.escapeHTML(b.filename));
+                JSONArray j = new JSONArray();
+                j.put (0, Util.escapeHTML(subject));
+                j.put (1, ed.dateString());
+                j.put (2, b.size);
+                j.put (3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
 
-					resultArray.put (count++, j);
-				}
+                // urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
+                j.put (4, messageURL);
+                j.put (5, blobURL);
+                j.put (6, Util.escapeHTML(b.filename));
 
-				%>
-				</tbody>
-				</table>
-			</div>
-		<% } %>
-<%	} %>
+                resultArray.put (count++, j);
+            }
+
+            %>
+            </tbody>
+            </table>
+        </div>
+    <% } %>
 
 <br/>
 <jsp:include page="footer.jsp"/>

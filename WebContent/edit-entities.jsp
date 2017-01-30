@@ -1,11 +1,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%@page language="java" import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="edu.stanford.muse.ner.Entity" %>
+
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="java.util.stream.Collectors" %>
+<%@ page import="edu.stanford.muse.ie.variants.Variants" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
@@ -18,15 +20,14 @@
 %>
 <html>
 <head>
-	<title>Edit Correspondents</title>
+	<title>Edit Entities</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
-	
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
 	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/jquery.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 </head>
@@ -36,7 +37,7 @@
 <%writeProfileBlock(out, archive, "Edit address book", "");%>
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px;margin-top:20px;">
 	<select id="sort-order">
-		<option <%=!alphaSort?"selected":""%> value="volume">Sort by email volume</option>
+		<option <%=!alphaSort?"selected":""%> value="volume">Sort by frequency</option>
 		<option <%=alphaSort?"selected":""%> value="alpha">Sort alphabetically</option>
 	</select>
 </div>
@@ -44,92 +45,81 @@
 <script>
 	$(document).ready(function() {
 		$('#sort-order').change(function (e) {
+			var url = 'edit-entities?type=<%=request.getParameter ("type")%>';
 			if ('alpha' == this.value)
-				window.location = 'edit-correspondents?sort=alphabetical';
-			else
-				window.location = 'edit-correspondents';
+				window.location = url += '&sort=alphabetical';
 		});
 	});
 </script>
 
+<%
+	Map<Short, String> desc = new LinkedHashMap<>();
+	for(NEType.Type t: NEType.Type.values())
+		desc.put(t.getCode(), t.getDisplayName());
+
+	Short type = Short.parseShort(request.getParameter("type"));
+	out.println("<h1>Type: "+desc.get(type)+"</h1>");
+	Map<String, Entity> nameToEntity = new LinkedHashMap();
+	double theta = 0.001;
+	for(Document doc: archive.getAllDocs()){
+		Span[] spans = archive.getEntitiesInDoc (doc, true);
+		Set<String> seenInThisDoc = new LinkedHashSet<>();
+
+		for(Span span: spans) {
+			String name = span.getText();
+			if(span.type!=type || span.typeScore<theta)
+				continue;
+			if (seenInThisDoc.contains (name.toLowerCase().trim()))
+				continue;
+			seenInThisDoc.add (name.toLowerCase().trim());
+
+			if (!nameToEntity.containsKey(name))
+				nameToEntity.put(name, new Entity(name, span.typeScore));
+			else
+				nameToEntity.get(name).freq++;
+		}
+	}
+
+	Map<String, Integer> nameToFreq = new LinkedHashMap<>();
+	for(Entity e: nameToEntity.values()) {
+		nameToFreq.put(e.entity, e.freq);
+		//System.err.println("Putting: "+e+", "+e.score);
+	}
+
+	Set<String> entityNames = nameToFreq.entrySet().stream().map (e -> e.getKey()).collect (Collectors.toSet());
+	Variants.EntityMap em = new Variants.EntityMap();
+	em.setupEntityMapping (entityNames);
+
+	Set<Set<String>> clusters = em.getClusters();
+
+	StringBuilder textBoxVal = new StringBuilder();
+	for (Set<String> set: clusters) {
+		textBoxVal.append("-- \n");
+		for (String s : set) {
+			textBoxVal.append (s);
+			textBoxVal.append ("\n");
+		}
+	}
+
+	/*
+	List<Pair<String,Integer>> list = (alphaSort) ? Util.sortMapByKey(nameToFreq) : Util.sortMapByValue(nameToFreq);
+
+	for (Pair<String, Integer> p: list) {
+		String n = p.getFirst().trim();
+		textBoxVal.append ("-- Times: " + p.getSecond() + "\n" + Util.escapeHTML(n) + "\n");
+	}
+	*/
+
+%>
+
 <p>
 <div style="text-align:center">
-<form method="post" action="browse-top">
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
-<textarea name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-<%!
-private static String dumpForContact(Contact c, String description) {
-	StringBuilder sb = new StringBuilder();
-	sb.append ("-- " + description + "\n");
-
-
-	// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
-	Set<String> uniqueNames = new LinkedHashSet<String>();
-	for (String s: c.names)
-		if (!Util.nullOrEmpty(s))
-			uniqueNames.add(s);
-	// uniqueNames.add(s.trim());
-	
-	Set<String> uniqueEmails = new LinkedHashSet<String>();
-	for (String s: c.emails)
-		if (!Util.nullOrEmpty(s))
-			uniqueEmails.add(s);
-	
-	for (String s: uniqueNames)
-	{
-		sb.append (Util.escapeHTML(s) + "\n");
-	}
-	for (String s: uniqueEmails)
-		sb.append (Util.escapeHTML(s) + "\n");
-	sb.append("\n");
-	return sb.toString();
-}
-%>
-<%
-// always toString first contact as self
-Contact self = addressBook.getContactForSelf();
-if (self != null)
-	out.print(dumpForContact(self, "Archive owner"));
-
-if (!alphaSort)
-{
-	for (Contact c: addressBook.sortedContacts((Collection) archive.getAllDocs()))
-		if (c != self)
-			out.print(dumpForContact(c, ""));
-}
-else
-{
-	// build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
-	List<Contact> allContacts = addressBook.allContacts();
-	Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();
-	for (Contact c: allContacts)
-	{
-		if (c == self)
-			continue;
-		String bestEmail = c.pickBestName();
-		if (bestEmail == null)
-			continue;
-		canonicalBestNameToContact.put(bestEmail.toLowerCase(), c);		
-	}
-	
-	List<Pair<String, Contact>> pairs = Util.mapToListOfPairs(canonicalBestNameToContact);
-	Util.sortPairsByFirstElement(pairs);
-	
-	for (Pair<String, Contact> p: pairs)
-	{
-		Contact c = p.getSecond();
-		if (c != self)
-			out.print(dumpForContact(c, c.pickBestName()));
-	}
-}
-
-	
-%>
+<textarea name="entities" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=textBoxVal%>
 </textarea>
 <br/>
 
 <button class="btn btn-cta" type="submit">Save <i class="icon-arrowbutton"></i> </button>
-</form>
 </div>
 <p/>
 <br/>
