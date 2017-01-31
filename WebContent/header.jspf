@@ -54,7 +54,7 @@
 				<li style="display:inline"><a href="browse-top">Browse</a></li>
 				<li style="display:inline"><a href="search-query">Search</a></li>
 				<% 	if (ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="assignauthorities-top">Authorities</a></li>
+					<li style="display:inline"><a href="assign-authorities?type=correspondent">Authorities</a></li>
 				<% } %>
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 					<li style="display:inline"><a href="export">Export</a></li>

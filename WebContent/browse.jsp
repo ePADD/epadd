@@ -365,6 +365,7 @@
             for(String sp: selectedPrefixes)
                 tmp.add('"'+sp+'"');
             selectedPrefixes = tmp;
+
         }
         String searchType = request.getParameter("searchType");
         // warning: remember to convert, otherwise will not work for i18n queries!

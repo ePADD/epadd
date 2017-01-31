@@ -145,7 +145,7 @@
 
 		boolean onlyOneLexicon = (lexiconNames.size() == 1);
 		// common case is only one lexicon, don't show load lexicon in this case.
-		if (onlyOneLexicon > 1) { %>
+		if (!onlyOneLexicon) { %>
 			<script>function changeLexicon() {	window.location = 'lexicon?name=' +	$('#lexiconName').val(); }</script>
 
 			<div style="text-align:center">

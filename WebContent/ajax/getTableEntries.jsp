@@ -8,17 +8,14 @@
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.List"%>
 <%
-	InternalAuthorityAssigner assignauthorities = (InternalAuthorityAssigner)request.getSession().getAttribute("authorities");
+	InternalAuthorityAssigner assignauthorities = (InternalAuthorityAssigner) session.getAttribute("authorities");
 	Archive archive = JSPHelper.getArchive(session);
 	
 	if (assignauthorities==null) {
         assignauthorities = InternalAuthorityAssigner.load(archive);
-        request.getSession().setAttribute("authorities", assignauthorities);
+        session.setAttribute("authorities", assignauthorities);
     }
 
-	if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
-	  session.removeAttribute("statusProvider");
-	
 	String type = request.getParameter("type");
 	String db = request.getParameter("db");
 	String bi = request.getParameter("bi");
@@ -31,7 +28,6 @@
 	//type = "person";
 	Entities entitiesData = null;	
 	if(assignauthorities != null && type != null){
-		List<Pair<String, Integer>> pairs = new ArrayList<Pair<String,Integer>>();
 		if(type.equals("correspondent")){
 			entitiesData = assignauthorities.entitiesData.get(EntityFeature.CORRESPONDENT);
 			JSPHelper.log.info("Number of correspondents: " + entitiesData.canonicalToOriginal.size());
@@ -50,20 +46,20 @@
 			JSPHelper.log.info("Number of places entities: " + entitiesData.canonicalToOriginal.size());
 		}
 	}
-	
-	long startMillis = System.currentTimeMillis();
 	session.setAttribute("statusProvider", entitiesData);
+
+	long startMillis = System.currentTimeMillis();
 	//this is table data in the form of Array of JSON objects and each JSON object in turn contains
 	//values, contexts and classes for each row
 	String tabledata = null;
-	try{
+	try {
 		Entities.Info info = new Entities.Info(type,db,false);
-		tabledata = entitiesData.getHtmlFor(beginIdx, endIdx, info, archive);
+		tabledata = entitiesData.getJSONObjectFor(beginIdx, endIdx, info, archive);
 	}catch(Exception e){
 		e.printStackTrace();
 	}
-	if(tabledata!=null)
-		response.getWriter().write(tabledata);
+	if (tabledata!=null)
+		response.getWriter().write(tabledata.toString());
 	session.removeAttribute("statusProvider");
 	JSPHelper.log.info("Assign authorities lookup took " + (Util.commatize(System.currentTimeMillis() - startMillis)) + " ms");
 	return;
