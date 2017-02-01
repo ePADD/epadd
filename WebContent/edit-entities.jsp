@@ -7,11 +7,11 @@
 
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.ie.variants.Variants" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
+<%@ page import="java.util.stream.Stream" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	AddressBook addressBook = archive.addressBook;
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
 	if (allDocs == null)
 		allDocs = (Collection) archive.getAllDocs();
@@ -48,78 +48,64 @@
 			var url = 'edit-entities?type=<%=request.getParameter ("type")%>';
 			if ('alpha' == this.value)
 				window.location = url += '&sort=alphabetical';
+			else
+				window.location = url;
 		});
 	});
 </script>
 
 <%
-	Map<Short, String> desc = new LinkedHashMap<>();
+	Map<Short, String> typeCodeToName = new LinkedHashMap<>();
 	for(NEType.Type t: NEType.Type.values())
-		desc.put(t.getCode(), t.getDisplayName());
+		typeCodeToName.put(t.getCode(), t.getDisplayName());
 
 	Short type = Short.parseShort(request.getParameter("type"));
-	out.println("<h1>Type: "+desc.get(type)+"</h1>");
-	Map<String, Entity> nameToEntity = new LinkedHashMap();
-	double theta = 0.001;
-	for(Document doc: archive.getAllDocs()){
-		Span[] spans = archive.getEntitiesInDoc (doc, true);
-		Set<String> seenInThisDoc = new LinkedHashSet<>();
+	out.println("<h1>Type: "+ typeCodeToName.get(type)+"</h1>");
 
-		for(Span span: spans) {
-			String name = span.getText();
-			if(span.type!=type || span.typeScore<theta)
-				continue;
-			if (seenInThisDoc.contains (name.toLowerCase().trim()))
-				continue;
-			seenInThisDoc.add (name.toLowerCase().trim());
+	EntityMapper entityMapper = archive.getEntityMapper();
+	Map<String, Integer> displayNameToFreq = entityMapper.getDisplayNameToFreq(archive, type);
 
-			if (!nameToEntity.containsKey(name))
-				nameToEntity.put(name, new Entity(name, span.typeScore));
-			else
-				nameToEntity.get(name).freq++;
-		}
+	// get pairs of <displayname, freq> in alpha order of display name, or the order of Freq
+	List<String> entityDisplayNames;
+	if (alphaSort) {
+		entityDisplayNames = new ArrayList<> (displayNameToFreq.keySet());
+		Collections.sort (entityDisplayNames);
+	} else {
+		entityDisplayNames = Util.sortMapByValue(displayNameToFreq).stream().map(p -> p.getFirst()).collect (Collectors.toList());
 	}
 
-	Map<String, Integer> nameToFreq = new LinkedHashMap<>();
-	for(Entity e: nameToEntity.values()) {
-		nameToFreq.put(e.entity, e.freq);
-		//System.err.println("Putting: "+e+", "+e.score);
-	}
-
-	Set<String> entityNames = nameToFreq.entrySet().stream().map (e -> e.getKey()).collect (Collectors.toSet());
-	Variants.EntityMap em = new Variants.EntityMap();
-	em.setupEntityMapping (entityNames);
-
-	Set<Set<String>> clusters = em.getClusters();
-
+	// start building the string that goes into the text box
 	StringBuilder textBoxVal = new StringBuilder();
-	for (Set<String> set: clusters) {
-		textBoxVal.append("-- \n");
-		for (String s : set) {
-			textBoxVal.append (s);
-			textBoxVal.append ("\n");
+	{
+		for (String entityDisplayName : entityDisplayNames) {
+			// for this entity, enter the separator first, then the display name, then alt names if any
+			textBoxVal.append("-- \n");
+			textBoxVal.append(Util.escapeHTML(entityDisplayName) + "\n");
+
+			// get alt names if any
+			Set<String> altNames = entityMapper.getAltNamesForDisplayName(entityDisplayName, type);
+			if (altNames != null)
+				for (String altName : altNames)
+					textBoxVal.append(Util.escapeHTML(altName) + "\n");
 		}
 	}
-
-	/*
-	List<Pair<String,Integer>> list = (alphaSort) ? Util.sortMapByKey(nameToFreq) : Util.sortMapByValue(nameToFreq);
-
-	for (Pair<String, Integer> p: list) {
-		String n = p.getFirst().trim();
-		textBoxVal.append ("-- Times: " + p.getSecond() + "\n" + Util.escapeHTML(n) + "\n");
-	}
-	*/
-
 %>
 
 <p>
+
 <div style="text-align:center">
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
-<textarea name="entities" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=textBoxVal%>
-</textarea>
+	<form method="post" action="browse-top">
+		<input name="entityType" type="hidden" value="<%=type%>"/>
+
+		<textarea name="entityMerges" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=textBoxVal%>
+		</textarea>
+		<br/>
+		<br/>
+		<button class="btn btn-cta" type="submit">Save <i class="icon-arrowbutton"></i> </button>
+	</form>
 <br/>
 
-<button class="btn btn-cta" type="submit">Save <i class="icon-arrowbutton"></i> </button>
 </div>
 <p/>
 <br/>

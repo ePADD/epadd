@@ -121,7 +121,7 @@
 				<div style="float:right">
 				<% String checked = "checked"; // (request.getParameter("downloadAttachments") != null) ? "checked" : "";
 				%>
-				<INPUT TYPE=hidden ID="downloadAttachments" NAME="downloadAttachments" <%=checked%>/>
+				<INPUT TYPE="hidden" ID="downloadAttachments" NAME="downloadAttachments" <%=checked%>/>
 				</div>
 							<section><div id="date-range" style="display:none"><h2><i class="fa fa-calendar"></i> Date Range</h2>
 

@@ -9,6 +9,7 @@
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.*" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--
 Browse page for enbtities based on fine types
@@ -52,24 +53,37 @@ Browse page for enbtities based on fine types
         Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
-        for(Document doc: archive.getAllDocs()){
+        EntityMapper entityMapper = archive.getEntityMapper();
+
+        for (Document doc: archive.getAllDocs()){
             Span[] es = archive.getEntitiesInDoc(doc,true);
             Set<String> seenInThisDoc = new LinkedHashSet<>();
 
-            for(Span sp: es) {
-                String e = sp.getText();
-                if(sp.type!=type || sp.typeScore<theta)
+            for (Span span: es) {
+                if (span.type != type || span.typeScore<theta)
                     continue;
-                if (seenInThisDoc.contains (e.toLowerCase().trim()))
-                    continue;
-                seenInThisDoc.add (e.toLowerCase().trim());
 
-                if (!entities.containsKey(e))
-                    entities.put(e, new Entity(e, sp.typeScore));
+                String name = span.getText();
+                String displayName = name;
+
+                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
+                if (entityMapper != null)
+                    displayName = entityMapper.getDisplayName(name, span.type);
+
+                displayName = displayName.trim();
+
+                if (seenInThisDoc.contains(displayName.toLowerCase()))
+                    continue; // count an entity in a doc only once
+
+                seenInThisDoc.add (displayName.toLowerCase());
+
+                if (!entities.containsKey(displayName))
+                    entities.put(displayName, new Entity(displayName, span.typeScore));
                 else
-                    entities.get(e).freq++;
+                    entities.get(displayName).freq++;
             }
         }
+
         Map<Entity, Double> vals = new LinkedHashMap<>();
         for(Entity e: entities.values()) {
             vals.put(e, e.score);
@@ -85,9 +99,12 @@ Browse page for enbtities based on fine types
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
 
+            Set<String> altNamesSet = entityMapper.getAltNamesForDisplayName(entity, type);
+            String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
             j.put (0, Util.escapeHTML(entity));
             j.put (1, (float)p.getFirst().score);
             j.put (2, p.getFirst().freq);
+            j.put (3, altNames);
 
             resultArray.put (count-1, j);
         }
@@ -112,15 +129,18 @@ Browse page for enbtities based on fine types
                 // epadd.do_search will open search result in a new tab.
                 // Note, we have to insert onclick into the rendered HTML,
                 // we were earlier trying $('.search').click(epadd.do_search) - this does not work because only the few rows initially rendered to html match the $('.search') selector, not the others
-                return '<span style="cursor:pointer" onclick="epadd.do_search(event)">' + data + '</span>';
+                return '<span title="' + full[3] + '" style="cursor:pointer" onclick="epadd.do_search(event)">' + data + '</span>';
             };
 
             var entities = <%=resultArray.toString(4)%>;
             $('#entities').dataTable({
                 data: entities,
                 pagingType: 'simple',
-                columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "600px", targets: 0},{targets: 0, render:click_to_search},
-                    {render:function(data,type,row){return Math.round(row[1]*1000)/1000}, targets:[1]}],
+                columnDefs: [
+                        { className: "dt-right", targets: 1},
+                        { width: "600px", targets: 0},
+                        { render:click_to_search, targets: 0},
+                        { render: function(data,type,row){return Math.round(row[1]*1000)/1000}, targets:1}],
                 order:[[1, 'desc'], [2, 'desc']], // col 1 (entity message count), descending
                 fnInitComplete: function() { $('#spinner-div').hide(); $('#entities').fadeIn(); }
             });

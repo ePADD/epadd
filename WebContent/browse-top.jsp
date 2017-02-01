@@ -11,6 +11,7 @@
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.List" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -47,6 +48,19 @@
         archive.addressBook.initialize(addressBookUpdate);
         SimpleSessions.saveArchive(session);
     }
+
+	String entityMerges = request.getParameter("entityMerges");
+	if (!Util.nullOrEmpty(entityMerges)) {
+		EntityMapper entityMapper = archive.getEntityMapper();
+		Short type = -1;
+		try {
+			type = Short.parseShort (request.getParameter ("entityType"));
+			entityMapper.initialize (type, entityMerges);
+			SimpleSessions.saveArchive(session);
+		} catch (Exception e) {
+			Util.print_exception("Error in merging entities", e, JSPHelper.log);
+		}
+	}
 
 	Collection<EmailDocument> allDocs = (Collection) JSPHelper.getSessionAttribute(session, "emailDocs");
 	Collection<EmailDocument> fullEmailDocs = (Collection) archive.getAllDocs();
