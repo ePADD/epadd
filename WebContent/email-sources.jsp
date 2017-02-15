@@ -223,7 +223,7 @@ if (archive != null) {
 
 
 			<br/>
-			<button  style="margin-left:40px" class="btn-default" onclick="add_mboxdir(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.email-sources.another-mbox")%></button>
+			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i> Add another folder</button>
 			<br/>
 			<br/>
 		</div>
@@ -279,7 +279,7 @@ if (archive != null) {
 			$clone.insertAfter($lasta);
 			$('<br/>').insertAfter($lasta);
 
-			fps.push(new FilePicker($clone, roots));
+			fps.push(new FilePicker($clone));
 			epadd.fix_login_account_numbers();
 			return false;
 		}
