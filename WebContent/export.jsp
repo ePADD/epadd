@@ -22,9 +22,7 @@
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="css/selectpicker.css" rel="stylesheet" type="text/css" media="screen" />
 	<jsp:include page="css/css.jsp"/>
-  <!--
-    <link rel="stylesheet" href="css/main.css">
--->
+
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="jqueryFileTree/jqueryFileTree.js"></script>

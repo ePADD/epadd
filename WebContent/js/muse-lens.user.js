@@ -107,11 +107,18 @@ main = function(evt) {
 			return null; // ignore fb bar because it causes spurious hits w/the name of the user.
 
 		// don't want to highlight our own stuff
-		if (node.className == 'muse-details')
-			return arr; 
 		if (node.id == '#muse-status')
-			return arr; 
-		
+			return arr;
+
+		// ignore subtrees with a few classes -- modals, navbars and muse-details
+		// below is the right way to check if an element has a class: http://stackoverflow.com/questions/5898656/test-if-an-element-contains-a-class
+		if ((' ' + node.className + ' ').indexOf('muse-details') > -1)
+			return arr;
+		if ((' ' + node.className + ' ').indexOf('navbar') > -1)
+			return arr;
+		if ((' ' + node.className + ' ').indexOf('modal') > -1)
+			return arr;
+
 		if (!arr)
 			arr = [];
 		if (node.nodeType == 7 || node.nodeType == 2) // comment node, attribute node
@@ -722,8 +729,11 @@ var open_popup = function(hit_details)
 		       + '<div>' + mesg.date + '</div>'
         	   + '<div>From: <span>' + ((mesg.from.length > 0) ? mesg.from[0].email : '???') + '</span>'
         	   + " To: <span>" + ((mesg.to.length > 0) ? mesg.to[0].email + plus_mesg : '???') + '</span></div>'
-               + "<div>Subject: <span>" + ellipsize(hit_details.messages[m].subject, 46) + '</span></div>';
+               + "<div>Subject: <span>" + ellipsize(hit_details.messages[m].subject, 46) + '</span></div>'
         	   + "</div>";
+		var last_entry = (m == 3 || m == hit_details.messages.length-1);
+		if (!last_entry)
+			popup += '<hr/>'; // no <hr> for last entry
     }
 	$('.modal-body').html(popup);
     $('#myModal').modal('show');

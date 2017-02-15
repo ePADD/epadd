@@ -7,6 +7,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.List"%>
+<%@ page import="org.json.JSONObject" %>
 <%
 	InternalAuthorityAssigner assignauthorities = (InternalAuthorityAssigner) session.getAttribute("authorities");
 	Archive archive = JSPHelper.getArchive(session);
@@ -51,13 +52,14 @@
 	long startMillis = System.currentTimeMillis();
 	//this is table data in the form of Array of JSON objects and each JSON object in turn contains
 	//values, contexts and classes for each row
-	String tabledata = null;
+	JSONObject tabledata = null;
 	try {
 		Entities.Info info = new Entities.Info(type,db,false);
 		tabledata = entitiesData.getJSONObjectFor(beginIdx, endIdx, info, archive);
-	}catch(Exception e){
+	} catch(Exception e){
 		e.printStackTrace();
 	}
+
 	if (tabledata!=null)
 		response.getWriter().write(tabledata.toString());
 	session.removeAttribute("statusProvider");

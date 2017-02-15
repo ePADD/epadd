@@ -16,17 +16,35 @@ if (ModeConfig.isPublicMode()) {
 	<title>Query Generator Results</title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <!-- Optional theme -->
+<!--    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css"> -->
+    <jsp:include page="css/css.jsp"/>
 
 	<script src="js/jquery.js"></script>
-		
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
-	<jsp:include page="css/css.jsp"/>
 	<script src="js/epadd.js"></script>
-    <link rel="stylesheet" href="css/main.css">
+
+    <style>
+        .search-clear-btns { text-align: center; padding: 35px 0; }
+        .search-btn {
+            background: #0175bc;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 4px;
+            display: inline-flex;
+            justify-content: center;
+            margin-right: 25px;
+            box-shadow: 0px 2px 7px 1px rgba(153, 177, 200, 0.38);
+        }
+        img { margin: 3px 0 0 10px;}
+        h5 { margin: 0px; color: white; }
+    </style>
 </head>
 <body style="background-color:#f5f5f8; color: #333">
 <jsp:include page="header.jspf"/>
@@ -60,39 +78,22 @@ if (ModeConfig.isPublicMode()) {
             </div>
         </div>
     </div>
-    <div id="myModal" class="modal fade popup-epadd" role="dialog">
-        <div class="modal-dialog">
 
-            <!-- Modal content-->
+    <div id="myModal" class="modal fade" style="z-index:9999">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="header-popup">
-                    <h2 class="text-left" id="search-term">Steve Wozniak</h2>
-                    <div>
-                        <a data-dismiss="modal">
-                            <img src="images/close.png" alt="close">
-                        </a>
-                    </div>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 style="font-size: 125%" class="modal-title">Messages matching <span id="search-term"></span></h4>
                 </div>
                 <div class="modal-body">
-                    <div class="mail-subject">
-                        <div>Jan 22,2002.</div>
-                        <div>From: <span>raj@gmail.com,</span> To: <span>mandeep@gmail.com</span></div>
-                        <div>Subject: <span>Duncan reading group</span></div>
-                    </div>
                 </div>
-                <div class="search-clear-btns">
-                    <!--search btn-->
-                    <button id="submit-button" type="submit" class="search-btn">
-                        <h5>VIEW ALL MESSAGES</h5>
-<!--                        <h5>VIEW <span id="nHits">0</span> MESSAGES</h5> -->
-                    </button>
+                <div class="modal-footer">
+                    <button id='submit-button' type="button" class="btn btn-default" data-dismiss="modal">View all <span id="nHits"></span> message(s)</button>
                 </div>
-
-            </div>
-
-        </div>
-    </div>
-
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 </div>
 
@@ -103,7 +104,7 @@ if (ModeConfig.isPublicMode()) {
     if(window.MUSE_URL==null)
         window.MUSE_URL="";
     var handle_submit = function() {
-        window.open('browse?term="' + $('#search-term').html() + '"');
+        window.open('browse?adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term="' + $('#search-term').html() + '"');
     };
 
     $('#submit-button').click(handle_submit);

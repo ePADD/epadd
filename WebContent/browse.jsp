@@ -84,7 +84,6 @@
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.qtip.min.css">
     <jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" page="css/epadd.css"/>
 
     <script src="js/stacktrace.js" type="text/javascript"></script>
 
@@ -365,7 +364,6 @@
             for(String sp: selectedPrefixes)
                 tmp.add('"'+sp+'"');
             selectedPrefixes = tmp;
-
         }
         String searchType = request.getParameter("searchType");
         // warning: remember to convert, otherwise will not work for i18n queries!
