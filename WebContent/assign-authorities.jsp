@@ -199,7 +199,6 @@
 		  $('#table').fadeIn();
 		  
 		  $('#save_button').click(save_authorities);
-		  $('#export_button').click(export_authorities);
 		  return false;
 		});
 		
