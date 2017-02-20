@@ -51,21 +51,22 @@
 
 	<!--phrase-->
 	<div class="search-tips">
-		<img src="images/pharse.png" alt="">
 		<p>
-			Text from Josh here.
+			This screen allows the user to view and edit the email address(es) and name(s) associated with each correspondent
+		<p>
+
+			The archive owner should always be the first individual listed.
+		<p>
+			The first name listed within each group of names or addresses is the name ePADD will display in all search and browsing results and visualizations. Manually change this display name by adding a new name at the top of this list
+
+		<p>
+			If names or addresses are incorrectly associated with the wrong individual, you can manually cut and paste them underneath a different entry
+
+		<p>
+			Mailing list addresses can be manually identified and added under the heading “-- [ML]” If this heading does not exist simply create it.
+
 		</p>
 	</div>
-
-	<!--requered-->
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
-
-
 </nav>
 <!--/sidebar-->
 

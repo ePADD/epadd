@@ -51,21 +51,10 @@
 		<img src="images/close.png" class="close" alt="close">
 	</a>
 
-	<!--phrase-->
-	<div class="search-tips">
-		<img src="images/pharse.png" alt="">
-		<p>
-			Text from Josh here.
-		</p>
-	</div>
-
-	<!--requered-->
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
+	<p>Merge entities by grouping them together using find, cut, and paste commands.
+	<p>Unmerge entities by separating them using find, cut, and paste commands.
+	<p>The first entity name listed within each group of entity names is the one ePADD will display in all search and browsing results and visualizations. Manually change this display name by moving a new name to the top of this list. Alternatively, you can supply a new entity display name to the top of the list. This supplied entity name does not need to appear in the email archive.
+	<p>Assign entities to a different category by cutting and pasting them into a different entity category’s <b>Edit Entities</b> panel.
 
 
 </nav>

@@ -74,23 +74,15 @@
 		<img src="images/close.png" class="close" alt="close">
 	</a>
 
-	<!--phrase-->
-	<div class="search-tips">
-		<img src="images/pharse.png" alt="">
-		<p>
-			Text from Josh here.
-		</p>
-	</div>
+	<p>To add a lexicon category, select the Add a Category button. To remove a category, simply remove all words in it.
 
-	<!--requered-->
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
+	<p>New entries in a category should be separated with the | (pipe) character.
 
+	<p>Multi-word phrases should be enclosed in double-quotes.
 
+	<p>Note that words and phrases with hyphens, such as father-in-law, should be spelled without hyphens.
+
+	<p>Select Test for a given category to view the number of hits for each keyword in that category.
 </nav>
 <!--/sidebar-->
 <div align="center">

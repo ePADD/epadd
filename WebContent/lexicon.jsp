@@ -78,21 +78,13 @@
 		<img src="images/close.png" class="close" alt="close">
 	</a>
 
-	<!--phrase-->
-	<div class="search-tips">
-		<img src="images/pharse.png" alt="">
-		<p>
-			Text from Josh here.
-		</p>
-	</div>
+	<p>Lexicons are customizable saved searches containing categories of keywords.
+	<p>Define the default lexicon using the config.properties file.
+	<p>Selecting a lexicon category from this screen will display the messages containing keywords in that category.
+	<p>Select a different lexicon using the Choose Lexicon dropdown.
+	<p>Lexicons can be viewed in detail and edited by selecting the View/Edit Lexicon button.
+	<p>Create a new lexicon by selecting the Create New Lexicon button.
 
-	<!--requered-->
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
 </nav>
 <!--/sidebar-->
 
