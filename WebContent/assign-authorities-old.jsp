@@ -3,15 +3,6 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="edu.stanford.muse.ie.AuthorityMapper" %>
-<%@ page import="org.json.JSONObject" %>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
-<%@ page import="java.util.Collection" %>
-<%@ page import="edu.stanford.muse.email.Contact" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.LinkedHashSet" %>
-<%@ page import="org.json.JSONArray" %>
 <%@include file="getArchive.jspf" %>
 
 <html>
@@ -226,31 +217,15 @@
 	</script>
 </head>
 <body>
-
+<%
+	String type = request.getParameter("type");
+	if (!"correspondent".equals(type))
+		type = "all";
+%>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Authorities');</script>
-
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
-
-<%
-    String type = request.getParameter("type");
-    if (!"correspondent".equals(type))
-        type = "all";
-    AuthorityMapper authorityMapper = archive.getAuthorityMapper();
-    Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-    AddressBook addressBook = archive.getAddressBook();
-    List<Contact> contacts = addressBook.sortedContacts(new LinkedHashSet<>((List) archive.getAllDocs()));
-
-    JSONArray resultArray = new JSONArray();
-    int count = 0;
-    for (Contact c: contacts) {
-        String name = c.pickBestName();
-        JSONObject jobj = authorityMapper.getJsonForName (name);
-        resultArray.put (count, jobj);
-    }
-    count++;
-%>
 
 <!--sidebar content-->
 <!--

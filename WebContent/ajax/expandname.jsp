@@ -24,7 +24,7 @@
 %>
 <%
 	response.setContentType("application/json; charset=utf-8");
-	InternalAuthorityAssigner authorities = (InternalAuthorityAssigner)request.getSession().getAttribute("authorities");
+//	InternalAuthorityAssigner authorities = (InternalAuthorityAssigner)request.getSession().getAttribute("authorities");
 	Archive archive = (Archive)request.getSession().getAttribute("archive");
 	JSONObject result = new JSONObject();
 	if (archive == null){

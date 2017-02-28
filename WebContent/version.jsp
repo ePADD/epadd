@@ -1,1 +1,1 @@
-ePADD version Release 3.0-alpha-Feb17
+ePADD version Release 3.0-beta-Feb28

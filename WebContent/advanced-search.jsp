@@ -605,9 +605,14 @@
 							</select>
 						</div>
 
+						<div class="form-group col-sm-6">
+							<label for="uniqueId">Message ID</label>
+							<input id="uniqueId" name="uniqueId" type="text" class="form-control">
+							</input>
+						</div>
+
 					</div>
 				<!--/Others-->
-
 
 				<!--Sort Results By-->
 				<div class="text search-wraper">
