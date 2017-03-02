@@ -2,49 +2,48 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
-<%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page language="java" %>
 <%@ page import="edu.stanford.muse.ie.AuthorityMapper" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
-<%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.email.Contact" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.LinkedHashSet" %>
 <%@ page import="org.json.JSONArray" %>
-<%@include file="getArchive.jspf" %>
+<%@ page import="com.google.gson.Gson" %>
+<%@ page import="edu.stanford.muse.webapp.*" %>
+<%@ page import="java.util.*" %>
 
 <html>
 <head>
 	<title>Processing: Assign authorities</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>
+    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/sidebar.css">
 	<jsp:include page="css/css.jsp"/>
-	<link rel="stylesheet" href="css/sidebar.css">
-	<link href="css/suggester.css" rel="stylesheet" />
 
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.mockjax.js" type="text/javascript"></script>
+    <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
+    <script type="text/javascript" src="js/fancyBox/source/jquery.fancybox.js"></script>
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="js/jquery.mockjax.js" type="text/javascript"></script>
-	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	
 
 	<script src="js/utils.js" type="text/javascript"></script>	
-	<script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
-	<script type="text/javascript" src="js/fancyBox/source/jquery.fancybox.js"></script>
 
 	<style type="text/css">
-      .js #table {display: none;}
+      .js table {display: none; font-size: 14px; vertical-align: top;}
+      .candidate { margin-top: 10px; margin-left:30px;}
+      hr { margin-top: 0px; margin-bottom: 0px; opacity: 0.3;}
+
       .search {cursor:pointer;}
       .wikiPage{
       	width: 350px;
@@ -64,6 +63,13 @@
     .autocomplete-suggestions {
         top: 210.2px !important;
     }
+
+        .authority-ids {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+        .auth-record {margin-left: 10px; }
     </style>
     <!-- fancybox is failing to compute the right top value on this page.-->
     
@@ -130,59 +136,6 @@
 			return false; /* to suppress other button actions */
 	 };
 
-      //@arg randId - a randum id that identifies an element in the row
-      sort = function(randId) {
-          rowNo = $("#"+randId).closest("tr").index();
-          epadd.log("Row no: "+rowNo);
-          //because we get a 0 indexed row number
-          rowNo++;
-          selector = "tr:eq(" + rowNo + ") td:eq(2)";
-          dbsHtml = $(selector);
-          ck = $(selector).find("input[type='checkbox']")[0];
-          var url = document.URL;
-          name = $("tr:eq(" + rowNo + ") td:eq(0)").text();
-          if (typeof(s) !== "undefined") s = s.substr(1, s.length - 2);
-          context = $(selector).attr("data-context");//aData[3];
-          if (!$(selector).find(".loading"))
-              $(selector).append("<img style='height:15px' class='loading' src='images/spinner.gif'/>");
-          //dont place the call when the context is empty.
-          //Never pass html as a parameter, I have learnt it the hardest way possible
-          //for instance I was passing html in the last column of a row as a param to an ajax call,
-          //the html that is being passed as parameter spilled all over and gave me a very cryptic
-          // error message: (TypeError: 'click' called on an object that does not implement interface HTMLElement)
-          //which took me one good day to figure out what the problem was
-          if ((typeof(ck) !== "undefined") && (!ck.checked)) {
-              $(selector).find(".loading").fadeIn();
-              epadd.log("rn: " + rowNo);
-              $.ajax({
-                  type: "POST",
-                  url: "./ajax/sortsources.jsp",
-                  contentType: "application/x-www-form-urlencoded;charset=utf-8",
-                  dataType: "text",
-                  data: {
-                      "entity": name,
-                      "type": type,
-                      "rowno": rowNo
-                  },
-                  success: function (data, status, jqXHR) {
-                      selector = "tr:eq(" + rowNo + ") td:eq(2)";
-                      console.log("Received response: " + data + " for rowNo: " + rowNo);
-                      epadd.log(data);
-                      $(selector).html(data);
-                      $(selector).find(".loading").hide();
-                  },
-                  beforeSend: function (jqXHR, settings) {
-                      jqXHR.rowNo = settings.rowNo;
-                  },
-                  error: function (jqXHR, exception, error) {
-                      epadd.log("Error while sorting: #" + rowNo + " row. Exception: " + exception + " Error:" + error);
-                      $("tr:eq(" + rowNo + ") td:eq(2)").find(".loading").hide();
-                      return null;
-                  }
-              });
-          }
-      };
-
 	  $(document).ready(function() {
 		  $('.search').click(epadd.do_search);
 		  renderedRows = [];
@@ -226,6 +179,7 @@
 	</script>
 </head>
 <body>
+<%@include file="getArchive.jspf" %>
 
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Authorities');</script>
@@ -238,176 +192,158 @@
     if (!"correspondent".equals(type))
         type = "all";
     AuthorityMapper authorityMapper = archive.getAuthorityMapper();
-    Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
+    authorityMapper.setupCounts(archive);
     AddressBook addressBook = archive.getAddressBook();
+
     List<Contact> contacts = addressBook.sortedContacts(new LinkedHashSet<>((List) archive.getAllDocs()));
 
-    JSONArray resultArray = new JSONArray();
-    int count = 0;
+    int rowType = edu.stanford.muse.webapp.HTMLUtils.getIntParam (request, "rowType", 1);
+
+    List<AuthorityMapper.AuthorityInfo> rows = new ArrayList<>();
     for (Contact c: contacts) {
         String name = c.pickBestName();
-        JSONObject jobj = authorityMapper.getJsonForName (name);
-        resultArray.put (count, jobj);
+        AuthorityMapper.AuthorityInfo info = authorityMapper.getAuthorityInfo(name);
+
+        boolean showRow = false;
+        switch (rowType) {
+            case 1:
+                showRow = (!info.isConfirmed && !Util.nullOrEmpty (info.candidates));
+                break;
+            case 2:
+                showRow = !info.isConfirmed;
+                break;
+            case 3:
+                showRow = true;
+                break;
+            case 4:
+                showRow = info.isConfirmed;
+                break;
+            case 5:
+                showRow = info.confirmedAuthority != null && info.confirmedAuthority.fastId != AuthorityMapper.INVALID_FAST_ID;
+                break;
+            case 6:
+                showRow = info.confirmedAuthority != null && info.confirmedAuthority.fastId == AuthorityMapper.INVALID_FAST_ID;
+                break;
+        }
+
+        if (showRow)
+            rows.add (info);
     }
-    count++;
+
 %>
 
-<!--sidebar content-->
-<!--
-<div class="nav-toggle1 sidebar-icon">
-	<img src="images/sidebar.png" alt="sidebar">
-</div>
-
-<nav class="menu1" role="navigation">
-	<h2>Assign authorities</h2>
-	<a class="nav-toggle1 show-nav1" href="#">
-		<img src="images/close.png" class="close" alt="close">
-	</a>
-
-	<div class="search-tips">
-		<img src="images/pharse.png" alt="">
-		<p>
-			Text from Josh here.
-		</p>
-	</div>
-
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
-
-
-</nav>
--->
-<!--/sidebar-->
+<form>
+    <div style="text-align:center">
+        <div class="form-group" style="width:20%; margin-left:40%">
+            <label for="rowType"></label>
+            <select id="rowType" name="rowType" class="form-control selectpicker">
+                <option  <%=(rowType == 1 ? "selected":"")%> value=1>Show unconfirmed rows with candidates</option>
+                <option  <%=(rowType == 2 ? "selected":"")%> value=2>Show all unconfirmed rows</option>
+                <option  <%=(rowType == 3 ? "selected":"")%> value=3>Show all rows</option>
+                <option  <%=(rowType == 4 ? "selected":"")%> value=4>Show all confirmed rows</option>
+                <option  <%=(rowType == 5 ? "selected":"")%> value=5>Show rows with confirmed authorities</option>
+                <option  <%=(rowType == 6 ? "selected":"")%> value=6>Show rows confirmed to have no authorities</option>
+            </select>
+        </div>
+    </div>
+</form>
 
 <script>
-	bi=0;
-	ei=<%=edu.stanford.muse.Config.MAX_TRY_TO_RESOLVE_NAMES %>;
-	
-	getNext = function(numEntries){
-		var temp = bi;
-		bi = ei;
-		ei = temp+numEntries;
-		fetchTableEntries(bi,ei);
-	}
-	
-	getNext = function(){
-		numEntries = parseInt($("#numLoad").val());
-		bi = ei;
-		ei = bi+numEntries;
-		fetchTableEntries(bi,ei);
-	}
-	
-	createIndex = function(){
-		params = "";
-		page = "ajax/checkFeaturesIndex.jsp";
-		epadd.log(page+params);
-		
-		//supplying the ready function to make it not redirect to the other page and give us the handle of the response data.  
-		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), params, null, "assign-authorities-old.jsp?type="+type);
-	}
-
-	showing = 0;
-	//beginIndex and endIndex of teh entries to be fetched.
-	fetchTableEntries = function(beginIndex,endIndex){
-		ready = function(j){
-			var t = $('#table').DataTable();
-			status = j["status"];
-            if(status === "0") {
-                var info = j["info"];
-                epadd.log(info);
-                $("#table").html("<span style='color:red'>"+info+"</span>");
-                return;
-            }
-            total = j["total"];
-			ei = j["endIndex"];
-			j = j["data"];
-			showing += (endIndex-beginIndex);
-
-			for(var i=0;i<j.length;i++){
-				contexts = j[i]["contexts"];
-				classes = j[i]["classes"];
-				values = j[i]["values"];
-				rows = "";
-				//link the name to browse page (search)
-				//name is in the index 0
-				values[0] = '<a target="_blank" href=\'browse?term="'+values[0]+'"\'>'+values[0]+'</a>';
-				epadd.log("Value: "+values[0]);
-				for(var k=0;k<contexts.length;k++){
-					row = $("<td>").append(values[k]);
-					$(row).attr("data-context",contexts[k]);
-					$(row).attr("class",classes[k]);
-				    rows += row[0].outerHTML;
-				    if(k<(contexts.length-1))
-				    	rows+=",";
-				}
-				jRow = $('<tr>').append(rows);
-				t.row.add(jRow).draw();
-			}
-			html = "";
-			featureExists = <%=EntityFeature.indexExists(JSPHelper.getArchive(session))%>;
-			if(featureExists==false)
-				html += "<button class='btn-default' onclick='createIndex()'><i class=\"fa fa-tags\"></i> Enable Disambiguation</button><br/> (Initializing this feature may take around 30-60 minutes. Once it completes, authority options will be shown in decreasing order of probability.)<br>";
-			html += "Found "+showing+" possible authority matches in "+total+" entities. You can find " + "<select id='numLoad'><option value='"+(total-showing)+"'>All</option><option value='100'>Next 100</option><option value='10'>Next 10</option></select>"+
-				" possible matches by clicking <button onclick='getNext()' class='btn-default'>here</button><br/><br/>";
-				
-			$("#extra").html(html);			
-			return;
-		}
-		params = encodeURI("type="+type+"&db="+"freebase"+"&test="+"false"+"&bi="+bi+"&ei="+ei);
-		page = "ajax/getTableEntries.jsp";
-		epadd.log(page+params);
-		
-		//supplying the ready function to make it not redirect the other page and give us the handle of the response data.  
-		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), params, ready, null);	
-	}
-    fetchTableEntries(bi,ei);
+    $('#rowType').change (function() { window.location = 'assign-authorities?rowType=' + $('#rowType').val();});
 </script>
 
-<%
-	AddressBook ab = archive.addressBook;
-	String testStr = request.getParameter("test");
-	Boolean test = false;
-	try{
-		test = Boolean.parseBoolean(testStr);
-	}catch(Exception e){
-		e.printStackTrace();
-	}
+<br/>
 
-	writeProfileBlock(out, archive, "", "Assign authority records");
-	out.println ("<br/>");
+<div style="margin:auto; min-width:1000px;max-width:1200px;padding:50px;">
+    <table id="people" style="display:none">
+        <thead><th>Name</th><th>Messages</th><th>Authorities</th></thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 
-	Integer numEntities = null;
-	type = request.getParameter("type");
-	if(type == null)
-		type = "correspondent";
-%>
+<script>
+    var tableEntries = <%=new Gson().toJson(rows)%>;
+    // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
+    $(document).ready(function() {
+        var clickable_message = function (data, type, full, meta) {
+            return '<a target="_blank" title="' + (full.title ? full.title : '') + '" href="' + full.url + '">' + full.name + '</a>';
+        };
 
-	<div id='extra' style='text-align:center;'></div>
-	<div style="margin:auto; width:1000px">
-	<table id="table" class="authorities-table">
-		<thead><tr><th><%="correspondent".equals(type) ? "Correspondent":"Entity"%></th><th>Messages</th><th>Possible matches</th>
-	<%
-		if(test)
-			out.println("<th>Accuracy</th>");
-			
-		out.println("</tr></thead><tbody>");
-		out.flush();
-		//KillPhrases kill = new KillPhrases();
-	%>
-	</tbody>
-	</table>
-	<br/>
-	<br/>
-	
-	<div style="width:100%;text-align:center">
-		<button class='btn btn-cta' id="save_button">Save <i class="icon-arrowbutton"></i></button>
-	</div>
-	
-	<div id="stats"></div>
+        var render_nMessages = function(data, type, full, meta) {
+            return full.nMessages;
+        };
+
+        var render_candidate = function(candidate, name) {
+            var result = '<div class="candidate" data-fast-id="' + candidate.fastId + '" data-name="' + name + '">';
+            {
+                if (candidate.altLabels)
+                    result += '<span title="' + candidate.altLabels + '">' + candidate.preferredLabel + '</span>';
+                else
+                    result += candidate.preferredLabel;
+
+                result += '<br/>';
+            }
+            {
+                result += '<div class="authority-ids">';
+                if (candidate.fastId) {
+//                    result += '<a href="http://id.worldcat.org/fast/' + candidate.fastId + '">FAST: ' + candidate.fastId + '</a>';
+                    result += '<span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.worldcat.org/fast/' + candidate.fastId + '">FAST</a></span>';
+                }
+                result += ' ';
+                if (candidate.viafId && candidate.viafId != '?') {
+//                    result += ' <a href="https://viaf.org/viaf/' + candidate.viafId + '">VIAF: ' + candidate.viafId + '</a>';
+                    result += ' <span class="auth-record"> <i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="https://viaf.org/viaf/' + candidate.viafId + '">VIAF</a> </span>';
+                }
+                if (candidate.wikipediaId && candidate.wikipediaId != '?') {
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="https://en.wikipedia.org/wiki/' + candidate.wikipediaId + '">Wikipedia: ' + candidate.wikipediaId + '</a></span>';
+                }
+                if (candidate.lcnafId && candidate.lcnafId != '?') {
+ //                   result += ' <a href="http://id.loc.gov/authorities/names/' + candidate.lcnafId + '">LCNAF: ' + candidate.lcnafId + '</a>';
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.loc.gov/authorities/names/' + candidate.lcnafId + '">LCNAF</a></span>';
+                }
+                if (candidate.lcshId && candidate.lcshId != '?') {
+//                    result += ' <a href="http://id.loc.gov/authorities/subject/' + candidate.lcshId + '">LCNAF: ' + candidate.lcshId + '</a>';
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.loc.gov/authorities/subject/' + candidate.lcshId + '">LCSH</a></span>';
+                }
+                result += '</div><br/>';
+            }
+            result += '</div>';
+            return result;
+        };
+
+        var render_candidates = function(data, type, full, meta) {
+            var result = '';
+            if (full.candidates) {
+                for (var i = 0; i < full.candidates.length; i++) {
+                    var candidate = full.candidates[i];
+                    var result_for_this_candidate = render_candidate (candidate, full.name);
+                    result += result_for_this_candidate;
+                    if (i < full.candidates.length-1)
+                        result += '<hr/>';
+                }
+            }
+
+            return result;
+        }
+
+        $('#people').dataTable({
+            data: tableEntries,
+            // pagingType: 'simple',
+            order:[[1, 'desc']], // col 12 (outgoing message count), descending
+            columnDefs: [
+                    {width: "300px", targets: 0},
+                    {className: "dt-right", "targets": 1 },
+                    {targets: 0, render:clickable_message},
+                    {targets: 1, render: render_nMessages},
+                    {targets: 2, render: render_candidates}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+            fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
+        });
+    } );
+
+
+</script>
+
 
 	<div style="display:none">
 		<div id="manualassign" style='width:400px;'>
@@ -437,7 +373,6 @@
 		</div>
 	</div>
 
-	</div>
 	<br/>
     <script>    
     	//by default query parameter is initialised weith the text content and be sent.

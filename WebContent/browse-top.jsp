@@ -20,11 +20,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Archive Information</title>
 
-	<script src="js/jquery.js"></script>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-
 	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/jquery.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/epadd.js"></script>
 
 	<style>
