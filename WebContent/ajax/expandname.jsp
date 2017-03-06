@@ -63,8 +63,9 @@
 			if (archive.addressBook.lookupByName(d) != null)
 			    recordType += internalRecordHtml;
 
-			if (AuthorisedAuthorities.cnameToDefiniteID != null && AuthorisedAuthorities.cnameToDefiniteID.get(IndexUtils.canonicalizeEntity(d)) != null)
-			    recordType += externalRecordHtml;
+
+		//	if (AuthorisedAuthorities.cnameToDefiniteID != null && AuthorisedAuthorities.cnameToDefiniteID.get(IndexUtils.canonicalizeEntity(d)) != null)
+		//	    recordType += externalRecordHtml;
 			html += "<li><a href='" + href + "' style='color:black'>" + d + "</a>&nbsp"
 			    + recordType
 				+ "<div style='background-color:" + color + ";width: " + width + ";height:5px;'></div>" + "</li>";//new DecimalFormat("#.####").format(score.second)

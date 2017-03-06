@@ -94,7 +94,7 @@
 
 			$.ajax({type: 'POST',
 				dataType: 'json',
-				url: 'ajax/updateAuthorityRecords.jsp', 
+				url: 'ajax/updateAuthorityRecords.jsp-',
 				data: {authorities: JSON.stringify(obj), reverted: JSON.stringify(obj2) },
 				cache: false,
 				success: function (response, textStatus) {
