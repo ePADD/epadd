@@ -1,10 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="com.google.gson.Gson"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="java.util.ArrayList"%>
-<%@page language="java" import="java.util.List"%>
 <%@page language="java" import="java.util.Set"%>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
@@ -289,13 +286,13 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
         <script>
         $('#export-auth .go-button').click (function(e) {
-        var $button = $(e.target);
-        if ($button.hasClass('faded'))
-        return false; // do nothing;
-        var baseUrl = 'export-authorities';
-        var dir = $('.dir', $button.closest('.panel')).val();
-        if (dir && dir.length > 0)
-        window.location = baseUrl + '?exportType=csv&dir=' + dir;
+            var $button = $(e.target);
+            if ($button.hasClass('faded'))
+                return false; // do nothing;
+            var baseUrl = 'export-authorities';
+            var dir = $('.dir', $button.closest('.panel')).val();
+            if (dir && dir.length > 0)
+                window.location = baseUrl + '?exportType=csv&dir=' + dir;
         });
         </script>
     <% } %>

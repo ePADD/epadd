@@ -5,6 +5,8 @@
 <%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
+
+<!-- currently unused. May need to revive when we do auth. types for entity types other than just correspondents -->
 <!DOCTYPE html>
 <html>
 <head>

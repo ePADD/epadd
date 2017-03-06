@@ -3,36 +3,36 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@include file="getArchive.jspf" %>
+<%@include file="../WebContent/getArchive.jspf" %>
 
 <html>
 <head>
 	<title>Processing: Assign authorities</title>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>
+	<link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
+	<script src="../../muse/WebContent/js/jquery.js"></script>
+	<script src="../../muse/WebContent/js/jquery.dataTables.min.js"></script>
 
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
-	<jsp:include page="css/css.jsp"/>
-	<link rel="stylesheet" href="css/sidebar.css">
-	<link href="css/suggester.css" rel="stylesheet" />
+	<link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
+	<link href="../../muse/WebContent/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" href="../WebContent/js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
+	<jsp:include page="../../muse/WebContent/css/css.jsp"/>
+	<link rel="stylesheet" href="../WebContent/css/sidebar.css">
+	<link href="../WebContent/css/suggester.css" rel="stylesheet" />
 
 
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="js/jquery.mockjax.js" type="text/javascript"></script>
-	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
-	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="../WebContent/js/jquery.mockjax.js" type="text/javascript"></script>
+	<script src="../WebContent/js/jquery.autocomplete.js" type="text/javascript"></script>
+	<script src="../WebContent/js/modernizr.min.js"></script>
+	<script src="../WebContent/js/sidebar.js"></script>
 
-	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="../../muse/WebContent/js/muse.js"></script>
+	<script src="../WebContent/js/epadd.js"></script>
 	
 
-	<script src="js/utils.js" type="text/javascript"></script>	
-	<script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
-	<script type="text/javascript" src="js/fancyBox/source/jquery.fancybox.js"></script>
+	<script src="../WebContent/js/utils.js" type="text/javascript"></script>
+	<script type='text/javascript' src='../WebContent/js/jquery.qtip-1.0.js'></script>
+	<script type="text/javascript" src="../WebContent/js/fancyBox/source/jquery.fancybox.js"></script>
 
 	<style type="text/css">
       .js #table {display: none;}
@@ -90,7 +90,7 @@
 		  });
 		  
 		  $('#stats').css('color', 'inherit');
-		  $('#stats').html('Saving authority records... <img style="height:15px" src="images/spinner.gif"/>');
+		  $('#stats').html('Saving authority records... <img style="height:15px" src="../../muse/WebContent/images/spinner.gif"/>');
 
 			$.ajax({type: 'POST',
 				dataType: 'json',
@@ -135,7 +135,7 @@
           if (typeof(s) !== "undefined") s = s.substr(1, s.length - 2);
           context = $(selector).attr("data-context");//aData[3];
           if (!$(selector).find(".loading"))
-              $(selector).append("<img style='height:15px' class='loading' src='images/spinner.gif'/>");
+              $(selector).append("<img style='height:15px' class='loading' src='../../muse/WebContent/images/spinner.gif'/>");
           //dont place the call when the context is empty.
           //Never pass html as a parameter, I have learnt it the hardest way possible
           //for instance I was passing html in the last column of a row as a param to an ajax call,
@@ -222,10 +222,10 @@
 	if (!"correspondent".equals(type))
 		type = "all";
 %>
-<jsp:include page="header.jspf"/>
+<jsp:include page="../WebContent/header.jspf"/>
 <script>epadd.nav_mark_active('Authorities');</script>
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
+<script type="text/javascript" src="../../muse/WebContent/js/statusUpdate.js"></script>
+<%@include file="../WebContent/div_status.jspf"%>
 
 <!--sidebar content-->
 <!--
@@ -446,7 +446,7 @@
 		qtipreinitialise();
 	</script>
 	
- <jsp:include page="footer.jsp"/>
+ <jsp:include page="../../muse/WebContent/footer.jsp"/>
  
 </body>
 </html>

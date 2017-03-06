@@ -1,15 +1,10 @@
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page language="java" %>
 <%@ page import="edu.stanford.muse.ie.AuthorityMapper" %>
-<%@ page import="org.json.JSONObject" %>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.email.Contact" %>
-<%@ page import="org.json.JSONArray" %>
 <%@ page import="com.google.gson.Gson" %>
-<%@ page import="edu.stanford.muse.webapp.*" %>
 <%@ page import="java.util.*" %>
 
 <html>
@@ -74,67 +69,8 @@
     <!-- fancybox is failing to compute the right top value on this page.-->
     
     <script>
-      qtipreinitialise = function(){
-    	  $('[title][title!=]').qtip({
-				hide:{ delay:'200', fixed:true },
-				style: { width: "357px", padding: "10px", color: 'black', textAlign: 'left', border: {width: 5, radius: 5, color: '#0175bc'}, name: 'light'}
-    	  });
-      };    
       
 	  $('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
-	  var save_authorities = function(e) {
-		  obj = {};
-		  obj2 = [];
-		  names = [];
-		  //also send all unchecked names
-		  $('input[type="checkbox"]:checked').each(function(idx, inp) {
-			  var $tr = $(inp).closest('tr');
-			  var name = $('td.name', $tr).text();
-			  var idS = $(inp).attr('data-ids');
-			  var dbTypeS = $(inp).attr('data-dbtypes');
-			  var ids = idS.split(":::");
-			  var dbTypes = dbTypeS.split(":::");
-			  obj[name] = [ids,dbTypes];
-			  names.push(name);
-		  });
-		  $('input[type="checkbox"]:not(:checked)').each(function(idx,inp){
-			  var $tr = $(inp).closest('tr');
-			  var name = $('td.name', $tr).text();
-			  if(names.indexOf(name)==-1)
-			  	obj2.push(name);
-		  });
-		  
-		  $('#stats').css('color', 'inherit');
-		  $('#stats').html('Saving authority records... <img style="height:15px" src="images/spinner.gif"/>');
-
-			$.ajax({type: 'POST',
-				dataType: 'json',
-				url: 'ajax/updateAuthorityRecords.jsp', 
-				data: {authorities: JSON.stringify(obj), reverted: JSON.stringify(obj2) },
-				cache: false,
-				success: function (response, textStatus) {
-						if (response && (response.status == 0)) {
-							var status = 'Success! ' + response.message;
-							$('#stats').text(status);
-							$('#stats').css('color', 'green');
-						}
-						else {
-							if (response)
-								$('#stats').text('Error! Code ' + response.status + ', Message ' + response.error);
-							else
-								$('#stats').text('Error! No response from ePADD.');
-							$('#stats').css('color', 'red');
-						}
-					$('img[src="images/spinner.gif').hide();
-					$('.fa-spinner').hide();
-				},
-				error: function() { 
-					epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu."); 
-					$('img[src="images/spinner.gif').hide(); // hide the spinner otherwise it continues on the page even after this crash
-					$('.fa-spinner').hide();
-				}});
-			return false; /* to suppress other button actions */
-	 };
 
 	  $(document).ready(function() {
 		  $('.search').click(epadd.do_search);
@@ -160,7 +96,7 @@
 		  oTable.fnSort( [ [1,'desc'] ] );
 		  $('#table').fadeIn();
 		  
-		  $('#save_button').click(save_authorities);
+//		  $('#save_button').click(save_authorities);
 		  return false;
 		});
 		
@@ -188,21 +124,19 @@
 <%@include file="div_status.jspf"%>
 
 <%
-    String type = request.getParameter("type");
-    if (!"correspondent".equals(type))
-        type = "all";
     AuthorityMapper authorityMapper = archive.getAuthorityMapper();
-    authorityMapper.setupCounts(archive);
     AddressBook addressBook = archive.getAddressBook();
 
+    // get all the contacts
     List<Contact> contacts = addressBook.sortedContacts(new LinkedHashSet<>((List) archive.getAllDocs()));
 
     int rowType = edu.stanford.muse.webapp.HTMLUtils.getIntParam (request, "rowType", 1);
 
+    // filter the contacts based on rowType
     List<AuthorityMapper.AuthorityInfo> rows = new ArrayList<>();
     for (Contact c: contacts) {
         String name = c.pickBestName();
-        AuthorityMapper.AuthorityInfo info = authorityMapper.getAuthorityInfo(name);
+        AuthorityMapper.AuthorityInfo info = authorityMapper.getAuthorityInfo (addressBook, name);
 
         boolean showRow = false;
         switch (rowType) {
@@ -232,15 +166,18 @@
 
 %>
 
+<script>
+    var INVALID_FAST_ID = <%=AuthorityMapper.INVALID_FAST_ID%>; // Java to JS
+</script>
 <form>
     <div style="text-align:center">
         <div class="form-group" style="width:20%; margin-left:40%">
             <label for="rowType"></label>
             <select id="rowType" name="rowType" class="form-control selectpicker">
                 <option  <%=(rowType == 1 ? "selected":"")%> value=1>Show unconfirmed rows with candidates</option>
-                <option  <%=(rowType == 2 ? "selected":"")%> value=2>Show all unconfirmed rows</option>
+                <option  <%=(rowType == 2 ? "selected":"")%> value=2>Show unconfirmed rows</option>
                 <option  <%=(rowType == 3 ? "selected":"")%> value=3>Show all rows</option>
-                <option  <%=(rowType == 4 ? "selected":"")%> value=4>Show all confirmed rows</option>
+                <option  <%=(rowType == 4 ? "selected":"")%> value=4>Show confirmed rows</option>
                 <option  <%=(rowType == 5 ? "selected":"")%> value=5>Show rows with confirmed authorities</option>
                 <option  <%=(rowType == 6 ? "selected":"")%> value=6>Show rows confirmed to have no authorities</option>
             </select>
@@ -266,7 +203,7 @@
     var tableEntries = <%=new Gson().toJson(rows)%>;
     // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
     $(document).ready(function() {
-        var clickable_message = function (data, type, full, meta) {
+        var clickable_message = function (data, type, full) {
             return '<a target="_blank" title="' + (full.title ? full.title : '') + '" href="' + full.url + '">' + full.name + '</a>';
         };
 
@@ -274,37 +211,48 @@
             return full.nMessages;
         };
 
-        var render_candidate = function(candidate, name) {
-            var result = '<div class="candidate" data-fast-id="' + candidate.fastId + '" data-name="' + name + '">';
+        var render_candidate = function(full, authRecord, name) {
+            // get the name first (preferredLabel, with alt labels on hover
+            var result = '<div class="candidate" data-fast-id="' + authRecord.fastId + '" data-name="' + name + '">';
             {
-                if (candidate.altLabels)
-                    result += '<span title="' + candidate.altLabels + '">' + candidate.preferredLabel + '</span>';
+                result += '<input class="candidate-checkbox" type="checkbox" ' + (full.isConfirmed ? 'checked':'') + '/> ';
+                if (authRecord.altLabels)
+                    result += '<span title="' + authRecord.altLabels + '">' + authRecord.preferredLabel + '</span>';
                 else
-                    result += candidate.preferredLabel;
+                    result += authRecord.preferredLabel;
+
+                if (authRecord.extent)
+                    result += ' (' + authRecord.extent + ')';
 
                 result += '<br/>';
             }
+
+            // get the line with the actual authority ids
             {
                 result += '<div class="authority-ids">';
-                if (candidate.fastId) {
+                if (authRecord.fastId && authRecord.fastId != INVALID_FAST_ID) {
 //                    result += '<a href="http://id.worldcat.org/fast/' + candidate.fastId + '">FAST: ' + candidate.fastId + '</a>';
-                    result += '<span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.worldcat.org/fast/' + candidate.fastId + '">FAST</a></span>';
+                    result += '<span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.worldcat.org/fast/' + authRecord.fastId + '">FAST</a></span>';
                 }
                 result += ' ';
-                if (candidate.viafId && candidate.viafId != '?') {
+                if (authRecord.viafId && authRecord.viafId != '?') {
 //                    result += ' <a href="https://viaf.org/viaf/' + candidate.viafId + '">VIAF: ' + candidate.viafId + '</a>';
-                    result += ' <span class="auth-record"> <i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="https://viaf.org/viaf/' + candidate.viafId + '">VIAF</a> </span>';
+                    result += ' <span class="auth-record"> <i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="https://viaf.org/viaf/' + authRecord.viafId + '">VIAF</a> </span>';
                 }
-                if (candidate.wikipediaId && candidate.wikipediaId != '?') {
-                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="https://en.wikipedia.org/wiki/' + candidate.wikipediaId + '">Wikipedia: ' + candidate.wikipediaId + '</a></span>';
+                if (authRecord.wikipediaId && authRecord.wikipediaId != '?') {
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="https://en.wikipedia.org/wiki/' + authRecord.wikipediaId + '">Wikipedia: ' + authRecord.wikipediaId + '</a></span>';
                 }
-                if (candidate.lcnafId && candidate.lcnafId != '?') {
+                if (authRecord.lcnafId && authRecord.lcnafId != '?') {
  //                   result += ' <a href="http://id.loc.gov/authorities/names/' + candidate.lcnafId + '">LCNAF: ' + candidate.lcnafId + '</a>';
-                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.loc.gov/authorities/names/' + candidate.lcnafId + '">LCNAF</a></span>';
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.loc.gov/authorities/names/' + authRecord.lcnafId + '">LCNAF</a></span>';
                 }
-                if (candidate.lcshId && candidate.lcshId != '?') {
+                if (authRecord.lcshId && authRecord.lcshId != '?') {
 //                    result += ' <a href="http://id.loc.gov/authorities/subject/' + candidate.lcshId + '">LCNAF: ' + candidate.lcshId + '</a>';
-                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.loc.gov/authorities/subject/' + candidate.lcshId + '">LCSH</a></span>';
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="http://id.loc.gov/authorities/subject/' + authRecord.lcshId + '">LCSH</a></span>';
+                }
+                if (authRecord.localId && authRecord.localId != '?') {
+//                    result += ' <a href="http://id.loc.gov/authorities/subject/' + candidate.lcshId + '">LCNAF: ' + candidate.lcshId + '</a>';
+                    result += ' <span class="auth-record"><i class="fa fa-check" aria-hidden="true"></i> <a target="_blank" href="#">Local ID: ' + authRecord.localId + '</a></span>';
                 }
                 result += '</div><br/>';
             }
@@ -312,18 +260,31 @@
             return result;
         };
 
-        var render_candidates = function(data, type, full, meta) {
-            var result = '';
-            if (full.candidates) {
+        var render_manual_assign_option = function (record) {
+            return '<div class="candidate" data-name="' + record.name + '"><a class="manual-assign-link" href="#"><i class="fa fa-plus"/> Assign an authority</a></div>';
+        };
+
+        var render_candidates_col = function(data, type, full, meta) {
+            var result = '<div data-name="' + full.name + '" class="all-candidates">';
+            if (full.isConfirmed && full.confirmedAuthority) {
+                if (full.confirmedAuthority.fastId != INVALID_FAST_ID)
+                    result += render_candidate (full, full.confirmedAuthority, full.name);
+                else
+                    result += render_candidate (full, {fastId: INVALID_FAST_ID, preferredLabel: 'No authority record'}, full.name);
+            }
+            else if (full.candidates) {
                 for (var i = 0; i < full.candidates.length; i++) {
                     var candidate = full.candidates[i];
-                    var result_for_this_candidate = render_candidate (candidate, full.name);
+                    var result_for_this_candidate = render_candidate (full, candidate, full.name);
                     result += result_for_this_candidate;
-                    if (i < full.candidates.length-1)
-                        result += '<hr/>';
+                    result += '<hr/>';
                 }
+                // render the no-auth-record option
+                result += render_candidate (full, {fastId: INVALID_FAST_ID, preferredLabel: 'No authority record'}, full.name);
+                result += '<hr/>';
+                result += render_manual_assign_option (full);
             }
-
+            result += '</div>';
             return result;
         }
 
@@ -336,16 +297,131 @@
                     {className: "dt-right", "targets": 1 },
                     {targets: 0, render:clickable_message},
                     {targets: 1, render: render_nMessages},
-                    {targets: 2, render: render_candidates}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+                    {targets: 2, render: render_candidates_col}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
             fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
         });
+
+        $('.candidate-checkbox').change(function(e) {
+            var $div_cand = $(e.target).closest('div.candidate');
+            var fastId = $div_cand.attr('data-fast-id');
+            var name = $div_cand.attr('data-name');
+            var data = {name: name, fastId: fastId};
+            if (!$(e.target).is(':checked')) {
+                // must be unchecked
+                data.unset = false;
+            }
+
+            $.ajax({
+                url: 'ajax/confirm-authority.jsp',
+                data: data,
+                success: function () {
+                    $spinner.removeClass('fa-spin');
+                },
+                error: function () {
+                    $spinner.removeClass('fa-spin');
+                    epadd.alert('Unable to save fast ID, sorry!');
+                }
+            });
+        });
+
+        $('.manual-assign-link').click(function(e) {
+            var $div_cand = $(e.target).closest('div.candidate');
+            var name = $div_cand.attr('data-name');
+            $('#manual-assign-name').html (name);
+            $('#manual-assign-modal').modal('show');
+        });
+
+        $('#manual-assign-submit').click (function() {
+            var data = {name: $('#manual-assign-name').text(), fastId: $('#fastId').val(), viafId: $('#viafId').val(), wikipediaId: $('#wikipediaId').val(), lcnafId: $('#lcnafId').val(), lcshId: $('#lcshId').val(),
+                localId: $('#localId').val(), isManualAssign: true};
+            console.log (data);
+
+            $.ajax({
+                url: 'ajax/confirm-authority.jsp',
+                data: data,
+                success: function () {
+                  //  $spinner.removeClass('fa-spin');
+                    $('#manual-assign-modal').modal('hide');
+
+                },
+                error: function () {
+                   // $spinner.removeClass('fa-spin');
+                    epadd.alert('Unable to save authority, sorry!');
+                    $('#manual-assign-modal').modal('hide');
+                }
+            });
+        });
+
+
     } );
 
 
 </script>
 
 
-	<div style="display:none">
+<!-- Modal -->
+<div class="modal fade" id="manual-assign-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Assign authority record for <span id="manual-assign-name"></span></h4>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <form role="form">
+                    <div class="form-group">
+                        <label for="fastId">FAST Id</label>
+                        <input type="text" class="form-control" id="fastId" name="fastId" placeholder="e.g., 61561"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="viafId">VIAF Id</label>
+                        <input type="text" class="form-control" id="viafId" name="viafId" placeholder="e.g., 66552944"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fastId">Wikipedia Id</label>
+                        <input type="text" class="form-control" id="wikipediaId" name="wikipediaId" placeholder="e.g., Thomas_Edison"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fastId">LoC Named Authority File Id</label>
+                        <input type="text" class="form-control" id="lcnafId" name="lcnafId" placeholder="e.g., n80126308"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fastId">LoC Subject Headings Id</label>
+                        <input type="text" class="form-control" id="lcshId" name="lcshId" placeholder="e.g., sh95009459"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fastId">Local Id</label>
+                        <input type="text" class="form-control" id="localId" name="localId" placeholder=""/>
+                    </div>
+
+
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="manual-assign-submit" type="button" class="btn btn-default">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div style="display:none">
 		<div id="manualassign" style='width:400px;'>
 			<div class="header">Assign authority records</div>
 			<br/>
@@ -372,40 +448,7 @@
 			</div>
 		</div>
 	</div>
-
 	<br/>
-    <script>    
-    	//by default query parameter is initialised weith the text content and be sent.
-    	//if needs to send more data use params field
-	    $('#manual_name').autocomplete({
-		    serviceUrl: 'ajax/getFASTMatches.jsp',
-			onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
-			preventBadQueries: false,
-			showNoSuggestionNotice: true,
-			preserveInput: true,
-			ajaxSettings: {
-				"timeout":3000,
-				dataType: "json"
-			},
-			dataType: "text",
-			params: {"type": type},
-			//100ms
-			deferRequestsBy: 100,
-			onSelect: function(suggestion) {
-		        $("#fast").val(suggestion.fastID);
-				$("#manual_name").val(suggestion.name);
-		    },
-		    onHint: function (hint) {
-		       $('#autocomplete-ajax-x').val(hint);
-		    },
-		    onInvalidateSelection: function() {
-		       epadd.log('You selected: none');
-		    }
-		 });
-	
-		qtipreinitialise();
-	</script>
-	
  <jsp:include page="footer.jsp"/>
  
 </body>
