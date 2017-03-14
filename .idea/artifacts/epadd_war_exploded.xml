@@ -7,6 +7,8 @@
           <element id="module-output" name="epadd" />
         </element>
         <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: javax.servlet:jsp-api:2.0" />
+          <element id="library" level="project" name="Maven: javax.servlet:servlet-api:2.4" />
           <element id="archive" name="muse-1.0.0-SNAPSHOT-classes.jar">
             <element id="module-output" name="muse" />
           </element>

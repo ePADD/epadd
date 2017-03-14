@@ -1,24 +1,29 @@
-<%@ page
-	import="java.io.File,java.io.FilenameFilter,java.util.Arrays"%>
+<%@ page import="java.io.File,java.io.FilenameFilter,java.util.Arrays"%>
+<%@ page import="java.util.stream.Collectors" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%
 /**
   * jQuery File Tree JSP Connector
   * Version 1.0
   * Copyright 2008 Joshua Gould
   * 21 April 2008
-*/	
+*/
     String dir = request.getParameter("dir");
-    if (dir == null || dir.length() == 0) {
-		// modified by SGH. if dir parameter is empty, just list all the roots.
-		out.print("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
+    if (dir == null || dir.length() == 0 || "/".equals(dir.trim())) {
+		// modified by SGH. if dir parameter is empty or /, just list all the roots.
 		java.io.File[] rootFiles = java.io.File.listRoots();
-		for (java.io.File f: rootFiles) {
-            String rootFile = f.toString();
-            out.print("<li class=\"directory collapsed\"><a href=\"#\" rel=\"" + rootFile + "/\">"
-                    + f.toString() + "</a></li>");
-        }
-		out.print("</ul>");
-		return;
+
+		if (rootFiles.length  > 1) { // this happens on Windows
+			JSPHelper.log.info ("Listing RootFiles = "  + String.join (",", Arrays.stream(rootFiles).map(f -> f.toString()).collect (Collectors.toList())));
+			out.print("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
+			for (java.io.File f : rootFiles) {
+				String rootFile = f.toString();
+				out.print("<li class=\"directory collapsed\"><a href=\"#\" rel=\"" + rootFile + "/\">"
+						+ f.toString() + "</a></li>");
+			}
+			out.print("</ul>");
+			return;
+		}
 	}
 	
 	if (dir.charAt(dir.length()-1) == '\\') {

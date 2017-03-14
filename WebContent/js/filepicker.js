@@ -35,7 +35,6 @@ function FilePicker($basediv) {
 	var $target_dir = $('input.dir', $basediv); // this is the actual text field that holds the dir
 	$go_button = $('.go-button', $basediv);
 
-	var that = this;
 	var current_path;
 
 	var o = {
@@ -79,8 +78,8 @@ function FilePicker($basediv) {
 			$('#filepicker-modal').modal();
 
 			var start_from = original_val ? original_val : '';
-			if (!start_from)
-				start_from = "/";
+//			if (typeof start_from == 'undefined')
+//				start_from = "/"; // allow it to be empty -- that is the case when invoked on windows
 			this.browse_root (start_from);
 			return false;
 		},
@@ -94,7 +93,7 @@ function FilePicker($basediv) {
 			current_path = root;
 			this.update_current_path();
 			var that = this; // needed because this in event handler below does not refer to this
-			var $browse_folder = $('.browseFolder'); // this is the file selection div
+			var $browse_folder = $('.browseFolder'); // this is the file selection div. doesn't need to be relative to $basediv, because its in the modal; there's only one on every page
 			$browse_folder.fileTree({ folderEvent: 'dblclick', multiFolder: true, root: root, script:'jqueryFileTree/connectors/jqueryFileTree.jsp' },
 
 			function(file, file_not_dir) {
