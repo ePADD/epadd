@@ -164,7 +164,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
             <div class="one-line" id="export-next">
                 <div class="form-group col-sm-8">
-                    <label for="export-attach-file">Export to next ePADD module</label>
+                    <label for="export-next-file">Export to next ePADD module</label>
                     <input id="export-next-file" class="dir form-control" type="text" name="name" value=""/>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">

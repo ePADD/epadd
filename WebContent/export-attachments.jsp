@@ -36,7 +36,6 @@
 	writeProfileBlock(out, archive, "", "Export archive");
 %>
 <div style="margin-left:170px">
-<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 
 
 <%
@@ -64,6 +63,7 @@
     // convert to lower case and remove empty types
     extensionsNeeded = (Set) extensionsNeeded.stream().filter(x -> !Util.nullOrEmpty(x)).map (x -> x.toLowerCase()).collect (Collectors.toSet());
     %>
+    <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 
     <br/>
     <br/>

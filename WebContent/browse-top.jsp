@@ -76,16 +76,18 @@
 	boolean statsAvailable = false;
 	if(archive.processingMetadata.entityCounts != null)
 		statsAvailable = true;
-	String pC="",oC="",lC="", nS="";
+	String nPersonEntities ="", nSensitiveMessages ="";
+	int nNonPersonEntities = 0;
 	if(statsAvailable){
-		pC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
-		oC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode() )+")";
-		lC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PLACE.getCode())+")";
+		nPersonEntities = " (" + archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
+		for (short fineType: archive.processingMetadata.entityCounts.keySet()) {
+			if (NEType.getTypeForCode (fineType) != NEType.Type.PERSON)
+				nNonPersonEntities += archive.processingMetadata.entityCounts.get(fineType);
+		}
 	}
 	if(archive.processingMetadata.numPotentiallySensitiveMessages>=0)
-		nS = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
+		nSensitiveMessages = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
 
-	JSPHelper.log.info("Counts: "+pC+", "+oC+", "+lC);
 	int nContacts = ab.allContacts().size();
 %>
 
@@ -106,8 +108,8 @@
 			<a href="list-entities.jsp?type=0">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/person.svg"/>
-			<p class="cta-text-1">Person entities<%=pC%></p>
-			<p class="cta-text-2">Person entities<%=pC%></p>
+			<p class="cta-text-1">Person entities<%=nPersonEntities%></p>
+			<p class="cta-text-2">Person entities<%=nPersonEntities%></p>
 			</a>
 	</div>
 
@@ -119,8 +121,8 @@
 		<a href="entity-types">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
-			<p class="cta-text-1">Other entities<%=oC%></p>
-			<p class="cta-text-2">Other entities<%=oC%></p>
+			<p class="cta-text-1">Other entities<%=nNonPersonEntities%></p>
+			<p class="cta-text-2">Other entities<%=nNonPersonEntities%></p>
 		</a>
 	</div>
 
@@ -130,8 +132,8 @@
             <a href="by-folder">
                 <i class="icon-browsetoparrow"></i>
                 <img src="images/folder.svg"/>
-                <p class="cta-text-1">Folder view<%=lC%></p>
-                <p class="cta-text-2">Folder view<%=lC%></p>
+                <p class="cta-text-1">Folder view></p>
+                <p class="cta-text-2">Folder view%></p>
             </a>
         </div>
     <% } %>
@@ -173,8 +175,8 @@
 				<a href="browse?sensitive=true&adv-search=1">
 					<i class="icon-browsetoparrow"></i>
 					<img src="images/sensitive-message.svg"/>
-					<p class="cta-text-1">Sensitive messages<%=nS%></p>
-					<p class="cta-text-2">Sensitive messages<%=nS%></p>
+					<p class="cta-text-1">Sensitive messages<%=nSensitiveMessages%></p>
+					<p class="cta-text-2">Sensitive messages<%=nSensitiveMessages%></p>
 				</a>
 			</div>
 		<% } %>

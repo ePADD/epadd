@@ -216,6 +216,13 @@
 							<input id="entity" name="entity" type="text" class="form-control">
 						</div>
 					</div>
+
+					<div class="row">
+						<div class="form-group col-sm-12">
+							<label for="attachmentEntity">Attachment Entity</label>
+							<input id="attachmentEntity" name="attachmentEntity" type="text" class="form-control">
+						</div>
+					</div>
 				</div>
 				<!--/Text-->
 
@@ -729,6 +736,10 @@
 		var entitiesAutoCompleteParams = $.extend({}, autocomplete_params);
 		entitiesAutoCompleteParams.serviceUrl = 'ajax/entitiesAutoComplete.jsp';
 		$('#entity').autocomplete(entitiesAutoCompleteParams);
+
+		var attachmentEntitiesAutoCompleteParams = $.extend({}, autocomplete_params);
+		attachmentEntitiesAutoCompleteParams.serviceUrl = 'ajax/attachmentEntitiesAutoComplete.jsp';
+		$('#attachmentEntity').autocomplete(attachmentEntitiesAutoCompleteParams);
 
 		var annotationAutoCompleteParams = $.extend({}, autocomplete_params);
 		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp';

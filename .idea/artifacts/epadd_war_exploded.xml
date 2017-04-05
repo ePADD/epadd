@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="epadd:war exploded">
+  <artifact type="exploded-war" build-on-make="true" name="epadd:war exploded">
     <output-path>$PROJECT_DIR$/target/epadd-0.0.1-SNAPSHOT</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
@@ -24,6 +24,7 @@
           <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.0.4" />
           <element id="library" level="project" name="Maven: commons-cli:commons-cli:1.2" />
           <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.5" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-imaging:1.0-R1534292" />
           <element id="library" level="project" name="Maven: javax.mail:mail:1.4.2" />
           <element id="library" level="project" name="Maven: javax.activation:activation:1.1" />
           <element id="library" level="project" name="Maven: net.sf.jtidy:jtidy:r938" />
