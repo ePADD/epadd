@@ -108,8 +108,8 @@
 			<a href="list-entities.jsp?type=0">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/person.svg"/>
-			<p class="cta-text-1">Person entities<%=nPersonEntities%></p>
-			<p class="cta-text-2">Person entities<%=nPersonEntities%></p>
+			<p class="cta-text-1">Person entities (<%=nPersonEntities%>)</p>
+			<p class="cta-text-2">Person entities (<%=nPersonEntities%>)</p>
 			</a>
 	</div>
 
@@ -121,8 +121,8 @@
 		<a href="entity-types">
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/org.svg"/>
-			<p class="cta-text-1">Other entities<%=nNonPersonEntities%></p>
-			<p class="cta-text-2">Other entities<%=nNonPersonEntities%></p>
+			<p class="cta-text-1">Other entities (<%=nNonPersonEntities%>)</p>
+			<p class="cta-text-2">Other entities (<%=nNonPersonEntities%>)</p>
 		</a>
 	</div>
 
@@ -133,7 +133,7 @@
                 <i class="icon-browsetoparrow"></i>
                 <img src="images/folder.svg"/>
                 <p class="cta-text-1">Folder view></p>
-                <p class="cta-text-2">Folder view%></p>
+                <p class="cta-text-2">Folder view</p>
             </a>
         </div>
     <% } %>
