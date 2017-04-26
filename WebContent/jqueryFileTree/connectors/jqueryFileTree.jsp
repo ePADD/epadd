@@ -1,6 +1,7 @@
 <%@ page import="java.io.File,java.io.FilenameFilter,java.util.Arrays"%>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
 <%
 /**
   * jQuery File Tree JSP Connector
@@ -10,6 +11,9 @@
 */
     String dir = request.getParameter("dir");
     if (dir == null || dir.length() == 0 || "/".equals(dir.trim())) {
+		if (Util.nullOrEmpty(dir))
+			dir = "/";
+
 		// modified by SGH. if dir parameter is empty or /, just list all the roots.
 		java.io.File[] rootFiles = java.io.File.listRoots();
 
@@ -26,12 +30,14 @@
 		}
 	}
 	
-	if (dir.charAt(dir.length()-1) == '\\') {
-    	dir = dir.substring(0, dir.length()-1) + "/";
-	} else if (dir.charAt(dir.length()-1) != '/') {
-	    dir += "/";
+	if (dir.length() > 0) {
+		if (dir.charAt(dir.length() - 1) == '\\') {
+			dir = dir.substring(0, dir.length() - 1) + "/";
+		} else if (dir.charAt(dir.length() - 1) != '/') {
+			dir += "/";
+		}
 	}
-	
+
 	dir = java.net.URLDecoder.decode(dir, "UTF-8");	
 	
 	File f = new File(dir);

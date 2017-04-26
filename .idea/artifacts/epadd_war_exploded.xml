@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" build-on-make="true" name="epadd:war exploded">
+  <artifact type="exploded-war" name="epadd:war exploded">
     <output-path>$PROJECT_DIR$/target/epadd-0.0.1-SNAPSHOT</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
@@ -9,9 +9,7 @@
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: javax.servlet:jsp-api:2.0" />
           <element id="library" level="project" name="Maven: javax.servlet:servlet-api:2.4" />
-          <element id="archive" name="muse-1.0.0-SNAPSHOT-classes.jar">
-            <element id="module-output" name="muse" />
-          </element>
+          <element id="library" level="project" name="Maven: edu.stanford.muse:muse:classes:1.0.0-SNAPSHOT" />
           <element id="library" level="project" name="Maven: tw.edu.ntu.csie:libsvm:3.17" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-core:4.7.0" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-queries:4.7.0" />

@@ -52,10 +52,12 @@ function FilePicker($basediv) {
 		update_current_path: function() {
 			$target_dir.val (current_path);
 			update_go_button_status (current_path);
-
 			// repaint the path components on screen
 			$('.path-components').html(''); // clear the existing path components
 			var path_to_this_component = '';
+			if (current_path = '') {
+				current_path = '/'; // special case of empty string. equivalent to /
+			}
 			var components = current_path.split("/");
 			for (var i = 0; i < components.length; i++) {
 				path_to_this_component += "/" + components[i];
@@ -67,7 +69,10 @@ function FilePicker($basediv) {
 					continue; // skip empty components - can happen with //
 
 				var html= '<i class="fa fa-caret-right" aria-hidden="true"></i>&nbsp;';
-
+				// for a completely empty current_path, this_component will also be empty.
+				// but we need to print something out for this_component. Print '/' instead of a blank. see epadd issue #110
+				if (this_component == '')
+					this_component = '/';
 				html += '<span data-path="' + path_to_this_component + '" class="path-component">' + this_component + '</span>';
 				$('.path-components').append (html);
 			}

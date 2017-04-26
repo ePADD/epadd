@@ -13,6 +13,7 @@
     <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
     <dev.build.timestamp>${maven.build.timestamp}</dev.build.timestamp>
     <skip.generate.git.props>true</skip.generate.git.props> <!-- default, for dev builds -->
+    <enforcer.skip>true</enforcer.skip> <!-- default, for dev builds -->
   </properties>
 
    <profiles>
