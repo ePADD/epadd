@@ -79,7 +79,7 @@
 	String nPersonEntities ="", nSensitiveMessages ="";
 	int nNonPersonEntities = 0;
 	if(statsAvailable){
-		nPersonEntities = " (" + archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
+		nPersonEntities = Integer.toString(archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode()));
 		for (short fineType: archive.processingMetadata.entityCounts.keySet()) {
 			if (NEType.getTypeForCode (fineType) != NEType.Type.PERSON)
 				nNonPersonEntities += archive.processingMetadata.entityCounts.get(fineType);
@@ -132,7 +132,7 @@
             <a href="by-folder">
                 <i class="icon-browsetoparrow"></i>
                 <img src="images/folder.svg"/>
-                <p class="cta-text-1">Folder view></p>
+                <p class="cta-text-1">Folder view</p>
                 <p class="cta-text-2">Folder view</p>
             </a>
         </div>
