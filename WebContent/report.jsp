@@ -46,8 +46,23 @@
 
 <div style="min-height:300px;margin: 10px 50px 10px 50px" class="panel rounded">
 
-
 <%
+    // warning: somewhat fragile. depends on the error string! Not desirable, but...
+    // also note: we'd prefer to keep backward compatibility with existing archives
+    // in every element of a errorTypes is a pair. the first element is the prefix of the error string to look for to identify this kind of error
+    // the second is the string that will be printed on the page after the number of errors of that type
+    String errorTypes[][] = new String[][]{
+            {"No to/cc/bcc addresses", "messages without To, Cc or Bcc addresses"},
+            {"No from address", "messages without a from address"},
+            {"Bad address", "invalid email addresses"},
+            {"Guessed date", "messages with a guessed date"},
+            {"No date for message", "messages with no date"},
+            {"Probably bad date", " messages with a probably bad date"},
+            {"attachment filename is null", "attachments with no filename"},
+            {"Duplicate message", "duplicate messages"},
+            {"", "other errors"} // this is needed as a catch all, otherwise the remaining errors won't be reported.
+    };
+
 	List<FetchStats> fetchStats = archive.allStats;
 	int count = 0;
 	if(fetchStats!=null) {
@@ -58,44 +73,55 @@
         }
     }
 
-	Collection<String> dataErrors = addressBook.getDataErrors();
-	int i = 0;
-	if (dataErrors != null) { %>
+    // gather all the errors, addressBook + archive
+    Collection<String> allErrors = new ArrayList<>();
+    {
+        Collection<String> addressBookErrors = addressBook.getDataErrors();
+        if (addressBookErrors != null)
+            allErrors.addAll (addressBookErrors);
 
-		<h2><%=dataErrors.size()%> data error(s) in email addresses</h2>
-		<p>
-		<%
-		for (String s: dataErrors) {
-			out.println (++i + ". " + Util.escapeHTML(s) + "<br/>\n");
-		}
-	}
-	i = 0;
-	dataErrors = archive.getDataErrors();
-	if (dataErrors != null) {
-		%>
-		<hr/>
-		<h2><%=dataErrors.size()%> data error(s) in message content and attachments</h2>
-		<%
-		List<String> dups = new ArrayList<String>();
-		i = 0;
-		// carve out the dups and report them separately
-		for (String s: dataErrors) {
-			if (s.startsWith("Duplicate message") || s.startsWith("Message already present"))
-				dups.add(s);
-			else
-				out.println(++i + ". " + Util.escapeHTML(s) + "<br/>\n");
-		}
+        Collection<String> archiveErrors = archive.getDataErrors();
+        if (archiveErrors != null)
+            allErrors.addAll(archiveErrors);
+    }
 
-		if (dups.size() > 0) {
-			i = 0;
-			%>
-			<hr/>
-			<h2><%=Util.pluralize(dups.size(), "duplicate message")%></h2>
-			<%
-			for (String s: dups)
-				out.println(++i + ". " + Util.escapeHTML(s) + "<br/>\n");
-		}
-	}
+    // gather the errors by type
+    List<String>[] errorsByType = new ArrayList[errorTypes.length];
+    for (int t = 0; t < errorsByType.length; t++)
+        errorsByType[t] = new ArrayList<String>();
+
+    for (String s: allErrors) {
+        for (int t = 0; t < errorTypes.length; t++) {
+            String prefix = errorTypes[t][0];
+            if (s.startsWith (prefix)) {
+                errorsByType[t].add(s);
+                break;
+            }
+        }
+    }
+    %>
+    <p>Summary of error types:
+    <p>
+    <%
+    // print out summary first so we can see everything in one place. hyperlink each error type to anchors below with the details
+    for (int t = 0; t < errorTypes.length; t++) {
+        if (errorsByType[t].size() == 0)
+            continue;
+        out.println ("<a href=\"#errorType" + t + "\">" + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "<br/>\n");
+    }
+
+    // print out details
+    for (int t = 0; t < errorTypes.length; t++) {
+        if (errorsByType[t].size() == 0)
+            continue;
+        int i = 0;
+        out.println ("<a id=\"errorType" + t + "\">"); // anchor
+        out.println ("<h2>" + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "</h2>"); // errorTypes[t][1] is the description of the error
+        out.println ("</a>");
+        for (String s : errorsByType[t])
+            out.println(++i + ". " + Util.escapeHTML(s) + "<br/>\n");
+        out.println ("<br/><br/><hr/><br/>\n");
+    }
 %>
 
 </div>
