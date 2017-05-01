@@ -4,18 +4,18 @@
 <%@page language="java" %>
 <%@page language="java" %>
 
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
+<%@page language="java" import="edu.stanford.muse.ie.EmailHierarchy"%>
+<%@page language="java" import="edu.stanford.muse.ie.ProperNounLinker"%>
+<%@ page import="edu.stanford.muse.index.Archive"%>
+<%@ page import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="edu.stanford.muse.index.IndexUtils"%>
 <%@ page import="edu.stanford.muse.util.EmailUtils"%>
 <%@ page import="edu.stanford.muse.util.Pair"%>
+<%@ page import="edu.stanford.muse.util.Span"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.HashSet"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
-<%@ page import="edu.stanford.muse.util.Span"%>
-<%@ page import="edu.stanford.muse.ie.*"%>
 <%/*Given a name; resolves it to multiple word name if the name is single word and also annotates the multiple word name with external(if there is an authorised database id) or internal(If there is a contact in addressbook with that name.)
 	Input: name that is to be expanded/annotated; docId of the document in which name is to be expanded/annotated.
 	Output: If expanded possible multiple word names with authority type annotations in decreasing order of confidence(Max: 5)

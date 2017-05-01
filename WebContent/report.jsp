@@ -1,12 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <% JSPHelper.checkContainer(request); // do this early on so we are set up
   request.setCharacterEncoding("UTF-8"); %>
+<%@page language="java" import="edu.stanford.muse.email.FetchStats"%>
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.List"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
 <%@include file="getArchive.jspf" %>
 <%
 // we are already logged into all accounts at the point this is called

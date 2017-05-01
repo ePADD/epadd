@@ -1,14 +1,12 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@ page import="java.util.Collection" %>
-<%@ page import="java.util.LinkedHashSet" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="edu.stanford.muse.index.DatedDocument" %>
+<%@ page import="edu.stanford.muse.index.Indexer" %>
+<%@ page import="edu.stanford.muse.index.Lexicon" %>
+<%@page language="java" import="java.util.Collection"%>
+<%@page language="java" import="java.util.LinkedHashSet"%>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>

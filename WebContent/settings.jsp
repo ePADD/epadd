@@ -1,15 +1,14 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
-<%@ page import="edu.stanford.muse.ner.*" %>
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-	<title>ePADD Settings</title>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <title>ePADD Settings</title>
+    <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-	<jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
 
 	<script src="js/jquery.js"></script>
