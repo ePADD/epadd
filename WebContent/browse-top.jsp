@@ -46,6 +46,7 @@
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
+		archive.recreateAuthorityMapper(); // we have to recreate auth mappings since they may have changed
         SimpleSessions.saveArchive(session);
     }
 

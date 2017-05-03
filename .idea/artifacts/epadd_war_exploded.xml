@@ -9,7 +9,9 @@
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: javax.servlet:jsp-api:2.0" />
           <element id="library" level="project" name="Maven: javax.servlet:servlet-api:2.4" />
-          <element id="library" level="project" name="Maven: edu.stanford.muse:muse:classes:1.0.0-SNAPSHOT" />
+          <element id="archive" name="muse-1.0.0-SNAPSHOT-classes.jar">
+            <element id="module-output" name="muse" />
+          </element>
           <element id="library" level="project" name="Maven: com.google.code.gson:gson:1.5" />
           <element id="library" level="project" name="Maven: commons-io:commons-io:2.0.1" />
           <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.3.2" />

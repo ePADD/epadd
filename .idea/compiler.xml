@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="epadd" />
+        <module name="muse" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="epadd" target="1.8" />
+      <module name="muse" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
