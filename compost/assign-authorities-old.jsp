@@ -1,8 +1,8 @@
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.ie.EntityFeature"%>
-<%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page language="java" %>
+<%@page language="java" %>
 <%@include file="../WebContent/getArchive.jspf" %>
 
 <html>

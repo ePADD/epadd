@@ -6,12 +6,13 @@
 %>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.index.Searcher"%>
 <%@page language="java" import="edu.stanford.muse.util.DetailedFacetItem"%>
 <%@page language="java" import="edu.stanford.muse.util.EmailUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
-<%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@page language="java" import="edu.stanford.muse.webapp.EmailRenderer"%>
+<%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
+<%@page language="java" import="edu.stanford.muse.webapp.NewFilter"%>
+<%@ page import="edu.stanford.muse.webapp.Sessions" %>
 <%@ page import="java.util.*" %>
 
 <%@include file="getArchive.jspf" %>

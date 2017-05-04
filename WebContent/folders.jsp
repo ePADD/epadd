@@ -1,7 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@page language="java" import="edu.stanford.muse.email.MuseEmailFetcher"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
+<%@page language="java" import="edu.stanford.muse.webapp.Accounts"%>
+<%@ page import="edu.stanford.muse.webapp.Sessions" %>
 <%
  	JSPHelper.checkContainer(request); // do this early on so we are set up
  request.setCharacterEncoding("UTF-8");

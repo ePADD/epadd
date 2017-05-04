@@ -1,6 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>edu.stanford.muse</groupId>
+        <artifactId>muse-common</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../muse/pom-common.xml</relativePath>
+    </parent>
   <groupId>edu.stanford.epadd</groupId>
   <artifactId>epadd</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -12,7 +18,19 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
     <dev.build.timestamp>${maven.build.timestamp}</dev.build.timestamp>
+    <skip.generate.git.props>true</skip.generate.git.props> <!-- default, for dev builds -->
+    <enforcer.skip>true</enforcer.skip> <!-- default, for dev builds -->
   </properties>
+
+   <profiles>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <enforcer.skip>false</enforcer.skip>
+                <skip.generate.git.props>false</skip.generate.git.props> <!-- yes, generate git props for prod builds -->
+            </properties>
+        </profile>
+    </profiles>
   
   <dependencies>
     <dependency>
@@ -127,6 +145,102 @@
 	  </execution>
 	</executions>
       </plugin>
+            <!-- generate the git properties file, check that we're building off a non-dirty version.
+             documentation on configuring this plugin is at: https://github.com/ktoso/maven-git-commit-id-plugin/blob/master/README.md
+             validateRevision goal in this plugin currently doesn't work, so we use maven enforcer plugin instead
+             -->
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.1</version>
+
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <prefix>git</prefix>
+                    <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+                    <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
+                    <verbose>true</verbose>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <format>properties</format>
+                    <skipPoms>true</skipPoms>
+                    <injectAllReactorProjects>false</injectAllReactorProjects>
+                    <failOnNoGitDirectory>true</failOnNoGitDirectory>
+                    <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
+                    <skip>${skip.generate.git.props}</skip>
+                    <runOnlyOnce>false</runOnlyOnce>
+                    <useNativeGit>false</useNativeGit>
+                    <abbrevLength>7</abbrevLength>
+                    <commitIdGenerationMode>flat</commitIdGenerationMode>
+                    <gitDescribe>
+                        <skip>false</skip>
+                        <always>false</always>
+                        <abbrev>7</abbrev>
+                        <dirty>-dirty</dirty>
+                        <match>*</match>
+                        <tags>false</tags>
+                        <forceLongFormat>false</forceLongFormat>
+                    </gitDescribe>
+                </configuration>
+            </plugin>
+
+            <!-- read back the git properties as maven properties. the commit id plugin does not set these maven props, it only emits them to git.properties. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <quiet>${skip.generate.git.props}</quiet> <!-- set quiet to true if we have skipped generating git props file, so this doesn't crash -->
+                            <files>
+                                <file>${project.build.outputDirectory}/git.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+ <!-- all the rules to be enforced must go into this section -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-property</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireProperty>
+                                    <property>git.dirty</property>
+                                    <message>${line.separator}${line.separator}!!!!!!!! --------- git.dirty property not found -- commit id plugin must not have run. --------!!!!!!!!!${line.separator}${line.separator}</message>
+                                    <regex>false</regex>
+                                    <regexMessage>${line.separator}${line.separator}!!!!!!!! --------- Git dirty must not be true -- make sure all files are committed before building. --------!!!!!!!!!${line.separator}${line.separator}</regexMessage>
+                                </requireProperty>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
       <plugin>
 	<artifactId>maven-war-plugin</artifactId>
 	<version>2.3</version>

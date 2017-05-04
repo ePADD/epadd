@@ -204,7 +204,7 @@
     // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
     $(document).ready(function() {
         var clickable_message = function (data, type, full) {
-            return '<a target="_blank" title="' + (full.title ? full.title : '') + '" href="' + full.url + '">' + full.name + '</a>';
+            return '<a target="_blank" title="' + (full.tooltip ? full.tooltip : '') + '" href="' + full.url + '">' + full.name + '</a>';
         };
 
         var render_nMessages = function(data, type, full, meta) {

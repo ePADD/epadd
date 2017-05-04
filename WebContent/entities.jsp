@@ -2,13 +2,12 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.util.Span" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.util.Span" %>
-<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@include file="getArchive.jspf" %>
 
 <!-- Input: Field name

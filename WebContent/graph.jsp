@@ -3,17 +3,15 @@
 	JSPHelper.checkContainer(request); // do this early on so we are set up
   request.setCharacterEncoding("UTF-8");
 %>
-<%@ page import="org.json.*"%>
-<%@ page import="java.util.*"%>
+<%@ page import="edu.stanford.muse.email.CalendarUtil"%>
+<%@ page import="edu.stanford.muse.email.Contact"%>
 <%@ page import="edu.stanford.muse.index.*" %>
-<%@ page import="edu.stanford.muse.email.CalendarUtil" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.email.AddressBook" %>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.util.*" %>
-<%@ page import="edu.stanford.muse.email.Contact" %>
-<%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="edu.stanford.muse.util.*" %>
+<%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
+<%@ page import="org.json.JSONArray" %>
+<%@ page import="org.json.JSONObject" %>
+<%@ page import="java.util.*" %>
 <%@include file="getArchive.jspf" %>
 <%!
 

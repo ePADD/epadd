@@ -116,6 +116,8 @@
 					<include>settings.jsp</include>
 					<include>correspondents.jsp</include>
 					<include>entities.jsp</include>
+					<include>entity-types.jsp</include>
+					<include>list-entities.jsp</include>
 					<include>serveImage.jsp</include>
 					<include>graph.jsp</include>
 					<include>header.jspf</include>

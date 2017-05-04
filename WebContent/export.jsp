@@ -1,11 +1,10 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="java.util.Set"%>
-<%@ page import="edu.stanford.muse.index.Document" %>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
+<%@page language="java" import="edu.stanford.muse.index.Document"%>
+<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="java.util.Set" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -164,7 +163,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
             <div class="one-line" id="export-next">
                 <div class="form-group col-sm-8">
-                    <label for="export-attach-file">Export to next ePADD module</label>
+                    <label for="export-next-file">Export to next ePADD module</label>
                     <input id="export-next-file" class="dir form-control" type="text" name="name" value=""/>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">

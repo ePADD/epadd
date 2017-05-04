@@ -1,7 +1,7 @@
 <%@page isErrorPage="true" contentType="text/html; charset=UTF-8"%>
+<%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" %>
 <%  JSPHelper.log.warn ("Error page reached. code:" + request.getAttribute("javax.servlet.error.status_code") + " message:" + request.getAttribute("javax.servlet.error.message") + " type: " + request.getAttribute("javax.servlet.error.exception_type")); %>
