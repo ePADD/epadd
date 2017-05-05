@@ -96,7 +96,7 @@ expand = function(name,docId,id){
 	epadd.log("Expanding name: "+name);
 	$.ajax({
 		type: "POST",
-		url: "./ajax/expandname.jsp",
+		url: "./ajax/expand-name.jsp",
 		dataType: "html",
 		async: false,
 		data: {

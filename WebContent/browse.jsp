@@ -363,7 +363,8 @@
             //add quotes or else, stop words will be removed and highlights single words
             Set<String> tmp = new HashSet<> ();
             for(String sp: selectedPrefixes)
-                tmp.add('"'+sp+'"');
+                if (!(sp.startsWith ("\"") && sp.endsWith ("\""))) // enclose in quotes, but only if not already to avoid excessive quoting
+                    tmp.add('"'+sp+'"');
             selectedPrefixes = tmp;
         }
         String searchType = request.getParameter("searchType");

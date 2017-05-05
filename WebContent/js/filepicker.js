@@ -55,7 +55,7 @@ function FilePicker($basediv) {
 			// repaint the path components on screen
 			$('.path-components').html(''); // clear the existing path components
 			var path_to_this_component = '';
-			if (current_path = '') {
+			if (current_path === '') {
 				current_path = '/'; // special case of empty string. equivalent to /
 			}
 			var components = current_path.split("/");
