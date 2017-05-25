@@ -1,7 +1,8 @@
-<%@ page import="java.io.File,java.io.FilenameFilter,java.util.Arrays"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page import="edu.stanford.muse.util.Util,edu.stanford.muse.webapp.JSPHelper,java.io.File"%>
+<%@ page import="java.io.FilenameFilter" %>
+<%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
 <%
 /**
   * jQuery File Tree JSP Connector
