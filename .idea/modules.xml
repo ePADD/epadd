@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/epadd.iml" filepath="$PROJECT_DIR$/epadd.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../muse/muse.iml" filepath="$PROJECT_DIR$/../muse/muse.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../gs-muse/muse (1).iml" filepath="$PROJECT_DIR$/../gs-muse/muse (1).iml" />
     </modules>
   </component>
 </project>
