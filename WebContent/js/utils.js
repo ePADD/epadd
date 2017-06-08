@@ -1,33 +1,9 @@
 // Vihari's functions for authorities and expanding partial names
 
-initialiseqtip_old = function(){
-	$('.qtip').remove();
-	//TODO: use a proper selector
-    var qtip_params = {
-        hide:{delay:'200',fixed:true},
-        style: {width: '450px',padding: 7,color: 'black',textAlign: 'left',border: {radius: '4px',color: 'red'}}
-    };
-
-    //Not able to avoid the random id assignment, it is required because the content is appended later through script
-    var x = 1;
-    //There can be many nested spans, in that case just consider the outer most span element
-	$('div.muse-doc-body .expand').map(function(){
-            var docId = $(this).attr("data-docid");
-            var name = $(this).attr("data-text");
-            var rid = name.replace(/ /g,"_");
-            $(this).attr("title","<div class='resolutions' data-id='"+rid+"'><img src='images/spinner.gif' style='height:15px'/><script>expand('"+name+"','"+docId+"','"+rid+"');</script>");
-        });
-    $('div.muse-doc-body .expand').qtip(qtip_params);
-
-    $('div.muse-doc-header .expand').map(function(){
-            var docId = $(this).attr("data-docid");
-            var name = $(this).attr("data-text");
-            var rid = name.replace(/ /g,"_");//Math.sin(x++).toString().substr(6);
-            $(this).attr("title","<div class='resolutions' data-id='"+rid+"'><img src='images/spinner.gif' style='height:15px'/><script>expand('"+name+"','"+docId+"','"+rid+"');</script>");
-        });
-    $('div.muse-doc-header .expand').qtip(qtip_params);
-};
-
+var escape = function(s) {
+	s = title.replace(/"/g, "&quot;");
+    s = title.replace(/"/g, "&quot;");
+}
 
 var initialiseqtip = function(){
 	$('.qtip').remove();
@@ -59,7 +35,7 @@ var initialiseqtip = function(){
                     var name = $(event.target).attr("data-text");
 
                     $.ajax({
-						url: 'ajax/expand-name.jsp', // Use data-url attribute for the URL
+						url: 'ajax/expand-name-new.jsp', // Use data-url attribute for the URL
 						dataType: 'json',
 						type: 'get',
 						data: {
@@ -69,15 +45,17 @@ var initialiseqtip = function(){
 					})
 						.then(function(result) {
 							// Set the tooltip content upon successful retrieval
-                            if (!(result.candidates && result.candidates.length > 0)) {
+                            if (!(result.matches && result.matches.length > 0)) {
                                 api.set('content.text', 'No matches');
                                 return;
                             }
 
-                            var candidates = result.candidates;
+                            var matches = result.matches;
 							var str = '';
-							for (var i = 0; i < candidates.length; i++)
-								str += (i+1) + '. ' + candidates[i].candidate + '<br/>';
+							for (var i = 0; i < matches.length; i++) {
+							    // todo, maybe: insert href to a search for the matched string or contact
+                                str += (i + 1) + '. ' + '<span style="cursor:pointer" title=\"' + matches[i].matchDescription + '">' + escapeHTML(matches[i].match) + '</span><br/>';
+                            }
 
 							api.set('content.text', str);
 						}, function(xhr, status, error) {
@@ -85,7 +63,7 @@ var initialiseqtip = function(){
 							api.set ('context.text', 'sorry there was an error contacting the epadd expander!');
 						});
 
-					return 'Loading...'; // Set some initial text
+					return 'Loading possible matches...'; // Set some initial text
 				}
 	}
 		});

@@ -1,6 +1,16 @@
 "use strict";
 var epadd = {};
 
+var escapeHTML = function(s) {
+	// verified that all the 5 characters "'&<> are ok being embedded inside a / /g
+    s = s.replace(/"/g, "&quot;");
+    s = s.replace(/'/g, "&apos;");
+    s = s.replace(/&/g, "&amp;");
+    s = s.replace(/</g, "&lt;");
+    s = s.replace(/>/g, "&gt;");
+    return s;
+}
+
 epadd.post_message = function(mesg)
 {
 	$.ajax({

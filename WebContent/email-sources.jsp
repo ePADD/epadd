@@ -1,9 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="com.google.gson.Gson"%>
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.List"%>
 <%@page language="java" import="java.util.Set"%>
 <%@page language="java" %>
@@ -19,6 +17,12 @@
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
+	<style>
+		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px; vertical-align: top;}
+		.input-field {width:350px;}
+		.input-field-label {font-size: 12px;}
+
+	</style>
 
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
@@ -29,12 +33,7 @@
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	<style>
-		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px; vertical-align: top;}
-		.input-field {width:350px;}
-		.input-field-label {font-size: 12px;}
 
-	</style>
 </head>
 <body style="background-color:white;">
 <jsp:include page="header.jspf"/>
