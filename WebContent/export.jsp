@@ -202,7 +202,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
     <section>
         <div class="panel">
-            <div class="panel-heading">Export attachments-dbg</div>
+            <div class="panel-heading">Export attachments</div>
 
             <div class="one-line">
                 <div class="advanced-search form-group col-sm-6" style="padding:0px 0px 0px 15px">
