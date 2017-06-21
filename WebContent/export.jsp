@@ -262,6 +262,8 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         </div>
     </section>
 
+    <% if (ModeConfig.isProcessingMode()) { %>
+
     <section>
         <div class="panel" id="export-headers">
             <div class="panel-heading">Export headers (CSV)</div>
@@ -293,6 +295,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 window.location = baseUrl + '?exportType=csv&dir=' + dir;
         });
     </script>
+    <% } %>
 
 
     <% if (ModeConfig.isProcessingMode()) { %>

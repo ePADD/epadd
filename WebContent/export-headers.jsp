@@ -74,6 +74,8 @@
             char CSV_RECORD_SEP=',';
             //In order to separate different mail id's within a single field (like cc or bcc) we use the following separator.
             String EMAILID_SEP=";";
+            //If a best name/mail id already contains EMAILID_SEP then we need to convert it to something else before proceeding.
+            String EMAILID_SEP_CONVERSION="_";
 
             Collection<Document> docs = archive.getAllDocs();
             //Create csv file format configuration with record separator as new line and value delimiter as comma
@@ -108,6 +110,9 @@
                                     String bestname = addressBook.getBestDisplayNameForEmail(email);
                                     //Can email or bestname be null? CHECK_ASSERTION
                                     //getBestDisplayNameForEmail can be empty but not null
+                                    //convert EMAILID_SEP (if any) present in email or bestname to EMAILID_SEP_CONVERSION
+                                    email.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
+                                    bestname.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
                                     fromEmailIds.append(email + EMAILID_SEP);
                                     fromBestNames.append(bestname + EMAILID_SEP);
                                 }
@@ -133,6 +138,9 @@
                                     String bestname = addressBook.getBestDisplayNameForEmail(email);
                                     //Can email or bestname be null? CHECK_ASSERTION
                                     //getBestDisplayNameForEmail can be empty but not null
+                                    //convert EMAILID_SEP (if any) present in email or bestname to EMAILID_SEP_CONVERSION
+                                    email.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
+                                    bestname.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
                                     toEmailIds.append(email + EMAILID_SEP);
                                     toBestNames.append(bestname + EMAILID_SEP);
                                 }
@@ -158,6 +166,9 @@
                                     String bestname = addressBook.getBestDisplayNameForEmail(email);
                                     //Can email or bestname be null? CHECK_ASSERTION
                                     //getBestDisplayNameForEmail can be empty but not null
+                                    //convert EMAILID_SEP (if any) present in email or bestname to EMAILID_SEP_CONVERSION
+                                    email.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
+                                    bestname.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
                                     ccEmailIds.append(email + EMAILID_SEP);
                                     ccBestNames.append(bestname + EMAILID_SEP);
                                 }
@@ -184,6 +195,9 @@
                                     String bestname = addressBook.getBestDisplayNameForEmail(email);
                                     //Can email or bestname be null? CHECK_ASSERTION
                                     //getBestDisplayNameForEmail can be empty but not null
+                                    //convert EMAILID_SEP (if any) present in email or bestname to EMAILID_SEP_CONVERSION
+                                    email.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
+                                    bestname.replaceAll(EMAILID_SEP,EMAILID_SEP_CONVERSION);
                                     bccEmailIds.append(email + EMAILID_SEP);
                                     bccBestNames.append(bestname + EMAILID_SEP);
                                 }
