@@ -173,11 +173,11 @@
 
 		<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
 			<div class="cta-box text-center margin30">
-				<a href="browse?sensitive=true&adv-search=1">
+				<a href="lexicon?name=regex">
 					<i class="icon-browsetoparrow"></i>
 					<img src="images/sensitive-message.svg"/>
-					<p class="cta-text-1">Sensitive messages<%=nSensitiveMessages%></p>
-					<p class="cta-text-2">Sensitive messages<%=nSensitiveMessages%></p>
+					<p class="cta-text-1">Sensitive messages</p>
+					<p class="cta-text-2">Sensitive messages</p>
 				</a>
 			</div>
 		<% } %>

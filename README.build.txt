@@ -29,6 +29,8 @@ epadd.exe
 epadd.dmg
 and -discovery versions of these 3 files.
 
+Note: for developers, it is adequate if the epadd-standalone file gets built. The windows/Mac packager into .exe/.dmg sometimes fail on some platforms, but are not really needed for testing.
+
 Notes:
 
 The muse project contains most of the Java based code. It is the core engine used in ePADD.  The epadd project contains primarily the frontend screens for the application (in the WebContent directory) and creates a deployable WAR file.  epadd-launcher bundles up the epadd.war into a standalone, runnable jar using an embedded Tomcat server.

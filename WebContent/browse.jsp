@@ -119,6 +119,8 @@
         lexicon = archive.getLexicon(lexiconName);
     }
 
+    boolean doRegexHighlighting = (lexicon != null) && Lexicon.REGEX_LEXICON_NAME.equals(lexiconName);
+
     Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive);
 
     boolean jogDisabled = true;
@@ -354,11 +356,13 @@
             //add quotes or else, stop words will be removed and highlights single words
             Set<String> tmp = new HashSet<> ();
             for(String sp: selectedPrefixes)
-                if (!(sp.startsWith ("\"") && sp.endsWith ("\""))) // enclose in quotes, but only if not already to avoid excessive quoting
-                    tmp.add('"'+sp+'"');
+                if (!doRegexHighlighting && !(sp.startsWith ("\"") && sp.endsWith ("\""))) // enclose in quotes, but only if not already to avoid excessive quoting. Also, do not add quotes if regex search
+                    tmp.add('"' + sp + '"');
+                else
+                    tmp.add (sp);
             selectedPrefixes = tmp;
         }
-        String searchType = request.getParameter("searchType");
+
         // warning: remember to convert, otherwise will not work for i18n queries!
         String[] searchTerms = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("term"));
 
@@ -410,9 +414,6 @@
         if (filter != null && filter.isRegexSearch()) {
             highlightTermsUnstemmed.add(filter.get("term"));
         }
-        Boolean isRegexSearch = false;
-        if(searchType!=null && searchType.equals("regex"))
-            isRegexSearch = true;
 
         Set<String> highlightTerms = new HashSet<>();
         if(selectedPrefixes!=null)
@@ -438,9 +439,10 @@
 
         DataSet browseSet = pair.getFirst();
         String html = pair.getSecond();
-
-        browseSet.sensitive = "true".equals(request.getParameter("sensitive"));
-        //browseSet.isRegexSearch = isRegexSearch;
+        browseSet.regexToHighlight = null;
+        if (doRegexHighlighting && selectedPrefixes != null) {
+            browseSet.regexToHighlight = String.join("|", selectedPrefixes);
+        }
 
         // entryPct says how far (what percentage) into the selected pages we want to enter
         int entryPage = IndexUtils.getDocIdxWithClosestDate((Collection) docs, HTMLUtils.getIntParam(request, "startMonth", -1), HTMLUtils.getIntParam(request, "startYear", -1));

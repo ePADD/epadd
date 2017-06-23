@@ -39,9 +39,12 @@
 		// we're using a simple datatables data source here, because this will be a small table
 		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
 		$(document).ready(function() {
-			function do_sentiment_search(e) {
+			function do_lexicon_search(e) {
 			  var cat = $(e.target).text();
-			  window.open ('browse?adv-search=1&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
+			  if (window.is_regex)
+                  window.open('browse?adv-search=1&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
+			  else
+                  window.open('browse?adv-search=1&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
 			};
 
 			//if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
@@ -50,7 +53,7 @@
 			$('#table').show();
 
 			// attach the click handlers
-			$('.search').click(do_sentiment_search);
+			$('.search').click(do_lexicon_search);
 		} );
 	</script>
 </head>
@@ -58,10 +61,6 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%
-	Indexer indexer = archive.indexer;
-	AddressBook ab = archive.addressBook;
-%>
 <%writeProfileBlock(out, archive, "", "Lexicon Hits");%>
 
 <!--sidebar content-->
@@ -96,8 +95,6 @@
 <br/>
 
 <%
-	Set<DatedDocument> allDocs = new LinkedHashSet<DatedDocument> ((Collection) JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false));
-
 	Lexicon lex = null;
 	// first look for url param for lexicon name if specified
 	String name = request.getParameter("name");
@@ -121,16 +118,17 @@
 			lex = archive.getLexicon(name);
 		}
 	}
+    boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase (name);
 
 	if (lex == null) {
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(name) + "</div>");
 	} else {
 //		session.setAttribute("lexicon", lex);
-		Map<String, Integer> map = lex.getLexiconCounts(indexer, true);
+		Map<String, Integer> map = lex.getLexiconCounts(archive.indexer, !isRegex /* originalContent only */, isRegex);
 		Collection<String> lexiconNames = archive.getAvailableLexicons();
 		if (ModeConfig.isDeliveryMode()) {
 			lexiconNames = new LinkedHashSet(lexiconNames); // we can't call remve on the collection directly, it throws an unsupported op.
-			lexiconNames.remove("sensitive");
+			lexiconNames.remove(Lexicon.SENSITIVE_LEXICON_NAME);
 		}
 
 		boolean onlyOneLexicon = (lexiconNames.size() == 1);
@@ -172,6 +170,7 @@
 <br/>
 	<script>
 		$(document).ready (function() {
+            window.is_regex = <%=isRegex%>;
 			$('#lexiconName').change (changeLexicon);
 			$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
 			$('#create-lexicon').click (function() {
