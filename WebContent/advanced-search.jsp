@@ -1,7 +1,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
-<%@ page import="java.util.Set" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.util.*" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -354,21 +354,26 @@
 							</div>
 						</div>
 
+						<%
+							Map<String,String> attachmentTypeOptions= Config.attachmentTypeToExtensions;
+						%>
 						<div class="row">
 							<!--Type-->
 							<div class="form-group col-sm-6">
 								<label for="attachmentType">Type</label>
 								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
 									<option value="" selected disabled>Select</option>
-									<option value="jpg;png;gif;bmp">Graphics (jpg, png, gif, bmp)</option>
-									<option value="doc;docx;pages">Document (doc, docx, pages)</option>
-									<option value="ppt;pptx;key">Presentation (ppt, pptx, key)</option>
-									<option value="xls;xlsx;numbers">Spreadsheet (xls, xlsx, numbers)</option>
-									<option value="htm;html;css;js">Internet file (htm, html, css, js)</option>
-									<option value="zip;7z;tar;tgz">Compressed (zip, 7z, tar, tgz)</option>
-									<option value="mp3;ogg">Audio (mp3, ogg)</option>
-									<option value="avi;mp4">Video (avi, mp4)</option>
-									<option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb)</option>
+									<%
+										for (Map.Entry<String,String> opt : attachmentTypeOptions.entrySet()){
+											if(opt.getKey().toLowerCase().equals(opt.getValue().toLowerCase())){
+									%>
+									<option value = "<%=opt.getValue()%>"><%=opt.getKey()%></option>
+									<%
+									}else{
+									%>
+
+									<option value = "<%=opt.getValue()%>"><%=opt.getKey()+" ("+opt.getValue()+")"%></option>
+									<%} }%>
 								</select>
 							</div>
 

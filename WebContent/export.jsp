@@ -5,6 +5,8 @@
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.util.Map" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -204,20 +206,33 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         <div class="panel">
             <div class="panel-heading">Export attachments</div>
 
+
+            <div class="checkbox-inline">
+                <label>
+                    <input type="checkbox" name="unprocessedOption" checked>
+                    <span class="label-text">Unprocessed only</span>
+                </label>
+            </div>
+
+            <%
+                Map<String,String> attachmentTypeOptions= Config.attachmentTypeToExtensions;
+            %>
             <div class="one-line">
                 <div class="advanced-search form-group col-sm-6" style="padding:0px 0px 0px 15px">
                     <label for="attachmentType">Type</label>
                     <select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
                         <option value="" selected disabled>Select</option>
-                        <option value="jpg;png;gif;bmp">Graphics (jpg, png, gif, bmp)</option>
-                        <option value="doc;docx;pages">Document (doc, docx, pages)</option>
-                        <option value="ppt;pptx;key">Presentation (ppt, pptx, key)</option>
-                        <option value="xls;xlsx;numbers">Spreadsheet (xls, xlsx, numbers)</option>
-                        <option value="htm;html;css;js">Internet file (htm, html, css, js)</option>
-                        <option value="zip;7z;tar;tgz">Compressed (zip, 7z, tar, tgz)</option>
-                        <option value="mp3;ogg">Audio (mp3, ogg)</option>
-                        <option value="avi;mp4">Video (avi, mp4)</option>
-                        <option value="fmp;db;mdb;accdb">Database (fmp, db, mdb, accdb)</option>
+                        <%
+                            for (Map.Entry<String,String> opt : attachmentTypeOptions.entrySet()){
+                                 if(opt.getKey().toLowerCase().equals(opt.getValue().toLowerCase())){
+                        %>
+                                    <option value = "<%=opt.getValue()%>"><%=opt.getKey()%></option>
+                        <%
+                                }else{
+                        %>
+
+                                    <option value = "<%=opt.getValue()%>"><%=opt.getKey()+" ("+opt.getValue()+")"%></option>
+                        <%} }%>
                     </select>
                 </div>
 
@@ -251,10 +266,25 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     var ext = $('#attachmentExtension').val();
                     var type = $('#attachmentType').val();
 
+                    /* //Check if type contains 'all' if it then add all options as type
+                    if(type.indexOf('all')!=-1){
+                        var allOptions = new Array;
+                        //following loop gets all options present in attachmentType selection box except 'all'
+                        $('#attachmentType option').each(function(){
+                            if($(this).val()!='all')
+                                allOptions.push($(this).val());
+                        });
+                        //assign options to type variable declared outside this if c`ondition
+                        type = allOptions.slice()
+
+                    }*/
+
+
+                 //Now we also pass an option to denote if only unprocessed attachments need to be exported.
                     var baseUrl = 'export-attachments';
                     var dir = $('.dir', $('#export-attach')).val();
                     if (dir && dir.length > 0)
-                        window.location = baseUrl + '?dir=' + dir + '&type=' + type + '&ext=' + ext;
+                        window.location = baseUrl + '?dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
                 });
             </script>
 
