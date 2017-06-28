@@ -263,7 +263,43 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
     </section>
 
     <% if (ModeConfig.isProcessingMode()) { %>
-        <section style="margin-bottom:100px">
+
+    <section>
+        <div class="panel" id="export-headers">
+            <div class="panel-heading">Export headers (CSV)</div>
+
+            <div class="one-line">
+                <div class="form-group col-sm-8">
+                    <label for="export-headers-file">Specify location</label>
+                    <input id="export-headers-file" class="dir form-control" type="text" name="name" value=""/>
+                </div>
+                <div class="form-group col-sm-4 picker-buttons">
+                    <button id="export-headers-browse" class="btn-default browse-button">Browse</button>
+                    <button id="export-headers-do" style="margin-left: 10px;" class="go-button faded btn-default">Export</button>
+                </div>
+            </div>
+
+
+            <br/>
+        </div>
+    </section>
+
+    <script>
+        $('#export-headers .go-button').click (function(e) {
+            var $button = $(e.target);
+            if ($button.hasClass('faded'))
+                return false; // do nothing;
+            var baseUrl = 'export-headers';
+            var dir = $('.dir', $button.closest('.panel')).val();
+            if (dir && dir.length > 0)
+                window.location = baseUrl + '?exportType=csv&dir=' + dir;
+        });
+    </script>
+    <% } %>
+
+
+    <% if (ModeConfig.isProcessingMode()) { %>
+    <section>
             <div class="panel" id="export-auth">
                 <div class="panel-heading">Export authorities (CSV)</div>
 
@@ -281,9 +317,9 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
                 <br/>
             </div>
-        </section>
+    </section>
 
-        <script>
+    <script>
         $('#export-auth .go-button').click (function(e) {
             var $button = $(e.target);
             if ($button.hasClass('faded'))
@@ -307,6 +343,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             new FilePicker($('#export-mbox'));
             new FilePicker($('#export-attach'));
             new FilePicker($('#export-auth'));
+            new FilePicker($('#export-headers'));
 		});
 
         $('#export-next .go-button').click (function(e) {

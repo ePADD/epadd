@@ -412,6 +412,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>export-headers</servlet-name>
+		<jsp-file>/export-headers.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-headers</servlet-name>
+		<url-pattern>/export-headers</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>export-complete</servlet-name>
 		<jsp-file>/export-complete.jsp</jsp-file>
 	</servlet>
