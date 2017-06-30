@@ -384,10 +384,34 @@ epadd.unloadArchive = function() {
 			type: 'POST',
 			url: "ajax/kill-session.jsp",
 			dataType: "json",
-			success: function(data) { epadd.alert('Archive unloaded successfully!', function() { window.location.reload(); });},
+			success: function(data) {epadd.alert('Archive unloaded successfully!');},
 			error: function(jq, textStatus, errorThrown) { var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
 	});
 };
+
+
+
+epadd.saveArchive= function() {
+    $.ajax({
+        type: 'POST',
+        url: "ajax/save-archive.jsp",
+        dataType: "json",
+        success: function(data) { epadd.alert('Archive saved successfully!');},
+        error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+    });
+};
+
+/*
+epadd.saveAndCloseArchive= function() {
+    $.ajax({
+        type: 'POST',
+        url: "ajax/save-archive.jsp",
+        dataType: "json",
+        success: function(data) { epadd.alert(date+'Archive saved successfully! Now closing the archive',epadd.unloadArchive());},
+        error: function(jq, textStatus, errorThrown) { var message = ("Error saving and closing archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+    });
+};
+*/
 
 
 epadd.deleteArchive = function(e) {
