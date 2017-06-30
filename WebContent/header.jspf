@@ -41,11 +41,9 @@
 
 			<% if (ModeConfig.isAppraisalMode()) {
 				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
-			} else if(ModeConfig.isProcessingMode() && !haveArchive){
+			} else if (!haveArchive) { // if haveArchive, we don't show Collections in header
 				out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
-			} else if (!ModeConfig.isProcessingMode()){ //Does collection button appear in non-appraisal/non-processing mode as well?
-                out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
-            }
+			}
 
 			if (ModeConfig.isProcessingMode() && !haveArchive) {
 				out.println("<li style='display:inline'><a href='import'>Add</a></li>");
@@ -55,20 +53,29 @@
 			if (haveArchive) { %>
 				<li style="display:inline"><a href="browse-top">Browse</a></li>
 				<li style="display:inline"><a href="search-query">Search</a></li>
-				<% 	if (ModeConfig.isProcessingMode()) { %>
+
+				<% if (ModeConfig.isProcessingMode()) { %>
 					<li style="display:inline"><a href="assign-authorities?type=correspondent">Authorities</a></li>
 				<% } %>
+
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 					<li style="display:inline"><a href="export">Export</a></li>
 				<% } %>
-				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+
+				<% if (!ModeConfig.isDiscoveryMode()) { %>
 				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
-			    <% } %>
-			    <% if (ModeConfig.isProcessingMode()) { %>
-			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
-                <% } %>
-				<% if (ModeConfig.isDeliveryMode()) { %>
+			    <% }
+
+				if (ModeConfig.isDeliveryMode()) { %>
 					<li style="display:inline"><a href="review-cart">Cart</a></li>
+				<% }
+
+				if (!ModeConfig.isDiscoveryMode()) { %>
+			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
+                <% }
+			} else {
+				if (ModeConfig.isProcessingMode() || ModeConfig.isDiscoveryMode()) { %>
+					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>
 				<% }
 			}
 			%>
@@ -85,7 +92,6 @@
                 //Q. Will this location always remain as collections irrespective of where this close button was called.
                 window.location = './collections';
             });
-
         </script>
 
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">

@@ -35,7 +35,6 @@
         JSPHelper.log.info("Loading archive from: "+dir);
 
         Archive archive = SimpleSessions.readArchiveIfPresent(dir);
-        JSPHelper.log.info(dir+" dir of loaded archive: "+archive.getLoadedDirectoryInfo());
         if (archive == null)
         {
             result.put ("status", 2);
