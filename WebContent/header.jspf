@@ -64,7 +64,7 @@
 					<li style="display:inline"><a href="export">Export</a></li>
 				<% } %>
 
-			<% if (!ModeConfig.isDiscoveryMode()) { %>
+			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() ) { %>
 				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
 			    <% } %>
 			    <% if (ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() || ModeConfig.isDiscoveryMode()) { %>
@@ -74,9 +74,6 @@
 					<li style="display:inline"><a href="review-cart">Cart</a></li>
 				<% }
 
-				if (!ModeConfig.isDiscoveryMode()) { %>
-			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
-                <% }
 			} else {
 				if (ModeConfig.isProcessingMode() || ModeConfig.isDiscoveryMode()) { %>
 					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>
