@@ -49,7 +49,7 @@ if(archive!=null){
             JSPHelper.log.info(ner.stats);
             System.err.println(ner.stats);
         }
-        archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
+//        archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
         JSPHelper.log.info("Number of potentially sensitive messages " + archive.processingMetadata.numPotentiallySensitiveMessages);
 
         session.removeAttribute("statusProvider");

@@ -25,16 +25,16 @@
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	<style>
-		td > div {
+		td,th {
 			padding: 5px;
 		}
 
-		.option {
-			margin-right: 15px;
-		}
-
-		.underlined-header { border-bottom: solid 4px #0175bc; }
-		.search-header { font-size: 100%; cursor: pointer; padding-bottom:5px;}
+        td.center {
+            text-align:center;
+        }
+        td.right {
+            text-align:right;
+        }
 	</style>
 </head>
 <body>
@@ -60,22 +60,26 @@
         if (infos == null) // should not happen
             continue;
         %>
-        <div class="panel">
 
-        <%
+    <%
         Archive.ProcessingMetadata metadata = CrossCollectionSearch.archiveMetadatas.get(I);
-        out.println ("Institution: " + Util.escapeHTML(metadata.institution) + "<br/>");
-        out.println ("Repository: " + Util.escapeHTML(metadata.repository) + "<br/>");
-        out.println ("Collection: " + Util.escapeHTML(metadata.collectionTitle) + "<br/>");
-        %>
+        out.println ("Institution: <b>" + Util.escapeHTML(metadata.institution) + "</b> &nbsp;&nbsp;");
+        out.println ("Repository: <b>" + Util.escapeHTML(metadata.repository) + "</b> &nbsp;&nbsp;");
+        out.println ("Collection: <b>" + Util.escapeHTML(metadata.collectionTitle) + "</b> &nbsp;&nbsp;");
+    %>
+        <div class="panel">
 
         <table>
             <tr><th>Entity</th><th>Messages</th><th>Confirmed</th><th>Date Range</th></tr>
             <% for (EntityInfo info: infos) { %>
             <tr>
                 <td><%=Util.escapeHTML(info.displayName)%></td>
-                <td><%=info.count%></td>
-                <td> <input type="checkbox"/></td>
+                <td class="right"><%=info.count%></td>
+                <td class="center">
+                    <% if (!info.isConfirmed) { %>
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    <% } %>
+                </td>
                 <td> <%=CalendarUtil.formatDateForDisplay(info.firstDate)%> - <%=CalendarUtil.formatDateForDisplay(info.lastDate)%></td>
             </tr>
             <% } %>
