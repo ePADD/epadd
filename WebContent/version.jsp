@@ -1,1 +1,1 @@
-ePADD version Release 3.1 (April 30, 2017)
+ePADD version Release 4.0-alpha (June 30, 2017)
