@@ -157,7 +157,7 @@
 			<i class="icon-browsetoparrow"></i>
 			<img src="images/other-attachment.svg"/>
 			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
-			<p class="cta-text-2">Other attachments (<%=nImageAttachments%>)</p>
+			<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments)%>)</p>
 		</a>
 	</div>
 	<br/>
