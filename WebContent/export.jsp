@@ -207,11 +207,14 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             <div class="panel-heading">Export attachments</div>
 
 
-            <div class="checkbox-inline">
-                <label>
-                    <input type="checkbox" name="unprocessedOption" checked>
-                    <span class="label-text">Unprocessed only</span>
-                </label>
+
+            <div class="one-line">
+                <div class="checkbox-inline" style="padding:0px 0px 0px 15px">
+                    <label>
+                        <input type="checkbox" name="unprocessedOption" checked>
+                        <span class="label-text">Unprocessed only</span>
+                    </label>
+                </div>
             </div>
 
             <%

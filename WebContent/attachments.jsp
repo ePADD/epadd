@@ -16,6 +16,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.index.Searcher" %>
 <%@ page import="java.util.stream.Collectors" %>
+<%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 
 <!DOCTYPE HTML>
@@ -80,6 +81,10 @@
 
 <div id="all_fields" style="margin:auto;width:1000px; padding: 10px">
 
+    <%
+        Map<String,String> attachmentTypeOptions= Config.attachmentTypeToExtensions;
+    %>
+
     <!-- filter form submits back to the same page -->
     <form action="attachments" method="get">
         <section>
@@ -91,15 +96,16 @@
                         <label for="attachmentType">Type</label>
                         <select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
                             <option value="" selected disabled>Select</option>
-                            <option value="graphics">Graphics (jpg, png, gif, bmp)</option>
-                            <option value="document">Document (doc, docx, pages)</option>
-                            <option value="presentation">Presentation (ppt, pptx, key)</option>
-                            <option value="spreadsheet">Spreadsheet (xls, xlsx, numbers)</option>
-                            <option value="internet">Internet file (htm, html, css, js)</option>
-                            <option value="compressed">Compressed (zip, 7z, tar, tgz)</option>
-                            <option value="audio">Audio (mp3, ogg)</option>
-                            <option value="video">Video (avi, mp4)</option>
-                            <option value="database">Database (fmp, db, mdb, accdb)</option>
+                            <%
+                                for (Map.Entry<String,String> opt : attachmentTypeOptions.entrySet()){
+                                    if(opt.getKey().toLowerCase().equals(opt.getValue().toLowerCase())){
+                            %>
+                            <option value = "<%=opt.getValue()%>"><%=opt.getKey()%></option>
+                            <%
+                            }else{
+                            %>
+                            <option value = "<%=opt.getValue()%>"><%=opt.getKey()+" ("+opt.getValue()+")"%></option>
+                            <%} }%>
                         </select>
                     </div>
 
