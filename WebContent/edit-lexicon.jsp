@@ -28,6 +28,7 @@
 
 	// get the final name for lex
 	lexiconName = lex.name;
+	boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equals (lexiconName);
 
 	JSPHelper.log.info ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
 
@@ -81,8 +82,9 @@
 	<p>Multi-word phrases should be enclosed in double-quotes.
 
 	<p>Note that words and phrases with hyphens, such as father-in-law, should be spelled without hyphens.
-
-	<p>Select Test for a given category to view the number of hits for each keyword in that category.
+	<% if (!isRegex) { %>
+		<p>Select Test for a given category to view the number of hits for each keyword in that category. <!-- test not available if in regex -->
+	<% } %>
 </nav>
 <!--/sidebar-->
 <div align="center">
@@ -102,7 +104,10 @@
 				%>
 				<p>
 				<div class="lexiconCategory">
-					<b><%=sentiment%></b> (<a target="_blank" class="test-lexicon" href="#">Test</a>)<br/>
+					<b><%=sentiment%></b>
+					<% if (!isRegex) { %>
+						(<a target="_blank" class="test-lexicon" href="#">Test</a>)<br/>
+					<% } %>
 					<textarea style="padding:5px" cols="120" rows="<%=nRows%>" name="<%=sentiment%>" ><%=query%></textarea>
 				</div>
 				<%

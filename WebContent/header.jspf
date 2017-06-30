@@ -41,7 +41,9 @@
 
 			<% if (ModeConfig.isAppraisalMode()) {
 				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
-			} else if (!haveArchive) { // if haveArchive, we don't show Collections in header
+			} else if(!haveArchive){ //display collection tab only if there is no archive opened currently. Note that the first and second
+                //conditions (if and else part) can be true simultaneously. Therefore the ordering of these two is important because we want
+                //to display import tab in the appraisal mode and collection tab in other modes.
 				out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
 			}
 
@@ -62,11 +64,13 @@
 					<li style="display:inline"><a href="export">Export</a></li>
 				<% } %>
 
-				<% if (!ModeConfig.isDiscoveryMode()) { %>
+			<% if (!ModeConfig.isDiscoveryMode()) { %>
 				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
-			    <% }
-
-				if (ModeConfig.isDeliveryMode()) { %>
+			    <% } %>
+			    <% if (ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() || ModeConfig.isDiscoveryMode()) { %>
+			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
+                <% } %>
+				<% if (ModeConfig.isDeliveryMode()) { %>
 					<li style="display:inline"><a href="review-cart">Cart</a></li>
 				<% }
 
@@ -87,10 +91,14 @@
             $("#save-archive").click(epadd.saveArchive);
             $("#close-archive").click(function(){
                 //on closing, first save the archive and then unload it.
-                epadd.saveArchive();
-                epadd.unloadArchive();
+                epadd.saveArchive(false).then(function(){
+                    epadd.unloadArchive().then(function(){
+                         window.location = './collections';
+                    });
+                });
+                //epadd.unloadArchive();
                 //Q. Will this location always remain as collections irrespective of where this close button was called.
-                window.location = './collections';
+                //window.location = './collections';
             });
         </script>
 
