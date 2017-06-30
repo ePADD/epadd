@@ -106,8 +106,9 @@
 				<div class="lexiconCategory">
 					<b><%=sentiment%></b>
 					<% if (!isRegex) { %>
-						(<a target="_blank" class="test-lexicon" href="#">Test</a>)<br/>
+						(<a target="_blank" class="test-lexicon" href="#">Test</a>)
 					<% } %>
+                    <br/>
 					<textarea style="padding:5px" cols="120" rows="<%=nRows%>" name="<%=sentiment%>" ><%=query%></textarea>
 				</div>
 				<%
