@@ -41,11 +41,11 @@
 
 			<% if (ModeConfig.isAppraisalMode()) {
 				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
-			} else if(ModeConfig.isProcessingMode() && !haveArchive){
+			} else if(!haveArchive){ //display collection tab only if there is no archive opened currently. Note that the first and second
+                //conditions (if and else part) can be true simultaneously. Therefore the ordering of these two is important because we want
+                //to display import tab in the appraisal mode and collection tab in other modes.
 				out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
-			} else if (!ModeConfig.isProcessingMode()){ //Does collection button appear in non-appraisal/non-processing mode as well?
-                out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
-            }
+			}
 
 			if (ModeConfig.isProcessingMode() && !haveArchive) {
 				out.println("<li style='display:inline'><a href='import'>Add</a></li>");
@@ -61,10 +61,10 @@
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 					<li style="display:inline"><a href="export">Export</a></li>
 				<% } %>
-				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
 				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
 			    <% } %>
-			    <% if (ModeConfig.isProcessingMode()) { %>
+			    <% if (ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() || ModeConfig.isDiscoveryMode()) { %>
 			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
                 <% } %>
 				<% if (ModeConfig.isDeliveryMode()) { %>
