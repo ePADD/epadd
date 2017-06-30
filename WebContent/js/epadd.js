@@ -378,9 +378,11 @@ epadd.clearCache = function() {
 		}
 	});
 };
-
+//It is advisable to return an ajax object on which any subsequent promise/wait/then can be invoked to chain ajax requests together.
+//Currently only following two functions return such objects because we needed to implement the functionality of closing an archive by
+//stitching together the functionality of saveArchive and unloadArchive.
 epadd.unloadArchive = function() {
-	$.ajax({
+	return $.ajax({
 			type: 'POST',
 			url: "ajax/kill-session.jsp",
 			dataType: "json",
@@ -391,12 +393,15 @@ epadd.unloadArchive = function() {
 
 
 
-epadd.saveArchive= function() {
-    $.ajax({
+epadd.saveArchive= function(prompt) {
+    if(prompt==undefined){
+        prompt=true;
+    }
+    return $.ajax({
         type: 'POST',
         url: "ajax/save-archive.jsp",
         dataType: "json",
-        success: function(data) { epadd.alert('Archive saved successfully!');},
+        success: function(data) { if(prompt){epadd.alert('Archive saved successfully!')};},
         error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
     });
 };

@@ -80,10 +80,14 @@
             $("#save-archive").click(epadd.saveArchive);
             $("#close-archive").click(function(){
                 //on closing, first save the archive and then unload it.
-                epadd.saveArchive();
-                epadd.unloadArchive();
+                epadd.saveArchive(false).then(function(){
+                    epadd.unloadArchive().then(function(){
+                         window.location = './collections';
+                    });
+                });
+                //epadd.unloadArchive();
                 //Q. Will this location always remain as collections irrespective of where this close button was called.
-                window.location = './collections';
+                //window.location = './collections';
             });
 
         </script>
