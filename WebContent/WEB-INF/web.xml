@@ -340,6 +340,24 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>cross-collection-search</servlet-name>
+		<jsp-file>/cross-collection-search.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cross-collection-search</servlet-name>
+		<url-pattern>/cross-collection-search</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>cross-collection-search-query</servlet-name>
+		<jsp-file>/cross-collection-search-query.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cross-collection-search-query</servlet-name>
+		<url-pattern>/cross-collection-search-query</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>multi-search</servlet-name>
 		<jsp-file>/multi-search.jsp</jsp-file>
 	</servlet>
@@ -409,6 +427,15 @@
 	<servlet-mapping>
 		<servlet-name>export-authorities</servlet-name>
 		<url-pattern>/export-authorities</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>export-headers</servlet-name>
+		<jsp-file>/export-headers.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-headers</servlet-name>
+		<url-pattern>/export-headers</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

@@ -41,11 +41,11 @@
 
 			<% if (ModeConfig.isAppraisalMode()) {
 				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
-			} else {
+			} else if (!haveArchive) { // if haveArchive, we don't show Collections in header
 				out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
 			}
 
-			if (ModeConfig.isProcessingMode()) {
+			if (ModeConfig.isProcessingMode() && !haveArchive) {
 				out.println("<li style='display:inline'><a href='import'>Add</a></li>");
 			}
 
@@ -53,14 +53,29 @@
 			if (haveArchive) { %>
 				<li style="display:inline"><a href="browse-top">Browse</a></li>
 				<li style="display:inline"><a href="search-query">Search</a></li>
-				<% 	if (ModeConfig.isProcessingMode()) { %>
+
+				<% if (ModeConfig.isProcessingMode()) { %>
 					<li style="display:inline"><a href="assign-authorities?type=correspondent">Authorities</a></li>
 				<% } %>
+
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 					<li style="display:inline"><a href="export">Export</a></li>
 				<% } %>
-				<% if (ModeConfig.isDeliveryMode()) { %>
+
+				<% if (!ModeConfig.isDiscoveryMode()) { %>
+				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
+			    <% }
+
+				if (ModeConfig.isDeliveryMode()) { %>
 					<li style="display:inline"><a href="review-cart">Cart</a></li>
+				<% }
+
+				if (!ModeConfig.isDiscoveryMode()) { %>
+			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
+                <% }
+			} else {
+				if (ModeConfig.isProcessingMode() || ModeConfig.isDiscoveryMode()) { %>
+					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>
 				<% }
 			}
 			%>
@@ -68,6 +83,16 @@
 			<!--  <li style="display:inline"><a href="delivery">Delivery</a></li>  -->
 <!-- 		<li style="display:inline"><a target="_blank" href="http://library.stanford.edu/spc/more-about-us/projects-and-initiatives/epadd-project">About</a></li>  -->	
 		</ul>
+        <script>
+            $("#save-archive").click(epadd.saveArchive);
+            $("#close-archive").click(function(){
+                //on closing, first save the archive and then unload it.
+                epadd.saveArchive();
+                epadd.unloadArchive();
+                //Q. Will this location always remain as collections irrespective of where this close button was called.
+                window.location = './collections';
+            });
+        </script>
 
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">
 			<li class="dropdown" id="options">
