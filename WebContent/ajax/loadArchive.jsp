@@ -54,7 +54,6 @@
             session.setAttribute("userKey", "user"); // always jam in userKey. This is used by Blobs for the attachment wall to generate the photos.rss file
             session.setAttribute("cacheDir", archive.baseDir);
             out.println (result.toString(4));
-            JSPHelper.log.info("dir of loaded archive (2): "+archive.getLoadedDirectoryInfo());
             return;
         } catch (Exception e) {
             result.put ("status", 3);
