@@ -23,8 +23,10 @@
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link href="css/selectpicker.css" rel="stylesheet" type="text/css" media="screen" />
     <jsp:include page="css/css.jsp"/>
-
+    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
+    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
     <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/modernizr.min.js"></script>
     <script src="js/selectpicker.js"></script>
@@ -140,9 +142,9 @@
                     <div class="form-group col-sm-6">
                         <label for="time-range">Time Range</label>
                         <div id="time-range" class="date-input-group">
-                            <input value="<%=request.getParameter ("startDate")%>" id="startDate" name="startDate" type="date" min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
                             <label for="endDate">To</label>
-                            <input value="<%=request.getParameter ("endDate")%>" id="endDate" name="endDate" type="date"  min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
                         </div>
                     </div>
 
@@ -207,6 +209,22 @@
 </div>
 <% } %>
 <jsp:include page="footer.jsp"/>
+<script>
+
+    $(document).ready(function() {
+        //installing input tags as datepickers
+        //setting min date as 1 jan 1960. The format is year,month,date. Month is 0 based and all other are 1 based
+        $('#startDate').datepicker({
+            minDate: new Date(1960, 1 - 1, 1),
+            dateFormat: "yy-mm-dd"
+        });
+        $('#endDate').datepicker({
+            minDate: new Date(1960, 1 - 1, 1),
+            dateFormat: "yy-mm-dd"
+        });
+
+    });
+</script>
 
 </body>
 </html>

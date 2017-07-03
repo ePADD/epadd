@@ -6,16 +6,21 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+	<%--date time picker component used from http://eonasdan.github.io/bootstrap-datetimepicker/--%>
     <title>Advanced Search</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8">
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
+		<link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
 
-    <!-- main.css from Lollypop has reset some of the btn-cta styles, which we didn't want ! :-( -->
+		<jsp:include page="css/css.jsp"/>
+
+	<link rel="stylesheet" href="css/main.css">
+
+	<!-- main.css from Lollypop has reset some of the btn-cta styles, which we didn't want ! :-( -->
     <style>
         .btn-cta {
             color: #fff;
@@ -43,12 +48,16 @@
         .btn-cta:hover i{ opacity:1;}
     </style>
     <!--scripts-->
+
 	<script  src="js/jquery-1.12.1.min.js"></script>
+
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
 	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="js/modernizr.min.js"></script>
+		<script src="js/jquery-ui/jquery-ui.js"></script>
+
+		<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 	<script src="js/selectpicker.js"></script>
 	<script src="js/muse.js"></script>
@@ -529,9 +538,15 @@
 						<div class="form-group col-sm-6">
 							<label for="time-range">Time Range</label>
 							<div id="time-range" class="date-input-group">
-								<input name="startDate" type="date" min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+							<%--	<div class='input-group date' id='startDate'>
+									<input type='text' class="form-control" />
+									<span class="input-group-addon">
+                        			<span class="glyphicon glyphicon-calendar"></span>
+                    				</span>
+								</div>--%>
+								<input type = "text"  id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
 								<label for="endDate">To</label>
-								<input id="endDate" name="endDate" type="date"  min="1960-01-01" class="form-control" placeholder="YYYY / MM / DD">
+								<input type = "text"  id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
 							</div>
 						</div>
 
@@ -675,9 +690,10 @@
 
 			</div>
 			<!--/row-->
-		</form>
-		</div>
-		<!--/container-->
+        </div>
+            <!--/container-->
+        </form>
+
 	</div>
 	<!--/Advanced Search-->
 
@@ -817,6 +833,24 @@
 		});
 
 	</script>
-  
+
+	<script>
+
+        $(document).ready(function() {
+            //installing input tags as datepickers
+            //setting min date as 1 jan 1960. The format is year,month,date. Month is 0 based and all other are 1 based
+            $('#startDate').datepicker({
+
+                minDate: new Date(1960, 1 - 1, 1),
+                dateFormat: "yy-mm-dd"
+			});
+            $('#endDate').datepicker({
+
+                minDate: new Date(1960, 1 - 1, 1),
+                dateFormat: "yy-mm-dd"
+            });
+
+        });
+	</script>
 	</body>
 </html>
