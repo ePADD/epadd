@@ -73,7 +73,7 @@
 	int nAttachments = EmailUtils.countAttachmentsInDocs(allDocs);
 	int nImageAttachments = EmailUtils.countImageAttachmentsInDocs(allDocs);
 	int nDocAttachments = EmailUtils.countDocumentAttachmentsInDocs(allDocs);
-
+	int nFolders = archive.getAllFolders().size();
 	boolean statsAvailable = false;
 	if(archive.processingMetadata.entityCounts != null)
 		statsAvailable = true;
@@ -133,8 +133,8 @@
             <a href="by-folder">
                 <i class="icon-browsetoparrow"></i>
                 <img src="images/folder.svg"/>
-                <p class="cta-text-1">Folder view</p>
-                <p class="cta-text-2">Folder view</p>
+                <p class="cta-text-1">Folder view (<%=nFolders%>)</p>
+                <p class="cta-text-2">Folder view (<%=nFolders%>)</p>
             </a>
         </div>
     <% } %>
