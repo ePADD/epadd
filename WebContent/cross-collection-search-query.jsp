@@ -8,7 +8,8 @@
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
+	<script  src="js/jquery-1.12.1.min.js"></script>
+	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<!-- Optional theme -->
@@ -31,7 +32,7 @@
 	<div id="cross-collection-search" style="text-align:center">
 		<form method="get" action="cross-collection-search">
 
-			<input name="term" size="80" placeholder="search query"/>
+			<input id="xcoll-search" name="term" size="80" placeholder="search query"/>
 			<br/>
 			<br/>
 
@@ -44,7 +45,35 @@
 
 <script>
     $(document).ready(function() {
-
+        var autocomplete_params = {
+            serviceUrl: 'ajax/xcollSearchAutoComplete.jsp',
+            onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
+            preventBadQueries: false,
+            showNoSuggestionNotice: true,
+            preserveInput: true,
+            ajaxSettings: {
+                "timeout":5000, /* 5000 instead of 3000 because xcoll search is likely to be slow */
+                dataType: "json"
+            },
+            dataType: "text",
+            //100ms
+            deferRequestsBy: 100,
+            onSelect: function(suggestion) {
+                var existingvalue = $(this).val();
+                var idx = existingvalue.lastIndexOf(';');
+                if (idx <= 0)
+                    $(this).val(suggestion.name);
+                else
+                    $(this).val (existingvalue.substring (0, idx+1) + ' ' + suggestion.name); // take everything up to the last ";" and replace after that
+            },
+            onHint: function (hint) {
+                $('#autocomplete-ajax-x').val(hint);
+            },
+            onInvalidateSelection: function() {
+                epadd.log('You selected: none');
+            }
+        };
+        $('#xcoll-search').autocomplete(autocomplete_params);
     });
 
 </script>

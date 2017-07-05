@@ -41,7 +41,7 @@
 <jsp:include page="header.jspf"/>
 <br/>
 <br/>
-<div style="margin-left:170px">
+<div style="width:1000px; margin-left:170px">
 	<%
 
     String queryTerm = request.getParameter("term");
@@ -65,18 +65,19 @@
         Archive.ProcessingMetadata metadata = CrossCollectionSearch.archiveMetadatas.get(I);
         out.println ("Institution: <b>" + Util.escapeHTML(metadata.institution) + "</b> &nbsp;&nbsp;");
         out.println ("Repository: <b>" + Util.escapeHTML(metadata.repository) + "</b> &nbsp;&nbsp;");
-        out.println ("Collection: <b>" + Util.escapeHTML(metadata.collectionTitle) + "</b> &nbsp;&nbsp;");
+        String url = "collection-detail?id=" + CrossCollectionSearch.archiveDirs.get(I);
+        out.println ("Collection: <b><a target=\"blank\" href=\"" + url + "\">" + Util.escapeHTML(metadata.collectionTitle) + "</a></b> &nbsp;&nbsp;");
     %>
         <div class="panel">
 
         <table>
-            <tr><th>Entity</th><th>Messages</th><th>Confirmed</th><th>Date Range</th></tr>
+            <tr><th>Entity</th><th>Messages</th><th>Correspondent</th><th>Date Range</th></tr>
             <% for (EntityInfo info: infos) { %>
             <tr>
                 <td><%=Util.escapeHTML(info.displayName)%></td>
                 <td class="right"><%=info.count%></td>
                 <td class="center">
-                    <% if (!info.isConfirmed) { %>
+                    <% if (info.isCorrespondent) { %>
                         <i class="fa fa-check" aria-hidden="true"></i>
                     <% } %>
                 </td>

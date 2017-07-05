@@ -151,6 +151,7 @@
                     <include>ajax/entitiesAutoComplete.jsp</include>
                     <include>ajax/correspondentAutoComplete.jsp</include>
                     <include>ajax/folderAutoComplete.jsp</include>
+					<include>ajax/xcollSearchAutoComplete.jsp</include>
         		</includes>
             </resource>
           </webResources>
