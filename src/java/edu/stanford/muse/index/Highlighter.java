@@ -376,7 +376,7 @@ class Highlighter {
             String entity = elt.text();
             int span_j = j;
 
-            String link = "browse?term=\"" + Util.escapeHTML(entity) + "\"";
+            String link = "browse?adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term=\"" + Util.escapeHTML(entity) + "\"";
             //note &quot here because the quotes have to survive
             //through the html page and reflect back in the URL
             link += "&initDocId=" + docId; // may need to URI escape docId?

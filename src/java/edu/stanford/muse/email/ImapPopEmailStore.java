@@ -251,7 +251,7 @@ public class ImapPopEmailStore extends EmailStore {
 		    	oauthToken = connectOptions.password.substring(OAUTH_MAGIC_STRING.length());
 			    mstoreProps.put("mail.imaps.sasl.enable", "true");
 			    mstoreProps.put("mail.imaps.sasl.mechanisms", "XOAUTH2");
-		    	mstoreProps.put(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, oauthToken);
+		    	// mstoreProps.put(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, oauthToken);
 			    log.info("Using oauth login for store " + this);
 		    }
 		}

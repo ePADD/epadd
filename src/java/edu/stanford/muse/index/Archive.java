@@ -949,7 +949,7 @@ public class Archive implements Serializable {
         getAllDocs();
         try {
 
-            s = Highlighter.getHTMLAnnotatedDocumentContents(s, (IA_links ? date : null), docId, regexToHighlight, highlightTerms, entitiesWithId, summarizer.importantTermsCanonical, false);
+            s = Highlighter.getHTMLAnnotatedDocumentContents(s, (IA_links ? date : null), docId, regexToHighlight, highlightTerms, entitiesWithId, null /* summarizer.importantTermsCanonical */, false);
 
             //indexer
             //	.getHTMLAnnotatedDocumentContents(s, (IA_links ? date : null), docId, searchTerms, isRegexSearch, highlightTermsStemmed, highlightTermsUnstemmed, entitiesWithId);
