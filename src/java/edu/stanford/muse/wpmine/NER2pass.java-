@@ -1,0 +1,325 @@
+package edu.stanford.muse.wpmine.*;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.PrintStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.zip.GZIPInputStream;
+
+import edu.stanford.nlp.ie.crf.CRFClassifier;
+import edu.stanford.nlp.util.Triple;
+
+public class NER2pass {
+
+	static PrintStream err = System.err;
+	
+	static String contents; // raw contents
+	static List<Triple<String,Integer,Integer>> triples;
+	
+	static Map<String, Info> nameToInfo0 = new LinkedHashMap<String, Info>();
+	static Map<String, Info> nameToInfo1 = new LinkedHashMap<String, Info>();
+	static Map<String, Info> nameToInfo2 = new LinkedHashMap<String, Info>();
+	
+	static String typesFile = "instance_types_en.nt1";
+	static String abstractsFile = "short_abstracts_en.nt";
+	static String pageLengthsFile = "page-lengths";
+	static String trainingTSVFile = "training.tsv";
+	static String trainingPropsFile = "StanfordNER.props";
+	static String trainedClassifierFile = "training.pass2.gz";
+	static String diffsFile = "diffs";
+	static String title = "NONE";
+	
+	static class Info implements Comparable<Info>, Serializable, Cloneable { 
+		String title, snippet, type = "notype", url; int score;
+		public Info(String t) { this.title = t; } 
+		public int compareTo(Info other)
+		{
+			return other.score - this.score;
+		}
+
+		public String toString()
+		{
+			return score/1000 + "k " + title + " (" + type + ") # " + snippet;
+		}
+
+		public String toString(boolean b)
+		{
+			return (score == 0 ? "- " : (score/1000) + "k ") + title + " # " + snippet;
+		}
+		
+		public Object clone() throws CloneNotSupportedException { return super.clone(); }
+	}
+
+	public static CRFClassifier classifier;
+	
+	private static void initClassifier(String file)
+	{
+	    try {
+			classifier = CRFClassifier.getClassifier(new GZIPInputStream(new FileInputStream(file)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+	
+	private static void writeTokensAndType(PrintStream ps, String s, String type)
+	{
+		if (Util.nullOrEmpty(s))
+			return;
+		StringTokenizer st = new StringTokenizer(s);
+		while (st.hasMoreTokens())
+			ps.println(st.nextToken() + "\t" + type); // O is the symbol for no tokens
+		return;
+	}
+	
+	private static void writeTrainingFile() throws FileNotFoundException
+	{
+		PrintStream trainingOut = new PrintStream (new FileOutputStream(trainingTSVFile));
+		int normalTextBegin = 0;
+		for (Iterator<Triple<String, Integer, Integer>> it = triples.iterator(); it.hasNext(); )
+		{
+			Triple<String, Integer, Integer> t = it.next();
+			if (t.second() > normalTextBegin)
+			{
+				String prefix = contents.substring(normalTextBegin, t.second());
+				writeTokensAndType(trainingOut, prefix, "O");
+			}
+			String name = contents.substring(t.second(), t.third());
+			String nname = name.toLowerCase().replaceAll("\\s",  "_"); // normalized
+			if (nameToInfo1.get(nname) == null)
+				continue;
+			String type = nameToInfo1.get(nname).type;
+			writeTokensAndType(trainingOut, name, type);
+			normalTextBegin = t.third();
+		}
+		
+		if (contents.length() > normalTextBegin)
+		{
+			String prefix = contents.substring(normalTextBegin, contents.length());
+			writeTokensAndType(trainingOut, prefix, "O");
+		}
+		
+		trainingOut.close();		
+	}
+	
+	/** dumps out the given name -> info map 
+	 * @throws FileNotFoundException */
+	private static void dump(Map<String, Info> map, String file) throws FileNotFoundException
+	{
+		PrintStream ps = new PrintStream (new FileOutputStream(file));
+		
+		List<Info> list = new ArrayList<Info>(map.values());
+		Collections.sort(list);
+		Map<String, Collection<Info>> typedHits = new LinkedHashMap<String, Collection<Info>>();
+		for (Info I : list)
+		{
+			ps.println (I);
+			String type = I.type;
+			Collection<Info> list1 = (typedHits.get(type));
+			if (list1 == null)
+			{
+				list1 = new ArrayList<Info>();
+				typedHits.put(type, list1);
+			}
+			list1.add(I);
+		}
+
+		ps.println ("-------------\n" + typedHits.size() + " categories of typed hits \n--------------");
+
+		typedHits = Util.sortMapByListSize(typedHits);
+
+		for (String s: typedHits.keySet())
+		{
+			List<Info> list1 = (List) typedHits.get(s);
+			Collections.sort(list1);
+			ps.println ("----- " + s + " (" + list1.size() + " hit(s))");
+			for (Info I: list1)
+				ps.println (I.toString(false));
+		}
+		ps.close();
+	}
+	
+	private static void pass2() throws FileNotFoundException
+	{
+		initClassifier(trainedClassifierFile);		
+		triples = classifier.classifyToCharacterOffsets(contents);
+
+		for (Triple<String,Integer,Integer> t: triples)
+		{
+			String name = contents.substring(t.second(), t.third()).trim().toLowerCase().replaceAll("\\s", "_");
+			Info I = new Info(name);
+			String type = t.first();
+			I.type = type;
+			Info I1 = nameToInfo2.get(name);
+			if (I1 == null)
+				nameToInfo2.put(name, I);
+			else
+			{
+				if (!I1.type.equals(type))
+					System.out.println ("Warning: contradictory types for " + name + ": " + I1.type + " & " + type);
+			}
+		}
+
+		dump (nameToInfo2, "names.pass2");
+	}
+
+	
+	public static void assignDBPediaTypes() throws IOException, CloneNotSupportedException
+	{
+		for (String key: nameToInfo0.keySet())
+		{
+			nameToInfo1.put(key, (Info) nameToInfo0.get(key).clone());
+		}
+		
+		int count = 0;
+		try {
+			LineNumberReader lnr = new LineNumberReader(new FileReader(typesFile)); // dbpedia types in the format <underscore separated entity> <type>
+			while (true)
+			{
+				String line = lnr.readLine();
+				if (line == null)
+					break;
+				count++;
+				StringTokenizer st = new StringTokenizer(line);
+				String r = st.nextToken().toLowerCase().trim();
+				Info I = nameToInfo1.get(r);
+				if (I == null)
+					continue;
+				I.type = st.nextToken();
+			}
+			lnr.close();
+		} catch (Exception e) {
+			err.println ("Unable to read types file, err at line "  + count);
+			e.printStackTrace(err);
+		}
+		
+		// remove standard types
+		for (Iterator<String> it = nameToInfo1.keySet().iterator(); it.hasNext(); )
+		{
+			String key = it.next();
+			String type = nameToInfo1.get(key).type;
+			if ("PERSON".equals(type) || "ORGANIZATION".equals(type) || "LOCATION".equals(type))
+				it.remove();
+		}
+	}
+	
+	private static void pass1() throws IOException, CloneNotSupportedException
+	{
+		for (Triple<String,Integer,Integer> t: triples)
+		{
+			String name = contents.substring(t.second(), t.third()).trim().toLowerCase().replaceAll("\\s", "_");
+			String type = t.first();
+			Info I1 = nameToInfo0.get(name);
+			if (I1 == null)
+			{
+				Info I = new Info(name);
+				I.type = type;
+				nameToInfo0.put(name, I);
+			}
+			else
+			{
+				if (!I1.type.equals(type))
+					System.out.println ("Warning: contradictory types for " + name + ": " + I1.type + " & " + type);
+			}
+		}
+		dump(nameToInfo0, "names.pass0");
+		assignDBPediaTypes();
+		dump(nameToInfo1, "names.pass1");
+	}
+	
+	private static void trainPass2CLassifier() throws FileNotFoundException, IOException
+	{
+		Properties CRFProperties = new Properties();
+		CRFProperties.load(new FileInputStream(trainingPropsFile));	
+		
+		// Create our training file for the CRF
+
+		System.out.println("Training model....");
+		
+		//Build and train the CRF Classifier
+		CRFClassifier classifier = new CRFClassifier(CRFProperties);
+		classifier.train(trainingTSVFile);
+		classifier.serializeClassifier(trainedClassifierFile);
+
+		System.out.println("Model serialized. Done.");	
+	}
+	
+	private static void diffs() throws FileNotFoundException
+	{
+		PrintStream ps = new PrintStream(new FileOutputStream(diffsFile));
+		
+		for (String s: nameToInfo0.keySet())
+		{
+			Info I0 = nameToInfo0.get(s);
+			String t0 = (I0 == null) ? "null" : I0.type;
+			Info I1 = nameToInfo1.get(s);
+			String t1 = (I1 == null) ? "null" : I1.type;
+			Info I2 = nameToInfo2.get(s);
+			String t2 = (I2 == null) ? "null" : I2.type;
+			
+			if (t2 == null && t1 == null)
+				continue;
+			if (t2 != null && t2.equals(t1))
+				continue;
+			
+			ps.println(s + " " + t0 + " " + t1 + " " + t2);
+		}
+		ps.close();
+		
+	}
+	
+	public static void main (String args[]) throws IOException, CloneNotSupportedException
+	{
+		contents = Util.getFileContents(args[0]);
+		
+		initClassifier("ner-eng-ie.crf-3-all2008.ser.gz");		
+		triples = classifier.classifyToCharacterOffsets(contents);
+
+		pass1();
+				
+		writeTrainingFile();
+
+		// train
+		trainPass2CLassifier();
+		
+		// load classifier
+		initClassifier(trainedClassifierFile);		
+		triples = classifier.classifyToCharacterOffsets(contents);
+
+		pass2();
+		dump (nameToInfo2, "names.pass2");
+		
+		diffs();
+		
+//		readAbstracts();
+
+//		out = new PrintStream(new FileOutputStream(title + ".out"));
+//		();
+
+//		doPageLengths();
+
+
+		/*
+
+		String s = new Gson().toJson(list);
+		PrintStream ps = new PrintStream(new FileOutputStream(title + ".data.js"));
+		ps.println("var pages = " + s);
+		ps.close();
+
+		lnr.close();
+		*/
+	}
+}
