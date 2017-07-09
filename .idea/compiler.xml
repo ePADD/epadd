@@ -7,13 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="epadd" />
-        <module name="muse-jar" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="epadd" target="1.8" />
       <module name="muse" target="1.8" />
-      <module name="muse-jar" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
