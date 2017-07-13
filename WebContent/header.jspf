@@ -68,9 +68,13 @@
 			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() ) { %>
 				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
 			    <% } %>
-			    <% if (ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() || ModeConfig.isDiscoveryMode()) { %>
-			        <li style="display:inline"><a id="close-archive" href="#">Close</a></li>
+			    <% if (ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() ) { %>
+			        <li style="display:inline"><a id="close-save-archive" href="#">Close</a></li>
                 <% } %>
+			<% if (ModeConfig.isDiscoveryMode()) { %>
+			<li style="display:inline"><a id="close-only-archive" href="#">Close</a></li>
+			<% } %>
+
 				<% if (ModeConfig.isDeliveryMode()) { %>
 					<li style="display:inline"><a href="review-cart">Cart</a></li>
 				<% }
@@ -87,7 +91,7 @@
 		</ul>
         <script>
             $("#save-archive").click(epadd.saveArchive);
-            $("#close-archive").click(function(){
+            $("#close-save-archive").click(function(){
                 //on closing, first save the archive and then unload it.
                 epadd.saveArchive(false).then(function(){
                     epadd.unloadArchive().then(function(){
@@ -98,6 +102,14 @@
                 //Q. Will this location always remain as collections irrespective of where this close button was called.
                 //window.location = './collections';
             });
+            $("#close-only-archive").click(function(){
+                //on closing, unload it.
+                    epadd.unloadArchive().then(function(){
+                        window.location = './collections';
+                    });
+
+            });
+
         </script>
 
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">
