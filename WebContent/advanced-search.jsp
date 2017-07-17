@@ -226,12 +226,13 @@
 						</div>
 					</div>
 
-					<div class="row">
+					<%--Disabling the Attachment entity following issue number #134 on github--%>
+					<%--<div class="row">
 						<div class="form-group col-sm-12">
 							<label for="attachmentEntity">Attachment Entity</label>
 							<input id="attachmentEntity" name="attachmentEntity" type="text" class="form-control">
 						</div>
-					</div>
+					</div>--%>
 				</div>
 				<!--/Text-->
 
@@ -758,10 +759,13 @@
 		entitiesAutoCompleteParams.serviceUrl = 'ajax/entitiesAutoComplete.jsp';
 		$('#entity').autocomplete(entitiesAutoCompleteParams);
 
+		//Disabling the following code as per issue number #134 on github
+		//There was no file named attachmentEntitiesAutoComplete.jsp there
+		/*
 		var attachmentEntitiesAutoCompleteParams = $.extend({}, autocomplete_params);
 		attachmentEntitiesAutoCompleteParams.serviceUrl = 'ajax/attachmentEntitiesAutoComplete.jsp';
 		$('#attachmentEntity').autocomplete(attachmentEntitiesAutoCompleteParams);
-
+		*/
 		var annotationAutoCompleteParams = $.extend({}, autocomplete_params);
 		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp';
 		$('#annotation').autocomplete(annotationAutoCompleteParams);
