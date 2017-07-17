@@ -121,6 +121,8 @@
 					<include>serveImage.jsp</include>
 					<include>graph.jsp</include>
 					<include>header.jspf</include>
+					<include>cross-collection-search-query.jsp</include>
+					<include>cross-collection-search.jsp</include>
 					<include>footer.jsp</include>
 					<include>alert.jspf</include>
 					<include>profile-block.jspf</include>

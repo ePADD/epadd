@@ -49,7 +49,7 @@
 
 			if (ModeConfig.isProcessingMode() && !haveArchive) {
 				out.println("<li style='display:inline'><a href='import'>Add</a></li>");
-				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
+				out.println("<li style='display:inline'><a href='email-sources'>New</a></li>");
 			}
 
 			// offer the following options only if an archive is actually in the session
@@ -76,7 +76,7 @@
 				<% }
 
 			} else {
-				if (ModeConfig.isProcessingMode() || ModeConfig.isDiscoveryMode()) { %>
+				if (ModeConfig.isDiscoveryMode()) { %>
 					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>
 				<% }
 			}
