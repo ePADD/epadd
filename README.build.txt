@@ -9,7 +9,6 @@ $JAVA_HOME\bin\java -version (windows)
 
 First checkout 3 projects from git.
 
-git clone https://github.com/ePADD/muse.git
 git clone https://github.com/ePADD/epadd.git
 git clone https://github.com/ePADD/epadd-launcher.git
 git clone https://github.com/ePADD/epadd-settings.git (this MUST be checked out under your home directory, so that it exists under ~/epadd-settings)
@@ -18,7 +17,7 @@ To build epadd
 1. in the epadd folder, Type:
 ./do (or do.bat on windows)
 
-This will first build a muse.jar which is a dependency for ePADD. It then builds target/epadd-0.0.1-SNAPSHOT.war and target/epadd-discovery-0.0.1-SNAPSHOT.war
+This will build target/epadd-0.0.1-SNAPSHOT.war and target/epadd-discovery-0.0.1-SNAPSHOT.war
 
 2. Next, in the epadd-launcher folder, Type: 
 ./do (do.bat on windows)
@@ -33,7 +32,7 @@ Note: for developers, it is adequate if the epadd-standalone file gets built. Th
 
 Notes:
 
-The muse project contains most of the Java based code. It is the core engine used in ePADD.  The epadd project contains primarily the frontend screens for the application (in the WebContent directory) and creates a deployable WAR file.  epadd-launcher bundles up the epadd.war into a standalone, runnable jar using an embedded Tomcat server.
+The muse packages contain most of the Java based code. It is the core engine used in ePADD.  The WebContent folder contains the frontend screens for the application and creates a deployable WAR file.  epadd-launcher bundles up the epadd.war into a standalone, runnable jar using an embedded Tomcat server.
 
 3. To check whether the program built correctly, you can try to run:
 java -Xmx2g -jar epadd-standalone.jar
