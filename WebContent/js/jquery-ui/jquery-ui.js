@@ -5594,6 +5594,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 //>>css.theme: ../../themes/base/theme.css
 
 
+/*
 
 $.widget( "ui.autocomplete", {
 	version: "1.12.1",
@@ -6237,6 +6238,7 @@ $.widget( "ui.autocomplete", $.ui.autocomplete, {
 } );
 
 var widgetsAutocomplete = $.ui.autocomplete;
+*/
 
 
 /*!
