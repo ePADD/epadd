@@ -16,7 +16,6 @@
           <element id="library" level="project" name="Maven: log4j:log4j:1.2.16" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.5" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
-          <element id="library" level="project" name="Maven: tw.edu.ntu.csie:libsvm:3.17" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-core:4.7.0" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-queries:4.7.0" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-analyzers-common:4.7.0" />
