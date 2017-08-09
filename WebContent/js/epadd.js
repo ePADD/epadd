@@ -62,8 +62,22 @@ epadd.do_search = function(e) {
 	}
 	// otherwise let term be as is.
 
-	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on'); // since this function is used from entities page, we don't want to match attachments (?)
+	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&term'); // since this function is used from entities page, we don't want to match attachments (?)
 //	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
+};
+
+// do a search on the text of the element that was clicked
+epadd.do_search_incl_attachments = function(e) {
+    var term = $(e.target).text();
+    // if term is not already quoted, quote it now
+    if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
+        // not in quotes. encode URI and then add quotes
+        term = '"' + encodeURIComponent(term) + '"'; // remember to encodeURIComponent, otherwise it fails on names with &. Also don't use encodeURI because it doesn't escape &
+    }
+    // otherwise let term be as is.
+
+    //window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&term'); // since this function is used from entities page, we don't want to match attachments (?)
+	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
 
 // fixes field names in account divs in prep for collect_input_fields

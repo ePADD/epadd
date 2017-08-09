@@ -90,7 +90,7 @@
 				// epadd.do_search will open search result in a new tab.
 				// Note, we have to insert onclick into the rendered HTML,
 				// we were earlier trying $('.search').click(epadd.do_search) - this does not work because only the few rows initially rendered to html match the $('.search') selector, not the others
-				return '<span style="cursor:pointer" onclick="epadd.do_search(event)">' + data + '</span>';
+				return '<span style="cursor:pointer" onclick="epadd.do_search_incl_attachments(event)">' + data + '</span>';
 			};
 
 			var entities = <%=resultArray.toString(4)%>;

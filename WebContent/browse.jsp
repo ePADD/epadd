@@ -19,51 +19,53 @@
 
 <%
 
-    String title = request.getParameter("title");
+    String term = request.getParameter("term");
+
+    //code-folding names="foo, bar, lexi" input="request" descr="..."
+    String title, title2;
+    {
+        String title = request.getParameter("title");
 
 // good to give a meaningful title to the browser tab since a lot of them may be open
-    String term = request.getParameter("term");
-    term = JSPHelper.convertRequestParamToUTF8(term);
-    String sentiments[] = request.getParameterValues("lexiconCategory");
-    String[] persons = request.getParameterValues("person");
-    String[] attachments = request.getParameterValues("attachment");
-    int month = HTMLUtils.getIntParam(request, "month", -1);
-    int year = HTMLUtils.getIntParam(request, "year", -1);
-    int cluster = HTMLUtils.getIntParam(request, "timeCluster", -1);
+        term = JSPHelper.convertRequestParamToUTF8(term);
+        String sentiments[] = request.getParameterValues("lexiconCategory");
+        String[] persons = request.getParameterValues("person");
+        String[] attachments = request.getParameterValues("attachment");
+        int month = HTMLUtils.getIntParam(request, "month", -1);
+        int year = HTMLUtils.getIntParam(request, "year", -1);
+        int cluster = HTMLUtils.getIntParam(request, "timeCluster", -1);
 
-    String sentimentSummary = "";
-    if (sentiments != null && sentiments.length > 0)
-        for (int i = 0; i < sentiments.length; i++)
-        {
-            sentimentSummary += sentiments[i];
-            if (i < sentiments.length-1)
-                sentimentSummary += " & ";
-        }
+        String sentimentSummary = "";
+        if (sentiments != null && sentiments.length > 0)
+            for (int i = 0; i < sentiments.length; i++) {
+                sentimentSummary += sentiments[i];
+                if (i < sentiments.length - 1)
+                    sentimentSummary += " & ";
+            }
 
-    if (Util.nullOrEmpty(title))
-    {
-        if (term != null)
-            title = "Search: " + term;
-        else if (cluster != -1)
-            title = "Cluster " + cluster;
-        else if (!Util.nullOrEmpty(sentimentSummary))
-            title = sentimentSummary;
-        else if (attachments != null && attachments.length > 0)
-            title = attachments[0];
-        else if (month >= 0 && year >= 0)
-            title = month + "/" + year;
-        else if (year >= 0)
-            title = Integer.toString(year);
-        else if (persons != null && persons.length > 0)
-        {
-            title = persons[0];
-            if (persons.length > 1)
-                title += "+" + (persons.length-1);
+        if (Util.nullOrEmpty(title)) {
+            if (term != null)
+                title = "Search: " + term;
+            else if (cluster != -1)
+                title = "Cluster " + cluster;
+            else if (!Util.nullOrEmpty(sentimentSummary))
+                title = sentimentSummary;
+            else if (attachments != null && attachments.length > 0)
+                title = attachments[0];
+            else if (month >= 0 && year >= 0)
+                title = month + "/" + year;
+            else if (year >= 0)
+                title = Integer.toString(year);
+            else if (persons != null && persons.length > 0) {
+                title = persons[0];
+                if (persons.length > 1)
+                    title += "+" + (persons.length - 1);
+            } else
+                title = "Browse";
         }
-        else
-            title = "Browse";
+        title = Util.escapeHTML(title);
     }
-    title = Util.escapeHTML(title);
+
 
     if (ModeConfig.isPublicMode()) {
         // this browse page is also used by Public mode where the following set up may be requried.

@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/epadd.iml" filepath="$PROJECT_DIR$/epadd.iml" />
       <module fileurl="file://$PROJECT_DIR$/../muse/muse-jar.iml" filepath="$PROJECT_DIR$/../muse/muse-jar.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../muse/muse-jar.iml" filepath="$PROJECT_DIR$/../muse/muse-jar.iml" />
     </modules>
   </component>
 </project>
