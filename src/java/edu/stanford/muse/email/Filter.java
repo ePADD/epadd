@@ -16,12 +16,14 @@
 package edu.stanford.muse.email;
 
 
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.exceptions.ReadContentsException;
 import edu.stanford.muse.index.DatedDocument;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
+import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -255,14 +257,14 @@ public class Filter implements Serializable {
 		return sb.toString();
 	}
 
-	public static Filter parseFilter(Map<String, String> request)
+	public static Filter parseFilter(Multimap<String, String> request)
 	{
 		if (request == null)
 			return null;
-		String keywords = request.get("keywords");
-		String dateRange = request.get("dateRange");
-		String sentOnly = request.get("sentOnly");
-		String filterPersonOrEmail = request.get("filterPersonOrEmail");
+		String keywords = JSPHelper.getParam(request,"keywords");
+		String dateRange = JSPHelper.getParam(request,"dateRange");
+		String sentOnly = JSPHelper.getParam(request,"sentOnly");
+		String filterPersonOrEmail = JSPHelper.getParam(request,"filterPersonOrEmail");
 		return new Filter(filterPersonOrEmail, (sentOnly != null), dateRange, keywords);
 	}
 	
