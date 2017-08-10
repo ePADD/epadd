@@ -33,41 +33,24 @@ import java.util.*;
  * Need to release memory when the dataset is not being used, which is done by ajax/releaseDataset.jsp
  */
 public class DataSet {
-    private List<String> pages = new ArrayList<>();
     private List<Document> docs = new ArrayList<>();
     private String datasetTitle;
-    private Archive archive;
-    private BlobStore attachmentsStore;
-    private Set<Integer> highlightContactIds;
-    private Set<String> highlightTerms;
-    private Set<Blob> highlightAttachments;
+    SearchResult searchResult;
     //String -> <dbId -> dbType>
     private Map<String, Map<String, Short>> authorisedEntities;
 
-    public String regexToHighlight;
-
-    public DataSet(Collection<Document> docs, Archive archive, String datasetTitle, Set<Integer> highlightContactIds, Set<String> highlightTerms, Collection<Blob> highlightAttachments) {
+    public DataSet(Collection<Document> docs, SearchResult result, String datasetTitle) {
         if(docs!=null) {
             //calling assigning new ArrayList<>(docs) is calling sort on docs by default
-            this.docs = new ArrayList<>();
             docs.forEach(d->this.docs.add(d));
         }
-        this.archive = archive;
+        this.searchResult = result;
         this.datasetTitle = datasetTitle;
-        this.attachmentsStore = archive.blobStore;
-        this.highlightContactIds = highlightContactIds;
-        this.highlightTerms = highlightTerms;
-        if(highlightAttachments!=null)
-            this.highlightAttachments = new LinkedHashSet<>(highlightAttachments);
-        if (docs != null) {
-            for (@SuppressWarnings("unused")
-            Document d : docs)
-                pages.add(null);
-        }
+
     }
 
     public void clear() {
-        pages.clear();
+        searchResult.clear();
         docs.clear();
     }
 
@@ -80,10 +63,12 @@ public class DataSet {
     }
 
     public String toString() {
-        return "Data set with " + docs.size() + " documents";
+        return "Data set with " + size() + " documents";
     }
 
-    /* returns html for doc i. Caches the html once computed. */
+    /* returns html for doc i.
+    Caches the html once computed (Removed during refactoring. It was done in variable called pages).
+     In the front end jog plugin also does caching so removed server sided caching for simplicity*/
     public String getPage(int i, boolean IA_links, boolean inFull, boolean debug) {
 //		if (authorisedEntities == null && !ModeConfig.isPublicMode()) {
 //			String filename = archive.baseDir + java.io.File.separator + edu.stanford.muse.Config.AUTHORITIES_FILENAME;
@@ -97,25 +82,27 @@ public class DataSet {
 //			}
 //		}
         try {
-            if (inFull || pages.get(i) == null) // inFull==true now means it
+            String pageContent = "";
+            //if (inFull ) // inFull==true now means it
             // previously was inFull==false
             // and needs refresh
             {
-                // we are assuming one one page per doc for now. (true for
+                // we are assuming one page per doc for now. (true for
                 // emails)
-                Pair<String, Boolean> htmlResut = EmailRenderer.htmlForDocument(docs.get(i), archive, datasetTitle, attachmentsStore, regexToHighlight, highlightContactIds,
-                        highlightTerms, highlightAttachments, authorisedEntities, IA_links, inFull, debug);
+                Pair<String, Boolean> htmlResut = EmailRenderer.htmlForDocument(docs.get(i), searchResult, datasetTitle,
+                         authorisedEntities, IA_links, inFull, debug);
                 boolean overflow = htmlResut.second;
                 Util.ASSERT(!(inFull && overflow));
-                String pageContent = htmlResut.first
+                pageContent = htmlResut.first
                         +
                         (overflow ? "<br><span class='nojog' style='color:#500050;text-decoration:underline;font-size:12px' onclick=\"$('#more_spinner').show(); $.fn.jog_page_reload("
                                 + i
                                 + ", '&inFull=1');\">More<img id='more_spinner' src='/muse/images/spinner3-greenie.gif' style='width:16px;display:none;'/></span><br/>\n"
                                 : "");
-                pages.set(i, pageContent);
+                //pages.set(i, pageContent);
             }
-            return pages.get(i);
+            //return pages.get(i);
+            return pageContent;
         } catch (Exception e) {
             Util.print_exception(e);
             return "Page unavailable";
