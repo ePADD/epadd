@@ -8,14 +8,13 @@ import edu.stanford.muse.email.Contact;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
-import edu.stanford.muse.index.Searcher;
+import edu.stanford.muse.index.SearchResult;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
+import edu.stanford.muse.webapp.JSPHelper;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class NameExpansion {
@@ -88,9 +87,15 @@ public class NameExpansion {
         for (Contact c: contactsExceptSelf) {
             if (c.emails != null) {
                 String correspondentsSearchStr = String.join(";", c.emails);
-                Set<EmailDocument> messagesWithSameCorrespondents = (Set) Searcher.filterForCorrespondents((Collection) archive.getAllDocs(), ab, correspondentsSearchStr, true, true, true, true);
-                for (EmailDocument messageWithSameCorrespondents: messagesWithSameCorrespondents) {
-                    if (matchAgainstEmailContent(archive, messageWithSameCorrespondents, matches, "Mentioned in other messages with these correspondents", 0.8F)) {
+                //As filterForCorrespondents function do not use queryparams therefore it is fine to instantiate SearchResult
+                //object with queryParams as null. After refactoring, filter methods take SearchObject as input and modify it
+                //according to the filter.
+                SearchResult inputSet = new SearchResult(archive,null);
+                SearchResult outputSet = SearchResult.filterForCorrespondents(inputSet,correspondentsSearchStr, true, true, true, true);
+                Set<Document> messagesWithSameCorrespondents =  outputSet.getDocumentSet();
+                for (Document messageWithSameCorrespondents: messagesWithSameCorrespondents) {
+                    EmailDocument edoc = (EmailDocument)messageWithSameCorrespondents;
+                    if (matchAgainstEmailContent(archive, edoc, matches, "Mentioned in other messages with these correspondents", 0.8F)) {
                         return matches;
                     }
                 }
@@ -106,10 +111,13 @@ public class NameExpansion {
             term = "\"" + s + "\"";
         }
 
-        Pair<Set<Document>, Set<Blob>> p = Searcher.searchForTerm(archive, params, term);
-        Set<EmailDocument> docsWithTerm = (Set) p.getFirst();
-        for (EmailDocument docWithTerm: docsWithTerm) {
-             if (matchAgainstEmailContent(archive, docWithTerm, matches, "Mentioned elsewhere in this archive", 0.7F))
+        //To search for terms, create a searchResult object and invoke appropriate filter method on it.
+        SearchResult inputSet = new SearchResult(archive, params);
+        SearchResult outputSet = SearchResult.searchForTerm(inputSet, term);
+        Set<Document> docsWithTerm = outputSet.getDocumentSet();
+        for (Document docWithTerm: docsWithTerm) {
+            EmailDocument edoc = (EmailDocument)docWithTerm;
+             if (matchAgainstEmailContent(archive, edoc, matches, "Mentioned elsewhere in this archive", 0.7F))
                 return matches;
         }
 
