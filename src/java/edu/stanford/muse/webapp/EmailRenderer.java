@@ -2,6 +2,7 @@ package edu.stanford.muse.webapp;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
@@ -24,7 +25,7 @@ public class EmailRenderer {
 												// around too soon. 120 is too
 												// much with courier font.
 
-    public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
+    /*public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
                                                           Set<String> highlightTerms)
             throws Exception{
         return pagesForDocuments(ds, archive, datasetTitle, null, highlightTerms, null, MultiDoc.ClusteringType.MONTHLY);
@@ -33,7 +34,8 @@ public class EmailRenderer {
     public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
                                                           Set<String> highlightTerms, Collection<Blob> highlightAttachments)
             throws Exception{
-        return pagesForDocuments(ds, archive, datasetTitle, null, highlightTerms, highlightAttachments, MultiDoc.ClusteringType.MONTHLY);
+        return pagesForDocuments(ds, archive, datasetTitle, null, highlightTerms, highlightAttachments,
+                MultiDoc.ClusteringType.MONTHLY);
     }
 
     public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
@@ -41,24 +43,26 @@ public class EmailRenderer {
 			throws Exception{
 		return pagesForDocuments(ds, archive, datasetTitle, highlightContactIds, highlightTerms, null, MultiDoc.ClusteringType.MONTHLY);
 	}
-
-	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
-                                                          Set<Integer> highlightContactIds, Set<String> highlightTerms, Collection<Blob> highlightAttachments)
+*/
+	public static Pair<DataSet, String> pagesForDocuments(SearchResult result,
+                                                          String datasetTitle)
             throws Exception{
-        return pagesForDocuments(ds, archive, datasetTitle, highlightContactIds, highlightTerms, highlightAttachments, MultiDoc.ClusteringType.MONTHLY);
+        return pagesForDocuments(result,datasetTitle,MultiDoc.ClusteringType.MONTHLY);
     }
 
 	/*
 	 * returns pages and html for a collection of docs, which can be put into a
 	 * jog frame. indexer clusters are used to
 	 *
-	 * Changed the first arg type from: Collection<? extends EmailDocument> to Collection<Document>, as we get Collection<Document> in browse page or from docsforquery, its a hassle to make them all return EmailDocument
+	 * Changed the first arg type from: Collection<? extends EmailDocument> to Collection<Document>, as we get C
+	 * ollection<Document> in browse page or from docsforquery, its a hassle to make them all return EmailDocument
 	 * especially when no other document type is used anywhere
 	 */
-	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
-			Set<Integer> highlightContactIds, Set<String> highlightTerms, Collection<Blob> highlightAttachments, MultiDoc.ClusteringType coptions)
+    public static Pair<DataSet, String> pagesForDocuments(SearchResult result,
+                                                          String datasetTitle,
+                                                          MultiDoc.ClusteringType coptions)
 			throws Exception
-	{
+    {
 		StringBuilder html = new StringBuilder();
 		int pageNum = 0;
 		List<String> pages = new ArrayList<String>();
@@ -71,7 +75,7 @@ public class EmailRenderer {
 		// wise)
 		// if (indexer != null && indexer.clustersIncludeAllDocs(ds))
 		// if (indexer != null)
-		clusters = archive.clustersForDocs(ds, coptions);
+		clusters = result.getArchive().clustersForDocs(result.getDocumentSet(), coptions);
 		/*
 		 * else { // categorize by month if the docs have dates if
 		 * (EmailUtils.allDocsAreDatedDocs(ds)) clusters =
@@ -142,7 +146,7 @@ public class EmailRenderer {
 			html.append("</div>\n"); // section
 		}
 
-		DataSet dataset = new DataSet(datasetDocs, archive, datasetTitle, highlightContactIds, highlightTerms, highlightAttachments);
+		DataSet dataset = new DataSet(datasetDocs, result, datasetTitle);
 
 		return new Pair<>(dataset, html.toString());
 	}
@@ -234,14 +238,14 @@ public class EmailRenderer {
 	/**
 	 * returns a string for documents.
 	 * 
-	 * @param highlightAttachments
+	 * @param
 	 * @throws Exception
 	 */
     //TODO: inFull, debug params can be removed
     //TODO: Consider a HighlighterOptions class
-	public static Pair<String, Boolean> htmlForDocument(Document d, Archive archive, String datasetTitle, BlobStore attachmentsStore,
-			String regexToHighlight, Set<Integer> highlightContactIds, Set<String> highlightTerms, Set<Blob> highlightAttachments, Map<String, Map<String, Short>> authorisedEntities,
-			boolean IA_links, boolean inFull, boolean debug) throws Exception
+	public static Pair<String, Boolean> htmlForDocument(Document d, SearchResult searchResult, String datasetTitle,
+                                                        Map<String, Map<String, Short>> authorisedEntities,
+			                                            boolean IA_links, boolean inFull, boolean debug) throws Exception
 	{
 		JSPHelper.log.debug("Generating HTML for document: " + d);
 		EmailDocument ed = null;
@@ -251,11 +255,12 @@ public class EmailRenderer {
 		{
 			// for email docs, 1 doc = 1 page
 			ed = (EmailDocument) d;
+            Set<Blob> highlightAttachments = searchResult.getAttachmentHighlightInformation(d);
 			StringBuilder page = new StringBuilder();
 			page.append("<div class=\"muse-doc\">\n");
 
 			page.append("<div class=\"muse-doc-header\">\n");
-			page.append(EmailRenderer.getHTMLForHeader(archive, ed, regexToHighlight, highlightContactIds, highlightTerms, IA_links, debug));
+			page.append(EmailRenderer.getHTMLForHeader(ed, searchResult, IA_links, debug));
 			page.append("</div>"); // muse-doc-header
 
 			/*
@@ -266,8 +271,12 @@ public class EmailRenderer {
 			 * page.append (word + " "); page.append ("<br/>\n");
 			 * page.append("<br/>\n"); }
 			 */
-			page.append("\n<div class=\"muse-doc-body\">\n");
-			Pair<StringBuilder, Boolean> contentsHtml = archive.getHTMLForContents(d, ((EmailDocument) d).getDate(), d.getUniqueId(), regexToHighlight, highlightTerms,
+            //get highlight terms from searchResult object for this document.
+            Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);
+
+            page.append("\n<div class=\"muse-doc-body\">\n");
+			Pair<StringBuilder, Boolean> contentsHtml = searchResult.getArchive().getHTMLForContents(d, ((EmailDocument) d).getDate(),
+                    d.getUniqueId(), searchResult.getRegexToHighlight(), highlightTerms,
 					authorisedEntities, IA_links, inFull, true);
 
 			StringBuilder htmlMessageBody = contentsHtml.first;
@@ -298,12 +307,12 @@ public class EmailRenderer {
 						Blob attachment = attachments.get(i);
 						String thumbnailURL = null, attachmentURL = null;
 						boolean is_image = Util.is_image_filename(attachment.filename);
-
-						if (attachmentsStore != null)
+                        BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
+						if (attachmentStore!= null)
 						{
-							String contentFileDataStoreURL = attachmentsStore.get_URL(attachment);
+							String contentFileDataStoreURL = attachmentStore.get_URL(attachment);
 							attachmentURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
-							String tnFileDataStoreURL = attachmentsStore.getViewURL(attachment, "tn");
+							String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
 							if (tnFileDataStoreURL != null)
 								thumbnailURL = "serveAttachment.jsp?file=" + Util.URLtail(tnFileDataStoreURL);
 							else
@@ -392,23 +401,26 @@ public class EmailRenderer {
 	 * 
 	 * @throws IOException
 	 */
-	private static StringBuilder getHTMLForHeader(Archive archive, EmailDocument ed, String regexToHighlight, Set<Integer> highlightContactIds, Set<String> highlightTerms,
-												  boolean IA_links, boolean debug) throws IOException
+    private static StringBuilder getHTMLForHeader(EmailDocument ed, SearchResult searchResult,
+                                                  boolean IA_links, boolean debug) throws IOException
 	{
-		AddressBook addressBook = archive.addressBook;
+		AddressBook addressBook = searchResult.getArchive().addressBook;
         Set<String> contactNames = new LinkedHashSet<>();
         Set<String> contactAddresses = new LinkedHashSet<>();
+        //get contact ids from searchResult object.
+        Set<Integer> highlightContactIds = searchResult.getHLInfoContactIDs().stream().map(d->Integer.parseInt(d)).collect(Collectors.toSet());
         if(highlightContactIds!=null)
             for(Integer hci: highlightContactIds) {
                 if(hci == null)
                     continue;
-                Contact c = archive.addressBook.getContact(hci);
+                Contact c = searchResult.getArchive().addressBook.getContact(hci);
                 if(c==null)
                     continue;
                 contactNames.addAll(c.names);
                 contactAddresses.addAll(c.emails);
             }
-        contactNames.addAll(highlightTerms);
+        //get highlight terms from searchResult object for this document.
+        Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);
 
 		StringBuilder result = new StringBuilder();
 		// header table
@@ -463,7 +475,7 @@ public class EmailRenderer {
 		if (x.endsWith("\n"))
 			x = x.substring(0, x.length() - 1);
 
-        Span[] names = archive.getAllNamesInDoc(ed, false);
+        Span[] names = searchResult.getArchive().getAllNamesInDoc(ed, false);
 
         // Contains all entities and id if it is authorised else null
         Map<String, Entity> entitiesWithId = new HashMap<>();
@@ -479,7 +491,7 @@ public class EmailRenderer {
                     entitiesWithId.put(n.text, new Entity(n.text, null, types));
                 });
 
-        x = archive.annotate(x, ed.getDate(), ed.getUniqueId(), regexToHighlight, highlightTerms, entitiesWithId, IA_links, false);
+        x = searchResult.getArchive().annotate(x, ed.getDate(), ed.getUniqueId(), searchResult.getRegexToHighlight(), highlightTerms, entitiesWithId, IA_links, false);
 
 		result.append(x);
 		result.append("</b>\n");
