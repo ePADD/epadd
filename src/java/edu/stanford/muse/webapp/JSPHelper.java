@@ -15,6 +15,8 @@
  */
 package edu.stanford.muse.webapp;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
@@ -383,7 +385,7 @@ public class JSPHelper {
             }
         }
 
-        Map<String, String> requestMap = convertRequestToMap(request);
+        Multimap<String, String> requestMap = convertRequestToMap(request);
         Filter filter = Filter.parseFilter(requestMap);
         // if required, forceEncoding can go into fetch config
         //	String s = (String) session.getAttribute("forceEncoding");
@@ -617,19 +619,41 @@ public class JSPHelper {
 		Thread.currentThread().setName("done-" + page);
 	}
 
-	private static Map<String, String> convertRequestToMap(HttpServletRequest request)
-	{
-		Map<String, String> result = new LinkedHashMap<String, String>();
-		Map<String, String[]> map = (Map) request.getParameterMap();
-		for (String key : map.keySet())
+	public static Multimap<String, String> convertRequestToMap(HttpServletRequest request) throws UnsupportedEncodingException {
+		Multimap<String, String> params = LinkedHashMultimap.create();
 		{
-			String[] values = map.get(key);
-			if (values == null || values.length == 0)
-				result.put(key, "");
-			else
-				result.put(key, values[0]);
+			if (true) {
+				// regular file encoding
+				Enumeration<String> paramNames = request.getParameterNames();
+
+				while (paramNames.hasMoreElements()) {
+					String param = paramNames.nextElement();
+					String[] vals = request.getParameterValues(param);
+					if (vals != null)
+						for (String val : vals)
+							params.put(param, JSPHelper.convertRequestParamToUTF8(val));
+				}
+			}
 		}
-		return result;
+
+		return params;
+	}
+
+	/** returns a single value for the given key */
+	public static String getParam(Multimap<String, String> params, String key) {
+		Collection<String> values = params.get(key);
+		if (values == null || values.size() == 0)
+			return null;
+		return values.iterator().next();
+	}
+
+
+	/** returns multiple value for the given key */
+	public static Collection<String> getParams(Multimap<String, String> params, String key) {
+		Collection<String> values = params.get(key);
+		if (values == null || values.size() == 0)
+			return null;
+		return values;
 	}
 
 	// returns just the request params as a string
@@ -758,7 +782,7 @@ public class JSPHelper {
 	}
 
 	/**
-	 * This used to be a VIP methods for muse. Now superseded by Searcher.java for ePADD.
+	 * This used to be a VIP methods for muse. Now superseded by SearchResult.java for ePADD.
 	 * handle query for term, sentiment, person, attachment, docNum, timeCluster
 	 * etc
 	 * note: date range selection is always ANDed

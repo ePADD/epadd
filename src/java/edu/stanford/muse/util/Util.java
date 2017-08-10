@@ -53,6 +53,8 @@ public class Util
 {
 	public static String[]	stopwords	= new String[] { "but", "be", "with", "such", "then", "for", "no", "will", "not", "are", "and", "their", "if", "this", "on", "into", "a", "there", "in", "that", "they", "was", "it", "an", "the", "as", "at", "these", "to", "of" };
 	public static boolean	BLUR		= true;																																																								// blurring of fnames
+	private static final long KB = 1024;
+	private static final char OR_DELIMITER = ';'; // used to separate parts of fields that can have multipled OR'ed clauses
 
 	public static void setBlur(boolean b) {
 		BLUR = b;
@@ -877,6 +879,36 @@ public class Util
 		return result;
 	}
 
+	/**
+	 * splits by semicolons, lowercases, trims spaces; e.g. given "A; b" returns ["a", "b"].
+	 * This syntax is followed by fields that can contain an OR specification.
+	 */
+	public static Set<String> splitFieldForOr(String s) {
+		Collection<String> tokens = Util.tokenize(s, Character.toString(OR_DELIMITER));
+		Set<String> result = new LinkedHashSet<>();
+		for (String token : tokens)
+			result.add(token.toLowerCase().trim());
+		return result;
+	}
+
+
+	/** returns true if the filesize satisfies the constraint. neededFileSize is as defined in the adv. search form.
+	 * we probably need to avoid hardcoding these limits */
+	public static boolean filesizeCheck (String neededFilesize, long size) {
+		// these attachmentFilesizes parameters are hardcoded --
+		// could make it more flexible if needed in the future
+		// "1".."5" are the only valid filesizes. If none of these, this parameter not set
+		// and we can include the blob
+		if ("1".equals(neededFilesize) || "2".equals(neededFilesize) || "3".equals(neededFilesize) || "4".equals(neededFilesize) || "5".equals(neededFilesize)) { // any other value, we ignore this param
+			boolean include = ("1".equals(neededFilesize) && size < 5 * KB) ||
+					("2".equals(neededFilesize) && size >= 5 * KB && size <= 20 * KB) ||
+					("3".equals(neededFilesize) && size >= 20 * KB && size <= 100 * KB) ||
+					("4".equals(neededFilesize) && size >= 100 * KB && size <= 2 * KB * KB) ||
+					("5".equals(neededFilesize) && size >= 2 * KB * KB);
+			return include;
+		}
+		return true;
+	}
 	public static List<String> tokenize(String s, String delims)
 	{
 		List<String> result = new ArrayList<String>();
