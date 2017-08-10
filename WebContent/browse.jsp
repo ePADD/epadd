@@ -14,63 +14,79 @@
 <%@page language="java" import="edu.stanford.muse.webapp.NewFilter"%>
 <%@ page import="edu.stanford.muse.webapp.Sessions" %>
 <%@ page import="java.util.*" %>
+<%@ page import="java.util.stream.Stream" %>
+<%@ page import="org.apache.poi.hdgf.streams.StringsStream" %>
+<%@ page import="com.google.common.collect.Multimap" %>
 
 <%@include file="getArchive.jspf" %>
 
 <%
-
+    String term = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
     String title = request.getParameter("title");
-
-// good to give a meaningful title to the browser tab since a lot of them may be open
-    String term = request.getParameter("term");
-    term = JSPHelper.convertRequestParamToUTF8(term);
-    String sentiments[] = request.getParameterValues("lexiconCategory");
-    String[] persons = request.getParameterValues("person");
-    String[] attachments = request.getParameterValues("attachment");
-    int month = HTMLUtils.getIntParam(request, "month", -1);
-    int year = HTMLUtils.getIntParam(request, "year", -1);
-    int cluster = HTMLUtils.getIntParam(request, "timeCluster", -1);
-
-    String sentimentSummary = "";
-    if (sentiments != null && sentiments.length > 0)
-        for (int i = 0; i < sentiments.length; i++)
-        {
-            sentimentSummary += sentiments[i];
-            if (i < sentiments.length-1)
-                sentimentSummary += " & ";
-        }
-
-    if (Util.nullOrEmpty(title))
+    //<editor-fold desc="Derive title if the original title is not set" input="request" output="title"
+    // name="search-title-derivation">
     {
-        if (term != null)
-            title = "Search: " + term;
-        else if (cluster != -1)
-            title = "Cluster " + cluster;
-        else if (!Util.nullOrEmpty(sentimentSummary))
-            title = sentimentSummary;
-        else if (attachments != null && attachments.length > 0)
-            title = attachments[0];
-        else if (month >= 0 && year >= 0)
-            title = month + "/" + year;
-        else if (year >= 0)
-            title = Integer.toString(year);
-        else if (persons != null && persons.length > 0)
-        {
-            title = persons[0];
-            if (persons.length > 1)
-                title += "+" + (persons.length-1);
-        }
-        else
-            title = "Browse";
-    }
-    title = Util.escapeHTML(title);
+        if (Util.nullOrEmpty(title)) {
 
+            // good to give a meaningful title to the browser tab since a lot of them may be open
+            // warning: remember to convert, otherwise will not work for i18n queries!
+            String sentiments[] = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("lexiconCategory"));
+
+            String[] persons = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("person"));
+            String[] attachments = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("attachment"));
+
+            int month = HTMLUtils.getIntParam(request, "month", -1);
+            int year = HTMLUtils.getIntParam(request, "year", -1);
+            int cluster = HTMLUtils.getIntParam(request, "timeCluster", -1);
+
+            String sentimentSummary = "";
+            if (sentiments != null && sentiments.length > 0)
+                for (int i = 0; i < sentiments.length; i++) {
+                    sentimentSummary += sentiments[i];
+                    if (i < sentiments.length - 1)
+                        sentimentSummary += " & ";
+                }
+
+            if (term != null)
+                title = "Search: " + term;
+            else if (cluster != -1)
+                title = "Cluster " + cluster;
+            else if (!Util.nullOrEmpty(sentimentSummary))
+                title = sentimentSummary;
+            else if (attachments != null && attachments.length > 0)
+                title = attachments[0];
+            else if (month >= 0 && year >= 0)
+                title = month + "/" + year;
+            else if (year >= 0)
+                title = Integer.toString(year);
+            else if (persons != null && persons.length > 0) {
+                title = persons[0];
+                if (persons.length > 1)
+                    title += "+" + (persons.length - 1);
+            } else
+                title = "Browse";
+            title = Util.escapeHTML(title);
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Setup (load archive/prepare session) for public mode- if present" input="request"
+    // output="">
     if (ModeConfig.isPublicMode()) {
         // this browse page is also used by Public mode where the following set up may be requried.
         String archiveId = request.getParameter("aId");
         Sessions.loadSharedArchiveAndPrepareSession(session, archiveId);
     }
-    String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+    //</editor-fold>
+
+    String datasetName;
+    //<editor-fold desc="generate a random id for this dataset (the terms docset and dataset are used interchangeably)"
+    // input="" output="String:datasetName">
+    {
+        datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+    }
+    //</editor-fold>
+
 %>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -104,64 +120,73 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<!--  important: include jog_plugin AFTER header.jsp, otherwise the extension is applied to a jquery ($) object that is overwritten when header.jsp is included! -->
+<!--  important: include jog_plugin AFTER header.jsp, otherwise the extension is applied to
+a jquery ($) object that is overwritten when header.jsp is included! -->
 <script src="js/jog_plugin.js" type="text/javascript"></script>
 
 <%
-    Pair<Collection<Document>, Collection<Blob>> search_result = Searcher.searchDocs(archive, request);
 
-    Collection<Document> docs = search_result.first;
-    //Collections.sort(docs);//order by time
-    Collection<Blob> highlightAttachments = search_result.second;
-    Lexicon lexicon = null;
-    String lexiconName = request.getParameter ("lexiconName");
-    if (!Util.nullOrEmpty (lexiconName)) {
-        lexicon = archive.getLexicon(lexiconName);
+    Collection<Document> docs;
+    SearchResult outputSet;
+    //<editor-fold desc="Search archive based on request parameters and return the result" input="archive;request"
+    // output="collection:docs;collection:attachments(highlightAttachments) name="search-archive">
+    {
+        // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+        Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+        SearchResult inputSet = new SearchResult(archive,params);
+        Pair<Collection<Document>,SearchResult> search_result = SearchResult.selectDocsAndBlobs(inputSet);
+        //Pair<Collection<Document>, Collection<Blob>> search_result
+        docs = search_result.first;
+        //Collections.sort(docs);//order by time
+        outputSet = search_result.second;
     }
+    //</editor-fold>
 
-    boolean doRegexHighlighting = (lexicon != null) && Lexicon.REGEX_LEXICON_NAME.equals(lexiconName);
 
-    Map<String, Collection<DetailedFacetItem>> facets = IndexUtils.computeDetailedFacets(docs, archive);
+    Map<String, Collection<DetailedFacetItem>> facets;
+    //<editor-fold desc="Create facets(categories) based on the search data" input="docs;archive"
+    // output="facets" name="search-create-facets">
+    {
+        facets = IndexUtils.computeDetailedFacets(docs, archive);
+    }
+    //</editor-fold>
 
-    boolean jogDisabled = true;
-
-    // now docs is the selected docs
-
-    String jog_contents_class = "";
-    jog_contents_class = "message";
     String origQueryString = request.getQueryString();
-    if (origQueryString == null)
-        origQueryString = "";
+    //<editor-fold desc="Massaging the query string (containing all search parameter)" input="request"
+    // output="string:origQueryString" name="search-query-string-massaging" >
+    {
+        if (origQueryString == null)
+            origQueryString = "";
 
-    // make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
-    if (origQueryString.indexOf("adv-search=") == -1) {
-        if (origQueryString.length() >0)
-            origQueryString += "&";
-        origQueryString += "adv-search=1";
+        // make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
+        if (origQueryString.indexOf("adv-search=") == -1) {
+            if (origQueryString.length() > 0)
+                origQueryString += "&";
+            origQueryString += "adv-search=1";
+        }
+
+        // remove all the either's because they are not needed, and could mask a real facet selection coming in below
+        origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
+        origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
+        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
+        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
+        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
+        origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+        origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
+        origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
+        origQueryString = Util.excludeUrlParam(origQueryString, "attachmentFilename=");
+        origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+        origQueryString = Util.excludeUrlParam(origQueryString, "annotation=");
+        origQueryString = Util.excludeUrlParam(origQueryString, "folder=");
+        // entity=&correspondent=&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&attachmentFilename=&attachmentExtension=&annotation=&startDate=&endDate=&folder=&lexiconName=general&lexiconCategory=Award&attachmentExtension=gif
     }
-
-    // remove all the either's because they are not needed, and could mask a real facet selection coming in below
-    origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
-    origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
-    origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
-    origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
-    origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
-    origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
-    origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
-    origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
-    origQueryString = Util.excludeUrlParam(origQueryString, "attachmentFilename=");
-    origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
-    origQueryString = Util.excludeUrlParam(origQueryString, "annotation=");
-    origQueryString = Util.excludeUrlParam(origQueryString, "folder=");
-    // entity=&correspondent=&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&attachmentFilename=&attachmentExtension=&annotation=&startDate=&endDate=&folder=&lexiconName=general&lexiconCategory=Award&attachmentExtension=gif
-
-    // generate a random id for this dataset (the terms docset and dataset are used interchangeably)
+    //</editor-fold>
 
 
     if (Util.nullOrEmpty(docs)) { %>
-        <div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
+<div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
 <%} else { %>
-    <div class="browsepage" style="min-width:1220px">
+<div class="browsepage" style="min-width:1220px">
 
     <!-- 160px block on the left for facets -->
     <div style="display:inline-block;vertical-align:top;width:160px;padding-left:5px">
@@ -176,7 +201,7 @@
                     out.println ("</span><br/>\n");
                     out.println("<br/>\n");
                 }
-
+                //<editor-fold desc="Facet-rendering" input="facets" output="html:out">
                 for (String facet: facets.keySet())
                 {
                     List<DetailedFacetItem> items = new ArrayList<DetailedFacetItem>(facets.get(facet));
@@ -232,7 +257,8 @@
                         }
                         else
                         {
-                            // no existing params ... not sure if this can happen (might some day if we want to browse all messages in session)
+                            // no existing params ... not sure if this can happen (might some day if we want
+                            // to browse all messages in session)
                             url += '?' + f.messagesURL;
                         }
 
@@ -268,13 +294,18 @@
                         out.println("<div class=\"clickableLink\" style=\"text-align:right;padding-right:10px;font-size:80%\" onclick=\"muse.reveal(this)\">More</div>\n");
                     }
                     out.println ("<br/>");
-
+                    out.flush();
                 } // String facet
+                //</editor-fold>
             %>
         </div> <!--  .facets -->
     </div> <!-- 160px block -->
 
     <!-- 1020px block for the actual message body -->
+    <%
+        //parameterizing the class name so that any future modification is easier
+        String jog_contents_class = "message";
+    %>
     <div style="display:inline-block;vertical-align:top;">
         <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
             <div class="controls" style="position:relative;width:100%;">
@@ -344,82 +375,15 @@
             </div>
         </div>
     </div>
+    <%
 
-    <% 	out.flush();
-
-        // has indexer indexed these docs ? if so, we can use the clusters in the indexer.
-        // but it may not have, in which case, we just split up the docs into monthly intervals.
-        Set<String> selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(archive.indexer, docs, request.getParameterValues("lexiconCategory"));
-        if (selectedPrefixes == null)
-            selectedPrefixes = new LinkedHashSet<>();
-        else{
-            //add quotes or else, stop words will be removed and highlights single words
-            Set<String> tmp = new HashSet<> ();
-            for(String sp: selectedPrefixes)
-                if (!doRegexHighlighting && !(sp.startsWith ("\"") && sp.endsWith ("\""))) // enclose in quotes, but only if not already to avoid excessive quoting. Also, do not add quotes if regex search
-                    tmp.add('"' + sp + '"');
-                else
-                    tmp.add (sp);
-            selectedPrefixes = tmp;
-        }
-
-        // warning: remember to convert, otherwise will not work for i18n queries!
-        String[] searchTerms = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("term"));
-
-        // for adv. search only: if any entities are specified, add them to search terms too, so that they can be highlighted properly
-        if (request.getParameter("adv-search") != null) {
-            String[] entities = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("entity"));
-            if (entities != null && entities.length > 0) {
-                List<String> searchTermsList = new ArrayList();
-                for (String s: searchTerms) // can't use Arrays.asList here, it can't be added to later
-                    searchTermsList.add(s);
-
-                // add all the entities to search terms...
-                for (String e : entities) {
-                    Set<String> list = Searcher.splitFieldForOr(e);
-                    if (list != null)
-                        searchTermsList.addAll(list);
-                }
-
-                // and convert back to an array
-                searchTerms = searchTermsList.toArray(new String[0]);
-            }
-        }
-
-        Set<String> highlightTermsUnstemmed = new LinkedHashSet<>();
-        if (searchTerms != null && searchTerms.length > 0)
-            for (String s: searchTerms) {
-                selectedPrefixes.addAll(IndexUtils.getAllWordsInQuery(s));
-                // note: we add the term to unstemmed terms as well -- no harm. this is being introduced to fix a query param we had like term=K&L Gates and this term wasn't being highlighted on the page earlier, because it didn't match modulo stemming
-                // if the query param has quotes, strip 'em
-                // along with phrase in quotes thre may be other terms, this method does not handle that.
-                if (s.startsWith("\"") && s.endsWith("\""))
-                    s = s.substring(1, s.length()-1);
-                highlightTermsUnstemmed.addAll(IndexUtils.getAllWordsInQuery(s));
-            }
-
-        String[] contactIds = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("contact"));
-        Set<Integer> highlightContactIds = new LinkedHashSet<>();
-        if(contactIds!=null && contactIds.length>0)
-            for(String cis: contactIds) {
-                try {
-                    int ci = Integer.parseInt(cis);
-                    highlightContactIds.add(ci);
-                }catch(Exception e){
-                    JSPHelper.log.warn(cis+" is not a contact id");
-                }
-            }
         // now if filter is in effect, we highlight the filter word too
+        //as it is a common highlighting information valid for all result documents we add it to
+        //commonHLInfo object of outputset by calling appropriate API.
         NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
         if (filter != null && filter.isRegexSearch()) {
-            highlightTermsUnstemmed.add(filter.get("term"));
+            outputSet.addCommonHLInfoTerm(filter.get("term"));
         }
-
-        Set<String> highlightTerms = new HashSet<>();
-        if(selectedPrefixes!=null)
-            highlightTerms.addAll(selectedPrefixes);
-        if(highlightTermsUnstemmed!=null)
-            highlightTerms.addAll(highlightTermsUnstemmed);
 
         Pair<DataSet, String> pair = null;
         try {
@@ -427,11 +391,11 @@
 
             // note: we currently do not support clustering for "recent" type, only for the chronological type. might be easy to fix if needed in the future.
             if ("recent".equals(sortBy) || "relevance".equals(sortBy) || "chronological".equals(sortBy))
-                pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, highlightTerms, highlightAttachments, MultiDoc.ClusteringType.NONE);
+                pair = EmailRenderer.pagesForDocuments(outputSet, datasetName, MultiDoc.ClusteringType.NONE);
             else {
                 // this path should not be used as it sorts the docs in some order
                 // (old code meant to handle clustered docs, so that tab can jump from cluster to cluster. not used now)
-                pair = EmailRenderer.pagesForDocuments(docs, archive, datasetName, highlightContactIds, highlightTerms, highlightAttachments);
+                pair = EmailRenderer.pagesForDocuments(outputSet, datasetName);
             }
         }catch(Exception e){
             Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
@@ -439,13 +403,10 @@
 
         DataSet browseSet = pair.getFirst();
         String html = pair.getSecond();
-        browseSet.regexToHighlight = null;
-        if (doRegexHighlighting && selectedPrefixes != null) {
-            browseSet.regexToHighlight = String.join("|", selectedPrefixes);
-        }
 
         // entryPct says how far (what percentage) into the selected pages we want to enter
-        int entryPage = IndexUtils.getDocIdxWithClosestDate((Collection) docs, HTMLUtils.getIntParam(request, "startMonth", -1), HTMLUtils.getIntParam(request, "startYear", -1));
+        int entryPage = IndexUtils.getDocIdxWithClosestDate((Collection) docs,
+                HTMLUtils.getIntParam(request, "startMonth", -1), HTMLUtils.getIntParam(request, "startYear", -1));
         if (entryPage < 0) {
             // if initdocid is set, look for a doc with that id to set the entry page
             String docId = request.getParameter("initDocId");

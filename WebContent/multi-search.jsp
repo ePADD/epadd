@@ -5,7 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
 <%@ page import="edu.stanford.muse.email.AddressBook" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
-<%@ page import="edu.stanford.muse.index.Searcher" %>
+<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="org.json.JSONArray" %>
@@ -66,8 +66,10 @@
 		String searchTerm = term;
 		if (!(searchTerm.length() > 2 && searchTerm.startsWith("\"") && searchTerm.endsWith("\"")))
 			searchTerm = "\"" + searchTerm + "\"";
-        Pair<Set<Document>, Set<Blob>> p = Searcher.searchForTerm (archive, params, searchTerm);
-        int nDocs = p.getFirst().size();
+		SearchResult inputSet = new SearchResult(archive,params);
+
+		SearchResult resultSet = SearchResult.searchForTerm (inputSet, searchTerm);
+        int nDocs = resultSet.getDocumentSet().size();
         JSONArray j = new JSONArray();
         j.put (0, Util.escapeHTML(term));
         j.put (1, nDocs);

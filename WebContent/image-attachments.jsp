@@ -12,6 +12,7 @@
 <%@page language="java" import="java.io.*"%>
 <%@page language="java" import="java.lang.*"%>
 <%@page language="java" import="java.net.*"%>
+<%@ page import="com.google.common.collect.Multimap" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -53,10 +54,18 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    List<Pair<Blob, EmailDocument>> allAttachmentsPairsList = Searcher.selectBlobs (archive, request);
+    // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+    Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+    SearchResult inputSet = new SearchResult(archive,params);
+    SearchResult resultSet = SearchResult.selectBlobs(inputSet);
+    Set<Document> docset = resultSet.getDocumentSet();
     Set<Blob> allAttachments = new LinkedHashSet<>();
-    for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList)
-        allAttachments.add (p.getFirst());
+
+    for (Document doc: docset){
+        EmailDocument edoc = (EmailDocument)doc;
+        allAttachments.addAll(resultSet.getAttachmentHighlightInformation(edoc));
+    }
+
     int nEntriesForPiclens = 0;
     String piclensRSSFilename = "";
 

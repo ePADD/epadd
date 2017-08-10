@@ -3,14 +3,17 @@
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.Set"%>
+
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.datacache.Blob" %>
 <%@ page import="java.util.LinkedHashSet" %>
-<%@ page import="edu.stanford.muse.index.Searcher" %>
+<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.google.common.collect.Multimap" %>
+<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -84,16 +87,24 @@ Error: Export is only available in processing or appraisal modes!
         return;
     }
 
-    List<Pair<Blob, EmailDocument>> allAttachmentsPairsList = Searcher.selectBlobs (archive, request);
+    // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+    Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+    SearchResult inputSet = new SearchResult(archive,params);
+    SearchResult resultSet = SearchResult.selectBlobs(inputSet);
+    Set<Document> docset = resultSet.getDocumentSet();
     Set<Blob> allAttachments = new LinkedHashSet<>();
     Set<Blob> allImageAttachments = new LinkedHashSet<>();
-    for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList) {
-        Blob b = p.getFirst();
-        allAttachments.add(p.getFirst());
-        if (b.filename == null)
-            continue;
-        if (Util.is_image_filename(b.filename))
-            allImageAttachments.add (p.getFirst());
+
+    for (Document doc: docset){
+        EmailDocument edoc = (EmailDocument)doc;
+        //get all attachments of edoc which satisfied the given filter.
+        for(Blob b : resultSet.getAttachmentHighlightInformation(edoc)){
+            allAttachments.add(b);
+            if (b.filename == null)
+                continue;
+            if (Util.is_image_filename(b.filename))
+                allImageAttachments.add (b);
+        }
     }
 
     int nAttachments = allAttachments.size();

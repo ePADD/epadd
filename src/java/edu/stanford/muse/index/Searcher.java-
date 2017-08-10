@@ -1,6 +1,5 @@
 package edu.stanford.muse.index;
 
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
@@ -12,12 +11,10 @@ import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.mail.internet.InternetAddress;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -52,46 +49,8 @@ public class Searcher {
             };
 */
 
-    /* Top level entry point for searches from places that have a HTTP Req (example use: called from browse.jsp).
-       Searches the given archive based on the params present in the given http req */
-    public static Pair<Collection<Document>, Collection<Blob>> searchDocs (Archive archive, HttpServletRequest request) throws IOException, FileUploadException {
-
-        // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
-        Multimap<String, String> params = LinkedHashMultimap.create();
-        {
-            if (true) {
-                // regular file encoding
-                Enumeration<String> paramNames = request.getParameterNames();
-
-                while (paramNames.hasMoreElements()) {
-                    String param = paramNames.nextElement();
-                    String[] vals = request.getParameterValues(param);
-                    if (vals != null)
-                        for (String val : vals)
-                            params.put(param, JSPHelper.convertRequestParamToUTF8(val));
-                }
-            }
-        }
-
-        return selectDocsAndBlobs(archive, params);
-    }
-
-    /** returns a single value for the given key */
-    private static String getParam(Multimap<String, String> params, String key) {
-        Collection<String> values = params.get(key);
-        if (values == null || values.size() == 0)
-            return null;
-        return values.iterator().next();
-    }
 
 
-    /** returns multiple value for the given key */
-    private static Collection<String> getParams(Multimap<String, String> params, String key) {
-        Collection<String> values = params.get(key);
-        if (values == null || values.size() == 0)
-            return null;
-        return values;
-    }
 
     /** returns docs matching the given regex term (currently full body only, no attachments)
      * @return
@@ -120,23 +79,23 @@ public class Searcher {
         Set<Document> docsForTerm = new LinkedHashSet<>();
         Set<Blob> blobsForTerm = new LinkedHashSet<>();
 
-        if ("on".equals(getParam(params, "termSubject"))) {
+        if ("on".equals(JSPHelper.getParam(params, "termSubject"))) {
             Indexer.QueryOptions options = new Indexer.QueryOptions();
             options.setQueryType(Indexer.QueryType.SUBJECT);
             docsForTerm.addAll(archive.docsForQuery(term, options));
         }
 
-        if ("on".equals(getParam(params, "termBody"))) {
+        if ("on".equals(JSPHelper.getParam(params, "termBody"))) {
             Indexer.QueryOptions options = new Indexer.QueryOptions();
             options.setQueryType(Indexer.QueryType.FULL);
             docsForTerm.addAll(archive.docsForQuery(term, options));
-        } else if ("on".equals(getParam(params, "termOriginalBody"))) { // this is an else because we don't want to look at both body and body original
+        } else if ("on".equals(JSPHelper.getParam(params, "termOriginalBody"))) { // this is an else because we don't want to look at both body and body original
             Indexer.QueryOptions options = new Indexer.QueryOptions();
             options.setQueryType(Indexer.QueryType.ORIGINAL);
             docsForTerm.addAll(archive.docsForQuery(term, options));
         }
 
-        if ("on".equals(getParam(params, "termAttachments"))) {
+        if ("on".equals(JSPHelper.getParam(params, "termAttachments"))) {
             blobsForTerm = archive.blobsForQuery(term);
             Set<Document> blobDocsForTerm = (Set<Document>) EmailUtils.getDocsForAttachments((Collection) archive.getAllDocs(), blobsForTerm);
             docsForTerm.addAll(blobDocsForTerm);
@@ -162,7 +121,7 @@ public class Searcher {
      * @return those among the set of input docs that match the params specification
      */
     private static Set<EmailDocument> filterForFlags (Set<EmailDocument> docs, Multimap<String, String> params) {
-        String reviewedValue = getParam(params, "reviewed");
+        String reviewedValue = JSPHelper.getParam(params, "reviewed");
         if (!"either".equals(reviewedValue) && !Util.nullOrEmpty(reviewedValue)) {
             Set<EmailDocument> newDocs = new LinkedHashSet<>();
             for (EmailDocument ed: docs)
@@ -171,7 +130,7 @@ public class Searcher {
             docs = newDocs;
         }
 
-        String dntValue = getParam(params, "doNotTransfer");
+        String dntValue = JSPHelper.getParam(params, "doNotTransfer");
         if (!"either".equals(dntValue) && !Util.nullOrEmpty(dntValue)) {
             Set<EmailDocument> newDocs = new LinkedHashSet<>();
             for (EmailDocument ed: docs)
@@ -180,7 +139,7 @@ public class Searcher {
             docs = newDocs;
         }
 
-        String twrValue = getParam(params, "transferWithRestrictions");
+        String twrValue = JSPHelper.getParam(params, "transferWithRestrictions");
         if (!"either".equals(twrValue) & !Util.nullOrEmpty(twrValue)) {
             Set<EmailDocument> newDocs = new LinkedHashSet<>();
             for (EmailDocument ed: docs)
@@ -190,7 +149,7 @@ public class Searcher {
         }
 
 
-        String inCartValue = getParam(params, "inCart");
+        String inCartValue = JSPHelper.getParam(params, "inCart");
         if (!"either".equals(inCartValue) & !Util.nullOrEmpty(inCartValue)) {
             Set<EmailDocument> newDocs = new LinkedHashSet<>();
             for (EmailDocument ed: docs)
@@ -199,7 +158,7 @@ public class Searcher {
             docs = newDocs;
         }
 
-        String annotationStr = getParam(params, "annotation");
+        String annotationStr = JSPHelper.getParam(params, "annotation");
         if (!Util.nullOrEmpty(annotationStr)) {
             Set<String> annotations = splitFieldForOr(annotationStr);
             Set<EmailDocument> newDocs = new LinkedHashSet<>();
@@ -219,7 +178,7 @@ public class Searcher {
 
     private static Set<EmailDocument> filterForEmailDirection(AddressBook addressBook, Set<EmailDocument> docs, Multimap<String, String> params) {
 
-        String val = getParam(params, "direction");
+        String val = JSPHelper.getParam(params, "direction");
         if ("either".equals(val) || Util.nullOrEmpty(val))
             return docs;
 
@@ -259,11 +218,11 @@ public class Searcher {
     /** version of filterForCorrespondents which reads settings from params. correspondent name can have the OR separator */
     private static Set<EmailDocument> filterForCorrespondents(Set<EmailDocument> docs, AddressBook ab, Multimap<String, String> params) {
 
-        String correspondentsStr = getParam(params, "correspondent");
-        boolean checkToField = "on".equals(getParam(params, "correspondentTo"));
-        boolean checkFromField = "on".equals(getParam(params, "correspondentFrom"));
-        boolean checkCcField = "on".equals(getParam(params, "correspondentCc"));
-        boolean checkBccField = "on".equals(getParam(params, "correspondentBcc"));
+        String correspondentsStr = JSPHelper.getParam(params, "correspondent");
+        boolean checkToField = "on".equals(JSPHelper.getParam(params, "correspondentTo"));
+        boolean checkFromField = "on".equals(JSPHelper.getParam(params, "correspondentFrom"));
+        boolean checkCcField = "on".equals(JSPHelper.getParam(params, "correspondentCc"));
+        boolean checkBccField = "on".equals(JSPHelper.getParam(params, "correspondentBcc"));
 
         if (Util.nullOrEmpty(correspondentsStr))
             return docs;
@@ -330,7 +289,7 @@ public class Searcher {
 
     /** returns only the docs matching params[uniqueId], which could have multiple uniqueIds separated by the OR separator */
     private static Set<EmailDocument> filterForMessageId (Set<EmailDocument> docs, Multimap<String, String> params) {
-        String val = getParam(params, "uniqueId");
+        String val = JSPHelper.getParam(params, "uniqueId");
         if (Util.nullOrEmpty(val))
             return docs;
 
@@ -351,7 +310,7 @@ public class Searcher {
      * If this value is either, no filtering is done.
      * if set to yes, only docs with at least one address matching a mailing list are returned. */
     private static Set<EmailDocument> filterForMailingListState(AddressBook ab, Set<EmailDocument> docs, Multimap<String, String> params) {
-        String mailingListState = getParam(params, "mailingListState");
+        String mailingListState = JSPHelper.getParam(params, "mailingListState");
         if ("either".equals(mailingListState) || Util.nullOrEmpty(mailingListState))
             return docs;
         Set<EmailDocument> result = new LinkedHashSet<>();
@@ -403,7 +362,7 @@ public class Searcher {
 
     /** returns only the docs matching params[emailSource] */
     private static Set<EmailDocument> filterForEmailSource (Set<EmailDocument> docs, Multimap<String, String> params) {
-        String val = getParam(params, "emailSource");
+        String val = JSPHelper.getParam(params, "emailSource");
         if (Util.nullOrEmpty(val))
             return docs;
 
@@ -421,7 +380,7 @@ public class Searcher {
 
     /* returns only the docs matching params[folder] (can be or-delimiter separated) */
     private static Set<EmailDocument> filterForFolder(Set<EmailDocument> docs, Multimap<String, String> params) {
-        String val = getParam(params, "folder");
+        String val = JSPHelper.getParam(params, "folder");
         if (Util.nullOrEmpty(val))
             return docs;
 
@@ -439,7 +398,7 @@ public class Searcher {
 
     /** returns only the docs containing params[entity] (can be or-delimiter separated) */
     private static Set<EmailDocument> updateForEntities(Archive archive, Set<EmailDocument> docs, Multimap<String, String> params) {
-        String val = getParam(params, "entity");
+        String val = JSPHelper.getParam(params, "entity");
         if (Util.nullOrEmpty(val))
             return docs;
 
@@ -468,7 +427,7 @@ public class Searcher {
     private static Set<EmailDocument> filterForAttachmentEntities(Archive archive, Set<EmailDocument> docs, Multimap<String, String> params) {
         Set<EmailDocument> resultDocs = new LinkedHashSet<>();
         Set<Blob> resultBlobs = new LinkedHashSet<>(); // currently not used
-        String val = getParam(params, "attachmentEntity");
+        String val = JSPHelper.getParam(params, "attachmentEntity");
         if (Util.nullOrEmpty(val))
             return docs;
 
@@ -495,7 +454,7 @@ public class Searcher {
     }
 
     private static Set<EmailDocument> filterForEntityType(Archive archive, Set<EmailDocument> docs, Multimap<String, String> params) {
-        String val = getParam(params, "entityType");
+        String val = JSPHelper.getParam(params, "entityType");
         if (Util.nullOrEmpty(val))
             return docs;
 
@@ -531,14 +490,14 @@ public class Searcher {
     }
 
     private static Set<DatedDocument> filterForDateRange(Set<DatedDocument> docs, Multimap<String, String> params) {
-        String start = getParam(params, "startDate"), end = getParam(params, "endDate");
+        String start = JSPHelper.getParam(params, "startDate"), end = JSPHelper.getParam(params, "endDate");
         if (Util.nullOrEmpty(start) && Util.nullOrEmpty(end))
             return docs;
 
         int startYear = -1, startMonth = -1, startDate = -1, endYear = -1, endMonth = -1, endDate = -1;
         if (!Util.nullOrEmpty(start) || !Util.nullOrEmpty(end)) {
             try {
-                List<String> startTokens = Util.tokenize(getParam(params, "startDate"), "-");
+                List<String> startTokens = Util.tokenize(JSPHelper.getParam(params, "startDate"), "-");
                 startYear = Integer.parseInt(startTokens.get(0));
                 startMonth = Integer.parseInt(startTokens.get(1));
                 startDate = Integer.parseInt(startTokens.get(2));
@@ -572,17 +531,17 @@ public class Searcher {
     private static Pair<Set<EmailDocument>, Set<Blob>> updateForAttachments(Set<EmailDocument> docs, Multimap<String, String> params) {
 
 
-        String neededFilesize = getParam(params, "attachmentFilesize");
-        String neededFilename = getParam(params, "attachmentFilename");
-        Collection<String> neededTypeStr = getParams(params, "attachmentType"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
-        String neededExtensionStr = getParam(params, "attachmentExtension");
+        String neededFilesize = JSPHelper.getParam(params, "attachmentFilesize");
+        String neededFilename = JSPHelper.getParam(params, "attachmentFilename");
+        Collection<String> neededTypeStr = JSPHelper.getParams(params, "attachmentType"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+        String neededExtensionStr = JSPHelper.getParam(params, "attachmentExtension");
 
         if (Util.nullOrEmpty(neededFilesize) && Util.nullOrEmpty(neededFilename) && Util.nullOrEmpty(neededTypeStr) && Util.nullOrEmpty(neededExtensionStr)) {
             return new Pair<>(docs, null);
         }
 
         // set up the file names incl. regex pattern if applicable
-        String neededFilenameRegex = getParam(params, "attachmentFilenameRegex");
+        String neededFilenameRegex = JSPHelper.getParam(params, "attachmentFilenameRegex");
         Set<String> neededFilenames = null;
         Pattern filenameRegexPattern = null;
         if ("on".equals(neededFilenameRegex) && !Util.nullOrEmpty(neededFilename)) {
@@ -611,7 +570,7 @@ public class Searcher {
 
 
         Set<EmailDocument> resultDocs = new LinkedHashSet<>();
-        Set<Blob> resultBlobs = new LinkedHashSet<>();;
+        Set<Blob> resultBlobs = new LinkedHashSet<>();
 
         for (EmailDocument ed : docs) {
             List<Blob> attachments = ed.attachments;
@@ -701,8 +660,8 @@ public class Searcher {
         return true;
     }
 
-    private static Set<DatedDocument> filterDocsByDate (HttpServletRequest request, Set<DatedDocument> docs) {
-        String start = request.getParameter("startDate"), end = request.getParameter ("endDate");
+    private static Set<DatedDocument> filterDocsByDate (Multimap<String,String> params, Set<DatedDocument> docs) {
+        String start = JSPHelper.getParam(params,"startDate"), end = JSPHelper.getParam(params,"endDate");
 
         if (Util.nullOrEmpty(start) && Util.nullOrEmpty(end))
             return docs;
@@ -733,11 +692,11 @@ public class Searcher {
     }
 
     /** this map is used only by attachments page right now, not advanced search. TODO: make adv. search page also use it */
-   public static List<Pair<Blob, EmailDocument>> selectBlobs (Archive archive, HttpServletRequest request) {
+   public static List<Pair<Blob, EmailDocument>> selectBlobs (Archive archive, Multimap<String,String> params) {
         Collection<Document> docs = archive.getAllDocs();
 
-        String neededFilesize = request.getParameter ("attachmentFilesize");
-        String extensions[] = request.getParameterValues("attachmentExtension");
+        String neededFilesize = JSPHelper.getParam(params,"attachmentFilesize");
+        String extensions[] = JSPHelper.getParams(params,"attachmentExtension").toArray(new String[0]);
         Set<String> extensionsToMatch = new LinkedHashSet<>(); // should also have lower-case strings, no "." included
 
         if (!Util.nullOrEmpty(extensions)) {
@@ -747,7 +706,7 @@ public class Searcher {
         }
 
         // or given extensions with extensions due to attachment type
-        String types[] = request.getParameterValues ("attachmentType"); // this will have more semicolon separated extensions
+        String types[] = JSPHelper.getParams(params,"attachmentType").toArray(new String[0]); // this will have more semicolon separated extensions
         if (!Util.nullOrEmpty(types)) {
             for (String t: types) {
                 String exts = Config.attachmentTypeToExtensions.get(t);
@@ -772,7 +731,7 @@ public class Searcher {
 
        List<Pair<Blob, EmailDocument>> allAttachments = new ArrayList<>();
 
-        Collection<EmailDocument> eDocs = (Collection) filterDocsByDate (request, new HashSet<>((Collection) docs));
+        Collection<EmailDocument> eDocs = (Collection) filterDocsByDate (params, new HashSet<>((Collection) docs));
         for (EmailDocument doc : eDocs) {
             List<Blob> blob = doc.attachments;
             if (blob != null)
@@ -805,7 +764,7 @@ public class Searcher {
     }
 
     private static Set<Document> filterForLexicons(Archive archive, Set<Document> docs, Multimap<String, String> params) {
-        String lexiconName = getParam(params, "lexiconName");
+        String lexiconName = JSPHelper.getParam(params, "lexiconName");
 
         Lexicon lex = null;
         if (Util.nullOrEmpty(lexiconName))
@@ -814,7 +773,7 @@ public class Searcher {
         if (lex == null)
             return docs;
 
-        String category = getParam(params, "lexiconCategory");
+        String category = JSPHelper.getParam(params, "lexiconCategory");
         if (Util.nullOrEmpty(category))
             return docs;
 
@@ -823,7 +782,7 @@ public class Searcher {
     }
 
     private static Set<Document> filterForSensitiveMessages(Archive archive, Set<Document> docs, Multimap<String, String> params) {
-        String isSensitive = getParam(params, "sensitive");
+        String isSensitive = JSPHelper.getParam(params, "sensitive");
 
         if ("true".equals(isSensitive)) {
             Indexer.QueryType qt = null;
@@ -864,14 +823,14 @@ public class Searcher {
         Set<Document> resultDocs = new LinkedHashSet<>(archive.getAllDocs());
         Set<Blob> resultBlobs = null;
 
-        String term = getParam(params, "term");
+        String term = JSPHelper.getParam(params, "term");
         if (!Util.nullOrEmpty(term)) {
             Pair<Set<Document>, Set<Blob>> p = searchForTerm(archive, params, term);
             resultDocs = p.getFirst();
             resultBlobs = p.getSecond();
         }
 
-        String regexTerm = getParam(params, "regexTerm");
+        String regexTerm = JSPHelper.getParam(params, "regexTerm");
         if (!Util.nullOrEmpty(regexTerm)) {
             resultDocs = searchForRegexTerm(archive, resultDocs, regexTerm);
         }
@@ -925,7 +884,7 @@ public class Searcher {
         // sort per the requirement
         Indexer.SortBy sortBy = Indexer.SortBy.RELEVANCE;
         {
-            String sortByStr = getParam(params, "sortBy");
+            String sortByStr = JSPHelper.getParam(params, "sortBy");
             if (!Util.nullOrEmpty(sortByStr)) {
                 if ("relevance".equals(sortByStr.toLowerCase()))
                     sortBy = Indexer.SortBy.RELEVANCE;

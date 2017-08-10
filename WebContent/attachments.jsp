@@ -14,9 +14,10 @@
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="edu.stanford.muse.index.Searcher" %>
+<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="com.google.common.collect.Multimap" %>
 <%@include file="getArchive.jspf" %>
 
 <!DOCTYPE HTML>
@@ -73,13 +74,22 @@
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
 	JSPHelper.log.info("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
-    List<Pair<Blob, EmailDocument>> allAttachmentsPairsList = Searcher.selectBlobs (archive, request);
+    // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+    Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+    SearchResult inputSet = new SearchResult(archive,params);
+    SearchResult resultSet = SearchResult.selectBlobs(inputSet);
+    Set<Document> docset = resultSet.getDocumentSet();
     Set<Blob> allAttachments = new LinkedHashSet<>();
-    for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList)
-        allAttachments.add (p.getFirst());
+    for (Document doc: docset){
+        EmailDocument edoc = (EmailDocument)doc;
+        //get all attachments of edoc which satisifed the given filter.
+        allAttachments.addAll(resultSet.getAttachmentHighlightInformation(edoc));
+    }
+
     allAttachments = allAttachments.stream().filter (b -> !b.is_image()).collect (Collectors.toSet());
 
-    writeProfileBlock(out, archive, "",  Util.pluralize(allAttachmentsPairsList.size(), "Non-image attachment") + " (" + allAttachments.size() + " unique)");
+    writeProfileBlock(out, archive, "",  Util.pluralize(docset.size(), "Non-image attachment") +
+            " (" + allAttachments.size() + " unique)");
 %>
 
 <div id="all_fields" style="margin:auto;width:1000px; padding: 10px">
@@ -186,7 +196,7 @@
 
 </div>
 
-    <% if (allAttachmentsPairsList.size() > 0) { %>
+    <% if (docset.size() > 0) { %>
         <br/>
         <div style="margin:auto; width:1000px">
             <table id="attachments">
@@ -196,27 +206,30 @@
             <%
             int count = 0;
             BlobStore blobStore = archive.blobStore;
-            for (Pair<Blob, EmailDocument> p: allAttachmentsPairsList) {
-                EmailDocument ed = p.getSecond();
+            for (Document  doc: docset) {
+                EmailDocument ed = (EmailDocument)doc;
                 String docId = ed.getUniqueId();
-                Blob b = p.getFirst();
-                String contentFileDataStoreURL = blobStore.get_URL(b);
-                String blobURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
-                String messageURL = "browse?docId=" + docId;
-                String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
+                //get the set of attachments matching in this document against search query.
+                Set<Blob> blobs = resultSet.getAttachmentHighlightInformation(ed);
+                for( Blob b : blobs) {
+                    String contentFileDataStoreURL = blobStore.get_URL(b);
+                    String blobURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
+                    String messageURL = "browse?docId=" + docId;
+                    String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
 
-                JSONArray j = new JSONArray();
-                j.put (0, Util.escapeHTML(subject));
-                j.put (1, ed.dateString());
-                j.put (2, b.size);
-                j.put (3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
+                    JSONArray j = new JSONArray();
+                    j.put(0, Util.escapeHTML(subject));
+                    j.put(1, ed.dateString());
+                    j.put(2, b.size);
+                    j.put(3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
 
-                // urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
-                j.put (4, messageURL);
-                j.put (5, blobURL);
-                j.put (6, Util.escapeHTML(b.filename));
+                    // urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
+                    j.put(4, messageURL);
+                    j.put(5, blobURL);
+                    j.put(6, Util.escapeHTML(b.filename));
 
-                resultArray.put (count++, j);
+                    resultArray.put(count++, j);
+                }
             }
 
             %>
