@@ -10,12 +10,14 @@ $.fn.scrollView = function () {
     });
 };
 
+var $currently_active_basediv; // basediv on whose behalf the modal is currently open
 
 // $basediv is the top_level div that has the following:
 // a div.browseFolder where the jquery filetree is displayed
 // a single input.dir in which the path of the selected folder is stored
 // a button.browse-button to which browse actions will be assigned.
 // optionally a button.go-button to which the class "faded" will be added/removed based on non-empty/empty value of the dir
+
 function FilePicker($basediv) {
 	var $go_button;
 
@@ -41,12 +43,20 @@ function FilePicker($basediv) {
 		// should be safe to call even if already closed
 		close: function () {
 			$('#filepicker-modal').modal('hide');
-			return false;
+            $currently_active_basediv = null;
+            return false;
 		},
 		cancel: function() {
-			if (undefined !== typeof (original_val))
-				$target_dir.val (original_val);
-			this.close(); // this refers to the window since this is called from the event handler
+			// there is a
+			if (undefined !== typeof (original_val)) {
+				// subtlely here. the cancel event is not per FilePicker, it goes to all of them, since the modal dismiss is connected to all FilePickers
+				// so we need to restore the original_val of only the FilePicker on whose behalf the modal is currently active
+                if ($basediv == $currently_active_basediv) {
+                    $target_dir.val(original_val);
+                    this.close(); // this refers to the window since this is called from the event handler
+					$currently_active_basediv = null;
+                }
+            }
 			return false;
 		},
 		update_current_path: function() {
@@ -80,8 +90,8 @@ function FilePicker($basediv) {
 			$('.path-component').click (function(e) { var new_path = $(e.target).attr('data-path'); this.browse_root(new_path);}.bind(this));
 		},
 		open: function () {
+            $currently_active_basediv = $basediv; // mark the fact that the
 			$('#filepicker-modal').modal();
-
 			var start_from = original_val ? original_val : '';
 //			if (typeof start_from == 'undefined')
 //				start_from = "/"; // allow it to be empty -- that is the case when invoked on windows
@@ -113,7 +123,6 @@ function FilePicker($basediv) {
 		  });
 		},
 		click_handler: function(event) {
-			// button can be either "browse" or "ok"
 			original_val = $target_dir.val();
 			this.open();
 			return false;
