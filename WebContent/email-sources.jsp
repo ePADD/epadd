@@ -4,6 +4,7 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.List"%>
 <%@page language="java" import="java.util.Set"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -39,7 +40,11 @@
 <jsp:include page="header.jspf"/>
 <jsp:include page="div_filepicker.jspf"/>
 
-<script>epadd.nav_mark_active('Import');</script>
+<% if (ModeConfig.isAppraisalMode()) { %>
+	<script>epadd.nav_mark_active('Import');</script>
+<% } else { %>
+	<script>epadd.nav_mark_active('New');</script>
+<% } %>
 
 <%@include file="profile-block.jspf"%>
 

@@ -26,7 +26,7 @@
 
 <div style="text-align:center; margin:auto; width:600px;">
 	<div style="width:100%;margin-bottom:20px;">
-		Cross-collection search
+		Cross-collection entity search
 	</div>
 
 	<div id="cross-collection-search" style="text-align:center">

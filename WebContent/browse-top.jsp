@@ -29,8 +29,11 @@
 
 	<style>
 		div.cta-box { width:270px; height: 200px; display: inline-block; border-color:black; margin:10px; cursor: pointer; }
-		div.cta-box img { margin-bottom: 10px; height: 30px;}
-		div.cta-box:hover img { display: none; }
+		div.cta-box .fa, div.cta-box img { margin-bottom: 10px; height: 30px;}
+
+		div.cta-box .fa { padding-top: 5px; font-size: 28px; }
+		div.cta-box:hover .fa, div.cta-box:hover img  { display: none; }
+
 		div.cta-box:hover { color: white; }
 		div.cta-box:hover a { color: white; }
 	</style>
@@ -99,7 +102,7 @@
 	<div class="cta-box text-center margin30">
 		<a href="correspondents">
 			<i class="icon-browsetoparrow"></i>
-			<img src="images/correspondent.svg"/>
+			<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>
 			<p class="cta-text-1">Correspondents (<%=nContacts %>)</p>
 			<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>
 		</a>
@@ -108,7 +111,7 @@
 	<div class="cta-box text-center margin30">
 			<a href="list-entities.jsp?type=0">
 			<i class="icon-browsetoparrow"></i>
-			<img src="images/person.svg"/>
+			<i class="fa fa-user-o" style="color:#e60707" aria-hidden="true"></i>
 			<p class="cta-text-1">Person entities (<%=nPersonEntities%>)</p>
 			<p class="cta-text-2">Person entities (<%=nPersonEntities%>)</p>
 			</a>
@@ -121,7 +124,7 @@
 	<div class="cta-box text-center margin30">
 		<a href="entity-types">
 			<i class="icon-browsetoparrow"></i>
-			<img src="images/org.svg"/>
+			<i class="fa fa-tag" style="color:#31a354" aria-hidden="true"></i>
 			<p class="cta-text-1">Other entities (<%=nNonPersonEntities%>)</p>
 			<p class="cta-text-2">Other entities (<%=nNonPersonEntities%>)</p>
 		</a>
@@ -132,7 +135,7 @@
         <div class="cta-box text-center margin30">
             <a href="by-folder">
                 <i class="icon-browsetoparrow"></i>
-                <img src="images/folder.svg"/>
+				<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>
                 <p class="cta-text-1">Folder view (<%=nFolders%>)</p>
                 <p class="cta-text-2">Folder view (<%=nFolders%>)</p>
             </a>
@@ -145,7 +148,7 @@
 		<div class="cta-box text-center margin30">
 				<a href="image-attachments">
 					<i class="icon-browsetoparrow"></i>
-					<img src="images/image-attachment.svg"/>
+					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
 					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
 					<p class="cta-text-2">Image attachments (<%=nImageAttachments%>)</p>
 				</a>
@@ -155,7 +158,7 @@
 	<div class="cta-box text-center margin30">
 		<a href="attachments">
 			<i class="icon-browsetoparrow"></i>
-			<img src="images/other-attachment.svg"/>
+			<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>
 			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
 			<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments)%>)</p>
 		</a>
@@ -165,7 +168,7 @@
 		<div class="cta-box text-center margin30">
 			<a href="lexicon">
 				<i class="icon-browsetoparrow"></i>
-				<img src="images/lexicon.svg"/>
+				<i class="fa fa-snowflake-o" style="color:yellowgreen" aria-hidden="true"></i>
 				<p class="cta-text-1">Lexicon search</p>
 				<p class="cta-text-2">Lexicon search</p>
 			</a>
@@ -173,11 +176,11 @@
 
 		<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
 			<div class="cta-box text-center margin30">
-				<a href="lexicon?name=regex">
+				<a href="report">
 					<i class="icon-browsetoparrow"></i>
-					<img src="images/sensitive-message.svg"/>
-					<p class="cta-text-1">Sensitive messages</p>
-					<p class="cta-text-2">Sensitive messages</p>
+					<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>
+					<p class="cta-text-1">Data report</p>
+					<p class="cta-text-2">Data report</p>
 				</a>
 			</div>
 		<% } %>
@@ -185,7 +188,7 @@
 		<div class="cta-box text-center margin30">
 			<a href="settings">
 				<i class="icon-browsetoparrow"></i>
-				<img src="images/sensitive-message.svg"/>
+				<i class="fa fa-cog" style="color:#000" aria-hidden="true"></i>
 				<p class="cta-text-1">Settings</p>
 				<p class="cta-text-2">Settings</p>
 			</a>

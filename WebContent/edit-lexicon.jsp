@@ -137,7 +137,18 @@
 					return;
 
 				// target = _blank is important here, otherwise the user will navigate off the page, and may not have saved the new category!
-				var html = '<br/><div class="lexiconCategory"> <b>' + name + '</b> (<a target="_blank" class="test-lexicon" href="#">Test</a>) <br/><textarea cols="120" rows="2" name="' + name + '" placeholder="Enter some words or phrases, separated by |"/></div>';
+				var html = '<br/><div class="lexiconCategory"> <b>' + name + '</b>';
+				var placeholder;
+
+                <% if (!isRegex) { %>
+	    			html += '(<a target="_blank" class="test-lexicon" href="#">Test</a>)';
+                    placeholder = 'Enter some words or phrases, separated by |';
+    	    	<% } else { %>
+				    placeholder = 'Enter a regular expression';
+    	    	<% } %>
+
+                html += '<br/><textarea cols="120" rows="2" name="' + name + '" placeholder="' + placeholder + '"/></div>';
+
 				$('#categories').append(html);
 				$('#save-button').fadeIn(); // always show, otherwise it may be hidden if we started with 0 categories
 				var areas = $('textarea');

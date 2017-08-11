@@ -1,6 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>edu.stanford.epadd</groupId>
+		<artifactId>epadd-common</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>./pom-common.xml</relativePath>
+	</parent>
   <groupId>edu.stanford.epadd</groupId>
   <artifactId>epadd</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -41,11 +47,6 @@
     </dependency>
 
     <dependency>
-      <groupId>edu.stanford.muse</groupId>
-      <artifactId>muse-jar</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency> 
-    <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>1.5</version>
@@ -85,6 +86,7 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <sourceDirectory>src/java</sourceDirectory>
+
     <resources>
       <resource>
        	<directory>WebContent/WEB-INF/classes</directory>
@@ -93,6 +95,7 @@
     
     <plugins>
       <plugin>
+
 	<groupId>org.eclipse.jetty</groupId>
 	<artifactId>jetty-jspc-maven-plugin</artifactId>
 	<version>9.3.7.v20160115</version>
@@ -111,21 +114,21 @@
 	  </execution>
 	</executions>
       </plugin>
-      <plugin>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>3.1</version>
-	<configuration>
-	  <source>1.8</source>
-	  <target>1.8</target>
-	  <excludes>
-	    <exclude>**/edu/stanford/epadd/launcher/*.java</exclude>
-	  </excludes>
-	  <encoding>UTF-8</encoding>
-          <source>1.8</source>
-          <target>1.8</target>
-	</configuration>
-      </plugin>
-      <plugin>
+
+        <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                <excludes>
+                    <exclude>**/edu/stanford/epadd/launcher/*.java</exclude>
+                </excludes>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+
+        <plugin>
 	<groupId>org.codehaus.mojo</groupId>
 	<artifactId>license-maven-plugin</artifactId>
 	<version>1.8</version>

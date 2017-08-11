@@ -259,6 +259,10 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 	margin: 0px 10px;
 }
 
+.autocomplete-selected{
+	background-color: whitesmoke;
+}
+
 .panel { background-color: #f5f5f8;  border: 1px solid #eaeaea;  padding:25px 30px;  border-radius: 4px;  margin-bottom: 25px; } /* taken from search-wraper in adv. search.scss */
 .panel-heading { font-size: 16px; font-weight: 400; /* weight 400 is equal to open sans regular */ margin-bottom:20px; color: #404040;} /* taken from h4/search-wrapper in adv. search.scss */
 

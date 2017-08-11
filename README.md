@@ -25,6 +25,8 @@ Windows installations: Java Runtime Environment 8u101 or later required.
 
 **Installation** 
 
+(Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc).
+
 ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.10 / 10.11. Please follow the instructions below for your operating system.
 
 *Installing ePADD on Windows*
@@ -34,8 +36,6 @@ Please download the latest ePADD distribution files (.exe) from https://github.c
 When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it. The ePADD Appraisal Module directory is located at c:\users\<username>\epadd-appraisal. 
 
 In order for functionality for authority reconciliation to perform correctly, you must also separately download the configuration files (epadd-settings.zip), accessible via https://github.com/ePADD/epadd/releases/. Once downloaded, unzip this file into your user directory (c:\users\<username>\).
-
-Note: This directory houses many customizable files discussed further elsewhere in the user guide, and also includes a file, “config.PROPERTIES,” which can be edited to update the contact information for your repository’s Administrator in case of system errors. 
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
@@ -49,8 +49,6 @@ Please download the latest ePADD distribution files (.dmg) from https://github.c
 When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it.  The ePADD Appraisal Module directory is located at Macintosh HD/Users/<username>/epadd-appraisal.
 
 In order for functionality related to authority reconciliation to perform correctly, you must also separately download the configuration files (epadd-settings.zip), accessible via https://github.com/ePADD/epadd/releases/. Once downloaded, unzip this file into your user directory (Macintosh HD\Users\<username>\). 
-
-This directory houses many customizable files discussed further elsewhere in the user guide, and also includes a file, “config.properties,” which can be edited to update the contact information for your repository’s Administrator in case of system errors. 
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 

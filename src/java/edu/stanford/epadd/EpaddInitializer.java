@@ -37,7 +37,11 @@ public class EpaddInitializer implements ServletContextListener {
 				throw new RuntimeException();
 			}
 			edu.stanford.muse.util.Version.appName = "epadd";
-			Archive.LEXICONS = new String[]{"general.english.lex.txt", "sensitive.english.lex.txt", "sentiments.english.lex.txt",
+			Archive.LEXICONS = new String[]{
+					"general.english.lex.txt",
+					"sensitive.english.lex.txt",
+					"sentiments.english.lex.txt",
+					"regex.english.lex.txt",
 					"Persona.academic.administrator.sensitive.duke.english.lex.txt",
 					"Persona.author.princeton.english.lex.txt",
 					"Persona.composer.NYPL.english.lex.txt",

@@ -9,10 +9,13 @@
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: javax.servlet:jsp-api:2.0" />
           <element id="library" level="project" name="Maven: javax.servlet:servlet-api:2.4" />
-          <element id="archive" name="muse-jar-1.0.0-SNAPSHOT.jar">
-            <element id="module-output" name="muse-jar" />
-          </element>
-          <element id="library" level="project" name="Maven: tw.edu.ntu.csie:libsvm:3.17" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:1.5" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:2.0.1" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.3.2" />
+          <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.3.1" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.16" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.5" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-core:4.7.0" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-queries:4.7.0" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-analyzers-common:4.7.0" />
@@ -139,13 +142,6 @@
           <element id="library" level="project" name="Maven: org.slf4j:jcl-over-slf4j:1.7.13" />
           <element id="library" level="project" name="Maven: junit:junit:4.11" />
           <element id="library" level="project" name="Maven: org.hamcrest:hamcrest-core:1.3" />
-          <element id="library" level="project" name="Maven: com.google.code.gson:gson:1.5" />
-          <element id="library" level="project" name="Maven: commons-io:commons-io:2.0.1" />
-          <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.3.2" />
-          <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.3.1" />
-          <element id="library" level="project" name="Maven: log4j:log4j:1.2.16" />
-          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.5" />
-          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
         </element>
       </element>
       <element id="directory" name="META-INF">
