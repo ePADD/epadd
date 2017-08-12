@@ -146,7 +146,7 @@
 		<br/>
 	<% } else { %>
 		<div class="cta-box text-center margin30">
-				<a href="image-attachments">
+				<a href="image-attachments?attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&startDate=&endDate=">
 					<i class="icon-browsetoparrow"></i>
 					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
 					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
