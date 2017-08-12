@@ -640,6 +640,7 @@
 						</div>
 
 					</div>
+				</div>
 				<!--/Others-->
 
 				<!--Sort Results By-->
@@ -689,8 +690,6 @@
 				</div>
 				<!--/Search and clear form buttons-->
 
-			</div>
-			<!--/row-->
         </div>
             <!--/container-->
         </form>

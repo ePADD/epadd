@@ -168,7 +168,7 @@
 		<div class="cta-box text-center margin30">
 			<a href="lexicon">
 				<i class="icon-browsetoparrow"></i>
-				<i class="fa fa-snowflake-o" style="color:yellowgreen" aria-hidden="true"></i>
+				<img src="images/lexicon.png"/>
 				<p class="cta-text-1">Lexicon search</p>
 				<p class="cta-text-2">Lexicon search</p>
 			</a>
@@ -188,7 +188,7 @@
 		<div class="cta-box text-center margin30">
 			<a href="settings">
 				<i class="icon-browsetoparrow"></i>
-				<i class="fa fa-cog" style="color:#000" aria-hidden="true"></i>
+				<i class="fa fa-cog" style="color:#888" aria-hidden="true"></i>
 				<p class="cta-text-1">Settings</p>
 				<p class="cta-text-2">Settings</p>
 			</a>

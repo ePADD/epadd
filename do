@@ -1,5 +1,4 @@
 #!/bin/csh -fe
-ant
 # cd ../muse
 # mvn clean
 mvn clean

@@ -282,9 +282,9 @@ if (archive != null) {
 			$('input', $clone).val(''); // clear the fields so we don't carry over the values of the original fields
 			$clone.insertAfter($lasta);
 			$('<br/>').insertAfter($lasta);
+            epadd.fix_login_account_numbers();
 
 			fps.push(new FilePicker($clone));
-			epadd.fix_login_account_numbers();
 			return false;
 		}
 
