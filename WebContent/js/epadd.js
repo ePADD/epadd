@@ -56,6 +56,7 @@ epadd.pluralize = function(count, description)
 epadd.do_search = function(e) {
 	var term = $(e.target).text();
 	// if term is not already quoted, quote it now
+	term = term.trim();
 	if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
 		// not in quotes. encode URI and then add quotes
 		term = '"' + encodeURIComponent(term) + '"'; // remember to encodeURIComponent, otherwise it fails on names with &. Also don't use encodeURI because it doesn't escape &
