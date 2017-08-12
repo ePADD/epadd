@@ -296,7 +296,7 @@ public class Util
 	public static boolean is_image_filename(String filename)
 	{
 		String lower_case_name = filename.toLowerCase();
-		return lower_case_name.endsWith(".jpg") || lower_case_name.endsWith(".svg") || lower_case_name.endsWith(".jpeg") || lower_case_name.endsWith(".gif") || lower_case_name.endsWith(".png"); // tif
+		return lower_case_name.endsWith(".jpg") || lower_case_name.endsWith(".jpeg") || lower_case_name.endsWith(".svg") || lower_case_name.endsWith(".gif") || lower_case_name.endsWith(".png") || lower_case_name.endsWith(".bmp") ; // tif
 																																																	// files
 																																																	// don't
 																																																	// render
