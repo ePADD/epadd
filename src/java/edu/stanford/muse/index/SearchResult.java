@@ -8,10 +8,13 @@ import edu.stanford.muse.email.AddressBook;
 import edu.stanford.muse.email.Contact;
 import edu.stanford.muse.email.MailingList;
 import edu.stanford.muse.util.Pair;
+import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXParseException;
+
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,10 +39,10 @@ public class SearchResult {
         // along with phrase in quotes there may be other terms,
         // this method does not handle that.
         old.addAll(IndexUtils.getAllWordsInQuery(term));
-        if (term.startsWith("\"") && term.endsWith("\""))
-            term = term.substring(1, term.length()-1);
-        //highlightTermsUnstemmed.addAll(IndexUtils.getAllWordsInQuery(s));
-        old.addAll(IndexUtils.getAllWordsInQuery(term));
+//        if (term.startsWith("\"") && term.endsWith("\""))
+//            term = term.substring(1, term.length()-1);
+//        //highlightTermsUnstemmed.addAll(IndexUtils.getAllWordsInQuery(s));
+//        old.addAll(IndexUtils.getAllWordsInQuery(term));
         map.put(key,old);
 
     }
@@ -173,8 +176,16 @@ public class SearchResult {
 //    public Set<String> getAttachmentHighlightInformation(Document doc, String key){
 
     //right now this function only retuns a set of attachments to be highlighted for the given doc.
-    public Set<Blob> getAttachmentHighlightInformation(Document doc){
-            return matchedDocs.get(doc).second.info.keySet();
+    public List<Blob> getAttachmentHighlightInformation(Document doc){
+        //Do not just return the key set. Moreover, we want the return type to be list instead of set.
+        //This is to avoid the case when one document had two copies of the same attachment. Keeping them
+        //in a set results in reporting wrong count information (as was seen on attachment.jsp /browse-top.jsp)
+        //It is caller's responsibility to get their unique names as and when needed.
+            //return matchedDocs.get(doc).second.info.keySet();
+        EmailDocument edoc = (EmailDocument)doc;
+        List<Blob> result = new LinkedList<>(edoc.attachments);
+        result.retainAll(matchedDocs.get(doc).second.info.keySet());
+        return result;
     }
 
 
@@ -640,18 +651,20 @@ public class SearchResult {
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
                     EmailDocument ed = (EmailDocument)k.getKey();
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
-                    // question: should we look at fine entities intead?
+                    // question: should we look at fine entities instead?
                     try {
-                        entitiesInThisDoc.addAll(Arrays.asList(inputSet.archive.getAllNamesInDoc(ed, true)).stream().map(n->n.text).collect(Collectors.toSet()));
+                        entitiesInThisDoc.addAll(Arrays.asList(inputSet.archive.getAllNamesInDoc(ed, true)).stream().map(n->n.text.toLowerCase()).collect(Collectors.toSet()));
                     } catch (IOException ioe) {
                         Util.print_exception("Error in reading entities", ioe, log);
                         return false;
                     }
-                    entitiesInThisDoc = entitiesInThisDoc.parallelStream().map (s -> s.toLowerCase()).collect(Collectors.toSet());
                     entitiesInThisDoc.retainAll(entities);
                     if (entitiesInThisDoc.size() > 0) {
                         //before returning true also add this information in the document body specific highlighting
                         //object.
+                        //Note that the entities name being surrounded by double quotes this is to ensure
+                        //exact highlighting of the entity names.
+                        entitiesInThisDoc = entitiesInThisDoc.parallelStream().map (s -> "\""+s+"\"").collect(Collectors.toSet());
                         inputSet.matchedDocs.get(k.getKey()).first.addTerms(entitiesInThisDoc);
                         return true;//result.add(ed);
                     }
@@ -680,7 +693,29 @@ public class SearchResult {
         }
 
         inputSet.matchedDocs.keySet().retainAll(docsWithNeededTypes);
-        return inputSet;
+        //Now for each document add the highlighting information about the entity types present there.
+        inputSet.matchedDocs.keySet().stream().forEach(k-> {
+            EmailDocument ed = (EmailDocument) k;
+            try {
+                //get all entities in this doc which are of interest.
+                Set<Span> entities = Arrays.asList(inputSet.archive.getAllNamesInDoc(ed, true)).stream().filter(en -> {
+                    if (neededTypes.contains(Short.toString(en.getType())))
+                        return true;
+                    else
+                        return false;
+                }).collect(Collectors.toSet());
+                //note that the entity name is being surrounded with double quotes to make it like exact search.
+                Set<String> entitiestext = entities.parallelStream().map(s -> "\""+s.text.toLowerCase()+"\"").collect(Collectors.toSet());
+                //add all those entities in the highlighting information of this document.
+                inputSet.matchedDocs.get(k).first.addTerms(entitiestext);
+
+            } catch (IOException ioe) {
+                Util.print_exception("Error in reading entities", ioe, log);
+                //return false;
+            }
+        });
+
+            return inputSet;
    }
 
 
