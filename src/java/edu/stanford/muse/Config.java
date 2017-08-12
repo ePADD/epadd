@@ -142,7 +142,7 @@ public class Config {
         }
 
         {
-            attachmentTypeToExtensions.put("Graphics", "jpg;png;gif;bmp");
+            attachmentTypeToExtensions.put("Graphics", "jpg;jpeg;png;gif;bmp");
             attachmentTypeToExtensions.put("Document", "doc;docx;pages");
             attachmentTypeToExtensions.put("Presentation", "ppt;pptx;key");
             attachmentTypeToExtensions.put("Spreadsheet", "xls;xlsx;numbers");
