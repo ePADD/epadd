@@ -11,6 +11,8 @@
 <%@ page import="edu.stanford.muse.email.AddressBook" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="org.json.JSONArray" %>
+<%@ page import="com.google.common.collect.Multimap" %>
+<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%--
   Created by IntelliJ IDEA.
   User: vihari
@@ -52,43 +54,21 @@
     <br/>
     <br/>
     <%
-        String filePath = request.getParameter("filePath");
-        String allDocsParam = request.getParameter("allDocs");
-        boolean allDocs = allDocsParam!=null && allDocsParam.equals("1");
+
+        // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+        Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+        SearchResult inputSet = new SearchResult(archive,params);
         String datasetName = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
-        Set<Document> matchedDocs = new LinkedHashSet<>();
 
-       if(allDocs || (filePath!=null && (new File(filePath).exists()))) {
-           if (allDocs) {
-               matchedDocs = archive.getAllDocsAsSet();
-               request.setAttribute("selectDocs", matchedDocs);
-           } else {
-               //read the entries in the file
-               CSVReader reader = new CSVReader(new FileReader(filePath));
-               Set<String> eas = new LinkedHashSet<String>();
-               String[] line;
-               while ((line = reader.readNext()) != null) {
-                   String eA = line[0].trim();
-                   eas.add(eA);
-               }
-               try {
-                   Map<String,Set<Document>> matchesWithNumHits = EmailUtils.getDocsForEAs(archive.getAllDocsAsSet(), eas);
-                   matchedDocs = new LinkedHashSet<>();
-                   if(matchesWithNumHits!=null)
-                       for(Set<Document> docs: matchesWithNumHits.values()){
-                           if(docs!=null)
-                               matchedDocs.addAll(docs);
-                       }
-                   request.setAttribute("selectDocs", matchedDocs);
+        SearchResult outputSet = SearchResult.selectDocsForBulkFlags(inputSet);
 
-                   // create a dataset out of the matched docs
-                   DataSet dataset = new DataSet(matchedDocs, archive, datasetName, null, null, null);
-                   session.setAttribute(datasetName, dataset);
-                   session.setAttribute("docs-" + datasetName, new ArrayList<Document>(matchedDocs));
-               } catch (Exception e) {
-                   Util.print_exception("Exception while fetching messages for: " + eas, e, JSPHelper.log);
-               }
-           }
+        Set<Document> matchedDocs = outputSet.getDocumentSet();
+        request.setAttribute("selectDocs", matchedDocs);
+
+        // create a dataset out of the matched docs
+        DataSet dataset = new DataSet(matchedDocs, outputSet, datasetName);
+        session.setAttribute(datasetName, dataset);
+        session.setAttribute("docs-" + datasetName, new ArrayList<Document>(matchedDocs));
     %>
 
     <div style="width:900px;margin-left:170px; position:relative;">
@@ -118,9 +98,6 @@
                 </div>
             </div>
     </div>
-<%
-       }
-        %>
 
     <script>
         var fade_spinner_with_delay = function ($spinner) {

@@ -1,5 +1,6 @@
 package edu.stanford.muse.index;
 
+import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
@@ -7,6 +8,7 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.AddressBook;
 import edu.stanford.muse.email.Contact;
 import edu.stanford.muse.email.MailingList;
+import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
@@ -16,6 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXParseException;
 
 import javax.mail.internet.InternetAddress;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -1259,4 +1263,44 @@ public class SearchResult {
 
         return new Pair((Collection<Document>)resultDocsList,outResult);
     }
+
+    //This method was moved from bulk-flags.jsp so that all types of result set creation happens here.
+    public static SearchResult selectDocsForBulkFlags(SearchResult inputSet) {
+
+
+        String filePath = JSPHelper.getParam(inputSet.queryParams, "filePath");
+        String allDocsParam = JSPHelper.getParam(inputSet.queryParams, "allDocs");
+        boolean allDocs = allDocsParam != null && allDocsParam.equals("1");
+
+        if (allDocs || (filePath != null && (new File(filePath).exists()))) {
+            if (allDocs) {
+                inputSet.matchedDocs.keySet().retainAll(inputSet.archive.getAllDocsAsSet());
+            } else {
+                Set<String> eas = new LinkedHashSet<String>();
+                try {
+                    //read the entries in the file
+                    CSVReader reader = new CSVReader(new FileReader(filePath));
+
+                    String[] line;
+                    while ((line = reader.readNext()) != null) {
+                        String eA = line[0].trim();
+                        eas.add(eA);
+                    }
+                    Map<String, Set<Document>> matchesWithNumHits = EmailUtils.getDocsForEAs(inputSet.archive.getAllDocsAsSet(), eas);
+                    Set<Document> matchedDocs = new LinkedHashSet<>();
+                    if (matchesWithNumHits != null)
+                        for (Set<Document> docs : matchesWithNumHits.values()) {
+                            if (docs != null)
+                                matchedDocs.addAll(docs);
+                        }
+                    inputSet.matchedDocs.keySet().retainAll(matchedDocs);
+                } catch (Exception e) {
+                    Util.print_exception("Exception while fetching messages for: " + eas, e, JSPHelper.log);
+                }
+            }
+
+        }
+        return inputSet;
+    }
+
 }
