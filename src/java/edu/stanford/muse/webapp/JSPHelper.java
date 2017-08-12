@@ -422,7 +422,14 @@ public class JSPHelper {
                 NER ner = new NER(archive, nerModel);
                 session.setAttribute("statusProvider", ner);
                 ner.recognizeArchive();
-                archive.processingMetadata.entityCounts = ner.stats.counts;
+                //Here, instead of getting the count of all entities (present in ner.stats object)
+				//get the count of only those entities which pass a given thersold.
+				//This is to fix a bug where the count of person entities displayed on browse-top.jsp
+				//page was different than the count of entities actually displayed following a thersold.
+				// @TODO make it more modular
+                //archive.processingMetadata.entityCounts = ner.stats.counts;
+				double theta = 0.001;
+				archive.processingMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
                 log.info(ner.stats);
             }
            // archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
@@ -651,8 +658,8 @@ public class JSPHelper {
 	/** returns multiple value for the given key */
 	public static Collection<String> getParams(Multimap<String, String> params, String key) {
 		Collection<String> values = params.get(key);
-		if (values == null || values.size() == 0)
-			return null;
+		if (values == null )
+			return new LinkedHashSet<>();
 		return values;
 	}
 
