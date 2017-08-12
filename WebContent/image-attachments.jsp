@@ -13,6 +13,7 @@
 <%@page language="java" import="java.lang.*"%>
 <%@page language="java" import="java.net.*"%>
 <%@ page import="com.google.common.collect.Multimap" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -60,11 +61,14 @@
     SearchResult resultSet = SearchResult.selectBlobs(inputSet);
     Set<Document> docset = resultSet.getDocumentSet();
     List<Blob> allAttachments = new LinkedList<>();
-
     for (Document doc: docset){
         EmailDocument edoc = (EmailDocument)doc;
-        allAttachments.addAll(resultSet.getAttachmentHighlightInformation(edoc));
+        //get all attachments of edoc which satisifed the given filter (image).
+        List<Blob> tmp = resultSet.getAttachmentHighlightInformation(edoc).stream().collect(Collectors.toList());
+        allAttachments.addAll(tmp);
     }
+
+    Set<Blob> uniqueAttachments = allAttachments.stream().collect (Collectors.toSet());
 
     int nEntriesForPiclens = 0;
     String piclensRSSFilename = "";
@@ -107,7 +111,10 @@
         String url = request.getRequestURI();
     }
 %>
-<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>
+
+<%writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Image attachments") +
+" (" + uniqueAttachments.size() + " unique)");%>
+<%--<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>--%>
 <br/>
 <br/>
 
