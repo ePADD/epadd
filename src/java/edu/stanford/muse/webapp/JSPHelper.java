@@ -649,7 +649,7 @@ public class JSPHelper {
 	/** returns a single value for the given key */
 	public static String getParam(Multimap<String, String> params, String key) {
 		Collection<String> values = params.get(key);
-		if (values == null || values.size() == 0)
+		if (values.size() == 0)
 			return null;
 		return values.iterator().next();
 	}
@@ -658,8 +658,6 @@ public class JSPHelper {
 	/** returns multiple value for the given key */
 	public static Collection<String> getParams(Multimap<String, String> params, String key) {
 		Collection<String> values = params.get(key);
-		if (values == null )
-			return new LinkedHashSet<>();
 		return values;
 	}
 
