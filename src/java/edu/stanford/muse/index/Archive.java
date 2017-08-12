@@ -908,6 +908,44 @@ public class Archive implements Serializable {
         return out_dir;
     }
 
+
+    //method to return the count map of entities provided that the score of the entity is greater than
+    //thersold.
+    public static Map<Short,Integer> getEntitiesCountMapModuloThersold(Archive archive, double thersold){
+        Map<Short,Integer> entityTypeToCount = new LinkedHashMap<>();
+        EntityMapper entityMapper = archive.getEntityMapper();
+        Set<String> seen = new LinkedHashSet<>();
+
+        for(Document doc: archive.getAllDocs()) {
+            Span[] es1 = archive.getEntitiesInDoc(doc, true);
+            Span[] es2 = archive.getEntitiesInDoc(doc, false);
+            Set<Span> ss = Arrays.stream(es1).collect(Collectors.toSet());
+            Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
+            ss.addAll(ss1);
+            for (Span span : ss) {
+                if (span.typeScore < thersold)
+                    continue;
+                String name = span.getText();
+                String displayName = name;
+
+                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
+                if (entityMapper != null)
+                    displayName = entityMapper.getDisplayName(name, span.type);
+
+                displayName = displayName.trim();
+                if (seen.contains(displayName.toLowerCase()))
+                    continue; // count an entity only once
+
+                seen.add(displayName.toLowerCase());
+                if (!entityTypeToCount.containsKey(span.getType())) {
+                    entityTypeToCount.put(span.getType(), 0);
+                }
+                entityTypeToCount.put(span.getType(), entityTypeToCount.get(span.getType()) + 1);
+            }
+        }
+
+        return entityTypeToCount;
+    }
     public List<Document> docsWithThreadId(long threadID) {
         List<Document> result = new ArrayList<Document>();
         for (Document ed : allDocs) {
