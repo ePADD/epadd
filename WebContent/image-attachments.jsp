@@ -59,7 +59,7 @@
     SearchResult inputSet = new SearchResult(archive,params);
     SearchResult resultSet = SearchResult.selectBlobs(inputSet);
     Set<Document> docset = resultSet.getDocumentSet();
-    Set<Blob> allAttachments = new LinkedHashSet<>();
+    List<Blob> allAttachments = new LinkedList<>();
 
     for (Document doc: docset){
         EmailDocument edoc = (EmailDocument)doc;

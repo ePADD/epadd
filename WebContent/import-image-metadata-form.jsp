@@ -14,6 +14,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="edu.stanford.muse.index.SearchResult" %>
+<%@ page import="java.util.LinkedList" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -92,8 +93,8 @@ Error: Export is only available in processing or appraisal modes!
     SearchResult inputSet = new SearchResult(archive,params);
     SearchResult resultSet = SearchResult.selectBlobs(inputSet);
     Set<Document> docset = resultSet.getDocumentSet();
-    Set<Blob> allAttachments = new LinkedHashSet<>();
-    Set<Blob> allImageAttachments = new LinkedHashSet<>();
+    List<Blob> allAttachments = new LinkedList<>();
+    List<Blob> allImageAttachments = new LinkedList<>();
 
     for (Document doc: docset){
         EmailDocument edoc = (EmailDocument)doc;

@@ -255,7 +255,7 @@ public class EmailRenderer {
 		{
 			// for email docs, 1 doc = 1 page
 			ed = (EmailDocument) d;
-            Set<Blob> highlightAttachments = searchResult.getAttachmentHighlightInformation(d);
+            List<Blob> highlightAttachments = searchResult.getAttachmentHighlightInformation(d);
 			StringBuilder page = new StringBuilder();
 			page.append("<div class=\"muse-doc\">\n");
 

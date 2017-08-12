@@ -79,17 +79,18 @@
     SearchResult inputSet = new SearchResult(archive,params);
     SearchResult resultSet = SearchResult.selectBlobs(inputSet);
     Set<Document> docset = resultSet.getDocumentSet();
-    Set<Blob> allAttachments = new LinkedHashSet<>();
+    List<Blob> allAttachments = new LinkedList<>();
     for (Document doc: docset){
         EmailDocument edoc = (EmailDocument)doc;
         //get all attachments of edoc which satisifed the given filter.
-        allAttachments.addAll(resultSet.getAttachmentHighlightInformation(edoc));
+        List<Blob> tmp = resultSet.getAttachmentHighlightInformation(edoc).stream().filter(b-> !b.is_image()).collect(Collectors.toList());
+        allAttachments.addAll(tmp);
     }
 
-    allAttachments = allAttachments.stream().filter (b -> !b.is_image()).collect (Collectors.toSet());
+    Set<Blob> uniqueAttachments = allAttachments.stream().collect (Collectors.toSet());
 
-    writeProfileBlock(out, archive, "",  Util.pluralize(docset.size(), "Non-image attachment") +
-            " (" + allAttachments.size() + " unique)");
+    writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Non-image attachment") +
+            " (" + uniqueAttachments.size() + " unique)");
 %>
 
 <div id="all_fields" style="margin:auto;width:1000px; padding: 10px">
@@ -210,7 +211,7 @@
                 EmailDocument ed = (EmailDocument)doc;
                 String docId = ed.getUniqueId();
                 //get the set of attachments matching in this document against search query.
-                Set<Blob> blobs = resultSet.getAttachmentHighlightInformation(ed);
+                List<Blob> blobs = resultSet.getAttachmentHighlightInformation(ed);
                 for( Blob b : blobs) {
                     String contentFileDataStoreURL = blobStore.get_URL(b);
                     String blobURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
