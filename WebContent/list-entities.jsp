@@ -10,6 +10,7 @@
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.*" %>
 <%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!--
 Browse page for enbtities based on fine types
@@ -56,10 +57,15 @@ Browse page for enbtities based on fine types
         EntityMapper entityMapper = archive.getEntityMapper();
 
         for (Document doc: archive.getAllDocs()){
-            Span[] es = archive.getEntitiesInDoc(doc,true);
+//            Span[] es = archive.getEntitiesInDoc(doc,true);
+            Span[] es1 = archive.getEntitiesInDoc(doc,true);
+            Span[] es2 =  archive.getEntitiesInDoc(doc,false);
+            Set<Span> ss = Arrays.stream(es1).collect(Collectors.toSet());
+            Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
+            ss.addAll(ss1);
             Set<String> seenInThisDoc = new LinkedHashSet<>();
 
-            for (Span span: es) {
+            for (Span span: ss) {
                 if (span.type != type || span.typeScore<theta)
                     continue;
 
@@ -77,10 +83,16 @@ Browse page for enbtities based on fine types
 
                 seenInThisDoc.add (displayName.toLowerCase());
 
-                if (!entities.containsKey(displayName))
-                    entities.put(displayName, new Entity(displayName, span.typeScore));
+                //fixed: Here entities map was keeping the keys without lowercase conversion as a result
+                // two entities which are same but differ only in their display name case (lower/upper) were
+                // being identified as separate entities. As a result the count in listing page was shown differently from the
+                //count on the processing metadata page (by a difference of 30 or so). This fix was done after
+                //the fix to handle a large difference in person entities count. For that refer to JSPHelper.java
+                //file fetchAndIndex method.
+                if (!entities.containsKey(displayName.toLowerCase()))
+                    entities.put(displayName.toLowerCase(), new Entity(displayName, span.typeScore));
                 else
-                    entities.get(displayName).freq++;
+                    entities.get(displayName.toLowerCase()).freq++;
             }
         }
 
