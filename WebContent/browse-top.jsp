@@ -156,7 +156,7 @@
 
 
 	<div class="cta-box text-center margin30">
-		<a href="attachments">
+		<a href="attachments?attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
 			<i class="icon-browsetoparrow"></i>
 			<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>
 			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
