@@ -9,9 +9,17 @@
 JSPHelper.setPageUncacheable(response);
 String fastIdStr = request.getParameter ("fastId");
 JSONObject result = new JSONObject();
+Archive archive = JSPHelper.getArchive(session,request);
+if (archive == null) {
+    JSONObject obj = new JSONObject();
+    obj.put("status", 1);
+    obj.put("error", "No archive in session");
+    out.println (obj);
+    JSPHelper.log.info(obj);
+    return;
+}
 
 String name = request.getParameter ("name");
-Archive archive = JSPHelper.getArchive(session);
 AuthorityMapper am = archive.getAuthorityMapper();
 
 if (request.getParameter ("unset") == null) {

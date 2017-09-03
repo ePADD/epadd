@@ -1711,6 +1711,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	}
 
 	// look up the doc from doc id assigned to it
+	// Use this method only if docID exist and you want to get the corresponding lucene doc.
 	private org.apache.lucene.document.Document getLDoc(String docId, Boolean attachment, Set<String> fieldsToLoad) throws IOException
 	{
 		IndexSearcher searcher = null;
@@ -1731,18 +1732,24 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 		TermQuery q = new TermQuery(new Term("docId", docId));
 		TopDocs td = searcher.search(q, 1); // there must be only 1 doc with this id anyway
-		Util.softAssert(td.totalHits <= 1, "docId = " + docId + " is not unique. Found: "+td.totalHits+" hits!");
+		Util.softAssert(td.totalHits <= 1, "docId = " + docId + " is not unique. Found: "+td.totalHits+" hits!",log);
 		ScoreDoc[] sd = td.scoreDocs;
 		if (sd.length != 1)
 		{
 			// something went wrong... report it and ignore this doc
-			Util.warnIf(true, "lookup failed for id " + docId);
+			log.warn("lookup failed for id " + docId + ": number of hits for this id is " + sd.length);
 			return null;
 		}
 
-        if(fieldsToLoad!=null)
-		    return searcher.doc(sd[0].doc, fieldsToLoad);
-        else return searcher.doc(sd[0].doc);
+		org.apache.lucene.document.Document result;
+        if(fieldsToLoad!=null){
+			result = searcher.doc(sd[0].doc, fieldsToLoad);
+		}else {
+			result= searcher.doc(sd[0].doc);
+		}
+		if(result == null)
+			log.warn("Lucene did not find the document for the given doc id");
+        return result;
 	}
 
 	private org.apache.lucene.document.Document getLDocAttachment(String docId) throws IOException{
@@ -1781,6 +1788,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
         return doc.get("title");
     }
 
+    //@TODO
 	String getContents(org.apache.lucene.document.Document doc, boolean originalContentOnly) {
         String contents = null;
         try {
@@ -1790,6 +1798,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
                 contents = doc.get("body");
         } catch (Exception e) {
             log.warn("Exception " + e + " trying to read field 'body/body_original': " + Util.ellipsize(Util.stackTrace(e), 350));
+            //@TODO
+			Util.print_exception();
             contents = null;
         }
 

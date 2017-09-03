@@ -12,9 +12,8 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
-	if (allDocs == null)
-		allDocs = (Collection) archive.getAllDocs();
+	Collection<EmailDocument> allDocs =  (Collection) archive.getAllDocs();
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>
@@ -68,9 +67,10 @@
 </div>
 
 <script>
+
 	$(document).ready(function() {
 		$('#sort-order').change(function (e) {
-			var url = 'edit-entities?type=<%=request.getParameter ("type")%>';
+			var url = 'edit-entities?archiveID=<%=archiveID%>&type=<%=request.getParameter ("type")%>';
 			if ('alpha' == this.value)
 				window.location = url += '&sort=alphabetical';
 			else
@@ -122,7 +122,9 @@
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
 	<form method="post" action="browse-top">
 		<input name="entityType" type="hidden" value="<%=type%>"/>
-
+		//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
+		//archiveID in all those forms where POST was used to invoke the server page.
+		<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 		<textarea name="entityMerges" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=textBoxVal%>
 		</textarea>
 		<br/>

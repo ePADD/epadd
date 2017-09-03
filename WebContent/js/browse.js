@@ -141,6 +141,7 @@ function apply(e, toAll) {
         post_updates();
 
     function post_updates() {
+        post_data.archiveID = archiveID;
         epadd.log('posting updates');
         if (toAll)
             post_data.datasetId = datasetName;

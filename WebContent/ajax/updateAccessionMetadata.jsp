@@ -8,7 +8,6 @@
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="org.json.JSONObject"%>
 <%@page language="java" import="javax.mail.MessagingException"%>
-
 <%@ page import="java.io.*"%>
 		<%!
         private String getFileName(final Part part) throws MessagingException
@@ -67,15 +66,17 @@
 <%
 session.setAttribute("statusProvider", new StaticStatusProvider("Updating metadata"));
 JSONObject result = new JSONObject();
-
-Archive archive = JSPHelper.getArchive(session);
-if (archive == null) 
-{
-	result.put ("status", 1);
-	result.put("error", "Please load an archive first.");
-	out.println (result.toString(4));
-	return;	
+Archive archive = JSPHelper.getArchive(request);
+if (archive == null) {
+    JSONObject obj = new JSONObject();
+    obj.put("status", 1);
+    obj.put("error", "No archive in session");
+    out.println (obj);
+    JSPHelper.log.info(obj);
+    return;
 }
+
+
 
 try {
 	if (archive.processingMetadata == null)

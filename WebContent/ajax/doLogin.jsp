@@ -13,11 +13,10 @@ JSPHelper.setPageUncacheable(response);
 boolean incremental = request.getParameter("incremental") != null;
 if (!incremental)
 {
-	Archive a = (Archive) JSPHelper.getSessionAttribute(session, "archive");
-	if (a != null)
-	{
-		JSPHelper.log.info ("Closing existing archive " + a);
-		a.close();
+	Archive archive = JSPHelper.getArchive(session,request);
+	if (archive != null) {
+	    JSPHelper.log.info ("Closing existing archive " + a);
+		archive.close();
 		session.removeAttribute("archive");
 	}
 	session.removeAttribute("alternateEmailAddrs");

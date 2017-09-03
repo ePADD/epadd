@@ -17,6 +17,7 @@
 
         JSONObject result = new JSONObject();
         String dir = request.getParameter("dir");
+        Boolean isEditAccessionNextScreen = request.getParameter("edit-screen") == null? false:true;
         if (Util.nullOrEmpty(dir))
         {
             result.put ("status", 1);
@@ -42,7 +43,15 @@
             out.println (result.toString(4));
             return;
         }
+        //by this time the archive must have an archiveID present in SimpleSession mapper.
+        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+        assert archiveID!=null : new AssertionError("Some serious issue, the archive has been laoded by the readArchiveIfPresent method but the archiveID is absent in the mapper");
 
+        String resultPage;
+        if(isEditAccessionNextScreen)
+            resultPage = "edit-accession?id="+dir+"&archiveID="+archiveID;
+        else
+            resultPage = "browse-top?archiveID="+archiveID;
         try {
             int nDocs = archive.getAllDocs().size();
             AddressBook ab = archive.addressBook;
@@ -50,9 +59,7 @@
             result.put("status", 0);
             result.put ("owner", bestName);
             result.put ("nDocs", nDocs);
-            session.setAttribute("archive", archive);
-            session.setAttribute("userKey", "user"); // always jam in userKey. This is used by Blobs for the attachment wall to generate the photos.rss file
-            session.setAttribute("cacheDir", archive.baseDir);
+            result.put("resultPage", resultPage);
             out.println (result.toString(4));
             return;
         } catch (Exception e) {

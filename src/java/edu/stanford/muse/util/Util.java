@@ -27,6 +27,7 @@
 
 package edu.stanford.muse.util;
 
+import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
 
@@ -174,27 +175,17 @@ public class Util
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b)
+	public static boolean softAssert(boolean b,Log log)
 	{
-		warnIf(!b, "Soft assert failed!");
+		warnIf(!b, "Soft assert failed!",log);
 		return true;
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b, String message)
+	public static boolean softAssert(boolean b, String message, Log log)
 	{
-		warnIf(!b, "Soft assert failed! " + message);
+		warnIf(!b, "Soft assert failed! " + message, log);
 		return true;
-	}
-
-	public static void warnIf(boolean b, String message)
-	{
-		if (b)
-		{
-			System.err.println("REAL WARNING: " + message + "\n");
-			// Thread.dumpStack();
-			breakpoint();
-		}
 	}
 
 	public static void warnIf(boolean b, String message, Log log)
@@ -206,20 +197,21 @@ public class Util
 		}
 	}
 
-	public static void aggressiveWarn(String message, long sleepMillis)
+	public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
-		System.out.println("\n\n\n\n\n");
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println("\n\n\n\n\n\n" + message + "\n\n\n\n\n\n");
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println("\n\n\n\n\n");
+		String errmsg = "\n\n\n\n\n" + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+				"\n\n\n\n\n\n" + message + "\n\n\n\n\n\n" +
+				"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+				"\n\n\n\n\n";
 
+		log.warn(errmsg);
 		if (sleepMillis > 0)
 			try {
 				Thread.sleep(sleepMillis);
 			} catch (Exception e) {
-				Util.print_exception(e);
+			Util.print_exception("Exception in Thread.sleep",e,log);
 			}
+
 	}
 
 	public static void die(String reason)
@@ -1666,7 +1658,7 @@ public class Util
 		return f.delete();
 	}
 
-	public static void deleteDir(String path)
+	public static void deleteDir(String path, Log log)
 	{
 		if (path == null)
 			return;
@@ -1674,10 +1666,10 @@ public class Util
 		if (f.exists())
 		{
 			boolean success = deleteDir(f);
-			warnIf(!success, "Unable to delete file: " + f.getPath());
+			warnIf(!success, "Unable to delete file: " + f.getPath(), log);
 		}
 		else
-			warnIf(true, "Sorry, can't delete path because it doesn't even exist: " + path);
+			warnIf(true, "Sorry, can't delete path because it doesn't even exist: " + path,log);
 	}
 
     static String cleanEmailStuff(String content){

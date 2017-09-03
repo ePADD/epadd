@@ -12,6 +12,8 @@
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="java.util.*" %>
+<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %>
+<%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 <%!
 
@@ -91,12 +93,11 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		System.err.println ("Error: session has timed out, archive is null.");
 		return;
 	}
+	String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	
-	Collection<DatedDocument> allDocs = (Collection) JSPHelper.selectDocs(request, session, true /* only apply to filtered docs */, false);
+	Collection<DatedDocument> allDocs = (Collection) archive.getAllDocs();
 
 	AddressBook addressBook = archive.addressBook;
-	Lexicon lex = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
-	String name = request.getParameter("lexicon");
 
 	Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
 	Date globalStart = p.getFirst();
@@ -118,37 +119,33 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
         ct = NEType.Type.PLACE.getCode();
     else ct = NEType.Type.ORGANISATION.getCode();
 
-    String heading = "", tableURL = "";
+		Lexicon lex;
+		String name = request.getParameter("lexicon");
+
+		String heading = "", tableURL = "";
 	if ("sentiments".equals(view)) {
 		doSentiments = true;
 		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
 		// resolve lexicon based on name in request and existing lex in session.
 		// name overrides lex
 		if (!Util.nullOrEmpty(name)) {
-			if (lex == null || !lex.name.equals(name)) {
 				lex = archive.getLexicon(name);
-				session.setAttribute("lexicon", lex);
-			}
 			// else do nothing, the right lex is already loaded
 		} else {
-			if (lex == null) {
-				// nothing in session, no request param... probably shouldn't happen
-				name = "default";
+				// no request param... probably shouldn't happen, get default lexicon
+				name = Config.DEFAULT_LEXICON;
 				lex = archive.getLexicon(name);
-				session.setAttribute("lexicon", lex);
-			} else
-				name = lex.name;
 		}
 		heading = "Lexicon Graph";
-		tableURL = "lexicon";
+		tableURL = "lexicon?archiveID="+archiveID;
 	} else if ("people".equals(view)) {
 		heading = "Top correspondents graph";
 		doPeople = true;
-		tableURL = "correspondents";
+		tableURL = "correspondents?archiveID="+archiveID;
 	} else if ("entities".equals(view)) {
 		doEntities = true;
 		heading = "Top entities graph (type: " + Util.capitalizeFirstLetter(type) + ")";
-		tableURL = "entities?type=" + type;
+		tableURL = "entities?archiveID="+archiveID+"&type=" + type;
 	}
 	%>
 <html>
@@ -223,7 +220,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 			if (lexiconNames.size() > 1)
 			{
 	%>
-		<script>function changeLexicon() {	window.location = 'graph?view=sentiments&lexicon=' +	$('#lexiconName').val(); }</script>
+		<script>function changeLexicon() {	window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments&lexicon=' +	$('#lexiconName').val(); }</script>
 		Lexicon <select id="lexiconName" onchange="changeLexicon()">
 		<%
 			// common case, only one lexicon, don't show load lexicon

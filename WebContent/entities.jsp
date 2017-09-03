@@ -40,6 +40,7 @@
 
 <%
     String type=request.getParameter("type");
+    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	String et = "";
     Short ct = NEType.Type.PERSON.getCode();
 	if("en_person".equals(type)||"person".equals(type)) {
@@ -58,7 +59,7 @@
 			%>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location = 'graph?view=entities&type=<%=type%>';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
+	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=entities&type=<%=type%>';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
 </div>
 <br/>
 

@@ -4,8 +4,8 @@
 <%@page language="java" import="java.util.*"%>    
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>    
-<%@page language="java" import="edu.stanford.muse.index.*"%>    
-<%   
+<%@page language="java" import="edu.stanford.muse.index.*"%><%@ page import="javax.print.Doc"%><%@ page import="java.util.stream.Collectors"%>
+<%
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
 JSPHelper.setPageUncacheable(response);
 
@@ -24,22 +24,28 @@ boolean append = "1".equals(request.getParameter("append"));
 
 int nMessages = 0;
 Set<Document> docs;
-Archive archive = JSPHelper.getArchive(session);
+Archive archive = JSPHelper.getArchive(request);
 if (archive == null) {
-	JSONObject obj = new JSONObject();
-	obj.put("status", 1);
-	obj.put("error", "No archive in session");
-	out.println (obj);
-	JSPHelper.log.info(obj);
-	return;
+    JSONObject obj = new JSONObject();
+    obj.put("status", 1);
+    obj.put("error", "No archive in session");
+    out.println (obj);
+    JSPHelper.log.info(obj);
+    return;
 }
+String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 
-if (request.getParameter("allDocs") != null)
-	docs = archive.getAllDocsAsSet();
-else if(session.getAttribute("selectDocs")!=null)
-    docs = (Set<Document>)session.getAttribute("selectDocs");
+if(request.getParameter("datasetId")!=null)
+    docs = (Set<Document>) session.getAttribute(request.getParameter("datasetId"));
+else if (request.getParameter("docId")!=null)
+    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId()==request.getParameter("docId");}).collect(Collectors.toSet());
 else
- 	docs = new LinkedHashSet<>(JSPHelper.selectDocs(request, session, false /* onlyFilteredDocs */, false));
+    {
+    assert false : new AssertionError("You tried to apply flags only on a set of documents which is not set yet.");
+    return;
+    }
+
+
 
 if (docs != null)
 {

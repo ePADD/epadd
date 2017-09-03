@@ -12,7 +12,6 @@
 <%@page language="java" import="edu.stanford.muse.webapp.EmailRenderer"%>
 <%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
 <%@page language="java" import="edu.stanford.muse.webapp.NewFilter"%>
-<%@ page import="edu.stanford.muse.webapp.Sessions" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.util.stream.Stream" %>
 <%@ page import="org.apache.poi.hdgf.streams.StringsStream" %>
@@ -72,11 +71,11 @@
 
     //<editor-fold desc="Setup (load archive/prepare session) for public mode- if present" input="request"
     // output="">
-    if (ModeConfig.isPublicMode()) {
+    /*if (ModeConfig.isPublicMode()) {
         // this browse page is also used by Public mode where the following set up may be requried.
         String archiveId = request.getParameter("aId");
         Sessions.loadSharedArchiveAndPrepareSession(session, archiveId);
-    }
+    }*/
     //</editor-fold>
 
     String datasetName;
@@ -109,6 +108,7 @@
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
+    <script>var archiveID = '<%=SimpleSessions.getArchiveIDForArchive(archive)%>';</script> <!-- make the archiveID available to browse.js -->
     <script>var datasetName = '<%=datasetName%>';</script> <!-- make the dataset name available to browse.js -->
     <script src="js/browse.js" type="text/javascript"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
@@ -380,11 +380,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         // now if filter is in effect, we highlight the filter word too
         //as it is a common highlighting information valid for all result documents we add it to
         //commonHLInfo object of outputset by calling appropriate API.
-        NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
+        /*NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
         if (filter != null && filter.isRegexSearch()) {
             outputSet.addCommonHLInfoTerm(filter.get("term"));
         }
-
+        */
         Pair<DataSet, String> pair = null;
         try {
             String sortBy = request.getParameter("sortBy");
@@ -425,7 +425,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
 
         session.setAttribute (datasetName, browseSet);
-        session.setAttribute ("docs-" + datasetName, new ArrayList<>(docs));
+        //session.setAttribute ("docs-" + datasetName, new ArrayList<>(docs));
         out.println (html);
         JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + datasetName);
 

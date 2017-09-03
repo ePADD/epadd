@@ -1,5 +1,5 @@
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.ner.featuregen.FeatureDictionary" %>
+<%@ page import="edu.stanford.muse.ner.featuregen.FeatureUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
@@ -10,6 +10,7 @@
 <%@ page import="com.google.gson.reflect.TypeToken" %>
 <%@ page import="java.lang.reflect.Type" %>
 <%@ page import="edu.stanford.muse.ner.Entity" %>
+<%@include file="../getArchive.jspf" %>
 <!--
 General API to request for entities
 Just navigate to test/entities.jsp to use it
@@ -109,7 +110,6 @@ Options:
                 "\nexclude: " + exc +
                 "\ninclude: " + inc +
                 "\nmaxdoc: " + mds);
-        Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         int di=0;
         for(Document doc: archive.getAllDocs()){

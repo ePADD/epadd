@@ -1182,16 +1182,16 @@ public class AddressBook implements Serializable {
             ci.verify();
     }
 
-    public JSONArray getCountsAsJson(Collection<EmailDocument> docs) {
-        return getCountsAsJson(docs, false /* we don't want to exceptOwner */);
+  /*  public JSONArray getCountsAsJson(Collection<EmailDocument> docs, String archiveID) {
+        return getCountsAsJson(docs, false *//* we don't want to exceptOwner *//*,archiveID);
     }
-
+*/
     /**
      * used primarily by correspondents.jsp
      * // dumps the contacts in docs, and sorts according to sent/recd/mentions
      * // returns an array of (json array of 5 elements:[name, in, out, mentions, url])
      */
-    public JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner) {
+    public JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
         Contact ownContact = getContactForSelf();
         List<Contact> allContacts = sortedContacts((Collection) docs);
         Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
@@ -1249,7 +1249,7 @@ public class AddressBook implements Serializable {
             int contactId = getContactId(c);
             //	out.println ("<a style=\"text-decoration:none;color:inherit;\" href=\"browse?contact=" + contactId + "\">");
             String bestNameForContact = c.pickBestName();
-            String url = "browse?adv-search=1&contact=" + contactId;
+            String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
             String nameToPrint = Util.escapeHTML(Util.ellipsize(bestNameForContact, 50));
             Integer inCount = contactInCount.get(c), outCount = contactOutCount.get(c), mentionCount = contactMentionCount.get(c);
             if (inCount == null)

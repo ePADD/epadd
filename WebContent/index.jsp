@@ -5,10 +5,12 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@include file="getArchive.jspf" %>
 <%
 	JSPHelper.log.info ("epadd v" + Version.version + " is running");
 if (ModeConfig.isAppraisalMode())
 {
+/*
 	Archive archive = JSPHelper.getArchive(session);
 	// try to load default archive if not already present
 	if (archive == null)
@@ -17,6 +19,7 @@ if (ModeConfig.isAppraisalMode())
 		archive = SimpleSessions.prepareAndLoadDefaultArchive(request); // if we don't have an archive and are running in desktop mode, try to load archive from given cachedir or from the default dir
 		JSPHelper.log.info("Default archive = " + archive);
 	}
+*/
 
 	// note: for redirecting, have to use responseRedirectURL, otherwise the session var set above is lost, and archive is loaded all over again.
 	// see http://stackoverflow.com/questions/4464641/java-session-attribute-is-only-in-next-operation

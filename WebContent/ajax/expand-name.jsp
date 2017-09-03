@@ -25,13 +25,16 @@
 <%
 	response.setContentType("application/json; charset=utf-8");
 //	InternalAuthorityAssigner authorities = (InternalAuthorityAssigner)request.getSession().getAttribute("authorities");
-	Archive archive = (Archive)request.getSession().getAttribute("archive");
 	JSONObject result = new JSONObject();
-	if (archive == null){
-		result.put("result", "Session expired? Please reload");
-		response.getWriter().write(result.toString(4));
-		return;
-	}
+    Archive archive = JSPHelper.getArchive(session,request);
+    if (archive == null) {
+        JSONObject obj = new JSONObject();
+        obj.put("status", 1);
+        obj.put("error", "No archive in session");
+        out.println (obj);
+        JSPHelper.log.info(obj);
+        return;
+    }
 	Set<String> ownNames = archive.addressBook.getOwnNamesSet();
 	Set<String> ownAddr = archive.getAddressBook().getOwnAddrs();
 

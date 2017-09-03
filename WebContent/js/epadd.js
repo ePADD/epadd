@@ -53,7 +53,7 @@ epadd.pluralize = function(count, description)
 };
 
 // do a search on the text of the element that was clicked
-epadd.do_search = function(e) {
+epadd.do_search = function(e,archiveID) {
 	var term = $(e.target).text();
 	// if term is not already quoted, quote it now
 	term = term.trim();
@@ -63,12 +63,12 @@ epadd.do_search = function(e) {
 	}
 	// otherwise let term be as is.
 
-	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&term'); // since this function is used from entities page, we don't want to match attachments (?)
+	window.open ('browse?archiveID='+archiveID+'&adv-search=1&term=' + term + '&termBody=on&termSubject=on'); // since this function is used from entities page, we don't want to match attachments (?)
 //	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
 
 // do a search on the text of the element that was clicked
-epadd.do_search_incl_attachments = function(e) {
+epadd.do_search_incl_attachments = function(e,archiveID) {
     var term = $(e.target).text();
     // if term is not already quoted, quote it now
     if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
@@ -78,7 +78,7 @@ epadd.do_search_incl_attachments = function(e) {
     // otherwise let term be as is.
 
     //window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&term'); // since this function is used from entities page, we don't want to match attachments (?)
-	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
+	window.open ('browse?archiveID='+archiveID+'&adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
 
 // fixes field names in account divs in prep for collect_input_fields
@@ -396,11 +396,14 @@ epadd.clearCache = function() {
 //It is advisable to return an ajax object on which any subsequent promise/wait/then can be invoked to chain ajax requests together.
 //Currently only following two functions return such objects because we needed to implement the functionality of closing an archive by
 //stitching together the functionality of saveArchive and unloadArchive.
-epadd.unloadArchive = function() {
+epadd.unloadArchive = function(archiveID) {
 	return $.ajax({
 			type: 'POST',
 			url: "ajax/kill-session.jsp",
 			dataType: "json",
+        	data: {
+                "archiveID": archiveID
+            },
 			success: function(data) {epadd.alert('Archive unloaded successfully!');},
 			error: function(jq, textStatus, errorThrown) { var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
 	});
@@ -408,7 +411,7 @@ epadd.unloadArchive = function() {
 
 
 
-epadd.saveArchive= function(prompt) {
+epadd.saveArchive= function(prompt,archiveID) {
     if(prompt==undefined){
         prompt=true;
     }
@@ -416,6 +419,9 @@ epadd.saveArchive= function(prompt) {
         type: 'POST',
         url: "ajax/save-archive.jsp",
         dataType: "json",
+        data: {
+            "archiveID": archiveID
+        },
         success: function(data) { if(prompt){epadd.alert('Archive saved successfully!')};},
         error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
     });
@@ -434,17 +440,20 @@ epadd.saveAndCloseArchive= function() {
 */
 
 
-epadd.deleteArchive = function(e) {
+epadd.deleteArchive = function(archiveID) {
 	var c = confirm ('Delete the archive? This action cannot be undone!');
 	if (!c)
 		return;
-	var $spinner = $('.spinner', $(e.target));
+	/*var $spinner = $('.spinner', $(e.target));
 	$spinner.addClass('fa-spin'); // revisit this -- fa-spin did not work for loadArchive() after new fa version
-
+	*/
 	$.ajax({
 		type: 'POST',
 		url: "ajax/delete-archive.jsp",
 		dataType: "json",
+        data: {
+            "archiveID": archiveID
+        },
 		success: function(data) { $spinner.removeClass('fa-spin'); epadd.alert('Archive deleted successfully!', function() { window.location.reload(); });},
 		error: function(jq, textStatus, errorThrown) { $spinner.removeClass('fa-spin'); var message = ("Error deleting archive, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace()); epadd.log (message); epadd.alert(message); }
 	});

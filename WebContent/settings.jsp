@@ -1,6 +1,8 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@include file="getArchive.jspf" %>
+
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -71,20 +73,20 @@
 	<br/>
 	<%
 
-	 Archive archive = (Archive)request.getSession().getAttribute("archive");
+		String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	 if (archive!=null) { %>
 		<div id="advanced_options">
 
 		<% if (!ModeConfig.isDiscoveryMode()) { %>
             <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-			    <p><button onclick="window.location='set-images';" class="btn-default" style='cursor:pointer' ><i class="fa fa-picture-o"></i> Set Images</button>
+			    <p><button onclick="window.location='set-images?archiveID=<%=archiveID%>';" class="btn-default" style='cursor:pointer' ><i class="fa fa-picture-o"></i> Set Images</button>
             <% } %>
 
-			<p><button onclick="window.location='bulk-flags?allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set default actions</button>
+			<p><button onclick="window.location='bulk-flags?archiveID=<%=archiveID%>&allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set default actions</button>
 
 			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload'"><i class="fa fa-upload"></i> Set bulk flags</button>
-				<p><button onclick="window.location.href='ner'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
+				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload?archiveID=<%=archiveID%>'"><i class="fa fa-upload"></i> Set bulk flags</button>
+				<p><button onclick="window.location.href='ner?archiveID=<%=archiveID%>'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
 				<%
 				/*
 						int size = archive.getAllDocs().size();
@@ -136,6 +138,7 @@
         <% } %>
 
 	<script>
+/*
 		$("#recompute").click(function(e){
 			// can consider making this is a get_page_with_progress, since it can take a while?
 			var $spinner = $('.fa', $(e.target));
@@ -143,12 +146,17 @@
 
 			$.ajax({
 				url: 'ajax/recomputestats.jsp',
+                data: {
+                    "archiveID": archiveID
+                },
 				success: function(){$spinner.removeClass('fa-spin');},
 				error: function(){$spinner.removeClass('fa-spin');epadd.alert('Unable to compute numbers, sorry!');}
 			});
 			$("#recompute-stat").css('display','block');
 		});
+*/
 
+/*
 		$("#featuresIndex").click(function(e){
 			// can consider making this is a get_page_with_progress, since it can take a while?
 			var $spinner = $('.fa', $(e.target));
@@ -161,9 +169,10 @@
 			});
 			$("#recompute-stat").css('display','block');
 		});
+*/
 
-		$("#unload-archive").click(epadd.unloadArchive);
-		$("#delete-archive").click(epadd.deleteArchive);
+		$("#unload-archive").click(epadd.unloadArchive(<%=archiveID%>));
+		$("#delete-archive").click(epadd.deleteArchive(<%=archiveID%>));
 
         // we assume jq is always loaded onto any page that includes this header
         $('#mode-select').change(function() {

@@ -2,7 +2,7 @@
 <%@page language="java" import="edu.stanford.muse.email.MuseEmailFetcher"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.Accounts"%>
-<%@ page import="edu.stanford.muse.webapp.Sessions" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%
  	JSPHelper.checkContainer(request); // do this early on so we are set up
  request.setCharacterEncoding("UTF-8");
@@ -168,7 +168,7 @@
   	    {
     		// mbox can only be with "desktop" mode, which means its a fixed cache dir (~/.muse/user by default)
     		// consider moving to its own directory under ~/.muse
-    		String mboxFolderCountsCacheDir = Sessions.CACHE_DIR; 
+    		String mboxFolderCountsCacheDir = SimpleSessions.getDefaultCacheDir();
     		JSPHelper.log.info ("getting folders and counts from fetcher #" + accountIdx);
            	// refresh_folders() will update the status and the account's folders div
             m.readFoldersInfos(accountIdx, mboxFolderCountsCacheDir);

@@ -23,12 +23,15 @@
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
 <%@include file="getArchive.jspf" %>
-<%writeProfileBlock(out, archive, "", "Named entity extraction");%>
+<%writeProfileBlock(out, archive, "", "Named entity extraction");
+String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+%>
 <script>
 	function start(){
-		page = "ajax/nertrainandrecognise.jsp";
+        var params = {archiveID: '<%=archiveID%>'};
+        page = "ajax/nertrainandrecognise.jsp";
 		//supplying the ready function to make it not redirect the other page and give us the handle of the response data.  
-		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'));	
+		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'),params);
 	}
 </script>
 <body>

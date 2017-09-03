@@ -11,9 +11,8 @@
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.*"%>
+<%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.index.Archive"%>
 <%//Archive needs to be loaded since NER is archive dependant%>
-<%@include file="../getArchive.jspf" %>
 
 <%
 JSPHelper.setPageUncacheable(response);
@@ -33,6 +32,16 @@ try {
 
 	String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
+    Archive archive = JSPHelper.getArchive(session,request);
+    if (archive == null) {
+        JSONObject obj = new JSONObject();
+        obj.put("status", 1);
+        obj.put("error", "No archive in session");
+        out.println (obj);
+        JSPHelper.log.info(obj);
+        return;
+    }
+
 	//Indexer	indexer = archive.indexer;
 	if (allDocs == null)
 		allDocs = (Collection) archive.getAllDocs();

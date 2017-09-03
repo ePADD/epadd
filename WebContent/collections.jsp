@@ -82,7 +82,7 @@
         JSPHelper.log.info("Reading collections from: "+topDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + topDir);
-        } else {
+        }  else {
           File[] files = topFile.listFiles();
           List<Archive.ProcessingMetadata> foundPMs = new ArrayList<Archive.ProcessingMetadata>();
           for (File f: files)
@@ -115,7 +115,7 @@
     %>
   </div>
   <br/>
-
+c
     <script>
     $(document).ready(function() {
       $('.archive-card').click(function(e) {

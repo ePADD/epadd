@@ -4,12 +4,19 @@
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONObject"%>
 <%@page language="java" %>
 <%
-	Archive archive = JSPHelper.getArchive(session);
 	JSONObject result = new JSONObject();
-      if (archive == null) {
-          result.put("status", 1);
-          result.put("message", "No archive is currently loaded.");
-      } else {
+    Archive archive = JSPHelper.getArchive(session,request);
+    if (archive == null) {
+        JSONObject obj = new JSONObject();
+        obj.put("status", 1);
+        obj.put("error", "No archive in session");
+        out.println (obj);
+        JSPHelper.log.info(obj);
+        return;
+    }
+
+
+	{
       	String baseDir = archive.baseDir;
         if (!session.isNew()) {
             session.removeAttribute("userKey");

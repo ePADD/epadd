@@ -35,13 +35,14 @@
 
 <%
 	AddressBook ab = archive.addressBook;
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "All Correspondents", "");
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location='graph?view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
+	<button class="btn-default" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
 	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-		<button class="btn-default" onclick="window.location='edit-correspondents'"><i class="fa fa-pencil"></i> Edit correspondents</button>
+		<button class="btn-default" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><i class="fa fa-pencil"></i> Edit correspondents</button>
 	<% } %>
 </div>
 <br/>
@@ -58,7 +59,7 @@
 	<%
 		out.flush(); // make sure spinner is seen
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-		JSONArray resultArray = ab.getCountsAsJson(docs, true /* except owner */);
+		JSONArray resultArray = ab.getCountsAsJson(docs, true /* except owner */,archiveID);
 	%>
 	<script>
 	var correspondents = <%=resultArray.toString(4)%>;

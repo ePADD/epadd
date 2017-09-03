@@ -1,6 +1,8 @@
 <%@page import="edu.stanford.muse.ie.EntityFeature"%>
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@include file="../getArchive.jspf" %>
+
 <!DOCTYPE html>
 <!--This JSP is not used anywhere-->
 <html>
@@ -11,10 +13,10 @@
 <body style='text-align:center'>
 <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
-<jsp:include page="css/css.jsp"/>
-<jsp:include page="header.jspf"/>
+<jsp:include page="../css/css.jsp"/>
+<jsp:include page="../header.jspf"/>
 <script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
+<%@include file="../div_status.jspf"%>
 
 <script src="js/jquery.js"></script>
 <script src="js/epadd.js"></script>
@@ -62,12 +64,12 @@
 <hr>
 <h3>Features</h3>
 <%
-	boolean findex = EntityFeature.indexExists(JSPHelper.getArchive(session));
+	boolean findex = EntityFeature.indexExists(archive);
 	if(findex)
 		out.println("<div id='t1'>Features index exists. Click here to recreate the features index <button class='btn-default' onclick='process(\"t1\")'>Recreate</button></div>");
 	else
 		out.println("<div id='t2'>Features index is not created. Please click here to create the features index <button class='btn-default' onclick='process(\"t2\")'>Create</button></div>");
 %>
-<jsp:include page="footer.jsp"/>
+<jsp:include page="../footer.jsp"/>
 </body>
 </html>

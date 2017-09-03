@@ -55,6 +55,7 @@
     <br/>
     <%
 
+        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
         Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
         SearchResult inputSet = new SearchResult(archive,params);
@@ -63,12 +64,12 @@
         SearchResult outputSet = SearchResult.selectDocsForBulkFlags(inputSet);
 
         Set<Document> matchedDocs = outputSet.getDocumentSet();
-        request.setAttribute("selectDocs", matchedDocs);
+      //  request.setAttribute("selectDocs", matchedDocs);
 
         // create a dataset out of the matched docs
         DataSet dataset = new DataSet(matchedDocs, outputSet, datasetName);
         session.setAttribute(datasetName, dataset);
-        session.setAttribute("docs-" + datasetName, new ArrayList<Document>(matchedDocs));
+
     %>
 
     <div style="width:900px;margin-left:170px; position:relative;">
@@ -126,14 +127,15 @@
                 }
 
                 post_data.datasetId = '<%=datasetName%>';
-                var allDocs = '<%=request.getParameter("allDocs")%>';
+                post_data.archiveID = '<%=archiveID%>';
+                <%--var allDocs = '<%=request.getParameter("allDocs")%>';--%>
                 var url = "ajax/applyFlags.jsp";
 
                 $.ajax({
                     type: 'POST',
                     url: url,
                     datatype: 'json',
-                    allDocs: allDocs,
+//                    allDocs: allDocs,
                     data: post_data,
                     success: function (data, textStatus, jqxhr) {
                         fade_spinner_with_delay($spinner);

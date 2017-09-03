@@ -323,7 +323,7 @@
 				t.row.add(jRow).draw();
 			}
 			html = "";
-			featureExists = <%=EntityFeature.indexExists(JSPHelper.getArchive(session))%>;
+			featureExists = <%=EntityFeature.indexExists(archive)%>;
 			if(featureExists==false)
 				html += "<button class='btn-default' onclick='createIndex()'><i class=\"fa fa-tags\"></i> Enable Disambiguation</button><br/> (Initializing this feature may take around 30-60 minutes. Once it completes, authority options will be shown in decreasing order of probability.)<br>";
 			html += "Found "+showing+" possible authority matches in "+total+" entities. You can find " + "<select id='numLoad'><option value='"+(total-showing)+"'>All</option><option value='100'>Next 100</option><option value='10'>Next 10</option></select>"+

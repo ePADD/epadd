@@ -10,9 +10,8 @@
 <%@include file="getArchive.jspf" %>
 <%
 	AddressBook addressBook = archive.addressBook;
-	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
-	if (allDocs == null)
-		allDocs = (Collection) archive.getAllDocs();
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	Collection<EmailDocument> allDocs  = (Collection) archive.getAllDocs();
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>
@@ -87,9 +86,9 @@
 	$(document).ready(function() {
 		$('#sort-order').change(function (e) {
 			if ('alpha' == this.value)
-				window.location = 'edit-correspondents?sort=alphabetical';
+				window.location = 'edit-correspondents?archiveID=<%=archiveID%>&sort=alphabetical';
 			else
-				window.location = 'edit-correspondents';
+				window.location = 'edit-correspondents?archiveID=<%=archiveID%>';
 		});
 	});
 </script>
@@ -97,6 +96,10 @@
 <p>
 <div style="text-align:center">
 <form method="post" action="browse-top">
+	//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
+	//archiveID in all those forms where POST was used to invoke the server page.
+	<input hidden="true" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
+
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
 <textarea name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <%!
@@ -135,7 +138,8 @@ if (self != null)
 
 if (!alphaSort)
 {
-	for (Contact c: addressBook.sortedContacts((Collection) archive.getAllDocs()))
+	List<Contact> contacts = addressBook.sortedContacts((Collection) archive.getAllDocs());
+	for (Contact c: contacts)
 		if (c != self)
 			out.print(dumpForContact(c, ""));
 }

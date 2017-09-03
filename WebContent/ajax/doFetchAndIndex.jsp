@@ -14,7 +14,6 @@
 	// sets up archive in the session at the end
 
 	session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
-
 	boolean cancelled = false;
 	JSONObject result = new JSONObject();
 	String errorMessage = null;
@@ -25,11 +24,14 @@
 	// m can't be null here, the stores should already have been set up inside it
 
 	try {
-		Archive archive = (Archive) session.getAttribute("archive");
-		if (archive == null) {
-			SimpleSessions.prepareAndLoadArchive(m, request);
-			archive = (Archive) session.getAttribute("archive");
+	    Archive archive = JSPHelper.getArchive(session,request);
+        if (archive == null) {
+        	archive = SimpleSessions.prepareAndLoadArchive(m, request);
 		}
+
+		// get archive id for this archive from archive mapper..
+
+        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 
 		// step 1: fetch		
 		Collection<EmailDocument> emailDocs = null;
@@ -78,9 +80,8 @@
 			// if we run out of memory parsing mbox files etc, emailDocs == null is usually the manifestation
 			errorMessage = "You may not be running with enough memory. Please try again with more memory, or on a folder with fewer messages.";
 		} else {
-				session.setAttribute("emailDocs", emailDocs);
-				resultPage = "browse-top";
-				SimpleSessions.saveArchive(session);
+				resultPage = "browse-top?archiveId="+archiveID;
+				SimpleSessions.saveArchive(archive);
 			}
 			try {
 				String aStats = archive.getStats();

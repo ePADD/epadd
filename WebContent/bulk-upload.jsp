@@ -31,7 +31,9 @@
     <jsp:include page="header.jspf"/>
     <jsp:include page="div_filepicker.jspf"/>
 
-<% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");%>
+<% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");
+String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+%>
 
 <br/>
 <br/>
@@ -55,7 +57,7 @@
         <script>
             var fp = new FilePicker($('#filepicker'));
             var submit = function(){
-                window.location = "bulk-flags?filePath="+$("#filePath").val();
+                window.location = "bulk-flags?archiveID=<%=archiveID%>&filePath="+$("#filePath").val();
             }
         </script>
     </div>

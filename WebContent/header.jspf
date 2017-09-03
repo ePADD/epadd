@@ -1,4 +1,6 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <header>
 	<div id="nav1">
 
@@ -25,7 +27,17 @@
 	if (ModeConfig.isDeliveryMode())
 		logo = "images/logo-delivery.png";
 
-	boolean haveArchive = session.getAttribute("archive") != null;
+	boolean haveArchive=false;
+	String archiveID = null;
+	//The following code means haveArchive is false when either archiveID was not passed to the jsp file
+	//or there is no archive in globaDirArchiveMap for the given archiveID (to avoid improper input handling)
+	if(request.getParameter("archiveID")!= null){
+	    if(SimpleSessions.getArchiveForArchiveID(request.getParameter("archiveID"))!=null)
+		{
+		    archiveID = request.getParameter("archiveID");
+		    haveArchive=true;
+		}
+	};
 %>
 	<div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse">
@@ -54,15 +66,15 @@
 
 			// offer the following options only if an archive is actually in the session
 			if (haveArchive) { %>
-				<li style="display:inline"><a href="browse-top">Browse</a></li>
-				<li style="display:inline"><a href="search-query">Search</a></li>
+				<li style="display:inline"><a href="browse-top?archiveID=<%=archiveID%>">Browse</a></li>
+				<li style="display:inline"><a href="search-query?archiveID=<%=archiveID%>">Search</a></li>
 
 				<% if (ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="assign-authorities?type=correspondent">Authorities</a></li>
+					<li style="display:inline"><a href="assign-authorities?archiveID=<%=archiveID%>&type=correspondent">Authorities</a></li>
 				<% } %>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="export">Export</a></li>
+					<li style="display:inline"><a href="export?archiveID=<%=archiveID%>">Export</a></li>
 				<% } %>
 
 			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() ) { %>
@@ -90,11 +102,12 @@
 <!-- 		<li style="display:inline"><a target="_blank" href="http://library.stanford.edu/spc/more-about-us/projects-and-initiatives/epadd-project">About</a></li>  -->	
 		</ul>
         <script>
-            $("#save-archive").click(epadd.saveArchive);
+			var archiveID = <%=archiveID%>
+            $("#save-archive").click(epadd.saveArchive(archiveID));
             $("#close-save-archive").click(function(){
                 //on closing, first save the archive and then unload it.
-                epadd.saveArchive(false).then(function(){
-                    epadd.unloadArchive().then(function(){
+                epadd.saveArchive(false,archiveID).then(function(){
+                    epadd.unloadArchive(archiveID).then(function(){
                          window.location = './collections';
                     });
                 });
@@ -104,7 +117,7 @@
             });
             $("#close-only-archive").click(function(){
                 //on closing, unload it.
-                    epadd.unloadArchive().then(function(){
+                    epadd.unloadArchive(archiveID).then(function(){
                         window.location = './collections';
                     });
 

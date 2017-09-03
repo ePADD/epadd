@@ -10,7 +10,6 @@ import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
-import edu.stanford.muse.webapp.Sessions;
 import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,7 +78,7 @@ public class CrossCollectionSearch {
                 continue;
 
             try {
-                String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Sessions.SESSION_SUFFIX;
+                String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
                 if (!new File(archiveFile).exists())
                     continue;
 
