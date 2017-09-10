@@ -20,7 +20,7 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 
 OS: Windows 7 SP1 / 10, Mac OS X  10.10 / 10.11
 Memory:  8 GB RAM (4 GB RAM allocated to the application by default)
-Browser:  Chrome 50/51, Firefox 47/48 
+Browser:  Chrome 60 or later, Firefox 55 or later
 Windows installations: Java Runtime Environment 8u101 or later required. 
 
 **Installation** 
