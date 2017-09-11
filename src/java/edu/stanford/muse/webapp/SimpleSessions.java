@@ -129,6 +129,8 @@ public class SimpleSessions {
 	/** saves the archive in the current session to the cachedir. note: no blobs saved. */
 	public static boolean saveArchive(String baseDir, String name, Archive archive) throws IOException
 	{
+		log.info("Before saving the archive checking if it is still in good shape");
+		archive.Verify();
 		String dir = baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
 		new File(dir).mkdirs(); // just to be safe
 		String filename = dir + File.separatorChar + name + Sessions.SESSION_SUFFIX;

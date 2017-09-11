@@ -45,7 +45,6 @@ if(archive!=null){
             NER ner = new NER(archive, nerModel);
             session.setAttribute("statusProvider", ner);
             ner.recognizeArchive();
-            ner.recognizeArchive();
             //Here, instead of getting the count of all entities (present in ner.stats object)
             //get the count of only those entities which pass a given thersold.
             //This is to fix a bug where the count of person entities displayed on browse-top.jsp

@@ -850,7 +850,7 @@ public class AddressBook implements Serializable {
 
         for (Contact c : sortedContactsSet)
             if (getContactId(c) < 0)
-                Util.warnIf(true, "Contact has -ve contact id: " + c);
+                Util.warnIf(true, "Contact has -ve contact id: " + c,log);
         return new ArrayList<Contact>(sortedContactsSet);
     }
 
@@ -1024,7 +1024,7 @@ public class AddressBook implements Serializable {
         if (c != null) {
             Integer id = contactIdMap.get(c);
             if (id != null) {
-                Util.softAssert(c.equals(getContact(id)), "Inconsistent mapping to contact ID " + id);
+                Util.softAssert(c.equals(getContact(id)), "Inconsistent mapping to contact ID " + id,log);
                 return id.intValue();
             }
         }

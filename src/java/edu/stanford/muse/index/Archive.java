@@ -454,7 +454,7 @@ public class Archive implements Serializable {
         if (!Util.nullOrEmpty(baseDir)) {
             // delete only indexes, blobs, sessions
             // keep sentiment stuff around
-            Util.deleteDir(baseDir);
+            Util.deleteDir(baseDir,log);
 			/*
 			Util.deleteDir(baseDir + File.separatorChar + INDEXES_SUBDIR);
 			Util.deleteDir(baseDir + File.separatorChar + SESSIONS_SUBDIR); // could
@@ -473,7 +473,7 @@ public class Archive implements Serializable {
         // rootdir is used only for webapp/<user> (piclens etc) we'll get rid of
         // it in future
         if (!Util.nullOrEmpty(rootDir)) {
-            Util.deleteDir(rootDir);
+            Util.deleteDir(rootDir,log);
             new File(rootDir + File.separator).mkdirs();
         }
     }
@@ -500,11 +500,26 @@ public class Archive implements Serializable {
             synchronized (this) {
                 if (allDocsAsSet == null) {
                     allDocsAsSet = new LinkedHashSet<Document>(getAllDocs());
-                    Util.softAssert(allDocs.size() == allDocsAsSet.size());
+                    Util.softAssert(allDocs.size() == allDocsAsSet.size(),log);
                 }
             }
         }
         return allDocsAsSet;
+    }
+
+    public void Verify() {
+        Set<Document> docs = allDocsAsSet;
+        for (Document doc : docs) {
+            try {
+                org.apache.lucene.document.Document ldoc = this.getLuceneDoc(doc.getUniqueId());
+                if (ldoc == null) {
+                    log.warn("Some serious error: For document " + doc + " no lucene doc found");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public int nDocsInCluster(int i) {

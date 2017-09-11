@@ -1385,7 +1385,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		// Iterate through the results:
 
 		// TODO: not very pretty code here to determine dir_name which selects the cache to use
-		Util.softAssert(searcher == isearcher || searcher == isearcher_blob);
+		Util.softAssert(searcher == isearcher || searcher == isearcher_blob,log);
 		String dir_name = searcher == isearcher ? INDEX_NAME_EMAILS : INDEX_NAME_ATTACHMENTS;
 
 		Map<Integer, String> map = dirNameToDocIdMap.get(dir_name);
@@ -1707,7 +1707,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	{
 		TermQuery q = new TermQuery(new Term("docId", docId));
 		TopDocs td = isearcher.search(q, 1); // there must be only 1 doc with this id anyway
-        Util.softAssert(td.totalHits == 0, "Oboy! docId: " + docId + " already present in the index, don't try to add it again!");
+        Util.softAssert(td.totalHits == 0, "Oboy! docId: " + docId + " already present in the index, don't try to add it again!",log);
 	}
 
 	// look up the doc from doc id assigned to it
@@ -1731,18 +1731,29 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 		TermQuery q = new TermQuery(new Term("docId", docId));
 		TopDocs td = searcher.search(q, 1); // there must be only 1 doc with this id anyway
-		Util.softAssert(td.totalHits <= 1, "docId = " + docId + " is not unique. Found: "+td.totalHits+" hits!");
+		Util.softAssert(td.totalHits <= 1, "docId = " + docId + " is not unique. Found: "+td.totalHits+" hits!",log);
 		ScoreDoc[] sd = td.scoreDocs;
 		if (sd.length != 1)
 		{
 			// something went wrong... report it and ignore this doc
-			Util.warnIf(true, "lookup failed for id " + docId);
+			Util.warnIf(true, "lookup failed for id " + docId +": " + sd.length + " documents found for this id",log);
 			return null;
 		}
 
-        if(fieldsToLoad!=null)
-		    return searcher.doc(sd[0].doc, fieldsToLoad);
-        else return searcher.doc(sd[0].doc);
+		org.apache.lucene.document.Document resultdoc = null;
+        if(fieldsToLoad!=null) {
+			resultdoc = searcher.doc(sd[0].doc, fieldsToLoad);
+			if(resultdoc==null) {
+				log.warn("Lucene could not find the document for docid = " + docId + "and field = "+fieldsToLoad.toString());
+			}
+        }
+        else{
+			resultdoc = searcher.doc(sd[0].doc);
+			if(resultdoc==null) {
+				log.warn("Lucene could not find the document for docid = " + docId);
+			}
+		}
+		return  resultdoc;
 	}
 
 	private org.apache.lucene.document.Document getLDocAttachment(String docId) throws IOException{

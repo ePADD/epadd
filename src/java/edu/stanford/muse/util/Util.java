@@ -174,27 +174,17 @@ public class Util
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b)
+	public static boolean softAssert(boolean b,Log log)
 	{
-		warnIf(!b, "Soft assert failed!");
+		warnIf(!b, "Soft assert failed!",log);
 		return true;
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b, String message)
+	public static boolean softAssert(boolean b, String message,Log log)
 	{
-		warnIf(!b, "Soft assert failed! " + message);
+		warnIf(!b, "Soft assert failed! " + message,log);
 		return true;
-	}
-
-	public static void warnIf(boolean b, String message)
-	{
-		if (b)
-		{
-			System.err.println("REAL WARNING: " + message + "\n");
-			// Thread.dumpStack();
-			breakpoint();
-		}
 	}
 
 	public static void warnIf(boolean b, String message, Log log)
@@ -206,18 +196,20 @@ public class Util
 		}
 	}
 
-	public static void aggressiveWarn(String message, long sleepMillis)
+	public static void aggressiveWarn(String message, long sleepMillis,Log log)
 	{
-		System.out.println("\n\n\n\n\n");
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println("\n\n\n\n\n\n" + message + "\n\n\n\n\n\n");
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println("\n\n\n\n\n");
+		String msg = "\n\n\n\n\n" +
+		"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+		"\n\n\n\n\n\n" + message + "\n\n\n\n\n\n" +
+		"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+		"\n\n\n\n\n";
 
+		log.warn(msg);
 		if (sleepMillis > 0)
 			try {
 				Thread.sleep(sleepMillis);
 			} catch (Exception e) {
+			log.warn("Exception thrown at Thread.sleep");
 				Util.print_exception(e);
 			}
 	}
@@ -1311,6 +1303,7 @@ public class Util
 	 * ...
 	 * nov2007-nov2008
 	 */
+/*
 	public static List<Pair<Calendar, Calendar>> getSlidingMonthlyIntervalsForward(Calendar start, Calendar end, int windowSizeInMonths, int stepSizeInMonths)
 	{
 		List<Pair<Calendar, Calendar>> intervals = new ArrayList<Pair<Calendar, Calendar>>();
@@ -1319,7 +1312,7 @@ public class Util
 
 		if (start.after(end)) // error
 		{
-			softAssert(false);
+			softAssert(false,log);
 			return intervals;
 		}
 
@@ -1355,6 +1348,7 @@ public class Util
 		}
 		return intervals;
 	}
+*/
 
 	/**
 	 * like forward, but er... backward.
@@ -1646,14 +1640,14 @@ public class Util
 	// Returns true if all deletions were successful.
 	// If a deletion fails, the method stops attempting to delete and returns
 	// false.
-	public static boolean deleteDir(File f)
+	public static boolean deleteDir(File f,Log log)
 	{
 		if (f.isDirectory())
 		{
 			String[] children = f.list();
 			for (int i = 0; i < children.length; i++)
 			{
-				boolean success = deleteDir(new File(f, children[i]));
+				boolean success = deleteDir(new File(f, children[i]),log);
 				if (!success)
 				{
 					System.err.println("warning: failed to delete file " + f);
@@ -1666,18 +1660,18 @@ public class Util
 		return f.delete();
 	}
 
-	public static void deleteDir(String path)
+	public static void deleteDir(String path, Log log)
 	{
 		if (path == null)
 			return;
 		File f = new File(path);
 		if (f.exists())
 		{
-			boolean success = deleteDir(f);
-			warnIf(!success, "Unable to delete file: " + f.getPath());
+			boolean success = deleteDir(f,log);
+			warnIf(!success, "Unable to delete file: " + f.getPath(),log);
 		}
 		else
-			warnIf(true, "Sorry, can't delete path because it doesn't even exist: " + path);
+			warnIf(true, "Sorry, can't delete path because it doesn't even exist: " + path,log);
 	}
 
     static String cleanEmailStuff(String content){

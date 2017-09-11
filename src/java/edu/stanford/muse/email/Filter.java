@@ -176,7 +176,7 @@ public class Filter implements Serializable {
 		if (keywords != null && keywords.size() > 0)
 		{
 			log.warn("Filtering by keywords during fetch&index is currently disabled");
-			Util.softAssert(false);
+			Util.softAssert(false,log);
 //			String s = d.getContents().toLowerCase();
 //			// check for all keywords, if any absent return false
 //			for (String keyword: keywords)

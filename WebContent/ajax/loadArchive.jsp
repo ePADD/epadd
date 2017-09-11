@@ -44,7 +44,11 @@
         }
 
         try {
-            int nDocs = archive.getAllDocs().size();
+            //check if the loaded archive satisfy the verification condtiions. Call verify method on archive.
+            JSPHelper.log.info("After reading the archive checking if it is in good shape");
+		    archive.Verify();
+
+		    int nDocs = archive.getAllDocs().size();
             AddressBook ab = archive.addressBook;
             String bestName = ab.getBestNameForSelf();
             result.put("status", 0);
