@@ -1385,7 +1385,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		// Iterate through the results:
 
 		// TODO: not very pretty code here to determine dir_name which selects the cache to use
-		Util.softAssert(searcher == isearcher || searcher == isearcher_blob);
+		Util.softAssert(searcher == isearcher || searcher == isearcher_blob,log);
 		String dir_name = searcher == isearcher ? INDEX_NAME_EMAILS : INDEX_NAME_ATTACHMENTS;
 
 		Map<Integer, String> map = dirNameToDocIdMap.get(dir_name);
@@ -1707,7 +1707,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	{
 		TermQuery q = new TermQuery(new Term("docId", docId));
 		TopDocs td = isearcher.search(q, 1); // there must be only 1 doc with this id anyway
-        Util.softAssert(td.totalHits == 0, "Oboy! docId: " + docId + " already present in the index, don't try to add it again!");
+        Util.softAssert(td.totalHits == 0, "Oboy! docId: " + docId + " already present in the index, don't try to add it again!",log);
 	}
 
 	// look up the doc from doc id assigned to it
@@ -1799,7 +1799,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
         } catch (Exception e) {
             log.warn("Exception " + e + " trying to read field 'body/body_original': " + Util.ellipsize(Util.stackTrace(e), 350));
             //@TODO
-			Util.print_exception();
+			Util.print_exception("Exception Trying to read field body/body_original",e,log);
             contents = null;
         }
 

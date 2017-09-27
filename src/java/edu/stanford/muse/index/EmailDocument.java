@@ -129,7 +129,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		// compare the hashCode for convenience, but not 100% correct. TODO.
 		result = hashCode() - other.hashCode();
 		if (result == 0)
-			assert(Util.softAssert(equals(other), "same hashCode/compareTo==0 should imply equals==true"));
+			assert(Util.softAssert(equals(other), "same hashCode/compareTo==0 should imply equals==true",log));
 		return result;
 	}
 

@@ -160,14 +160,15 @@ public class JSPHelper {
 		if(archiveID==null){
 			//if only single archive is present in the map then return that
 			//else return null after logging this information.
-			Archive onlyleft = SimpleSessions.getDefaultArchiveFromGlobalArchiveMap();
-			if(onlyleft==null){
-				log.debug("No archive present for the given archive ID. No default archive could be loaded");
+//			Archive onlyleft = SimpleSessions.getDefaultArchiveFromGlobalArchiveMap();
+//			if(onlyleft==null){
+				log.debug("No archive ID parameter passed from the client");
+			//present for the given archive ID. No default archive could be loaded");
 				return null;
-			}else{
-				log.debug("No archiveID parameter passed from the client. Loading the default archive.");
-				return onlyleft;
-			}
+//			}else{
+//				log.debug("No archiveID parameter passed from the client. Loading the default archive.");
+//				return onlyleft;
+//			}
 		}
 		return SimpleSessions.getArchiveForArchiveID(archiveID);
 	}

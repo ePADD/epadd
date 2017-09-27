@@ -53,7 +53,7 @@ public class SessionListener implements HttpSessionListener {
 			Archive archive = (Archive) session.getAttribute("archive");
 			if (archive != null)
 				try {
-					SimpleSessions.saveArchive(session);
+					SimpleSessions.saveArchive(archive);
 				} catch (Exception e) {
 					Util.print_exception(e, log);
 					return;

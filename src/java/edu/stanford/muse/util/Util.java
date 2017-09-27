@@ -1311,7 +1311,7 @@ public class Util
 
 		if (start.after(end)) // error
 		{
-			softAssert(false);
+			softAssert(false,JSPHelper.log);
 			return intervals;
 		}
 

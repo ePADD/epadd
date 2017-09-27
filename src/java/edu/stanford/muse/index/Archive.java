@@ -454,7 +454,7 @@ public class Archive implements Serializable {
         if (!Util.nullOrEmpty(baseDir)) {
             // delete only indexes, blobs, sessions
             // keep sentiment stuff around
-            Util.deleteDir(baseDir);
+            Util.deleteDir(baseDir,log);
 			/*
 			Util.deleteDir(baseDir + File.separatorChar + INDEXES_SUBDIR);
 			Util.deleteDir(baseDir + File.separatorChar + SESSIONS_SUBDIR); // could
@@ -473,11 +473,23 @@ public class Archive implements Serializable {
         // rootdir is used only for webapp/<user> (piclens etc) we'll get rid of
         // it in future
         if (!Util.nullOrEmpty(rootDir)) {
-            Util.deleteDir(rootDir);
+            Util.deleteDir(rootDir,log);
             new File(rootDir + File.separator).mkdirs();
         }
     }
 
+    /** adds alternateEmailAddrs if specified in the request to the session. alternateEmailAddrs are simply appended to. */
+    public void updateUserInfo(String name, String archiveTitle, String alteranteEmailAddrs)
+    {
+        // set up the owner email addrs from the email addrs saved in the fetcher's stores
+        if (!Util.nullOrEmpty(name))
+            this.addOwnerName(name);
+        if (!Util.nullOrEmpty(archiveTitle))
+            this.archiveTitle = archiveTitle;
+
+        if (!Util.nullOrEmpty(alteranteEmailAddrs))
+            this.addOwnerEmailAddrs(EmailUtils.parseAlternateEmailAddrs(alteranteEmailAddrs));
+    }
     /**
      * returns the final, sorted, deduped version of allDocs that this driver
      * worked on in its last run
@@ -500,7 +512,7 @@ public class Archive implements Serializable {
             synchronized (this) {
                 if (allDocsAsSet == null) {
                     allDocsAsSet = new LinkedHashSet<Document>(getAllDocs());
-                    Util.softAssert(allDocs.size() == allDocsAsSet.size());
+                    Util.softAssert(allDocs.size() == allDocsAsSet.size(),log);
                 }
             }
         }

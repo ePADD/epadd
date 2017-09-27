@@ -69,7 +69,7 @@ public class DataSet {
     /* returns html for doc i.
     Caches the html once computed (Removed during refactoring. It was done in variable called pages).
      In the front end jog plugin also does caching so removed server sided caching for simplicity*/
-    public String getPage(int i, boolean IA_links, boolean inFull, boolean debug) {
+    public String getPage(int i, boolean IA_links, boolean inFull, boolean debug,String archiveID) {
 //		if (authorisedEntities == null && !ModeConfig.isPublicMode()) {
 //			String filename = archive.baseDir + java.io.File.separator + edu.stanford.muse.Config.AUTHORITIES_FILENAME;
 //			try {
@@ -90,7 +90,7 @@ public class DataSet {
                 // we are assuming one page per doc for now. (true for
                 // emails)
                 Pair<String, Boolean> htmlResut = EmailRenderer.htmlForDocument(docs.get(i), searchResult, datasetTitle,
-                         authorisedEntities, IA_links, inFull, debug);
+                         authorisedEntities, IA_links, inFull, debug,archiveID);
                 boolean overflow = htmlResut.second;
                 Util.ASSERT(!(inFull && overflow));
                 pageContent = htmlResut.first

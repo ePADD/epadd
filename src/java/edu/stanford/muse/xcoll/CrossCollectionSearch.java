@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 public class CrossCollectionSearch {
     public static Log log = LogFactory.getLog(CrossCollectionSearch.class);
 
-    public static List<Archive.ProcessingMetadata> archiveMetadatas = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
+  /*  public static List<Archive.ProcessingMetadata> archiveMetadatas = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
     public static List<String> archiveDirs = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
-
+*/
     private static Multimap<String, EntityInfo> cTokenToInfos; // this token -> infos mapping is intended to make the lookup more efficient. Otherwise, we'd have to go through all the infos for looking up a string.
     private static Set<String> allCEntities = new LinkedHashSet<>(); // this token -> infos mapping is intended to make the lookup more efficient. Otherwise, we'd have to go through all the infos for looking up a string.
 
@@ -90,13 +90,14 @@ public class CrossCollectionSearch {
 
                 log.info ("Loaded archive from " + f.getAbsolutePath());
 
-                Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
+                /*Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
                 archiveMetadatas.add (pm);
                 archiveDirs.add (f.getName());
-
+*/
                 log.info ("Loaded archive metadata from " + f.getAbsolutePath());
 
                 // process all docs in this archive to set up centityToInfo map
+                String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
                 Map<String, EntityInfo> centityToInfo = new LinkedHashMap<>();
                 {
                     AddressBook ab = archive.addressBook;
@@ -138,7 +139,7 @@ public class CrossCollectionSearch {
                             EntityInfo ei = centityToInfo.get(centity);
                             if (ei == null) {
                                 ei = new EntityInfo();
-                                ei.archiveNum = archiveNum;
+                                ei.archiveID = archiveID;
                                 ei.displayName = entity;
                                 centityToInfo.put(centity, ei);
                             }
@@ -216,15 +217,15 @@ public class CrossCollectionSearch {
      * entity="Mary" will not return a name like MaryLou in any case.
      **/
 
-    public static Multimap<Integer, EntityInfo> search (String entity) {
+    public static Multimap<String, EntityInfo> search (String entity) {
 
         // first get all infos that match the entity
         Collection<EntityInfo> infos = getInfosFor(entity);
 
         // break them down by archiveNum
-        Multimap<Integer, EntityInfo> archiveNumToInfos = LinkedHashMultimap.create();
+        Multimap<String, EntityInfo> archiveNumToInfos = LinkedHashMultimap.create();
         for (EntityInfo info: infos)
-            archiveNumToInfos.put (info.archiveNum, info);
+            archiveNumToInfos.put (info.archiveID, info);
 
         return archiveNumToInfos;
     }

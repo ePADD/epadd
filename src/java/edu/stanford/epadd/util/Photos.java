@@ -67,7 +67,6 @@ public class Photos
 		}
 		else
 		{ //get archiveID from the request parameter and then get the archive. It must be present
-			//use its baseDir.
 			Archive archive = JSPHelper.getArchive(request);
 			assert archive!=null: new AssertionError("If no mode is set then the archiveID must be passed to serveImage.jsp");
 			baseDir = archive.baseDir;
