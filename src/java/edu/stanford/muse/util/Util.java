@@ -1667,7 +1667,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		File f = new File(path);
 		if (f.exists())
 		{
-		boolean success = deleteDir(f);
+		boolean success = deleteDir(f,log);
 			warnIf(!success, "Unable to delete file: " + f.getPath(), log);
 		}
 		else

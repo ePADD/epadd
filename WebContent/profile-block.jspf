@@ -2,7 +2,7 @@
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.IOException" %>
-<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %><%!
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %><%!
   // this profile block will go onto pretty much every page after the archive is loaded
   static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields)
   {
