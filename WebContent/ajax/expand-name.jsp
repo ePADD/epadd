@@ -26,7 +26,7 @@
 	response.setContentType("application/json; charset=utf-8");
 //	InternalAuthorityAssigner authorities = (InternalAuthorityAssigner)request.getSession().getAttribute("authorities");
 	JSONObject result = new JSONObject();
-    Archive archive = JSPHelper.getArchive(session,request);
+    Archive archive = JSPHelper.getArchive(request);
     if (archive == null) {
         JSONObject obj = new JSONObject();
         obj.put("status", 1);

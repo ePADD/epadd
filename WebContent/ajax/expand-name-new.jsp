@@ -8,7 +8,7 @@
 <%
 	response.setContentType("application/json; charset=utf-8");
 
-	Archive archive = JSPHelper.getArchive(session,request);
+	Archive archive = JSPHelper.getArchive(request);
 	if (archive == null) {
 	    JSONObject obj = new JSONObject();
 	    obj.put("status", 1);

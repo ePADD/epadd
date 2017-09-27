@@ -23,7 +23,7 @@
 
     int MAX_SUGGESTIONS = HTMLUtils.getIntParam(request, "MAX_SUGGESTIONS", 5);
 
-    Archive archive = JSPHelper.getArchive(session,request);
+    Archive archive = JSPHelper.getArchive(request);
     if (archive == null) {
         obj.put("status", 1);
         obj.put("error", "No archive in session");

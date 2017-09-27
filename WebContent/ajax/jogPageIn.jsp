@@ -13,6 +13,8 @@
 	DataSet dataset = (DataSet) JSPHelper.getSessionAttribute(session, datasetId);
 	boolean error = (dataset == null);
 
+	String archiveID = request.getParameter("archiveID");
+
 	int startPage = HTMLUtils.getIntParam(request, "startPage", -1);
 	int endPage = HTMLUtils.getIntParam(request, "endPage", -1);
 	boolean inFull = HTMLUtils.getIntParam(request, "inFull", 0) != 0;
@@ -34,7 +36,7 @@
 		{
 			try {
 				out.println ("<script>$('.qtip').remove()</script>");
-				out.println (dataset.getPage(i, IA_links, inFull, debug));
+				out.println (dataset.getPage(i, IA_links, inFull, debug,archiveID));
 				out.println ("\n");
                 out.println ("<script src=\"js/epadd.js\"></script>");
 				out.println ("<script>initialiseqtip()</script>");

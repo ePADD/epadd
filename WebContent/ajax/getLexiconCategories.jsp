@@ -13,7 +13,7 @@
 
 	// which lexicon? first check if url param is present, then check if url param is specified
 	JSONObject result = new JSONObject();
-    Archive archive = JSPHelper.getArchive(session,request);
+    Archive archive = JSPHelper.getArchive(request);
     if (archive == null) {
         JSONObject obj = new JSONObject();
         obj.put("status", 1);

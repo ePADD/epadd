@@ -32,7 +32,7 @@ try {
 
 	String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
-    Archive archive = JSPHelper.getArchive(session,request);
+    Archive archive = JSPHelper.getArchive(request);
     if (archive == null) {
         JSONObject obj = new JSONObject();
         obj.put("status", 1);
