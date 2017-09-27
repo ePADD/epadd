@@ -1414,7 +1414,7 @@ body {
 	height: 75px;
 	width: 75px;
 	background-color: #0175bc;
-	background-image: url('../serveImage.jsp?file=profilePhoto.png');
+	/*background-image: url('../serveImage.jsp?file=profilePhoto.png');*/
 	border-radius: 50%;
 	display: inline-block;
 	background-size: 80px 80px; /* deliberately kept slightly larger */
