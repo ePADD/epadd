@@ -24,11 +24,14 @@
 	// m can't be null here, the stores should already have been set up inside it
 
 	try {
-	    Archive archive = JSPHelper.getArchive(session,request);
+	    /* Commenting out the following lines for supporting archiveID. What if there is an archive in
+	    the globalDirMap but we do not want to add mails to that?
+	    Archive archive = JSPHelper.getArchive(request);
         if (archive == null) {
         	archive = SimpleSessions.prepareAndLoadArchive(m, request);
-		}
+		}*/
 
+	    Archive archive = SimpleSessions.prepareAndLoadArchive(m, request);
 		// get archive id for this archive from archive mapper..
 
         String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
@@ -47,23 +50,25 @@
 		// rewrite for efficiency if slant becomes important.
 		m.setupFetchers(-1);
 
-		// set up the owner email addrs from the email addrs saved in the fetcher's stores
-		String ownerName = (String) JSPHelper.getSessionAttribute(session, "ownerName");
-		if (!Util.nullOrEmpty(ownerName))
-			archive.addOwnerName(ownerName);
-		String archiveTitle = (String) JSPHelper.getSessionAttribute(session, "archiveTitle");
-		if (!Util.nullOrEmpty(archiveTitle))
-			archive.archiveTitle = archiveTitle;
+		//get ownername, title, alternateemailaddr from the request..
+	    String ownerName = request.getParameter("name");
 
-		String altEmailAddrs = (String) JSPHelper.getSessionAttribute(session, "alternateEmailAddrs");
+		String archiveTitle = request.getParameter("archiveTitle");
 
-		for (EmailStore store : m.emailStores)
-			if (!(Util.nullOrEmpty(store.emailAddress)))
-				archive.addOwnerEmailAddr(store.emailAddress);
-		if (!Util.nullOrEmpty(altEmailAddrs))
-			archive.addOwnerEmailAddrs(EmailUtils.parseAlternateEmailAddrs(altEmailAddrs));
+		String alt = request.getParameter("alternateEmailAddrs");
+		if (Util.nullOrEmpty(alt))
+		    alt = (String) JSPHelper.getSessionAttribute(session, "alternateEmailAddrs");
 
+		// could also uniquify the emailAddrs here
+
+		archive.updateUserInfo(ownerName,archiveTitle,alt);
+
+        for (EmailStore store : m.emailStores)
+            if (!(Util.nullOrEmpty(store.emailAddress)))
+                archive.addOwnerEmailAddr(store.emailAddress);
 		// the emailStores session var has done its job (check login info and hold on to stores till MEF can take over) and can be removed		
+    	session.removeAttribute("museEmailFetcher");
+
 
 		// this is a special flag used during screening time to read only headers without the message bodies
 		boolean downloadMessageText = !"false".equals(request.getParameter("downloadMessages"));

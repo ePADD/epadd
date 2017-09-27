@@ -72,7 +72,7 @@ public class Accounts {
 		// note: the same params get posted with every accountNum
 		// we'll update for all account nums, because sometimes account #0 may not be used, only #1 onwards. This should be harmless.
 		// we used to do only altemailaddrs, but now also include the name.
-		updateUserInfo(request);
+		//updateUserInfo(request);
 
 		String accountType = request.getParameter("accountType" + accountNum);
 		if (Util.nullOrEmpty(accountType))
@@ -241,29 +241,5 @@ public class Accounts {
 		}
 		return result;
 	}
-	
-	/** adds alternateEmailAddrs if specified in the request to the session. alternateEmailAddrs are simply appended to. */
-	public static void updateUserInfo(HttpServletRequest request)
-	{
-		HttpSession session = request.getSession();
-		
-		String ownerName = request.getParameter("name");
-		if (!Util.nullOrEmpty(ownerName)) 
-			session.setAttribute("ownerName", ownerName);
 
-		String archiveTitle = request.getParameter("archiveTitle");
-		if (!Util.nullOrEmpty(archiveTitle))
-			session.setAttribute("archiveTitle", archiveTitle);
-
-		String alt = request.getParameter("alternateEmailAddrs");
-		if (Util.nullOrEmpty(alt))
-			return;
-
-		String sessionAlt = (String) JSPHelper.getSessionAttribute(session, "alternateEmailAddrs");
-		if (Util.nullOrEmpty(sessionAlt))
-			session.setAttribute("alternateEmailAddrs", alt); // this will be removed when we fetch and index email
-		else
-			session.setAttribute("alternateEmailAddrs", sessionAlt + " " + alt);
-		// could also uniquify the emailAddrs here
-	}
 }
