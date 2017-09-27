@@ -5,6 +5,17 @@
 <%@page language="java" %>
 <%
 	JSONObject result = new JSONObject();
+
+	result.put("status", 0);
+	result.put("message", "Archive deleted");
+	out.println (result.toString());
+    //With the introduction of archiveID we decide not to delete the archive
+    //Therefore immediately return from here.
+	return;
+	//However in future we can decide upon the action
+
+
+/*
     Archive archive = JSPHelper.getArchive(session,request);
     if (archive == null) {
         JSONObject obj = new JSONObject();
@@ -37,5 +48,6 @@
         result.put("message", "Archive deleted.");
     }
 	out.println (result.toString());
+*/
 //	session.removeAttribute("mode");
 %>
