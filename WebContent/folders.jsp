@@ -12,8 +12,9 @@
  	response.sendRedirect("index?noredirect=");
  	return;
  }
- 		
- Accounts.updateUserInfo(request);
+
+ //Moved the method updateUserInfo to archive
+ //Accounts.updateUserInfo(request);
  // re-read accounts again only if we don't already have them in this session.
  // later we might want to provide a way for users to refresh the list of folders.
  	
@@ -67,10 +68,10 @@
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 
 <%
-	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
+	/*Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (archive != null) {
 		writeProfileBlock(out, archive, "", "Add email from folders");
-	}
+	}*/
 %>
 
 

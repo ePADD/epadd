@@ -119,13 +119,12 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
         ct = NEType.Type.PLACE.getCode();
     else ct = NEType.Type.ORGANISATION.getCode();
 
-		Lexicon lex;
+		Lexicon lex=null;
 		String name = request.getParameter("lexicon");
 
 		String heading = "", tableURL = "";
 	if ("sentiments".equals(view)) {
 		doSentiments = true;
-		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
 		// resolve lexicon based on name in request and existing lex in session.
 		// name overrides lex
 		if (!Util.nullOrEmpty(name)) {
@@ -136,6 +135,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 				name = Config.DEFAULT_LEXICON;
 				lex = archive.getLexicon(name);
 		}
+		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
 		heading = "Lexicon Graph";
 		tableURL = "lexicon?archiveID="+archiveID;
 	} else if ("people".equals(view)) {
@@ -263,6 +263,8 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		graph_is_empty = true;
 		if (!Util.nullOrEmpty(allDocs))
 		{
+		    //lex can never be null if doSentiments is true. Java was not able to infer this relation
+			//hence giving error that lex is uninitialized.
 			Map<String, Collection<Document>> map = (Map) lex.getEmotions(archive.indexer, (Collection) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
 			for (String key: map.keySet())
 			{

@@ -6,6 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.Config"%>
+<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %>
 
 <html>
 <head>
@@ -91,7 +92,7 @@
               continue;
 
             String id = f.getName();
-            String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Sessions.SESSION_SUFFIX;
+            String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
 
             if (!new File(archiveFile).exists())
               continue;

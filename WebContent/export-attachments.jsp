@@ -34,7 +34,9 @@
 <body>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Export');</script>
-<% 	AddressBook addressBook = archive.addressBook;
+<%
+    String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+    AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "", "Export archive");
 	//get the options that were displayed for attachment types. This will be used to select attachment extensions if the option 'other'

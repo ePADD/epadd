@@ -98,7 +98,7 @@
 <form method="post" action="browse-top">
 	//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
 	//archiveID in all those forms where POST was used to invoke the server page.
-	<input hidden="true" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
+	<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
 
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
 <textarea name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">

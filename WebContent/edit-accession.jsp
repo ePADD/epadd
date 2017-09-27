@@ -53,7 +53,7 @@
 		//archiveID in all those forms where POST was used to invoke the server page.
 		<div class="div-input-field">
 			<div class="input-field">
-				<input hidden="true" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>
+				<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>
 			</div>
 		</div>
 

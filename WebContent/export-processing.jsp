@@ -26,6 +26,7 @@
 	<jsp:include page="div_filepicker.jspf"/>
 	<script>epadd.nav_mark_active('Export');</script>
 	<%
+		String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 		AddressBook ab = archive.addressBook;
 		writeProfileBlock(out, archive, "", "Export messages");
 	%>
@@ -55,7 +56,7 @@
 	<br/>
 	<script>
 		function submit() {
-			window.location = 'export-complete-processing?dir=' + $('#filepicker .dir').val();
+			window.location = 'export-complete-processing?archiveID=<%=archiveID%>&dir=' + $('#filepicker .dir').val();
 		}
 		new FilePicker($('#filepicker'));
 	</script>

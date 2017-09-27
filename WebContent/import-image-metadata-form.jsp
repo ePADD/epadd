@@ -68,18 +68,19 @@
 <body style="background-color:white;">
 <jsp:include page="header.jspf"/>
 <jsp:include page="div_filepicker.jspf"/>
+<%@include file="getArchive.jspf" %>
 
 <script>epadd.nav_mark_active('TODO');</script>
 
-<%@include file="profile-block.jspf"%>
 
 <%
-    Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
-    if (archive != null) {
+//    Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
+//    if (archive != null) {
+String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         AddressBook ab = archive.addressBook;
         Set<String> addrs = ab.getOwnAddrs();
         writeProfileBlock(out, archive, "", "Export archive");
-    }
+//    }
 
     if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 %>
@@ -118,7 +119,7 @@ Error: Export is only available in processing or appraisal modes!
     <b>Import image attachment metadata</b>
     <br/>
     <br/>
-    <div onclick="window.location='export-review?type=transfer'" class="mini-box">
+    <div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=transfer'" class="mini-box">
         <div class="review-messages">
             <i class="icon-browsetoparrow"></i><br/>View
         </div>
@@ -130,7 +131,7 @@ Error: Export is only available in processing or appraisal modes!
         </div>
     </div>
 
-    <div onclick="window.location='export-review?type=annotated'" class="mini-box">
+    <div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=annotated'" class="mini-box">
         <div class="review-messages">
             <i class="icon-browsetoparrow"></i><br/>View
         </div>
@@ -181,7 +182,7 @@ Error: Export is only available in processing or appraisal modes!
             var baseUrl = 'import-image-metadata-result.jsp';
             var dir = $('.dir', $('#import-image-metadata')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?dir=' + dir;
+                window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
         });
     </script>
 

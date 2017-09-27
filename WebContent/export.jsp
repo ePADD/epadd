@@ -7,6 +7,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -66,7 +67,8 @@
 <%@include file="profile-block.jspf"%>
 
 <%
-Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
+Archive archive = JSPHelper.getArchive(request);
+String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 String bestName = "";
 String bestEmail = "";
 if (archive != null) {
@@ -104,7 +106,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 	<b>Review messages</b>
     <br/>
 	<br/>
-	<div onclick="window.location='export-review?type=transfer'" class="mini-box">
+	<div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=transfer'" class="mini-box">
         <div class="review-messages">
             <i class="icon-browsetoparrow"></i><br/>View
         </div>
@@ -117,7 +119,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         </div>
     </div>
 
-	<div onclick="window.location='export-review?type=annotated'" class="mini-box">
+	<div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=annotated'" class="mini-box">
         <div class="review-messages">
             <i class="icon-browsetoparrow"></i><br/>View
         </div>
@@ -130,7 +132,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         </div>
 	</div>
 
-	<div onclick="window.location='export-review?type=transferWithRestrictions'" class="mini-box">
+	<div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=transferWithRestrictions'" class="mini-box">
         <div class="review-messages">
             <i class="icon-browsetoparrow"></i><br/>View
         </div>
@@ -143,7 +145,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         </div>
 	</div>
 
-	<div onclick="window.location='export-review?type=doNotTransfer'" class="mini-box" style="margin-right:0px">
+	<div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=doNotTransfer'" class="mini-box" style="margin-right:0px">
         <div class="review-messages">
             <i class="icon-browsetoparrow"></i><br/>View
         </div>
@@ -194,7 +196,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     var baseUrl = 'export-mbox';
                     var dir = $('.dir', $('#export-mbox')).val();
                     if (dir && dir.length > 0)
-                        window.location = baseUrl + '?dir=' + dir;
+                        window.location = baseUrl + '?dir=' + dir+"&archiveID="+<%=archiveID%>;
                 });
                 </script>
             <% } %>
@@ -287,7 +289,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     var baseUrl = 'export-attachments';
                     var dir = $('.dir', $('#export-attach')).val();
                     if (dir && dir.length > 0)
-                        window.location = baseUrl + '?dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
+                        window.location = baseUrl + '?archiveID='+ <%=archiveID%> +'&dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
                 });
             </script>
 
@@ -325,7 +327,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var baseUrl = 'export-headers';
             var dir = $('.dir', $button.closest('.panel')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?exportType=csv&dir=' + dir;
+                window.location = baseUrl + '?archiveID=' + <%=archiveID%> + '&exportType=csv&dir=' + dir;
         });
     </script>
     <% } %>
@@ -360,7 +362,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var baseUrl = 'export-authorities';
             var dir = $('.dir', $button.closest('.panel')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?exportType=csv&dir=' + dir;
+                window.location = baseUrl + '?archiveID=' + <%=archiveID%> + '&exportType=csv&dir=' + dir;
         });
         </script>
     <% } %>
@@ -386,13 +388,13 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var baseUrl = '<%=ModeConfig.isProcessingMode() ? "export-complete-processing":"export-complete"%>';
             var dir = $('.dir', $('#export-next')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?dir=' + dir;
+                window.location = baseUrl + '?archiveID='+<%=archiveID%> +'&dir=' + dir;
         });
 
 
 
         var autocomplete_params = {
-            serviceUrl: 'ajax/attachmentAutoComplete.jsp?extensions=1',
+            serviceUrl: 'ajax/attachmentAutoComplete.jsp?extensions=1&archiveID='+<%=archiveID%>,
             onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
             preventBadQueries: false,
             showNoSuggestionNotice: true,

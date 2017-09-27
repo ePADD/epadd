@@ -7,6 +7,8 @@
 <%@ page import="edu.stanford.muse.email.CalendarUtil" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="java.io.File" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -45,7 +47,7 @@
 	<%
 
     String queryTerm = request.getParameter("term");
-    Multimap<Integer, EntityInfo> entityToInfos = CrossCollectionSearch.search (queryTerm);
+    Multimap<String, EntityInfo> entityToInfos = CrossCollectionSearch.search (queryTerm);
 
     out.println ("Search term: " + Util.escapeHTML(queryTerm) + "<br/><br/>");
 
@@ -55,17 +57,17 @@
 		return;
 	}
 
-	for (Integer I: entityToInfos.keySet()) {
+	for (String I: entityToInfos.keySet()) {
         Collection<EntityInfo> infos = entityToInfos.get(I);
         if (infos == null) // should not happen
             continue;
         %>
 
     <%
-        Archive.ProcessingMetadata metadata = CrossCollectionSearch.archiveMetadatas.get(I);
+        Archive.ProcessingMetadata metadata = SimpleSessions.readProcessingMetadata(SimpleSessions.getArchiveForArchiveID(I).baseDir + File.separator + Archive.SESSIONS_SUBDIR,"default");
         out.println ("Institution: <b>" + Util.escapeHTML(metadata.institution) + "</b> &nbsp;&nbsp;");
         out.println ("Repository: <b>" + Util.escapeHTML(metadata.repository) + "</b> &nbsp;&nbsp;");
-        String url = "collection-detail?id=" + CrossCollectionSearch.archiveDirs.get(I);
+        String url = "collection-detail?id=" + SimpleSessions.getArchiveForArchiveID(I).baseDir;
         out.println ("Collection: <b><a target=\"blank\" href=\"" + url + "\">" + Util.escapeHTML(metadata.collectionTitle) + "</a></b> &nbsp;&nbsp;");
     %>
         <div class="panel">

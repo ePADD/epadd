@@ -38,7 +38,7 @@
 <script>epadd.nav_mark_active('Export');</script>
 
 <%
-AddressBook ab = archive.addressBook;
+	String archiveID=SimpleSessions.getArchiveIDForArchive(archive);
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 
 String type = request.getParameter("type");
@@ -74,7 +74,7 @@ for (EmailDocument ed: docs)
 }
 
 docs = newDocs;
-session.setAttribute("action-docs", docs);
+//session.setAttribute("action-docs", docs);
 writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
 
 
@@ -101,7 +101,7 @@ for (EmailDocument ed: docs)
 	String subject = ed.description;
 	if (Util.nullOrEmpty(subject))
 		subject = "NONE";
-    String messageURL = "browse?docId=" + docId;
+    String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
 	JSONArray j = new JSONArray();
 	j.put (0, Util.escapeHTML(subject));
 	j.put (1, ed.dateString());
@@ -117,7 +117,7 @@ for (EmailDocument ed: docs)
 <br/>
 <div id="export-buttons" style="display:none;margin:auto;text-align:center">
 <% if (Util.nullOrEmpty(type)) { %>
-	<button class="btn btn-cta" onclick="window.location='export'">Export <i class="icon-arrowbutton"></i> </button>
+	<button class="btn btn-cta" onclick="window.location='export?archiveID=<%=archiveID%>'">Export <i class="icon-arrowbutton"></i> </button>
 	<% } %>
 </div>
 </div>

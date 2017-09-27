@@ -28,9 +28,9 @@ if (archive == null)
 		<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 		<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 			</head>
-		<jsp:include page="../css/css.jsp"/>
+		<jsp:include page="css/css.jsp"/>
 		<body>
-		<jsp:include page="../header.jspf"/>
+		<jsp:include page="header.jspf"/>
 		<div style="margin-left:170px">
 		<% if (ModeConfig.isAppraisalMode()) { %>
 			There is no default archive in <%= edu.stanford.muse.webapp.SimpleSessions.getDefaultCacheDir() %>. Please use the <a href="email-sources">import</a> option to start an archive.

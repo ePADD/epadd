@@ -49,7 +49,7 @@
 <%@include file="profile-block.jspf"%>
 
 <%
-Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
+Archive archive =  JSPHelper.getArchive(request);
 String bestName = "";
 String bestEmail = "";
 if (archive != null) {
