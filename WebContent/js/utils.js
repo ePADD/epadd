@@ -40,7 +40,8 @@ var initialiseqtip = function(){
 						type: 'get',
 						data: {
 							"name": name,
-							"docId": docId
+							"docId": docId,
+							"archiveID":archiveID
 						},
 					})
 						.then(function(result) {
@@ -79,7 +80,8 @@ expand = function(name,docId,id){
 		async: false,
 		data: {
 			"name": name,
-			"docId": docId 
+			"docId": docId,
+            "archiveID":archiveID
 		},
 		success: function(data,status,jqXHR){
 			epadd.log("Response "+data);
