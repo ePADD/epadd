@@ -6,6 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.Config"%>
+<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %>
 
 <html>
 <head>
@@ -82,7 +83,7 @@
         JSPHelper.log.info("Reading collections from: "+topDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + topDir);
-        } else {
+        }  else {
           File[] files = topFile.listFiles();
           List<Archive.ProcessingMetadata> foundPMs = new ArrayList<Archive.ProcessingMetadata>();
           for (File f: files)
@@ -91,7 +92,7 @@
               continue;
 
             String id = f.getName();
-            String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Sessions.SESSION_SUFFIX;
+            String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
 
             if (!new File(archiveFile).exists())
               continue;
@@ -115,7 +116,7 @@
     %>
   </div>
   <br/>
-
+c
     <script>
     $(document).ready(function() {
       $('.archive-card').click(function(e) {

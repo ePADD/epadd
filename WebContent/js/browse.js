@@ -141,6 +141,7 @@ function apply(e, toAll) {
         post_updates();
 
     function post_updates() {
+        post_data.archiveID = archiveID;
         epadd.log('posting updates');
         if (toAll)
             post_data.datasetId = datasetName;
@@ -288,7 +289,7 @@ $('body').ready(function() {
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var x = $(document).jog({
 //        paging_info: {url: 'ajax/jogPageIn.jsp?datasetId=' + datasetName + '&debug=<%=request.getParameter("debug")%>', window_size_back: 30, window_size_fwd: 50}, // disabling request.getParameter("debug") after we moved this js from browse.jsp to browse.js
-        paging_info: {url: 'ajax/jogPageIn.jsp?datasetId=' + datasetName, window_size_back: 30, window_size_fwd: 50},
+        paging_info: {url: 'ajax/jogPageIn.jsp?archiveID='+archiveID+'&datasetId=' + datasetName, window_size_back: 30, window_size_fwd: 50},
         page_change_callback: page_change_callback,
         logger: epadd.log,
         width: 180,

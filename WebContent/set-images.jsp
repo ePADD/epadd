@@ -1,3 +1,4 @@
+<%@include file="getArchive.jspf" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,7 @@
     <script src="js/epadd.js" type="text/javascript"></script>
 </head>
 <body>
+ <% String archiveID = SimpleSessions.getArchiveIDForArchive(archive);%>
     <jsp:include page="header.jspf"/>
 
     <script>epadd.nav_mark_active('Collections');</script>
@@ -24,19 +26,23 @@
         You can upload images that represent the archive here. Only PNG format files are currently supported.
         <p></p>
         <form method="POST" action="upload-images" enctype="multipart/form-data" >
+            //adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
+            //archiveID in all those forms where POST was used to invoke the server page.
+            <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+
             Profile Photo: (Aspect ratio 1:1)<br/>
             <div class="profile-small-img"></div>
             <input type="file" name="profilePhoto" id="profilePhoto" /> <br/><br/>
 
             Landing Page Photo: (Aspect ratio 4:3)<br/>
-            <div class="landing-img" style="background-image:url('serveImage.jsp?file=landingPhoto.png')"></div>
+            <div class="landing-img" style="background-image:url('serveImage.jsp?archiveID=<%=archiveID%>&file=landingPhoto.png')"></div>
             <br/>
             <br/>
             <input type="file" name="landingPhoto" id="landingPhoto" />
             <br/><br/>
 
             Banner Image: (Aspect ratio 2.5:1)<br/>
-            <div class="banner-img" style="background-image:url('serveImage.jsp?file=bannerImage.png')">
+            <div class="banner-img" style="background-image:url('serveImage.jsp?archiveID=<%=archiveID%>&file=bannerImage.png')">
             </div>
             <br/>
             <br/>

@@ -1711,6 +1711,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	}
 
 	// look up the doc from doc id assigned to it
+	// Use this method only if docID exist and you want to get the corresponding lucene doc.
 	private org.apache.lucene.document.Document getLDoc(String docId, Boolean attachment, Set<String> fieldsToLoad) throws IOException
 	{
 		IndexSearcher searcher = null;
@@ -1792,6 +1793,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
         return doc.get("title");
     }
 
+    //@TODO
 	String getContents(org.apache.lucene.document.Document doc, boolean originalContentOnly) {
         String contents = null;
         try {
@@ -1801,6 +1803,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
                 contents = doc.get("body");
         } catch (Exception e) {
             log.warn("Exception " + e + " trying to read field 'body/body_original': " + Util.ellipsize(Util.stackTrace(e), 350));
+            //@TODO
+			Util.print_exception("Exception Trying to read field body/body_original",e,log);
             contents = null;
         }
 

@@ -32,7 +32,7 @@
         String status = archive.transferActionsFrom (transferActionsArchiveDir);
         out.println (status.replaceAll("\\n", "<br/>"));
         out.flush();
-        SimpleSessions.saveArchive(session); // save .session file.
+        SimpleSessions.saveArchive(archive); // save .session file.
         out.println ("<br/>Current archive saved in: " + archive.baseDir);
     %>
 	</div>

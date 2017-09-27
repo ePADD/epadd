@@ -124,6 +124,7 @@
 <%@include file="div_status.jspf"%>
 
 <%
+    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     AuthorityMapper authorityMapper = archive.getAuthorityMapper();
     AddressBook addressBook = archive.getAddressBook();
 
@@ -136,7 +137,7 @@
     List<AuthorityMapper.AuthorityInfo> rows = new ArrayList<>();
     for (Contact c: contacts) {
         String name = c.pickBestName();
-        AuthorityMapper.AuthorityInfo info = authorityMapper.getAuthorityInfo (addressBook, name);
+        AuthorityMapper.AuthorityInfo info = authorityMapper.getAuthorityInfo (archiveID,addressBook, name);
 
         boolean showRow = false;
         switch (rowType) {
@@ -186,7 +187,7 @@
 </form>
 
 <script>
-    $('#rowType').change (function() { window.location = 'assign-authorities?rowType=' + $('#rowType').val();});
+    $('#rowType').change (function() { window.location = 'assign-authorities?archiveID=<%=archiveID%>&rowType=' + $('#rowType').val();});
 </script>
 
 <br/>
@@ -309,7 +310,8 @@
             if (!$(e.target).is(':checked')) {
                 // must be unchecked
                 data.unset = false;
-            }
+            };
+            data.archiveID = '<%=archiveID%>';
 
             $.ajax({
                 url: 'ajax/confirm-authority.jsp',
@@ -333,8 +335,7 @@
 
         $('#manual-assign-submit').click (function() {
             var data = {name: $('#manual-assign-name').text(), fastId: $('#fastId').val(), viafId: $('#viafId').val(), wikipediaId: $('#wikipediaId').val(), lcnafId: $('#lcnafId').val(), lcshId: $('#lcshId').val(),
-                localId: $('#localId').val(), isManualAssign: true};
-            console.log (data);
+                localId: $('#localId').val(), isManualAssign: true, archiveID:'<%=archiveID%>'}
 
             $.ajax({
                 url: 'ajax/confirm-authority.jsp',

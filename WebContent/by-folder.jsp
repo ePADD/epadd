@@ -38,6 +38,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
+    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     AddressBook ab = archive.addressBook;
 %>
 
@@ -99,7 +100,8 @@
         // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
         $(document).ready(function() {
             var clickable_message = function ( data, type, full, meta ) {
-                return '<a target="_blank" title="' + full[1] + '" href="/epadd/browse?folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+                //return '<a target="_blank" title="' + full[1] + '" href="/epadd/browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+                return '<a target="_blank" title="' + full[1] + '" href="browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
             };
 
             $('#people').dataTable({

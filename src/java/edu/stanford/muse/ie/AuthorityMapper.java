@@ -234,7 +234,7 @@ public class AuthorityMapper implements java.io.Serializable {
     }
 
     /** returns an authorityInfo object representing info needed by the front-end. Use only for rendering the authorities table. */
-    public AuthorityInfo getAuthorityInfo (AddressBook ab, String name) throws IOException, ParseException {
+    public AuthorityInfo getAuthorityInfo (String archiveID,AddressBook ab, String name) throws IOException, ParseException {
         String cname = canonicalize (name);
         AuthorityInfo result = new AuthorityInfo();
         result.isConfirmed = false;
@@ -249,7 +249,7 @@ public class AuthorityMapper implements java.io.Serializable {
             return result;
         }
 
-        result.url = "browse?adv-search=1&contact=" + ab.getContactId(c);
+        result.url = "browse?archiveID="+archiveID+"&adv-search=1&contact=" + ab.getContactId(c);
         result.tooltip = c.toTooltip();
         result.nMessages = nMessages;
 

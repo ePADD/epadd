@@ -7,22 +7,23 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>    
 <%@page language="java" import="edu.stanford.muse.index.*"%>    
 <%   
-// does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
+// does a login for a particular account,
 JSPHelper.setPageUncacheable(response);
 
 boolean incremental = request.getParameter("incremental") != null;
 if (!incremental)
 {
-	Archive a = (Archive) JSPHelper.getSessionAttribute(session, "archive");
-	if (a != null)
-	{
-		JSPHelper.log.info ("Closing existing archive " + a);
-		a.close();
+/*
+	Archive archive = JSPHelper.getArchive(session,request);
+	if (archive != null) {
+	    JSPHelper.log.info ("Closing existing archive " + archive);
+		archive.close();
 		session.removeAttribute("archive");
 	}
 	session.removeAttribute("alternateEmailAddrs");
 	session.removeAttribute("cacheDir");
 	session.removeAttribute("museEmailFetcher");
+*/
 }
 String idx_str = request.getParameter("accountIdx");
 int accountIdx = Integer.parseInt(idx_str);

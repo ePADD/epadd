@@ -3,7 +3,6 @@
 <%@page language="java" import="edu.stanford.muse.Config"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.Sessions"%>
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="java.io.File"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
@@ -58,7 +57,7 @@
         return;
     }
 
-    String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Sessions.SESSION_SUFFIX;
+    String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
 
     if (!new File(archiveFile).exists()) {
         %>
@@ -206,9 +205,14 @@
     <jsp:include page="footer.jsp"/>
 
     <script>
-        var params = {dir: '<%=id%>'};
-        $('#edit-metadata').click (function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), params , null, 'edit-accession?id=<%=id%>'); /* load_archive_and_call(function() { window.location = "edit-accession"} */});
-        $('#enter').click(function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), params, null, 'browse-top'); /* load_archive_and_call(function() { window.location = "browse-top"} */});
+        var edit-metadata-params = {dir: '<%=id%>',edit-screen: '1'};
+        //the following call will first load archive and then in that jsp the subsequent screeen 'edit-accession.jsp' will be set as the next page
+        //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-accession.jsp or browse-top.jsp
+        $('#edit-metadata').click (function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), edit-metadata-params , null); /* load_archive_and_call(function() { window.location = "edit-accession"} */});
+       //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
+        //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.
+        var enter-params = {dir: '<%=id%>'};
+        $('#enter').click(function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enter-params, null); /* load_archive_and_call(function() { window.location = "browse-top"} */});
 
     </script>
 

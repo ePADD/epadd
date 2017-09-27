@@ -19,7 +19,7 @@ if (Util.nullOrEmpty(baseDir))
 }
 
 // check if its really an archive
-if (!new File(baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Sessions.SESSION_SUFFIX).exists())
+if (!new File(baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix()).exists())
 {
 	result.put ("status", 2);
 	result.put("error", "The specified folder does not appear to contain an ePADD archive.");

@@ -32,6 +32,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Export');</script>
 <% 	AddressBook addressBook = archive.addressBook;
+String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "", "Export archive");
 %>
@@ -43,7 +44,7 @@
 
 	File file = new File(dir);
 	if (!file.isDirectory() || !file.canWrite()) {
-		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export-processing?type=doNotTransfer\">go back</a> and select a different directory.");
+		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export-processing?archiveID="+archiveID+"&type=doNotTransfer\">go back</a> and select a different directory.");
 		return;
 	}
 	%>
@@ -57,7 +58,7 @@
 	JSPHelper.log.info("Saving archive in " + archive.baseDir);
 	out.println("Saving current archive...<br/>");
 	out.flush();
-	SimpleSessions.saveArchive(session);
+	SimpleSessions.saveArchive(archive);
 
 	String folder = dir + File.separator + "ePADD archive of " + bestName + "-Delivery";
 	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
@@ -130,11 +131,11 @@
 	out.flush();
 	String baseDir = archive.baseDir;
 	archive = SimpleSessions.readArchiveIfPresent(baseDir);
-	archive.setBaseDir(baseDir);
+	/*archive.setBaseDir(baseDir);
 	session.setAttribute("archive", archive);
 	session.setAttribute("userKey", "user");
 	session.setAttribute("cacheDir", archive.baseDir);
-
+*/
 //	archive.processingMetadata.entityCounts = ec;
 
 //authority records are exported to authority.csv in delivery mode

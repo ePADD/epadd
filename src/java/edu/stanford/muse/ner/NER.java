@@ -228,7 +228,8 @@ public class NER implements StatusProvider {
             st = System.currentTimeMillis();
 
             //!!!!!!SEVERE!!!!!!!!!!
-            //TODO: an entity name is stored in NAMES, NAMES_ORIGINAL, nameoffsets, and one or more of EPER, ELOC, EORG fields, that is a lot of redundancy
+            //TODO: an entity name is stored in NAMES, NAMES_ORIGINAL, nameoffsets, and one or more of
+            // EPER, ELOC, EORG fields, that is a lot of redundancy
             //!!!!!!SEVERE!!!!!!!!!!
 //			storeSerialized(ldoc, NAMES_OFFSETS, mapAndOffsets.second);
 //            storeSerialized(ldoc, TITLE_NAMES_OFFSETS, mapAndOffsetsTitle.second);

@@ -15,6 +15,7 @@
 <%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.Config" %>
+
 <%
 session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
 
@@ -23,15 +24,17 @@ JSONObject result = new JSONObject();
 String errorMessage = null;
 String resultPage = null;
 
-Archive archive = JSPHelper.getArchive(session);
+    if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
+      session.removeAttribute("statusProvider");
 
-if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
-  session.removeAttribute("statusProvider");
+Archive archive = JSPHelper.getArchive(request);
 
 if(archive!=null){
     try {
+        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         String modelFile = SequenceModel.RULES_DIRNAME;
-        SequenceModel nerModel = (SequenceModel) session.getAttribute("ner");
+        SequenceModel nerModel = null;
+//        = (SequenceModel) session.getAttribute("ner");
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
         try {
@@ -45,8 +48,9 @@ if(archive!=null){
             NER ner = new NER(archive, nerModel);
             session.setAttribute("statusProvider", ner);
             ner.recognizeArchive();
+            //ner.recognizeArchive(); [why was it called two times??]
             //Here, instead of getting the count of all entities (present in ner.stats object)
-            //get the count of only those entities which pass a given thersold.
+            //get the count of only those entities which pass a given threshold.
             //This is to fix a bug where the count of person entities displayed on browse-top.jsp
             //page was different than the count of entities actually displayed following a thersold.
             // @TODO make it more modular
@@ -55,13 +59,12 @@ if(archive!=null){
             archive.processingMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
 
             JSPHelper.log.info(ner.stats);
-            System.err.println(ner.stats);
         }
 //        archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
         JSPHelper.log.info("Number of potentially sensitive messages " + archive.processingMetadata.numPotentiallySensitiveMessages);
 
         session.removeAttribute("statusProvider");
-        resultPage = "browse-top";
+        resultPage = "browse-top?archiveID="+archiveID;
     }catch (CancelledException ce) {
 		JSPHelper.log.warn("ePADD NER entity extraction cancelled by user");
 		cancelled = true;

@@ -31,6 +31,7 @@
 </script>
 
 <% try {
+    String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf();
 	writeProfileBlock(out, archive, "", "Export archive");
@@ -40,7 +41,6 @@
 <div style="margin-left:170px">
 
 <%
-	AddressBook ab = archive.addressBook;
 
 	String rawDir = request.getParameter("dir");
 	/*
@@ -51,7 +51,7 @@
 
 	File file = new File(dir);
 	if (!file.isDirectory() || !file.canWrite()) {
-		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export?type=doNotTransfer\">go back</a> and select a different directory.");
+		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export?archiveID=+"+archiveID+"&type=doNotTransfer\">go back</a> and select a different directory.");
 		return;
 	}
 	%>

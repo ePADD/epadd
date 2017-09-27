@@ -69,6 +69,7 @@
 
 <%
 	AddressBook ab = archive.addressBook;
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	String bestName = ab.getBestNameForSelf();
 	JSONArray resultArray = new JSONArray();
 
@@ -214,8 +215,8 @@
                 List<Blob> blobs = resultSet.getAttachmentHighlightInformation(ed);
                 for( Blob b : blobs) {
                     String contentFileDataStoreURL = blobStore.get_URL(b);
-                    String blobURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
-                    String messageURL = "browse?docId=" + docId;
+                    String blobURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
+                    String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
                     String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
 
                     JSONArray j = new JSONArray();

@@ -12,8 +12,10 @@
 <%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@include file="getArchive.jspf" %>
+
 <!--
-Browse page for enbtities based on fine types
+Browse page for entities based on fine types
 -->
 <html>
 <head>
@@ -46,12 +48,12 @@ Browse page for enbtities based on fine types
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
+        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         for(NEType.Type t: NEType.Type.values())
             desc.put(t.getCode(), t.getDisplayName());
 
         Short type = Short.parseShort(request.getParameter("type"));
         out.println("<h1>Type: "+desc.get(type)+"</h1>");
-        Archive archive = JSPHelper.getArchive(session);
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
         EntityMapper entityMapper = archive.getEntityMapper();
@@ -104,8 +106,7 @@ Browse page for enbtities based on fine types
         List<Pair<Entity,Double>> lst = Util.sortMapByValue(vals);
 
         JSONArray resultArray = new JSONArray();
-        String url = request.getRequestURL().toString();
-        int count = 0;
+         int count = 0;
 	    for (Pair<Entity, Double> p: lst) {
 	        count++;
             String entity = p.getFirst().entity;
@@ -133,15 +134,15 @@ Browse page for enbtities based on fine types
     <br/>
 
 <div style="text-align:center">
-    <button class="btn btn-default" onclick="window.location='edit-entities?type=<%=request.getParameter ("type")%>'">Edit Entities</button>
+    <button class="btn btn-default" onclick="window.location='edit-entities?archiveID=<%=archiveID%>&type=<%=type%>'">Edit Entities</button>
 </div>
     <script type="text/javascript">
-        $(document).ready(function() {
+            $(document).ready(function() {
             var click_to_search = function ( data, type, full, meta ) {
                 // epadd.do_search will open search result in a new tab.
                 // Note, we have to insert onclick into the rendered HTML,
                 // we were earlier trying $('.search').click(epadd.do_search) - this does not work because only the few rows initially rendered to html match the $('.search') selector, not the others
-                return '<span title="' + full[3] + '" style="cursor:pointer" onclick="epadd.do_search(event)">' + data + '</span>';
+                return '<span title="' + full[3] + '" style="cursor:pointer" onclick="epadd.do_search(event,'<%=archiveID%>')">' + data + '</span>';
             };
 
             var entities = <%=resultArray.toString(4)%>;

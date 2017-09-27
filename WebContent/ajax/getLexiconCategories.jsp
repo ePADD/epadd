@@ -5,20 +5,24 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
+
 <%
 	// params:
 	// lexicon=<lexicon name>. if no lexicon name, use "default"
 	// archive, cacheDir should be in session
 
 	// which lexicon? first check if url param is present, then check if url param is specified
-	Archive archive = JSPHelper.getArchive(session);
 	JSONObject result = new JSONObject();
-	if (archive == null) {
-		result.put("status", 1);
-		result.put ("errorMessage", "No archive is loaded");
-		out.println (result.toString(4));
-		return;
-	}
+    Archive archive = JSPHelper.getArchive(request);
+    if (archive == null) {
+        JSONObject obj = new JSONObject();
+        obj.put("status", 1);
+        obj.put("error", "No archive in session");
+        out.println (obj);
+        JSPHelper.log.info(obj);
+        return;
+    }
+
 	String lexiconName = request.getParameter("lexicon");
 
 	Lexicon lex = null;

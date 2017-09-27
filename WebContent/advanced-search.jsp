@@ -64,6 +64,9 @@
 	<script src="js/epadd.js"></script>
 
 </head>
+<%
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+%>
 <body>
 	<jsp:include page="header.jspf"/>
 	<script>epadd.nav_mark_active('Search');</script>
@@ -72,7 +75,9 @@
 	<div class="advanced-search">
 		<form id="adv-search-form" action="browse" method="post">
 		<input type="hidden" name="adv-search" value="1"/>
-		<!--container-->
+			<%--hidden parameter passed as archiveID--%>
+			<input type="hidden" name="archiveID" value="<%=archiveID%>"/>
+			<!--container-->
 		<div class="container">
 			<!--row-->
 			<div class="row">
@@ -715,8 +720,8 @@
 			$('#adv-search.form').submit();
 		});
 
-		var autocomplete_params = {
-			serviceUrl: 'ajax/correspondentAutoComplete.jsp',
+         var autocomplete_params = {
+			serviceUrl: 'ajax/correspondentAutoComplete.jsp?archiveID=<%=archiveID%>',
 			onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
 			preventBadQueries: false,
 			showNoSuggestionNotice: true,
@@ -747,15 +752,15 @@
 		$('#correspondent').autocomplete(autocomplete_params);
 
 		var emailSourceAutoCompleteParams = $.extend({}, autocomplete_params);
-		emailSourceAutoCompleteParams.serviceUrl = 'ajax/emailSourceAutoComplete.jsp';
+		emailSourceAutoCompleteParams.serviceUrl = 'ajax/emailSourceAutoComplete.jsp?archiveID=<%=archiveID%>';
 		$('#emailSource').autocomplete(emailSourceAutoCompleteParams);
 
 		var folderAutoCompleteParams = $.extend({}, autocomplete_params);
-		folderAutoCompleteParams.serviceUrl = 'ajax/folderAutoComplete.jsp';
+		folderAutoCompleteParams.serviceUrl = 'ajax/folderAutoComplete.jsp?archiveID=<%=archiveID%>';
 		$('#messageFolder').autocomplete(folderAutoCompleteParams);
 
 		var entitiesAutoCompleteParams = $.extend({}, autocomplete_params);
-		entitiesAutoCompleteParams.serviceUrl = 'ajax/entitiesAutoComplete.jsp';
+		entitiesAutoCompleteParams.serviceUrl = 'ajax/entitiesAutoComplete.jsp?archiveID=<%=archiveID%>';
 		$('#entity').autocomplete(entitiesAutoCompleteParams);
 
 		//Disabling the following code as per issue number #134 on github
@@ -766,11 +771,11 @@
 		$('#attachmentEntity').autocomplete(attachmentEntitiesAutoCompleteParams);
 		*/
 		var annotationAutoCompleteParams = $.extend({}, autocomplete_params);
-		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp';
+		annotationAutoCompleteParams.serviceUrl = 'ajax/annotationAutoComplete.jsp?archiveID=<%=archiveID%>';
 		$('#annotation').autocomplete(annotationAutoCompleteParams);
 
 		var attachmentAutoCompleteParams = $.extend({}, autocomplete_params);
-		attachmentAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp';
+		attachmentAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp?archiveID=<%=archiveID%>';
 		$('#attachmentFilename').autocomplete(attachmentAutoCompleteParams);
 		$('#attachmentFilenameRegex').change(function() {
 			if (this.checked) {
@@ -781,7 +786,7 @@
 		});
 
 		var attachmentExtAutoCompleteParams = $.extend({}, autocomplete_params);
-		attachmentExtAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp?extensions=1';
+		attachmentExtAutoCompleteParams.serviceUrl = 'ajax/attachmentAutoComplete.jsp?extensions=1?archiveID=<%=archiveID%>';
 		$('#attachmentExtension').autocomplete(attachmentExtAutoCompleteParams);
 
 		$('#lexiconName').change(function() {
@@ -791,7 +796,7 @@
 			$.ajax({type: 'POST',
 				dataType: 'json',
 				url: 'ajax/getLexiconCategories.jsp',
-				data: {lexicon: $('#lexiconName').val() },
+				data: {lexicon: $('#lexiconName').val(), archiveID:'<%=archiveID%>' },
 				cache: false,
 				success: function (response) {
 					if (response && (response.status == 0)) {

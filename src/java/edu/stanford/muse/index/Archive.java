@@ -478,6 +478,18 @@ public class Archive implements Serializable {
         }
     }
 
+    /** adds alternateEmailAddrs if specified in the request to the session. alternateEmailAddrs are simply appended to. */
+    public void updateUserInfo(String name, String archiveTitle, String alteranteEmailAddrs)
+    {
+        // set up the owner email addrs from the email addrs saved in the fetcher's stores
+        if (!Util.nullOrEmpty(name))
+            this.addOwnerName(name);
+        if (!Util.nullOrEmpty(archiveTitle))
+            this.archiveTitle = archiveTitle;
+
+        if (!Util.nullOrEmpty(alteranteEmailAddrs))
+            this.addOwnerEmailAddrs(EmailUtils.parseAlternateEmailAddrs(alteranteEmailAddrs));
+    }
     /**
      * returns the final, sorted, deduped version of allDocs that this driver
      * worked on in its last run

@@ -3,17 +3,21 @@
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="org.json.JSONObject"%>
 <%@ page import="edu.stanford.muse.ie.matching.NameExpansion"%>
-<%@ page import="edu.stanford.muse.ie.matching.Matches"%>
+<%@ page import="edu.stanford.muse.ie.matching.Matches"%><%@ page import="edu.stanford.muse.webapp.JSPHelper"%>
 
 <%
 	response.setContentType("application/json; charset=utf-8");
-	Archive archive = (Archive)request.getSession().getAttribute("archive");
-	JSONObject result = new JSONObject();
-	if (archive == null){
-		result.put("result", "ePADD session expired? Please reload the archive.");
-		out.println(result.toString(4));
-		return;
+
+	Archive archive = JSPHelper.getArchive(request);
+	if (archive == null) {
+	    JSONObject obj = new JSONObject();
+	    obj.put("status", 1);
+	    obj.put("error", "No archive in session");
+	    out.println (obj);
+	    JSPHelper.log.info(obj);
+	    return;
 	}
+
 
 	String name = request.getParameter("name");
 	String docId = request.getParameter("docId");

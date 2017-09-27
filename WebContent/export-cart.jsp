@@ -38,7 +38,7 @@
 
   // either we do tags (+ or -) from selectedTags
   // or we do all docs from allDocs
-  String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
+  String cacheDir = archive.baseDir;
   String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
   BlobStore bs = null;
   try {
@@ -48,14 +48,16 @@
     JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
   }
 
+/*
   String rootDir = JSPHelper.getRootDir(request);
   new File(rootDir).mkdirs();
-  String userKey = JSPHelper.getUserKey(session);
+*/
+  String userKey = "User";//JSPHelper.getUserKey(session);
   String name = request.getParameter("name");
   if (Util.nullOrEmpty(name))
     name = String.format("%08x", EmailUtils.rng.nextInt());
   String filename = name + ".mbox.txt";
-  String path = rootDir + File.separator + filename;
+  String path = cacheDir + File.separator + filename;
 
   PrintWriter pw = new PrintWriter (path);
 

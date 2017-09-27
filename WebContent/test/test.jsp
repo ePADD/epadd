@@ -9,6 +9,8 @@
 <%@page language="java" import="edu.stanford.epadd.util.*"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="java.io.*"%>
+<%@include file="../getArchive.jspf" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,7 +31,7 @@ function dodrop(event) {
 </div>
 </body>
 <%
-Archive archive = JSPHelper.getArchive(session);
+//Archive archive = JSPHelper.getArchive(session);
 Indexer indexer = (Indexer) archive.indexer;
 
 String q = "/r..bert/";

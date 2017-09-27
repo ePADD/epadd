@@ -23,8 +23,16 @@
 
     int MAX_SUGGESTIONS = HTMLUtils.getIntParam(request, "MAX_SUGGESTIONS", 5);
 
-	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
-	if (!Util.nullOrEmpty(query) && archive != null) {
+	Archive archive = JSPHelper.getArchive(request);
+	if (archive == null) {
+	    obj.put("status", 1);
+	    obj.put("error", "No archive in session");
+	    out.println (obj);
+	    JSPHelper.log.info(obj);
+	    return;
+	}
+
+    if (!Util.nullOrEmpty(query) && archive != null) {
         Set<String>	annotations = archive.getAllAnnotations();
         int suggestionCount = 0;
 

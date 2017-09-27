@@ -117,7 +117,7 @@ public class JSPHelper {
 		HttpSession session = request.getSession();
 
 		if (session == null)
-			return Sessions.getDefaultCacheDir();
+			return SimpleSessions.getDefaultCacheDir();
 		else
 		{
 			String baseDir = (String) getHttpSessionAttribute(session, "cacheDir");
@@ -147,21 +147,36 @@ public class JSPHelper {
 
 			session.setAttribute("userKey", userKey); // this is needed for the root dir for piclens
 			// now we have the user key				
-			baseDir = Sessions.getDefaultRootDir() + File.separator + getUserKey(session);
+			baseDir = SimpleSessions.getDefaultRootDir() + File.separator + getUserKey(session);
 			log.info("base dir set to " + baseDir);
 			return baseDir;
 		}
 	}
 
-	public static Archive getArchive(HttpSession session)
+	public static Archive getArchive(HttpServletRequest request)
 	{
-		return (Archive) getSessionAttribute(session, "archive");
+		//get archiveID from request parameter..
+		String archiveID = request.getParameter("archiveID");
+		if(archiveID==null){
+			//if only single archive is present in the map then return that
+			//else return null after logging this information.
+//			Archive onlyleft = SimpleSessions.getDefaultArchiveFromGlobalArchiveMap();
+//			if(onlyleft==null){
+				log.debug("No archive ID parameter passed from the client");
+			//present for the given archive ID. No default archive could be loaded");
+				return null;
+//			}else{
+//				log.debug("No archiveID parameter passed from the client. Loading the default archive.");
+//				return onlyleft;
+//			}
+		}
+		return SimpleSessions.getArchiveForArchiveID(archiveID);
 	}
 
 	/**
 	 * gets the session attribute - look up from the client-side session storage
 	 * first then the server-side.
-	 * session name (archive name) is determined by attribute ARCHIVE_NAME_STR
+	 * session name (archive name) is determined by attribute ARCHIVE_NAME_STR`
 	 * of the client-side session.
 	 */
 	public static Object getSessionAttribute(HttpSession session, String attr_name)
@@ -403,7 +418,8 @@ public class JSPHelper {
         //perform entity IE related tasks only if the message text is available
         if (downloadMessageText) {
             String modelFile = SequenceModel.MODEL_FILENAME;
-            NERModel nerModel = (SequenceModel) session.getAttribute("ner");
+            NERModel nerModel=null;
+            //=(SequenceModel) session.getAttribute("ner");
             session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
             try {
                 if (System.getProperty("muse.dummy.ner") != null) {
@@ -786,652 +802,13 @@ public class JSPHelper {
 		return "on".equals(request.getParameter("unindexed"));
 	}
 
-	/**
-	 * This used to be a VIP methods for muse. Now superseded by SearchResult.java for ePADD.
-	 * handle query for term, sentiment, person, attachment, docNum, timeCluster
-	 * etc
-	 * note: date range selection is always ANDed
-	 * if only_apply_to_filtered_docs, looks at emailDocs, i.e. ones selected by
-	 * the current filter (if there is one)
-	 * if !only_apply_to_filtered_docs, looks at all docs in archive
-	 * note: only_apply_to_filtered_docs == true is not honored by lucene lookup
-	 * by term (callers need to filter by themselves)
-	 * note2: performance can be improved. e.g., if in AND mode, searches that
-	 * iterate through documents such as
-	 * selectDocByTag, getBlobsForAttachments, etc., can take the intermediate
-	 * resultDocs rather than allDocs.
-	 * set intersection/union can be done in place to the intermediate
-	 * resultDocs rather than create a new collection.
-	 * getDocsForAttachments can be called on the combined result of attachments
-	 * and attachmentTypes search, rather than individually.
-	 * note3: should we want options to allow user to choose whether to search
-	 * only in emails, only in attachments, or both?
-	 * also, how should we allow variants in combining multiple conditions.
-	 * there will be work in UI too.
-	 * note4: the returned resultBlobs may not be tight, i.e., it may include
-	 * blobs from docs that are not in the returned resultDocs.
-	 * but for docs that are in resultDocs, it should not include blobs that are
-	 * not hitting.
-	 * these extra blobs will not be seen since we only use this info for
-	 * highlighting blobs in resultDocs.
-	 */
-	public static Pair<Collection<Document>, Collection<Blob>> selectDocsWithHighlightAttachments(HttpServletRequest request, HttpSession session, boolean only_apply_to_filtered_docs, boolean or_not_and) throws UnsupportedEncodingException
+
+
+
+
+	private static Set<Document> getAllDocsAsSet(HttpSession session, boolean only_apply_to_filtered_docs, HttpServletRequest request)
 	{
-		// below are all the controls for selecting docs 
-		String term = request.getParameter("term"); // search term
-		String[] contact_ids = request.getParameterValues("contact");
-		String[] persons = request.getParameterValues("person");
-		String[] attachments = request.getParameterValues("attachment"); // actual attachment name
-
-		String[] attachment_extensions = request.getParameterValues("attachment_extension");
-
-		{
-			// if attachment_types specified, parse them and add the values in them to attachment_extensions also
-			// types are higher level (video, audio, etc.) and map to more than 1 extension
-			String[] attachment_types = request.getParameterValues("attachment_type"); // will be something like ["pdf,doc", "ppt,pptx,key"]
-			if (!Util.nullOrEmpty(attachment_types)) {
-				// assemble all extensions in a list first
-				List<String> list = new ArrayList<>();
-				if (!Util.nullOrEmpty(attachment_extensions))
-					list.addAll(Arrays.asList(attachment_extensions));
-
-				for (String s : attachment_types)
-					list.addAll(Util.tokenize(s, ","));
-				// trim all spaces, then convert back to array
-				list = list.stream().map(s -> s.trim()).collect(Collectors.toList());
-				attachment_extensions = list.toArray(new String[list.size()]);
-			}
-		}
-
-		String datasetId = request.getParameter("datasetId");
-		String[] docIds = request.getParameterValues("docId");
-		String[] folders = request.getParameterValues("folder");
-		String sortByStr = request.getParameter("sort_by");
-		Indexer.SortBy sortBy = Indexer.SortBy.RELEVANCE;
-		if (!Util.nullOrEmpty(sortByStr)) {
-			if ("relevance".equals(sortByStr.toLowerCase()))
-				sortBy = Indexer.SortBy.RELEVANCE;
-			else if ("recent".equals(sortByStr.toLowerCase()))
-				sortBy = Indexer.SortBy.RECENT_FIRST;
-			else if ("chronological".equals(sortByStr.toLowerCase()))
-				sortBy = Indexer.SortBy.CHRONOLOGICAL_ORDER;
-			else {
-				log.warn("Unknown sort by option: " + sortBy);
-			}
-		}
-
-        // compute date requirements. start/end_date are in yyyy/mm/dd format
-        int yy = -1, end_yy = -1, mm = -1, end_mm = -1, dd = -1, end_dd = -1;
-
-        String start_date = request.getParameter("start_date");
-        if (!Util.nullOrEmpty(start_date)) {
-            String[] ss =  start_date.split("/");
-            if (ss.length > 0) { yy = Util.getIntParam(ss[0], -1); }
-            if (ss.length > 1) { mm = Util.getIntParam(ss[1], -1); }
-            if (ss.length > 2) { dd = Util.getIntParam(ss[2], -1); }
-        }
-
-        String end_date = request.getParameter("end_date");
-        if (!Util.nullOrEmpty(end_date)) {
-            String[] ss =  end_date.split("/");
-            if (ss.length > 0) { end_yy = Util.getIntParam(ss[0], -1); }
-            if (ss.length > 1) { end_mm = Util.getIntParam(ss[1], -1); }
-            if (ss.length > 2) { end_dd = Util.getIntParam(ss[2], -1); }
-        }
-
-		//key to large array of docids in session
-		//it possible to pass this array as the get request parameter, but is not scalable due to the post and get size limits of tomcat
-		String dIdLKey = request.getParameter("dIdLKey");
-		if(dIdLKey!=null) {
-			try {
-				Set<String> docIdsLot = (Set<String>) session.getAttribute(dIdLKey);
-				Set<String> dIds = new HashSet<String>();
-				if(docIds!=null)
-					for(String docId: docIds)
-						dIds.add(docId);
-
-				if(docIdsLot!=null)
-					for(String dId: docIdsLot)
-						dIds.add(dId);
-				docIds = dIds.toArray(new String[dIds.size()]);
-				//System.err.println("Found docIds in the session... read "+docIds.length+" docIds");
-			}catch(ClassCastException e){
-				e.printStackTrace();
-			}
-		}
-		String tag = request.getParameter("annotation"); // only one tag supported right now, will revisit if needed
-
-		String[] directions = request.getParameterValues("direction");
-		Set<String> directionsSet = new LinkedHashSet<String>();
-		if (directions != null)
-			for (String d : directions)
-				directionsSet.add(d);
-		boolean direction_in = directionsSet.contains("in");
-		boolean direction_out = directionsSet.contains("out");
-
-
-        String[] sentiments = request.getParameterValues("sentiment");
-		int cluster = HTMLUtils.getIntParam(request, "timeCluster", -1);
-		/** usually, there is 1 time cluster per month */
-
-		Set<String> foldersSet = new LinkedHashSet<String>();
-		if (folders != null)
-			for (String f : folders)
-				foldersSet.add(f);
-
-		// a little bit of an asymmetry here, only one groupIdx is considered, can't be multiple
-		int groupIdx = HTMLUtils.getIntParam(request, "groupIdx", Integer.MAX_VALUE);
-		Archive archive = JSPHelper.getArchive(session);
-		AddressBook addressBook = archive.addressBook;
-		BlobStore attachmentsStore = archive.blobStore;
-
-		Collection<Document> allDocs = getAllDocsAsSet(session, only_apply_to_filtered_docs);
-		if (Util.nullOrEmpty(allDocs))
-			return new Pair<Collection<Document>, Collection<Blob>>(new ArrayList<Document>(), new ArrayList<Blob>());
-
-        //why are there two vars for sentiment and content indexer repns?
-//		Indexer sentiIndexer, indexer;
-//		indexer = sentiIndexer = archive.indexer;
-
-		// the raw request param val is in 8859 encoding, interpret the bytes as utf instead
-
-		/**
-		 * there is a little overlap between datasetId and docForDocIds.
-		 * probably datasetIds can be got rid of?
-		 */
-		List<Document> docsForGroup = null, docsForDateRange = null, docsForNumbers = null, docsForFolder = null, docsForDirection = null, docsForCluster = null, docsForDocIds = null;
-		Collection<Document> docsForTerm = null, docsForPersons = null, docsForSentiments = null, docsForTag = null, docsForAttachments = null, docsForAttachmentTypes = null, docsForDoNotTransfer = null, docsForTransferWithRestrictions = null, docsForReviewed = null, docsForRegex = null;
-		Collection<Blob> blobsForAttachments = null, blobsForAttachmentTypes = null, blobsForTerm = null;
-
-		if (!Util.nullOrEmpty(term))
-		{
-			term = JSPHelper.convertRequestParamToUTF8(term);
-			if (isRegexSearch(request)) {
-				docsForTerm = new LinkedHashSet<Document>(IndexUtils.selectDocsByRegex(archive, allDocs, term));
-				// TODO: regex search in attachments is not implemented yet
-			} else {
-				Indexer.QueryType qt = null;
-				String searchType = request.getParameter("searchType");
-				if ("correspondents".equals(searchType))
-					qt = Indexer.QueryType.CORRESPONDENTS;
-				else if ("subject".equals(searchType))
-					qt = Indexer.QueryType.SUBJECT;
-				else if ("original".equals(searchType))
-					qt = Indexer.QueryType.ORIGINAL;
-				else if ("regex".equals(searchType))
-					qt = Indexer.QueryType.REGEX;
-				else
-					qt = Indexer.QueryType.FULL;
-
-                Indexer.QueryOptions options = new Indexer.QueryOptions();
-                options.setQueryType(qt);
-				options.setSortBy(sortBy);
-
-				docsForTerm = archive.docsForQuery(term, options);
-				// also search blobs and merge result, but not for subject/corr. search
-				if (!"correspondents".equals(searchType) && !"subject".equals(searchType)) {
-					blobsForTerm = archive.blobsForQuery(term);
-					Set<Document> blobDocsForTerm = (Set<Document>) EmailUtils.getDocsForAttachments((Collection) allDocs, blobsForTerm);
-					log.info("Blob docs for term: "+term+", "+blobDocsForTerm.size()+", blobs: "+blobsForTerm.size());
-					docsForTerm = Util.setUnion(docsForTerm, blobDocsForTerm);
-				}
-			}
-		}
-
-		if ("true".equals(request.getParameter("sensitive"))) {
-			Indexer.QueryType qt = null;
-			qt = Indexer.QueryType.PRESET_REGEX;
-			docsForRegex = archive.docsForQuery(cluster, qt);
-		}
-
-		if (foldersSet.size() > 0)
-		{
-			docsForFolder = new ArrayList<Document>();
-			for (Document d : allDocs) {
-				EmailDocument ed = (EmailDocument) d;
-				if (foldersSet.contains(ed.folderName))
-					docsForFolder.add(ed);
-			}
-		}
-
-		if ((direction_in || direction_out) && addressBook != null)
-		{
-			docsForDirection = new ArrayList<Document>();
-			for (Document d : allDocs)
-			{
-				EmailDocument ed = (EmailDocument) d;
-				int sent_or_received = ed.sentOrReceived(addressBook);
-				if (direction_in)
-					if (((sent_or_received & EmailDocument.RECEIVED_MASK) != 0) || sent_or_received == 0) // if sent_or_received == 0 => we neither directly recd. nor sent it (e.g. it could be received on a mailing list). so count it as received.
-						docsForDirection.add(ed);
-				if (direction_out && (sent_or_received & EmailDocument.SENT_MASK) != 0)
-					docsForDirection.add(ed);
-			}
-		}
-
-		String doNotTransfer = request.getParameter("doNotTransfer");
-		if (!Util.nullOrEmpty(doNotTransfer)) {
-			boolean val = "true".equals(doNotTransfer);
-			docsForDoNotTransfer = new LinkedHashSet<Document>();
-			for (Document d : allDocs)
-			{
-				EmailDocument ed = (EmailDocument) d;
-				if (ed.doNotTransfer == val)
-					docsForDoNotTransfer.add(ed);
-			}
-		}
-
-		String transferWithRestrictions = request.getParameter("transferWithRestrictions");
-		if (!Util.nullOrEmpty(transferWithRestrictions)) {
-			boolean val = "true".equals(transferWithRestrictions);
-			docsForTransferWithRestrictions = new LinkedHashSet<Document>();
-			for (Document d : allDocs)
-			{
-				EmailDocument ed = (EmailDocument) d;
-				if (ed.transferWithRestrictions == val)
-					docsForTransferWithRestrictions.add(ed);
-			}
-		}
-
-		String reviewed = request.getParameter("reviewed");
-		if (!Util.nullOrEmpty(reviewed)) {
-			boolean val = "true".equals(reviewed);
-			docsForReviewed = new LinkedHashSet<Document>();
-			for (Document d : allDocs)
-			{
-				EmailDocument ed = (EmailDocument) d;
-				if (ed.reviewed == val)
-					docsForReviewed.add(ed);
-			}
-		}
-
-		if (sentiments != null && sentiments.length > 0)
-		{
-			Lexicon lex = (Lexicon) getSessionAttribute(session, "lexicon");
-			docsForSentiments = lex.getDocsWithSentiments(sentiments, archive.indexer, allDocs, cluster, request.getParameter("originalContentOnly") != null, sentiments);
-		}
-
-		// if (!Util.nullOrEmpty(tag))
- 		if (tag != null) // note: explicitly allowing tag=<empty> as a way to specify no tag.
-		{
-			docsForTag = Document.selectDocByTag(allDocs, tag, true);
-		}
-		if (cluster >= 0) {
-			docsForCluster = new ArrayList<>(archive.docsForQuery(null, cluster, Indexer.QueryType.FULL)); // null for term returns all docs in cluster
-		}
-
-		if (persons != null || contact_ids != null)
-		{
-			persons = JSPHelper.convertRequestParamsToUTF8(persons);
-			docsForPersons = IndexUtils.selectDocsByAllPersons(addressBook, (Collection) allDocs, persons, Util.toIntArray(contact_ids));
-		}
-
-        //Some docs with faulty date are assigned 1960/01/01
-		if (end_yy >= 0 && yy >= 0) // date range
-		{
-			docsForDateRange = (List) IndexUtils.selectDocsByDateRange((Collection) allDocs, yy, mm, dd, end_yy, end_mm, end_dd);
-            log.info("Found " + docsForDateRange.size() + " docs in range: [" + yy+"/"+mm+"/"+dd+" - [" + end_yy + "/" + end_mm + "/" + end_dd + "]");
-        }
-		else if (yy >= 0) // single month or year
-		{
-			docsForDateRange = IndexUtils.selectDocsByDateRange((Collection) allDocs, yy, mm, dd);
-            log.info("Found " + docsForDateRange.size() + " docs beyond " + yy+"/"+mm+"/"+dd);
-		}
-
-		if (!Util.nullOrEmpty(attachments))
-		{
-			attachments = JSPHelper.convertRequestParamsToUTF8(attachments);
-			blobsForAttachments = IndexUtils.getBlobsForAttachments(allDocs, attachments, attachmentsStore);
-			docsForAttachments = (Set<Document>) EmailUtils.getDocsForAttachments((Collection) allDocs, blobsForAttachments);
-		}
-
-		if (!Util.nullOrEmpty(attachment_extensions))
-		{
-			attachment_extensions = JSPHelper.convertRequestParamsToUTF8(attachment_extensions);
-			blobsForAttachmentTypes = IndexUtils.getBlobsForAttachmentTypes(allDocs, attachment_extensions);
-			docsForAttachmentTypes = (Set<Document>) EmailUtils.getDocsForAttachments((Collection) allDocs, blobsForAttachmentTypes);
-		}
-
-		if (!Util.nullOrEmpty(docIds))
-		{
-			docsForDocIds = new ArrayList<>();
-			for (String id : docIds)
-			{
-				Document d = archive.docForId(id);
-				if (d != null)
-					docsForDocIds.add(d);
-			}
-		}
-
-		if (datasetId != null)
-		{
-			// note: these docNums have nothing to do with docIds of the docs.
-			// they are just indexes into a dataset, which is a collection of docs from the result of some search.
-			DataSet dataset = (DataSet) getSessionAttribute(session, datasetId);
-			if (dataset != null)
-
-			{
-				String[] docNumbers = request.getParameterValues("docNum");
-				if (docNumbers == null)
-					docsForNumbers = dataset.getDocs();
-				else
-					docsForNumbers = (List) IndexUtils.getDocNumbers(dataset.getDocs(), docNumbers);
-			}
-		}
-
-		// apply the OR or AND of the filters
-		boolean initialized = false;
-		List<Document> resultDocs;
-		List<Blob> resultBlobs;
-
-		// if its an AND selection, and we are applying only to filtered docs, start with it and intersect with the docs for each facet.
-		// otherwise, start with nothing as an optimization, since there's no need to intersect with it.
-		// the docs for each facet will always be a subset of archive's docs.
-		if (only_apply_to_filtered_docs && !or_not_and && allDocs != null)
-		{
-			initialized = true;
-			resultDocs = new ArrayList<>(allDocs);
-		}
-		else
-			resultDocs = new ArrayList<>();
-
-		if (docsForTerm != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForTerm);
-			}
-			else
-				resultDocs.retainAll(docsForTerm);
-		}
-
-		if (docsForRegex != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForRegex);
-			}
-			else
-				resultDocs.retainAll(docsForRegex);
-		}
-
-		if (docsForSentiments != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForSentiments);
-			}
-			else
-				resultDocs = Util.listIntersection(resultDocs, docsForSentiments);
-		}
-		if (docsForTag != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForTag);
-			}
-			else
-				resultDocs = Util.listIntersection(resultDocs, docsForTag);
-		}
-
-		if (docsForCluster != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForCluster);
-			}
-			else
-				resultDocs.retainAll(docsForCluster);
-		}
-
-		if (docsForDocIds != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForDocIds);
-			}
-			else
-				resultDocs.retainAll(docsForDocIds);
-		}
-
-		if (docsForPersons != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForPersons);
-			}
-			else
-				resultDocs = Util.listIntersection(resultDocs, docsForPersons);
-		}
-
-		if (docsForDateRange != null)
-		{
-			// if (!initialized || or_not_and)
-			// note: date range selection is always ANDed, regardless of or_not_and
-			if (!initialized)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForDateRange);
-			}
-			else
-				resultDocs.retainAll(docsForDateRange);
-		}
-		if (docsForFolder != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForFolder);
-			}
-			else
-				resultDocs.retainAll(docsForFolder);
-		}
-
-		if (docsForDirection != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForDirection);
-			}
-			else
-				resultDocs.retainAll(docsForDirection);
-		}
-
-		if (docsForDoNotTransfer != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForDoNotTransfer);
-			}
-			else
-				resultDocs.retainAll(docsForDoNotTransfer);
-		}
-
-		if (docsForTransferWithRestrictions != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForTransferWithRestrictions);
-			}
-			else
-				resultDocs.retainAll(docsForTransferWithRestrictions);
-		}
-
-		if (docsForReviewed != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForReviewed);
-			}
-			else
-				resultDocs.retainAll(docsForReviewed);
-		}
-
-		if (docsForGroup != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForGroup);
-			}
-			else
-				resultDocs.retainAll(docsForGroup);
-		}
-
-		if (docsForAttachments != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForAttachments);
-			}
-			else
-				resultDocs.retainAll(docsForAttachments);
-		}
-
-		if (docsForAttachmentTypes != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForAttachmentTypes);
-			}
-			else
-				resultDocs.retainAll(docsForAttachmentTypes);
-		}
-
-		if (docsForNumbers != null)
-		{
-			if (!initialized || or_not_and)
-			{
-				initialized = true;
-				resultDocs.addAll(docsForNumbers);
-			}
-			else
-				resultDocs.retainAll(docsForNumbers);
-		}
-
-		if (!initialized)
-		{
-			if (cluster >= 0)
-				resultDocs = new ArrayList<Document>(archive.docsForQuery(null, cluster, Indexer.QueryType.FULL)); // means all docs in cluster x
-			else
-			{
-				resultDocs = new ArrayList<Document>();
-				resultDocs.addAll(allDocs); // if no filter, all docs are selected
-			}
-		}
-
-		// compute resultBlobs
-		if (or_not_and) {
-			resultBlobs = Util.listUnion(blobsForAttachments, blobsForAttachmentTypes);
-			resultBlobs = Util.listUnion(resultBlobs, blobsForTerm);
-		} else {
-			resultBlobs = Util.listIntersection(blobsForAttachments, blobsForAttachmentTypes);
-			resultBlobs = Util.listIntersection(resultBlobs, blobsForTerm);
-		}
-
-		// we need to sort again if needed. by default, we're here assuming relevance based sort.
-		// can't rely on indexer sort.
-		// for 2 reasons:
-		// 1. blobs vs. docs may not be sorted by date as they are retrieved separately from the index.
-		// 2. there may be no search term -- the user can use this as a way to list all docs, but may still want sort by time
-		if (sortBy == Indexer.SortBy.CHRONOLOGICAL_ORDER)
-			Collections.sort(resultDocs);
-		else if (sortBy == Indexer.SortBy.RECENT_FIRST) {
-			Collections.sort(resultDocs);
-			Collections.reverse(resultDocs);
-		}
-
-		return new Pair<Collection<Document>, Collection<Blob>>(resultDocs, resultBlobs);
-	}
-
-	// currently, only lookup by term and attachment url tails
-	// note: only_apply_to_filtered_docs == true is not honored by lucene lookup by term (callers need to filter by themselves)
-	public static Set<Blob> selectAttachments(HttpServletRequest request, HttpSession session, boolean only_apply_to_filtered_docs, boolean or_not_and) throws UnsupportedEncodingException
-	{
-		// below are all the controls for selecting docs 
-		String term = request.getParameter("term"); // search term
-		String[] attachments = request.getParameterValues("attachment");
-		Archive archive = JSPHelper.getArchive(session);
-		Collection<Document> allDocs = getAllDocsAsSet(session, only_apply_to_filtered_docs);
-		if (Util.nullOrEmpty(allDocs))
-			return new LinkedHashSet<Blob>();
-
-		BlobStore attachmentsStore = archive.blobStore;
-
-		Indexer indexer;
-		indexer = archive.indexer;
-
-		// the raw request param val is in 8859 encoding, interpret the bytes as utf instead
-
-		/**
-		 * there is a little overlap between datasetId and docForDocIds.
-		 * probably datasetIds can be got rid of?
-		 */
-		Set<Blob> blobsForTerm = null, blobsForAttachments = null;
-
-		if (!Util.nullOrEmpty(term))
-		{
-			term = JSPHelper.convertRequestParamToUTF8(term);
-			if (isRegexSearch(request)) {
-				// TODO: not implemented yet
-				//assert(false);
-				return null;
-			} else {
-				blobsForTerm = archive.blobsForQuery(term);
-			}
-		}
-
-		if (!Util.nullOrEmpty(attachments))
-		{
-			attachments = JSPHelper.convertRequestParamsToUTF8(attachments);
-			blobsForAttachments = IndexUtils.getBlobsForAttachments((Collection) allDocs, attachments, attachmentsStore);
-		}
-
-		if (blobsForTerm == null)
-			return blobsForAttachments;
-		if (blobsForAttachments == null)
-			return blobsForTerm;
-
-		if (or_not_and) {
-			return Util.setUnion(blobsForTerm, blobsForAttachments);
-		} else {
-			return Util.setIntersection(blobsForTerm, blobsForAttachments);
-		}
-	}
-
-	public static List<Document> selectDocsAsList(HttpServletRequest request, HttpSession session) throws UnsupportedEncodingException
-	{
-		return new ArrayList<Document>(selectDocsWithHighlightAttachments(request, session, true /*
-																								 * only
-																								 * select
-																								 * from
-																								 * currently
-																								 * filtered
-																								 * docs
-																								 */, false /*
-																											 * and
-																											 * ,
-																											 * not
-																											 * or
-																											 */).first);
-	}
-
-	private static Set<Document> getAllDocsAsSet(HttpSession session, boolean only_apply_to_filtered_docs)
-	{
-		Archive archive = JSPHelper.getArchive(session);
+		Archive archive = JSPHelper.getArchive(request);
 
 		if (!only_apply_to_filtered_docs)
 			return archive.getAllDocsAsSet();
@@ -1459,10 +836,6 @@ public class JSPHelper {
 		return (docs.size() < archive.getAllDocs().size());
 	}
 
-	public static Collection<Document> selectDocs(HttpServletRequest request, HttpSession session, boolean only_apply_to_filtered_docs, boolean or_not_and) throws UnsupportedEncodingException
-	{
-		return selectDocsWithHighlightAttachments(request, session, only_apply_to_filtered_docs, or_not_and).first;
-	}
 
 	public static void setSessionConfigParam(HttpServletRequest request)
 	{
@@ -1480,26 +853,7 @@ public class JSPHelper {
 		request.getSession().setAttribute(key, value);
 	}
 
-	/** serve up a file from the cache_dir */
-	public static void serveFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-	{
-		HttpSession session = request.getSession();
-		String filename = request.getParameter("file");
-		filename = convertRequestParamToUTF8(filename);
-		String baseDir = (String) getSessionAttribute(session, "cacheDir");
 
-		if (filename.indexOf(".." + File.separator) >= 0) // avoid file injection!
-		{
-			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);
-			return;
-		}
-
-		// could check if user is authorized here... or get the userKey directly from session
-
-		String filePath = baseDir + File.separator + filename;
-		writeFileToResponse(session, response, filePath, true /* asAttachment */);
-	}
 
 	/** serve up a file from the cache_dir */
 	public static void serveBlob(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -1507,7 +861,12 @@ public class JSPHelper {
 		HttpSession session = request.getSession();
 		String filename = request.getParameter("file");
 		filename = convertRequestParamToUTF8(filename);
-		String baseDir = (String) getSessionAttribute(session, "cacheDir");
+
+		//get archiveID from the request parameter and then get the archive. It must be present
+		//use its baseDir.
+		Archive archive = JSPHelper.getArchive(request);
+		assert archive!=null: new AssertionError("ArchiveID not passed to serveAttachment.jsp");
+		String baseDir = archive.baseDir;
 
 		if (filename.indexOf(".." + File.separator) >= 0) // avoid file injection!
 		{

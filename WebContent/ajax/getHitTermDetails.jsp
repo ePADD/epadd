@@ -27,13 +27,16 @@ try {
 	try { pageScore = Float.parseFloat(pageScoreStr); } catch (Exception e) { }
 	
 	String baseURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-	Archive archive = JSPHelper.getArchive(session);
-	if (archive == null)
-	{
-		// display error is a message that can be displayed to the end user, i.e. something he can take action upon.
-		result.put("displayError", "<a href=\"" + baseURL + "\">Load an index into Muse</a>.");
-		JSPHelper.log.warn ("No index loaded for leadsAsJson");
-		return;
+
+
+	Archive archive = JSPHelper.getArchive(request);
+	if (archive == null) {
+	    JSONObject obj = new JSONObject();
+	    obj.put("status", 1);
+	    obj.put("error", "No archive in session");
+	    out.println (obj);
+	    JSPHelper.log.info(obj);
+	    return;
 	}
 
 	AddressBook ab = archive.addressBook;

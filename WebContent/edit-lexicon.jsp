@@ -13,6 +13,7 @@
 
 	boolean freshLexicon = false; // track whether this is a newly created lexicon -- we suppress the "create new lexicon" option if so.
 
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String lexiconName = request.getParameter("lexicon");
 
@@ -162,6 +163,7 @@
 				$('#categories textarea').each(function (i, o) {
 					post_params[$(o).attr('name')] = $(o).val();
 				});
+				post_params.archiveID = '<%=archiveID%>';
 				post_params.lexicon = '<%=lexiconName%>';
 				post_params.language = 'english';
 				$('#save-button .fa').addClass('fa-spin');
@@ -188,7 +190,7 @@
 					return;
 				var lexiconTermsArr = lexiconTerms.split('|');
 
-				var url = 'multi-search?';
+				var url = 'multi-search?archiveID=<%=archiveID%>&';
 				for (var i = 0; i < lexiconTermsArr.length; i++) {
 					url += 'term=' + lexiconTermsArr[i] + '&'; // there will be a trailing &, that's ok
 				}

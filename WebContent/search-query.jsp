@@ -3,6 +3,9 @@
 <%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@include file="getArchive.jspf" %>
+<%
+	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+%>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -49,7 +52,10 @@
 
 	<div id="simple-search"style="text-align:center">
 		<form method="get" action="browse">
-
+	<%--		hidden input field to pass archiveID to the server. This is a common pattern used to pass
+			//archiveID in all those forms where POST was used to invoke the server page.
+	--%>
+		<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
 			<input name="term" size="80" placeholder="search query"/>
 			<div style="display:none">
 				<input type="hidden" name="adv-search"/>
@@ -69,6 +75,7 @@
 
 	<div style="display:none" id="query-generator">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
+			<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
 			<textarea placeholder="Type or paste text here to search the email archive for all matching entities. Following the search, select a highlighted entity to view related messages." name="refText" id="refText" cols="80" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
@@ -78,7 +85,7 @@
 	</div>
 
 	<br/>
-	Need more search options? Try <a href="advanced-search">Advanced Search</a>.
+	Need more search options? Try <a href="advanced-search?archiveID=<%=archiveID%>">Advanced Search</a>.
 </div>
 
 <script>

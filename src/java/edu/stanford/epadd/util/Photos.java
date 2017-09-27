@@ -66,8 +66,10 @@ public class Photos
 			filePath = baseDir + File.separator + filename;
 		}
 		else
-		{
-			baseDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
+		{ //get archiveID from the request parameter and then get the archive. It must be present
+			Archive archive = JSPHelper.getArchive(request);
+			assert archive!=null: new AssertionError("If no mode is set then the archiveID must be passed to serveImage.jsp");
+			baseDir = archive.baseDir;
 			filePath = baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
 		}
 		// could check if user is authorized here... or get the userKey directly from session

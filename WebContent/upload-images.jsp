@@ -12,6 +12,7 @@
 <%@include file="getArchive.jspf" %>
 
 <%
+    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
    session.setAttribute("statusProvider", new StaticStatusProvider("Uploading files"));
    JSONObject result = new JSONObject();
 
@@ -108,7 +109,7 @@
        <% } %>
        <br/>
        <br/>
-            <button class="btn btn-cta" onclick="window.location='set-images'; return false;">Back <i class="icon-arrowbutton"></i></button>
+            <button class="btn btn-cta" onclick="window.location='set-images?archiveID=<%=archiveID%>'; return false;">Back <i class="icon-arrowbutton"></i></button>
         </div>
 
        <jsp:include page="footer.jsp"/>

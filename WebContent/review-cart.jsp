@@ -41,7 +41,7 @@
 
 <%
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-
+String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 // filter all docs to only get the type requested.
 Collection<EmailDocument> newDocs = new ArrayList<EmailDocument>();
 for (EmailDocument ed: docs)
@@ -57,7 +57,10 @@ writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + " i
 <br/>
 <form method="post" action="export-cart.jsp">
 <div style="margin:auto; width:900px">
-<table id="messages">
+	hidden input field to pass archiveID to the server. This is a common pattern used to pass
+	//archiveID in all those forms where POST was used to invoke the server page.
+	<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
+	<table id="messages">
 	<thead><tr><th>Subject</th><th>Date</th><th>Annotation</th></tr></thead>
 	<tbody>
 

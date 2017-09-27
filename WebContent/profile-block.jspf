@@ -1,7 +1,8 @@
 <%@ page import="edu.stanford.muse.email.AddressBook" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="java.io.IOException" %><%!
+<%@ page import="java.io.IOException" %>
+<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %><%!
   // this profile block will go onto pretty much every page after the archive is loaded
   static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields)
   {
@@ -9,11 +10,11 @@
     {
       AddressBook ab = archive.addressBook;
       String bestName = ab.getBestNameForSelf();
-
+      String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
       out1.println("<div style=\"display:inline-block;text-align:left\">"
               + "<div class=\"profile-info\">"
-              + "<div class=\"profile-small-img\"></div>"
+              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto.png\')\"></div>"
               + "<div class=\"profile-text\">"
               + Util.escapeHTML(title) + "<br/>");
 

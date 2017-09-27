@@ -4,12 +4,30 @@
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONObject"%>
 <%@page language="java" %>
 <%
-	Archive archive = JSPHelper.getArchive(session);
 	JSONObject result = new JSONObject();
-      if (archive == null) {
-          result.put("status", 1);
-          result.put("message", "No archive is currently loaded.");
-      } else {
+
+	result.put("status", 0);
+	result.put("message", "Archive deleted");
+	out.println (result.toString());
+    //With the introduction of archiveID we decide not to delete the archive
+    //Therefore immediately return from here.
+	return;
+	//However in future we can decide upon the action
+
+
+/*
+    Archive archive = JSPHelper.getArchive(session,request);
+    if (archive == null) {
+        JSONObject obj = new JSONObject();
+        obj.put("status", 1);
+        obj.put("error", "No archive in session");
+        out.println (obj);
+        JSPHelper.log.info(obj);
+        return;
+    }
+
+
+	{
       	String baseDir = archive.baseDir;
         if (!session.isNew()) {
             session.removeAttribute("userKey");
@@ -30,5 +48,6 @@
         result.put("message", "Archive deleted.");
     }
 	out.println (result.toString());
+*/
 //	session.removeAttribute("mode");
 %>

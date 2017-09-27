@@ -46,11 +46,12 @@
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
     AddressBook ab = archive.addressBook;
+    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
 		archive.recreateAuthorityMapper(); // we have to recreate auth mappings since they may have changed
-        SimpleSessions.saveArchive(session);
+        SimpleSessions.saveArchive(archive);
     }
 
 	String entityMerges = request.getParameter("entityMerges");
@@ -60,22 +61,19 @@
 		try {
 			type = Short.parseShort (request.getParameter ("entityType"));
 			entityMapper.initialize (type, entityMerges);
-			SimpleSessions.saveArchive(session);
+			SimpleSessions.saveArchive(archive);
 		} catch (Exception e) {
 			Util.print_exception("Error in merging entities", e, JSPHelper.log);
 		}
 	}
 
-	Collection<EmailDocument> allDocs = (Collection) JSPHelper.getSessionAttribute(session, "emailDocs");
-	Collection<EmailDocument> fullEmailDocs = (Collection) archive.getAllDocs();
-	if (allDocs == null)
-		allDocs = fullEmailDocs;
+	Collection<EmailDocument> allDocs = (Collection) archive.getAllDocs();
 
 	int outCount = ab.getOutMessageCount(allDocs);
 	int inCount = allDocs.size()-outCount;
 	int nAttachments = EmailUtils.countAttachmentsInDocs(allDocs);
 	int nImageAttachments = EmailUtils.countImageAttachmentsInDocs(allDocs);
-	int nDocAttachments = EmailUtils.countDocumentAttachmentsInDocs(allDocs);
+	//int nDocAttachments = EmailUtils.countDocumentAttachmentsInDocs(allDocs);
 	int nFolders = archive.getAllFolders().size();
 	boolean statsAvailable = false;
 	if(archive.processingMetadata.entityCounts != null)
@@ -100,7 +98,7 @@
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box text-center margin30">
-		<a href="correspondents">
+		<a href="correspondents?archiveID=<%=archiveID%>">
 			<i class="icon-browsetoparrow"></i>
 			<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>
 			<p class="cta-text-1">Correspondents (<%=nContacts %>)</p>
@@ -109,7 +107,7 @@
 	</div>
 	
 	<div class="cta-box text-center margin30">
-			<a href="list-entities.jsp?type=0">
+			<a href="list-entities.jsp?type=0&archiveID=<%=archiveID%>">
 			<i class="icon-browsetoparrow"></i>
 			<i class="fa fa-user-o" style="color:#e60707" aria-hidden="true"></i>
 			<p class="cta-text-1">Person entities (<%=nPersonEntities%>)</p>
@@ -122,7 +120,7 @@
 	<% } %>
 
 	<div class="cta-box text-center margin30">
-		<a href="entity-types">
+		<a href="entity-types?archiveID=<%=archiveID%>">
 			<i class="icon-browsetoparrow"></i>
 			<i class="fa fa-tag" style="color:#31a354" aria-hidden="true"></i>
 			<p class="cta-text-1">Other entities (<%=nNonPersonEntities%>)</p>
@@ -133,7 +131,7 @@
 	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<br/>
         <div class="cta-box text-center margin30">
-            <a href="by-folder">
+            <a href="by-folder?archiveID=<%=archiveID%>">
                 <i class="icon-browsetoparrow"></i>
 				<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>
                 <p class="cta-text-1">Folder view (<%=nFolders%>)</p>
@@ -146,7 +144,7 @@
 		<br/>
 	<% } else { %>
 		<div class="cta-box text-center margin30">
-				<a href="image-attachments?attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&startDate=&endDate=">
+				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&startDate=&endDate=">
 					<i class="icon-browsetoparrow"></i>
 					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
 					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
@@ -156,7 +154,7 @@
 
 
 	<div class="cta-box text-center margin30">
-		<a href="attachments?attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
+		<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
 			<i class="icon-browsetoparrow"></i>
 			<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>
 			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
@@ -166,7 +164,7 @@
 	<br/>
 
 		<div class="cta-box text-center margin30">
-			<a href="lexicon">
+			<a href="lexicon?archiveID=<%=archiveID%>">
 				<i class="icon-browsetoparrow"></i>
 				<img src="images/lexicon.png"/>
 				<p class="cta-text-1">Lexicon search</p>
@@ -176,7 +174,7 @@
 
 		<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
 			<div class="cta-box text-center margin30">
-				<a href="report">
+				<a href="report?archiveID=<%=archiveID%>">
 					<i class="icon-browsetoparrow"></i>
 					<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>
 					<p class="cta-text-1">Data report</p>
@@ -186,7 +184,7 @@
 		<% } %>
 
 		<div class="cta-box text-center margin30">
-			<a href="settings">
+			<a href="settings?archiveID=<%=archiveID%>">
 				<i class="icon-browsetoparrow"></i>
 				<i class="fa fa-cog" style="color:#888" aria-hidden="true"></i>
 				<p class="cta-text-1">Settings</p>

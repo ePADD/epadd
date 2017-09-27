@@ -2,7 +2,7 @@
 <%@page language="java" import="edu.stanford.muse.email.MuseEmailFetcher"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.Accounts"%>
-<%@ page import="edu.stanford.muse.webapp.Sessions" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%
  	JSPHelper.checkContainer(request); // do this early on so we are set up
  request.setCharacterEncoding("UTF-8");
@@ -12,8 +12,9 @@
  	response.sendRedirect("index?noredirect=");
  	return;
  }
- 		
- Accounts.updateUserInfo(request);
+
+ //Moved the method updateUserInfo to archive
+ //Accounts.updateUserInfo(request);
  // re-read accounts again only if we don't already have them in this session.
  // later we might want to provide a way for users to refresh the list of folders.
  	
@@ -67,10 +68,10 @@
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 
 <%
-	Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
+	/*Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 	if (archive != null) {
 		writeProfileBlock(out, archive, "", "Add email from folders");
-	}
+	}*/
 %>
 
 
@@ -168,7 +169,7 @@
   	    {
     		// mbox can only be with "desktop" mode, which means its a fixed cache dir (~/.muse/user by default)
     		// consider moving to its own directory under ~/.muse
-    		String mboxFolderCountsCacheDir = Sessions.CACHE_DIR; 
+    		String mboxFolderCountsCacheDir = SimpleSessions.getDefaultCacheDir();
     		JSPHelper.log.info ("getting folders and counts from fetcher #" + accountIdx);
            	// refresh_folders() will update the status and the account's folders div
             m.readFoldersInfos(accountIdx, mboxFolderCountsCacheDir);

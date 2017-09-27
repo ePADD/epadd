@@ -3,12 +3,14 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@include file="getArchive.jspf" %>
 <%
+/*
 if (ModeConfig.isPublicMode()) {
 	// this browse page is also used by Public mode where the following set up may be requried. 
 	String archiveId = request.getParameter("aId");
 	Sessions.loadSharedArchiveAndPrepareSession(session, archiveId);
 	// TODO: should also pass "aId" downstream to leadsAsJson.jsp also. but it still relies on emailDocs and maybe other session attributes, whose dependence should also be eliminated in public mode for being RESTful.
 }
+*/
 %>
 <!DOCTYPE html>
 <html>
@@ -73,6 +75,7 @@ if (ModeConfig.isPublicMode()) {
             <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px; height: auto">
                 <%
                     String req = request.getParameter("refText");
+                    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
                     out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
                 %>
             </div>
@@ -100,11 +103,12 @@ if (ModeConfig.isPublicMode()) {
 <!-- Pop-up section -->
 
 <script type="text/javascript">
+    var archiveID="<%=archiveID%>";
 	window.MUSE_URL = "<%=request.getContextPath()%>" // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
     if(window.MUSE_URL==null)
         window.MUSE_URL="";
     var handle_submit = function() {
-        window.open('browse?adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term="' + $('#search-term').html() + '"');
+        window.open('browse?archiveID=<%=archiveID%>&adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term="' + $('#search-term').html() + '"');
     };
 
     $('#submit-button').click(handle_submit);

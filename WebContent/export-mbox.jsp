@@ -26,6 +26,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Export');</script>
 <% 	AddressBook addressBook = archive.addressBook;
+String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "", "Export archive");
 %>
@@ -57,7 +58,7 @@
 
         // either we do tags (+ or -) from selectedTags
         // or we do all docs from allDocs
-        String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
+        String cacheDir = archive.baseDir;
         String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
         BlobStore bs = null;
         try {

@@ -27,6 +27,7 @@
 
 package edu.stanford.muse.util;
 
+import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
 
@@ -181,9 +182,9 @@ public class Util
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b, String message,Log log)
+	public static boolean softAssert(boolean b, String message, Log log)
 	{
-		warnIf(!b, "Soft assert failed! " + message,log);
+		warnIf(!b, "Soft assert failed! " + message, log);
 		return true;
 	}
 
@@ -196,22 +197,21 @@ public class Util
 		}
 	}
 
-	public static void aggressiveWarn(String message, long sleepMillis,Log log)
+public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
-		String msg = "\n\n\n\n\n" +
-		"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-		"\n\n\n\n\n\n" + message + "\n\n\n\n\n\n" +
-		"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-		"\n\n\n\n\n";
+		String errmsg = "\n\n\n\n\n" + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+				"\n\n\n\n\n\n" + message + "\n\n\n\n\n\n" +
+				"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+				"\n\n\n\n\n";
 
-		log.warn(msg);
+		log.warn(errmsg);
 		if (sleepMillis > 0)
 			try {
 				Thread.sleep(sleepMillis);
 			} catch (Exception e) {
-			log.warn("Exception thrown at Thread.sleep");
-				Util.print_exception(e);
+		Util.print_exception("Exception in Thread.sleep",e,log);
 			}
+
 	}
 
 	public static void die(String reason)
@@ -1312,7 +1312,7 @@ public class Util
 
 		if (start.after(end)) // error
 		{
-			softAssert(false,log);
+		softAssert(false,JSPHelper.log);
 			return intervals;
 		}
 
@@ -1667,8 +1667,8 @@ public class Util
 		File f = new File(path);
 		if (f.exists())
 		{
-			boolean success = deleteDir(f,log);
-			warnIf(!success, "Unable to delete file: " + f.getPath(),log);
+		boolean success = deleteDir(f);
+			warnIf(!success, "Unable to delete file: " + f.getPath(), log);
 		}
 		else
 			warnIf(true, "Sorry, can't delete path because it doesn't even exist: " + path,log);

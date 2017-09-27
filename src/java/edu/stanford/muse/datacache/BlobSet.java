@@ -186,7 +186,7 @@ private List<Blob> sortBlobsByTime()
 
 /** currently 2 kinds of output. standalone page and piclens page. standalone page not tested.
  * if applicationURL is not null/empty, we'll use full paths to be safe (Cooliris has problems if we use relative paths in its media RSS file  */
-private int emit_gallery_page(String prefix, String applicationURL, String extra_mesg)
+private int emit_gallery_page(String prefix, String applicationURL, String extra_mesg,String archiveID)
 {
     int nEntriesForPiclens;
     	
@@ -236,8 +236,8 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
 	        	String contentFileDataStoreURL = blobStore.get_URL(b);
 	        	// could either serve up the attachment directly or break out to the message containing the attachment.
 	        	// both are reasonable...
-	        	contentURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
-	        	linkURL = "browse?attachment=" + Util.URLtail(contentFileDataStoreURL);
+	        	contentURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
+	        	linkURL = "browse?archiveID="+archiveID+"&attachment=" + Util.URLtail(contentFileDataStoreURL);
 				if (!Util.nullOrEmpty(applicationURL)) {
 					contentURL = applicationURL + "/" + contentURL;
 					linkURL = applicationURL + "/" +  linkURL;
@@ -264,7 +264,7 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
 	    		}
 	    		else
 	    		{
-					 thumbURL = "serveAttachment.jsp?file=" + Util.URLtail(thumbFileDataStoreURL);
+					 thumbURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(thumbFileDataStoreURL);
 					// alternate: String thumbURL = "../serveAttachment.jsp?file=" + Util.URLtail(thumbFileDataStoreURL);
 					// if given appl URL prepend it, because cooliris sometimes has trouble with just serveAttachment or even ../serveAttachment
 					if (!Util.nullOrEmpty(applicationURL))
@@ -306,11 +306,13 @@ private void compute_stats(Blob.BlobStats stats)
     }
 }
 
+/*
 public int generate_top_level_page(String prefix) throws IOException { return generate_top_level_page(prefix, "", null); }
 public int generate_top_level_page(String prefix, String extra_mesg) throws IOException { return generate_top_level_page(prefix, "", extra_mesg); }
+*/
 
 	/** application URL is something like http://localhost:8080/epadd */
-public int generate_top_level_page(String prefix, String applicationURL, String extra_mesg) throws IOException
+public int generate_top_level_page(String prefix, String applicationURL, String extra_mesg, String archiveID) throws IOException
 {
     List<Pair<String, List<Blob>>> tmp = new ArrayList<Pair<String, List<Blob>>>();
     for (Map.Entry<String, List<Blob>> entry: personToBlobMap.entrySet())
@@ -328,7 +330,7 @@ public int generate_top_level_page(String prefix, String applicationURL, String 
     log.info  ((stats.n_total_pics - stats.n_unique_pics) + " redundant attachments = " + (stats.total_data_size - stats.unique_data_size) + " bytes");
  //   generate_sharer_xml();
  //   generate_sharer_json();
-    return emit_gallery_page(prefix, applicationURL, extra_mesg); // rootDir has trailing /
+    return emit_gallery_page(prefix, applicationURL, extra_mesg,archiveID); // rootDir has trailing /
 }
 
 public void verify()

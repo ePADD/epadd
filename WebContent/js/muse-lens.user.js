@@ -364,7 +364,7 @@ main = function(evt) {
 	$_.ajax({
 			url: muse_url, 
 			type: 'POST',
-			data: 'refText=' + encoded_page +"&refURL="+encoded_url, 
+			data: 'refText=' + encoded_page +"&refURL="+encoded_url+"&archiveID="+archiveID,
 			dataType: 'text',
 			beforeSend: function(xhr) { xhr.withCredentials = true;  },
 			xhrFields: { withCredentials: true},
@@ -757,7 +757,7 @@ var HIT_CLICKED = function(e, hit_details) {
     	var jqXHR = $_.ajax({
 			url: window.MUSE_URL + '/ajax/getHitTermDetails.jsp', 
 			type: 'POST',
-			data: 'term=' + hit_details.text +"&pageScore="+hit_details.pageScore, 
+			data: 'term=' + hit_details.text +"&pageScore="+hit_details.pageScore+"&archiveID="+archiveID,
 			dataType: 'text',
 			beforeSend: function(xhr) { xhr.withCredentials = true;  },
 			xhrFields: { withCredentials: true},

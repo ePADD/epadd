@@ -8,12 +8,20 @@
 <%@page language="java" contentType="application/json; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%>
+<%@page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.index.Archive"%>
 <%
 JSONObject result = new JSONObject();
+Archive archive = JSPHelper.getArchive(request);
+        if (archive == null)
+        {
+            result.put ("status", 2);
+            result.put("error", "No archive found for archive ID =  " + request.getParameter("archiveID"));
+            out.println (result.toString(4));
+            return;
+        }
 
 try{
-        SimpleSessions.saveArchive(session);
+        SimpleSessions.saveArchive(archive);
         JSPHelper.log.info ("session saved");
 	    result.put("status", 0);
 	    result.put("message", "Session saved");

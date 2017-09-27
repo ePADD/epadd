@@ -35,6 +35,9 @@
       .search {cursor:pointer;}
     </style>
 
+	<%
+		String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	%>
 	<script type="text/javascript" charset="utf-8">
 		// we're using a simple datatables data source here, because this will be a small table
 		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
@@ -42,9 +45,9 @@
 			function do_lexicon_search(e) {
 			  var cat = $(e.target).text();
 			  if (window.is_regex)
-                  window.open('browse?adv-search=1&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
+                  window.open('browse?adv-search=1&archivedID=<%=archiveID%>&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
 			  else
-                  window.open('browse?adv-search=1&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
+                  window.open('browse?adv-search=1&archivedID=<%=archiveID%>&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
 			};
 
 			//if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
@@ -86,7 +89,7 @@
 <!--/sidebar-->
 
 <div style="text-align:center">
-	<button class="btn-default" onclick="window.location = 'graph?view=sentiments';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
+	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
 	&nbsp;&nbsp;
 	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit Lexicon </button>
 	&nbsp;&nbsp;
@@ -97,9 +100,9 @@
 <%
 	Lexicon lex = null;
 	// first look for url param for lexicon name if specified
-	String name = request.getParameter("name");
-	if (!Util.nullOrEmpty(name))
-		lex = archive.getLexicon(name);
+	String lexiconname = request.getParameter("lexicon");
+	if (!Util.nullOrEmpty(lexiconname))
+		lex = archive.getLexicon(lexiconname);
 	else
 	{
         /*
@@ -114,14 +117,14 @@
 		if (lex == null)
 		{
 			// if not in session either, simply look for default
-			name = Config.DEFAULT_LEXICON;
-			lex = archive.getLexicon(name);
+			lexiconname = Config.DEFAULT_LEXICON;
+			lex = archive.getLexicon(lexiconname);
 		}
 	}
-    boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase (name);
+    boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase (lexiconname);
 
 	if (lex == null) {
-		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(name) + "</div>");
+		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(lexiconname) + "</div>");
 	} else {
 //		session.setAttribute("lexicon", lex);
 		Map<String, Integer> map = lex.getLexiconCounts(archive.indexer, !isRegex /* originalContent only */, isRegex);
@@ -134,7 +137,7 @@
 		boolean onlyOneLexicon = (lexiconNames.size() == 1);
 		// common case is only one lexicon, don't show load lexicon in this case.
 		if (!onlyOneLexicon) { %>
-			<script>function changeLexicon() {	window.location = 'lexicon?name=' +	$('#lexiconName').val(); }</script>
+			<script>function changeLexicon() {	window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	$('#lexiconName').val(); }</script>
 
 			<div style="text-align:center">
 
@@ -142,7 +145,7 @@
 						<label for="lexiconName">Choose Lexicon</label>
 						<select id="lexiconName" name="lexiconName" class="form-control selectpicker">
 							<% for (String n: lexiconNames) { %>
-							%> <option <%=name.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
+							%> <option <%=lexiconname.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
 							<% } %>
 						</select>
 					</div>
@@ -172,12 +175,12 @@
 		$(document).ready (function() {
             window.is_regex = <%=isRegex%>;
 			$('#lexiconName').change (changeLexicon);
-			$('#edit-lexicon').click (function() { window.location='edit-lexicon?lexicon=<%=lex.name%>';})
+			$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';})
 			$('#create-lexicon').click (function() {
 				var lexiconName = prompt ('Enter the name of the new lexicon:');
 				if (!lexiconName)
 					return;
-				window.location = 'edit-lexicon?lexicon=' + lexiconName;
+				window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;
 			});
 		});
 	</script>

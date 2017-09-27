@@ -55,6 +55,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
+    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
     Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
     SearchResult inputSet = new SearchResult(archive,params);
@@ -74,12 +75,9 @@
     String piclensRSSFilename = "";
 
 	if (!Util.nullOrEmpty(allAttachments)) {
-        String userKey = "user";
-        String rootDir = JSPHelper.getRootDir(request);
-        String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
+	    String cacheDir = archive.baseDir;
         JSPHelper.log.info("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
 
-        Set<DatedDocument> docs = new HashSet<>((Collection) archive.getAllDocs());
 
         String extra_mesg = "";
 
@@ -97,18 +95,18 @@
         // create a dataset object to view
         int i = new Random().nextInt();
         String randomPrefix = String.format("%08x", i);
-        JSPHelper.log.info("Root dir for blobset top level page is " + rootDir);
-        System.err.println("Root dir for blobset top level page is " + rootDir);
-        BlobSet bs = new BlobSet(rootDir, new ArrayList<Blob>(allAttachments), store);
+        JSPHelper.log.info("Root dir for blobset top level page is " + cacheDir);
+        System.err.println("Root dir for blobset top level page is " + cacheDir);
+        BlobSet bs = new BlobSet(cacheDir, new ArrayList<Blob>(allAttachments), store);
 
         String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        nEntriesForPiclens = bs.generate_top_level_page(randomPrefix, appURL, extra_mesg);
+        nEntriesForPiclens = bs.generate_top_level_page(randomPrefix, appURL, extra_mesg,archiveID);
         // attachmentsForDocs
 
-        piclensRSSFilename = userKey + "/" + randomPrefix + ".photos.rss";
-        String faviconPlusCSS = "<link rel=\"icon\" type=\"image/png\" href=\"images/muse-favicon.png\">\n<link href=\"css/muse.css\" rel=\"stylesheet\" type=\"text/css\"/>";
+        piclensRSSFilename = "user"+ "/" + randomPrefix + ".photos.rss";
+        //String faviconPlusCSS = "<link rel=\"icon\" type=\"image/png\" href=\"images/muse-favicon.png\">\n<link href=\"css/muse.css\" rel=\"stylesheet\" type=\"text/css\"/>";
 
-        String url = request.getRequestURI();
+        //String url = request.getRequestURI();
     }
 %>
 
@@ -125,6 +123,10 @@
         <section>
             <div class="panel">
                 <div class="panel-heading">Filter images</div>
+
+                //adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
+                //archiveID in all those forms where POST was used to invoke the server page.
+                <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 
                 <div class="one-line">
                     <div class="form-group col-sm-6">

@@ -245,7 +245,7 @@ public class EmailRenderer {
     //TODO: Consider a HighlighterOptions class
 	public static Pair<String, Boolean> htmlForDocument(Document d, SearchResult searchResult, String datasetTitle,
                                                         Map<String, Map<String, Short>> authorisedEntities,
-			                                            boolean IA_links, boolean inFull, boolean debug) throws Exception
+			                                            boolean IA_links, boolean inFull, boolean debug,String archiveID) throws Exception
 	{
 		JSPHelper.log.debug("Generating HTML for document: " + d);
 		EmailDocument ed = null;
@@ -311,10 +311,10 @@ public class EmailRenderer {
 						if (attachmentStore!= null)
 						{
 							String contentFileDataStoreURL = attachmentStore.get_URL(attachment);
-							attachmentURL = "serveAttachment.jsp?file=" + Util.URLtail(contentFileDataStoreURL);
+							attachmentURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
 							String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
 							if (tnFileDataStoreURL != null)
-								thumbnailURL = "serveAttachment.jsp?file=" + Util.URLtail(tnFileDataStoreURL);
+								thumbnailURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(tnFileDataStoreURL);
 							else
 							{
 								if (attachment.is_image())

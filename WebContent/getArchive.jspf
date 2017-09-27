@@ -7,8 +7,8 @@
 <%
 	javax.servlet.jsp.JspWriter out2 = out;
 // if archive not in session, nothing can be done
-Archive archive = JSPHelper.getArchive(session);
- if (archive == null)
+Archive archive = JSPHelper.getArchive(request);
+if (archive == null)
 {
 	if (ModeConfig.isAppraisalMode()) {
 		// in appraisal mode only: try and load it from the default dir.
@@ -33,10 +33,10 @@ Archive archive = JSPHelper.getArchive(session);
 		<jsp:include page="header.jspf"/>
 		<div style="margin-left:170px">
 		<% if (ModeConfig.isAppraisalMode()) { %>
-			There is no default archive in <%= edu.stanford.muse.webapp.Sessions.CACHE_DIR %>. Please use the <a href="email-sources">import</a> option to start an archive.
+			There is no default archive in <%= edu.stanford.muse.webapp.SimpleSessions.getDefaultCacheDir() %>. Please use the <a href="email-sources">import</a> option to start an archive.
 		<% } else { %>
 			No archive in session. Please go to <a href="collections">Collections</a> and load an archive.
-		<% } %>
+		<% } %>zzz
 		</div></body></html>
 		<%
 		return;
