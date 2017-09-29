@@ -171,9 +171,9 @@
 		});
 */
 
-		$("#unload-archive").click(epadd.unloadArchive('<%=archiveID%>'));
+		/*$("#unload-archive").click(epadd.unloadArchive('<%=archiveID%>'));
 		$("#delete-archive").click(epadd.deleteArchive('<%=archiveID%>'));
-
+*/
         // we assume jq is always loaded onto any page that includes this header
         $('#mode-select').change(function() {
             var val = $('#mode-select').val();

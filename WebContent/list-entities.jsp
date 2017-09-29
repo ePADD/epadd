@@ -33,8 +33,6 @@ Browse page for entities based on fine types
     <script type="text/javascript" src="js/statusUpdate.js"></script>
     <script src="js/muse.js"></script>
     <script src="js/epadd.js"></script>
-
-    <script src="js/epadd.js"></script>
     <style type="text/css">
         .js #entities {display: none;}
     </style>
@@ -138,11 +136,12 @@ Browse page for entities based on fine types
 </div>
     <script type="text/javascript">
             $(document).ready(function() {
+                var archiveID='<%=archiveID%>';
             var click_to_search = function ( data, type, full, meta ) {
                 // epadd.do_search will open search result in a new tab.
                 // Note, we have to insert onclick into the rendered HTML,
                 // we were earlier trying $('.search').click(epadd.do_search) - this does not work because only the few rows initially rendered to html match the $('.search') selector, not the others
-                return '<span title="' + full[3] + '" style="cursor:pointer" onclick="epadd.do_search(event,'<%=archiveID%>')">' + data + '</span>';
+                return '<span title="' + full[3] + '" style="cursor:pointer" onclick="epadd.do_search(event,archiveID)">' + data + '</span>';
             };
 
             var entities = <%=resultArray.toString(4)%>;

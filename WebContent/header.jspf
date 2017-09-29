@@ -103,27 +103,30 @@
 		</ul>
         <script>
 			var archiveID = '<%=archiveID%>';
-            $("#save-archive").click(function(){
-                epadd.saveArchive(archiveID);
-            });
-            $("#close-save-archive").click(function(){
-                //on closing, first save the archive and then unload it.
-                epadd.saveArchive(false,archiveID).then(function(){
-                    epadd.unloadArchive(archiveID).then(function(){
-                         window.location = './collections';
+            $("#save-archive").click((function(archiveID){
+                return function(){ epadd.saveArchive(archiveID)}
+            }(archiveID)));
+            $("#close-save-archive").click((function(archiveID){
+                return function(){
+                    //on closing, first save the archive and then unload it.
+                    epadd.saveArchive(false,archiveID).then(function(){
+                        epadd.unloadArchive(archiveID).then(function(){
+                            window.location = './collections';
+                        });
                     });
-                });
-                //epadd.unloadArchive();
-                //Q. Will this location always remain as collections irrespective of where this close button was called.
-                //window.location = './collections';
-            });
-            $("#close-only-archive").click(function(){
+                    //epadd.unloadArchive();
+                    //Q. Will this location always remain as collections irrespective of where this close button was called.
+                    //window.location = './collections';
+                }
+            }(archiveID)));
+            $("#close-only-archive").click((function(archiveID){
                 //on closing, unload it.
-                    epadd.unloadArchive(archiveID).then(function(){
+				return function() {
+                    epadd.unloadArchive(archiveID).then(function () {
                         window.location = './collections';
                     });
-
-            });
+                }
+            }(archiveID)));
 
         </script>
 
