@@ -17,7 +17,7 @@
 
         JSONObject result = new JSONObject();
         String dir = request.getParameter("dir");
-        Boolean isEditAccessionNextScreen = request.getParameter("edit-screen") == null? false:true;
+        Boolean isEditAccessionNextScreen = request.getParameter("editscreen") == null? false:true;
         if (Util.nullOrEmpty(dir))
         {
             result.put ("status", 1);
