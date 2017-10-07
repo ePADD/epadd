@@ -520,7 +520,7 @@ public class Archive implements Serializable {
     }
 
     public void Verify() {
-        Set<Document> docs = allDocsAsSet;
+        List<Document> docs = getAllDocs();
         for (Document doc : docs) {
             try {
                 org.apache.lucene.document.Document ldoc = this.getLuceneDoc(doc.getUniqueId());
