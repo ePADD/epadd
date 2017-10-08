@@ -780,15 +780,6 @@ public class AddressBook implements Serializable {
         reassignContactIds();
     }
 
-    /**
-     * convert given list of email addrs to their canonical form
-     */
-    public List<String> convertToCanonicalAddrs(List<String> addrs) {
-        List<String> result = new ArrayList<String>();
-        for (String s : addrs)
-            result.add(getCanonicalAddr(s));
-        return result;
-    }
 
     /**
      * recomputes contacts merging unified ones. Warning: must be done before using the address book, otherwise, contacts will remain un-unified!
@@ -875,21 +866,6 @@ public class AddressBook implements Serializable {
 
         List<Pair<Contact, Integer>> pairs = Util.sortMapByValue(contactToCount);
         return pairs;
-    }
-
-    /**
-     * given an email addr, find a canonical email addr for that contact
-     */
-    public String getCanonicalAddr(String s) {
-        String s1 = s;
-        Contact c = lookupByEmail(s);
-        // ci can be null
-        if (c != null)
-            s1 = c.getCanonicalEmail();
-        else
-            log.error("REAL WARNING: no contact info for email address: " + s);
-
-        return s1;
     }
 
 

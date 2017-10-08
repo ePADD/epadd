@@ -53,14 +53,11 @@ public class Contact extends UnionFindObject {
 		return emails;
 	}
 
-	public String getCanonicalEmail()
+	public String getFirstEmail()
 	{
-		if (canonicalEmail != null)
-			return canonicalEmail;
-
 		Iterator<String> it = emails.iterator();
-		canonicalEmail = it.hasNext() ? it.next() : "Unknown";
-		return canonicalEmail;
+		String firstEmail = it.hasNext() ? it.next() : "Unknown";
+		return firstEmail;
 	}
 
 
@@ -89,36 +86,32 @@ public class Contact extends UnionFindObject {
 	 * no comma preferably i.e. prefer First Last to Last, First. */
 	public String pickBestName()
 	{
-		if (names == null || names.size() == 0)
-			return getCanonicalEmail();
-
 		String bestName = "";
-		int bestScore = Integer.MIN_VALUE;
-		for (String name: names)
-		{
-			if (name.length() == 0)
-				continue;
-			if (name.toLowerCase().indexOf("viagra") >= 0) // unfortunately, sometimes we see "names" such as "viagra official site"
-				continue;
-			boolean twoOrMoreTokens = (new StringTokenizer(name).countTokens() > 1);
-			boolean capitalized = Character.isUpperCase(name.charAt(0));
-			boolean comma = name.indexOf(',') >= 0;
-			int score = (twoOrMoreTokens ? 100 : 0)
-					+ (capitalized ? 10:0)
-					- (comma ? 1:0);
 
-			score = score * 100;
-			score += name.length(); // prefer longer names, but only if most other things are equal.
+		if (names != null) {
+			int bestScore = Integer.MIN_VALUE;
+			for (String name : names) {
+				if (name.length() == 0)
+					continue;
+				boolean twoOrMoreTokens = (new StringTokenizer(name).countTokens() > 1);
+				boolean capitalized = Character.isUpperCase(name.charAt(0));
+				boolean comma = name.indexOf(',') >= 0;
+				int score = (twoOrMoreTokens ? 100 : 0)
+						+ (capitalized ? 10 : 0)
+						- (comma ? 1 : 0);
 
-			if (score > bestScore)
-			{
-				bestScore = score;
-				bestName = name;
+				score = score * 100;
+				score += name.length(); // prefer longer names, but only if most other things are equal.
+
+				if (score > bestScore) {
+					bestScore = score;
+					bestName = name;
+				}
 			}
 		}
 		// default: just return the first name
 		if (Util.nullOrEmpty(bestName))
-			bestName = getCanonicalEmail();
+			bestName = getFirstEmail();
 		return bestName;
 	}
 
@@ -135,8 +128,6 @@ public class Contact extends UnionFindObject {
 
 	public void maskEmailDomain(AddressBook ab)
 	{
-		if (!Util.nullOrEmpty(canonicalEmail))
-			canonicalEmail = ab.getMaskedEmail(canonicalEmail);
 
 		Set<String> maskedEmails = new LinkedHashSet<String>();
 		for (String e : emails) {

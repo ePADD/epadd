@@ -233,7 +233,7 @@ public class Lens {
 		json.put ("nMessages", finalDocList.size());
 
 		// score people
-		Map<String, Float> peopleScores = new LinkedHashMap<String, Float>();
+		Map<Contact, Float> peopleScores = new LinkedHashMap<>();
 		for (EmailDocument ed: finalDocSet)
 		{
 			Collection<String> addrs = ed.getParticipatingAddrsExcept(ab.getOwnAddrs());
@@ -243,7 +243,7 @@ public class Lens {
 					continue;
 
 				float weight = 1.0f/addrs.size(); // weight = 1/size
-				String c = ab.getCanonicalAddr(s);
+				Contact c = ab.lookupByEmail(s);
 				Float F = peopleScores.get(c);
 				if (F == null)
 					peopleScores.put (c, weight);
@@ -254,22 +254,19 @@ public class Lens {
 
 		// add the top people
 		int MAX_PEOPLE = 5;
-		List<Pair<String, Float>> pairs = Util.sortMapByValue(peopleScores);
+		List<Pair<Contact, Float>> pairs = Util.sortMapByValue(peopleScores);
 		JSONArray people = new JSONArray();
 		Contact own = ab.getContactForSelf();
 		int count = 0;
-		for (Pair<String, Float> p: pairs)
+		for (Pair<Contact, Float> p: pairs)
 		{
 			if (count > MAX_PEOPLE)
 				break;
-			JSONObject person = new JSONObject();
-			String email = p.getFirst();
-			String displayName = email;
-			Contact c = ab.lookupByEmail(email);
-			if (c != null)
-				displayName = c.pickBestName();
+			Contact c = p.getFirst();//ab.lookupByEmail(email);
 			if (c == own)
 				continue; // ignore own name
+			JSONObject person = new JSONObject();
+			String displayName = c==null?"":c.pickBestName();
 
 			person.put ("person", displayName);
 			person.put ("score", p.getSecond());
