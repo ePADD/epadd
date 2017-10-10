@@ -22,7 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/* class to model a mailing list with some members */
+/* class to model a mailing list with some members. */
 public class MailingList implements java.io.Serializable {
 	private final static long serialVersionUID = 1L;
 	public final static String MAILING_LIST_MARKER = "[ML]";
@@ -31,7 +31,7 @@ public class MailingList implements java.io.Serializable {
 	public final static int USER_ASSIGNED = 16, SUPER_DEFINITE = 8, DEFINITE = 1, MAYBE = 2, DEFINITE_NOT = 4, DUNNO = 0;
 	
 	private Contact ci;
-	public Set<Contact> members = new LinkedHashSet<Contact>();
+	public Set<Contact> members = new LinkedHashSet<>();
 //	public int state;
 	
 	private MailingList(Contact ci)
@@ -47,7 +47,8 @@ public class MailingList implements java.io.Serializable {
 		members.add(c);
 	}
 
-	/** toAddrs here really refers to to/cc/bcc */
+	/** update mailing list state for contacts in ab for 1 message with the given toAddrs (which really refers to all of to/cc/bcc)
+	 * sentToMailingLists are confirmed mailingLists that a message has been sent to. */
 	static void trackMailingLists(AddressBook ab, List<Address> toAddrs, boolean sent, Address[] froms, String[] sentToMailingLists)
 	{
 		/*

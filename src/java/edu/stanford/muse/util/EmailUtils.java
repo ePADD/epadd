@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EmailUtils {
 	public static Log					log				= LogFactory.getLog(EmailUtils.class);
@@ -476,54 +477,67 @@ public class EmailUtils {
 	private static Pattern	parensPattern		= Pattern.compile("\\(.*\\)");
 	private static Pattern	sqBracketsPattern	= Pattern.compile("\\[.*\\]");
 
-	// hopefully people don't have any of these words in their names... note, should be lowercase
-
 	/**
-	 * normalizes the given person name, by stripping whitespace at either end, normalizes spaces, so exactly 1 space between tokens.
-	 * returns null if not a valid name or has a banned word/string or is a single word name
+	 * Cleans the given person name, by stripping whitespace at either end, normalizes spaces, so exactly 1 space between tokens.
+     * The goal of this method is only to clean up messiness in person names read from mbox files.
+     * It is mostly a simple, cosmetic (and early) cleanup for what is read from the mbox.
+     * Note: this is more for display, not a normalization!
+     * Note: May return null!
+	 * returns null if we judge it not a valid name or has a banned word/string or is a single word name
 	 * retains case of the input as is.
 	 * returns same case
+     * earlier it used to return null if name only had a single word, but now it will just clean that word and return.
 	 */
 	public static String cleanPersonName(String name)
 	{
-		// be careful with case, we want name to remain in its original case
 		if (name == null)
 			return null;
-		name = name.trim();
 
-		if (name.indexOf("@") >= 0) // an email addr, not a real name -- we dunno what's happening, just return it as is, just lowercasing it.
-			return name.toLowerCase();
+        // be careful with case, we want name to remain in its original case
 
-		// a surprising number of names in email headers start and end with a single quote
-		// if so, strip it.
-		if (name.startsWith("'") && name.endsWith("'"))
-			name = name.substring(1, name.length() - 1);
-		if (name.startsWith("\"") && name.endsWith("\""))
-			name = name.substring(1, name.length() - 1);
+        // strip whitespace and quotes
+        {
+            name = name.trim();
+            // a surprising number of names in email headers start and end with a single quote
+            // if so, strip it.
+            if (name.length() >= 2 && name.startsWith("'") && name.endsWith("'"))
+                name = name.substring(1, name.length() - 1);
+            if (name.length() >= 2 && name.startsWith("\"") && name.endsWith("\""))
+                name = name.substring(1, name.length() - 1);
+        }
 
-		// check if it has any characters at all
-		boolean allNonAlpha = true;
-		for (char c: name.toCharArray()) {
-			if (Character.isAlphabetic(c)) {
-				allNonAlpha = false;
-				break;
-			}
-		}
+        // if it has no alphabetical characters at all, return null
+        {
+            boolean allNonAlpha = true;
+            for (char c : name.toCharArray()) {
+                if (Character.isAlphabetic(c)) {
+                    allNonAlpha = false;
+                    break;
+                }
+            }
 
-		// all non-alphabet? return nothing, because its likely a junk name like "(" or "((" (yes, we see plenty of those!)
-		if (allNonAlpha)
-			return null;
+            // all non-alphabet? return nothing, because its likely a junk name like "(" or "((" (yes, we see plenty of those!)
+            if (allNonAlpha)
+                return null;
+        }
 
-		// Strip stuff inside parens, e.g. sometimes names are like:
-		// foo bar (at home) - or -
-		// foo bar [some Dept]
-		Matcher m1 = parensPattern.matcher(name);
-		name = m1.replaceAll("");
-		Matcher m2 = sqBracketsPattern.matcher(name);
-		name = m2.replaceAll("");
-		name = name.trim();
+        // Strip stuff inside parens, e.g. sometimes names are like: foo bar (at home) or foo bar [some Dept]
+        // in either case, we want to keep just foo bar and strip the rest
+        {
+            Matcher m1 = parensPattern.matcher(name);
+            name = m1.replaceAll("");
+            Matcher m2 = sqBracketsPattern.matcher(name);
+            name = m2.replaceAll("");
+            // trim again if needed
+            name = name.trim();
+        }
 
-		// normalize spaces
+        // check if an email addr accidentally got passed in, if so, don't do any of the rest
+        // sometimes the mbox parser may read
+        if (name.indexOf("@") >= 0) // an email addr, not a real name -- we dunno what's happening, just return it as is, just lowercasing it.
+            return name.toLowerCase();
+
+        // normalize spaces
 		// return null if name has banned words - e.g. ben s's email has different people with the "name" (IPM Return requested)
 		String result = "";
 		for (String t: Util.tokenize(name))
@@ -547,9 +561,11 @@ public class EmailUtils {
 				return null;
 			}
 
+    	/*
 		if (Util.tokenize(name).size() < 2) {
 			return null; // single word names should not be considered for merging
 		}
+		*/
 
 		return result;
 	}
@@ -566,21 +582,6 @@ public class EmailUtils {
 				log.debug("Dropping mailing list or junk address: " + s);
 				continue;
 			}
-			result.add(s);
-		}
-		return result;
-	}
-
-	// removes obviously bad names from the input list. used only by grouper.
-	public static List<String> removeIncorrectNames(List<String> in)
-	{
-
-		List<String> result = new ArrayList<String>();
-		for (String s : in)
-		{
-			s = EmailUtils.cleanPersonName(s);
-            if(s == null)
-                continue;
 			result.add(s);
 		}
 		return result;
@@ -1075,7 +1076,7 @@ public class EmailUtils {
 	/** thread a collection of emails */
 	public static Collection<Collection<EmailDocument>> threadEmails(Collection<EmailDocument> docs)
 	{
-		Map<String, Collection<EmailDocument>> map = new LinkedHashMap<String, Collection<EmailDocument>>();
+		Map<String, Collection<EmailDocument>> map = new LinkedHashMap<>();
 		for (EmailDocument ed : docs)
 		{
 			// compute a canonical thread id, based on the cleaned up subject line (removing re: fwd: etc) and the description.
@@ -1094,7 +1095,7 @@ public class EmailUtils {
 			Collection<EmailDocument> messagesForThisThread = map.get(threadId);
 			if (messagesForThisThread == null)
 			{
-				messagesForThisThread = new ArrayList<EmailDocument>();
+				messagesForThisThread = new ArrayList<>();
 				map.put(threadId, messagesForThisThread);
 			}
 			messagesForThisThread.add(ed);
@@ -1105,7 +1106,7 @@ public class EmailUtils {
 	/** returns a histogram of the dates, bucketed in quantum of quantum, going backwards from endTime */
 	public static List<Integer> histogram(List<Date> dates, long endTime, long quantumMillis)
 	{
-		ArrayList<Integer> result = new ArrayList<Integer>();
+		ArrayList<Integer> result = new ArrayList<>();
 
 		// input dates may not be sorted, but doesn't matter
 		for (Date d : dates)
@@ -1124,45 +1125,23 @@ public class EmailUtils {
 		return result;
 	}
 
-    private static void testLookupNormalizer(){
-        Pair<String,String>[] tests = new Pair[]{
-                new Pair<>("bernstein","bernstein"),
-                new Pair<>("charles, bernstein", "bernstein charles"),
-                new Pair<>("James H McGill", "james mcgill"),
-                new Pair<>("Wetterwald Julien","julien wetterwald"),
-                new Pair<>("Barack H. Obama", "barack obama"),
-                new Pair<>("George H W, Bush","bush george"),
-                //committee is a banned word in people names
-                new Pair<>("Justice committee", null),
-                new Pair<>("''''093- 'Wetterwald Jul-ien\"''''","'''093- 'wetterwald jul-ien\"'''")
-        };
-        for(Pair<String,String> p: tests) {
-            String np =normalizePersonNameForLookup(p.getFirst());
-            if ((np==null&&p.second!=null) || (np!=null&&p.second==null) || (np!=null&&p.second!=null&&!np.equals(p.getSecond()))) {
-                System.err.println("Test fail!! Expected: "+p.second+" found: "+np+" -- for: "+p.first);
-            }
-        }
-        System.err.println("All tests done!");
-    }
 
 	/*
-	 * normalizes names.
-	 * orders words in the name alphabetically.
-	 * this is different from normalizePersonName, which actually
-	 * changes the display name shown to the user. e.g. in that method
-	 * "'Seng Keat'" becomes "Seng Keat" (stripping the quotes) and
-	 * "Teh, Seng Keat" becomes "Seng Keat Teh"
-	 * in contrast this method changes the (internal) name **for the purposes of lookup only**
-	 * it mangles the name, so it should never be displayed to the user.
-	 * it canonicalizes the name by ordering all the words in the name alphabetically
-	 * there is exactly one space between each word in the output, with no spaces at the end.
-	 * e.g.
+	 * normalizes names, computing the (internal) name **for the purposes of lookup only**
+	 * it mangles the name, so it should never be displayed to the user!
+	 * e.g.s
 	 * Wetterwald Julien becomes julien wetterwald
-	 * both names are still retained in the contact.
-	 * if there are at least 2 names with multiple letters, then single letter initials are dropped.
 	 * Obama Barack becomes barack obama (all hail the chief!)
 	 * Barack H Obama also becomes barack obama
-	 * 
+	 *
+	 * (this is different from normalizePersonName, which actually changes the display name shown to the user. e.g. in that method
+	 * "'Seng Keat'" becomes "Seng Keat" (stripping the quotes) and "Teh, Seng Keat" becomes "Seng Keat Teh")
+	 *
+	 * it canonicalizes the name by the following rules:
+	 * (1) ordering all the words in the name alphabetically
+	 * (2) there is exactly one space between each word in the output, with no spaces at the end.
+	 * (3) if there are at least 2 names with multiple letters, then single letter initials are dropped.
+	 *
 	 * we assume these forms are really the same person, so they must be looked up consistently.
 	 * this is somewhat aggressive entity resolution. reconsider if it is found to relate unrelated people...
 	 */
@@ -1174,32 +1153,21 @@ public class EmailUtils {
 		String originalName = name;
 
 		name = cleanPersonName(name);
-        //cleanPersonName returns null for singlw word names for some reason
-		if (name == null) {
-            if(originalName.indexOf(' ')==-1) {
-                name = originalName;
-                name = name.toLowerCase();
-                name = name.replaceAll("^\\W+|\\W+$","");
-                return name;
-            }
-            return null;
-        }
+
+		if (name == null)
+		    name = "";
+
 		// remove all periods and commas
 		// in future: consider removing all non-alpha, non-number chars.
-		// but should we also remove valid quote chars in names like O'Melveny
+		// but should we also remove valid quote chars in names like O'Melveny?
 		// also be careful of foreign names
 		name = name.replaceAll("\\.", " "); // make sure to escape the period, replaceAll's first param is a regex!
 		name = name.replaceAll(",", " ");
 
-		StringTokenizer st = new StringTokenizer(name);
-		if (st.countTokens() <= 1) {
-            return name;
-        }
-
 		// gather all the words in the name into tokens and sort it
-		List<String> tokens = new ArrayList<String>();
-		while (st.hasMoreTokens())
-			tokens.add(st.nextToken().toLowerCase());
+		List<String> tokens = Util.tokenize (name.toLowerCase());
+		if (tokens.size() <= 1)
+		    return name;
 
 		if (tokens.size() > 2)
 		{
@@ -1223,20 +1191,12 @@ public class EmailUtils {
 		}
 
 		Collections.sort(tokens);
+
 		// enable variants
 		tokens = tokens.stream().map(Variants.nameVariants::getCanonicalVariant).collect(Collectors.toList());
 
 		// cat all the tokens, one space in between, no space at the end
 		String cname = Util.join(tokens, " ");
-		/*
-		 * StringBuilder sb = new StringBuilder();
-		 * for (int i = 0; i < tokens.size(); i++)
-		 * {
-		 * sb.append(tokens.get(i));
-		 * if (i < tokens.size()-1)
-		 * sb.append (" ");
-		 * }
-		 */
 
 		if (Util.nullOrEmpty(cname))
 		{
@@ -1293,57 +1253,40 @@ public class EmailUtils {
 		return e;
 	}
 
-	/**
-	 * Similar to normalizePersonNameForLookup but return a list of tokens in the name.
-	 * 
-	 * @param name
-	 * @return list of tokens in the name
-	 */
-	public static List<String> normalizePersonNameForLookupAsList(String name)
-	{
-		if (name == null)
-			return null;
+	/* returns a set of contact objects for all to/from/cc/bcc of the message */
+	public static Set<Contact> getContactsForMessage (AddressBook ab, EmailDocument ed) {
+        Set<InternetAddress> allAddressesInMessage = new LinkedHashSet<>(); // only lookup the fields (to/cc/bcc/from) that have been enabled
 
-		name = cleanPersonName(name);
-		if (name == null)
-			return null;
-		// remove all periods and commas
-		// in future: consider removing all non-alpha, non-number chars.
-		// but should we also remove valid quote chars in names like O'Melveny
-		// also be careful of foreign names
-		name = name.replaceAll("\\.", " "); // make sure to escape the period, replaceAll's first param is a regex!
-		name = name.replaceAll(",", " ");
+        // now check for mailing list state
+        if (!Util.nullOrEmpty(ed.to)) {
+            allAddressesInMessage.addAll((List) Arrays.asList(ed.to));
+        }
+        if (!Util.nullOrEmpty(ed.from)) {
+            allAddressesInMessage.addAll((List) Arrays.asList(ed.from));
+        }
+        if (!Util.nullOrEmpty(ed.cc)) {
+            allAddressesInMessage.addAll((List) Arrays.asList(ed.cc));
+        }
+        if (!Util.nullOrEmpty(ed.bcc)) {
+            allAddressesInMessage.addAll((List) Arrays.asList(ed.bcc));
+        }
 
-		StringTokenizer st = new StringTokenizer(name);
-
-		// gather all the words in the name into tokens and sort it
-		List<String> tokens = new ArrayList<String>();
-		while (st.hasMoreTokens())
-			tokens.add(st.nextToken().toLowerCase());
-
-		if (tokens.size() > 2)
-		{
-			int nOneLetterTokens = 0, nMultiLetterTokens = 0;
-			for (String t : tokens)
-			{
-				if (t.length() > 1)
-					nMultiLetterTokens++;
-				else
-					nOneLetterTokens++;
-			}
-
-			// if we have at least 2 multi-letter names, then ignore initials
-			if (nMultiLetterTokens >= 2 && nOneLetterTokens >= 1)
-				for (Iterator<String> it = tokens.iterator(); it.hasNext();)
-				{
-					String t = it.next();
-					if (t.length() == 1)
-						it.remove(); // this is an initial, remove it.
-				}
-		}
-
-		return tokens;
-	}
+        Set<Contact> contactsInMessage = new LinkedHashSet<>();
+        for (InternetAddress a : allAddressesInMessage) {
+            // try and find the contact for both the email address and the name, because sometimes (in extreme cases only) perhaps the email is not there, and we only have a name
+            Contact c = ab.lookupByEmail(a.getAddress());
+            if (c != null)
+                contactsInMessage.add(c);
+            else {
+                // look up name contact only if the email lookup failed -- hopefully this is rare
+                log.debug ("Warning: email lookup failed for " + a);
+                Collection<Contact> contacts = ab.lookupByName(a.getPersonal());
+                if (!Util.nullOrEmpty(contacts))
+                    contactsInMessage.addAll(contacts);
+            }
+        }
+        return contactsInMessage;
+    }
 
 	/** Filters the contact for specifically people. */
 	public static List<Contact> getPeople(Archive archive) {
@@ -1354,7 +1297,7 @@ public class EmailUtils {
 		System.err.println("OwnEAs: " + ownEAs);
 
 		//list of mailing list addresses.
-		Set<String> maillists = new HashSet<String>();
+		Set<String> maillists = new HashSet<>();
 		for (Document doc : docs) {
 			EmailDocument ed = (EmailDocument) doc;
 			List<String> addrs = ed.getAllAddrs();
@@ -1559,6 +1502,31 @@ public class EmailUtils {
 	public static Map<String,String> readDBpedia(){
 		return readDBpedia(1.0, null);
 	}
+
+    private static void testLookupNormalizer(){
+        Pair<String,String>[] tests = new Pair[]{
+                new Pair<>("bernstein","bernstein"),
+                new Pair<>("charles, bernstein", "bernstein charles"),
+                new Pair<>("James H McGill", "james mcgill"),
+                new Pair<>("Wetterwald Julien","julian wetterwald"), // variants maps julien to julian
+                new Pair<>("Barack H. Obama", "barack obama"),
+                new Pair<>("George H W, Bush","bush george"),
+                new Pair<>("bob creeley","robert creeley"),
+
+                //committee is a banned word in people names
+                new Pair<>("Justice committee", ""),
+                // undisclosed is a banned string in people names
+                new Pair<>("some-undisclosed-recip", ""),
+                new Pair<>("''''093- 'Wetterwald Jul-ien\"''''","'''093- 'wetterwald jul-ien\"'''")
+        };
+        for(Pair<String,String> p: tests) {
+            String np =normalizePersonNameForLookup(p.getFirst());
+            if ((np==null&&p.second!=null) || (np!=null&&p.second==null) || (np!=null&&p.second!=null&&!np.equals(p.getSecond()))) {
+                System.err.println("Test fail!! Expected: \""+p.second+"\" found: \""+np+"\" -- for: "+p.first);
+            }
+        }
+        System.err.println("All tests done!");
+    }
 
     public static void main(String[] args){
         testLookupNormalizer();

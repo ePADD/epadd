@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import edu.stanford.muse.Config;
@@ -32,7 +33,10 @@ public class DictUtils {
 	public static Set<String>	topNames		= new HashSet<>();				// used for NER
 	public static Set<String>	tabooNames		= new LinkedHashSet<>();		// this will be ignored by NER
 
-	public static Set<String>	bannedWordsInPeopleNames	= new HashSet<>(), bannedStringsInPeopleNames = new HashSet<>();	// bannedWords => discrete word; bannedStrings => occurs anywhere in the name
+	// bannedWords => discrete word; bannedStrings => occurs anywhere in the name
+	// both should be lower case
+	public static Set<String>	bannedWordsInPeopleNames	= new HashSet<>(), bannedStringsInPeopleNames = new HashSet<>();
+
 	public static Set<String>	bannedStartStringsForEmailAddresses = new HashSet<>();
 	static Set<String>			joinWords					= new HashSet<>();  // this will be ignored for the indexing
 	private static final String	COMMENT_STRING				= "#";
@@ -89,18 +93,21 @@ public class DictUtils {
 			}
 
 			// banned words and strings in people names (for address book, to avoid noisy names merging unrelated entities)
+			// ensure bannedWordsInPeopleNames and bannedStringsInPeopleNames are lowercased
             // use getLinesFromInputStream because readStreamAndInternStrings() canonicalizes spaces between tokens and cannot handle special chars
             // so info@ becomes "info @".
             // instead, we want to read the line as is
 			is = Config.getResourceAsStream("bannedWordsInPeopleNames.txt");
 			if (is != null) {
 				bannedWordsInPeopleNames = new LinkedHashSet<>(Util.getLinesFromInputStream(is, true));
+				bannedWordsInPeopleNames = bannedWordsInPeopleNames.stream().map(String::toLowerCase).collect(Collectors.toSet());
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("bannedStringsInPeopleNames.txt");
 			if (is != null) {
 				bannedStringsInPeopleNames = new LinkedHashSet<>(Util.getLinesFromInputStream(is, true));
+				bannedStringsInPeopleNames = bannedStringsInPeopleNames.stream().map(String::toLowerCase).collect(Collectors.toSet());
 				is.close();
 			}
 

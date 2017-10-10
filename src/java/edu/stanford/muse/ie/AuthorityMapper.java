@@ -121,9 +121,7 @@ public class AuthorityMapper implements java.io.Serializable {
                 if (cnameTokens.size() < 2)
                     continue; // only match when 2 or more words are present in the name
 
-                if (cnameToAuthority.get(cname) != null) {
-                    continue;
-                } else {
+                if (cnameToAuthority.get(cname) == null) {
                     for (String name : names) {
                         List<String> nameTokens = Util.tokenize(name);
                         if (nameTokens.size() < 2)
@@ -243,14 +241,19 @@ public class AuthorityMapper implements java.io.Serializable {
         Integer nMessages = (cnameToCount != null) ? cnameToCount.get(cname) : null;
         result.nMessages = (nMessages == null) ? 0 : nMessages;
 
-        Contact c = ab.lookupByName(name);
-        if (c == null) {
+        String tooltip = "";
+        Collection<Contact> contacts = ab.lookupByName(name);
+        if (contacts != null)
+            for (Contact contact: contacts) {
+                tooltip += contact.toTooltip();
+            }
+        else {
             result.errorMessage = "Name not in address book: " + name;
             return result;
         }
 
-        result.url = "browse?archiveID="+archiveID+"&adv-search=1&contact=" + ab.getContactId(c);
-        result.tooltip = c.toTooltip();
+        result.url = "browse?archiveID=" + archiveID + "&adv-search=on&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&correspondent=" + name;
+        result.tooltip = tooltip;
         result.nMessages = nMessages;
 
         AuthorityRecord authRecord = cnameToAuthority.get(cname);

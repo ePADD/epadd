@@ -52,86 +52,6 @@ public class IndexUtils {
 		return false;
 	}
 
-	public static List<MultiDoc> partitionDocsByCategory(Collection<? extends Document> allDocs)
-	{
-		Map<String, MultiDoc> map = new LinkedHashMap<String, MultiDoc>();
-		for (Document d : allDocs)
-		{
-			CategoryDocument cd = (CategoryDocument) d;
-			MultiDoc docs = map.get(cd.category);
-			if (docs == null)
-			{
-				docs = new MultiDoc(map.size(), cd.category);
-				map.put(cd.category, docs);
-			}
-			docs.add(d);
-		}
-
-		List<MultiDoc> result = new ArrayList<MultiDoc>();
-		for (MultiDoc docs : map.values())
-			result.add(docs);
-
-		return result;
-	}
-
-	public static List<MultiDoc> partitionDocsByInterval(Collection<? extends DatedDocument> allDocs, boolean monthsNotYears)
-	{
-		List<MultiDoc> result = new ArrayList<MultiDoc>();
-		if (allDocs.size() == 0)
-			return result;
-
-		Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs);
-		Date first = p.getFirst();
-		Date last = p.getSecond();
-
-		// compute the monthly intervals
-		List<Date> intervals;
-		if (monthsNotYears)
-			intervals = Util.getMonthlyIntervals(first, last);
-		else
-			intervals = Util.getYearlyIntervals(first, last);
-
-		int nIntervals = intervals.size() - 1;
-		for (int i = 0; i < nIntervals; i++)
-		{
-			String clusterDescription;
-			Date d = intervals.get(i);
-			GregorianCalendar c = new GregorianCalendar();
-			c.setTime(d);
-
-			if (!monthsNotYears)
-				clusterDescription = Integer.toString(c.get(Calendar.YEAR));
-			else
-				clusterDescription = CalendarUtil.getDisplayMonth(c) + " " + c.get(Calendar.YEAR);
-
-			result.add(new MultiDoc(i, clusterDescription));
-		}
-
-		for (DatedDocument ed : allDocs)
-		{
-			// find which interval this email belongs to
-			int selectedInterval = -1;
-			// TODO: if all this API does is either partition by month or year then no need to "search".
-			Date c = ed.date;
-			for (int i = 0; i < nIntervals; i++)
-			{
-				Date intervalStart = intervals.get(i);
-				Date intervalEnd = intervals.get(i + 1);
-				if (!c.before(intervalStart) && c.before(intervalEnd))
-				{
-					selectedInterval = i;
-					break;
-				}
-			}
-
-			// this doc goes into interval # selectedInterval
-			MultiDoc whichList = result.get(selectedInterval);
-			whichList.add(ed);
-		}
-
-		return result;
-	}
-
 	/** replaces all tokens in the given text that are not in any of the entities in the given doc.
      * all other tokens are replaced with REDACTION_CHAR.
      * token is defined as a consecutive sequence of letters or digits
@@ -473,7 +393,7 @@ public class IndexUtils {
 
 	public static List<Document> selectDocsByPersonsAsList(AddressBook ab, Collection<EmailDocument> docs, String[] emailOrNames)
 	{
-		return new ArrayList<Document>(selectDocsByPersons(ab, docs, emailOrNames, null));
+		return new ArrayList<>(selectDocsByPersons(ab, docs, emailOrNames, null));
 	}
 
 	/**
@@ -483,34 +403,13 @@ public class IndexUtils {
 	 */
 	private static Set<Document> selectDocsByPersons(AddressBook ab, Collection<EmailDocument> docs, String[] emailOrNames, int[] contactIds)
 	{
-		if (ab == null)
-		{
-			// no addressbook, return everything
-			Set<Document> result = new LinkedHashSet<Document>();
-			result.addAll(docs);
-			return result;
-		}
-
-		Set<Contact> contactSet = new LinkedHashSet<Contact>();
+		Set<Contact> contactSet = new LinkedHashSet<>();
 		if (emailOrNames != null) {
 			for (String e : emailOrNames) {
-				if (e.contains(" ")) {
-					// not a single token, likely a specific name, e.g., "john doe"
-					Contact c = ab.lookupByEmailOrName(e);
-					if (c != null)
-						contactSet.add(c);
-				} else {
-					// single token (partial name), use lookup that returns a set, e.g., "john"
-
-					//@vihari: BUG-FIX: throws Null-pointer exception when ab.lookupByNameTokenAsSet is null.
-					if (ab.lookupByNameTokenAsSet(e) == null) {
-						log.info("Null pointer for: " + e);
-						continue;
-					}
-					else
-						contactSet.addAll(ab.lookupByNameTokenAsSet(e));
-				}
-				if (contactSet.isEmpty())
+				Collection<Contact> contacts = ab.lookupByEmailOrName(e);
+				if (!Util.nullOrEmpty(contacts ))
+					contactSet.addAll(contacts);
+				else
 					log.info("Unknown email/name " + e);
 			}
 		}
@@ -550,34 +449,6 @@ public class IndexUtils {
 		}
 
 		return docsForThisPerson;
-	}
-
-	/**
-	 * returns docs with ALL the given email/names. looks for all aliases of the
-	 * person's name, not just the given one.
-	 * runs through all docs times # given emailOrNames.
-	 */
-	public static Set<Document> selectDocsByAllPersons(AddressBook ab, Collection<EmailDocument> docs, String[] emailOrNames, int[] contactIds)
-	{
-		Set<Document> result = Util.castOrCloneAsSet((Collection) docs);
-
-		if (emailOrNames != null) {
-			for (String e : emailOrNames) {
-				result = selectDocsByPersons(ab, (Collection) result, new String[] { e }, null);
-				if (result.isEmpty())
-					return result;
-			}
-		}
-
-		if (contactIds != null) {
-			for (int c : contactIds) {
-				result = selectDocsByPersons(ab, (Collection) result, null, new int[] { c });
-				if (result.isEmpty())
-					return result;
-			}
-		}
-
-		return result;
 	}
 
 	/*
@@ -1489,19 +1360,6 @@ public class IndexUtils {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * returns docs with the given email or name. looks for all aliases of the
-	 * person's name, not just the given one.
-	 * goes through ALL docs
-	 */
-	public static Set<Document> selectDocsByContact(AddressBook ab, Collection<EmailDocument> docs, Contact c)
-	{
-		if (c == null)
-			return new LinkedHashSet<Document>();
-
-		return selectDocsByContact(ab, docs, c.names, c.emails);
 	}
 
 	private static Set<Document> selectDocsByContact(AddressBook ab, Collection<EmailDocument> docs, Set<Contact> cset)

@@ -41,7 +41,7 @@ public class BlobStore implements Serializable {
     private int next_data_id = 0;
 
     // mapping of each data to its views
-    private Map<Blob, Map<String,Object>> views = new LinkedHashMap<Blob, Map<String,Object>>();
+    private Map<Blob, Map<String,Object>> views = new LinkedHashMap<>();
 
     public Multimap<Blob, String> getBlobToKeywords() {
         return blobToKeywords;

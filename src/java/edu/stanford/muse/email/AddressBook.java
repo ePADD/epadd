@@ -15,7 +15,8 @@
 */
 package edu.stanford.muse.email;
 
-import edu.stanford.muse.index.DatedDocument;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.EmailUtils;
@@ -51,6 +52,7 @@ public class AddressBook implements Serializable {
 
     public static Log log = LogFactory.getLog(AddressBook.class);
     private final static long serialVersionUID = 1L;
+    private final static String PERSON_DELIMITER = "--";
 
     /**
      * there are 3 important maps maintained in the address book.
@@ -62,52 +64,26 @@ public class AddressBook implements Serializable {
      * be careful! nameToContact has to be only looked up with the result of Util.normalizePersonNameForLookup(string). the lookup string is different from the name's display string!
      * preferably do not use emailToContact and nameToContact directly -- use lookupEmail or lookupName
      */
-    private Map<String, Contact> emailToContact = new LinkedHashMap<String, Contact>(); // do not .put/get directly, use addEmailAddressForContact()
-    private Map<String, Contact> nameToContact = new LinkedHashMap<String, Contact>(); // do not access directly, use addNameForContactAndUpdateMaps()
-    private Map<String, Set<Contact>> nameTokenToContacts = new LinkedHashMap<String, Set<Contact>>(); // maps, e.g., Jim to all contacts with Jim in its name
+    private Map<String, Contact> emailToContact = new LinkedHashMap<>(); // do not .put/get directly, use addEmailAddressForContact()
+    private Multimap<String, Contact> nameToContact = LinkedHashMultimap.create(); // do not access directly, use addNameForContactAndUpdateMaps()
 
     private Contact contactForSelf;
-    private Collection<String> dataErrors = new LinkedHashSet<String>();
+    private Collection<String> dataErrors = new LinkedHashSet<>();
 
     /**
      * these are for providing a layer of opaqueness to contact emails in discovery mode
      */
-    transient private List<Contact> contactListForIds = new ArrayList<Contact>();
-    private Map<Contact, Integer> contactIdMap = new LinkedHashMap<Contact, Integer>();
+    transient private List<Contact> contactListForIds = new ArrayList<>();
+    private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
     transient private Map<String, String> emailMaskingMap = null;
 
-    public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<Contact, MailingList>();
+    public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<>();
 
     /**
      * create a new contact set with the given list of self addrs. selfAddrs can be null or empty
      * in which case no addresses are considered selfAddrs
      */
     public AddressBook(String[] selfAddrs, String[] selfNames) {
-        setup(selfAddrs, selfNames);
-    }
-
-    private AddressBook(Set<String> selfAddrsSet, Set<String> selfNamesSet) {
-        String[] selfAddrs = new String[selfAddrsSet.size()];
-        int i = 0;
-        StringBuilder about = new StringBuilder();
-        about.append("Addressbook created with " + selfAddrs.length + " addr(s):\n");
-        for (String s : selfAddrsSet) {
-            selfAddrs[i++] = s;
-            about.append(s + "\n");
-        }
-        String[] selfNames = new String[selfNamesSet.size()];
-        about.append("and " + selfNames.length + " name(s):");
-
-        i = 0;
-        for (String s : selfNamesSet) {
-            selfNames[i++] = s;
-            about.append(s + "\n");
-        }
-        setup(selfAddrs, selfNames);
-        log.info(about);
-    }
-
-    private synchronized void setup(String[] selfAddrs, String[] selfNames) {
         // create a new ContactInfo for owner
         Contact c = new Contact();
         contactIdMap.put(c, contactListForIds.size());
@@ -138,10 +114,8 @@ public class AddressBook implements Serializable {
         // todo: decide how to handle names are missing in text, but are associated with some email message in the archive.
         // when lookup is performed on such an archive, it may return null.
         // similar room for inconsistency when user can have the same name or email addr in multiple contacts
-        String PERSON_DELIMITER = "--";
         nameToContact.clear();
         emailToContact.clear();
-        nameTokenToContacts.clear();
 
         // Q: what to do if user removed a name or address from the map?
         List<String> lines = Util.tokenize(text, "\r\n");
@@ -223,19 +197,7 @@ public class AddressBook implements Serializable {
         // nameToContact is very important, so only add to it if we're fairly certain about the name.
         if (Util.tokenize(name).size() > 1)
             nameToContact.put(EmailUtils.normalizePersonNameForLookup(name), c);
-
-        List<String> tokens = EmailUtils.normalizePersonNameForLookupAsList(name);
-        if (tokens == null) return;
-        for (String token : tokens) {
-            Set<Contact> contactSet = nameTokenToContacts.get(token);
-            if (contactSet == null) {
-                contactSet = new LinkedHashSet<Contact>();
-                nameTokenToContacts.put(token, contactSet);
-            }
-            contactSet.add(c);
-        }
     }
-
 
     /**
      * the Contacts for name and email are unified if they are not already the same
@@ -246,8 +208,7 @@ public class AddressBook implements Serializable {
      */
     private synchronized Contact unifyContact(String email, String name) {
         // we'll implement a weaker pre-condition: both name and email could be null
-        Contact cEmail = null;
-        Contact cName = null;
+        Collection<Contact> cNames = null;
         if (Util.nullOrEmpty(email)) {
             log.warn("Confused: email is null or empty:\n" + Util.stackTrace());
             return null;
@@ -261,25 +222,23 @@ public class AddressBook implements Serializable {
 
         email = email.trim().toLowerCase();
         // get existing contacts for email/name
-        cEmail = lookupByEmail(email);
-        if (name != null)
-            cName = lookupByName(name);
-
-        // if name and email have different CIs, unify them first
-        if (cName != null && cEmail != null && cName != cEmail) {
-            log.debug("Merging contacts due to message with name=" + name + ", email=" + email + " Contacts are: " + cName + " -- and -- " + cEmail);
-            cEmail.unify(cName);
+        Contact cEmail = lookupByEmail(email);
+        if (name != null) {
+            cNames = lookupByName(name);
+            for (Contact cName : cNames) {
+                // if name and email have different CIs, unify them first
+                if (cName != null && cEmail != null && cName != cEmail) {
+                    log.debug("Merging contacts due to message with name=" + name + ", email=" + email + " Contacts are: " + cName + " -- and -- " + cEmail);
+                    cEmail.unify(cName);
+                    addEmailAddressForContact(email, cName);
+                }
+            }
         }
 
         if (cEmail != null) {
             if (name != null)
                 addNameForContactAndUpdateMaps(name, cEmail);
             return cEmail;
-        }
-
-        if (cName != null) {
-            addEmailAddressForContact(email, cName);
-            return cName;
         }
 
         // neither cEmail nor cName was found. new contact.
@@ -310,7 +269,7 @@ public class AddressBook implements Serializable {
         if (contactForSelf != null && contactForSelf.emails != null)
             return Collections.unmodifiableSet(contactForSelf.emails);
 
-        return new LinkedHashSet<String>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -318,7 +277,7 @@ public class AddressBook implements Serializable {
      */
     public Set<String> getOwnNamesSet() {
         // just trim because some names seem to have spaces remaining at the end
-        Set<String> result = new LinkedHashSet<String>();
+        Set<String> result = new LinkedHashSet<>();
         for (String s : contactForSelf.names)
             result.add(s.trim());
         return Collections.unmodifiableSet(result);
@@ -341,11 +300,6 @@ public class AddressBook implements Serializable {
             return "";
 
         return c.names.iterator().next(); // pick first name for self (not best name! because the best name tries to find the longest string etc. Here for the own name, we want to stay with whatever was provided when the archive/addressbook was created.)
-    }
-
-    /* subtracts email addresses of the address book's owner from the given list. Used for things like network graphs. */
-    public List<String> removeOwnAddrs(List<String> input) {
-        return Util.removeStrings(input, getOwnAddrs());
     }
 
     /**
@@ -404,34 +358,11 @@ public class AddressBook implements Serializable {
     }
 
     /**
-     * returns the contact object for the given name.
+     * returns the contact object for the given name. name will be normalized for lookup first.
      * If multi word name, looks up in multi word map.
      * If single word name, looks up in the nameTokenToContacts map and returns the first one in that map (since there can be several)
      */
-    public Contact lookupByName(String s) {
-        // look among the single tokens
-        List<String> tokens = Util.tokenize(s);
-        if (tokens.size() == 1) {
-            // single word name
-            String normalizedName = EmailUtils.normalizePersonNameForLookup(s); // normalize even if single word name
-            if (normalizedName == null)
-                return null;
-
-            Collection<Contact> c = nameTokenToContacts.get(normalizedName); // note
-            if (c != null && c.size() > 0)
-                return c.iterator().next(); // ooh... more than one contact has this (single) name arbitrarily returns the first one
-            else
-                return null;
-        } else {
-            return lookupByNameMultiWord(s);
-        }
-    }
-
-    /**
-     * this is a lookup for multiword names only.
-     * it uses the nameToContact map which is only used for multiword names
-     */
-    private Contact lookupByNameMultiWord(String s) {
+    public Collection<Contact> lookupByName(String s) {
         if (s == null)
             return null;
         String normalizedName = EmailUtils.normalizePersonNameForLookup(s);
@@ -441,39 +372,17 @@ public class AddressBook implements Serializable {
         return nameToContact.get(normalizedName);
     }
 
-    public Set<Contact> lookupByNameTokenAsSet(String s) {
-        if (s == null)
-            return null;
-        String normalizedName = EmailUtils.normalizePersonNameForLookup(s);
-        if (normalizedName == null)
-            return null;
-
-        Set<Contact> result = new LinkedHashSet<Contact>();
-        Contact c = nameToContact.get(normalizedName);
-        if (c != null)
-            result.add(c);
-
-        List<String> tokens = EmailUtils.normalizePersonNameForLookupAsList(s);
-        if (!Util.nullOrEmpty(tokens)) {
-            for (String token : tokens) {
-                Set<Contact> set = nameTokenToContacts.get(token);
-                if (set != null) {
-                    result.addAll(set);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public Contact lookupByEmailOrName(String s) {
+    public Collection<Contact> lookupByEmailOrName(String s) {
         if (s == null)
             return null;
 
         s = s.trim().toLowerCase();
         Contact c = lookupByEmail(s);
-        if (c != null)
-            return c;
+        if (c != null) {
+            Set<Contact> result = new LinkedHashSet<>();
+            result.add(c);
+            return result;
+        }
 
         // not an email addr, lets try to find a name
         return lookupByName(s);
@@ -608,17 +517,6 @@ public class AddressBook implements Serializable {
             markDataError("Owner not sender, and no to addr for: " + ed);
     }
 
-    /**
-     * checks if s occurs (case normalized) as part of ANY name for ANY contact. used for memory study
-     */
-    public boolean isStringPartOfAnyAddressBookName(String s) {
-        Collection<Contact> contacts = this.allContacts();
-        for (Contact c : contacts)
-            if (c.checkIfStringPartOfAnyName(s))
-                return true;
-        return false;
-    }
-
     private void markDataError(String s) {
         log.debug(s);
         dataErrors.add(s);
@@ -630,15 +528,14 @@ public class AddressBook implements Serializable {
     public Pair<Boolean, Boolean> isSentOrReceived(List<Address> toCCBCCAddrs, Address[] fromAddrs) {
         boolean sent = false, received = false;
 
-        Address[] froms = fromAddrs;
-        if (froms != null) {
-            if (froms.length > 1) {
-                log.warn("Alert!: froms.length > 1: " + froms.length);
-                for (Address from : froms)
+        if (fromAddrs != null) {
+            if (fromAddrs.length > 1) {
+                log.warn("Alert!: froms.length > 1: " + fromAddrs.length);
+                for (Address from : fromAddrs)
                     log.warn(from);
             }
 
-            for (Address from : froms) {
+            for (Address from : fromAddrs) {
                 if (isMyAddress((InternetAddress) from)) {
                     sent = true;
                     break;
@@ -675,37 +572,9 @@ public class AddressBook implements Serializable {
         return count;
     }
 
-    /* returns a pair of lists of in and out dates of the given docs.
-     if inNOut is false, all dates are set to outdates */
-    public Pair<List<Date>, List<Date>> splitInOutDates(Collection<DatedDocument> docs, boolean inNOut) {
-        // compute in/out dates for each group
-        List<Date> inDates = new ArrayList<Date>();
-        List<Date> outDates = new ArrayList<Date>();
-        for (DatedDocument dd : docs) {
-            if (!inNOut)
-                outDates.add(dd.date);
-            else {
-                int sentOrReceived = EmailDocument.RECEIVED_MASK;
-                if (dd instanceof EmailDocument)
-                    sentOrReceived = ((EmailDocument) dd).sentOrReceived(this);
-                if ((sentOrReceived & EmailDocument.SENT_MASK) != 0)
-                    outDates.add(dd.date);
-                if ((sentOrReceived & EmailDocument.RECEIVED_MASK) != 0)
-                    inDates.add(dd.date);
-                if (((sentOrReceived & EmailDocument.RECEIVED_MASK) == 0) &&
-                        ((sentOrReceived & EmailDocument.SENT_MASK) == 0)) // assume received
-                {
-                    inDates.add(dd.date);
-                }
-            }
-        }
-
-        return new Pair<>(inDates, outDates);
-    }
-
     public synchronized Collection<String> getDataErrors() {
         if (dataErrors == null)
-            dataErrors = new LinkedHashSet<String>();
+            dataErrors = new LinkedHashSet<>();
         return Collections.unmodifiableCollection(dataErrors);
     }
 
@@ -730,27 +599,28 @@ public class AddressBook implements Serializable {
     }
 
     /**
-     * unifi CIs and recompute nameToInfo and emailToInfo
+     * unify contacts and recompute nameToContact and emailToContact, also sets up contact ids
      */
     private synchronized void recomputeUnifiedContacts(Set<Contact> allContacts) {
-        // first set up representative CI -> List of CI's that map to that rep
-        Map<Contact, Set<Contact>> reps = new LinkedHashMap<Contact, Set<Contact>>();
+
+        // first set up representative contact -> List of contact that map to that rep (which means they are in the same eq class)
+        Map<Contact, Set<Contact>> reps = new LinkedHashMap<>();
 
         for (Contact c : allContacts) {
             Contact rep = (Contact) c.find();
             Set<Contact> list = reps.get(rep);
             if (list == null) {
-                list = new LinkedHashSet<Contact>();
+                list = new LinkedHashSet<>();
                 reps.put(rep, list);
             }
             list.add(c);
         }
 
-        // resultCIs will contain all the unique clusters
-        Set<Contact> resultContacts = new LinkedHashSet<Contact>();
+        // resultContacts will contain all the unique clusters
+        Set<Contact> resultContacts = new LinkedHashSet<>();
         for (Contact rep : reps.keySet()) {
-            // merge members of each cluster
-            Contact mergedContact = null; // result of merge of each cluster
+            // merge members of each cluster into a single contact called mergeContaact
+            Contact mergedContact = null;
             Set<Contact> cluster = reps.get(rep); // one equiv. class
             for (Contact ci : cluster) {
                 if (mergedContact == null)
@@ -768,12 +638,11 @@ public class AddressBook implements Serializable {
         // now recompute the emailToInfo and nameToInfo maps
         emailToContact.clear();
         nameToContact.clear();
-        nameTokenToContacts = new LinkedHashMap<String, Set<Contact>>();
         for (Contact c : resultContacts) {
             // create new versions of c.emails and names here, otherwise can get concurrent mod exception
-            for (String s : new ArrayList<String>(c.emails))
+            for (String s : new ArrayList<>(c.emails))
                 addEmailAddressForContact(s, c);
-            for (String s : new ArrayList<String>(c.names))
+            for (String s : new ArrayList<>(c.names))
                 addNameForContactAndUpdateMaps(s, c);
         }
 
@@ -785,7 +654,7 @@ public class AddressBook implements Serializable {
      * recomputes contacts merging unified ones. Warning: must be done before using the address book, otherwise, contacts will remain un-unified!
      */
     public synchronized void organizeContacts() {
-        Set<Contact> allContacts = new LinkedHashSet<Contact>();
+        Set<Contact> allContacts = new LinkedHashSet<>();
         allContacts.addAll(emailToContact.values());
         allContacts.addAll(nameToContact.values());
         recomputeUnifiedContacts(allContacts);
@@ -831,7 +700,7 @@ public class AddressBook implements Serializable {
 
         // sort by in count -- note that when processing sent email, in count is the # of messages sent by the owner of the archive to the person #confusing
         List<Pair<Contact, Integer>> pairs = Util.sortMapByValue(contactInCount);
-        Set<Contact> sortedContactsSet = new LinkedHashSet<Contact>();
+        Set<Contact> sortedContactsSet = new LinkedHashSet<>();
         for (Pair<Contact, Integer> p : pairs)
             sortedContactsSet.add(p.getFirst());
         // then by out count.
@@ -842,7 +711,7 @@ public class AddressBook implements Serializable {
         for (Contact c : sortedContactsSet)
             if (getContactId(c) < 0)
                 Util.warnIf(true, "Contact has -ve contact id: " + c,log);
-        return new ArrayList<Contact>(sortedContactsSet);
+        return new ArrayList<>(sortedContactsSet);
     }
 
     /**
@@ -868,7 +737,6 @@ public class AddressBook implements Serializable {
         return pairs;
     }
 
-
     /**
      * find all addrs from the given set of email addrs
      * useful for self addrs. user may have missed some
@@ -893,8 +761,8 @@ public class AddressBook implements Serializable {
 
     public AddressBookStats getStats() {
         Contact selfContact = getContactForSelf();
-        Set<String> emails = (selfContact != null) ? selfContact.emails : new LinkedHashSet<String>();
-        Set<String> names = (selfContact != null) ? selfContact.names : new LinkedHashSet<String>();
+        Set<String> emails = (selfContact != null) ? selfContact.emails : new LinkedHashSet<>();
+        Set<String> names = (selfContact != null) ? selfContact.names : new LinkedHashSet<>();
 
         AddressBookStats stats = new AddressBookStats();
         stats.nOwnEmails = emails.size();
@@ -934,7 +802,7 @@ public class AddressBook implements Serializable {
 
 
     public void resetCounts() {
-        Set<Contact> allContacts = new LinkedHashSet<Contact>();
+        Set<Contact> allContacts = new LinkedHashSet<>();
         // now add all other CIs
         allContacts.addAll(emailToContact.values());
         allContacts.addAll(nameToContact.values());
@@ -948,22 +816,24 @@ public class AddressBook implements Serializable {
     /**
      * merges one contact set with another. also recomputes unification classes etc.
      * warning doesn't merge inDates, and outDates etc.
+     * TODO: fix this for epadd v5
      */
     public void merge(AddressBook other) {
         // TOFIX: mailing lists merging!
-        Set<Contact> allContacts = new LinkedHashSet<Contact>();
+        Set<Contact> allContacts = new LinkedHashSet<>();
 
-        // first merge self addrs and find self CI
+        // first merge self addrs and find self contact
         Contact selfContact = mergeSelfAddrs(other);
         allContacts.add(selfContact);
 
-        // now add all other CIs
+        // now add all contacts in either address book
         allContacts.addAll(emailToContact.values());
         allContacts.addAll(nameToContact.values());
+
         allContacts.addAll(other.emailToContact.values());
         allContacts.addAll(other.nameToContact.values());
 
-        // unify CIs with the same name or email
+        // unify contacts with the same name or email
         for (String email : emailToContact.keySet()) {
             email = email.toLowerCase();
             Contact otherContact = other.lookupByEmail(email);
@@ -974,24 +844,26 @@ public class AddressBook implements Serializable {
             }
         }
 
-        for (String name : nameToContact.keySet()) {
+        /*
+        for (Collection<Contact> names : nameToContact.keySet()) {
             Contact otherContact = other.lookupByName(name); // no need of normalizing because name is already normalized, coming from a keyset
             if (otherContact != null) {
                 Contact thisContact = lookupByName(name);
                 thisContact.unify(otherContact);
             }
         }
+        */
 
         recomputeUnifiedContacts(allContacts);
         dataErrors.addAll(other.dataErrors);
     }
 
     private void reassignContactIds() {
-        Set<Contact> allContacts = new LinkedHashSet<Contact>();
+        Set<Contact> allContacts = new LinkedHashSet<>();
         allContacts.addAll(emailToContact.values());
         allContacts.addAll(nameToContact.values());
-        contactListForIds = new ArrayList<Contact>(allContacts);
-        contactIdMap = new LinkedHashMap<Contact, Integer>();
+        contactListForIds = new ArrayList<>(allContacts);
+        contactIdMap = new LinkedHashMap<>();
         for (int i = 0; i < contactListForIds.size(); i++)
             contactIdMap.put(contactListForIds.get(i), i);
     }
@@ -1001,7 +873,7 @@ public class AddressBook implements Serializable {
             Integer id = contactIdMap.get(c);
             if (id != null) {
                 Util.softAssert(c.equals(getContact(id)), "Inconsistent mapping to contact ID " + id,log);
-                return id.intValue();
+                return id;
             }
         }
         return -1;
@@ -1019,7 +891,7 @@ public class AddressBook implements Serializable {
 
     /** masking stuff is used by epadd only, to hide full email addrs in discovery mode */
     private static <V> Map<String, V> maskEmailDomain(Map<String, V> map, Map<String, String> maskingMap, Map<String, Integer> duplicationCount) {
-        Map<String, V> result = new LinkedHashMap<String, V>();
+        Map<String, V> result = new LinkedHashMap<>();
         for (Map.Entry<String, V> e : map.entrySet()) {
             String email = e.getKey();
             //log.info("masking " + email);
@@ -1050,8 +922,8 @@ public class AddressBook implements Serializable {
     }
 
     public void maskEmailDomain() {
-        emailMaskingMap = new LinkedHashMap<String, String>();
-        Map<String, Integer> duplication_count = new LinkedHashMap<String, Integer>();
+        emailMaskingMap = new LinkedHashMap<>();
+        Map<String, Integer> duplication_count = new LinkedHashMap<>();
         emailToContact = maskEmailDomain(emailToContact, emailMaskingMap, duplication_count);
 
         // it seems email address may also appear "in" (not necessarily "as") the key of nameToContact.
@@ -1065,7 +937,7 @@ public class AddressBook implements Serializable {
         // so, we should not mask nameToContact with maskEmailDomain here and use a different approach.
         //nameToContact = maskEmailDomain(nameToContact, emailMaskingMap, duplication_count);
 
-        Set<Contact> allContacts = new LinkedHashSet<Contact>();
+        Set<Contact> allContacts = new LinkedHashSet<>();
         allContacts.addAll(emailToContact.values());
         allContacts.addAll(nameToContact.values());
 
@@ -1089,7 +961,7 @@ public class AddressBook implements Serializable {
     } // blur by default
 
     // an older and slightly more elaborate version of get stats
-    public String getStatsAsString(boolean blur) {
+    private String getStatsAsString(boolean blur) {
         // count how many with at least one sent
         List<Contact> list = allContacts();
         int nContacts = list.size();
@@ -1120,10 +992,7 @@ public class AddressBook implements Serializable {
     }
 
     public void verify() {
-        Set<Contact> allContacts = new LinkedHashSet<Contact>();
-        for (Set<Contact> s : nameTokenToContacts.values()) {
-            allContacts.addAll(s);
-        }
+        Set<Contact> allContacts = new LinkedHashSet<>();
 
         // a CI in nameToInfo *must* be present in emailToInfo
         for (Contact c : nameToContact.values()) {
@@ -1138,6 +1007,8 @@ public class AddressBook implements Serializable {
             Util.ASSERT(c.emails.contains(email));
         }
 
+        // verify nameToContacts
+        /*
         for (Map.Entry<String, Contact> me : nameToContact.entrySet()) {
             String name = me.getKey();
             Contact c = me.getValue();
@@ -1149,6 +1020,7 @@ public class AddressBook implements Serializable {
                 }
             Util.ASSERT(found);
         }
+        */
 
         Set<Contact> allCs = new LinkedHashSet<Contact>();
         allCs.addAll(nameToContact.values());
@@ -1170,7 +1042,7 @@ public class AddressBook implements Serializable {
     public JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
         Contact ownContact = getContactForSelf();
         List<Contact> allContacts = sortedContacts((Collection) docs);
-        Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
+        Map<Contact, Integer> contactInCount = new LinkedHashMap<>(), contactOutCount = new LinkedHashMap<>(), contactMentionCount = new LinkedHashMap<>();
 
         // compute counts
         for (EmailDocument ed : docs) {
@@ -1248,8 +1120,7 @@ public class AddressBook implements Serializable {
         return resultArray;
     }
 
-
-    public static class AddressBookStats implements Serializable {
+    static class AddressBookStats implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public int nOwnEmails, nOwnNames;

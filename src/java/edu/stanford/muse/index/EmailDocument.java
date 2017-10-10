@@ -180,7 +180,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	/** get all addrs associated with the message -- from, to, cc, bcc */
 	public List<String> getAllAddrs()
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (to != null) // to can sometimes be null e.g. for mbox files have a "IMAP server data -- DO NOT DELETE" as the first message
 			for (Address a: to)
 				if (a instanceof InternetAddress)
@@ -202,16 +202,16 @@ public class EmailDocument extends DatedDocument implements Serializable
 
 	public List<String> getAllNames()
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (to != null) // to can sometimes be null e.g. for mbox files have a "IMAP server data -- DO NOT DELETE" as the first message
 			for (Address a: to)
 				if (a instanceof InternetAddress)
 					result.add(EmailUtils.cleanPersonName(((InternetAddress) a).getPersonal()));
-		if (cc != null) // to can sometimes be null e.g. for mbox files have a "IMAP server data -- DO NOT DELETE" as the first message
+		if (cc != null)
 			for (Address a: cc)
 				if (a instanceof InternetAddress)
 					result.add(EmailUtils.cleanPersonName(((InternetAddress) a).getPersonal()));
-		if (bcc != null) // to can sometimes be null e.g. for mbox files have a "IMAP server data -- DO NOT DELETE" as the first message
+		if (bcc != null)
 			for (Address a: bcc)
 				if (a instanceof InternetAddress)
 					result.add(EmailUtils.cleanPersonName(((InternetAddress) a).getPersonal()));

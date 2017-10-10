@@ -15,7 +15,6 @@ import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXParseException;
 
 import javax.mail.internet.InternetAddress;
 import java.io.File;
@@ -25,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * VIP class. Performs various search functions.
@@ -33,7 +33,7 @@ public class SearchResult {
     private static Log log = LogFactory.getLog(SearchResult.class);
 
     //Helper function to add key-value pair in a map (especially for terms)
-    void enhance(Map<String,Set<String>> map, String key, String term) {
+    private void enhance(Map<String,Set<String>> map, String key, String term) {
         Set<String> old = map.getOrDefault(key,new HashSet<>());
         // note: we add the term to unstemmed terms as well -- no harm. this
         // is being introduced to fix a query param we had like term=K&L Gates and
@@ -80,7 +80,7 @@ public class SearchResult {
     //class that holds the document body specific highlighting information
     class BodyHLInfo{
         private Map<String,Set<String>> info;
-        public BodyHLInfo(){
+        BodyHLInfo(){
             info = new HashMap<>();
         }
         void addTerm(String term){
@@ -99,7 +99,7 @@ public class SearchResult {
 
     class AttachmentHLInfo{
         private Map<Blob,Set<String>> info;
-        public AttachmentHLInfo(){
+        AttachmentHLInfo(){
             info = new HashMap<>();
         }
         void addMultipleInfo(Set<Blob> attachments){
@@ -138,7 +138,7 @@ public class SearchResult {
         }
         queryParams = params;
         commonHLInfo = new CommonHLInfo();
-        regexToHighlight = new String("");
+        regexToHighlight = "";
     }
 
     public SearchResult(Map<Document, Pair<BodyHLInfo,AttachmentHLInfo>> matchedDocs, Archive archive,
@@ -193,7 +193,7 @@ public class SearchResult {
     }
 
 
-    /***************************DOCUMENT AND ATTACHMENT SPECIFIC FILTERS****************************/
+    /* **************************DOCUMENT AND ATTACHMENT SPECIFIC FILTERS*************************** */
 
     /**
      * returns SearchResult containing docs or attachments which match the given regex term
@@ -203,7 +203,7 @@ public class SearchResult {
      * information will be filled for all documents at the point when searchResult object is being rendered (browse.jsp)
      * @return SearchResult object
      */
-    public static SearchResult searchForRegexTerm(SearchResult inputSet, String regexTerm) {
+    private static SearchResult searchForRegexTerm(SearchResult inputSet, String regexTerm) {
         // go in the order subject, body, attachment
         Set<Document> docsForTerm = new LinkedHashSet<>();
         Indexer.QueryOptions options = new Indexer.QueryOptions();
@@ -221,7 +221,7 @@ public class SearchResult {
      *
      * @param inputSet Input search result object on which this term filtering needs to be done
      * @param term     term to search for
-     * @return
+     * @return searchresult obj
      */
     public static SearchResult searchForTerm(SearchResult inputSet, String term) {
         // go in the order subject, body, attachment
@@ -309,7 +309,7 @@ public class SearchResult {
     }
 
 
-    /**************************ONLY DOCUMENT SPECIFIC FILTERS****************************************/
+    /* *************************ONLY DOCUMENT SPECIFIC FILTERS*************************************** */
 
     /**
      * returns only the docs from amongst the given ones that matches the query specification for flags.
@@ -317,7 +317,7 @@ public class SearchResult {
      * @param inputSet The input search result object on which this filtering needs to be done.
      * @return Another SearchResult object containing filtered messages only.
      */
-    public static SearchResult filterForFlags(SearchResult inputSet) {
+    private static SearchResult filterForFlags(SearchResult inputSet) {
 
         //keep on removing those documents from inputSet which do not satisfy the filter conditions.
         //Filter1- whether to keep reviewed or not
@@ -339,10 +339,7 @@ public class SearchResult {
         if (!"either".equals(dntValue) && !Util.nullOrEmpty(dntValue)) {
             inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
                 EmailDocument edoc = (EmailDocument) entry.getKey();
-                if (edoc.doNotTransfer == "yes".equals(dntValue))
-                    return true;
-                else
-                    return false;
+                return edoc.doNotTransfer == "yes".equals(dntValue);
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
         }
 
@@ -351,10 +348,7 @@ public class SearchResult {
         if (!"either".equals(twrValue) & !Util.nullOrEmpty(twrValue)) {
             inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
                 EmailDocument edoc = (EmailDocument) entry.getKey();
-                if (edoc.transferWithRestrictions == "yes".equals(twrValue))
-                    return true;
-                else
-                    return false;
+                return edoc.transferWithRestrictions == "yes".equals(twrValue);
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
         }
 
@@ -364,10 +358,7 @@ public class SearchResult {
         if (!"either".equals(inCartValue) & !Util.nullOrEmpty(inCartValue)) {
             inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
                 EmailDocument edoc = (EmailDocument) entry.getKey();
-                if (edoc.addedToCart == "yes".equals(inCartValue))
-                    return true;
-                else
-                    return false;
+                return edoc.addedToCart == "yes".equals(inCartValue);
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
         }
 
@@ -378,10 +369,7 @@ public class SearchResult {
                 EmailDocument edoc = (EmailDocument) entry.getKey();
                 if (!Util.nullOrEmpty(edoc.comment)) {
                     String comment = edoc.comment.toLowerCase();
-                    if (annotations.contains(comment))
-                        return true;
-                    else
-                        return false;
+                    return annotations.contains(comment);
                 }else
                     return false;
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
@@ -411,9 +399,7 @@ public class SearchResult {
                 if (direction_in)
                     if (((sent_or_received & EmailDocument.RECEIVED_MASK) != 0) || sent_or_received == 0) // if sent_or_received == 0 => we neither directly recd. nor sent it (e.g. it could be received on a mailing list). so count it as received.
                         return true;//result.add(ed);
-                if (direction_out && (sent_or_received & EmailDocument.SENT_MASK) != 0)
-                    return true;//result.add(ed);
-                return false;
+                return direction_out && (sent_or_received & EmailDocument.SENT_MASK) != 0;
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
         }
 
@@ -425,11 +411,10 @@ public class SearchResult {
         String correspondentName = null;
         AddressBook ab = inputSet.archive.addressBook;
         int contactId = -1;
-        try { contactId = Integer.parseInt(cid); } catch (NumberFormatException nfe) { }
+        try { contactId = Integer.parseInt(cid); } catch (NumberFormatException nfe) { Util.print_exception("Bad contactId in filterForContactId", nfe, log); }
         if (contactId >= 0) {
             Contact c = ab.getContact(contactId);
-            String name = c.pickBestName();
-            correspondentName = name;
+            correspondentName = c.pickBestName();
         }
 
         //highlighting info addition
@@ -467,36 +452,18 @@ public class SearchResult {
         Set<String> correspondents = Util.splitFieldForOr(correspondentsStr);
 
         for (String s : correspondents) {
-            Contact c = ab.lookupByEmailOrName(s); // this lookup will normalize, be case-insensitive, etc.
-            if (c != null)
-                searchedContacts.add(c);
+            Collection<Contact> contacts = ab.lookupByEmailOrName(s); // this lookup will normalize, be case-insensitive, etc.
+            if (contacts != null)
+                searchedContacts.addAll (contacts);
         }
 
-        // keep on removing those documents from allDocs which do not satisfy the filter conditions.
+        // keep on removing those documents from allDocs which do not have any contact that matches ANY of searchedContacts
 
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k -> {
             EmailDocument ed = (EmailDocument) k.getKey();
-            Set<InternetAddress> addressesInMessage = new LinkedHashSet<>(); // only lookup the fields (to/cc/bcc/from) that have been enabled
-            if (checkToField && !Util.nullOrEmpty(ed.to))
-                addressesInMessage.addAll((List) Arrays.asList(ed.to));
-            if (checkFromField && !Util.nullOrEmpty(ed.from))
-                addressesInMessage.addAll((List) Arrays.asList(ed.from));
-            if (checkCcField && !Util.nullOrEmpty(ed.cc))
-                addressesInMessage.addAll((List) Arrays.asList(ed.cc));
-            if (checkBccField && !Util.nullOrEmpty(ed.bcc))
-                addressesInMessage.addAll((List) Arrays.asList(ed.bcc));
-
-            for (InternetAddress a : addressesInMessage) {
-                Contact c = ab.lookupByEmail(a.getAddress());
-                if (c == null)
-                    c = ab.lookupByName(a.getPersonal());
-                if (c != null && searchedContacts.contains(c)) {
-                    return true;
-                }
-            }
-            return false;
+            Collection<Contact> contactsInMessage = EmailUtils.getContactsForMessage(ab, ed);
+            return contactsInMessage.stream().anyMatch (c -> searchedContacts.contains(c));
         }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-
 
         return inputSet;
     }
@@ -549,7 +516,7 @@ public class SearchResult {
     /** returns only the docs matching per params[mailingListState].
      * If this value is either, no filtering is done.
      * if set to yes, only docs with at least one address matching a mailing list are returned. */
-    private static SearchResult filterForMailingListState(SearchResult inputSet ) {
+    private static SearchResult filterForMailingListState(SearchResult inputSet) {
         String mailingListState = JSPHelper.getParam(inputSet.queryParams, "mailingListState");
         AddressBook ab = inputSet.archive.addressBook;
         if ("either".equals(mailingListState) || Util.nullOrEmpty(mailingListState))
@@ -558,30 +525,10 @@ public class SearchResult {
 
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
             EmailDocument ed = (EmailDocument)k.getKey();
-            Set<InternetAddress> allAddressesInMessage = new LinkedHashSet<>(); // only lookup the fields (to/cc/bcc/from) that have been enabled
-
-            // now check for mailing list state
-            if (!Util.nullOrEmpty(ed.to)) {
-                allAddressesInMessage.addAll((List) Arrays.asList(ed.to));
-            }
-            if (!Util.nullOrEmpty(ed.from)) {
-                allAddressesInMessage.addAll((List) Arrays.asList(ed.from));
-            }
-            if (!Util.nullOrEmpty(ed.cc)) {
-                allAddressesInMessage.addAll((List) Arrays.asList(ed.cc));
-            }
-            if (!Util.nullOrEmpty(ed.bcc)) {
-                allAddressesInMessage.addAll((List) Arrays.asList(ed.bcc));
-            }
+            Collection<Contact> contactsInMessage = EmailUtils.getContactsForMessage(ab, ed);
 
             boolean atLeastOneML = false; // is any of these addresses a ML?
-            for (InternetAddress a : allAddressesInMessage) {
-                Contact c = ab.lookupByEmail(a.getAddress());
-                if (c == null)
-                    c = ab.lookupByName(a.getPersonal());
-                if (c == null)
-                    continue; // shouldn't happen, just being defensive
-
+            for (Contact c: contactsInMessage) {
                 boolean isMailingList = (c.mailingListState & MailingList.SUPER_DEFINITE) != 0 ||
                         (c.mailingListState & MailingList.USER_ASSIGNED) != 0;
 
@@ -598,7 +545,6 @@ public class SearchResult {
             // ok, this ed satisfies ML criteria
             return true;//result.add(ed);
         }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-
 
         return inputSet;
     }
@@ -657,7 +603,7 @@ public class SearchResult {
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
                     try {
-                        entitiesInThisDoc.addAll(Arrays.asList(inputSet.archive.getAllNamesInDoc(ed, true)).stream().map(n->n.text.toLowerCase()).collect(Collectors.toSet()));
+                        entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getAllNamesInDoc(ed, true)).map(n->n.text.toLowerCase()).collect(Collectors.toSet()));
                     } catch (IOException ioe) {
                         Util.print_exception("Error in reading entities", ioe, log);
                         return false;
@@ -680,8 +626,6 @@ public class SearchResult {
         return inputSet;
     }
 
-
-
     private static SearchResult filterForEntityType( SearchResult inputSet) {
         String val = JSPHelper.getParam(inputSet.queryParams, "entityType");
 
@@ -698,16 +642,14 @@ public class SearchResult {
 
         inputSet.matchedDocs.keySet().retainAll(docsWithNeededTypes);
         //Now for each document add the highlighting information about the entity types present there.
-        inputSet.matchedDocs.keySet().stream().forEach(k-> {
+        inputSet.matchedDocs.keySet().forEach(k-> {
             EmailDocument ed = (EmailDocument) k;
             try {
                 //get all entities in this doc which are of interest.
-                Set<Span> entities = Arrays.asList(inputSet.archive.getAllNamesInDoc(ed, true)).stream().filter(en -> {
-                    if (neededTypes.contains(Short.toString(en.getType())))
-                        return true;
-                    else
-                        return false;
-                }).collect(Collectors.toSet());
+                Set<Span> entities = Arrays.stream(inputSet.archive.getAllNamesInDoc(ed, true))
+                        .filter(en -> neededTypes.contains(Short.toString(en.getType())))
+                        .collect(Collectors.toSet());
+
                 //note that the entity name is being surrounded with double quotes to make it like exact search.
                 Set<String> entitiestext = entities.parallelStream().map(s -> "\""+s.text.toLowerCase()+"\"").collect(Collectors.toSet());
                 //add all those entities in the highlighting information of this document.
@@ -820,10 +762,10 @@ public class SearchResult {
         //Highlighting information that will be applied to all documents. This information is based on the
         //lexicon category option passed from the front end.
 
-        boolean doRegexHighlighting = (lexicon != null) && Lexicon.REGEX_LEXICON_NAME.equals(lexiconName);
+        boolean doRegexHighlighting = Lexicon.REGEX_LEXICON_NAME.equals(lexiconName);
 
         Set<String> selectedPrefixes;
-        selectedPrefixes = lexicon == null ? null : lexicon.wordsForSentiments(inputSet.archive.indexer, inputSet.matchedDocs.keySet(),new String[]{category} );
+        selectedPrefixes = lexicon.wordsForSentiments(inputSet.archive.indexer, inputSet.matchedDocs.keySet(),new String[]{category} );
         if (selectedPrefixes != null){
             //add quotes or else, stop words will be removed and highlights single words
             for (String sp : selectedPrefixes)
@@ -845,8 +787,7 @@ public class SearchResult {
         String isSensitive = JSPHelper.getParam(inputSet.queryParams, "sensitive");
 
         if ("true".equals(isSensitive)) {
-            Indexer.QueryType qt = null;
-            qt = Indexer.QueryType.REGEX;
+            Indexer.QueryType qt = Indexer.QueryType.REGEX;
             Collection<Document> sensitiveDocs = inputSet.archive.docsForQuery(-1 /* cluster num -- not used */, qt);
             //now keep only those docs in inputSet which are present in sensitiveDocs set.
             inputSet.matchedDocs.keySet().retainAll(sensitiveDocs);
@@ -875,7 +816,7 @@ public class SearchResult {
 
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
 
-        inputSet.matchedDocs.keySet().stream().forEach(k -> {
+        inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
             EmailDocument ed = (EmailDocument) k;
             //Here.. check for all attachments of ed for match.
             Collection<Blob> blobs = ed.attachments;
@@ -938,9 +879,7 @@ public class SearchResult {
                 AttachmentHLInfo attachmentHLInfo = inputSet.matchedDocs.get(k).second;
                 attachmentHLInfo.addMultipleInfo(matchedBlobs);
                 outputDocs.put(k, new Pair(bhlinfo, attachmentHLInfo));
-
             }
-
         });
 
         return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
@@ -950,12 +889,7 @@ public class SearchResult {
     /** will look in the given docs for a message with an attachment that satisfies all the requirements.
      * the set of such messages, along with the matching blobs is returned
      * if no requirements, Pair<docs, null> is returned.
-     *
-     * @param inputSet
-     *
-     * @return
      */
-    //private static Pair<Set<EmailDocument>, Set<Blob>> updateForAttachments(Set<EmailDocument> docs, Multimap<String, String> params) {
     private static SearchResult filterForAttachments(SearchResult inputSet) {
 
 
@@ -1026,7 +960,7 @@ public class SearchResult {
                 boolean isOtherSelected = neededExtensions.contains("others");
                 //get the options that were displayed for attachment types. This will be used to select attachment extensions if the option 'other'
                 //was selected by the user in the drop down box of export.jsp.
-                List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x -> Util.tokenize(x, ";")).flatMap(col -> col.stream()).collect(Collectors.toList());
+                List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x -> Util.tokenize(x, ";")).flatMap(Collection::stream).collect(Collectors.toList());
 
                 if (neededExtensions != null) {
                     if (b.filename == null)
@@ -1108,9 +1042,7 @@ public class SearchResult {
                 //In order to accommodate both cases we first check if there is ampping from the extension type to actual extensions using .get(t)
                 //if no such mapping is present then we assume that the input extension types are of the form mp3;mov;ogg and work on that.
                 String[] components = exts.split (";");
-                for (String c: components) {
-                    extensionsToMatch.add (c);
-                }
+                Collections.addAll(extensionsToMatch, components);
             }
         }
 
@@ -1119,8 +1051,6 @@ public class SearchResult {
         //get the options that were displayed for attachment types. This will be used to select attachment extensions if the option 'other'
         //was selected by the user in the drop down box of export.jsp.
         List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x->Util.tokenize(x,";")).flatMap(col->col.stream()).collect(Collectors.toList());
-
-        List<Pair<Blob, EmailDocument>> allAttachments = new ArrayList<>();
 
         SearchResult outputSet = filterDocsByDate(inputSet);
         //Collection<EmailDocument> eDocs = (Collection) filterDocsByDate (params, new HashSet<>((Collection) docs));
@@ -1168,7 +1098,7 @@ public class SearchResult {
                 inputSet.commonHLInfo,inputSet.regexToHighlight);
     }
 
-    /*********************COMBINING EVERYTHING TOGETHER TO CREATE AN ENTRY LEVEL SEARCH FUNCTION*******/
+    /* ********************COMBINING EVERYTHING TOGETHER TO CREATE AN ENTRY LEVEL SEARCH FUNCTION****** */
 
     /**
      * VIP method. Top level API entry point to perform the search in the given archive according to params in the given multimap.
@@ -1259,9 +1189,7 @@ public class SearchResult {
             Collections.reverse(resultDocsList);
         }
 
-
-
-        return new Pair((Collection<Document>)resultDocsList,outResult);
+        return new Pair<>(resultDocsList,outResult);
     }
 
     //This method was moved from bulk-flags.jsp so that all types of result set creation happens here.
@@ -1276,7 +1204,7 @@ public class SearchResult {
             if (allDocs) {
                 inputSet.matchedDocs.keySet().retainAll(inputSet.archive.getAllDocsAsSet());
             } else {
-                Set<String> eas = new LinkedHashSet<String>();
+                Set<String> eas = new LinkedHashSet<>();
                 try {
                     //read the entries in the file
                     CSVReader reader = new CSVReader(new FileReader(filePath));

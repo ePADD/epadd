@@ -38,13 +38,13 @@ public class Filter implements Serializable {
 
     private static Log log = LogFactory.getLog(Filter.class);
 
-	List<String> personNameOrEmails = new ArrayList<String>(); // currently can only be 1 person, but we might want to support more
-	Set<Contact> personContacts = new LinkedHashSet<Contact>(); // mirror of personNameOrEmails w/contact objs. setup when we are assigned an address book.
-	List<String> keywords = new ArrayList<String>();
-	Date startDate, endDate;
-	boolean sentMessagesOnly;
-	Contact ownCI;
-	AddressBook addressBook; // used for matching people
+	private List<String> personNameOrEmails = new ArrayList<>(); // currently can only be 1 person, but we might want to support more
+    private Set<Contact> personContacts = new LinkedHashSet<>(); // mirror of personNameOrEmails w/contact objs. setup when we are assigned an address book.
+	private List<String> keywords = new ArrayList<>();
+	private Date startDate, endDate;
+	private boolean sentMessagesOnly;
+	private Contact ownContact;
+	private AddressBook addressBook; // used for matching people
 
 	public void setAddressBook(AddressBook addressBook) {
 		this.addressBook = addressBook;
@@ -52,9 +52,11 @@ public class Filter implements Serializable {
 		// we assume the addressbook does not change after this
 		for (String s: personNameOrEmails)
 		{
-			Contact c = addressBook.lookupByEmailOrName(s);
-			if (c != null)
-				personContacts.add(c);
+			Collection<Contact> contacts = addressBook.lookupByEmailOrName(s);
+			for (Contact contact: contacts) {
+				if (contact != null)
+					personContacts.add(contact);
+			}
 		}
 	}
 
@@ -94,18 +96,10 @@ public class Filter implements Serializable {
 	/**
 	 * returns date range in the format accepted by filter, e.g., 20130709-20130710. Used only by memory study etc.
 	 */
-	public static String getDateRangeForLast1Year()
+	private static String getDateRangeForLast1Year()
 	{
 		Date d = new Date();
 		Date d1 = new Date(d.getTime() - (30L * 12 * 24 * 60 * 60 * 1000));
-		return dateToString(d1) + "-" + dateToString(d);		
-	}
-	
-	/** returns date range in the format accepted by filter, e.g., 20130709-20130710 */
-	public static String getDateRangeForLastNDays(int n)
-	{
-		Date d = new Date();
-		Date d1 = new Date(d.getTime() - (((long) n) * 24 * 60 * 60 * 1000));
 		return dateToString(d1) + "-" + dateToString(d);		
 	}
 	
@@ -114,14 +108,9 @@ public class Filter implements Serializable {
 		return ((personContacts.size() == 0) && !sentMessagesOnly && startDate == null && endDate == null && keywords.size() == 0);
 	}
 
-	public void setSentMessagesOnly(boolean b)
-	{
-		this.sentMessagesOnly = b;
-	}
-
 	public void setOwnContactInfo(Contact ownCI)
 	{
-		this.ownCI = ownCI;
+		this.ownContact = ownCI;
 	}
 
 	/** takes in string of the form 20150101-20150131 (both dates are inclusive) and sets up startDate and endDate accordingly. */
@@ -148,7 +137,7 @@ public class Filter implements Serializable {
 		personNameOrEmails.add(s);
 	}
 
-	public boolean matchesDate (DatedDocument dd)
+	private boolean matchesDate (DatedDocument dd)
 	{
 		if (startDate != null && endDate != null)
 		{
@@ -165,10 +154,9 @@ public class Filter implements Serializable {
 	{
 		// look for any reason to return false, if none of them fire, return true.
 
-		DatedDocument dd = null;
 		if (d instanceof DatedDocument)
 		{
-			dd = (DatedDocument) d;
+			DatedDocument dd = (DatedDocument) d;
 			if (!matchesDate(dd))
 				return false;
 		}
@@ -199,7 +187,7 @@ public class Filter implements Serializable {
 				if (addressBook != null)
 				{
 					List<String> list = ed.getAllAddrs();
-					Set<Contact> contactsInThisMessage = new LinkedHashSet<Contact>();
+					Set<Contact> contactsInThisMessage = new LinkedHashSet<>();
 					for (String s: list)
 					{
 						Contact c = addressBook.lookupByEmail(s);
@@ -215,10 +203,10 @@ public class Filter implements Serializable {
 
 			if (sentMessagesOnly)
 			{
-				if (ownCI != null)
+				if (ownContact != null)
 				{
 					String fromEmail = ed.getFromEmailAddress();
-					Set<String> ownAddrs = ownCI.getEmails();
+					Set<String> ownAddrs = ownContact.getEmails();
 					if (!ownAddrs.contains(fromEmail))
 						return false;
 				}
@@ -275,7 +263,7 @@ public class Filter implements Serializable {
 	
 	/* currently supports sent-only, start/end date and keywords in body/subject. these terms are ANDed. sender matching w/email aliases ORed. 
 	 * if dates specified, sent or recd. date terms are used based on the incoming param. */
-	public SearchTerm convertToSearchTerm(boolean useReceivedDateTerms)
+	SearchTerm convertToSearchTerm(boolean useReceivedDateTerms)
 	{
 		// FLAG DEBUG: end date = null
 		//endDate = null;
@@ -283,9 +271,9 @@ public class Filter implements Serializable {
 		if (sentMessagesOnly)
 		{
 			List<SearchTerm> fromAddrTerms = new ArrayList<SearchTerm>();
-			if (ownCI != null)
+			if (ownContact != null)
 			{
-				for (String e: ownCI.emails)
+				for (String e: ownContact.emails)
 					try {
 						fromAddrTerms.add(new FromTerm(new InternetAddress(e, ""))); // the name doesn't matter for equality of InternetAddress				
 					} catch (Exception ex) { Util.print_exception(ex, log); }
