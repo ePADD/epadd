@@ -27,7 +27,7 @@ Windows installations: Java Runtime Environment 8u101 or later required.
 
 (Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc).
 
-ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.10 / 10.11. Please follow the instructions below for your operating system.
+ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.12 / 10.13, and Ubuntu 16.04. Please follow the instructions below for your operating system.
 
 *Installing ePADD on Windows*
 
@@ -81,6 +81,7 @@ Unless otherwise indicated, software items in this repository are distributed un
 - Mandeep RJ, Lollypop Design
 
 *Testing and Collaboration (Phase 2):*
+- Audra Eagle Yun, University of California, Irvine;
 - Laura Uglean Jackson, University of California, Irvine;
 - Skip Kendall, Harvard University;
 - Margo Padilla, Metropolitan New York Library Council (METRO);
