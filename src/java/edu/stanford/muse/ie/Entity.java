@@ -1,16 +1,9 @@
 package edu.stanford.muse.ie;
 
 import com.google.gson.Gson;
-import edu.stanford.muse.email.Contact;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.EmailDocument;
-import edu.stanford.muse.index.IndexUtils;
-import edu.stanford.muse.index.Indexer;
-import edu.stanford.muse.ner.tokenize.CICTokenizer;
-import edu.stanford.muse.ner.tokenize.Tokenizer;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
-import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.SimpleSessions;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -20,9 +13,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.util.Version;
 
-import javax.mail.Address;
 import java.io.File;
-import java.io.FileWriter;
 import java.util.*;
 
 /**

@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>

@@ -3,6 +3,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 	
 	<%!
@@ -147,12 +148,12 @@
 		Set<String> nameTokens = new LinkedHashSet<String>(), emailAccountTokens = new LinkedHashSet<String>();
 		for (Contact c: contacts)
 		{
-			Set<String> namesForThisContact = c.names;
+			Set<String> namesForThisContact = c.getNames();
 			if (namesForThisContact != null)				
 				for (String n: namesForThisContact)
 					nameTokens.addAll(Util.tokenize(n.toLowerCase()));
 			
-			for (String n: c.emails)
+			for (String n: c.getEmails())
 			{
 				int endIdxp1 = n.length();
 				int x = n.indexOf("@");

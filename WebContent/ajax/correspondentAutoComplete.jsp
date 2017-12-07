@@ -1,6 +1,6 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
-<%@page import="edu.stanford.muse.email.AddressBook"%>
-<%@page import="edu.stanford.muse.email.Contact"%>
+<%@page import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page import="edu.stanford.muse.email.AddressBookManager.Contact"%>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
@@ -38,7 +38,7 @@
         Set<String> seen = new LinkedHashSet<>();
         outer:
 		for (Contact c: addressBook.allContacts()){
-			Set<String> names = c.names;
+			Set<String> names = c.getNames();
 			if (names != null) {
 				for (String name: names) {
 					if (name.toLowerCase().contains(query)) {
@@ -56,9 +56,9 @@
 				}
 			}
 
-			Set<String> emails = c.emails;
+			Set<String> emails = c.getEmails();
 			if (emails != null) {
-				for (String email: c.emails) {
+				for (String email: emails) {
 					if (email.toLowerCase().contains(query)) {
 						JSPHelper.log.info("Adding name: " + names);
 						JSONObject s = new JSONObject();

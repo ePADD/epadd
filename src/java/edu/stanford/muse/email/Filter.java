@@ -17,6 +17,8 @@ package edu.stanford.muse.email;
 
 
 import com.google.common.collect.Multimap;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.exceptions.ReadContentsException;
 import edu.stanford.muse.index.DatedDocument;
 import edu.stanford.muse.index.Document;
@@ -273,7 +275,7 @@ public class Filter implements Serializable {
 			List<SearchTerm> fromAddrTerms = new ArrayList<SearchTerm>();
 			if (ownContact != null)
 			{
-				for (String e: ownContact.emails)
+				for (String e: ownContact.getEmails())
 					try {
 						fromAddrTerms.add(new FromTerm(new InternetAddress(e, ""))); // the name doesn't matter for equality of InternetAddress				
 					} catch (Exception ex) { Util.print_exception(ex, log); }

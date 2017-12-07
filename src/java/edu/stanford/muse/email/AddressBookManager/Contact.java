@@ -13,8 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package edu.stanford.muse.email;
+package edu.stanford.muse.email.AddressBookManager;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import edu.stanford.muse.webapp.JSPHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,16 +41,16 @@ public class Contact extends UnionFindObject {
 	private final static long serialVersionUID = 1L;
 
 	// we might have track more fields per contact in the future, but right now just emails/names.
-	public Set<String> names = new LinkedHashSet<String>();
-	public Set<String> emails = new LinkedHashSet<String>();
+	private Set<String> names = new LinkedHashSet<String>();
+	private Set<String> emails = new LinkedHashSet<String>();
 	public int mailingListState = MailingList.DUNNO;
-	public String canonicalEmail = null; // maybe expensive to compute for each term, so cache it the first time it is computed
 
 	//	private Set<String> mailers = new LinkedHashSet<String>();
 	//	private Set<String> messageIDs = new LinkedHashSet<String>();
 	//	private Set<String> ipAddrs = new LinkedHashSet<String>();
 	//	private Set<String> lastReceivedHeaders = new LinkedHashSet<String>();
 
+	public Set<String> getNames() { return names;}
 	public Set<String> getEmails() {
 		return emails;
 	}
@@ -307,4 +309,83 @@ public class Contact extends UnionFindObject {
 				System.err.println ("WARNING: Calendar year = " + year);
 		}
 	}
+
+	////////////////////////Code for writing and reading textual representation of this class.
+
+	/*
+	The format for writing a contact object is as defined earlier in dumpForContact method in
+	edit-addrssbook.jsp file,
+	 */
+	public void writeObjectToStream(BufferedWriter out, String description) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		String mailingListOutput = (this.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.USER_ASSIGNED)) != 0 ? MailingList.MAILING_LIST_MARKER : "";
+		sb.append ("-- " + mailingListOutput + " " + description + "\n");
+
+		// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
+		Set<String> uniqueNames = new LinkedHashSet<String>();
+		for (String s: this.getNames())
+			if (!Util.nullOrEmpty(s))
+				uniqueNames.add(s);
+		// uniqueNames.add(s.trim());
+
+		Set<String> uniqueEmails = new LinkedHashSet<String>();
+		for (String s: this.getEmails())
+			if (!Util.nullOrEmpty(s))
+				uniqueEmails.add(s);
+
+		for (String s: uniqueNames)
+		{
+			sb.append (Util.escapeHTML(s) + "\n");
+		}
+		for (String s: uniqueEmails)
+			sb.append (Util.escapeHTML(s) + "\n");
+		sb.append(AddressBook.PERSON_DELIMITER);
+		sb.append("\n");
+		out.append(sb.toString());
+	}
+
+
+	public static Contact readObjectFromStream(BufferedReader in) throws IOException {
+		String inp = in.readLine();
+		if(inp==null)
+			return null;
+		Contact tmp = new Contact();
+		//int state  = 0;
+		//0=name_reading,1= email_reading,2=state_reading
+		while(inp!=null){
+			if(inp.trim().compareTo(AddressBook.PERSON_DELIMITER)==0)
+				return tmp;
+			else if(inp.trim().contains("@"))
+				tmp.getEmails().add(inp.trim());
+			else
+				tmp.getNames().add(inp.trim());
+			inp = in.readLine();
+			/*
+			if(inp.trim().compareTo("###Names###")==0){
+				inp = in.readLine();
+				state=0;
+			}
+			else if(inp.trim().compareTo("###Emails###")==0){
+				//means we have finished reading the names and the subsequent strings should be treated as emails
+				inp = in.readLine();
+				state =1 ;
+			}else if(inp.trim().compareTo("###MailingList###")==0){
+				//means we have finished reading emails and the subsequent string should be treated as mailing state.
+				inp=in.readLine();
+				state = 2;
+			}
+			if(state==0)
+				tmp.getNames().add(inp.trim());
+			else if (state==1)
+				tmp.getEmails().add(inp.trim());
+			else {
+				tmp.mailingListState = Integer.parseInt(inp.trim());
+				//Util.softAssert(tmp.mailingListState,"Some serious issue in reading mailing list state from the contact object",log);
+			}*/
+
+		}
+		Util.warnIf(true,"Control should not reach here while reading a contact object", JSPHelper.log);
+		return tmp;
+	}
+
 }

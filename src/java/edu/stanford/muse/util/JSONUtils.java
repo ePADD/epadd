@@ -21,14 +21,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,12 +40,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import edu.stanford.muse.email.AddressBook;
-import edu.stanford.muse.email.Contact;
-import edu.stanford.muse.index.EmailDocument;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 
 public class JSONUtils {
 	private static Log log = LogFactory.getLog(JSONUtils.class);
@@ -167,7 +159,7 @@ public class JSONUtils {
 
 //		Set<String> myAddresses = ab.getOwnAddrsSet();
 		Contact me = ab.getContactForSelf();
-		Set<String> myAddresses = me.emails;
+		Set<String> myAddresses = me.getEmails();
 
 		for (Contact c: allContacts)
 		{

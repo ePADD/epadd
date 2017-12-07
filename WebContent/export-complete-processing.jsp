@@ -1,7 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.Config"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
@@ -92,7 +92,7 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	}
 
 	try {
-        String csv = archive.getAuthorityMapper().getAuthoritiesAsCSV ();
+        String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
         if (!Util.nullOrEmpty(csv)) {
             String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
             FileWriter fw = new FileWriter(new File(filename));
@@ -113,7 +113,7 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	archive.export(docsToExport, true /* public mode */, folderPublic, "default");
 
 	try {
-        String csv = archive.getAuthorityMapper().getAuthoritiesAsCSV ();
+        String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
         if (!Util.nullOrEmpty(csv)) {
             String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
             FileWriter fw = new FileWriter(new File(filename));

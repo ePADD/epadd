@@ -1,6 +1,6 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.email.StaticStatusProvider" %>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
@@ -53,9 +53,6 @@
         else
             resultPage = "browse-top?archiveID="+archiveID;
         try {
-            //check if the loaded archive satisfy the verification condtiions. Call verify method on archive.
-            JSPHelper.log.info("After reading the archive checking if it is in good shape");
-		    archive.Verify();
 
 		    int nDocs = archive.getAllDocs().size();
             AddressBook ab = archive.addressBook;

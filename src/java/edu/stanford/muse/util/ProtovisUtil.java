@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import edu.stanford.muse.email.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.index.DatedDocument;
 

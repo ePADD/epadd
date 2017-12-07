@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
@@ -54,7 +54,7 @@
 	String exportType = request.getParameter("exportType"); // currently not used
 
     try {
-		String csv = archive.getAuthorityMapper().getAuthoritiesAsCSV();
+		String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV();
         pw.println(csv);
         pw.close();
 	} catch(Exception e){

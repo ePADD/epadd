@@ -17,9 +17,10 @@ package edu.stanford.muse.webapp;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
 import edu.stanford.muse.index.*;
@@ -46,7 +47,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /* import javax.servlet.jsp.JspWriter; */
 

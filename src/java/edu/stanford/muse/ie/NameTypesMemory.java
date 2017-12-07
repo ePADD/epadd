@@ -1,6 +1,6 @@
 package edu.stanford.muse.ie;
 
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;

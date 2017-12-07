@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.Set"%>
 
@@ -13,7 +13,6 @@
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="java.util.LinkedList" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>

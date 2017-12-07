@@ -2,17 +2,14 @@ package edu.stanford.muse.ie.matching;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import edu.stanford.muse.datacache.Blob;
-import edu.stanford.muse.email.AddressBook;
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.index.SearchResult;
-import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
-import edu.stanford.muse.webapp.JSPHelper;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -51,9 +48,9 @@ public class NameExpansion {
         // check if s matches any contacts on this message
         outer:
         for (Contact c: contacts) {
-            if (c.names == null)
+            if (c.getNames()== null)
                 continue;
-            for (String name : c.names) {
+            for (String name : c.getNames()) {
                 StringMatchType matchType = Matches.match(s, name);
                 if (matchType != null) {
                     float score = 1.0F;
@@ -85,8 +82,8 @@ public class NameExpansion {
 
         // check if s matches any other email with any of these correspondents
         for (Contact c: contactsExceptSelf) {
-            if (c.emails != null) {
-                String correspondentsSearchStr = String.join(";", c.emails);
+            if (c.getEmails()!= null) {
+                String correspondentsSearchStr = String.join(";", c.getEmails());
                 //As filterForCorrespondents function do not use queryparams therefore it is fine to instantiate SearchResult
                 //object with queryParams as null. After refactoring, filter methods take SearchObject as input and modify it
                 //according to the filter.

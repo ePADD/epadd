@@ -3,8 +3,8 @@ package edu.stanford.muse.xcoll;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
-import edu.stanford.muse.email.AddressBook;
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
@@ -114,10 +114,10 @@ public class CrossCollectionSearch {
                             entities = new LinkedHashSet<>();
                             Set<Contact> contacts = ed.getParticipatingContacts(ab);
                             for (Contact c : contacts) {
-                                if (c.names != null)
-                                    entities.addAll(c.names);
-                                if (c.emails != null)
-                                    entities.addAll(c.emails);
+                                if (c.getNames()!= null)
+                                    entities.addAll(c.getNames());
+                                if (c.getEmails()!= null)
+                                    entities.addAll(c.getEmails());
                             }
 
                             correspondentEntities = new LinkedHashSet<>(entities); // keep track of the correspondent centities also, separately because we need the isCorrespondent flag

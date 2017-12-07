@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * This class takes a .fast nt file and converts it to a lucene index that can be searched for.
  * It's a standalone program, i.e. doesn't need to be included in epadd.war
  */
-class FASTIndexer {
+public class FASTIndexer {
     private static Log log = LogFactory.getLog(FASTIndexer.class);
     public static final String FIELD_NAME_LABELS = "labels";
     public static final String FIELD_NAME_FAST_ID = "fastId";

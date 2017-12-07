@@ -7,7 +7,7 @@
 
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
 <%@ page import="java.util.stream.Stream" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
@@ -87,8 +87,8 @@
 	Short type = Short.parseShort(request.getParameter("type"));
 	out.println("<h1>Type: "+ typeCodeToName.get(type)+"</h1>");
 
-	EntityMapper entityMapper = archive.getEntityMapper();
-	Map<String, Integer> displayNameToFreq = entityMapper.getDisplayNameToFreq(archive, type);
+	EntityBook entityBook = archive.getEntityBook();
+	Map<String, Integer> displayNameToFreq = entityBook.getDisplayNameToFreq(archive, type);
 
 	// get pairs of <displayname, freq> in alpha order of display name, or the order of Freq
 	List<String> entityDisplayNames;
@@ -108,7 +108,7 @@
 			textBoxVal.append(Util.escapeHTML(entityDisplayName) + "\n");
 
 			// get alt names if any
-			Set<String> altNames = entityMapper.getAltNamesForDisplayName(entityDisplayName, type);
+			Set<String> altNames = entityBook.getAltNamesForDisplayName(entityDisplayName, type);
 			if (altNames != null)
 				for (String altName : altNames)
 					textBoxVal.append(Util.escapeHTML(altName) + "\n");

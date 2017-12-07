@@ -29,8 +29,8 @@ import javax.servlet.http.HttpSession;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 
-import edu.stanford.muse.email.AddressBook;
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.util.Util;
 
 public class HTMLUtils {

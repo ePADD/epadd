@@ -9,7 +9,7 @@
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="getArchive.jspf" %>
@@ -54,7 +54,7 @@ Browse page for entities based on fine types
         out.println("<h1>Type: "+desc.get(type)+"</h1>");
         Map<String,Entity> entities = new LinkedHashMap();
         double theta = 0.001;
-        EntityMapper entityMapper = archive.getEntityMapper();
+        EntityBook entityBook = archive.getEntityBook();
 
         for (Document doc: archive.getAllDocs()){
 //            Span[] es = archive.getEntitiesInDoc(doc,true);
@@ -73,8 +73,8 @@ Browse page for entities based on fine types
                 String displayName = name;
 
                 //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityMapper != null)
-                    displayName = entityMapper.getDisplayName(name, span.type);
+                if (entityBook != null)
+                    displayName = entityBook.getDisplayName(name, span.type);
 
                 displayName = displayName.trim();
 
@@ -110,7 +110,7 @@ Browse page for entities based on fine types
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
 
-            Set<String> altNamesSet = entityMapper.getAltNamesForDisplayName(entity, type);
+            Set<String> altNamesSet = entityBook.getAltNamesForDisplayName(entity, type);
             String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
             j.put (0, Util.escapeHTML(entity));
             j.put (1, (float)p.getFirst().score);

@@ -7,32 +7,24 @@ import edu.stanford.muse.index.Document;
 import edu.stanford.muse.ner.Entity;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by hangal on 1/31/17. Entity mapper for an archive.
  */
-public class EntityMapper implements Serializable {
+public class EntityBook implements Serializable {
     public static long serialVersionUID = 1L;
+    public static Log log = LogFactory.getLog(EntityBook.class);
 
     public static final String DELIMS = " .;,-#@&()";
-
-    /**
-     * small class that stores an entity with a preferred display name, and its alternate variants
-     */
-    public class MappedEntity implements Serializable {
-
-        private Set<String> altNames = new LinkedHashSet<>(); // altNames does NOT contain displayName. altNames are not canonicalized
-        private String displayName; // this is the preferred name that should be shown to the user when any of the alt names is present
-
-        // this may also point to auth record, etc
-        public String toString() {
-            return displayName + " (" + Util.pluralize(altNames.size(), "alternate name") + ")";
-        }
-    }
 
     /**
      * case independent, word order independent, case normalized
@@ -53,20 +45,17 @@ public class EntityMapper implements Serializable {
         return Util.join(tokens, " ");
     }
 
-    /**
-     * small inner class that stores all entity mappings for 1 type
-     */
-    class EntityMapperForType implements java.io.Serializable {
         private final static String DELIMITER = "--";
 
         // for all entities in this mapper, canonicalized name -> MappedEntity object. to save space, only contains MappedEntity's for entities that actually have more than 1 name variant
-        Multimap<String, MappedEntity> cNameToMappedEntity = LinkedHashMultimap.create();
+        Multimap<String, MappedEntity> nameToMappedEntity = LinkedHashMultimap.create();
 
+        //private List<MappedEntity> entityList = new LinkedList<>();
         /**
          * initialize this mapper from the given text
          */
-        public void initialize(String text) {
-            cNameToMappedEntity.clear();
+        public void initialize(String text, short type) {
+            nameToMappedEntity.clear();
 
             List<String> lines = Util.tokenize(text, "\r\n");
             List<String> linesForEntity = new ArrayList<String>();
@@ -88,54 +77,78 @@ public class EntityMapper implements Serializable {
                     // end of a contact, process linesForContact. if only 1 line in contact, no need to do anything, we won't enter it into this mapper
                     if (linesForEntity.size() > 1) {
                         MappedEntity me = new MappedEntity();
-
+                        me.setEntityType(type);
                         for (String s : linesForEntity) {
-                            if (Util.nullOrEmpty(me.displayName)) {
-                                me.displayName = s;
+                            if (Util.nullOrEmpty(me.getDisplayName())) {
+                                me.setDisplayName( s);
                             } else {
-                                me.altNames.add(s);
+                                me.addAltNames(s);
                             }
-                            cNameToMappedEntity.put(canonicalize(s), me);
+                            nameToMappedEntity.put(canonicalize(s), me);
                         }
                     }
                     linesForEntity.clear();
                 }
             }
         }
-
+/*
         public void initializeFromFile(String filename) throws IOException {
             String text = Util.readFile(filename);
-            initialize(text);
+            initialize(text,);
         }
 
         public void writeToFile() {
 
-        }
-    }
+        }*/
 
     /**
      * there is only entityMapper for every fine grained type
      */
-    Map<Short, EntityMapperForType> typeToEntityMapper = new LinkedHashMap<>();
+
+    public Collection<MappedEntity> getEntitiesForName(String name){
+    //work on a transient data.. multimap of name to mappedentity.
+        //get canonical name of name.
+        String cname = canonicalize(name);
+        return nameToMappedEntity.get(cname);
+    }
+
+    public MappedEntity getEntityForNameAndType(String name, short type){
+
+        Collection<MappedEntity> entities = getEntitiesForName(name);
+        //filter on entities where type is same same type.
+        Set<MappedEntity> filtered = entities.stream().filter(f->f.getEntityType()==type).collect(Collectors.toSet());
+
+        //ideally this set should be of one element. If not then log it as a message/warning.
+        Util.warnIf(filtered.size()>1,"More than one entities of the same type found. Please check for entity name as "+name+" and type as "+type,log);
+        //return the first element of this filtered list if any.
+        if(filtered.size()==0)
+            return null;
+
+        return filtered.iterator().next();
+    }
 
     /* get the preferred display name for the given string */
     public String getDisplayName(String s, short type) {
-        EntityMapperForType emft = typeToEntityMapper.get(type);
-        if (emft == null)
+        MappedEntity m = getEntityForNameAndType(s,type);
+        if(m==null)
             return s;
-        String canonicalized = canonicalize(s);
-        Collection<MappedEntity> mes = emft.cNameToMappedEntity.get(canonicalized);
-        return (mes == null || mes.size() == 0) ? s : mes.iterator().next().displayName; // return the first iterator's display name only
+        else
+            return m.getDisplayName();
     }
-
+/*
     public void initialize(short type, String text) {
-        EntityMapperForType emft = new EntityMapperForType();
-        emft.initialize(text);
+        initialize(text);
         typeToEntityMapper.put(type, emft);
-    }
+    }*/
 
     /* given this display name for a type, look up its alt names */
     public Set<String> getAltNamesForDisplayName(String displayName, short type) {
+        MappedEntity m = getEntityForNameAndType(displayName,type);
+        if(m==null)
+            return null;
+        else
+            return m.getAltNames();
+/*
         String cname = canonicalize(displayName);
         EntityMapperForType em = typeToEntityMapper.get(type);
         if (em == null)
@@ -152,13 +165,13 @@ public class EntityMapper implements Serializable {
         if (me.displayName.equals(displayName))
             return me.altNames;
 
-        return null;
+        return null;*/
     }
 
     public Map<String, Integer> getDisplayNameToFreq(Archive archive, short type) {
         Map<String, Entity> displayNameToEntity = new LinkedHashMap();
         double theta = 0.001;
-        EntityMapper entityMapper = archive.getEntityMapper();
+        EntityBook entityBook = archive.getEntityBook();
 
         for (Document doc : archive.getAllDocs())
 
@@ -176,8 +189,8 @@ public class EntityMapper implements Serializable {
                 String displayName = name;
 
                 //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityMapper != null)
-                    displayName = entityMapper.getDisplayName(name, span.type);
+                if (entityBook != null)
+                    displayName = entityBook.getDisplayName(name, span.type);
 
                 displayName = displayName.trim();
 
@@ -199,5 +212,43 @@ public class EntityMapper implements Serializable {
             displayNameToFreq.put(e.entity, e.freq);
 
         return displayNameToFreq;
+    }
+
+    /*
+        The format for writing an EntityBook object is as following,
+        For every unique mappedEntity object present in the map nameToMappedEntity
+        call writeObjectToStream method of mappedEntity class
+        write an entity delimiter "-----------------------------------" once done (for each mapped Entity)
+         */
+    public void writeObjectToStream(BufferedWriter out) throws IOException {
+        Set<MappedEntity> entityList = new LinkedHashSet<>(nameToMappedEntity.values());
+        for(MappedEntity entity: entityList){
+            entity.writeObjectToStream(out);
+            out.write("-------------------------------------------");
+            out.newLine();
+        }
+    }
+
+    /*For reading and constructing nameToMappedEntity map open a BufferedReader and construct
+    mappedEntity object iteratively (in between skipping a line for entity delimiter --------------------).
+    Once done, iterate over this list of mappedEntity and create nameToMappedEntity map again
+    by calling                             nameToMappedEntity.put(canonicalize(s), me);
+    for every s in mappedEntity.altNames.
+    */
+    public static EntityBook readObjectFromStream(BufferedReader in) throws IOException {
+        MappedEntity me = MappedEntity.readObjectFromStream(in);
+        if(me==null)
+            return null;
+        EntityBook ebook = new EntityBook();
+        while(me!=null){
+            for(String name: me.getAltNames()){
+                ebook.nameToMappedEntity.put(canonicalize(name),me);
+            }
+            //now skip one line that represents entity delimiter.
+            in.readLine();
+            me = MappedEntity.readObjectFromStream(in);
+        }
+        return ebook;
+
     }
 }

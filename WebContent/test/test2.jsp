@@ -14,6 +14,7 @@
 <%@page language="java" import="edu.stanford.muse.groups.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
 
 <%@include file="getArchive.jspf" %>
 <html>

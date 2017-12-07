@@ -6,6 +6,9 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact" %>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.MailingList" %>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
@@ -103,6 +106,7 @@
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
 <textarea name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <%!
+/*
 private static String dumpForContact(Contact c, String description) {
 	StringBuilder sb = new StringBuilder();
 	String mailingListOutput = (c.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.USER_ASSIGNED)) != 0 ? MailingList.MAILING_LIST_MARKER : "";
@@ -110,13 +114,13 @@ private static String dumpForContact(Contact c, String description) {
 
 	// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
 	Set<String> uniqueNames = new LinkedHashSet<String>();
-	for (String s: c.names)
+	for (String s: c.getNames())
 		if (!Util.nullOrEmpty(s))
 			uniqueNames.add(s);
 	// uniqueNames.add(s.trim());
 	
 	Set<String> uniqueEmails = new LinkedHashSet<String>();
-	for (String s: c.emails)
+	for (String s: c.getEmails())
 		if (!Util.nullOrEmpty(s))
 			uniqueEmails.add(s);
 	
@@ -129,45 +133,13 @@ private static String dumpForContact(Contact c, String description) {
 	sb.append("\n");
 	return sb.toString();
 }
+*/
 %>
 <%
-// always toString first contact as self
-Contact self = addressBook.getContactForSelf();
-if (self != null)
-	out.print(dumpForContact(self, "Archive owner"));
+BufferedWriter bwriter = new BufferedWriter(new StringWriter());
+addressBook.writeObjectToStream(bwriter,alphaSort);
+out.print(bwriter.toString());
 
-if (!alphaSort)
-{
-	List<Contact> contacts = addressBook.sortedContacts((Collection) archive.getAllDocs());
-	for (Contact c: contacts)
-		if (c != self)
-			out.print(dumpForContact(c, ""));
-}
-else
-{
-	// build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
-	List<Contact> allContacts = addressBook.allContacts();
-	Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();
-	for (Contact c: allContacts)
-	{
-		if (c == self)
-			continue;
-		String bestEmail = c.pickBestName();
-		if (bestEmail == null)
-			continue;
-		canonicalBestNameToContact.put(bestEmail.toLowerCase(), c);		
-	}
-	
-	List<Pair<String, Contact>> pairs = Util.mapToListOfPairs(canonicalBestNameToContact);
-	Util.sortPairsByFirstElement(pairs);
-	
-	for (Pair<String, Contact> p: pairs)
-	{
-		Contact c = p.getSecond();
-		if (c != self)
-			out.print(dumpForContact(c, c.pickBestName()));
-	}
-}
 
 	
 %>

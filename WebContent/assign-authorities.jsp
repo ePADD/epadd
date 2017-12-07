@@ -1,9 +1,9 @@
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" %>
-<%@ page import="edu.stanford.muse.ie.AuthorityMapper" %>
-<%@ page import="edu.stanford.muse.email.Contact" %>
+<%@ page import="edu.stanford.muse.email.CorrespondentAuthorityMapper" %>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact" %>
 <%@ page import="com.google.gson.Gson" %>
 <%@ page import="java.util.*" %>
 
@@ -125,7 +125,7 @@
 
 <%
     String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
-    AuthorityMapper authorityMapper = archive.getAuthorityMapper();
+    CorrespondentAuthorityMapper cAuthorityMapper = archive.getCorrespondentAuthorityMapper();
     AddressBook addressBook = archive.getAddressBook();
 
     // get all the contacts
@@ -134,10 +134,10 @@
     int rowType = edu.stanford.muse.webapp.HTMLUtils.getIntParam (request, "rowType", 1);
 
     // filter the contacts based on rowType
-    List<AuthorityMapper.AuthorityInfo> rows = new ArrayList<>();
+    List<CorrespondentAuthorityMapper.AuthorityInfo> rows = new ArrayList<>();
     for (Contact c: contacts) {
         String name = c.pickBestName();
-        AuthorityMapper.AuthorityInfo info = authorityMapper.getAuthorityInfo (archiveID,addressBook, name);
+        CorrespondentAuthorityMapper.AuthorityInfo info = cAuthorityMapper.getCorrespondentAuthorityInfo(archiveID,addressBook, name);
 
         boolean showRow = false;
         switch (rowType) {
@@ -154,10 +154,10 @@
                 showRow = info.isConfirmed;
                 break;
             case 5:
-                showRow = info.confirmedAuthority != null && info.confirmedAuthority.fastId != AuthorityMapper.INVALID_FAST_ID;
+                showRow = info.confirmedAuthority != null && info.confirmedAuthority.fastId != CorrespondentAuthorityMapper.INVALID_FAST_ID;
                 break;
             case 6:
-                showRow = info.confirmedAuthority != null && info.confirmedAuthority.fastId == AuthorityMapper.INVALID_FAST_ID;
+                showRow = info.confirmedAuthority != null && info.confirmedAuthority.fastId == CorrespondentAuthorityMapper.INVALID_FAST_ID;
                 break;
         }
 
@@ -168,7 +168,7 @@
 %>
 
 <script>
-    var INVALID_FAST_ID = <%=AuthorityMapper.INVALID_FAST_ID%>; // Java to JS
+    var INVALID_FAST_ID = <%=CorrespondentAuthorityMapper.INVALID_FAST_ID%>; // Java to JS
 </script>
 <form>
     <div style="text-align:center">

@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package edu.stanford.muse.email;
+package edu.stanford.muse.email.AddressBookManager;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
@@ -31,7 +31,7 @@ public class MailingList implements java.io.Serializable {
 	public final static int USER_ASSIGNED = 16, SUPER_DEFINITE = 8, DEFINITE = 1, MAYBE = 2, DEFINITE_NOT = 4, DUNNO = 0;
 	
 	private Contact ci;
-	public Set<Contact> members = new LinkedHashSet<>();
+	private Set<Contact> members = new LinkedHashSet<>();
 //	public int state;
 	
 	private MailingList(Contact ci)

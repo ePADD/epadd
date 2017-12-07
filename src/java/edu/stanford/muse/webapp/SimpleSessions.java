@@ -2,7 +2,11 @@ package edu.stanford.muse.webapp;
 
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.CorrespondentAuthorityMapper;
 import edu.stanford.muse.email.MuseEmailFetcher;
+import edu.stanford.muse.ie.AuthorityMapper;
+import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Archive.ProcessingMetadata;
 import edu.stanford.muse.index.Document;
@@ -12,6 +16,7 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.LockObtainFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +70,11 @@ public class SimpleSessions {
 	 * @throws IOException
 	 * @throws LockObtainFailedException
 	 * @throws CorruptIndexException
+	 * Change as on Nov 2017-
+	 * Earlier the whole archive was serialized and deserialized as one big entity. Now it is broken into
+	 * four main parts, Addressbook, entitybook, correspondentAuthorityMapper and the rest of the object
+	 * We save all these four components separately in saveArchive. Therefore while reading, we need to read
+	 * all those separately from appropriate files.
 	 */
 	public static Map<String, Object> loadSessionAsMap(String filename, String baseDir, boolean readOnly) throws IOException
 	{
@@ -116,6 +126,34 @@ public class SimpleSessions {
 		// no groups in public mode
 		if (archive != null)
 		{
+			/*
+				Read other three modules of Archive object which were set as transient and hence did not serialize.
+				*/
+			//file path names of addressbook, entitybook and correspondentAuthorityMapper data.
+			String addressBookPath = baseDir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
+			String entityBookPath = baseDir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
+			String cAuthorityPath =  baseDir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
+
+			/////////////////AddressBook////////////////////////////////////////////
+			BufferedReader br = new BufferedReader(new FileReader(addressBookPath));
+			AddressBook ab = AddressBook.readObjectFromStream(br);
+			archive.addressBook = ab;
+			br.close();
+			////////////////EntityBook/////////////////////////////////////
+			br = new BufferedReader(new FileReader(entityBookPath));
+			EntityBook eb = EntityBook.readObjectFromStream(br);
+			archive.setEntityBook(eb);
+			br.close();
+			///////////////CorrespondentAuthorityMapper/////////////////////////////
+			CorrespondentAuthorityMapper cmapper = null;
+			try {
+				//Cast is no issue as there is no extra field in the inherited class CorrespondentAuthorityMapper.
+				cmapper = (CorrespondentAuthorityMapper)CorrespondentAuthorityMapper.deserializeObjectFromFile(cAuthorityPath);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			archive.correspondentAuthorityMapper = cmapper;
+			/////////////////////////////Done reading//////////////////////////////////////////////////////
             System.err.println("dir: "+archive.indexer);
 			// most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
 			archive.postDeserialized(baseDir, readOnly);
@@ -175,6 +213,10 @@ public class SimpleSessions {
 		new File(dir).mkdirs(); // just to be safe
 		String filename = dir + File.separatorChar + name + SimpleSessions.SESSION_SUFFIX;
 		log.info("Saving archive to (session) file " + filename);
+		//file path names of addressbook, entitybook and correspondentAuthorityMapper data.
+		String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
+		String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
+		String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
 
 		if (archive.processingMetadata == null)
 			archive.processingMetadata = new ProcessingMetadata();
@@ -247,6 +289,30 @@ public class SimpleSessions {
 			oos.close();
 		}
 
+		//Now write modular transient fields to separate files-
+		//By Dec 2017 there are three transient fields which will be saved and loaded separately
+		//1. AddressBook -- Stored in a gzip file with name in the same directory as of archive.
+		//2. EntityBook
+		//3. CorrespondentAuthorityMapper
+		/////////////////AddressBook Writing -- In human readable form ///////////////////////////////////
+		BufferedWriter bw = new BufferedWriter(new FileWriter(addressBookPath));
+		archive.addressBook.writeObjectToStream(bw,false);
+		bw.close();
+		////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
+		bw = new BufferedWriter(new FileWriter(entityBookPath));
+		archive.getEntityBook().writeObjectToStream(bw);
+		bw.close();
+		///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
+		try {
+			archive.getCorrespondentAuthorityMapper().serializeObjectToFile(cAuthorityPath);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		bw.close();
+
+
 		// now write out the metadata
 		String processingFilename = dir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
 		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(processingFilename)));
@@ -259,11 +325,11 @@ public class SimpleSessions {
 			oos.close();
 		}
 
-		if (archive.authorityMapper != null) {
+		if (archive.correspondentAuthorityMapper!= null) {
 			String authorityMapperFilename = dir + File.separatorChar + name + Config.AUTHORITIES_FILENAME;
 			oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(authorityMapperFilename)));
 			try {
-				oos.writeObject(archive.authorityMapper);
+				oos.writeObject(archive.correspondentAuthorityMapper);
 			} catch (Exception e1) {
 				Util.print_exception("Failed to write archive's authority mapper: ", e1, log);
 				oos.close();
@@ -319,7 +385,7 @@ public class SimpleSessions {
 					if (a != null) {
 						log.info("Great, could re-use loaded archive for dir: " + archiveFile + "; archive = " + a);
 						return a;
-					}
+					}																																																																																																																																																																																																																																																																																																																																																																																																																																																																								
 				}
 
 				log.info("Archive not already loaded, reading from dir: " + archiveFile);
@@ -334,6 +400,10 @@ public class SimpleSessions {
 				a.setBaseDir(baseDir);
                 // no need to read archive authorized authorities, they will be loaded on demand from the legacy authorities.ser file
 				addToGlobalArchiveMap(baseDir,a);
+				//check if the loaded archive satisfy the verification condtiions. Call verify method on archive.
+				JSPHelper.log.info("After reading the archive checking if it is in good shape");
+				a.Verify();
+
 				return a;
 			}
 		} catch (Exception e) {

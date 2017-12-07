@@ -9,8 +9,8 @@ import javax.mail.internet.InternetAddress;
 
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.AddressBook;
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Pair;
@@ -416,8 +416,8 @@ public class EmailRenderer {
                 Contact c = searchResult.getArchive().addressBook.getContact(hci);
                 if(c==null)
                     continue;
-                contactNames.addAll(c.names);
-                contactAddresses.addAll(c.emails);
+                contactNames.addAll(c.getNames());
+                contactAddresses.addAll(c.getEmails());
             }
         //get highlight terms from searchResult object for this document.
         Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);

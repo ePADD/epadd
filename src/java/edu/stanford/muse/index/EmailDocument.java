@@ -19,9 +19,9 @@ package edu.stanford.muse.index;
 
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
@@ -614,9 +614,9 @@ public class EmailDocument extends DatedDocument implements Serializable
 		for (String addr: addrs)
 		{
 			Contact c = ab.lookupByEmail(addr);
-			if (c == null || c.names == null)
+			if (c == null || c.getNames() == null)
 				continue;
-			for (String name: c.names)
+			for (String name: c.getNames())
 				for (String token: Util.tokenize(name))
 					nameTokens.add(token.toLowerCase());
 		}

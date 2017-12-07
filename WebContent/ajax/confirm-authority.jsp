@@ -3,7 +3,7 @@
 <%@page language="java" import="org.json.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page import="edu.stanford.muse.ie.AuthorityMapper"%>
+<%@page import="edu.stanford.muse.email.CorrespondentAuthorityMapper"%>
 <%
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
 JSPHelper.setPageUncacheable(response);
@@ -20,7 +20,7 @@ if (archive == null) {
 }
 
 String name = request.getParameter ("name");
-AuthorityMapper am = archive.getAuthorityMapper();
+CorrespondentAuthorityMapper cam = archive.getCorrespondentAuthorityMapper();
 
 if (request.getParameter ("unset") == null) {
     long fastId = 0;
@@ -29,9 +29,9 @@ if (request.getParameter ("unset") == null) {
         result.put ("status", 1);
         result.put ("error", "Invalid long for fast id: " + fastIdStr);
     }
-    am.setAuthRecord (name, fastId, request.getParameter ("viafId"), request.getParameter ("wikipediaId"), request.getParameter ("lcnafId"), request.getParameter ("lcshId"), request.getParameter ("localId"), request.getParameter("isManualAssign") != null);
+    cam.setAuthRecord (name, fastId, request.getParameter ("viafId"), request.getParameter ("wikipediaId"), request.getParameter ("lcnafId"), request.getParameter ("lcshId"), request.getParameter ("localId"), request.getParameter("isManualAssign") != null);
 } else {
-    am.unsetAuthRecord (name);
+    cam.unsetAuthRecord (name);
 }
 
 out.println (result.toString());

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="edu.stanford.muse.email.AddressBook" %>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.util.Collection" %>

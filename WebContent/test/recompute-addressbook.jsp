@@ -4,6 +4,7 @@
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 
 
@@ -25,13 +26,13 @@
 
         // extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
         Set<String> uniqueNames = new LinkedHashSet<String>();
-        for (String s: c.names)
+        for (String s: c.getNames())
             if (!Util.nullOrEmpty(s))
                 uniqueNames.add(s);
         // uniqueNames.add(s.trim());
 
         Set<String> uniqueEmails = new LinkedHashSet<String>();
-        for (String s: c.emails)
+        for (String s: c.getEmails())
             if (!Util.nullOrEmpty(s))
                 uniqueEmails.add(s);
 
@@ -51,11 +52,11 @@
     AddressBook oldAB = archive.getAddressBook();
     Contact ownContact = oldAB.getContactForSelf();
     String ownEmail = "";
-    if (ownContact.emails.size() > 0)
-        ownEmail = ownContact.emails.iterator().next();
+    if (ownContact.getEmails().size() > 0)
+        ownEmail = ownContact.getEmails().iterator().next();
     String ownName = "";
-    if (ownContact.names.size() > 0)
-        ownName = ownContact.names.iterator().next();
+    if (ownContact.getNames().size() > 0)
+        ownName = ownContact.getNames().iterator().next();
 
     AddressBook ab = new AddressBook(new String[]{ownEmail}, new String[]{ownName});
 

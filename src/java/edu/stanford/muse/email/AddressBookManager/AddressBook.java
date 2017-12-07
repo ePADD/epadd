@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package edu.stanford.muse.email;
+package edu.stanford.muse.email.AddressBookManager;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -28,8 +28,7 @@ import org.json.JSONArray;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -52,7 +51,7 @@ public class AddressBook implements Serializable {
 
     public static Log log = LogFactory.getLog(AddressBook.class);
     private final static long serialVersionUID = 1L;
-    private final static String PERSON_DELIMITER = "--";
+    public final static String PERSON_DELIMITER = "--";
 
     /**
      * there are 3 important maps maintained in the address book.
@@ -64,20 +63,22 @@ public class AddressBook implements Serializable {
      * be careful! nameToContact has to be only looked up with the result of Util.normalizePersonNameForLookup(string). the lookup string is different from the name's display string!
      * preferably do not use emailToContact and nameToContact directly -- use lookupEmail or lookupName
      */
-    private Map<String, Contact> emailToContact = new LinkedHashMap<>(); // do not .put/get directly, use addEmailAddressForContact()
-    private Multimap<String, Contact> nameToContact = LinkedHashMultimap.create(); // do not access directly, use addNameForContactAndUpdateMaps()
+    transient private Map<String, Contact> emailToContact = new LinkedHashMap<>(); // do not .put/get directly, use addEmailAddressForContact()
+    transient private Multimap<String, Contact> nameToContact = LinkedHashMultimap.create(); // do not access directly, use addNameForContactAndUpdateMaps()
+    //following can be crated from contactListForIds list hence no need to serialize them
+    transient private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
 
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
+    //needed to keep track of mailingList information
+    public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<>();
+    private List<Contact> contactListForIds = new ArrayList<>();
 
     /**
      * these are for providing a layer of opaqueness to contact emails in discovery mode
      */
-    transient private List<Contact> contactListForIds = new ArrayList<>();
-    private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
     transient private Map<String, String> emailMaskingMap = null;
 
-    public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<>();
 
     /**
      * create a new contact set with the given list of self addrs. selfAddrs can be null or empty
@@ -98,6 +99,12 @@ public class AddressBook implements Serializable {
         contactForSelf = c;
     }
 
+    public AddressBook(Contact self){
+        contactListForIds.add(self);
+        contactForSelf = self;
+    }
+
+
     /**
      * initialize addressbook from lines of this format:
      * #person 1
@@ -111,9 +118,27 @@ public class AddressBook implements Serializable {
      * etc.
      */
     public void initialize(String text) {
+        BufferedReader br = new BufferedReader(new StringReader(text));
+
+        try {
+            AddressBook ab = AddressBook.readObjectFromStream(br);
+            //now assign all fields of this address book using ab.
+            this.emailToContact = ab.emailToContact;
+            this.nameToContact = ab.nameToContact;
+            this.contactIdMap = ab.contactIdMap;
+            this.contactForSelf = ab.contactForSelf;
+            this.contactListForIds = ab.contactListForIds;
+            this.mailingListMap = ab.mailingListMap;
+            this.dataErrors = ab.dataErrors;
+            this.emailMaskingMap = ab.emailMaskingMap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Util.print_exception("Unable to initialize the addressbook with different contact information",e,log);
+        }
         // todo: decide how to handle names are missing in text, but are associated with some email message in the archive.
         // when lookup is performed on such an archive, it may return null.
         // similar room for inconsistency when user can have the same name or email addr in multiple contacts
+/*
         nameToContact.clear();
         emailToContact.clear();
 
@@ -159,24 +184,21 @@ public class AddressBook implements Serializable {
             }
         }
         String firstLines = text.substring(0, text.substring(3).indexOf("--"));
-        if (contactForSelf == null || contactForSelf.emails == null || contactForSelf.emails.size() == 0)
+        if (contactForSelf == null || contactForSelf.getEmails()== null || contactForSelf.getEmails().size() == 0)
             log.warn("Could not identify self in the starting lines: \n" + firstLines);
         else
             log.info("Initialised self contact: " + contactForSelf);
         reassignContactIds();
+*/
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        // the no-arg constructor to do the needed setup when an address book is initialized thru deserialization
-    }
 
     private void addEmailAddressForContact(String email, Contact c) {
         if (Util.nullOrEmpty(email))
             return;
 
         email = EmailUtils.cleanEmailAddress(email);
-        c.emails.add(email);
+        c.getEmails().add(email);
         emailToContact.put(email, c);
     }
 
@@ -192,7 +214,7 @@ public class AddressBook implements Serializable {
 
         // trim is the one operation we do on the source name. otherwise, we want to retain it in its original form, for capitalization etc.
         name = name.trim();
-        c.names.add(name);
+        c.getNames().add(name);
 
         // nameToContact is very important, so only add to it if we're fairly certain about the name.
         if (Util.tokenize(name).size() > 1)
@@ -266,8 +288,8 @@ public class AddressBook implements Serializable {
      * returns an unmodifiable set of the owner's email addresses
      */
     public Set<String> getOwnAddrs() {
-        if (contactForSelf != null && contactForSelf.emails != null)
-            return Collections.unmodifiableSet(contactForSelf.emails);
+        if (contactForSelf != null && contactForSelf.getEmails()!= null)
+            return Collections.unmodifiableSet(contactForSelf.getEmails());
 
         return new LinkedHashSet<>();
     }
@@ -278,7 +300,7 @@ public class AddressBook implements Serializable {
     public Set<String> getOwnNamesSet() {
         // just trim because some names seem to have spaces remaining at the end
         Set<String> result = new LinkedHashSet<>();
-        for (String s : contactForSelf.names)
+        for (String s : contactForSelf.getNames())
             result.add(s.trim());
         return Collections.unmodifiableSet(result);
     }
@@ -296,10 +318,10 @@ public class AddressBook implements Serializable {
      */
     public String getBestNameForSelf() {
         Contact c = getContactForSelf();
-        if (c == null || c.names == null || Util.nullOrEmpty(c.names))
+        if (c == null || c.getNames()== null || Util.nullOrEmpty(c.getNames()))
             return "";
 
-        return c.names.iterator().next(); // pick first name for self (not best name! because the best name tries to find the longest string etc. Here for the own name, we want to stay with whatever was provided when the archive/addressbook was created.)
+        return c.getNames().iterator().next(); // pick first name for self (not best name! because the best name tries to find the longest string etc. Here for the own name, we want to stay with whatever was provided when the archive/addressbook was created.)
     }
 
     /**
@@ -313,7 +335,7 @@ public class AddressBook implements Serializable {
             return "";
         }
         String displayName;
-        if (c.names != null && c.names.size() > 0)
+        if (c.getNames()!= null && c.getNames().size() > 0)
             displayName = c.pickBestName(); // just pick the first name
         else
             displayName = email;
@@ -333,7 +355,7 @@ public class AddressBook implements Serializable {
         if (selfContact == null)
             return false;
 
-        return selfContact.emails.contains(email);
+        return selfContact.getEmails().contains(email);
     }
 
     /**
@@ -424,16 +446,16 @@ public class AddressBook implements Serializable {
 
         // DEBUG point: enable this to see all the incoming names and email addrs
         if (c != null) {
-            if (!c.emails.contains(email)) {
+            if (!c.getEmails().contains(email)) {
                 if (log.isDebugEnabled())
                     log.debug("merging email " + email + " into contact " + c);
-                c.emails.add(email);
+                c.getEmails().add(email);
             }
 
-            if (!Util.nullOrEmpty(name) && !c.names.contains(name)) {
-                if (log.isDebugEnabled() && !c.names.contains(name))
+            if (!Util.nullOrEmpty(name) && !c.getNames().contains(name)) {
+                if (log.isDebugEnabled() && !c.getNames().contains(name))
                     log.debug("merging name " + name + " into contact " + c);
-                c.names.add(name);
+                c.getNames().add(name);
             }
         }
 
@@ -635,18 +657,21 @@ public class AddressBook implements Serializable {
             resultContacts.add(mergedContact);
         }
 
-        // now recompute the emailToInfo and nameToInfo maps
+        this.contactListForIds.clear();
+        this.contactListForIds.addAll(resultContacts);
+        fillTransientFields();
+       /* // now recompute the emailToInfo and nameToInfo maps
         emailToContact.clear();
         nameToContact.clear();
         for (Contact c : resultContacts) {
             // create new versions of c.emails and names here, otherwise can get concurrent mod exception
-            for (String s : new ArrayList<>(c.emails))
+            for (String s : new ArrayList<>(c.getEmails()))
                 addEmailAddressForContact(s, c);
-            for (String s : new ArrayList<>(c.names))
+            for (String s : new ArrayList<>(c.getNames()))
                 addNameForContactAndUpdateMaps(s, c);
         }
 
-        reassignContactIds();
+        reassignContactIds();*/
     }
 
 
@@ -750,7 +775,7 @@ public class AddressBook implements Serializable {
             Contact ci = lookupByEmail(s);
             if (ci == null)
                 continue; // user may have given an address which doesn't actually exist in this set
-            allMyEmailAddrsSet.addAll(ci.emails);
+            allMyEmailAddrsSet.addAll(ci.getEmails());
         }
 
         String[] result = new String[allMyEmailAddrsSet.size()];
@@ -761,8 +786,8 @@ public class AddressBook implements Serializable {
 
     public AddressBookStats getStats() {
         Contact selfContact = getContactForSelf();
-        Set<String> emails = (selfContact != null) ? selfContact.emails : new LinkedHashSet<>();
-        Set<String> names = (selfContact != null) ? selfContact.names : new LinkedHashSet<>();
+        Set<String> emails = (selfContact != null) ? selfContact.getEmails() : new LinkedHashSet<>();
+        Set<String> names = (selfContact != null) ? selfContact.getNames(): new LinkedHashSet<>();
 
         AddressBookStats stats = new AddressBookStats();
         stats.nOwnEmails = emails.size();
@@ -774,8 +799,8 @@ public class AddressBook implements Serializable {
         stats.nNames = 0;
         stats.nEmailAddrs = 0;
         for (Contact ci : allContacts) {
-            stats.nNames += ci.names.size();
-            stats.nEmailAddrs += ci.emails.size();
+            stats.nNames += ci.getNames().size();
+            stats.nEmailAddrs += ci.getEmails().size();
         }
 
 //		sb.append("STAT-own-email-name:\t");
@@ -912,7 +937,7 @@ public class AddressBook implements Serializable {
 
             V v = e.getValue();
             if (v instanceof Contact && !email.equals(masked_email)) // if "email" is not masked, it may actually not be an email. e.g., this routine can also be called on nameToContact.
-                Util.ASSERT(((Contact) v).emails.contains(email));
+                Util.ASSERT(((Contact) v).getEmails().contains(email));
 
             maskingMap.put(email, masked_email);
             result.put(masked_email, v);
@@ -967,8 +992,8 @@ public class AddressBook implements Serializable {
         int nContacts = list.size();
         int nNames = 0, nEmailAddrs = 0;
         for (Contact ci : list) {
-            nNames += ci.names.size();
-            nEmailAddrs += ci.emails.size();
+            nNames += ci.getNames().size();
+            nEmailAddrs += ci.getEmails().size();
         }
 
         String result = list.size() + " people, "
@@ -976,11 +1001,11 @@ public class AddressBook implements Serializable {
                 + nNames + " names, (" + String.format("%.1f", ((float) nNames) / nContacts) + "/contact)";
 
         if (contactForSelf != null) {
-            result += " \n" + contactForSelf.emails.size() + " self emails: ";
-            for (String x : contactForSelf.emails)
+            result += " \n" + contactForSelf.getEmails().size() + " self emails: ";
+            for (String x : contactForSelf.getEmails())
                 result += (blur ? Util.blur(x) : x) + "|"; // "&bull; ";
-            result += "\n" + contactForSelf.names.size() + " self names: ";
-            for (String x : contactForSelf.names)
+            result += "\n" + contactForSelf.getNames().size() + " self names: ";
+            for (String x : contactForSelf.getNames())
                 result += (blur ? Util.blur(x) : x) + "|"; // " &bull; ";
         }
 
@@ -1004,7 +1029,7 @@ public class AddressBook implements Serializable {
         for (Map.Entry<String, Contact> me : emailToContact.entrySet()) {
             String email = me.getKey();
             Contact c = me.getValue();
-            Util.ASSERT(c.emails.contains(email));
+            Util.ASSERT(c.getEmails().contains(email));
         }
 
         // verify nameToContacts
@@ -1120,8 +1145,10 @@ public class AddressBook implements Serializable {
         return resultArray;
     }
 
-    static class AddressBookStats implements Serializable {
-        private static final long serialVersionUID = 1L;
+//    static class AddressBookStats implements Serializable {
+//        private static final long serialVersionUID = 1L;
+//No need to keep AddressBookStats class serializable as it's instance is not present anywhere.
+        static class AddressBookStats {
 
         public int nOwnEmails, nOwnNames;
         // Calendar firstMessageDate, lastMessageDate;
@@ -1138,7 +1165,128 @@ public class AddressBook implements Serializable {
         }
     }
 
-    public static void main(String args[]) {
+    /*
+    Code for serialization of this object. Going forward, we will save this object in a human-readable format.
+    For that, we need to resolve the issue of storing mailingList and dataErrors in a human-readable format.
+     */
+    public void serializeObjectToFile(String filename) throws IOException {
+        Util.writeObjectToFile(filename,this);
+    }
+    private void fillTransientFields(){
+        contactIdMap.clear();
+        nameToContact.clear();
+        emailToContact.clear();
+        for(int i =0; i<contactListForIds.size();i++){
+            Contact c = contactListForIds.get(i);
+            contactIdMap.put(c,i);
+            for(String name: c.getNames()){
+                nameToContact.put(name,c);
+            }
+            for(String email: c.getEmails()){
+                emailToContact.put(email,c);
+            }
+        }
+
+    }
+
+
+    /*
+    Code for deserialization and re-initialization of transient fields of this Class.
+     */
+    public static AddressBook deserializeObjectFromFile(String filename) throws IOException, ClassNotFoundException {
+        AddressBook ab = (AddressBook)Util.readObjectFromFile(filename);
+        //now we need to fill-in four transient fields manually. They are
+        //1.Map<String, Contact> emailToContact
+        //2.Multimap<String, Contact> nameToContact
+        //3.Map<Contact, Integer> contactIdMap
+        ab.fillTransientFields();
+        //4.private Map<String, String> emailMaskingMap -- What about this?
+        return ab;
+    }
+    ///////////////////////////Code for writing and reading address book in Human readable format///////
+    /*
+    MailingList class and data errors seems to be an issue. In this version we will only write addressbook
+    as a list of contacts with the first contact as self contact. After reading we fillTransientFields
+    as done in readObjectFromFile method above.
+    --Here the format is
+    contact object (first one is alwasy self)
+    delimiter (##################)
+    Series of contact objects separated by delimiter(########################)
+     */
+    public void writeObjectToStream(BufferedWriter out, boolean alphaSort) throws IOException {
+
+        // always toString first contact as self
+        Contact self = this.getContactForSelf();
+        if (self != null)
+            self.writeObjectToStream(out,"Archive owner");
+
+        if (!alphaSort)
+        {
+            List<Contact> contacts = this.contactListForIds;
+            for (Contact c: contacts)
+                if (c != self) {
+                    c.writeObjectToStream(out, "");
+                    //out.write(PERSON_DELIMITER);
+            }
+        }
+        else
+        {
+            // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
+            List<Contact> allContacts = this.contactListForIds;
+            Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();
+            for (Contact c: allContacts)
+            {
+                if (c == self)
+                    continue;
+                String bestEmail = c.pickBestName();
+                if (bestEmail == null)
+                    continue;
+                canonicalBestNameToContact.put(bestEmail.toLowerCase(), c);
+            }
+
+            List<Pair<String, Contact>> pairs = Util.mapToListOfPairs(canonicalBestNameToContact);
+            Util.sortPairsByFirstElement(pairs);
+
+            for (Pair<String, Contact> p: pairs)
+            {
+                Contact c = p.getSecond();
+                if (c != self) {
+                    c.writeObjectToStream(out, c.pickBestName());
+                    //out.print(dumpForContact(c, c.pickBestName()));
+                    //No need to write PERSON_DELIMITER explicitly as it will be written by writeObjectToStream
+                    //method of the contact class. Without it there was no other way to denote that a contact
+                    //has been read in totality.
+                    //out.write(PERSON_DELIMITER);
+                }
+            }
+        }
+    }
+
+    /*
+    This code is what was earlier initialize method of AddressBook. However, here we only read contacts
+    and put them in the list contactListForIds. After that we need to call fillTransientFields method to
+    fill transient variables.
+     */
+    public static AddressBook readObjectFromStream(BufferedReader in) throws IOException {
+        Contact self = Contact.readObjectFromStream(in);
+        if(self==null)
+            return null;
+        AddressBook ab = new AddressBook(self);
+
+        Contact c = Contact.readObjectFromStream(in);
+        while(c!=null){
+            ab.contactListForIds.add(c);
+            c = Contact.readObjectFromStream(in);
+        }
+        //fillTransientVariables
+        ab.fillTransientFields();
+        return ab;
+
+    }
+
+
+
+        public static void main(String args[]) {
         List<String> list = EmailUtils.parsePossibleNamesFromEmailAddress("mickey.mouse@disney.com");
         System.out.println(Util.join(list, " "));
         list = EmailUtils.parsePossibleNamesFromEmailAddress("donald_duck@disney.com");
@@ -1178,7 +1326,7 @@ public class AddressBook implements Serializable {
                 Util.ASSERT(ab.size() == 3);
             }
 
-            Util.ASSERT(ab.lookupByEmail("mergename@example.com").names.size() == 2); // 2 names for this email address
+            Util.ASSERT(ab.lookupByEmail("mergename@example.com").getNames().size() == 2); // 2 names for this email address
         }
 
     }

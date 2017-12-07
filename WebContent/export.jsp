@@ -8,6 +8,7 @@
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>

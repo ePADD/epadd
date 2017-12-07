@@ -9,7 +9,7 @@
 # hierarchy.
 
 log4j.rootCategory=INFO, Console
-log4j.logger.edu.stanford.muse.email.AddressBook=DEBUG
+log4j.logger.edu.stanford.muse.email.AddressBookManager.AddressBook=DEBUG
 
 log4j.logger.com.opensymphony.xwork2=INFO
 log4j.logger.freemarker.cache=INFO

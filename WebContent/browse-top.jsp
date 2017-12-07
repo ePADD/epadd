@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.index.IndexUtils"%>
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
@@ -11,7 +11,7 @@
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.List" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityMapper" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -50,17 +50,17 @@
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
-		archive.recreateAuthorityMapper(); // we have to recreate auth mappings since they may have changed
+		archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
         SimpleSessions.saveArchive(archive);
     }
 
 	String entityMerges = request.getParameter("entityMerges");
 	if (!Util.nullOrEmpty(entityMerges)) {
-		EntityMapper entityMapper = archive.getEntityMapper();
+		EntityBook entityBook = archive.getEntityBook();
 		Short type = -1;
 		try {
 			type = Short.parseShort (request.getParameter ("entityType"));
-			entityMapper.initialize (type, entityMerges);
+			entityBook.initialize (entityMerges,type);
 			SimpleSessions.saveArchive(archive);
 		} catch (Exception e) {
 			Util.print_exception("Error in merging entities", e, JSPHelper.log);

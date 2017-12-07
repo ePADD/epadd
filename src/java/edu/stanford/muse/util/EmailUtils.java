@@ -19,6 +19,8 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ie.variants.Variants;
 
@@ -40,7 +42,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EmailUtils {
 	public static Log					log				= LogFactory.getLog(EmailUtils.class);
@@ -1320,7 +1321,7 @@ public class EmailUtils {
 		List<Contact> contacts = new ArrayList<Contact>();
 		for (Contact c : ab.allContacts()) {
 			boolean ml = false;
-			for (String email : c.emails)
+			for (String email : c.getEmails())
 				if (maillists.contains(email)) {
 					ml = true;
 					break;
@@ -1343,8 +1344,8 @@ public class EmailUtils {
 		int allsize = contacts.size();
 		Map<String, String> names = new HashMap<String, String>();
 		for (Contact c : contacts) {
-			if (c.names != null)
-				for (String n : c.names) {
+			if (c.getNames()!= null)
+				for (String n : c.getNames()) {
 					//dont trust single word names, may contain phrases like Mom, Dad
 					if (n == null || n.split("\\s+").length == 1)
 						continue;

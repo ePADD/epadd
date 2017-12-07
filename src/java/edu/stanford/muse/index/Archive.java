@@ -21,9 +21,11 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
-import edu.stanford.muse.ie.AuthorityMapper;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.email.CorrespondentAuthorityMapper;
 import edu.stanford.muse.ie.NameInfo;
-import edu.stanford.muse.ie.variants.EntityMapper;
+import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.EmailUtils;
@@ -43,7 +45,6 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Core data structure that represents an archive. Conceptually, an archive is a
@@ -68,6 +69,10 @@ public class Archive implements Serializable {
     private static final String LEXICONS_SUBDIR = "lexicons";
     private static final String FEATURES_SUBDIR = "mixtures";
     public static final String IMAGES_SUBDIR = "images";
+    public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
+    public static final String ENTITYBOOK_SUFFIX = "EntityBook";
+    public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthroities";
+
 
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
 
@@ -83,14 +88,15 @@ public class Archive implements Serializable {
     public Indexer indexer;
     private IndexOptions indexOptions;
     public BlobStore blobStore;
-    public AddressBook addressBook;
+    public transient AddressBook addressBook; //transient because it is saved explicitly
     transient private Map<String, Lexicon> lexiconMap = null;
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
     private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<FolderInfo>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
-    public Set<String> ownerNames = new LinkedHashSet<String>(), ownerEmailAddrs = new LinkedHashSet<String>();private EntityMapper entityMapper;
-    public AuthorityMapper authorityMapper; /* transient because this is saved and loaded separately */
+    public Set<String> ownerNames = new LinkedHashSet<String>(), ownerEmailAddrs = new LinkedHashSet<String>();
+    private transient EntityBook entityBook;//transient because it is saved explicitly
+    public transient CorrespondentAuthorityMapper correspondentAuthorityMapper; /* transient because this is saved and loaded separately */
     private Map<String, NameInfo> nameMap;
 
     public ProcessingMetadata processingMetadata = new ProcessingMetadata();
@@ -99,22 +105,25 @@ public class Archive implements Serializable {
 
     public String archiveTitle; // this is the name of this archive
 
-    public synchronized AuthorityMapper getAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
+    public synchronized CorrespondentAuthorityMapper getCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
         // auth mapper is transient, so may have to be created each time. but it will be loaded from a file if it already exists
-        if (authorityMapper == null)
-            authorityMapper = AuthorityMapper.createAuthorityMapper (this);
-        return authorityMapper;
+        if (correspondentAuthorityMapper == null)
+            correspondentAuthorityMapper = CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
+        return correspondentAuthorityMapper;
     }
 
     /** recreates the authority mapper, call this, e.g. if the address book changes. */
-    public synchronized void recreateAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
-        authorityMapper = AuthorityMapper.createAuthorityMapper (this);
+    public synchronized void recreateCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
+        correspondentAuthorityMapper= CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
     }
 
-    public synchronized EntityMapper getEntityMapper() {
-        if (entityMapper == null)
-            entityMapper = new EntityMapper();
-        return entityMapper;
+    public synchronized EntityBook getEntityBook() {
+        if (entityBook == null)
+            entityBook = new EntityBook();
+        return entityBook;
+    }
+    public synchronized  void setEntityBook(EntityBook eb){
+        entityBook = eb;
     }
 
     /*
@@ -940,7 +949,7 @@ public class Archive implements Serializable {
     //thersold.
     public static Map<Short,Integer> getEntitiesCountMapModuloThersold(Archive archive, double thersold){
         Map<Short,Integer> entityTypeToCount = new LinkedHashMap<>();
-        EntityMapper entityMapper = archive.getEntityMapper();
+        EntityBook entityBook = archive.getEntityBook();
         Set<String> seen = new LinkedHashSet<>();
 
         for(Document doc: archive.getAllDocs()) {
@@ -956,8 +965,8 @@ public class Archive implements Serializable {
                 String displayName = name;
 
                 //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityMapper != null)
-                    displayName = entityMapper.getDisplayName(name, span.type);
+                if (entityBook != null)
+                    displayName = entityBook.getDisplayName(name, span.type);
 
                 displayName = displayName.trim();
                 if (seen.contains(displayName.toLowerCase()))
@@ -1302,13 +1311,13 @@ public class Archive implements Serializable {
       //  processingMetadata.numPotentiallySensitiveMessages = numMatchesPresetQueries();
     }
 
-    public void merge(Archive other) {
-        /* originalContentOnly */
-        other.getAllDocs().stream().filter(doc -> !this.containsDoc(doc)).forEach(doc -> this.addDoc(doc, other.getContents(doc, /* originalContentOnly */false)));
-
-        addressBook.merge(other.addressBook);
-        this.processingMetadata.merge(other.processingMetadata);
-    }
+//    public void merge(Archive other) {
+//        /* originalContentOnly */
+//        other.getAllDocs().stream().filter(doc -> !this.containsDoc(doc)).forEach(doc -> this.addDoc(doc, other.getContents(doc, /* originalContentOnly */false)));
+//
+//        addressBook.merge(other.addressBook);
+//        this.processingMetadata.merge(other.processingMetadata);
+//    }
 
     private static Map<String, Lexicon> createLexiconMap(String baseDir) throws IOException {
         String lexDir = baseDir + File.separatorChar + LEXICONS_SUBDIR;

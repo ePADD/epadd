@@ -17,9 +17,9 @@ package edu.stanford.muse.index;
 
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.AddressBook;
+import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
-import edu.stanford.muse.email.Contact;
+import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
@@ -1370,8 +1370,8 @@ public class IndexUtils {
 		Set<String> cnames = new LinkedHashSet<String>();
 		Set<String> cemails = new LinkedHashSet<String>();
 		for (Contact c : cset) {
-			cnames.addAll(c.names);
-			cemails.addAll(c.emails);
+			cnames.addAll(c.getNames());
+			cemails.addAll(c.getEmails());
 		}
 		return selectDocsByContact(ab, docs, cnames, cemails);
 	}
