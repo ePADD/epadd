@@ -1180,7 +1180,7 @@ public class AddressBook implements Serializable {
             Contact c = contactListForIds.get(i);
             contactIdMap.put(c,i);
             for(String name: c.getNames()){
-                nameToContact.put(name,c);
+                nameToContact.put(EmailUtils.normalizePersonNameForLookup(name),c);
             }
             for(String email: c.getEmails()){
                 emailToContact.put(email,c);
