@@ -134,6 +134,14 @@ public class SimpleSessions {
 			String entityBookPath = baseDir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
 			String cAuthorityPath =  baseDir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
 
+			//Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
+			//above three files are not present. In that case start afresh with importing the email-archive again in processing mode.
+			if(!(new File(addressBookPath).exists()) || !(new File(entityBookPath).exists()) || !(new File(cAuthorityPath).exists())){
+				result.put("archive", null);
+				return result;
+			}
+
+
 			/////////////////AddressBook////////////////////////////////////////////
 			BufferedReader br = new BufferedReader(new FileReader(addressBookPath));
 			AddressBook ab = AddressBook.readObjectFromStream(br);

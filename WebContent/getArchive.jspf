@@ -36,7 +36,7 @@ if (archive == null)
 			There is no default archive in <%= edu.stanford.muse.webapp.SimpleSessions.getDefaultCacheDir() %>. Please use the <a href="email-sources">import</a> option to start an archive.
 		<% } else { %>
 			No archive in session. Please go to <a href="collections">Collections</a> and load an archive.
-		<% } %>zzz
+		<% } %>
 		</div></body></html>
 		<%
 		return;
