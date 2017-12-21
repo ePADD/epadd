@@ -58,6 +58,10 @@ public class Matches {
         String cs = canonicalize(s);
         String ccandidate = canonicalize(candidate);
 
+	// if the candidate is the exact same string, don't consider it a match
+        if (cs.equals (ccandidate))
+            return null;
+
         // check if s is a substring of candidate
         if (ccandidate.contains(cs) && !ccandidate.equals(cs))
             return StringMatchType.CONTAINED;
