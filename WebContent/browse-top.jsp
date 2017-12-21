@@ -51,7 +51,9 @@
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
 		archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
-        SimpleSessions.saveArchive(archive);
+        //SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
+		SimpleSessions.saveAddressBook(archive);
+        SimpleSessions.saveCorrespondentAuthorityMapper(archive);
     }
 
 	String entityMerges = request.getParameter("entityMerges");
@@ -61,7 +63,8 @@
 		try {
 			type = Short.parseShort (request.getParameter ("entityType"));
 			entityBook.initialize (entityMerges,type);
-			SimpleSessions.saveArchive(archive);
+			//SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
+			SimpleSessions.saveEntityBook(archive);
 		} catch (Exception e) {
 			Util.print_exception("Error in merging entities", e, JSPHelper.log);
 		}

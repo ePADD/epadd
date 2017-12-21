@@ -122,8 +122,8 @@
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
 	<form method="post" action="browse-top">
 		<input name="entityType" type="hidden" value="<%=type%>"/>
-		//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
-		//archiveID in all those forms where POST was used to invoke the server page.
+		<%--//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
+		//archiveID in all those forms where POST was used to invoke the server page.--%>
 		<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 		<textarea name="entityMerges" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=textBoxVal%>
 		</textarea>

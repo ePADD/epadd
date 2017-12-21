@@ -130,9 +130,11 @@ public class SimpleSessions {
 				Read other three modules of Archive object which were set as transient and hence did not serialize.
 				*/
 			//file path names of addressbook, entitybook and correspondentAuthorityMapper data.
-			String addressBookPath = baseDir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
-			String entityBookPath = baseDir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
-			String cAuthorityPath =  baseDir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
+			String dir = baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+
+			String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
+			String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
+			String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
 
 			//Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
 			//above three files are not present. In that case start afresh with importing the email-archive again in processing mode.
@@ -221,11 +223,11 @@ public class SimpleSessions {
 		new File(dir).mkdirs(); // just to be safe
 		String filename = dir + File.separatorChar + name + SimpleSessions.SESSION_SUFFIX;
 		log.info("Saving archive to (session) file " + filename);
-		//file path names of addressbook, entitybook and correspondentAuthorityMapper data.
+		/*//file path names of addressbook, entitybook and correspondentAuthorityMapper data.
 		String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
 		String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
 		String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
-
+		*/
 		if (archive.processingMetadata == null)
 			archive.processingMetadata = new ProcessingMetadata();
 
@@ -285,7 +287,6 @@ public class SimpleSessions {
         archive.processingMetadata.nDocBlobs = docs;
         archive.processingMetadata.nOtherBlobs = others;
 
-        archive.close();
 
 		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(filename)));
 		try {
@@ -303,23 +304,11 @@ public class SimpleSessions {
 		//2. EntityBook
 		//3. CorrespondentAuthorityMapper
 		/////////////////AddressBook Writing -- In human readable form ///////////////////////////////////
-		BufferedWriter bw = new BufferedWriter(new FileWriter(addressBookPath));
-		archive.addressBook.writeObjectToStream(bw,false);
-		bw.close();
+		SimpleSessions.saveAddressBook(archive);
 		////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
-		bw = new BufferedWriter(new FileWriter(entityBookPath));
-		archive.getEntityBook().writeObjectToStream(bw);
-		bw.close();
+		SimpleSessions.saveEntityBook(archive);
 		///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
-		try {
-			archive.getCorrespondentAuthorityMapper().serializeObjectToFile(cAuthorityPath);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		bw.close();
-
+		SimpleSessions.saveCorrespondentAuthorityMapper(archive);
 
 		// now write out the metadata
 		String processingFilename = dir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
@@ -332,6 +321,7 @@ public class SimpleSessions {
 		} finally {
 			oos.close();
 		}
+/*
 
 		if (archive.correspondentAuthorityMapper!= null) {
 			String authorityMapperFilename = dir + File.separatorChar + name + Config.AUTHORITIES_FILENAME;
@@ -345,11 +335,67 @@ public class SimpleSessions {
 				oos.close();
 			}
 		}
-        // re-open for reading
+*/
+		archive.close();
+
+		// re-open for reading
 		archive.openForRead();
 
         // note: no need of saving archive authorities separately -- they are already saved as part of the archive object
 		return true;
+	}
+
+	public static void saveAddressBook(Archive archive){
+
+		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+		new File(dir).mkdirs(); // just to be safe
+		//file path name of addressbook data.
+		String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
+		log.info("Saving addressBook to file " + addressBookPath);
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(addressBookPath));
+			archive.addressBook.writeObjectToStream(bw,false);
+			bw.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static void saveEntityBook(Archive archive){
+		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+		//file path name of entitybook
+		String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
+		log.info("Saving entity book to file " + entityBookPath);
+
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(entityBookPath));
+			archive.getEntityBook().writeObjectToStream(bw);
+			bw.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static void saveCorrespondentAuthorityMapper(Archive archive){
+		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+		//file path name of entitybook
+		String cAuthorityPath = dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
+		log.info("Saving entity book to file " + cAuthorityPath);
+
+		try {
+			archive.getCorrespondentAuthorityMapper().serializeObjectToFile(cAuthorityPath);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	// an archive in a given dir should be loaded only once into memory.
