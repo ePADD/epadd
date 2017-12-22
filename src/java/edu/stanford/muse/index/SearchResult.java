@@ -886,6 +886,30 @@ public class SearchResult {
                 inputSet.commonHLInfo,inputSet.regexToHighlight);
     }
 
+    /* Will look in the given docs for given labels passed as parameter*/
+
+    private static SearchResult filterForLabels(SearchResult inputSet){
+        Collection<String> neededLabels = JSPHelper.getParams(inputSet.queryParams, "labelNames"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+        //get labelids for these names..
+        if(Util.nullOrEmpty(neededLabels))
+            return inputSet;
+
+        Set<Integer> neededLabelIDs = neededLabels.stream().map(f->inputSet.getArchive().getLabelManager().getLabelID(f)).collect(Collectors.toSet());
+        //now iterate over inputSet and retain only those documents whose label's intersection with neededLabelIDs set is same as neededLabelIDs (which means all of them are present in that doc)
+        Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
+
+        inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
+            EmailDocument ed = (EmailDocument) k;
+            Set<Integer> labs = inputSet.getArchive().getLabels(ed);
+            Set<Integer> intersection = Util.setIntersection(labs,neededLabelIDs);
+            if(intersection.equals(neededLabelIDs))//if all neededlabIDs were present in the document label set then add it to output doc set.
+                outputDocs.put(k,inputSet.matchedDocs.get(k));
+        });
+
+        return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
+                inputSet.commonHLInfo,inputSet.regexToHighlight);
+    }
+
     /** will look in the given docs for a message with an attachment that satisfies all the requirements.
      * the set of such messages, along with the matching blobs is returned
      * if no requirements, Pair<docs, null> is returned.
@@ -1147,6 +1171,7 @@ public class SearchResult {
                 outResult = filterForContactId(outResult, cid);
         }
 
+        outResult = filterForLabels(outResult);
         outResult = filterForDocId(outResult);
         outResult = filterForMessageId(outResult);
         outResult = filterForMailingListState(outResult);
@@ -1158,6 +1183,7 @@ public class SearchResult {
         outResult = filterForLexicons(outResult);
         outResult = filterForEntities(outResult); // searching by entity is probably the most expensive, so keep it near the end
         outResult = filterForEntityType(outResult);
+
 
         //  we don't have sensitive messages now (based on PRESET_REGEX)
         // sensitive messages are just a special lexicon

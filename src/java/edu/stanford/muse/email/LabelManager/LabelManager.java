@@ -83,6 +83,21 @@ public class LabelManager implements Serializable{
         return  result;
     }
 
+    //get label id for a label name
+    public Integer getLabelID(String labelname){
+        Set<Label> result = labelInfoMap.values().stream().filter(f-> f.labName==labelname).collect(Collectors.toSet());
+        assert result.size()==1;
+        return result.iterator().next().labId;
+    }
+
+
+    //get label name for a labelID
+    public String getLabelName(Integer labelid){
+        Label l = labelInfoMap.getOrDefault(labelid,null);
+        if(l == null)
+            return "Invalid Label";
+        return l.getLabelName();
+    }
     /*
       Code for serialization of this object. Going forward, we will save this object in a human-readable format.
       For that, we need to resolve the issue of storing mailingList and dataErrors in a human-readable format.

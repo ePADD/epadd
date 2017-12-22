@@ -20,6 +20,8 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.email.LabelManager.Label;
+import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
@@ -738,6 +740,38 @@ public class IndexUtils {
 		return result;
 	}
 
+
+	/** Partition documents by label types ******************/
+	private static Map<String, DetailedFacetItem> partitionDocsByLabelTypes(Collection<? extends Document> docs, Archive archive, LabelManager.LabType type) {
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
+
+		Map<Integer, DetailedFacetItem> tmpresult = new LinkedHashMap<>();//a temp result to hold labelID specific facets. Once fully constructed we will convert labelID to labelName
+		//create as many detailed facetitems as there are number of labels of that type.
+		Set<Label> labels= archive.getLabelManager().getAllLabels(type);
+		labels.forEach(f->
+			tmpresult.put(f.getLabelID(),new DetailedFacetItem(f.getLabelName(),f.getDescription(),f.getLabelName(),f.getLabelName()))
+		);
+		//now iterate over documents and add them to appropriate facet depending upon the labelID of that document.
+
+		for (Document d : docs) {
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+			Set<Integer> labs = archive.getLabels(ed,type);
+			labs.forEach(f->{
+				if(tmpresult.get(f)!=null)
+					tmpresult.get(f).addDoc(ed);
+			}); //add document to the facet associated with corresponding label ID
+
+		}
+		//converting tmpresult to result and also take care of 'no doc in a facet' case
+		tmpresult.keySet().forEach(labid-> {
+					if (tmpresult.get(labid).totalCount() > 0)
+						result.put(archive.getLabelManager().getLabelName(labid), tmpresult.get(labid));
+				}
+		);
+		return result;
+	}
 	/** note: attachment types are lower-cased */
 	private static Map<String, DetailedFacetItem> partitionDocsByAttachmentType(Collection<? extends Document> docs)
 	{
@@ -843,6 +877,16 @@ public class IndexUtils {
 			Map<String, DetailedFacetItem> reviewedMap = partitionDocsByReviewed(docs);
 			if  (reviewedMap.size() > 1)
 				facetMap.put("reviewed", reviewedMap.values());
+
+			//facet for restriction labels
+			Map<String, DetailedFacetItem> syslabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.SYSTEM_LAB);
+			Map<String, DetailedFacetItem> restrlabels  = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.RESTR_LAB);
+			facetMap.put("Restriction Labels",Util.setUnion(syslabels.values(),restrlabels.values()));
+
+			//facet for general labels
+			Map<String, DetailedFacetItem> genlabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.GEN_LAB);
+			facetMap.put("General Labels",genlabels.values());
+			//////////////////////////////////////////////////////////////////////////////////
 
 			List<DetailedFacetItem> tagItems = new ArrayList<DetailedFacetItem>();
 			Set<Document> unannotatedDocs = new LinkedHashSet<Document>(docSet);
