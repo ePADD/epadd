@@ -16,6 +16,7 @@
 <%@ page import="java.util.stream.Stream" %>
 <%@ page import="org.apache.poi.hdgf.streams.StringsStream" %>
 <%@ page import="com.google.common.collect.Multimap" %>
+<%@ page import="com.google.gson.Gson" %>
 
 <%@include file="getArchive.jspf" %>
 
@@ -423,7 +424,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 entryPage = 0;
         }
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
-
+        String labelMap = new Gson().toJson(archive.getLabelManager().labelInfoMap);
+        out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";</script>\n");
         session.setAttribute (datasetName, browseSet);
         //session.setAttribute ("docs-" + datasetName, new ArrayList<>(docs));
         out.println (html);

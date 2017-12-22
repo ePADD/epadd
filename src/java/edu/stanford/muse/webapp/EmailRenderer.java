@@ -11,11 +11,15 @@ import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.model.NEType;
+import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
+import netscape.javascript.JSObject;
+import org.json.simple.JSONValue;
 
 /** This class has util methods to display an email message in an html page */
 
@@ -85,7 +89,7 @@ public class EmailRenderer {
 		 */
 
 		List<Document> datasetDocs = new ArrayList<>();
-
+		LabelManager labelManager = result.getArchive().getLabelManager();
 		// we build up a hierarchy of <section, document, page>
 		for (MultiDoc md : clusters)
 		{
@@ -126,15 +130,38 @@ public class EmailRenderer {
 						String messageId = d.getUniqueId();
 						html.append(" messageID=\"" + messageId + "\"");
 					}
-
 					if (d.isLiked())
 						html.append(" liked=\"true\"");
+					/*
 					if (d instanceof EmailDocument && ((EmailDocument) d).doNotTransfer)
 						html.append(" doNotTransfer=\"true\"");
 					if (d instanceof EmailDocument && ((EmailDocument) d).transferWithRestrictions)
 						html.append(" transferWithRestrictions=\"true\"");
 					if (d instanceof EmailDocument && ((EmailDocument) d).reviewed)
 						html.append(" reviewed=\"true\"");
+					*/
+					//getting labels for this document and setting them under different attributes, i.e. systemlabels, restrlabels and genlabels.
+					//also make sure that browse.jsp (the jsp calling this function) should have a map of LabelID to Label Name, Label type in javascript
+					if(d instanceof EmailDocument) {
+						Set<Integer> systemlabels = labelManager.getLabels((EmailDocument) d, LabelManager.LabType.SYSTEM_LAB);
+						Set<Integer> restrlabels = labelManager.getLabels((EmailDocument) d, LabelManager.LabType.RESTR_LAB);
+						Set<Integer> genlabels = labelManager.getLabels((EmailDocument) d, LabelManager.LabType.GEN_LAB);
+						if (!Util.nullOrEmpty(systemlabels)) {
+							String val = systemlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
+							html.append(" syslabels=\"" + val +"\"");
+						}
+						if (!Util.nullOrEmpty(restrlabels)) {
+							String val = restrlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
+							html.append(" restrlabels=\"" + val +"\"");
+						}
+						if (!Util.nullOrEmpty(genlabels)) {
+							String val = genlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
+							html.append(" genlabels=\"" + val +"\"");
+						}
+					}
+
+
+					//////////////////////////////////////////DONE reading labels///////////////////////////////////////////////////////////////////////////
 					if (d instanceof EmailDocument && ((EmailDocument) d).addedToCart)
 						html.append(" addToCart=\"true\"");
 					if (d instanceof EmailDocument)

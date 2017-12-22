@@ -24,6 +24,7 @@ import edu.stanford.muse.email.*;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.email.CorrespondentAuthorityMapper;
+import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.ner.NER;
@@ -72,6 +73,7 @@ public class Archive implements Serializable {
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
     public static final String ENTITYBOOK_SUFFIX = "EntityBook";
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthroities";
+    public static final String LABELMAPFILE_SUFFIX= "LabelMapper";
 
 
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
@@ -99,6 +101,8 @@ public class Archive implements Serializable {
     public transient CorrespondentAuthorityMapper correspondentAuthorityMapper; /* transient because this is saved and loaded separately */
     private Map<String, NameInfo> nameMap;
 
+    private transient LabelManager labelManager; //transient because it will be saved and loaded separately
+
     public ProcessingMetadata processingMetadata = new ProcessingMetadata();
     public List<String> allAccessions = new ArrayList<String>();
     public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
@@ -112,6 +116,15 @@ public class Archive implements Serializable {
         return correspondentAuthorityMapper;
     }
 
+    public synchronized  LabelManager getLabelManager() {
+        if(labelManager == null)
+            labelManager = new LabelManager();
+        return labelManager;
+    }
+
+    public void setLabelManager(LabelManager labelManager) {
+        this.labelManager = labelManager;
+    }
     /** recreates the authority mapper, call this, e.g. if the address book changes. */
     public synchronized void recreateCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
         correspondentAuthorityMapper= CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);

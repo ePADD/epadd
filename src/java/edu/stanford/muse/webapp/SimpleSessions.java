@@ -4,6 +4,7 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CorrespondentAuthorityMapper;
+import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.email.MuseEmailFetcher;
 import edu.stanford.muse.ie.AuthorityMapper;
 import edu.stanford.muse.ie.variants.EntityBook;
@@ -135,10 +136,12 @@ public class SimpleSessions {
 			String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
 			String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
 			String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
+			String labMapFilePath = dir + File.separatorChar + Archive.LABELMAPFILE_SUFFIX;
+
 
 			//Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
 			//above three files are not present. In that case start afresh with importing the email-archive again in processing mode.
-			if(!(new File(addressBookPath).exists()) || !(new File(entityBookPath).exists()) || !(new File(cAuthorityPath).exists())){
+			if(!(new File(addressBookPath).exists()) || !(new File(entityBookPath).exists()) || !(new File(cAuthorityPath).exists()) || !(new File(labMapFilePath).exists())){
 				result.put("archive", null);
 				return result;
 			}
@@ -163,6 +166,14 @@ public class SimpleSessions {
 				e.printStackTrace();
 			}
 			archive.correspondentAuthorityMapper = cmapper;
+			/////////////////Label Mapper/////////////////////////////////////////////////////
+			LabelManager labelManager = null;
+			try {
+				labelManager = LabelManager.deserializeObjectFromFile(labMapFilePath);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			archive.setLabelManager(labelManager);
 			/////////////////////////////Done reading//////////////////////////////////////////////////////
             System.err.println("dir: "+archive.indexer);
 			// most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
@@ -309,6 +320,8 @@ public class SimpleSessions {
 		SimpleSessions.saveEntityBook(archive);
 		///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
 		SimpleSessions.saveCorrespondentAuthorityMapper(archive);
+		//////////////LabelManager Writing -- Serialized//////////////////////////////////
+		SimpleSessions.saveLabelManager(archive);
 
 		// now write out the metadata
 		String processingFilename = dir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
@@ -397,6 +410,22 @@ public class SimpleSessions {
 		}
 
 	}
+
+	public static void saveLabelManager(Archive archive){
+		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+		//file path name of labelMap file
+		String labMapFilePath = dir + File.separatorChar + Archive.LABELMAPFILE_SUFFIX;
+		log.info("Saving label mapper to file " + labMapFilePath);
+
+		try {
+			archive.getLabelManager().serializeObjectToFile(labMapFilePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+
 
 	// an archive in a given dir should be loaded only once into memory.
 	// this map stores the directory -> archive mapping.
