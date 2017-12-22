@@ -115,6 +115,10 @@ public class Archive implements Serializable {
             correspondentAuthorityMapper = CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
         return correspondentAuthorityMapper;
     }
+    /** recreates the authority mapper, call this, e.g. if the address book changes. */
+    public synchronized void recreateCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
+        correspondentAuthorityMapper= CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
+    }
 
     public synchronized  LabelManager getLabelManager() {
         if(labelManager == null)
@@ -125,10 +129,30 @@ public class Archive implements Serializable {
     public void setLabelManager(LabelManager labelManager) {
         this.labelManager = labelManager;
     }
-    /** recreates the authority mapper, call this, e.g. if the address book changes. */
-    public synchronized void recreateCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
-        correspondentAuthorityMapper= CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
+
+    //set label for an email document
+    public void setLabel(EmailDocument edoc, Integer labelID){
+        labelManager.setLabel(edoc.getUniqueId(),labelID);
     }
+
+    //get all labels for an email document and a given type
+    public Set<Integer> getLabels(EmailDocument edoc, LabelManager.LabType type){
+        Set<Integer> ss = new LinkedHashSet<>();
+        ss.add(1);
+        ss.add(2);
+
+        return ss;//added for testing
+        //return labelManager.getLabels(edoc.getUniqueId(),type);
+    }
+
+
+    //get all labels for an email document ( any type)
+    public Set<Integer> getLabels(EmailDocument edoc){
+        return labelManager.getLabels(edoc.getUniqueId());
+    }
+
+
+
 
     public synchronized EntityBook getEntityBook() {
         if (entityBook == null)

@@ -59,6 +59,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	public boolean attachmentsYetToBeDownloaded;
 	private String errorString; // error string set only if there was an error in reading this message from the original source
 	public long threadID;  // note: valid thread ids must be > 1, 0 means uninitialized
+	//@TODO review the following after converting doNotTransfer, transferWithRestrictions and reviewed as labels.
 	public boolean doNotTransfer, transferWithRestrictions, reviewed, addedToCart; // this is for libraries etc who may want export after redaction
 	
 	// default constructor for serialization

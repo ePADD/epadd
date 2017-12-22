@@ -424,7 +424,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 entryPage = 0;
         }
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
-        String labelMap = new Gson().toJson(archive.getLabelManager().labelInfoMap);
+        String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
         out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";</script>\n");
         session.setAttribute (datasetName, browseSet);
         //session.setAttribute ("docs-" + datasetName, new ArrayList<>(docs));

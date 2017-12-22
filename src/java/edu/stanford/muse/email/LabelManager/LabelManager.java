@@ -1,7 +1,6 @@
 package edu.stanford.muse.email.LabelManager;
 
-import edu.stanford.muse.ie.AuthorityMapper;
-import edu.stanford.muse.index.EmailDocument;
+import com.google.gson.Gson;
 import edu.stanford.muse.util.Util;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class LabelManager implements Serializable{
     //Map from Document ID to set of Label ID's
     private HashMap<String,Set<Integer>> docToLabelMap= null;
     //Map from Label ID's to Label Information
-    public HashMap<Integer,Label> labelInfoMap=null;
+    private HashMap<Integer,Label> labelInfoMap=null;
 
     public LabelManager(){
         docToLabelMap = new LinkedHashMap<>();
@@ -29,6 +28,9 @@ public class LabelManager implements Serializable{
         InitialLabelSetup();
     }
 
+    public String getLabelInfoMapAsJSONString(){
+        return new Gson().toJson(labelInfoMap);
+    }
     //By default we have one in-built system label.
     private void InitialLabelSetup(){
         //do not transfer
@@ -45,17 +47,17 @@ public class LabelManager implements Serializable{
     //
 
     //set label for an email document
-    public void setLabel(EmailDocument edoc, Integer labelID){
-        Set<Integer> labset = docToLabelMap.getOrDefault(edoc.getUniqueId(),null);
+    public void setLabel(String docid, Integer labelID){
+        Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
         if(labset==null){
-            docToLabelMap.put(edoc.getUniqueId(),new LinkedHashSet<>());
-            labset = docToLabelMap.get(edoc.getUniqueId());
+            docToLabelMap.put(docid,new LinkedHashSet<>());
+            labset = docToLabelMap.get(docid);
         }
         labset.add(labelID);
     }
 
     //get all labels for an email document and a given type
-    public Set<Integer> getLabels(EmailDocument edoc, LabType type){
+    public Set<Integer> getLabels(String docid, LabType type){
         Set<Integer> ss = new LinkedHashSet<>();
         ss.add(1);
         ss.add(2);
@@ -63,15 +65,15 @@ public class LabelManager implements Serializable{
         return ss;
 
 //        Set<Integer> result =
-//                docToLabelMap.getOrDefault(edoc.getUniqueId(),new HashSet<>()).stream().filter(f->
+//                docToLabelMap.getOrDefault(docid,new HashSet<>()).stream().filter(f->
 //                        labelInfoMap.get(f)!=null && labelInfoMap.get(f).labType==type).collect(Collectors.toSet());
 //        return result;
     }
 
 
     //get all labels for an email document ( any type)
-    public Set<Integer> getLabels(EmailDocument edoc){
-        return docToLabelMap.getOrDefault(edoc.getUniqueId(),new HashSet<>());
+    public Set<Integer> getLabels(String docid){
+        return docToLabelMap.getOrDefault(docid,new HashSet<>());
     }
 
     //get all labels of a given type
