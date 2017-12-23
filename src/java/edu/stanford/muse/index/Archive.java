@@ -148,7 +148,11 @@ public class Archive implements Serializable {
 
     //get all labels for an email document ( any type)
     public Set<Integer> getLabels(EmailDocument edoc){
-        return labelManager.getLabels(edoc.getUniqueId());
+        Set<Integer> ss = new LinkedHashSet<>();
+        ss.add(1);
+        ss.add(2);
+        return ss;
+        //return labelManager.getLabels(edoc.getUniqueId());
     }
 
 

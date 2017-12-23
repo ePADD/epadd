@@ -2,6 +2,9 @@
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="java.util.*" %>
+<%@ page import="edu.stanford.muse.email.LabelManager.LabelManager" %>
+<%@ page import="edu.stanford.muse.email.LabelManager.Label" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -409,7 +412,17 @@
                 <!--/Attachment-->
 
 				<!--Actions-->
-                <% if (!ModeConfig.isDiscoveryMode()) { %>
+                <% if (!ModeConfig.isDiscoveryMode()) {
+				//get restricted labels..
+					Set<Label> labels = Util.setUnion(
+					        archive.getLabelManager().getAllLabels(LabelManager.LabType.SYSTEM_LAB),
+							archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB));
+					Set<String> restrlabelsname = labels.stream().map(f->f.getLabelName()).collect(Collectors.toSet());
+				//get general labels
+					labels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
+					Set<String> genlabelsname = labels.stream().map(f->f.getLabelName()).collect(Collectors.toSet());
+
+				%>
 
                 <div class=" actions search-wraper clearfix">
 
@@ -423,7 +436,40 @@
 							<label for="annotation">Annotation</label>
 							<input id="annotation" name="annotation" type="text" class="form-control">
 						</div>
+						<div class="form-group col-sm-6">
 
+
+							<div class="form-group">
+
+							<label for="labelNames">Labels</label>
+							<select name="labelNames" id="labelNames" class="form-control multi-select selectpicker" title="Select" multiple>
+								<option value="" selected disabled>Select a label</option>
+								<optgroup label="Restricted Labels">
+								<%
+									for (String opt : restrlabelsname){
+								%>
+										<option value = "<%=opt%>"><%=opt%></option>
+								<%}%>
+								</optgroup>
+								<optgroup label="General Labels">
+								<%
+									for (String opt : genlabelsname){
+								%>
+								<option value = "<%=opt%>"><%=opt%></option>
+								<%}%>
+								</optgroup>
+							</select>
+
+							</div>
+							<div class="checkbox-inline">
+								<label>
+									<input id="multiLabelsCheck" name="multiLabelsCheck" type="checkbox">
+									<span class="label-text">More than one restriction labels</span>
+								</label>
+							</div>
+						</div>
+
+<%--
 						<!--Reviewed-->
 						<div class="form-group col-sm-6">
 							<label for="reviewed">Reviewed</label>
@@ -503,38 +549,38 @@
                                 </fieldset>
                             </div>
 						<!--/Transfer-->
-                        <% } else { %>
-                            <!--Cart-->
-                            <div class="form-group col-sm-6">
-                                <label for="inCart">In cart</label>
+--%>
+                        <%--<% } else { %>--%>
+                            <%--<!--Cart-->--%>
+                            <%--<div class="form-group col-sm-6">--%>
+                                <%--<label for="inCart">In cart</label>--%>
 
-                                <fieldset id="inCart" name="inCart" class="comman-radio">
-                                    <legend class="sr-only">Transfer filters</legend>
+                                <%--<fieldset id="inCart" name="inCart" class="comman-radio">--%>
+                                    <%--<legend class="sr-only">Transfer filters</legend>--%>
 
-                                    <label class="radio-inline">
-                                        <input value="yes" type="radio" name="inCart">
-                                        <span class="text-radio">Yes</span>
-                                    </label>
+                                    <%--<label class="radio-inline">--%>
+                                        <%--<input value="yes" type="radio" name="inCart">--%>
+                                        <%--<span class="text-radio">Yes</span>--%>
+                                    <%--</label>--%>
 
-                                    <label class="radio-inline">
-                                        <input value="no" type="radio" name="inCart">
-                                        <span class="text-radio">No</span>
-                                    </label>
+                                    <%--<label class="radio-inline">--%>
+                                        <%--<input value="no" type="radio" name="inCart">--%>
+                                        <%--<span class="text-radio">No</span>--%>
+                                    <%--</label>--%>
 
-                                    <label class="radio-inline">
-                                        <input id="inCart-either" value="either" type="radio" name="inCart" checked>
-                                        <span class="text-radio">Either</span>
-                                    </label>
+                                    <%--<label class="radio-inline">--%>
+                                        <%--<input id="inCart-either" value="either" type="radio" name="inCart" checked>--%>
+                                        <%--<span class="text-radio">Either</span>--%>
+                                    <%--</label>--%>
 
-                                </fieldset>
-                            </div>
-                             <!--/Cart-->
-                        <% } %>
+                                <%--</fieldset>--%>
+                            <%--</div>--%>
+                             <%--<!--/Cart-->--%>
+                        <%--<% } %>--%>
                     </div>
 				</div>
-                <% } %>
-				<!--/Actions-->
-
+               <!--/Actions-->
+<%}%>
 				<!--Others-->
 				<div class="others search-wraper">
 					<h4>Miscellaneous</h4>
@@ -837,6 +883,7 @@
 			// TODO: reset the other fields also, esp. the select picker
 			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy').prop ('selectedIndex', 0);
 			$('#attachmentType').prop ('selectedIndex', -1); // 0 for this one is not ok
+			$('#labelNames').prop('selectedIndex',-1);
 			$('.selectpicker').selectpicker('refresh');
 		});
 

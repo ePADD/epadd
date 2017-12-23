@@ -8,6 +8,8 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.email.AddressBookManager.MailingList;
+import edu.stanford.muse.email.LabelManager.Label;
+import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
@@ -890,10 +892,12 @@ public class SearchResult {
 
     private static SearchResult filterForLabels(SearchResult inputSet){
         Collection<String> neededLabels = JSPHelper.getParams(inputSet.queryParams, "labelNames"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
-        //get labelids for these names..
+        String multiLabelsCheck = JSPHelper.getParam(inputSet.queryParams, "multiLabelsCheck"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+        boolean multiLabCheck = "on".equals(multiLabelsCheck)? true:false;
         if(Util.nullOrEmpty(neededLabels))
             return inputSet;
 
+        //get labelids for these names..
         Set<Integer> neededLabelIDs = neededLabels.stream().map(f->inputSet.getArchive().getLabelManager().getLabelID(f)).collect(Collectors.toSet());
         //now iterate over inputSet and retain only those documents whose label's intersection with neededLabelIDs set is same as neededLabelIDs (which means all of them are present in that doc)
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
@@ -901,9 +905,18 @@ public class SearchResult {
         inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
             EmailDocument ed = (EmailDocument) k;
             Set<Integer> labs = inputSet.getArchive().getLabels(ed);
+            Set<Integer> restrlabels = Util.setUnion(inputSet.getArchive().getLabels(ed, LabelManager.LabType.SYSTEM_LAB),
+                    inputSet.getArchive().getLabels(ed, LabelManager.LabType.RESTR_LAB));
+
             Set<Integer> intersection = Util.setIntersection(labs,neededLabelIDs);
-            if(intersection.equals(neededLabelIDs))//if all neededlabIDs were present in the document label set then add it to output doc set.
-                outputDocs.put(k,inputSet.matchedDocs.get(k));
+           /* if(intersection.equals(neededLabelIDs))//if all neededlabIDs were present in the document label set then add it to output doc set.
+                outputDocs.put(k,inputSet.matchedDocs.get(k));--- It is for AND of labelname options*/
+           if(!intersection.isEmpty()){ //means at least one of the selected labels were present then add this doc
+               if(!multiLabCheck)
+                   outputDocs.put(k,inputSet.matchedDocs.get(k));
+               else if(restrlabels.size()>1)
+                   outputDocs.put(k,inputSet.matchedDocs.get(k));
+           }
         });
 
         return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,

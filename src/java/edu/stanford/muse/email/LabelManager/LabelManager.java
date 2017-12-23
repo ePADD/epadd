@@ -85,7 +85,7 @@ public class LabelManager implements Serializable{
 
     //get label id for a label name
     public Integer getLabelID(String labelname){
-        Set<Label> result = labelInfoMap.values().stream().filter(f-> f.labName==labelname).collect(Collectors.toSet());
+        Set<Label> result = labelInfoMap.values().stream().filter(f-> f.labName.compareTo(labelname)==0).collect(Collectors.toSet());
         assert result.size()==1;
         return result.iterator().next().labId;
     }

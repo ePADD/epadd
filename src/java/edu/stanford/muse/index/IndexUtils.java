@@ -749,7 +749,7 @@ public class IndexUtils {
 		//create as many detailed facetitems as there are number of labels of that type.
 		Set<Label> labels= archive.getLabelManager().getAllLabels(type);
 		labels.forEach(f->
-			tmpresult.put(f.getLabelID(),new DetailedFacetItem(f.getLabelName(),f.getDescription(),f.getLabelName(),f.getLabelName()))
+			tmpresult.put(f.getLabelID(),new DetailedFacetItem(f.getLabelName(),f.getDescription(),"labelNames",f.getLabelName()))
 		);
 		//now iterate over documents and add them to appropriate facet depending upon the labelID of that document.
 

@@ -169,9 +169,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         // remove all the either's because they are not needed, and could mask a real facet selection coming in below
         origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
-        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
-        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
-        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
+//        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
+//        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
+//        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
         origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
         origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
