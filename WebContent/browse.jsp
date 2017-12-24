@@ -12,6 +12,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
+<%@ page import="com.google.gson.Gson" %>
 
 <%@include file="getArchive.jspf" %>
 
@@ -173,9 +174,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         // remove all the either's because they are not needed, and could mask a real facet selection coming in below
         origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
-        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
-        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
-        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
+//        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
+//        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
+//        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
         origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
         origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
@@ -448,7 +449,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 entryPage = 0;
         }
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
-
+        String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
+        out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";</script>\n");
         session.setAttribute (datasetName, browseSet);
         //session.setAttribute ("docs-" + datasetName, new ArrayList<>(docs));
         out.println (html);

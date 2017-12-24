@@ -5,8 +5,9 @@
 /* JS code for handing interactive browse page.
 
 /* The browse page has a certain number of messages on screen. these arrays store the states of each of the messages.*/
-var transferWithRestrictions = [], doNotTransfer = [], reviewed = [], addToCart = [], messageIds = [], annotations = [];
-
+//var transferWithRestrictions = [], doNotTransfer = [], reviewed = [],
+    var addToCart = [], messageIds = [], annotations = [];
+var syslabels = [], restrlabels = [], genlabels=[];
 var PAGE_ON_SCREEN = -1; // current page displayed on screen
 var TOTAL_PAGES = 0; // global vars
 
@@ -273,10 +274,18 @@ $('body').ready(function() {
     for (var i = 0; i < TOTAL_PAGES; i++)
     {
         annotations[i] = $pages[i].getAttribute('comment');
-        doNotTransfer[i] = ($pages[i].getAttribute('doNotTransfer') != null);
-        transferWithRestrictions[i] = ($pages[i].getAttribute('transferWithRestrictions') != null);
+
+        // doNotTransfer[i] = ($pages[i].getAttribute('doNotTransfer') != null);
+        // transferWithRestrictions[i] = ($pages[i].getAttribute('transferWithRestrictions') != null);
+        // reviewed[i] = ($pages[i].getAttribute('reviewed') != null);
+        //get system labels and put them in sys labels array
+        syslabels[i] = ($pages[i].getAttribute('syslabels'));
+        //get restriction labels and put them in restr labels array
+        restrlabels[i] = ($pages[i].getAttribute('restrlabels'));
+        //get general labels and put them in genlabels array
+        genlabels[i] = ($pages[i].getAttribute('genlabels'));
+
         addToCart[i] = ($pages[i].getAttribute('addToCart') != null);
-        reviewed[i] = ($pages[i].getAttribute('reviewed') != null);
         messageIds[i] = $pages[i].getAttribute('docID');
     }
     update_controls_on_screen(PAGE_ON_SCREEN);
@@ -317,3 +326,4 @@ $(window).unload(function() {
     $.get('ajax/releaseDataset.jsp?datasetId=' + datasetName);
 });
 
+//syslabels[1].split(",").map((x)=>labelMap[x].labName)
