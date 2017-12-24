@@ -920,6 +920,33 @@ pre code {
 	border-bottom-right-radius: 3px
 }
 
+.btn-icon {
+	display: inline-block;
+	padding-left: 0;
+	padding: 2px;
+	border: 1px solid #cbd5dc;
+	border-radius:2px;
+}
+
+.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 4px; border-radius: 4px; font-size: 80%;}
+.dnt-label { background: red; color: white; }
+.restriction-label { background: #ff9900; color: white; }
+.general-label { background: blue; color: white;}
+
+.btn-icon >li>a:hover, .btn-icon >li>span:hover, .btn-icon >li>a:focus, .btn-icon >li>span:focus {
+	color: #818da7;
+	background-color: #f5f5f8;
+	border: 1px solid #98a2b7;
+	border-radius:0px;
+}
+.btn-icon >.active>a, .btn-icon >.active>span, .btn-icon >.active>a:hover, .btn-icon >.active>span:hover, .btn-icon >.active>a:focus, .btn-icon >.active>span:focus {
+	z-index: 2;
+	color: #fff;
+	cursor: default;
+	background-color: #428bca;
+	border-color: #428bca
+}
+
 /* line 5,  */
 h1, h2, h3, h4, h5, h6 {
   color: #333333;

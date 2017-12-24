@@ -2024,6 +2024,8 @@ input[type="radio"] + .text-radio:before,
   height: 13px;
   font-size: 17px; }
 
+.bootstrap-select.btn-group.show-tick .dropdown-menu li.selected a span.check-mark { display: none; } /* disable the annoying checkmark to the right, it's not needed because we have a checkbox to the left */
+
 input[type="checkbox"] {
   display: none; }
   input[type="checkbox"] + .label-text:before {

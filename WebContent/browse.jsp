@@ -4,17 +4,13 @@
     JSPHelper.checkContainer(request); // do this early on so we are set up
     request.setCharacterEncoding("UTF-8");
 %>
-<%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.DetailedFacetItem"%>
 <%@page language="java" import="edu.stanford.muse.util.EmailUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.webapp.EmailRenderer"%>
 <%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
-<%@page language="java" import="edu.stanford.muse.webapp.NewFilter"%>
 <%@ page import="java.util.*" %>
-<%@ page import="java.util.stream.Stream" %>
-<%@ page import="org.apache.poi.hdgf.streams.StringsStream" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 
 <%@include file="getArchive.jspf" %>
@@ -99,12 +95,15 @@
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.qtip.min.css">
     <jsp:include page="css/css.jsp"/>
+    <link href="css/main.css" rel="stylesheet" type="text/css"/>
+
 
     <script src="js/stacktrace.js" type="text/javascript"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
 
     <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/selectpicker.js"></script>
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
@@ -113,7 +112,13 @@
     <script src="js/browse.js" type="text/javascript"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
 
-    <style> div.facets hr { width: 90%; } </style>
+    <style>
+        div.facets hr { width: 90%; }
+        .archive-heading div { font-style: italic; display:inline-block; overflow: hidden; margin: 2px 10px;}
+        .archive-heading .institution-name, .archive-heading .collection-name, .archive-heading .repository-name { width: 25%; text-align:center; }
+        .archive-heading .collection-id { width: 10%;}
+        .archive-heading { border: solid 1px #ccc; }
+    </style>
 
 </head>
 <body > <!--  override margin because this page is framed. -->
@@ -305,49 +310,34 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     <%
         //parameterizing the class name so that any future modification is easier
         String jog_contents_class = "message";
+        String collectionName = Util.escapeHTML("Richard Fikes Email Collection");
+        String repositoryName = Util.escapeHTML("Stanford University Archives");
+        String institutionName = Util.escapeHTML("Stanford University");
+        String collectionID = Util.escapeHTML("SC 1201");
+
+        String[] allLabels = {"label1", "label2"};
     %>
     <div style="display:inline-block;vertical-align:top;">
+        <div class="archive-heading" style="">
+            <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
+            <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
+            <div title="<%=repositoryName%>" class="repository-name"><%=repositoryName%></div>
+            <div title="<%=institutionName%>" class="institution-name"><%=institutionName%></div>
+        </div>
         <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
-            <div class="controls" style="position:relative;width:100%;">
+            <div class="bulk-controls" style="position:relative;width:100%;border-bottom: solid 1px black;padding-top:5px;">
 
-                <div style="position:relative;float:left;padding:5px;">
-                    <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-                    <i title="Do not transfer" id="doNotTransfer" class="flag fa fa-ban"></i>
-                    <i title="Transfer with restrictions" id="transferWithRestrictions" class="flag fa fa-exclamation-triangle"></i>
-                    <% } %>
-                    <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-                    <i title="Message Reviewed" id="reviewed" class="flag fa fa-eye"></i>
-                    <% } %>
-                    <% if (ModeConfig.isDeliveryMode()) { %>
-                    <i title="Add to Cart" id="addToCart" class="flag fa fa-shopping-cart"></i>
-                    <% } %>
+                <div style="float:right;position:relative;">
 
-                    <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-                    <div style="display:inline;z-index:1000;" id="annotation_div">
-                        <input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
-                    </div>
-                    <% } %>
-                    <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-                    <!--
-                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="apply">Apply <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
-                    -->
-                    <%
-                        // show apply to all only if > 1 doc
-                        if (docs.size() > 1) { %>
-                    <button type="button" class="btn btn-default" id="applyToAll" style="margin-left:25px;margin-right:25px;">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
-                    <% } %>
-                    <% } %>
-                </div>
-
-                <div style="float:right;position:relative;top:8px">
                     <div>
-                        <div style="display:inline;vertical-align:top;font-size:20px; position:relative; top:8px; margin-right:10px" id="pageNumbering"></div>
-                        <ul class="pagination">
-                            <li class="button">
-                                <a id="page_back" style="border-right:0" href="#0" class="icon-peginationarrow"></a>
-                                <a id="page_forward" href="#0" class="icon-circlearrow"></a>
-                            </li>
-                        </ul>
+                        <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
+                            <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
+                                <ul class="pagination">
+                                    <li><a title="Label all messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
+                                </ul>
+                            </span>
+                        </div>
+
                     </div>
                     <!--
                     <img src="images/back_enabled.png" id="back_arrow"/>
@@ -362,6 +352,41 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                          -->
                 </div>
                 <div style="clear:both"></div>
+            </div>
+            <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px black;">
+                <div style="float:left;position:relative;top:8px">
+                    <div class="message-label form-group" style="padding:4px 23px 0 0;display:inline-block">
+                        <select data-selected-text-format="static" name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Edit labels" multiple>
+                            <option value="" selected disabled>Labels</option>
+                            <% for (String label: allLabels) { %>
+                                <option value = "<%=label%>"><%=label%></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="message-label dnt-label">Do not transfer</div>
+                    <div class="message-label restriction-label">2042</div>
+                    <div class="message-label general-label">Project X</div>
+                </div>
+
+                <div style="float:right;position:relative;top:8px">
+                    <div style="display:inline;vertical-align:top;font-size:20px; position:relative;" >
+
+                        <div class="btn-icon" style="padding:4px 10px;position:relative; top:-8px">
+                            <span title="Annotate message"><i class="fa fa-pencil"></i></span>
+                        </div>
+
+
+                        <div style="display:inline; position:relative; top:-8px;" id="pageNumbering"></div>
+                        <ul class="pagination">
+                            <li class="button">
+                                <a id="page_back" style="border-right:0" href="#0" class="icon-peginationarrow"></a>
+                                <a id="page_forward" href="#0" class="icon-circlearrow"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+
             </div> <!-- controls -->
 
             <!--  to fix: these image margins and paddings are held together with ducttape cos the orig. images are not a consistent size -->
