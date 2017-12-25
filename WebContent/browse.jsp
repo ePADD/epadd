@@ -12,7 +12,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="com.google.gson.Gson" %>
+<%@ page import="edu.stanford.muse.email.LabelManager.Label" %>
 
 <%@include file="getArchive.jspf" %>
 
@@ -316,8 +316,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         String institutionName = Util.escapeHTML("Stanford University");
         String collectionID = Util.escapeHTML("SC 1201");
 
-        String[] allLabels = {"label1", "label2"};
-    %>
+        Set<Label> allLabels = archive.getLabelManager().getAllLabels();
+        String json = archive.getLabelManager().getLabelInfoMapAsJSONString();
+        %>
+        <script>
+            allLabels = JSON.parse('<%=json%>');
+        </script>
     <div style="display:inline-block;vertical-align:top;">
         <div class="archive-heading" style="">
             <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
@@ -357,16 +361,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px black;">
                 <div style="float:left;position:relative;top:8px">
                     <div class="message-label form-group" style="padding:4px 23px 0 0;display:inline-block">
-                        <select data-selected-text-format="static" name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Edit labels" multiple>
-                            <option value="" selected disabled>Labels</option>
-                            <% for (String label: allLabels) { %>
-                                <option value = "<%=label%>"><%=label%></option>
+                        <select data-selected-text-format="static" name="attachmentType" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="Edit labels" multiple>
+                            <% for (Label label: allLabels) { %>
+                                <option data-label-class="<%=label.getType().toString()%> " data-label-id="<%=label.getLabelID()%>" data-label="<%=label.getLabelName()%>" value = "<%=label.getLabelName()%>"><%=label.getLabelName()%></option>
                             <% } %>
                         </select>
                     </div>
-                    <div class="message-label dnt-label">Do not transfer</div>
-                    <div class="message-label restriction-label">2042</div>
-                    <div class="message-label general-label">Project X</div>
+                    <div class="labels-area">
+                        <!-- will be filled in by render_labels() in JS -->
+                    </div>
                 </div>
 
                 <div style="float:right;position:relative;top:8px">
@@ -375,7 +378,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <div class="btn-icon" style="padding:4px 10px;position:relative; top:-8px">
                             <span title="Annotate message"><i class="fa fa-pencil"></i></span>
                         </div>
-
 
                         <div style="display:inline; position:relative; top:-8px;" id="pageNumbering"></div>
                         <ul class="pagination">
@@ -502,5 +504,22 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <div style="clear:both"></div>
 <jsp:include page="footer.jsp"/>
+<script>
+    // note label selectpicker element itself is not refreshed when a new message is rendered in the browse window
+
+    $('.label-selectpicker').on('change', function(){
+        $selected = $('.label-selectpicker option:selected');
+
+        var selected_labels = [];
+        // repaint selected labels
+        $selected.map (function(idx, elem) {
+            var labelText = console.log($(elem).data("label"));
+            var labelId = console.log($(elem).data("labelId"));
+            selected_labels.push (labelId);
+        });
+        render_labels(labels);
+    });
+
+</script>
 </body>
 </html>

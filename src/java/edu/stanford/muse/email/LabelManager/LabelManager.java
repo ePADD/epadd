@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
  */
 public class LabelManager implements Serializable{
 
+    private final static long serialVersionUID = 1L;
+
     public enum LabType {
         SYSTEM_LAB, RESTR_LAB, GEN_LAB
     }
@@ -31,20 +33,25 @@ public class LabelManager implements Serializable{
     public String getLabelInfoMapAsJSONString(){
         return new Gson().toJson(labelInfoMap);
     }
-    //By default we have one in-built system label.
+
+    // Some test labels
     private void InitialLabelSetup(){
         //do not transfer
-        Label dnt = new Label("Do not transfer",LabType.SYSTEM_LAB,1);
-        labelInfoMap.put(1,dnt);
-        //transfer with restriction
-        Label twr = new Label("With restriction",LabType.SYSTEM_LAB,2);
-        labelInfoMap.put(2,twr);
+        Label dnt = new Label("Do not transfer",LabType.SYSTEM_LAB, 0);
+        labelInfoMap.put(dnt.getLabelID(),dnt);
+
+        //restricted
+        Label twr = new Label("Restricted",LabType.RESTR_LAB,1);
+        labelInfoMap.put(twr.getLabelID(),twr);
+
+        // test
+        Label gen = new Label("General",LabType.GEN_LAB,2);
+        labelInfoMap.put(gen.getLabelID(),gen);
+
         //reviewed
         Label reviewed = new Label("Reviewed",LabType.SYSTEM_LAB,3);
-        labelInfoMap.put(3,reviewed);
-
+        labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
-    //
 
     //set label for an email document
     public void setLabel(String docid, Integer labelID){
@@ -80,6 +87,12 @@ public class LabelManager implements Serializable{
     public Set<Label> getAllLabels(LabType type){
         Set<Label> result = labelInfoMap.values().stream().filter(f->
                                                                 f.labType == type).collect(Collectors.toSet());
+        return  result;
+    }
+
+    //get all possible labels
+    public Set<Label> getAllLabels(){
+        Set<Label> result = new LinkedHashSet<>(labelInfoMap.values());
         return  result;
     }
 

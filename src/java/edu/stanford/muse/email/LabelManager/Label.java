@@ -5,7 +5,10 @@ import java.io.Serializable;
 /**
  * Created by chinmay on 21/12/17.
  */
-public class Label implements Serializable{
+public class Label implements Serializable {
+    private final static long serialVersionUID = 1L;
+
+    /** note: these field names are used in JS as well. do not change casually */
     String labName;
     Integer labId;
     String description;
@@ -28,4 +31,6 @@ public class Label implements Serializable{
     public String getDescription(){
         return description;
     }
+
+    public LabelManager.LabType getType () { return this.labType; }
 }

@@ -222,33 +222,34 @@ function apply(e, toAll) {
 }
 
 
+function render_labels(labelIds) {
+    $('.labels-area').html('');
+    for (var i = 0; i < labelIds.length; i++) {
+        var label_id = labelIds[i];
+        var label = allLabels[label_id];
 
-function update_controls_on_screen(currentPage) {
-    // if b, $elem has flag-enabled class added to it, otherwise flag-enabled class is removed
-    function set_class (b, $elem) {
-        if (b)
-            $elem.addClass('flag-enabled');
-        else
-            $elem.removeClass('flag-enabled');
+        var class_for_type; // this is one of system/general/restriction label
+        {
+            if (label.labType === 'SYSTEMLAB')
+                class_for_type = 'system-label';
+            else if (label.labType === 'RESTRLABEL')
+                class_for_type = 'restriction-label';
+            else if (label.labType === 'GEN_LAB')
+                class_for_type = 'general-label';
+        }
+
+        $('.labels-area').append(
+            '<div '
+            + 'data-label-id="' + label.labId + '" '
+            + 'title="' + label.description + '" ' +
+            + 'class="message-label ' + class_for_type + '" >'
+            + label_id // .lablabel.labName
+            + '</div>');
     }
-    $('#pageNumbering').html(((TOTAL_PAGES == 0) ? 0 : currentPage+1) + '/' + TOTAL_PAGES);
-    set_class(doNotTransfer[currentPage], $('#doNotTransfer'));
-    set_class(transferWithRestrictions[currentPage], $('#transferWithRestrictions'));
-    set_class(reviewed[currentPage], $('#reviewed'));
-    set_class(addToCart[currentPage], $('#addToCart'));
-
-    // color the arrows
-    /*
-     $('#page_back').attr('src', (currentPage == 0) ? 'images/back_disabled.png' : 'images/back_enabled.png');
-     $('#page_forward').attr('src', (currentPage == TOTAL_PAGES-1) ? 'images/forward_disabled.png' : 'images/forward_enabled.png');
-     */
-
 }
 
 // currently called before the new page has been rendered
 var page_change_callback = function(oldPage, currentPage) {
-
-    update_controls_on_screen(currentPage);
 
     var $annotation = $('#annotation');
 
@@ -263,12 +264,17 @@ var page_change_callback = function(oldPage, currentPage) {
         $annotation.attr('placeholder', 'Add an annotation');
     }
     PAGE_ON_SCREEN = currentPage;
+    $('#pageNumbering').html(((TOTAL_PAGES == 0) ? 0 : currentPage+1) + '/' + TOTAL_PAGES);
+    var labelIds = labelsOnPage[currentPage];
+    if (labelIds)
+        render_labels(labelIds);
 };
 
+var labelsOnPage = [];
 
 $('body').ready(function() {
-    $pages = $('.page');
 
+    $pages = $('.page');
     PAGE_ON_SCREEN = 0;
     TOTAL_PAGES = $pages.length;
     for (var i = 0; i < TOTAL_PAGES; i++)
@@ -279,16 +285,21 @@ $('body').ready(function() {
         // transferWithRestrictions[i] = ($pages[i].getAttribute('transferWithRestrictions') != null);
         // reviewed[i] = ($pages[i].getAttribute('reviewed') != null);
         //get system labels and put them in sys labels array
-        syslabels[i] = ($pages[i].getAttribute('syslabels'));
+      //  syslabels[i] = ($pages[i].getAttribute('syslabels'));
         //get restriction labels and put them in restr labels array
-        restrlabels[i] = ($pages[i].getAttribute('restrlabels'));
+       // restrlabels[i] = ($pages[i].getAttribute('restrlabels'));
         //get general labels and put them in genlabels array
-        genlabels[i] = ($pages[i].getAttribute('genlabels'));
+       // genlabels[i] = ($pages[i].getAttribute('genlabels'));
+        labelsOnPage[i] = ['0', '1'] // ($pages[i].getAttribute('labels'));
 
-        addToCart[i] = ($pages[i].getAttribute('addToCart') != null);
+//        addToCart[i] = ($pages[i].getAttribute('addToCart') != null);
         messageIds[i] = $pages[i].getAttribute('docID');
     }
-    update_controls_on_screen(PAGE_ON_SCREEN);
+    currentPage = 0;
+    try {
+        page_change_callback(-1, 0);
+    } catch (e) { }
+
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //Big gotcha here: Be very careful what method is passed as logger into this jog method.
