@@ -929,7 +929,7 @@ pre code {
 }
 
 .message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 4px; border-radius: 4px; font-size: 80%;}
-.dnt-label { background: red; color: white; }
+.system-label { background: red; color: white; }
 .restriction-label { background: #ff9900; color: white; }
 .general-label { background: blue; color: white;}
 

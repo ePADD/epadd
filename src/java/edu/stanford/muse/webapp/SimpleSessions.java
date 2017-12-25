@@ -141,7 +141,7 @@ public class SimpleSessions {
 
 			//Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
 			//above three files are not present. In that case start afresh with importing the email-archive again in processing mode.
-			if(!(new File(addressBookPath).exists()) || !(new File(entityBookPath).exists()) || !(new File(cAuthorityPath).exists()) || !(new File(labMapFilePath).exists())){
+			if(!(new File(addressBookPath).exists()) || !(new File(entityBookPath).exists()) || !(new File(cAuthorityPath).exists())){
 				result.put("archive", null);
 				return result;
 			}
@@ -170,12 +170,13 @@ public class SimpleSessions {
 			LabelManager labelManager = null;
 			try {
 				labelManager = LabelManager.deserializeObjectFromFile(labMapFilePath);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				Util.print_exception ("Exception in reading label manager from archive, assigning a new label manager", e, log);
+				labelManager = new LabelManager();
 			}
+
 			archive.setLabelManager(labelManager);
 			/////////////////////////////Done reading//////////////////////////////////////////////////////
-            System.err.println("dir: "+archive.indexer);
 			// most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
 			archive.postDeserialized(baseDir, readOnly);
 			result.put("emailDocs", archive.getAllDocs());

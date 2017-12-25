@@ -222,17 +222,23 @@ function apply(e, toAll) {
 }
 
 
+/** labelIds is an array of label ids (e.g. [1,2,5]) which are to be rendered for the current message */
 function render_labels(labelIds) {
+    $('.label-selectpicker').selectpicker('deselectAll');
+    $('.label-selectpicker').selectpicker ('val', labelIds); // e.g. setting val, [0, 1, 3] will set the selectpicker state to these 3
+
     $('.labels-area').html('');
     for (var i = 0; i < labelIds.length; i++) {
         var label_id = labelIds[i];
         var label = allLabels[label_id];
+        if (!label)
+            continue;
 
         var class_for_type; // this is one of system/general/restriction label
         {
-            if (label.labType === 'SYSTEMLAB')
+            if (label.labType === 'SYSTEM_LAB')
                 class_for_type = 'system-label';
-            else if (label.labType === 'RESTRLABEL')
+            else if (label.labType === 'RESTR_LAB')
                 class_for_type = 'restriction-label';
             else if (label.labType === 'GEN_LAB')
                 class_for_type = 'general-label';
@@ -240,10 +246,10 @@ function render_labels(labelIds) {
 
         $('.labels-area').append(
             '<div '
-            + 'data-label-id="' + label.labId + '" '
-            + 'title="' + label.description + '" ' +
-            + 'class="message-label ' + class_for_type + '" >'
-            + label_id // .lablabel.labName
+            + ' data-label-id="' + label.labId + '" '
+            + ' title="' + label.description + '" '
+            + ' class="message-label ' + class_for_type + '" >'
+            + label.labName
             + '</div>');
     }
 }
@@ -296,10 +302,6 @@ $('body').ready(function() {
         messageIds[i] = $pages[i].getAttribute('docID');
     }
     currentPage = 0;
-    try {
-        page_change_callback(-1, 0);
-    } catch (e) { }
-
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //Big gotcha here: Be very careful what method is passed as logger into this jog method.

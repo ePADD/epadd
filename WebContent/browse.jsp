@@ -360,14 +360,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             </div>
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px black;">
                 <div style="float:left;position:relative;top:8px">
-                    <div class="message-label form-group" style="padding:4px 23px 0 0;display:inline-block">
+                    <div class="message-label form-group label-picker" style="padding:4px 23px 0 0;display:inline-block">
                         <select data-selected-text-format="static" name="attachmentType" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="Edit labels" multiple>
+                            <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
                             <% for (Label label: allLabels) { %>
-                                <option data-label-class="<%=label.getType().toString()%> " data-label-id="<%=label.getLabelID()%>" data-label="<%=label.getLabelName()%>" value = "<%=label.getLabelName()%>"><%=label.getLabelName()%></option>
+                                <option data-label-class="<%=label.getType().toString()%> " data-label-id="<%=label.getLabelID()%>" data-label="<%=label.getLabelName()%>" value="<%=label.getLabelID()%>"><%=label.getLabelName()%></option>
                             <% } %>
                         </select>
                     </div>
-                    <div class="labels-area">
+                    <div style="display:inline" class="labels-area">
                         <!-- will be filled in by render_labels() in JS -->
                     </div>
                 </div>
@@ -505,19 +506,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 <div style="clear:both"></div>
 <jsp:include page="footer.jsp"/>
 <script>
-    // note label selectpicker element itself is not refreshed when a new message is rendered in the browse window
 
     $('.label-selectpicker').on('change', function(){
-        $selected = $('.label-selectpicker option:selected');
-
-        var selected_labels = [];
-        // repaint selected labels
-        $selected.map (function(idx, elem) {
-            var labelText = console.log($(elem).data("label"));
-            var labelId = console.log($(elem).data("labelId"));
-            selected_labels.push (labelId);
-        });
-        render_labels(labels);
+        var labelIds = $('.label-selectpicker').selectpicker('val');
+        render_labels(labelIds);
     });
 
 </script>
