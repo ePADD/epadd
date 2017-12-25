@@ -221,13 +221,17 @@ function apply(e, toAll) {
     }
 }
 
+/** renders labels on screen for the current message (but does not change any state in the backend) */
+function refresh_labels_on_screen(labelIds) {
+    if (!labelIds)
+        return;
 
-/** labelIds is an array of label ids (e.g. [1,2,5]) which are to be rendered for the current message */
-function render_labels(labelIds) {
+    // we have to set up the select picker so it will show the right things in the dropdown
     $('.label-selectpicker').selectpicker('deselectAll');
     $('.label-selectpicker').selectpicker ('val', labelIds); // e.g. setting val, [0, 1, 3] will set the selectpicker state to these 3
 
-    $('.labels-area').html('');
+    // refresh the labels area
+    $('.labels-area').html(''); // wipe out existing labels
     for (var i = 0; i < labelIds.length; i++) {
         var label_id = labelIds[i];
         var label = allLabels[label_id];
@@ -254,6 +258,22 @@ function render_labels(labelIds) {
     }
 }
 
+/** labelIds is an array of label ids (e.g. [1,2,5]) which are to be applied to the current message */
+function apply_labels(labelIds) {
+
+    // post to the backend, and when successful, refresh the labels on screen
+    $.ajax({
+        url:'ajax/applyLabelsAnnotations.jsp',
+        type: 'POST',
+        data: {docId: $($pages[0]).attr('docid'), labels: labelIds.join()}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+        dataType: 'json',
+        success: function() { refresh_labels_on_screen (labelIds); },
+        error: function() {  refresh_labels_on_screen (labelIds);
+        /* FLAG DEBUG epadd.alert('There was an error in saving labels, sorry!'); */
+        }
+    });
+}
+
 // currently called before the new page has been rendered
 var page_change_callback = function(oldPage, currentPage) {
 
@@ -273,7 +293,7 @@ var page_change_callback = function(oldPage, currentPage) {
     $('#pageNumbering').html(((TOTAL_PAGES == 0) ? 0 : currentPage+1) + '/' + TOTAL_PAGES);
     var labelIds = labelsOnPage[currentPage];
     if (labelIds)
-        render_labels(labelIds);
+        refresh_labels_on_screen(labelIds);
 };
 
 var labelsOnPage = [];
@@ -331,6 +351,11 @@ $('body').ready(function() {
     $('#apply').click(function(e) { apply(e, false);});
     $('#applyToAll').click(function(e) { apply(e, true);});
     $('#annotation_div').focusout(function (e) { apply(e, false); });
+
+    $('.label-selectpicker').on('change', function(){
+        var labelIds = $('.label-selectpicker').selectpicker('val');
+        apply_labels(labelIds);
+    });
 });
 
 // on page unload, release dataset to free memory

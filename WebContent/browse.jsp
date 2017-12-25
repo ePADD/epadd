@@ -507,10 +507,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 <jsp:include page="footer.jsp"/>
 <script>
 
-    $('.label-selectpicker').on('change', function(){
-        var labelIds = $('.label-selectpicker').selectpicker('val');
-        render_labels(labelIds);
-    });
 
 </script>
 </body>
