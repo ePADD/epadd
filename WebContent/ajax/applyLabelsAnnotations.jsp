@@ -40,7 +40,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 if(request.getParameter("datasetId")!=null)
     docs = (Set<Document>) session.getAttribute(request.getParameter("datasetId"));
 else if (request.getParameter("docId")!=null)
-    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId()==request.getParameter("docId");}).collect(Collectors.toSet());
+    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId().equals(request.getParameter("docId"));}).collect(Collectors.toSet());
 else
     {
     assert false : new AssertionError("You tried to apply flags only on a set of documents which is not set yet.");
@@ -60,17 +60,17 @@ if (docs != null)
     	                            });
     }else{
     //labels apply
-    String[] labels = request.getParameterValues("labels");
+    String[] labels = Util.tokenize(request.getParameter("labels"),",").toArray(new String[0]);
     Util.softAssert(!Util.nullOrEmpty(labels),JSPHelper.log);
     String action = request.getParameter("action");
     if("set".equals(action)){
         archive.setLabels(docs,labels);
     }else if("unset".equals(action)){
         archive.unsetLabels(docs,labels);
-    }else if("only".equals(action)){
+    }else if("override".equals(action)){
         archive.putOnlyTheseLabels(docs,labels);
     }else{
-        Util.softAssert(true,"Action parameter from the front end is allowed to contain only one of the following three options, set-unset-only",JSPHelper.log);
+        Util.softAssert(true,"Action parameter from the front end is allowed to contain only one of the following three options, set-unset-override",JSPHelper.log);
     }
 
     }
