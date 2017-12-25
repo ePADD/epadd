@@ -22,6 +22,8 @@ boolean addToCart = "1".equals(request.getParameter("setAddToCart"));
 String annotation = request.getParameter("setAnnotation");
 boolean append = "1".equals(request.getParameter("append"));
 
+//////////////// The request can be of the form docID/docsetID, labels, action=set/unset/only [set/unset/only keep label for all docs in the given set], or
+// ///////////////docID/docsetID, annotation [set annotation for all docs in the given set]
 int nMessages = 0;
 Set<Document> docs;
 Archive archive = JSPHelper.getArchive(request);
@@ -49,7 +51,31 @@ else
 
 if (docs != null)
 {
+    //annotation apply
+    String annotationText = request.getParameter("annotation");
+    if(!Util.nullOrEmpty(annotationText)){
+    	docs.stream().forEach(d->{
+    	                            EmailDocument ed = (EmailDocument)d;
+    	                            ed.setComment(annotation);
+    	                            });
+    }else{
+    //labels apply
+    String[] labels = request.getParameterValues("labels");
+    Util.softAssert(!Util.nullOrEmpty(labels),JSPHelper.log);
+    String action = request.getParameter("action");
+    if("set".equals(action)){
+        archive.setLabels(docs,labels);
+    }else if("unset".equals(action)){
+        archive.unsetLabels(docs,labels);
+    }else if("only".equals(action)){
+        archive.putOnlyTheseLabels(docs,labels);
+    }else{
+        Util.softAssert(true,"Action parameter from the front end is allowed to contain only one of the following three options, set-unset-only",JSPHelper.log);
+    }
 
+    }
+
+/*
 	JSPHelper.log.info ("applyFlags to " + docs.size() + " message(s)");
 	if (doNotTransferSet)
 		JSPHelper.log.info ("setting doNotTransfer to " + doNotTransfer);
@@ -78,7 +104,7 @@ if (docs != null)
 			else
 				ed.setComment(annotation);
 		}
-	}
+	}*/
 	nMessages= docs.size();
 }
 

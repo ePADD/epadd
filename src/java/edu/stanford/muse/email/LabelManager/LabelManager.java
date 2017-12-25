@@ -2,6 +2,8 @@ package edu.stanford.muse.email.LabelManager;
 
 import com.google.gson.Gson;
 import edu.stanford.muse.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -13,11 +15,13 @@ import java.util.stream.Collectors;
  */
 public class LabelManager implements Serializable{
 
+    private static Log log = LogFactory.getLog(LabelManager.class);
     private final static long serialVersionUID = 1L;
 
     public enum LabType {
         SYSTEM_LAB, RESTR_LAB, GEN_LAB
     }
+
 
     //Map from Document ID to set of Label ID's
     private HashMap<String,Set<Integer>> docToLabelMap= null;
@@ -33,8 +37,8 @@ public class LabelManager implements Serializable{
     public String getLabelInfoMapAsJSONString(){
         return new Gson().toJson(labelInfoMap);
     }
-
     // Some test labels
+    //By default we have a few in-built system labels.
     private void InitialLabelSetup(){
         //do not transfer
         Label dnt = new Label("Do not transfer",LabType.SYSTEM_LAB, 0);
@@ -54,15 +58,59 @@ public class LabelManager implements Serializable{
     }
 
     //set label for an email document
-    public void setLabel(String docid, Integer labelID){
+    public void setLabels(String docid, Set<Integer> labelIDs){
         Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
         if(labset==null){
             docToLabelMap.put(docid,new LinkedHashSet<>());
             labset = docToLabelMap.get(docid);
         }
-        labset.add(labelID);
+        labset.addAll(labelIDs);
     }
 
+    //remove label for an email document
+    public void unsetLabels(String docid, Set<Integer> labelIDs){
+        Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
+        if(labset!=null)
+            labset.removeAll(labelIDs);
+    }
+
+    //put only a set of labels on a document
+    public void putOnlyTheseLabels(String docid, Set<Integer> labelIDs){
+        Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
+        if(labset==null)
+        {
+            docToLabelMap.put(docid,new LinkedHashSet<>());
+            labset = docToLabelMap.get(docid);
+        }
+        labset.clear();
+        labset.addAll(labelIDs);
+    }
+
+
+    /*//set label to all documents given as input
+    public void setLabel(Set<String> docids, Integer labelID){
+        docids.forEach(id->
+        {
+            if(docToLabelMap.containsKey(id))
+                docToLabelMap.get(id).add(labelID);
+            else{
+                Set<Integer> container = new HashSet<>();
+                container.add(labelID);
+                docToLabelMap.put(id,container);
+            }
+
+        });
+    }
+
+    //unset label on all documents given as input
+    public void unsetLabel(Set<String> docids, Integer labelID){
+        docids.forEach(id->
+        {
+            if(docToLabelMap.containsKey(id))
+                docToLabelMap.get(id).remove(labelID);
+        });
+    }
+*/
     //get all labels for an email document and a given type
     public Set<Integer> getLabels(String docid, LabType type){
         Set<Integer> ss = new LinkedHashSet<>();
@@ -99,7 +147,7 @@ public class LabelManager implements Serializable{
     //get label id for a label name
     public Integer getLabelID(String labelname){
         Set<Label> result = labelInfoMap.values().stream().filter(f-> f.labName.compareTo(labelname)==0).collect(Collectors.toSet());
-        assert result.size()==1;
+        Util.softAssert(result.size()==1,log);
         return result.iterator().next().labId;
     }
 

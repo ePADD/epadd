@@ -145,17 +145,10 @@ public class EmailRenderer {
 						Set<Integer> systemlabels = result.getArchive().getLabels((EmailDocument) d, LabelManager.LabType.SYSTEM_LAB);
 						Set<Integer> restrlabels = result.getArchive().getLabels((EmailDocument) d, LabelManager.LabType.RESTR_LAB);
 						Set<Integer> genlabels = result.getArchive().getLabels((EmailDocument) d, LabelManager.LabType.GEN_LAB);
-						if (!Util.nullOrEmpty(systemlabels)) {
+						Set<Integer> labels = Util.setUnion(Util.setUnion(systemlabels,restrlabels),genlabels);
+						if (!Util.nullOrEmpty(labels)) {
 							String val = systemlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
-							html.append(" syslabels=\"" + val +"\"");
-						}
-						if (!Util.nullOrEmpty(restrlabels)) {
-							String val = restrlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
-							html.append(" restrlabels=\"" + val +"\"");
-						}
-						if (!Util.nullOrEmpty(genlabels)) {
-							String val = genlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
-							html.append(" genlabels=\"" + val +"\"");
+							html.append(" labels=\"" + val +"\"");
 						}
 					}
 

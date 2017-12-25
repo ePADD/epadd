@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 
+import javax.print.Doc;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,11 +130,27 @@ public class Archive implements Serializable {
         this.labelManager = labelManager;
     }
 
-    //set label for an email document
-    public void setLabel(EmailDocument edoc, Integer labelID){
-        labelManager.setLabel(edoc.getUniqueId(),labelID);
+
+    public void setLabels(Set<Document> docs, String[] labels){
+        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+        docs.stream().forEach(doc->{
+            labelManager.setLabels(doc.getUniqueId(),labelIDs);
+        });
     }
 
+    public void unsetLabels(Set<Document> docs, String[] labels){
+        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+        docs.stream().forEach(doc->{
+            labelManager.unsetLabels(doc.getUniqueId(),labelIDs);
+        });
+    }
+
+    public void putOnlyTheseLabels(Set<Document> docs, String[] labels){
+        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+        docs.stream().forEach(doc->{
+            labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs);
+        });
+    }
     //get all labels for an email document and a given type
     public Set<Integer> getLabels(EmailDocument edoc, LabelManager.LabType type){
         Set<Integer> ss = new LinkedHashSet<>();

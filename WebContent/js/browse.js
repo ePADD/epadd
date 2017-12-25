@@ -7,7 +7,6 @@
 /* The browse page has a certain number of messages on screen. these arrays store the states of each of the messages.*/
 //var transferWithRestrictions = [], doNotTransfer = [], reviewed = [],
     var addToCart = [], messageIds = [], annotations = [];
-var syslabels = [], restrlabels = [], genlabels=[];
 var PAGE_ON_SCREEN = -1; // current page displayed on screen
 var TOTAL_PAGES = 0; // global vars
 
@@ -130,7 +129,7 @@ function apply(e, toAll) {
             continuation(); // no continuation, easy.
     }
 
-    var url = 'ajax/applyFlags.jsp';
+    var url = 'ajax/applyLabelsAnnotations.jsp';
     // first check if applying to all, in case we may need to check if we append/overwrite
     var modal_shown = false;
     if (toAll) {
@@ -265,7 +264,7 @@ function apply_labels(labelIds) {
     $.ajax({
         url:'ajax/applyLabelsAnnotations.jsp',
         type: 'POST',
-        data: {docId: $($pages[0]).attr('docid'), labels: labelIds.join()}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+        data: {archiveID: archiveID,docId: $($pages[0]).attr('docId'), labels: labelIds.join(),action:"override"}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
         dataType: 'json',
         success: function() { refresh_labels_on_screen (labelIds); },
         error: function() {  refresh_labels_on_screen (labelIds);
@@ -316,7 +315,7 @@ $('body').ready(function() {
        // restrlabels[i] = ($pages[i].getAttribute('restrlabels'));
         //get general labels and put them in genlabels array
        // genlabels[i] = ($pages[i].getAttribute('genlabels'));
-        labelsOnPage[i] = ['0', '1'] // ($pages[i].getAttribute('labels'));
+        labelsOnPage[i] = $pages[i].getAttribute('labels').split(",");
 
 //        addToCart[i] = ($pages[i].getAttribute('addToCart') != null);
         messageIds[i] = $pages[i].getAttribute('docID');
@@ -354,7 +353,10 @@ $('body').ready(function() {
 
     $('.label-selectpicker').on('change', function(){
         var labelIds = $('.label-selectpicker').selectpicker('val');
-        apply_labels(labelIds);
+        if(labelIds) {
+            labelsOnPage[currentPage]=labelIds;
+            apply_labels(labelIds);
+        }
     });
 });
 

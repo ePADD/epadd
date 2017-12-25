@@ -1,14 +1,19 @@
 package edu.stanford.muse.email.LabelManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.Serializable;
 
 /**
  * Created by chinmay on 21/12/17.
  */
 public class Label implements Serializable {
-    private final static long serialVersionUID = 1L;
 
     /** note: these field names are used in JS as well. do not change casually */
+
+    private static Log log = LogFactory.getLog(Label.class);
+    private final static long serialVersionUID = 1L;
     String labName;
     Integer labId;
     String description;
