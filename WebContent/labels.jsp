@@ -48,7 +48,7 @@
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><th>Label</th><th>messages</th></thead>
+	<thead><th>Label</th><th>messages</th><th></th></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -64,14 +64,24 @@
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
-			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelNames=' + full[0] + '&archiveId=<%=archiveID%>">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveId=<%=archiveID%>">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
-		$('#labels').dataTable({
+        var edit_label_link = function ( data, type, full, meta ) {
+            return '<a title="' + full[2] + '" href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
+        };
+
+        $('#labels').dataTable({
 			data: labels,
 			pagingType: 'simple',
 			order:[[1, 'desc']], // (message count), descending
-			columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 1 ] },{width: "50%", targets: 0},{targets: 0, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+			columnDefs: [
+			    {width: "550px", targets: 0},
+                { className: "dt-right", "targets": [ 1 ] },
+                {width: "50%", targets: 0},
+                {targets: 0, render:clickable_message},
+                {targets: 2, render:edit_label_link},
+            ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
 			fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});
 	} );
