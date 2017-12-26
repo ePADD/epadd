@@ -1437,7 +1437,8 @@ public class Archive implements Serializable {
             array.put (2, label.getDescription());
             array.put (3, docCount);
             array.put (4, label.isSysLabel());
-            array.put (5, label.getType());
+            String labelType = LabelManager.LabType.RESTR_LAB.equals(label.getType()) ? "Restriction" : "General";
+            array.put (5, labelType);
 
             resultArray.put (count++, array);
         }

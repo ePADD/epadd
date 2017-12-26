@@ -54,7 +54,7 @@
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><th>Label</th><th>Type</th><th>messages</th><th></th></thead>
+	<thead><th>Label</th><th>Type</th><th>Messages</th><th></th></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -75,8 +75,8 @@
 
         var edit_label_link = function ( data, type, full, meta ) {
             if (full[4])  // system label
-                return ''; // not editable
-            return '<a title="' + full[2] + '" href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
+                return '<span title="System labels are not editable">Not editable</span>'; // not editable
+            return '<a href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
         };
 
         var label_count = function(data, type, full, meta) { return full[3]; }
@@ -87,10 +87,8 @@
 			pagingType: 'simple',
 			order:[[1, 'desc']], // (message count), descending
 			columnDefs: [
-			    {width: "550px", targets: 0},
-                { className: "dt-right", "targets": [ 1 ] },
-                {width: "50%", targets: 0},
-                {targets: 0, render:clickable_message},
+                { className: "dt-right", "targets": [ 1, 2, 3 ] },
+                {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
                 {targets: 3, render:edit_label_link},
