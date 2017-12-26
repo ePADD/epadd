@@ -13,6 +13,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="edu.stanford.muse.email.LabelManager.Label" %>
+<%@ page import="edu.stanford.muse.email.LabelManager.LabelManager" %>
 
 <%@include file="getArchive.jspf" %>
 
@@ -381,11 +382,28 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px black;">
                 <div style="float:left;position:relative;top:3px">
                     <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
-                        <select data-selected-text-format="static" name="attachmentType" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="Edit labels" multiple>
+
+                        <select data-selected-text-format="static" name="labelIDs" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="Edit labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
-                            <% for (Label label: allLabels) { %>
-                                <option data-label-class="<%=label.getType().toString()%> " data-label-id="<%=label.getLabelID()%>" data-label="<%=label.getLabelName()%>" value="<%=label.getLabelID()%>"><%=label.getLabelName()%></option>
-                            <% } %>
+
+                            <optgroup label="Restricted Labels">
+                                <%
+                                    Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
+                                    //get general labels
+                                    Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
+                                    for (Label opt : restrlabels){
+                                %>
+                                <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
+                                <%}%>
+                            </optgroup>
+                            <optgroup label="General Labels">
+                                <%
+                                    for (Label opt : genlabels){
+                                %>
+                                <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
+                                <%}%>
+                            </optgroup>
+
                         </select>
                     </div>
                     <div style="display:inline" class="labels-area">

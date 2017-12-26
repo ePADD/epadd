@@ -11,12 +11,13 @@
 	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String labelID = request.getParameter("labelID");
-	String labelName = "", labelDescription = "";
+	String labelName = "", labelDescription = "", labelType = "";
     if (!Util.nullOrEmpty(labelID)) {
         Label label = archive.getLabelManager().getLabel(labelID);
         if (label != null) {
             labelName = label.getLabelName();
             labelDescription = label.getDescription();
+            labelType = label.getType().toString();
         }
     }
 %>
@@ -51,7 +52,7 @@
     <div class="row">
         <!--form-wraper-->
         <div class="form-wraper clearfix panel">
-            <input name="labelID" type="hidden" value="<%=labelID%>" class="form-control"/>
+            <input name="labelID" type="hidden" value="<%=(labelID == null) ? "": labelID  %>" class="form-control"/>
             <input name="archiveID" type="hidden" value="<%=archiveID%>" class="form-control"/>
 
         <div class="row">
@@ -64,7 +65,7 @@
                 <!--input box-->
                 <div class="form-group">
                     <label for="labelName">Label name</label>
-                    <input name="labelName" id="labelName" type="text" class="form-control">
+                    <input name="labelName" id="labelName" type="text" class="form-control" value="<%=labelName%>">
                 </div>
             </div>
 
@@ -73,8 +74,8 @@
                 <label for="labelType">Label type</label>
                 <select id="labelType" name="labelType" class="form-control selectpicker">
                     <option value="" selected disabled>Choose label type</option>
-                    <option value="Restricted">Restriction label</option>
-                    <option value="General">General label</option>
+                    <option value="<%=LabelManager.LabType.RESTR_LAB.toString()%>" <%=LabelManager.LabType.RESTR_LAB.toString().equals(labelType) ? "selected":""%> >Restriction label</option>
+                    <option value="<%=LabelManager.LabType.GEN_LAB.toString()%>"  <%=LabelManager.LabType.GEN_LAB.toString().equals(labelType) ? "selected":""%> >General label</option>
                 </select>
             </div>
         </div>

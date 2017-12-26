@@ -1437,6 +1437,7 @@ public class Archive implements Serializable {
             array.put (2, label.getDescription());
             array.put (3, docCount);
             array.put (4, label.isSysLabel());
+            array.put (5, label.getType());
 
             resultArray.put (count++, array);
         }

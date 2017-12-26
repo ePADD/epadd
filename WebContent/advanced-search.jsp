@@ -413,11 +413,6 @@
 
 				<!--Actions-->
                 <% if (!ModeConfig.isDiscoveryMode()) {
-				//get restricted labels..
-					Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
-					//get general labels
-					Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
-
 				%>
 
                 <div class=" actions search-wraper clearfix">
@@ -438,10 +433,13 @@
 							<div class="form-group">
 
 							<label for="labelIDs">Labels</label>
-							<select name="labelIDs" id="labelIDs" class="form-control multi-select selectpicker" title="Select" multiple>
+							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
 								<option value="" selected disabled>Select a label</option>
-								<optgroup label="Restricted Labels">
+								<optgroup label="Restriction Labels">
 								<%
+									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
+									//get general labels
+									Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
 									for (Label opt : restrlabels){
 								%>
 										<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>

@@ -21,6 +21,7 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
 import edu.stanford.muse.index.*;
@@ -1004,19 +1005,19 @@ public class JSPHelper {
 	//returns labelID that was created/edited.
 	public static String createOrEditLabels(Archive archive,HttpServletRequest request){
 		String labelName = request.getParameter("labelName");
-		String description = request.getParameter("description");
-		String isRestricted = request.getParameter("isRestricted");
-		boolean isRestr   = "yes".equals(isRestricted);
+		String description = request.getParameter("labelDescription");
+		boolean isRestr = LabelManager.LabType.RESTR_LAB.toString().equals(request.getParameter("labelType"));
 
 		//check if it is label creation request or label updation one.
-		if(request.getParameter("labelID")!=null){
+		String labelID=request.getParameter("labelID");
+
+		if(!Util.nullOrEmpty(labelID)){
 			//label updation request.
-			String labelID=request.getParameter("labelID");
 			archive.getLabelManager().updateLabel(labelID,labelName,description,isRestr);
 			return labelID;
 		}else{
 			//label creation request
-			String labelID = archive.getLabelManager().createLabel(labelName,description,isRestr);
+			labelID = archive.getLabelManager().createLabel(labelName,description,isRestr);
 			return labelID;
 		}
 	}
