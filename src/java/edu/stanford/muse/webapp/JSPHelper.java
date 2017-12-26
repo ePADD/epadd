@@ -999,4 +999,25 @@ public class JSPHelper {
 		}
 		return selectedDocs;
 	}
+
+	//handles create/edit label request received from labels.jsp.
+	//returns labelID that was created/edited.
+	public static String createOrEditLabels(Archive archive,HttpServletRequest request){
+		String labelName = request.getParameter("labelName");
+		String description = request.getParameter("description");
+		String isRestricted = request.getParameter("isRestricted");
+		boolean isRestr   = "yes".equals(isRestricted);
+
+		//check if it is label creation request or label updation one.
+		if(request.getParameter("labelID")!=null){
+			//label updation request.
+			String labelID=request.getParameter("labelID");
+			archive.getLabelManager().updateLabel(labelID,labelName,description,isRestr);
+			return labelID;
+		}else{
+			//label creation request
+			String labelID = archive.getLabelManager().createLabel(labelName,description,isRestr);
+			return labelID;
+		}
+	}
 }
