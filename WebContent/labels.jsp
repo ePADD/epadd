@@ -45,7 +45,7 @@
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> Manage Labels</button>
+	<button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> New label</button> <!-- no labelID param, so it's taken as a new label -->
 </div>
 
 
@@ -54,7 +54,7 @@
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><th>Label</th><th>messages</th><th></th></thead>
+	<thead><th>Label</th><th>Type</th><th>messages</th><th></th></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -74,10 +74,13 @@
 		};
 
         var edit_label_link = function ( data, type, full, meta ) {
+            if (full[4])  // system label
+                return ''; // not editable
             return '<a title="' + full[2] + '" href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
         };
 
         var label_count = function(data, type, full, meta) { return full[3]; }
+        var label_type = function(data, type, full, meta) { return full[5]; }
 
         $('#labels').dataTable({
 			data: labels,
@@ -88,8 +91,9 @@
                 { className: "dt-right", "targets": [ 1 ] },
                 {width: "50%", targets: 0},
                 {targets: 0, render:clickable_message},
-                {targets: 1, render:label_count},
-                {targets: 2, render:edit_label_link},
+                {targets: 1, render:label_type},
+                {targets: 2, render:label_count},
+                {targets: 3, render:edit_label_link},
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
             fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});
