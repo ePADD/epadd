@@ -5,6 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -35,13 +36,16 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 <div id="spinner-div" style="display:none;text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 
 <%
-    String dir = request.getParameter ("dir");
+    // attachmentsForDocs
+
+    String dir = archive.baseDir + File.separator + Archive.TEMP_SUBDIR + File.separator;
+    new File(dir).mkdir();//make sure it exists
+    //create mbox file in localtmpdir and put it as a link on appURL.
+
+//    String dir = request.getParameter ("dir");
     File f = new File(dir);
-    String pathToFile;
-    if (f.isDirectory())
-        pathToFile = f.getAbsolutePath() + File.separator + "epadd-export.mbox";
-    else
-        pathToFile = f.getAbsolutePath();
+    String fname = "epadd-export.mbox";
+    String pathToFile = f.getAbsolutePath() + File.separator + fname;
 
     PrintWriter pw = null;
     try {
@@ -52,12 +56,20 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         return;
     }
 
+    //check if request contains dataSetID then work only on those messages which are in docset
+    //else export all messages of mbox.
+    String dataSetID=request.getParameter("datasetId");
+    Set<Document> selectedDocs;
 
-        List<EmailDocument> selectedDocs = (List) archive.getAllDocs();
+    if(!Util.nullOrEmpty(dataSetID)){
+        selectedDocs = (Set<Document>) session.getAttribute(request.getParameter("datasetId"));
+    }else
+        selectedDocs = archive.getAllDocs().stream().collect(Collectors.toSet());
 
         JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
-        // either we do tags (+ or -) from selectedTags
+
+    // either we do tags (+ or -) from selectedTags
         // or we do all docs from allDocs
         String cacheDir = archive.baseDir;
         String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
@@ -89,11 +101,15 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         for (Document ed: selectedDocs)
             EmailUtils.printToMbox(archive, (EmailDocument) ed, pw, noAttachments ? null: bs, stripQuoted);
         pw.close();
-    %>
+        String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;
+        String linkURL = appURL + "/" +  contentURL;
+
+%>
 
     <br/>
 
-    Mbox file saved: <%=pathToFile%>.
+    <a href =<%=linkURL%>>Download mbox file</a>
     <p></p>
     This file is in mbox format, and can be accessed with many email clients (e.g. <a href="http://www.mozillamessaging.com/">Thunderbird</a>.)
     It can also be viewed with a text editor.<br/>

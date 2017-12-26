@@ -177,7 +177,9 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 </div>
             </div>
 
-            <% if (ModeConfig.isProcessingMode()) { %>
+            <%--<% if (ModeConfig.isProcessingMode()) { %>--%>
+            <% if (false) {//no longer needed export-mbox support after adding it to browse message set  %>
+
                 <div class="one-line" id="export-mbox">
                     <div class="form-group col-sm-8" >
                         <label for="export-mbox-file">Export to mbox</label>
@@ -197,7 +199,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     var baseUrl = 'export-mbox';
                     var dir = $('.dir', $('#export-mbox')).val();
                     if (dir && dir.length > 0)
-                        window.location = baseUrl + '?dir=' + dir+"&archiveID="+<%=archiveID%>;
+                        window.location = baseUrl + '?dir=' + dir+"&archiveID=<%=archiveID%>";
                 });
                 </script>
             <% } %>
@@ -290,7 +292,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     var baseUrl = 'export-attachments';
                     var dir = $('.dir', $('#export-attach')).val();
                     if (dir && dir.length > 0)
-                        window.location = baseUrl + '?archiveID='+ <%=archiveID%> +'&dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
+                        window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
                 });
             </script>
 
@@ -328,7 +330,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var baseUrl = 'export-headers';
             var dir = $('.dir', $button.closest('.panel')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?archiveID=' + <%=archiveID%> + '&exportType=csv&dir=' + dir;
+                window.location = baseUrl + '?archiveID=<%=archiveID%>&exportType=csv&dir=' + dir;
         });
     </script>
     <% } %>
@@ -363,7 +365,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var baseUrl = 'export-authorities';
             var dir = $('.dir', $button.closest('.panel')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?archiveID=' + <%=archiveID%> + '&exportType=csv&dir=' + dir;
+                window.location = baseUrl + '?archiveID=<%=archiveID%>&exportType=csv&dir=' + dir;
         });
         </script>
     <% } %>
@@ -389,13 +391,13 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var baseUrl = '<%=ModeConfig.isProcessingMode() ? "export-complete-processing":"export-complete"%>';
             var dir = $('.dir', $('#export-next')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?archiveID='+<%=archiveID%> +'&dir=' + dir;
+                window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
         });
 
 
 
         var autocomplete_params = {
-            serviceUrl: 'ajax/attachmentAutoComplete.jsp?extensions=1&archiveID='+<%=archiveID%>,
+            serviceUrl: 'ajax/attachmentAutoComplete.jsp?extensions=1&archiveID=<%=archiveID%>',
             onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
             preventBadQueries: false,
             showNoSuggestionNotice: true,

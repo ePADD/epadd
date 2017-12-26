@@ -68,6 +68,7 @@ public class Archive implements Serializable {
 
     // the archive structure: the archive's top level dir has these subdirs
     public static final String BLOBS_SUBDIR = "blobs";
+    public static final String TEMP_SUBDIR = "tmp";
     public static final String INDEXES_SUBDIR = "indexes";
     public static final String SESSIONS_SUBDIR = "sessions"; // original idea was that there would be different sessions on the same archive (index). but in practice we only have one session
     private static final String LEXICONS_SUBDIR = "lexicons";

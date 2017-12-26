@@ -124,8 +124,8 @@
             <div class="panel">
                 <div class="panel-heading">Filter images</div>
 
-                //adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
-                //archiveID in all those forms where POST was used to invoke the server page.
+                <%--//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass--%>
+                <%--//archiveID in all those forms where POST was used to invoke the server page.--%>
                 <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 
                 <div class="one-line">
