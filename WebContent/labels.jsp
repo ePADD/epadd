@@ -68,6 +68,8 @@
 		};
 
         var edit_label_link = function ( data, type, full, meta ) {
+            if (full[4])  // system label
+                return ''; // not editable
             return '<a title="' + full[2] + '" href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
         };
 
