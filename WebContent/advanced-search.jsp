@@ -414,13 +414,9 @@
 				<!--Actions-->
                 <% if (!ModeConfig.isDiscoveryMode()) {
 				//get restricted labels..
-					Set<Label> labels = Util.setUnion(
-					        archive.getLabelManager().getAllLabels(LabelManager.LabType.SYSTEM_LAB),
-							archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB));
-					Set<String> restrlabelsname = labels.stream().map(f->f.getLabelName()).collect(Collectors.toSet());
-				//get general labels
-					labels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
-					Set<String> genlabelsname = labels.stream().map(f->f.getLabelName()).collect(Collectors.toSet());
+					Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
+					//get general labels
+					Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
 
 				%>
 
@@ -441,21 +437,21 @@
 
 							<div class="form-group">
 
-							<label for="labelNames">Labels</label>
-							<select name="labelNames" id="labelNames" class="form-control multi-select selectpicker" title="Select" multiple>
+							<label for="labelIDs">Labels</label>
+							<select name="labelIDs" id="labelIDs" class="form-control multi-select selectpicker" title="Select" multiple>
 								<option value="" selected disabled>Select a label</option>
 								<optgroup label="Restricted Labels">
 								<%
-									for (String opt : restrlabelsname){
+									for (Label opt : restrlabels){
 								%>
-										<option value = "<%=opt%>"><%=opt%></option>
+										<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
 								<%}%>
 								</optgroup>
 								<optgroup label="General Labels">
 								<%
-									for (String opt : genlabelsname){
+									for (Label opt : genlabels){
 								%>
-								<option value = "<%=opt%>"><%=opt%></option>
+								<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
 								<%}%>
 								</optgroup>
 							</select>
@@ -883,7 +879,7 @@
 			// TODO: reset the other fields also, esp. the select picker
 			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy').prop ('selectedIndex', 0);
 			$('#attachmentType').prop ('selectedIndex', -1); // 0 for this one is not ok
-			$('#labelNames').prop('selectedIndex',-1);
+			$('#labelIDs').prop('selectedIndex',-1);
 			$('.selectpicker').selectpicker('refresh');
 		});
 

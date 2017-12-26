@@ -139,17 +139,15 @@ public class EmailRenderer {
 					if (d instanceof EmailDocument && ((EmailDocument) d).reviewed)
 						html.append(" reviewed=\"true\"");
 					*/
-					//getting labels for this document and setting them under different attributes, i.e. systemlabels, restrlabels and genlabels.
+					//getting labels for this document
 					//also make sure that browse.jsp (the jsp calling this function) should have a map of LabelID to Label Name, Label type in javascript
 					if(d instanceof EmailDocument) {
-						Set<Integer> systemlabels = result.getArchive().getLabels((EmailDocument) d, LabelManager.LabType.SYSTEM_LAB);
-						Set<Integer> restrlabels = result.getArchive().getLabels((EmailDocument) d, LabelManager.LabType.RESTR_LAB);
-						Set<Integer> genlabels = result.getArchive().getLabels((EmailDocument) d, LabelManager.LabType.GEN_LAB);
-						Set<Integer> labels = Util.setUnion(Util.setUnion(systemlabels,restrlabels),genlabels);
+						Set<String> labels = result.getArchive().getLabelIDs((EmailDocument) d);
 						if (!Util.nullOrEmpty(labels)) {
-							String val = systemlabels.stream().map(f -> f.toString()).collect(Collectors.joining(","));
+							String val = labels.stream().collect(Collectors.joining(","));
 							html.append(" labels=\"" + val +"\"");
-						}
+						}else
+							html.append(" labels=\"\"");
 					}
 
 

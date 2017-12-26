@@ -745,11 +745,12 @@ public class IndexUtils {
 	private static Map<String, DetailedFacetItem> partitionDocsByLabelTypes(Collection<? extends Document> docs, Archive archive, LabelManager.LabType type) {
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
 
-		Map<Integer, DetailedFacetItem> tmpresult = new LinkedHashMap<>();//a temp result to hold labelID specific facets. Once fully constructed we will convert labelID to labelName
+		Map<String, DetailedFacetItem> tmpresult = new LinkedHashMap<>();//a temp result to hold labelID specific facets. Once fully constructed we will convert labelID to labelName
 		//create as many detailed facetitems as there are number of labels of that type.
 		Set<Label> labels= archive.getLabelManager().getAllLabels(type);
 		labels.forEach(f->
-			tmpresult.put(f.getLabelID(),new DetailedFacetItem(f.getLabelName(),f.getDescription(),"labelNames",f.getLabelName()))
+			tmpresult.put(f.getLabelID(),new DetailedFacetItem(f.getLabelName(),
+					f.getDescription(),"labelIDs",f.getLabelID()))
 		);
 		//now iterate over documents and add them to appropriate facet depending upon the labelID of that document.
 
@@ -757,17 +758,19 @@ public class IndexUtils {
 			if (!(d instanceof EmailDocument))
 				continue;
 			EmailDocument ed = (EmailDocument) d;
-			Set<Integer> labs = archive.getLabels(ed,type);
+			Set<String> labs = archive.getLabelIDs(ed);
 			labs.forEach(f->{
-				if(tmpresult.get(f)!=null)
-					tmpresult.get(f).addDoc(ed);
+				//add to tmpresult
+				//null check here ensures that we add only those docs which have at least one label of interest
+				//here note that the labels of interest (of a given type) are already put in tmpresult earlier.
+					if(tmpresult.get(f)!=null)
+						tmpresult.get(f).addDoc(ed);
 			}); //add document to the facet associated with corresponding label ID
-
 		}
 		//converting tmpresult to result and also take care of 'no doc in a facet' case
 		tmpresult.keySet().forEach(labid-> {
 					if (tmpresult.get(labid).totalCount() > 0)
-						result.put(archive.getLabelManager().getLabelName(labid), tmpresult.get(labid));
+						result.put(labid, tmpresult.get(labid));
 				}
 		);
 		return result;
@@ -879,9 +882,8 @@ public class IndexUtils {
 				facetMap.put("reviewed", reviewedMap.values());
 
 			//facet for restriction labels
-			Map<String, DetailedFacetItem> syslabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.SYSTEM_LAB);
 			Map<String, DetailedFacetItem> restrlabels  = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.RESTR_LAB);
-			facetMap.put("Restriction Labels",Util.setUnion(syslabels.values(),restrlabels.values()));
+			facetMap.put("Restriction Labels",restrlabels.values());
 
 			//facet for general labels
 			Map<String, DetailedFacetItem> genlabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.GEN_LAB);

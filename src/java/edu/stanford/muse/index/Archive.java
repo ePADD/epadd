@@ -131,45 +131,29 @@ public class Archive implements Serializable {
     }
 
 
-    public void setLabels(Set<Document> docs, String[] labels){
-        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+    public void setLabels(Set<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.setLabels(doc.getUniqueId(),labelIDs);
         });
     }
 
-    public void unsetLabels(Set<Document> docs, String[] labels){
-        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+    public void unsetLabels(Set<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.unsetLabels(doc.getUniqueId(),labelIDs);
         });
     }
 
-    public void putOnlyTheseLabels(Set<Document> docs, String[] labels){
-        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+    public void putOnlyTheseLabels(Set<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs);
         });
     }
     //get all labels for an email document and a given type
-    public Set<Integer> getLabels(EmailDocument edoc, LabelManager.LabType type){
-        Set<Integer> ss = new LinkedHashSet<>();
-        ss.add(1);
-        ss.add(2);
-
-        return ss;//added for testing
-        //return labelManager.getLabels(edoc.getUniqueId(),type);
+    public Set<String> getLabelIDs(EmailDocument edoc){
+        return labelManager.getLabelIDs(edoc.getUniqueId());
     }
 
 
-    //get all labels for an email document ( any type)
-    public Set<Integer> getLabels(EmailDocument edoc){
-        Set<Integer> ss = new LinkedHashSet<>();
-        ss.add(1);
-        ss.add(2);
-        return ss;
-        //return labelManager.getLabels(edoc.getUniqueId());
-    }
 
 
 

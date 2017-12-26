@@ -60,15 +60,15 @@ if (docs != null)
     	                            });
     }else{
     //labels apply
-    String[] labels = Util.tokenize(request.getParameter("labels"),",").toArray(new String[0]);
-    Util.softAssert(!Util.nullOrEmpty(labels),JSPHelper.log);
+    Set<String> labelIds = Util.tokenize(request.getParameter("labelIDs"),",").stream().collect(Collectors.toSet());
+    Util.softAssert(!Util.nullOrEmpty(labelIds),JSPHelper.log);
     String action = request.getParameter("action");
     if("set".equals(action)){
-        archive.setLabels(docs,labels);
+        archive.setLabels(docs,labelIds);
     }else if("unset".equals(action)){
-        archive.unsetLabels(docs,labels);
+        archive.unsetLabels(docs,labelIds);
     }else if("override".equals(action)){
-        archive.putOnlyTheseLabels(docs,labels);
+        archive.putOnlyTheseLabels(docs,labelIds);
     }else{
         Util.softAssert(true,"Action parameter from the front end is allowed to contain only one of the following three options, set-unset-override",JSPHelper.log);
     }

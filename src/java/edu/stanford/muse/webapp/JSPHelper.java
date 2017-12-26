@@ -181,7 +181,7 @@ public class JSPHelper {
 	 */
 	public static Object getSessionAttribute(HttpSession session, String attr_name)
 	{
-		Object value = getHttpSessionAttribute(session, attr_name);
+			Object value = getHttpSessionAttribute(session, attr_name);
 		return value;
 		//		if (value != null) return value;
 
