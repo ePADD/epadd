@@ -928,7 +928,7 @@ pre code {
 	border-radius:2px;
 }
 
-.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 4px; border-radius: 4px; font-size: 80%;}
+.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 4px;}
 .system-label { background: red; color: white; }
 .restriction-label { background: #ff9900; color: white; }
 .general-label { background: blue; color: white;}

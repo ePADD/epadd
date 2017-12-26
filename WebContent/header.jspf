@@ -141,6 +141,7 @@
 					 <li><a href="by-folder"><i class="menu-icon fa fa-folder fa-fw"></i>Browse folders</a></li>
 		 			 <li><a id="settings" href="settings"><i class="menu-icon fa fa-gear fa-fw"></i>Settings</a></li>
 					 -->
+					<li><a target="_blank" href="settings"><i class="menu-icon fa fa-gear"></i>Settings</a></li>
 					<li><a target="_blank" href="https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc/edit"><i class="menu-icon fa fa-book fa-fw"></i>Documentation</a></li>
 					<li><a target="_blank" href="https://epadd.nimeyo.com"><i class="menu-icon fa fa-user fa-question"></i>User forums</a></li>
 

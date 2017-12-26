@@ -15,10 +15,10 @@ public class Label implements Serializable {
     private static Log log = LogFactory.getLog(Label.class);
     private final static long serialVersionUID = 1L;
     String labName;
-    Integer labId;
+    String labId;
     String description;
     LabelManager.LabType labType;
-    public Label(String name, LabelManager.LabType type,int labid){
+    public Label(String name, LabelManager.LabType type, String labid){
         this.labName = name;
         this.labType  = type;
         this.labId = labid;
@@ -29,7 +29,7 @@ public class Label implements Serializable {
         return labName;
     }
 
-    public Integer getLabelID(){
+    public String getLabelID(){
         return labId;
     }
 

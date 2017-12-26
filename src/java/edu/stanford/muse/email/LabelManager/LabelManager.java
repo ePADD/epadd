@@ -22,11 +22,10 @@ public class LabelManager implements Serializable{
         SYSTEM_LAB, RESTR_LAB, GEN_LAB
     }
 
-
     //Map from Document ID to set of Label ID's
-    private HashMap<String,Set<Integer>> docToLabelMap= null;
+    private Map<String,Set<Integer>> docToLabelMap= null;
     //Map from Label ID's to Label Information
-    private HashMap<Integer,Label> labelInfoMap=null;
+    private Map<Integer,Label> labelInfoMap=null;
 
     public LabelManager(){
         docToLabelMap = new LinkedHashMap<>();

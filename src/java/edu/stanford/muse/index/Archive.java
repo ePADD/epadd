@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.json.JSONArray;
 
 import javax.print.Doc;
 import java.io.*;
@@ -1413,6 +1414,43 @@ public class Archive implements Serializable {
         if (lexiconMap == null)
             return new LinkedHashSet<String>();
         return Collections.unmodifiableSet(lexiconMap.keySet());
+    }
+
+    /** returns an array (sorted by doc count for set labels.
+     *  each element of the array is itself an array corresponding to the details for one label.
+     *  important: labels with 0 count should not be returned. */
+    public JSONArray getLabelCountsAsJson(Collection<Document> docs) {
+        Map<Integer, Integer> labelIdToCount = new LinkedHashMap<>();
+        for (Document d: docs) {
+            Set<Integer> labelIds = labelManager.getLabels(d.getUniqueId());
+            for (Integer labelId: labelIds) {
+                Integer I = labelIdToCount.getOrDefault (labelId, 0);
+                labelIdToCount.put (labelId, I+1);
+            }
+        }
+
+        // sort by count
+        List<Pair<Integer, Integer>> pairs = Util.sortMapByValue(labelIdToCount);
+
+        // assemble the result json object
+        int count = 0;
+        JSONArray resultArray = new JSONArray();
+        for (Pair<Integer, Integer> p: pairs) {
+            Integer labelId = p.getFirst();
+
+            JSONArray array = new JSONArray();
+
+            Integer docCount = p.getSecond();
+            array.put (0, labelManager.getLabelName(labelId));
+            array.put (1, docCount);
+
+            // TODO: get label descr also
+            // array.put (1, labelId);
+            // resultArray.put (2, labelManager.getDescription(labelId));
+            resultArray.put (count++, array);
+        }
+
+        return resultArray;
     }
 
     public void addStats(FetchStats as) {

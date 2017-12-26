@@ -464,7 +464,7 @@
 							<div class="checkbox-inline">
 								<label>
 									<input id="multiLabelsCheck" name="multiLabelsCheck" type="checkbox">
-									<span class="label-text">More than one restriction labels</span>
+									<span class="label-text">More than one restriction label</span>
 								</label>
 							</div>
 						</div>

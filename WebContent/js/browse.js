@@ -276,23 +276,24 @@ function apply_labels(labelIds) {
 // currently called before the new page has been rendered
 var page_change_callback = function(oldPage, currentPage) {
 
-    var $annotation = $('#annotation');
 
-    if (annotations[currentPage] != null && annotations[currentPage].length > 0)
-    {
-        $annotation.val(annotations[currentPage]);
-        $('#annotation_div').show();
-    }
-    else
-    {
-        $annotation.val('');
-        $annotation.attr('placeholder', 'Add an annotation');
-    }
     PAGE_ON_SCREEN = currentPage;
     $('#pageNumbering').html(((TOTAL_PAGES == 0) ? 0 : currentPage+1) + '/' + TOTAL_PAGES);
     var labelIds = labelsOnPage[currentPage];
     if (labelIds)
         refresh_labels_on_screen(labelIds);
+
+    var $annotation = $('.annotation-area');
+    $annotation.show();
+    if (annotations[currentPage] != null && annotations[currentPage].length > 0)
+    {
+        $annotation.text(annotations[currentPage]);
+    }
+    else
+    {
+        $annotation.text('No annotation');
+//        $annotation.attr('placeholder', 'Add an annotation');
+    }
 };
 
 var labelsOnPage = [];
@@ -338,25 +339,47 @@ $('body').ready(function() {
         dynamic: false
     });
 
+    // forward/back nav
     $('#page_forward').click(x.forward_func);
     $('#page_back').click(x.back_func);
-    // toggle each flag upon click
-    $('.flag').click (function(e) {
-        var $target = $(e.target);
-        $target.toggleClass('flag-enabled');
-        apply(e, false);
-    });
 
-    $('#apply').click(function(e) { apply(e, false);});
-    $('#applyToAll').click(function(e) { apply(e, true);});
-    $('#annotation_div').focusout(function (e) { apply(e, false); });
-
+    // set up label handling
     $('.label-selectpicker').on('change', function(){
         var labelIds = $('.label-selectpicker').selectpicker('val');
         if(labelIds) {
             labelsOnPage[currentPage]=labelIds;
             apply_labels(labelIds);
         }
+    });
+
+    // set up annotation handling
+    $('.annotation-area').click(function() {
+        $('#annotation-modal .modal-body').html(annotations[currentPage]);
+
+        // set up callback when modal is dismissed
+        $('#annotation-modal').on('hidden.bs.modal', function() {
+            var annotation = $('#annotation-modal .modal-body').val(); // .val() gets the value of a text area. assume: no html in annotations
+            annotations[currentPage] = annotation;
+            $('.annotation-area').text(annotation);
+            // post to the backend, and when successful, refresh the labels on screen
+            $.ajax({
+                url:'ajax/applyLabelsAnnotations.jsp',
+                type: 'POST',
+                data: {archiveID: archiveID,docId: $($pages[currentPage]).attr('docId'), annotation: annotation,action:"override"}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+                dataType: 'json',
+                success: function() { refresh_annotation_on_screen (labelIds); },
+                error: function() {  refresh_annotation_on_screen (labelIds);
+                    /* FLAG DEBUG epadd.alert('There was an error in saving labels, sorry!'); */
+                }
+            });
+        });
+
+        $('#annotation-modal').on('shown.bs.modal', function () {
+            $('#annotation-modal .modal-body').focus();
+        })
+
+        // show the modal
+        $('#annotation-modal').modal();
     });
 });
 

@@ -122,6 +122,23 @@
     </style>
 
 </head>
+<div id="annotation-modal" class="modal fade" style="z-index:9999">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Annotation</h4>
+            </div>
+            <textarea style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
+
+            </textarea>
+            <div class="modal-footer">
+                <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <body > <!--  override margin because this page is framed. -->
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
@@ -323,12 +340,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             allLabels = JSON.parse('<%=json%>');
         </script>
     <div style="display:inline-block;vertical-align:top;">
-        <div class="archive-heading" style="">
-            <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
-            <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
-            <div title="<%=repositoryName%>" class="repository-name"><%=repositoryName%></div>
-            <div title="<%=institutionName%>" class="institution-name"><%=institutionName%></div>
-        </div>
+        <% /* if (!ModeConfig.isAppraisalMode()) */ { %>
+            <div class="archive-heading" style="">
+                <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
+                <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
+                <div title="<%=repositoryName%>" class="repository-name"><%=repositoryName%></div>
+                <div title="<%=institutionName%>" class="institution-name"><%=institutionName%></div>
+            </div>
+        <% } %>
+
         <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
             <div class="bulk-controls" style="position:relative;width:100%;border-bottom: solid 1px black;padding-top:5px;">
 
@@ -359,8 +379,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div style="clear:both"></div>
             </div>
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px black;">
-                <div style="float:left;position:relative;top:8px">
-                    <div class="message-label form-group label-picker" style="padding:4px 23px 0 0;display:inline-block">
+                <div style="float:left;position:relative;top:3px">
+                    <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
                         <select data-selected-text-format="static" name="attachmentType" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="Edit labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
                             <% for (Label label: allLabels) { %>
@@ -371,14 +391,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <div style="display:inline" class="labels-area">
                         <!-- will be filled in by render_labels() in JS -->
                     </div>
+
+                    <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
+                    <div class="annotation-area" style="display:none; margin-left: 50px; padding: 5px; border: solid 1px gray; font-style: italic; overflow:hidden; min-width: 10%; width:20%;display:inline">
+
+                    </div>
                 </div>
 
                 <div style="float:right;position:relative;top:8px">
                     <div style="display:inline;vertical-align:top;font-size:20px; position:relative;" >
-
-                        <div class="btn-icon" style="padding:4px 10px;position:relative; top:-8px">
-                            <span title="Annotate message"><i class="fa fa-pencil"></i></span>
-                        </div>
 
                         <div style="display:inline; position:relative; top:-8px;" id="pageNumbering"></div>
                         <ul class="pagination">

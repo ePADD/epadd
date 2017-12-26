@@ -214,6 +214,24 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>labels</servlet-name>
+		<jsp-file>/labels.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>labels</servlet-name>
+		<url-pattern>/labels</url-pattern>
+	</servlet-mapping>
+
+    <servlet>
+        <servlet-name>edit-label</servlet-name>
+        <jsp-file>/edit-label.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>edit-label</servlet-name>
+        <url-pattern>/edit-label</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
 		<servlet-name>by-folder</servlet-name>
 		<jsp-file>/by-folder.jsp</jsp-file>
 	</servlet>

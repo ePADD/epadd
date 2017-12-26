@@ -187,11 +187,11 @@
 		<% } %>
 
 		<div class="cta-box text-center margin30">
-			<a href="settings?archiveID=<%=archiveID%>">
+			<a href="labels?archiveID=<%=archiveID%>">
 				<i class="icon-browsetoparrow"></i>
 				<i class="fa fa-cog" style="color:#888" aria-hidden="true"></i>
-				<p class="cta-text-1">Settings</p>
-				<p class="cta-text-2">Settings</p>
+				<p class="cta-text-1">Labels</p>
+				<p class="cta-text-2">Labels</p>
 			</a>
 		</div>
 
