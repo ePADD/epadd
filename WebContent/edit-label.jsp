@@ -10,10 +10,15 @@
 
 	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	// which lexicon? first check if url param is present, then check if url param is specified
-	String labelID = request.getParameter("labelId");
-
-	// FLAG DEBUG
-	Label label = new Label("Lab1", LabelManager.LabType.GEN_LAB, 1);
+	String labelID = request.getParameter("labelID");
+	String labelName = "", labelDescription = "";
+    if (!Util.nullOrEmpty(labelID)) {
+        Label label = archive.getLabelManager().getLabel(labelID);
+        if (label != null) {
+            labelName = label.getLabelName();
+            labelDescription = label.getDescription();
+        }
+    }
 %>
 <html>
 <head>
@@ -36,7 +41,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%writeProfileBlock(out, archive, "", "Label: " + label.getLabelName());%>
+<%writeProfileBlock(out, archive, "", "Label: " + labelName);%>
 <br/>
 
 <!-- when posted, this form goes back to labels screen -->
@@ -50,7 +55,7 @@
             <input name="archiveID" type="hidden" value="<%=archiveID%>" class="form-control"/>
 
         <div class="row">
-            <h4><%=(Util.nullOrEmpty(label.getLabelID()) ? "New label" : "Edit Label Id: " + label.getLabelID())%></h4>
+            <h4><%=(Util.nullOrEmpty(labelID) ? "New label" : "Edit Label Id: " + labelID)%></h4>
             <br/>
             <br/>
             <!--File Name-->
@@ -65,8 +70,8 @@
 
             <!--File Size-->
             <div class="form-group col-sm-6">
-                <label for="attachmentFilesize">Label type</label>
-                <select id="attachmentFilesize" name="labelType" class="form-control selectpicker">
+                <label for="labelType">Label type</label>
+                <select id="labelType" name="labelType" class="form-control selectpicker">
                     <option value="" selected disabled>Choose label type</option>
                     <option value="Restricted">Restriction label</option>
                     <option value="General">General label</option>
@@ -81,7 +86,7 @@
                 <!--input box-->
                 <div class="form-group">
                     <label for="labelDescription">Label description</label>
-                    <input name="labelDescription" id="labelDescription" type="text" class="form-control">
+                    <input name="labelDescription" id="labelDescription" type="text" class="form-control" value="<%=Util.escapeHTML(labelDescription)%>">
                 </div>
 
             </div>

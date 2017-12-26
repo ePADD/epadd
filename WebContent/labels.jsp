@@ -64,12 +64,14 @@
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
-			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveId=<%=archiveID%>">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveId=<%=archiveID%>">' + full[1] + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
         var edit_label_link = function ( data, type, full, meta ) {
             return '<a title="' + full[2] + '" href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
         };
+
+        var label_count = function(data, type, full, meta) { return full[3]; }
 
         $('#labels').dataTable({
 			data: labels,
@@ -80,9 +82,10 @@
                 { className: "dt-right", "targets": [ 1 ] },
                 {width: "50%", targets: 0},
                 {targets: 0, render:clickable_message},
+                {targets: 1, render:label_count},
                 {targets: 2, render:edit_label_link},
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
-			fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
+            fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});
 	} );
 

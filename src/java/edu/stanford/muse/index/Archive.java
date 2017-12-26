@@ -1406,6 +1406,11 @@ public class Archive implements Serializable {
      *  important: labels with 0 count should not be returned. */
     public JSONArray getLabelCountsAsJson(Collection<Document> docs) {
         Map<String, Integer> labelIdToCount = new LinkedHashMap<>();
+
+        for (Label label: getLabelManager().getAllLabels()) {
+            labelIdToCount.put (label.getLabelID(), 0);
+        }
+
         for (Document d: docs) {
             Set<String> labelIds = labelManager.getLabelIDs(d.getUniqueId());
             for (String labelId: labelIds) {
@@ -1427,9 +1432,10 @@ public class Archive implements Serializable {
 
             Integer docCount = p.getSecond();
             Label label = labelManager.getLabel(labelId);
-            array.put (0, label.getLabelName());
-            array.put (1, docCount);
-            resultArray.put (2, label.getDescription());
+            array.put (0, labelId);
+            array.put (1, label.getLabelName());
+            array.put (2, label.getDescription());
+            array.put (3, docCount);
             resultArray.put (count++, array);
         }
 
