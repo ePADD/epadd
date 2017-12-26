@@ -239,7 +239,7 @@ function refresh_labels_on_screen(labelIds) {
 
         var class_for_type; // this is one of system/general/restriction label
         {
-            if (label.labType === 'SYSTEM_LAB')
+            if (label.labType === 'RESTR_LAB' && label.isSysLabel)
                 class_for_type = 'system-label';
             else if (label.labType === 'RESTR_LAB')
                 class_for_type = 'restriction-label';
@@ -264,7 +264,7 @@ function apply_labels(labelIds) {
     $.ajax({
         url:'ajax/applyLabelsAnnotations.jsp',
         type: 'POST',
-        data: {archiveID: archiveID,docId: $($pages[0]).attr('docId'), labels: labelIds.join(),action:"override"}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+        data: {archiveID: archiveID,docId: $($pages[0]).attr('docId'), labelIDs: labelIds.join(),action:"override"}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
         dataType: 'json',
         success: function() { refresh_labels_on_screen (labelIds); },
         error: function() {  refresh_labels_on_screen (labelIds);

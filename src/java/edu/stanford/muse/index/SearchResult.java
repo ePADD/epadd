@@ -890,32 +890,43 @@ public class SearchResult {
 
     /* Will look in the given docs for given labels passed as parameter*/
 
-    private static SearchResult filterForLabels(SearchResult inputSet){
-        Collection<String> neededLabels = JSPHelper.getParams(inputSet.queryParams, "labelNames"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+    private static SearchResult filterForMultipleRestrictionLabels(SearchResult inputSet){
         String multiLabelsCheck = JSPHelper.getParam(inputSet.queryParams, "multiLabelsCheck"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
         boolean multiLabCheck = "on".equals(multiLabelsCheck)? true:false;
-        if(Util.nullOrEmpty(neededLabels))
+        if(!multiLabCheck)
             return inputSet;
+        Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
 
-        //get labelids for these names..
-        Set<Integer> neededLabelIDs = neededLabels.stream().map(f->inputSet.getArchive().getLabelManager().getLabelID(f)).collect(Collectors.toSet());
+        inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
+            EmailDocument ed = (EmailDocument) k;
+            Set<String> labIDs = inputSet.getArchive().getLabelIDs(ed);
+            //note: dnt is also a restriction label. we will flag if a message has two restriction label
+            //even if one of them is dnt.
+            Set<String> restrlabels = labIDs.stream().filter(id->inputSet.getArchive().getLabelManager().isRestrictionLabel(id)).collect(Collectors.toSet());
+            if(restrlabels.size()>1)
+                    outputDocs.put(k,inputSet.matchedDocs.get(k));
+        });
+        return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
+                inputSet.commonHLInfo,inputSet.regexToHighlight);
+
+    }
+    private static SearchResult filterForLabelsAndMultipleRestrictionLabels(SearchResult inputSet){
+        Collection<String> neededLabelIDs = JSPHelper.getParams(inputSet.queryParams, "labelIDs"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+        if(Util.nullOrEmpty(neededLabelIDs))
+            return filterForMultipleRestrictionLabels(inputSet);
+
         //now iterate over inputSet and retain only those documents whose label's intersection with neededLabelIDs set is same as neededLabelIDs (which means all of them are present in that doc)
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
 
         inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
             EmailDocument ed = (EmailDocument) k;
-            Set<Integer> labs = inputSet.getArchive().getLabels(ed);
-            Set<Integer> restrlabels = Util.setUnion(inputSet.getArchive().getLabels(ed, LabelManager.LabType.SYSTEM_LAB),
-                    inputSet.getArchive().getLabels(ed, LabelManager.LabType.RESTR_LAB));
-
-            Set<Integer> intersection = Util.setIntersection(labs,neededLabelIDs);
+            Set<String> labIDs = inputSet.getArchive().getLabelIDs(ed);
+            Set<String> intersection = Util.setIntersection(labIDs,neededLabelIDs);
            /* if(intersection.equals(neededLabelIDs))//if all neededlabIDs were present in the document label set then add it to output doc set.
                 outputDocs.put(k,inputSet.matchedDocs.get(k));--- It is for AND of labelname options*/
            if(!intersection.isEmpty()){ //means at least one of the selected labels were present then add this doc
-               if(!multiLabCheck)
-                   outputDocs.put(k,inputSet.matchedDocs.get(k));
-               else if(restrlabels.size()>1)
-                   outputDocs.put(k,inputSet.matchedDocs.get(k));
+               outputDocs.put(k,inputSet.matchedDocs.get(k));
+
            }
         });
 
@@ -1184,7 +1195,7 @@ public class SearchResult {
                 outResult = filterForContactId(outResult, cid);
         }
 
-        outResult = filterForLabels(outResult);
+        outResult = filterForLabelsAndMultipleRestrictionLabels(outResult);
         outResult = filterForDocId(outResult);
         outResult = filterForMessageId(outResult);
         outResult = filterForMailingListState(outResult);

@@ -18,17 +18,19 @@ public class Label implements Serializable {
     String labId;
     String description;
     LabelManager.LabType labType;
-    public Label(String name, LabelManager.LabType type, String labid){
+    boolean isSysLabel;
+    public Label(String name, LabelManager.LabType type,String labid,String description,boolean isSysLabel){
         this.labName = name;
         this.labType  = type;
         this.labId = labid;
-        //setting some default value for description
-        this.description = "Label description";
+        this.description = description;
+        this.isSysLabel = isSysLabel;
     }
     public String getLabelName(){
         return labName;
     }
 
+    public boolean isSysLabel(){ return isSysLabel;}
     public String getLabelID(){
         return labId;
     }
@@ -38,4 +40,9 @@ public class Label implements Serializable {
     }
 
     public LabelManager.LabType getType () { return this.labType; }
+    public void updateInfo(String labelName, String description, LabelManager.LabType type){
+        this.labName = labelName;
+        this.labType = type;
+        this.description = description;
+    }
 }

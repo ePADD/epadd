@@ -19,18 +19,49 @@ public class LabelManager implements Serializable{
     private final static long serialVersionUID = 1L;
 
     public enum LabType {
-        SYSTEM_LAB, RESTR_LAB, GEN_LAB
+        RESTR_LAB, GEN_LAB
     }
 
     //Map from Document ID to set of Label ID's
-    private Map<String,Set<Integer>> docToLabelMap= null;
+    private Map<String,Set<String>> docToLabelMap= null;
     //Map from Label ID's to Label Information
-    private Map<Integer,Label> labelInfoMap=null;
+    private Map<String,Label> labelInfoMap=null;
 
     public LabelManager(){
         docToLabelMap = new LinkedHashMap<>();
         labelInfoMap = new LinkedHashMap<>();
         InitialLabelSetup();
+    }
+
+    public String createLabel(String labelName, String description, boolean isRestricted){
+        //get the labelID that can be assigned to this label.
+        //For now, get the max of all labelIDs present so far and add 1 to that.
+        Set<Integer> labids = labelInfoMap.keySet().stream().map(id->Integer.parseInt(id)).collect(Collectors.toSet());
+        Integer m = labids.stream().mapToInt(v->v).max().orElseThrow(NoSuchElementException::new);
+        m = m+1;//inc by 1 to get new id.
+        String newlabid = m.toString();
+        LabType labt;
+        if(isRestricted)
+            labt = LabType.RESTR_LAB;
+        else
+            labt = LabType.GEN_LAB;
+        labelInfoMap.put(newlabid,new Label(labelName,labt,newlabid,description,false));
+        return newlabid;
+    }
+
+    public boolean updateLabel(String labelID, String labelName, String description, boolean isRestricted) {
+        //get Label object for given labelID
+        Label obj = labelInfoMap.get(labelID);
+        if (obj == null) {
+            Util.softAssert(true, "Label id " + labelID + " is not a valid one. Nothing to update", log);
+            return false;
+        }
+        if (isRestricted)
+            obj.updateInfo(labelName, description, LabType.RESTR_LAB);
+        else
+            obj.updateInfo(labelName, description, LabType.GEN_LAB);
+
+        return true;
     }
 
     public String getLabelInfoMapAsJSONString(){
@@ -40,25 +71,29 @@ public class LabelManager implements Serializable{
     //By default we have a few in-built system labels.
     private void InitialLabelSetup(){
         //do not transfer
-        Label dnt = new Label("Do not transfer",LabType.SYSTEM_LAB, 0);
+        Label dnt = new Label("Do not transfer",LabType.RESTR_LAB, "0",
+                "Do not transfer this message",true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
 
         //restricted
-        Label twr = new Label("Restricted",LabType.RESTR_LAB,1);
+        Label twr = new Label("Restricted",LabType.RESTR_LAB,"1",
+                "Transfer this message only after 2040",false);
         labelInfoMap.put(twr.getLabelID(),twr);
 
         // test
-        Label gen = new Label("General",LabType.GEN_LAB,2);
+        Label gen = new Label("General",LabType.GEN_LAB,"2",
+                "This is general label",false);
         labelInfoMap.put(gen.getLabelID(),gen);
 
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.SYSTEM_LAB,3);
+        Label reviewed = new Label("Reviewed",LabType.RESTR_LAB,"3",
+                "This message was reviewed",false);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
 
     //set label for an email document
-    public void setLabels(String docid, Set<Integer> labelIDs){
-        Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
+    public void setLabels(String docid, Set<String> labelIDs){
+        Set<String> labset = docToLabelMap.getOrDefault(docid,null);
         if(labset==null){
             docToLabelMap.put(docid,new LinkedHashSet<>());
             labset = docToLabelMap.get(docid);
@@ -67,15 +102,15 @@ public class LabelManager implements Serializable{
     }
 
     //remove label for an email document
-    public void unsetLabels(String docid, Set<Integer> labelIDs){
-        Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
+    public void unsetLabels(String docid, Set<String> labelIDs){
+        Set<String> labset = docToLabelMap.getOrDefault(docid,null);
         if(labset!=null)
             labset.removeAll(labelIDs);
     }
 
     //put only a set of labels on a document
-    public void putOnlyTheseLabels(String docid, Set<Integer> labelIDs){
-        Set<Integer> labset = docToLabelMap.getOrDefault(docid,null);
+    public void putOnlyTheseLabels(String docid, Set<String> labelIDs){
+        Set<String> labset = docToLabelMap.getOrDefault(docid,null);
         if(labset==null)
         {
             docToLabelMap.put(docid,new LinkedHashSet<>());
@@ -86,47 +121,18 @@ public class LabelManager implements Serializable{
     }
 
 
-    /*//set label to all documents given as input
-    public void setLabel(Set<String> docids, Integer labelID){
-        docids.forEach(id->
-        {
-            if(docToLabelMap.containsKey(id))
-                docToLabelMap.get(id).add(labelID);
-            else{
-                Set<Integer> container = new HashSet<>();
-                container.add(labelID);
-                docToLabelMap.put(id,container);
-            }
+    public boolean isRestrictionLabel(String labid){
+        Label lab = labelInfoMap.getOrDefault(labid,null);
+        if(lab==null){
+            Util.softAssert(true,"No label found with the given label id "+labid, log);
+            return false;
+        }else
+            return lab.getType()==LabType.RESTR_LAB;
 
-        });
     }
 
-    //unset label on all documents given as input
-    public void unsetLabel(Set<String> docids, Integer labelID){
-        docids.forEach(id->
-        {
-            if(docToLabelMap.containsKey(id))
-                docToLabelMap.get(id).remove(labelID);
-        });
-    }
-*/
-    //get all labels for an email document and a given type
-    public Set<Integer> getLabels(String docid, LabType type){
-        Set<Integer> ss = new LinkedHashSet<>();
-        ss.add(1);
-        ss.add(2);
-
-        return ss;
-
-//        Set<Integer> result =
-//                docToLabelMap.getOrDefault(docid,new HashSet<>()).stream().filter(f->
-//                        labelInfoMap.get(f)!=null && labelInfoMap.get(f).labType==type).collect(Collectors.toSet());
-//        return result;
-    }
-
-
-    //get all labels for an email document ( any type)
-    public Set<Integer> getLabels(String docid){
+    //get all label IDs for an email document ( any type)
+    public Set<String> getLabelIDs(String docid){
         return docToLabelMap.getOrDefault(docid,new HashSet<>());
     }
 
@@ -143,21 +149,11 @@ public class LabelManager implements Serializable{
         return  result;
     }
 
-    //get label id for a label name
-    public Integer getLabelID(String labelname){
-        Set<Label> result = labelInfoMap.values().stream().filter(f-> f.labName.compareTo(labelname)==0).collect(Collectors.toSet());
-        Util.softAssert(result.size()==1,log);
-        return result.iterator().next().labId;
+    //get all possible labels
+    public Label getLabel(String labelID){
+        return labelInfoMap.get(labelID);
     }
 
-
-    //get label name for a labelID
-    public String getLabelName(Integer labelid){
-        Label l = labelInfoMap.getOrDefault(labelid,null);
-        if(l == null)
-            return "Invalid Label";
-        return l.getLabelName();
-    }
     /*
       Code for serialization of this object. Going forward, we will save this object in a human-readable format.
       For that, we need to resolve the issue of storing mailingList and dataErrors in a human-readable format.

@@ -24,6 +24,7 @@ import edu.stanford.muse.email.*;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.email.CorrespondentAuthorityMapper;
+import edu.stanford.muse.email.LabelManager.Label;
 import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBook;
@@ -132,45 +133,29 @@ public class Archive implements Serializable {
     }
 
 
-    public void setLabels(Set<Document> docs, String[] labels){
-        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+    public void setLabels(Set<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.setLabels(doc.getUniqueId(),labelIDs);
         });
     }
 
-    public void unsetLabels(Set<Document> docs, String[] labels){
-        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+    public void unsetLabels(Set<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.unsetLabels(doc.getUniqueId(),labelIDs);
         });
     }
 
-    public void putOnlyTheseLabels(Set<Document> docs, String[] labels){
-        Set<Integer> labelIDs = Arrays.stream(labels).map(f->Integer.parseInt(f)).collect(Collectors.toSet());
+    public void putOnlyTheseLabels(Set<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs);
         });
     }
     //get all labels for an email document and a given type
-    public Set<Integer> getLabels(EmailDocument edoc, LabelManager.LabType type){
-        Set<Integer> ss = new LinkedHashSet<>();
-        ss.add(1);
-        ss.add(2);
-
-        return ss;//added for testing
-        //return labelManager.getLabels(edoc.getUniqueId(),type);
+    public Set<String> getLabelIDs(EmailDocument edoc){
+        return labelManager.getLabelIDs(edoc.getUniqueId());
     }
 
 
-    //get all labels for an email document ( any type)
-    public Set<Integer> getLabels(EmailDocument edoc){
-        Set<Integer> ss = new LinkedHashSet<>();
-        ss.add(1);
-        ss.add(2);
-        return ss;
-        //return labelManager.getLabels(edoc.getUniqueId());
-    }
 
 
 
@@ -1420,33 +1405,31 @@ public class Archive implements Serializable {
      *  each element of the array is itself an array corresponding to the details for one label.
      *  important: labels with 0 count should not be returned. */
     public JSONArray getLabelCountsAsJson(Collection<Document> docs) {
-        Map<Integer, Integer> labelIdToCount = new LinkedHashMap<>();
+        Map<String, Integer> labelIdToCount = new LinkedHashMap<>();
         for (Document d: docs) {
-            Set<Integer> labelIds = labelManager.getLabels(d.getUniqueId());
-            for (Integer labelId: labelIds) {
+            Set<String> labelIds = labelManager.getLabelIDs(d.getUniqueId());
+            for (String labelId: labelIds) {
                 Integer I = labelIdToCount.getOrDefault (labelId, 0);
                 labelIdToCount.put (labelId, I+1);
             }
         }
 
         // sort by count
-        List<Pair<Integer, Integer>> pairs = Util.sortMapByValue(labelIdToCount);
+        List<Pair<String, Integer>> pairs = Util.sortMapByValue(labelIdToCount);
 
         // assemble the result json object
         int count = 0;
         JSONArray resultArray = new JSONArray();
-        for (Pair<Integer, Integer> p: pairs) {
-            Integer labelId = p.getFirst();
+        for (Pair<String, Integer> p: pairs) {
+            String labelId = p.getFirst();
 
             JSONArray array = new JSONArray();
 
             Integer docCount = p.getSecond();
-            array.put (0, labelManager.getLabelName(labelId));
+            Label label = labelManager.getLabel(labelId);
+            array.put (0, label.getLabelName());
             array.put (1, docCount);
-
-            // TODO: get label descr also
-            // array.put (1, labelId);
-            // resultArray.put (2, labelManager.getDescription(labelId));
+            resultArray.put (2, label.getDescription());
             resultArray.put (count++, array);
         }
 
