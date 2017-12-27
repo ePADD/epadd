@@ -109,7 +109,7 @@
             $("#close-save-archive").click((function(archiveID){
                 return function(){
                     //on closing, first save the archive and then unload it.
-                    epadd.saveArchive(false,archiveID).then(function(){
+                    epadd.saveArchive(archiveID,false).then(function(){
                         epadd.unloadArchive(archiveID).then(function(){
                             window.location = './collections';
                         });

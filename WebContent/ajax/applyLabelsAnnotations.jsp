@@ -4,7 +4,8 @@
 <%@page language="java" import="java.util.*"%>    
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>    
-<%@page language="java" import="edu.stanford.muse.index.*"%><%@ page import="javax.print.Doc"%><%@ page import="java.util.stream.Collectors"%>
+<%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="java.util.stream.Collectors"%>
 <%
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
 JSPHelper.setPageUncacheable(response);
@@ -21,7 +22,6 @@ if (archive == null) {
     JSPHelper.log.info(obj);
     return;
 }
-String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 String docsetID = request.getParameter("docsetID");
 String docID = request.getParameter("docId");
 

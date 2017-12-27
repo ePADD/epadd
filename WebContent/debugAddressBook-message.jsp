@@ -67,7 +67,7 @@
 	out.println ("<br/><br/>" + docs.size() + " message(s) with the email address " + Util.escapeHTML (searchedEmail) + " name: " + Util.escapeHTML (searchedName) + "<br/><br/>");
 	for (EmailDocument ed: docs) {
 		String id = Util.hash (ed.getSignature());
-		String link = "browse?uniqueId=" + id + "&adv-search=1";
+		String link = "browse?archiveID="+SimpleSessions.getArchiveIDForArchive(archive)+"&uniqueId=" + id + "&adv-search=1";
 		out.println ("Message ID <a target=\"_blank\" href=\"" + link + "\">" + id + "</a><br/>");
 	}
 %>

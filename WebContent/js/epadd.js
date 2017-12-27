@@ -412,7 +412,7 @@ epadd.unloadArchive = function(archiveID) {
 
 
 
-epadd.saveArchive= function(prompt,archiveID) {
+epadd.saveArchive= function(archiveID,prompt) {
     if(prompt==undefined){
         prompt=true;
     }
