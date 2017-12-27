@@ -72,7 +72,7 @@
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
-			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveID=<%=archiveID%>">' + full[1] + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+			return '<a target="_blank" title="' + escapeHTML(full[2]) + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveID=<%=archiveID%>">' + escapeHTML(full[1]) + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
         var edit_label_link = function ( data, type, full, meta ) {

@@ -77,7 +77,7 @@
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
-			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveID=<%=archiveID%>">' + full[1] + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+			return '<a target="_blank" title="' + escapeHTML(full[2]) + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveID=<%=archiveID%>">' + escapeHTML(full[1]) + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
         var label_count = function(data, type, full, meta) { return full[3]; };
@@ -100,7 +100,7 @@
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
-                <% if (ModeConfig.isDiscoveryMode()) { %>
+                <% if (!ModeConfig.isDiscoveryMode()) { %>
                     {targets: 3, render:set_link},
                     {targets: 4, render:unset_link},
                 <% } %>

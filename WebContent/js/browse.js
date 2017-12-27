@@ -85,9 +85,9 @@ var Labels = function() {
             $('.labels-area').append(
                 '<div '
                 + ' data-label-id="' + label.labId + '" '
-                + ' title="' + label.description + '" '
+                + ' title="' + escapeHTML(label.description) + '" '
                 + ' class="message-label ' + class_for_label + '" >'
-                + label.labName
+                + escapeHTML(label.labName)
                 + '</div>');
         }
     }
@@ -151,7 +151,7 @@ var Annotations = function() {
 
         // things to do when annotation modal is shown
         function annotation_modal_shown() {
-            $('#annotation-modal .modal-body').html(annotations[PAGE_ON_SCREEN]).focus();
+            $('#annotation-modal .modal-body').text(annotations[PAGE_ON_SCREEN]).focus();
         }
 
         // things to do when annotation modal is dismissed
