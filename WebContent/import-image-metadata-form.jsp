@@ -1,16 +1,13 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.Set"%>
 
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.datacache.Blob" %>
-<%@ page import="java.util.LinkedHashSet" %>
 <%@ page import="edu.stanford.muse.index.SearchResult" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="java.util.LinkedList" %>
@@ -77,7 +74,6 @@
 //    if (archive != null) {
 String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         AddressBook ab = archive.addressBook;
-        Set<String> addrs = ab.getOwnAddrs();
         writeProfileBlock(out, archive, "", "Export archive");
 //    }
 

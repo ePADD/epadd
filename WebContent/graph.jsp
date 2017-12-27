@@ -12,7 +12,6 @@
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="java.util.*" %>
-<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@include file="getArchive.jspf" %>

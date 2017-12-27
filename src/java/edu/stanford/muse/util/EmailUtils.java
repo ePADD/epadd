@@ -331,17 +331,18 @@ public class EmailUtils {
 
 		mbox.println("Subject: " + ed.description);
 		mbox.println("Message-ID: " + ed.messageID);
-		mbox.println("X-Muse-Folder: " + ed.folderName);
+		mbox.println("X-ePADD-Folder: " + ed.folderName);
 		if (!Util.nullOrEmpty(ed.comment))
 		{
 			String comment = ed.comment;
 			comment = comment.replaceAll("\n", " ");
 			comment = comment.replaceAll("\r", " ");
-			mbox.println("X-Muse-Comment: " + comment);
+			mbox.println("X-ePADD-Annotation: " + comment);
 		}
-		if (ed.isLiked())
-			mbox.println("X-Muse-Liked: 1");
-	}
+		// todo: add Labels
+        String labels = "TODO";
+        mbox.println("X-ePADD-Labels: " + labels);
+    }
 
 	/** this is an export for other tools to process the message text or names. Writes files called <n>.fill and <n>.names in the givne dir */
 	public static void dumpMessagesAndNamesToDir(Archive archive, Collection<EmailDocument> docs, String dir) throws IOException, GeneralSecurityException, ClassCastException, ClassNotFoundException
