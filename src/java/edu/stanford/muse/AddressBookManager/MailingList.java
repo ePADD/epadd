@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package edu.stanford.muse.email.AddressBookManager;
+package edu.stanford.muse.AddressBookManager;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;

@@ -9,17 +9,13 @@ import javax.mail.internet.InternetAddress;
 
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
-import edu.stanford.muse.email.AddressBookManager.Contact;
-import edu.stanford.muse.email.LabelManager.LabelManager;
+import edu.stanford.muse.AddressBookManager.AddressBook;
+import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.model.NEType;
-import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
-import netscape.javascript.JSObject;
-import org.json.simple.JSONValue;
 
 /** This class has util methods to display an email message in an html page */
 

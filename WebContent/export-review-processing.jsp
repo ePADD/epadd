@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.Contact"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.Contact"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="org.json.JSONArray"%>
@@ -52,6 +52,9 @@ if ("doNotDeliver".equals(type)) {
 	description = " with restrictions (will not be delivered)";
 }
 
+/*
+
+	@TODO-Export Take decision on exporting based on labels of this document set
 for (EmailDocument ed: docs)
 {
 	if ("doNotDeliver".equals(type)) {
@@ -65,6 +68,7 @@ for (EmailDocument ed: docs)
 			newDocs.add(ed);
 	}
 }
+*/
 
 docs = newDocs;
 writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>

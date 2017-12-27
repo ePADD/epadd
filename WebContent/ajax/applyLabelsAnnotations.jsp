@@ -30,7 +30,7 @@ if(!Util.nullOrEmpty(docsetID)) {
     DataSet dataset = (DataSet) session.getAttribute(docsetID);
     docs = dataset.getDocs();
 } else if (!Util.nullOrEmpty(docID))
-    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId().equals(request.getParameter("docID"));}).collect(Collectors.toSet());
+    docs = archive.getAllDocsAsSet().stream().filter(doc->doc.getUniqueId().equals(docID)).collect(Collectors.toSet());
 else
     docs = (Set<Document>)archive.getAllDocs();
 

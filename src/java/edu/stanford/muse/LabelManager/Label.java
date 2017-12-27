@@ -1,4 +1,4 @@
-package edu.stanford.muse.email.LabelManager;
+package edu.stanford.muse.LabelManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

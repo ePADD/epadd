@@ -1,9 +1,9 @@
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" %>
-<%@ page import="edu.stanford.muse.email.CorrespondentAuthorityMapper" %>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
 <%@ page import="com.google.gson.Gson" %>
 <%@ page import="java.util.*" %>
 

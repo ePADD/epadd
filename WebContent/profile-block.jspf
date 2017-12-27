@@ -1,4 +1,4 @@
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.IOException" %>

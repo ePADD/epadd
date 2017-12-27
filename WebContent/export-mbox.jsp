@@ -4,7 +4,7 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="thredds.catalog2.Dataset" %>
 <%@include file="getArchive.jspf" %>

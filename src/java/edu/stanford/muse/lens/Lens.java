@@ -16,8 +16,8 @@
 
 package edu.stanford.muse.lens;
 
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
-import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.AddressBookManager.AddressBook;
+import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.util.Pair;

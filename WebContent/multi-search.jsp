@@ -3,7 +3,7 @@
 <%@page language="java" import="com.google.common.collect.LinkedHashMultimap"%>
 <%@page language="java" import="com.google.common.collect.Multimap"%>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>

@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package edu.stanford.muse.email.AddressBookManager;
+package edu.stanford.muse.AddressBookManager;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;

@@ -2,8 +2,8 @@ package edu.stanford.muse.ie.matching;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
-import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.AddressBookManager.AddressBook;
+import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;

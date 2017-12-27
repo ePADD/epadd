@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.Contact"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.Contact"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="org.json.JSONArray"%>
@@ -55,7 +55,9 @@ if ("doNotTransfer".equals(type)) {
 } else if ("annotated".equals(type)) {
 	description = " annotated";
 }
+/*
 
+	@TODO-Export Take decision on exporting based on labels of this document set
 for (EmailDocument ed: docs)
 {
 	if ("doNotTransfer".equals(type)) {
@@ -72,6 +74,7 @@ for (EmailDocument ed: docs)
 			newDocs.add(ed);
 	}
 }
+*/
 
 docs = newDocs;
 //session.setAttribute("action-docs", docs);

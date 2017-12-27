@@ -1,6 +1,6 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
-<%@page import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
-<%@page import="edu.stanford.muse.email.AddressBookManager.Contact"%>
+<%@page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page import="edu.stanford.muse.AddressBookManager.Contact"%>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
