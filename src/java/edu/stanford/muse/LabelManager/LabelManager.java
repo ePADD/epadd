@@ -70,24 +70,21 @@ public class LabelManager implements Serializable{
     // Some test labels
     //By default we have a few in-built system labels.
     private void InitialLabelSetup(){
-        //do not transfer
+        // these are just for testing
         Label dnt = new Label("Do not transfer",LabType.RESTR_LAB, "0",
                 "Do not transfer this message",true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
 
         //restricted
-        Label twr = new Label("Restricted",LabType.RESTR_LAB,"1",
-                "Transfer this message only after 2040",false);
+        Label twr = new Label("Restricted",LabType.RESTR_LAB,"1", "Transfer this message only after 2040",false);
         labelInfoMap.put(twr.getLabelID(),twr);
 
         // test
-        Label gen = new Label("General",LabType.GEN_LAB,"2",
-                "This is general label",false);
+        Label gen = new Label("General",LabType.GEN_LAB,"2", "This is general label",false);
         labelInfoMap.put(gen.getLabelID(),gen);
 
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.RESTR_LAB,"3",
-                "This message was reviewed",false);
+        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"3", "This message was reviewed",true);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
 

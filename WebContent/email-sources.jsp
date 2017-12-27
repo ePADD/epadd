@@ -81,13 +81,6 @@ if (archive != null) {
 		</p>
 	</div>
 
-	<!--requered-->
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
 </nav>
 <!--/sidebar-->
 
@@ -102,7 +95,7 @@ if (archive != null) {
 				<div class="input-field-label"><i class="fa fa-user"></i> Name of archive owner</div>
 				<br/>
 				<div class="input-field">
-					<input "Name of archive owner" class="form-control" type="text" name="name" value="<%=bestName%>"/>
+					<input title="Name of archive owner" class="form-control" type="text" name="name" value="<%=bestName%>"/>
 				</div>
 			</div>
 			<div class="div-input-field">
@@ -155,7 +148,8 @@ if (archive != null) {
 
 	<section>
 	<div id="private_servers" class="accounts panel">
-		<div class="panel-heading">Private Email IMAP Accounts (Google Apps, university account, corporate account, etc.)<br/>
+		<div class="panel-heading">
+			Private Email IMAP Accounts (Google Apps, university account, corporate account, etc.)<br/>
 		</div>
 		<p></p>
 
@@ -189,14 +183,15 @@ if (archive != null) {
 		<button style="margin-left:40px" class="btn-default" onclick="add_private_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.email-sources.another-private-imap")%></button>
 		<br/>
 		<br/>
-</section>
 
 	</div> <!--  end servers -->
+</section>
 
 
 	<section>
 		<div id="mboxes" class="accounts panel">
-			<div class="panel-heading">Mbox files<br/>
+			<div class="panel-heading">
+				Mbox files<br/>
 			</div>
 
 			<% /* all mboxes folders will be in account divs here */ %>
@@ -223,17 +218,12 @@ if (archive != null) {
 
 				<br/>
 			</div> <!--  end account -->
-
-
 			<br/>
 			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i> Add another folder</button>
 			<br/>
 			<br/>
 		</div>
 	</section>
-
-
-
 
 	<div style="text-align:center;margin-top:20px">
 		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false">Continue <i class="icon-arrowbutton"></i> </button>

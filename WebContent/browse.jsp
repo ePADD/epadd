@@ -10,6 +10,8 @@
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.webapp.EmailRenderer"%>
 <%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
+<%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
+
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
@@ -333,7 +335,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //parameterizing the class name so that any future modification is easier
         String jog_contents_class = "message";
         String collectionName = "", repositoryName = "", institutionName = "", collectionID = "";
-        <% if (!ModeConfig.isAppraisalMode()) {
+        if (!ModeConfig.isAppraisalMode()) {
             Archive.ProcessingMetadata pm = archive.processingMetadata;
             collectionName = Util.escapeHTML(pm.collectionTitle);
             repositoryName = Util.escapeHTML(pm.repository);
@@ -412,7 +414,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     </div>
 
                     <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
-                    <div class="annotation-area" style="display:none; margin-left: 50px; padding: 5px; border: solid 1px gray; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
+                    <div class="annotation-area" style="display:inline; margin-left: 50px; padding: 5px; border: solid 1px gray; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
 
                     </div>
                 </div>

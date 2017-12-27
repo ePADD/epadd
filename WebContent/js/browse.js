@@ -68,21 +68,25 @@ var Labels = function() {
             if (!label)
                 continue;
 
-            var class_for_type; // this is one of system/general/restriction label
+            var class_for_label; // this is one of system/general/restriction label
             {
-                if (label.labType === 'RESTR_LAB' && label.isSysLabel)
-                    class_for_type = 'system-label';
-                else if (label.labType === 'RESTR_LAB')
-                    class_for_type = 'restriction-label';
+                if (label.labType === 'RESTR_LAB')
+                    class_for_label = 'restriction-label';
                 else if (label.labType === 'GEN_LAB')
-                    class_for_type = 'general-label';
+                    class_for_label = 'general-label';
+
+                if (label.isSysLabel)
+                    class_for_label += ' system-label';
             }
 
+            // restriction + system labels will have both system-label and restr. label applied and will be colored red
+            // non-system restriction labels will be colored orange
+            // general labels will be colored blue
             $('.labels-area').append(
                 '<div '
                 + ' data-label-id="' + label.labId + '" '
                 + ' title="' + label.description + '" '
-                + ' class="message-label ' + class_for_type + '" >'
+                + ' class="message-label ' + class_for_label + '" >'
                 + label.labName
                 + '</div>');
         }
