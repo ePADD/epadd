@@ -1,12 +1,12 @@
-package edu.stanford.muse.ie;
+package edu.stanford.muse.AuthorityMapper;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
-//import edu.stanford.muse.email.AddressBookManager.AddressBook;
-//import edu.stanford.muse.email.AddressBookManager.Contact;
-import edu.stanford.muse.util.Pair;
+//import edu.stanford.muse.AddressBookManager.AddressBook;
+//import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.ie.FASTIndexer;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

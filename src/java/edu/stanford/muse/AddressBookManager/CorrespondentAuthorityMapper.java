@@ -1,9 +1,7 @@
-package edu.stanford.muse.email;
+package edu.stanford.muse.AddressBookManager;
 
 import edu.stanford.muse.Config;
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
-import edu.stanford.muse.email.AddressBookManager.Contact;
-import edu.stanford.muse.ie.AuthorityMapper;
+import edu.stanford.muse.AuthorityMapper.AuthorityMapper;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;

@@ -210,9 +210,9 @@ $(document).ready(function() {
         }
     }
 
-    Navigation.setupEvents();
     Labels.setup();
     Annotations.setup();
+    Navigation.setupEvents();
 
     // on page unload, release dataset to free memory
     $(window).unload(function () {

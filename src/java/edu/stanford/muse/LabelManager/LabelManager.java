@@ -1,4 +1,4 @@
-package edu.stanford.muse.email.LabelManager;
+package edu.stanford.muse.LabelManager;
 
 import com.google.gson.Gson;
 import edu.stanford.muse.util.Util;
