@@ -3,6 +3,8 @@
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -83,11 +85,11 @@
 
         var set_link = function(data, type, full, meta) {
 			return '<span class="set-all" data-labelID="' + full[0] + '">Set for all</span>'; // not editable
-        }
+        };
 
         var unset_link = function(data, type, full, meta) {
             return '<span class="unset-all" data-labelID="' + full[0] + '">Unset for all</span>'; // not editable
-        }
+        };
 
         $('#labels').dataTable({
 			data: labels,
@@ -98,7 +100,7 @@
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
-                <%! if (ModeConfig.isDiscoveryMode()) { %>
+                <% if (ModeConfig.isDiscoveryMode()) { %>
                     {targets: 3, render:set_link},
                     {targets: 4, render:unset_link},
                 <% } %>

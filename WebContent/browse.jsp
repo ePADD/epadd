@@ -132,7 +132,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Annotation</h4>
             </div>
-            <textarea style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
+            <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
 
             </textarea>
             <div class="modal-footer">
@@ -185,7 +185,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             origQueryString = "";
 
         // make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
-        if (origQueryString.indexOf("adv-search=") == -1) {
+        if (!origQueryString.contains("adv-search=")) {
             if (origQueryString.length() > 0)
                 origQueryString += "&";
             origQueryString += "adv-search=1";
@@ -230,7 +230,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 //<editor-fold desc="Facet-rendering" input="facets" output="html:out">
                 for (String facet: facets.keySet())
                 {
-                    List<DetailedFacetItem> items = new ArrayList<DetailedFacetItem>(facets.get(facet));
+                    List<DetailedFacetItem> items = new ArrayList<>(facets.get(facet));
                     if (items.size() == 0)
                         continue; // don't show facet if it has no items.
 
@@ -254,8 +254,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     Collections.sort(items);
 
                     // generate html for each facet. selected and unselected facets separately
-                    List<String> htmlForSelectedFacets = new ArrayList<String>();
-                    List<String> htmlForUnSelectedFacets = new ArrayList<String>();
+                    List<String> htmlForSelectedFacets = new ArrayList<>();
+                    List<String> htmlForUnSelectedFacets = new ArrayList<>();
 
                     // random idea: BUI (Blinds user interface. provide blinds-like controls (pull a chain down/to-the-side to reveal information))
                     for (DetailedFacetItem f: items)
@@ -301,7 +301,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     }
 
                     // prioritize selected over unselected facets
-                    List<String> htmlForAllFacets = new ArrayList<String>();
+                    List<String> htmlForAllFacets = new ArrayList<>();
                     htmlForAllFacets.addAll(htmlForSelectedFacets);
                     htmlForAllFacets.addAll(htmlForUnSelectedFacets);
 
@@ -371,7 +371,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 </span>
                                 <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
                                     <ul class="pagination">
-                                        <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
+                                        <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
                                     </ul>
                                 </span>
                             </div>
@@ -412,7 +412,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     </div>
 
                     <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
-                    <div class="annotation-area" style="display:none; margin-left: 50px; padding: 5px; border: solid 1px gray; font-style: italic; overflow:hidden; min-width: 10%; width:20%;display:inline">
+                    <div class="annotation-area" style="display:none; margin-left: 50px; padding: 5px; border: solid 1px gray; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
 
                     </div>
                 </div>
@@ -423,8 +423,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <div style="display:inline; position:relative; top:-8px;" id="pageNumbering"></div>
                         <ul class="pagination">
                             <li class="button">
-                                <a id="page_back" style="border-right:0" href="#0" class="icon-peginationarrow"></a>
-                                <a id="page_forward" href="#0" class="icon-circlearrow"></a>
+                                <a id="page_back" style="border-right:0" href="#" class="icon-peginationarrow"></a>
+                                <a id="page_forward" href="#" class="icon-circlearrow"></a>
                             </li>
                         </ul>
                     </div>

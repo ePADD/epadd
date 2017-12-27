@@ -41,7 +41,6 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	AddressBook ab = archive.addressBook;
 	String archiveID =SimpleSessions.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "", "");
 %>
@@ -79,7 +78,7 @@
 
 %>
 <table id="terms" style="display:none">
-	<thead><th>Term</th><th>Messages</th></thead>
+	<thead><tr><th>Term</th><th>Messages</th></tr></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -91,7 +90,7 @@
 
 		$(document).ready(function() {
 		    var archiveID = <%=archiveID%>;
-			var click_to_search = function ( data, type, full, meta ) {
+			var click_to_search = function (data) {
 				// epadd.do_search will open search result in a new tab.
 				// Note, we have to insert onclick into the rendered HTML,
 				// we were earlier trying $('.search').click(epadd.do_search) - this does not work because only the few rows initially rendered to html match the $('.search') selector, not the others

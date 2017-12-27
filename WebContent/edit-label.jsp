@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
 <%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
 <!DOCTYPE html>
@@ -103,6 +102,5 @@
 <br/>
 
 <jsp:include page="footer.jsp"/>
-</div>
 </body>
 </html>

@@ -4,28 +4,28 @@
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="java.util.ArrayList"%>
 <%@page language="java" import="java.util.List"%>
-<%@include file="getArchive.jspf" %>
+<%@include file="../WebContent/getArchive.jspf" %>
 
 <html>
 <head>
 	<title>Export</title>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+	<link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
 
 
-	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <jsp:include page="css/css.jsp"/>
+	<link href="../WebContent/jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
+    <jsp:include page="../WebContent/css/css.jsp"/>
 
-    <script src="js/jquery.js"></script>
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="jqueryFileTree/jqueryFileTree.js"></script>
-	<script src="js/epadd.js"></script>
-	<script src="js/filepicker.js"></script>
+    <script src="../WebContent/js/jquery.js"></script>
+    <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../WebContent/jqueryFileTree/jqueryFileTree.js"></script>
+	<script src="../WebContent/js/epadd.js"></script>
+	<script src="../WebContent/js/filepicker.js"></script>
 </head>
 
 <body>
-    <jsp:include page="header.jspf"/>
-    <jsp:include page="div_filepicker.jspf"/>
+    <jsp:include page="../WebContent/header.jspf"/>
+    <jsp:include page="../WebContent/div_filepicker.jspf"/>
 
     <%
         writeProfileBlock(out, archive, "", "Select archive folder to import actions from");

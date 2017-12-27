@@ -1,19 +1,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%@page language="java" import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="javax.mail.Address" %>
 <%@ page import="javax.mail.internet.InternetAddress" %>
-<%@ page import="com.google.common.collect.*" %>
-<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	AddressBook addressBook = archive.addressBook;
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
 	if (allDocs == null)
 		allDocs = (Collection) archive.getAllDocs();
@@ -56,8 +50,7 @@
 		if (list != null)
 			allAddrs.addAll (list);
 		if (ed.from != null)
-			for (Address a: ed.from)
-				allAddrs.add (a);
+			Collections.addAll(allAddrs, ed.from);
 
 		for (Address a: allAddrs) {
 			InternetAddress ia = (InternetAddress) a;
@@ -80,7 +73,6 @@
 %>
 
 </div>
-<p/>
 <br/>
 <jsp:include page="footer.jsp"/>
 </body>

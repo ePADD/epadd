@@ -335,7 +335,7 @@
 
         $('#manual-assign-submit').click (function() {
             var data = {name: $('#manual-assign-name').text(), fastId: $('#fastId').val(), viafId: $('#viafId').val(), wikipediaId: $('#wikipediaId').val(), lcnafId: $('#lcnafId').val(), lcshId: $('#lcshId').val(),
-                localId: $('#localId').val(), isManualAssign: true, archiveID:'<%=archiveID%>'}
+                localId: $('#localId').val(), isManualAssign: true, archiveID:'<%=archiveID%>'};
 
             $.ajax({
                 url: 'ajax/confirm-authority.jsp',

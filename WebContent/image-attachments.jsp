@@ -65,11 +65,11 @@
     for (Document doc: docset){
         EmailDocument edoc = (EmailDocument)doc;
         //get all attachments of edoc which satisifed the given filter (image).
-        List<Blob> tmp = resultSet.getAttachmentHighlightInformation(edoc).stream().collect(Collectors.toList());
+        List<Blob> tmp = new ArrayList<>(resultSet.getAttachmentHighlightInformation(edoc));
         allAttachments.addAll(tmp);
     }
 
-    Set<Blob> uniqueAttachments = allAttachments.stream().collect (Collectors.toSet());
+    Set<Blob> uniqueAttachments = new LinkedHashSet<>(allAttachments);
 
     int nEntriesForPiclens = 0;
     String piclensRSSFilename = "";
@@ -96,8 +96,7 @@
         int i = new Random().nextInt();
         String randomPrefix = String.format("%08x", i);
         JSPHelper.log.info("Root dir for blobset top level page is " + cacheDir);
-        System.err.println("Root dir for blobset top level page is " + cacheDir);
-        BlobSet bs = new BlobSet(cacheDir, new ArrayList<Blob>(allAttachments), store);
+        BlobSet bs = new BlobSet(cacheDir, new ArrayList<>(allAttachments), store);
 
         String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         nEntriesForPiclens = bs.generate_top_level_page(randomPrefix, appURL, extra_mesg,archiveID);

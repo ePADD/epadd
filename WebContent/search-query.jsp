@@ -50,7 +50,7 @@
 		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>
 	</div>
 
-	<div id="simple-search"style="text-align:center">
+	<div id="simple-search" style="text-align:center">
 		<form method="get" action="browse">
 	<%--		hidden input field to pass archiveID to the server. This is a common pattern used to pass
 			//archiveID in all those forms where POST was used to invoke the server page.

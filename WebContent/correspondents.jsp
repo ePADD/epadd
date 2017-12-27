@@ -50,7 +50,7 @@
 
 <div style="margin:auto; width:900px">
 <table id="people" style="display:none">
-	<thead><th>Name</th><th>Incoming messages</th><th>Outgoing messages</th><th>Mentions</th></thead>
+	<thead><tr><th>Name</th><th>Incoming messages</th><th>Outgoing messages</th><th>Mentions</th></tr></thead>
 	<tbody>
 	</tbody>
 </table>

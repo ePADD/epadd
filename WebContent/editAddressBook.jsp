@@ -1,20 +1,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@page language="java" import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
-<%@ page import="edu.stanford.muse.AddressBookManager.MailingList" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
 	AddressBook addressBook = archive.addressBook;
 	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
-	Collection<EmailDocument> allDocs  = (Collection) archive.getAllDocs();
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>
@@ -87,8 +79,8 @@
 
 <script>
 	$(document).ready(function() {
-		$('#sort-order').change(function (e) {
-			if ('alpha' == this.value)
+		$('#sort-order').change(function () {
+			if ('alpha' === this.value)
 				window.location = 'edit-correspondents?archiveID=<%=archiveID%>&sort=alphabetical';
 			else
 				window.location = 'edit-correspondents?archiveID=<%=archiveID%>';
@@ -101,55 +93,21 @@
 <form method="post" action="browse-top">
 	<!-- adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
 	//archiveID in all those forms where POST was used to invoke the server page. -->
-	<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
+	<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
 
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
-<textarea name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-<%!
-/*
-private static String dumpForContact(Contact c, String description) {
-	StringBuilder sb = new StringBuilder();
-	String mailingListOutput = (c.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.USER_ASSIGNED)) != 0 ? MailingList.MAILING_LIST_MARKER : "";
-	sb.append ("-- " + mailingListOutput + " " + description + "\n");
-
-	// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
-	Set<String> uniqueNames = new LinkedHashSet<String>();
-	for (String s: c.getNames())
-		if (!Util.nullOrEmpty(s))
-			uniqueNames.add(s);
-	// uniqueNames.add(s.trim());
-	
-	Set<String> uniqueEmails = new LinkedHashSet<String>();
-	for (String s: c.getEmails())
-		if (!Util.nullOrEmpty(s))
-			uniqueEmails.add(s);
-	
-	for (String s: uniqueNames)
-	{
-		sb.append (Util.escapeHTML(s) + "\n");
-	}
-	for (String s: uniqueEmails)
-		sb.append (Util.escapeHTML(s) + "\n");
-	sb.append("\n");
-	return sb.toString();
-}
-*/
-%>
-<%
-BufferedWriter bwriter = new BufferedWriter(new StringWriter());
-addressBook.writeObjectToStream(bwriter,alphaSort);
-out.print(bwriter.toString());
-
-
-	
-%>
+<textarea title="Address book update" name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+	<%
+	BufferedWriter bwriter = new BufferedWriter(new StringWriter());
+	addressBook.writeObjectToStream(bwriter,alphaSort);
+	out.print(bwriter.toString());
+	%>
 </textarea>
 <br/>
 
 <button class="btn btn-cta" type="submit">Save <i class="icon-arrowbutton"></i> </button>
 </form>
 </div>
-<p/>
 <br/>
 <jsp:include page="footer.jsp"/>
 </body>

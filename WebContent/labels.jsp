@@ -81,8 +81,8 @@
             return '<a href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
         };
 
-        var label_count = function(data, type, full, meta) { return full[3]; }
-        var label_type = function(data, type, full, meta) { return full[5]; }
+        var label_count = function(data, type, full, meta) { return full[3]; };
+        var label_type = function(data, type, full, meta) { return full[5]; };
 
         $('#labels').dataTable({
 			data: labels,

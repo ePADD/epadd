@@ -3,8 +3,6 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="javax.mail.Address" %>
 <%@ page import="javax.mail.internet.InternetAddress" %>
@@ -13,12 +11,10 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	AddressBook addressBook = archive.addressBook;
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
 	if (allDocs == null)
 		allDocs = (Collection) archive.getAllDocs();
 	String sort = request.getParameter("sort");
-	boolean alphaSort = ("alphabetical".equals(sort));
 %>
 <html>
 <head>
@@ -77,12 +73,7 @@
 	<h2><%=emailMap.size()%> email addresses</h2>
 	<%
 		List<String> emails = new ArrayList<>(emailMap.keySet());
-		Collections.sort(emails, new Comparator<String>() {
-			@Override
-			public int compare(String e1, String e2) {
-				return Integer.compare(emailMap.get(e2).size(), emailMap.get(e1).size());
-			}
-		});
+		emails.sort((e1, e2) -> Integer.compare(emailMap.get(e2).size(), emailMap.get(e1).size()));
 
 		for (String emailAddr: emails) {
 			out.println ("Email address: " + Util.escapeHTML(emailAddr) + ": #occurrences=" + emailMap.get(emailAddr).size() + " is associated with the following names:<br/>");
@@ -100,7 +91,6 @@
 	<h2><%=nameMap.size()%> names</h2>
 
 </div>
-<p/>
 <br/>
 <jsp:include page="footer.jsp"/>
 </body>

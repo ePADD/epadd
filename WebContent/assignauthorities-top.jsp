@@ -46,7 +46,7 @@
 			boolean statsAvailable = false;
 			if(archive.processingMetadata.entityCounts != null)
 				statsAvailable = true;
-			String pC="",oC="",lC="", nS="";
+			String pC="",oC="",lC=""; // , nS="";
 			if(statsAvailable){
 				pC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
 				oC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode())+")";

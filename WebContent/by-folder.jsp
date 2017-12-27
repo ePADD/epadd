@@ -26,7 +26,7 @@
     <script src="js/epadd.js"></script>
 
     <style type="text/css">
-        .js #people {display: none;}
+        .js #folders {display: none;}
     </style>
 
     <script type="text/javascript" charset="utf-8">
@@ -48,8 +48,8 @@
 <br/>
 
 <div style="margin:auto; width:900px">
-    <table id="people" style="display:none">
-        <thead><th>Source</th><th>Folder</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></thead>
+    <table id="folders" style="display:none">
+        <thead><tr><th>Source</th><th>Folder</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></tr></thead>
         <tbody>
         </tbody>
     </table>
@@ -104,7 +104,7 @@
                 return '<a target="_blank" title="' + full[1] + '" href="browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
             };
 
-            $('#people').dataTable({
+            $('#folders').dataTable({
                 data: correspondents,
                 pagingType: 'simple',
                 order:[[4, 'desc']], // col 12 (outgoing message count), descending

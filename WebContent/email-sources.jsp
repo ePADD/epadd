@@ -102,7 +102,7 @@ if (archive != null) {
 				<div class="input-field-label"><i class="fa fa-user"></i> Name of archive owner</div>
 				<br/>
 				<div class="input-field">
-					<input class="form-control" type="text" name="name" value="<%=bestName%>"/>
+					<input "Name of archive owner" class="form-control" type="text" name="name" value="<%=bestName%>"/>
 				</div>
 			</div>
 			<div class="div-input-field">
@@ -154,7 +154,6 @@ if (archive != null) {
 </section>
 
 	<section>
-	<p/>
 	<div id="private_servers" class="accounts panel">
 		<div class="panel-heading">Private Email IMAP Accounts (Google Apps, university account, corporate account, etc.)<br/>
 		</div>
@@ -190,9 +189,9 @@ if (archive != null) {
 		<button style="margin-left:40px" class="btn-default" onclick="add_private_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.email-sources.another-private-imap")%></button>
 		<br/>
 		<br/>
+</section>
 
 	</div> <!--  end servers -->
-</section>
 
 
 	<section>

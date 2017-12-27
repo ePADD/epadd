@@ -11,7 +11,6 @@
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
-<%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.index.SearchResult" %>
@@ -68,9 +67,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	AddressBook ab = archive.addressBook;
 	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
-	String bestName = ab.getBestNameForSelf();
 	JSONArray resultArray = new JSONArray();
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
@@ -88,7 +85,7 @@
         allAttachments.addAll(tmp);
     }
 
-    Set<Blob> uniqueAttachments = allAttachments.stream().collect (Collectors.toSet());
+    Set<Blob> uniqueAttachments = new LinkedHashSet<>(allAttachments);
 
     writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Non-image attachment") +
             " (" + uniqueAttachments.size() + " unique)");
@@ -202,7 +199,7 @@
         <br/>
         <div style="margin:auto; width:1000px">
             <table id="attachments">
-            <thead><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th></thead>
+            <thead><tr><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th></tr></thead>
             <tbody>
 
             <%
