@@ -320,7 +320,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     if (count > N_INITIAL_FACETS)
                     {
                         out.println("</div>");
-                        out.println("<div class=\"clickableLink\" style=\"text-align:right;padding-right:10px;font-size:80%\" onclick=\"muse.reveal(this)\">More</div>\n");
+                        out.println("<div class=\"clickableLink\" style=\"text-align:right;padding-right:10px;font-size:80%; cursor:pointer;\" onclick=\"muse.reveal(this)\">More</div>\n");
                     }
                     out.println ("<br/>");
                     out.flush();

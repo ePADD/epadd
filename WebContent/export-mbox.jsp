@@ -2,11 +2,9 @@
 <%@page language="java" import="java.io.*"%>
 <%@page language="java" import="edu.stanford.muse.datacache.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="thredds.catalog2.Dataset" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -117,7 +115,10 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     This file is in mbox format, and can be accessed with many email clients (e.g. <a href="http://www.mozillamessaging.com/">Thunderbird</a>.)
     It can also be viewed with a text editor.<br/>
     On Mac OS X, Linux, and other flavors of Unix, you can usually open a terminal window and type the command: <br/>
-    <i>mail -f &lt;saved file&gt;</i>
+    <i>mail -f &lt;saved file&gt;</i>.
+    <p>
+        This mbox file may also have extra headers like X-ePADD-Folder, X-ePADD-Labels and X-ePADD-Annotation.
+    </p>
     <br/>
 </div>
 <jsp:include page="footer.jsp"/>
