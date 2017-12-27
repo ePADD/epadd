@@ -290,6 +290,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                         String c = facetAlreadySelected ? " selected-facet rounded" : "";
 
+                        url = url + "&archiveID="+ SimpleSessions.getArchiveIDForArchive(archive);
                         String html = "<span class=\"facet nojog" + c + "\" style=\"padding-left:2px;padding-right:2px\" onclick=\"javascript:self.location.href='" + url + "';\" title=\"" + Util.escapeHTML(f.description) + "\">" + Util.escapeHTML(name)
                                 + " <span class=\"facet-count\">(" + f.totalCount() + ")</span>"
                                 + "</span><br/>\n";

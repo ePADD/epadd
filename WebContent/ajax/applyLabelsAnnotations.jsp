@@ -11,6 +11,7 @@ JSPHelper.setPageUncacheable(response);
 
 // careful here: the params names are deliberately *set*DoNotTransfer instead of doNotTransfer, etc. otherwise, the doNotTransfer that we are trying to set is instead taken as a selector in selectDocs
 // was a bug causing flags to only be set, and unable to unset.
+/*
 boolean doNotTransferSet = !Util.nullOrEmpty(request.getParameter("setDoNotTransfer"));
 boolean doNotTransfer = "1".equals(request.getParameter("setDoNotTransfer"));
 boolean transferWithRestrictionsSet = !Util.nullOrEmpty(request.getParameter("setTransferWithRestrictions"));
@@ -21,6 +22,7 @@ boolean addToCartSet = !Util.nullOrEmpty(request.getParameter("setAddToCart"));
 boolean addToCart = "1".equals(request.getParameter("setAddToCart"));
 String annotation = request.getParameter("setAnnotation");
 boolean append = "1".equals(request.getParameter("append"));
+*/
 
 //////////////// The request can be of the form docID/docsetID, labels, action=set/unset/only [set/unset/only keep label for all docs in the given set], or
 // ///////////////docID/docsetID, annotation [set annotation for all docs in the given set]
@@ -43,11 +45,12 @@ else if (request.getParameter("docId")!=null)
     docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId().equals(request.getParameter("docId"));}).collect(Collectors.toSet());
 else
     {
+    docs = (Set<Document>)archive.getAllDocs();
+/*
     assert false : new AssertionError("You tried to apply flags only on a set of documents which is not set yet.");
     return;
+*/
     }
-
-
 
 if (docs != null)
 {
@@ -56,7 +59,7 @@ if (docs != null)
     if(!Util.nullOrEmpty(annotationText)){
     	docs.stream().forEach(d->{
     	                            EmailDocument ed = (EmailDocument)d;
-    	                            ed.setComment(annotation);
+    	                            ed.setComment(annotationText);
     	                            });
     }else{
     //labels apply
