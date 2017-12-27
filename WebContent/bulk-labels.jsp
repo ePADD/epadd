@@ -53,9 +53,10 @@
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><tr><th>Label</th><th>Type</th><th>Messages</th><th></th>
+	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% if (!ModeConfig.isDiscoveryMode()) { %>
-            <th></th>
+        <th></th>
+        <th></th>
         <% } %>
     </tr></thead>
 	<tbody>
@@ -97,8 +98,10 @@
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
-                {targets: 3, render:set_link},
-                {targets: 4, render:unset_link},
+                <%! if (ModeConfig.isDiscoveryMode()) { %>
+                    {targets: 3, render:set_link},
+                    {targets: 4, render:unset_link},
+                <% } %>
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
             fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});

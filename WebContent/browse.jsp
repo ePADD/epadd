@@ -332,19 +332,22 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     <%
         //parameterizing the class name so that any future modification is easier
         String jog_contents_class = "message";
-        String collectionName = Util.escapeHTML("Richard Fikes Email Collection");
-        String repositoryName = Util.escapeHTML("Stanford University Archives");
-        String institutionName = Util.escapeHTML("Stanford University");
-        String collectionID = Util.escapeHTML("SC 1201");
+        String collectionName = "", repositoryName = "", institutionName = "", collectionID = "";
+        <% if (!ModeConfig.isAppraisalMode()) {
+            Archive.ProcessingMetadata pm = archive.processingMetadata;
+            collectionName = Util.escapeHTML(pm.collectionTitle);
+            repositoryName = Util.escapeHTML(pm.repository);
+            institutionName = Util.escapeHTML(pm.institution);
+            collectionID = Util.escapeHTML(pm.collectionID);
+        }
 
-        Set<Label> allLabels = archive.getLabelManager().getAllLabels();
         String json = archive.getLabelManager().getLabelInfoMapAsJSONString();
         %>
         <script>
             allLabels = JSON.parse('<%=json%>');
         </script>
     <div style="display:inline-block;vertical-align:top;">
-        <% /* if (!ModeConfig.isAppraisalMode()) */ { %>
+        <% if (!ModeConfig.isAppraisalMode()) { %>
             <div class="archive-heading" style="">
                 <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
                 <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
@@ -354,40 +357,30 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         <% } %>
 
         <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
-            <div class="bulk-controls" style="position:relative;width:100%;border-bottom: solid 1px black;padding-top:5px;">
-
-                <div style="float:right;position:relative;">
-
-                    <div>
-                        <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
-                            <span style="margin-right:5px;cursor:pointer;" class="bulk-export">
-                                <ul class="pagination">
-                                    <li><a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages as mbox"><i style="display:inline" class="fa fa-download"></i></a></li>
-                                </ul>
-                            </span>
-                            <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
-                                <ul class="pagination">
-                                    <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
-                                </ul>
-                            </span>
+            <%
+                // bulk controls not available in discovery mode
+               if (!ModeConfig.isDiscoveryMode()) { %>
+                <div class="bulk-controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);padding-top:5px;">
+                    <div style="float:right;position:relative;">
+                        <div>
+                            <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
+                                <span style="margin-right:5px;cursor:pointer;" class="bulk-export">
+                                    <ul class="pagination">
+                                        <li><a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages as mbox"><i style="display:inline" class="fa fa-download"></i></a></li>
+                                    </ul>
+                                </span>
+                                <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
+                                    <ul class="pagination">
+                                        <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
+                                    </ul>
+                                </span>
+                            </div>
                         </div>
-
                     </div>
-                    <!--
-                    <img src="images/back_enabled.png" id="back_arrow"/>
-                    <img src="images/forward_enabled.png" id="forward_arrow"/>
-                    -->
-                    <!--
-                         <div class="pagination">
-                             <li><a id="back_arrow" style="border-right:0" href="#0" class="icon-peginationarrow"></a></li>
-                             <li> <div style="display:inline;" id="pageNumbering"></div></li>
-                             <li><a id="forward_arrow" href="#0" class="icon-circlearrow"></a></li>
-                         </div>
-                         -->
+                    <div style="clear:both"></div>
                 </div>
-                <div style="clear:both"></div>
-            </div>
-            <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px black;">
+            <% } %>
+            <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);">
                 <div style="float:left;position:relative;top:3px">
                     <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
 
