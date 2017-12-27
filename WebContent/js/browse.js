@@ -165,7 +165,9 @@ var Annotations = function() {
                     action: "override"
                 }, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
                 dataType: 'json',
-                success: function () { $('.annotation-area').text(annotation); },
+                success: function (response) {
+                    $('.annotation-area').text(annotation);
+                },
                 error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
             });
         }

@@ -362,12 +362,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
                             <span style="margin-right:5px;cursor:pointer;" class="bulk-export">
                                 <ul class="pagination">
-                                    <li><a href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages as mbox"><i style="display:inline" class="fa fa-download"></i></a></li>
+                                    <li><a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages as mbox"><i style="display:inline" class="fa fa-download"></i></a></li>
                                 </ul>
                             </span>
                             <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
                                 <ul class="pagination">
-                                    <li><a href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
+                                    <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
                                 </ul>
                             </span>
                         </div>

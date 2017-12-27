@@ -27,7 +27,6 @@ boolean append = "1".equals(request.getParameter("append"));
 //////////////// The request can be of the form docID/docsetID, labels, action=set/unset/only [set/unset/only keep label for all docs in the given set], or
 // ///////////////docID/docsetID, annotation [set annotation for all docs in the given set]
 int nMessages = 0;
-Set<Document> docs;
 Archive archive = JSPHelper.getArchive(request);
 if (archive == null) {
     JSONObject obj = new JSONObject();
@@ -38,19 +37,20 @@ if (archive == null) {
     return;
 }
 String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+String docsetID = request.getParameter("docsetID");
+String docID = request.getParameter("docId");
 
-if(request.getParameter("datasetId")!=null)
-    docs = (Set<Document>) session.getAttribute(request.getParameter("datasetId"));
-else if (request.getParameter("docId")!=null)
-    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId().equals(request.getParameter("docId"));}).collect(Collectors.toSet());
+Collection<Document> docs;
+if(!Util.nullOrEmpty(docsetID)) {
+    DataSet dataset = (DataSet) session.getAttribute(docsetID);
+    docs = dataset.getDocs();
+} else if (!Util.nullOrEmpty(docID))
+    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId().equals(request.getParameter("docID"));}).collect(Collectors.toSet());
 else
-    {
     docs = (Set<Document>)archive.getAllDocs();
-/*
-    assert false : new AssertionError("You tried to apply flags only on a set of documents which is not set yet.");
-    return;
-*/
-    }
+
+boolean error = false;
+String errorMessage = "";
 
 if (docs != null)
 {
@@ -61,60 +61,34 @@ if (docs != null)
     	                            EmailDocument ed = (EmailDocument)d;
     	                            ed.setComment(annotationText);
     	                            });
+    	archive.clearAllAnnotationsCache();
     }else{
-    //labels apply
-    Set<String> labelIds = Util.tokenize(request.getParameter("labelIDs"),",").stream().collect(Collectors.toSet());
-    Util.softAssert(!Util.nullOrEmpty(labelIds),JSPHelper.log);
-    String action = request.getParameter("action");
-    if("set".equals(action)){
-        archive.setLabels(docs,labelIds);
-    }else if("unset".equals(action)){
-        archive.unsetLabels(docs,labelIds);
-    }else if("override".equals(action)){
-        archive.putOnlyTheseLabels(docs,labelIds);
-    }else{
-        Util.softAssert(true,"Action parameter from the front end is allowed to contain only one of the following three options, set-unset-override",JSPHelper.log);
-    }
+        //labels apply
+        Set<String> labelIds = Util.tokenize(request.getParameter("labelIDs"),",").stream().collect(Collectors.toSet());
+        // Util.softAssert(!Util.nullOrEmpty(labelIds),JSPHelper.log);
+        String action = request.getParameter("action");
+        if("set".equals(action)){
+            archive.setLabels(docs,labelIds);
+        }else if("unset".equals(action)){
+            archive.unsetLabels(docs,labelIds);
+        }else if("override".equals(action)){
+            archive.putOnlyTheseLabels(docs,labelIds);
+        } else {
+            error = true;
+            errorMessage = "Action parameter is allowed to contain only one of the following three options: set, unset, override. Unknown action: " + action;
+            Util.softAssert(true, errorMessage,JSPHelper.log);
+        }
 
     }
-
-/*
-	JSPHelper.log.info ("applyFlags to " + docs.size() + " message(s)");
-	if (doNotTransferSet)
-		JSPHelper.log.info ("setting doNotTransfer to " + doNotTransfer);
-	if (transferWithRestrictionsSet)
-		JSPHelper.log.info ("setting transferWithRestrictions to " + transferWithRestrictions);
-	if (reviewedSet)
-		JSPHelper.log.info ("setting reviewed to " + reviewed);
-	if (addToCartSet)
-		JSPHelper.log.info ("setting addToCart to " + addToCart);
-	
-	for (Document d: docs)
-	{
-		EmailDocument ed = (EmailDocument) d;
-		if (doNotTransferSet)
-			ed.doNotTransfer = doNotTransfer;
-		if (transferWithRestrictionsSet)
-			ed.transferWithRestrictions = transferWithRestrictions;
-		if (reviewedSet)
-			ed.reviewed = reviewed;
-		if (addToCartSet)
-			ed.addedToCart = addToCart;
-		if (annotation != null) // this can be null coming in from settings page -> reset all reviewed, in which case we don't want to reset all annotations.
-		{
-			if (append)
-				ed.setComment(Util.nullOrEmpty(ed.comment) ? annotation : ed.comment + " " + annotation);
-			else
-				ed.setComment(annotation);
-		}
-	}*/
 	nMessages= docs.size();
 }
 
-archive.clearAllAnnotationsCache();
 
 JSONObject obj = new JSONObject();
-obj.put("nMessages", nMessages);    	
+obj.put("status", error ?  1 : 0);
+if (error)
+    obj.put ("errorMessage", errorMessage);
+obj.put("nMessages", nMessages);
 out.println (obj);
-JSPHelper.log.info(obj);
+JSPHelper.log.info("AJAX response: " + obj);
 %>

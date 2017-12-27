@@ -105,7 +105,7 @@
         $.ajax({
             url:'ajax/applyLabelsAnnotations.jsp',
             type: 'POST',
-            data: {archiveID: archiveID, labelIDs: labelID, docset: '<%=docsetID%>', action:action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+            data: {archiveID: archiveID, labelIDs: labelID, docsetID: '<%=docsetID%>', action:action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
             dataType: 'json',
             success: function() { window.location.reload(); },
             error: function() { epadd.alert('There was an error in saving labels, sorry!');

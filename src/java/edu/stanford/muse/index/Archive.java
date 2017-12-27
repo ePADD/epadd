@@ -134,19 +134,19 @@ public class Archive implements Serializable {
     }
 
 
-    public void setLabels(Set<Document> docs, Set<String> labelIDs){
+    public void setLabels(Collection<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.setLabels(doc.getUniqueId(),labelIDs);
         });
     }
 
-    public void unsetLabels(Set<Document> docs, Set<String> labelIDs){
+    public void unsetLabels(Collection<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.unsetLabels(doc.getUniqueId(),labelIDs);
         });
     }
 
-    public void putOnlyTheseLabels(Set<Document> docs, Set<String> labelIDs){
+    public void putOnlyTheseLabels(Collection<Document> docs, Set<String> labelIDs){
         docs.stream().forEach(doc->{
             labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs);
         });
@@ -155,11 +155,6 @@ public class Archive implements Serializable {
     public Set<String> getLabelIDs(EmailDocument edoc){
         return labelManager.getLabelIDs(edoc.getUniqueId());
     }
-
-
-
-
-
 
     public synchronized EntityBook getEntityBook() {
         if (entityBook == null)
