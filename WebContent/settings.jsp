@@ -82,10 +82,10 @@
 			    <p><button onclick="window.location='set-images?archiveID=<%=archiveID%>';" class="btn-default" style='cursor:pointer' ><i class="fa fa-picture-o"></i> Set Images</button>
             <% } %>
 
-			<p><button onclick="window.location='bulk-flags?archiveID=<%=archiveID%>&allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set default actions</button>
+			<p><button onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set labels</button>
 
 			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload?archiveID=<%=archiveID%>'"><i class="fa fa-upload"></i> Set bulk flags</button>
+				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload?archiveID=<%=archiveID%>'"><i class="fa fa-upload"></i>Correspondents List</button>
 				<p><button onclick="window.location.href='ner?archiveID=<%=archiveID%>'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
 				<%
 				/*

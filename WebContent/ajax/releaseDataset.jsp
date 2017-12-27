@@ -7,15 +7,15 @@ JSPHelper.logRequest(request);
 JSPHelper.setPageUncacheable(response);
 response.setContentType("application/json; charset=utf-8");
 
-String datasetId = request.getParameter("datasetId");
-DataSet dataset = (DataSet) JSPHelper.getSessionAttribute(session, datasetId);
+String docsetID = request.getParameter("docsetID");
+DataSet dataset = (DataSet) JSPHelper.getSessionAttribute(session, docsetID);
 boolean error = (dataset == null);
 if (error)
 	out.println("{status: 'error'}");
 else
 {
 	dataset.clear();
-	session.removeAttribute(datasetId);
+	session.removeAttribute(docsetID);
 	out.println("{status: 'ok'}");
 }
 JSPHelper.logRequestComplete(request);

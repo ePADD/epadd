@@ -100,7 +100,7 @@
 		});
 	} );
 
-	// there will only be a single labelID here
+	// labelID will be a single item here, even though applyLabelsAnnotations can support more than one
 	function do_action (labelID, action) {
         $.ajax({
             url:'ajax/applyLabelsAnnotations.jsp',

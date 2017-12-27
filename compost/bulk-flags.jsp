@@ -21,7 +21,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <!--No use with archive on this page, but for the profile block -->
-<%@include file="getArchive.jspf" %>
+<%@include file="../WebContent/getArchive.jspf" %>
 <%
 /**
  * Reads a list of email addresses from CSV file, select docs from or to these email addresses and applies flags selected to these docs*/
@@ -29,25 +29,25 @@
 <html>
 <head>
     <title>Bulk Redaction</title>
-    <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
 
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-    <jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" href="css/epadd.css">
+    <link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
+    <link href="../WebContent/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+    <jsp:include page="../WebContent/css/css.jsp"/>
+    <link rel="stylesheet" href="../WebContent/css/epadd.css">
 
-    <script src="js/jquery.js"></script>
-    <script src="js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../WebContent/js/jquery.js"></script>
+    <script src="../WebContent/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <script src="js/epadd.js"></script>
+    <script src="../WebContent/js/epadd.js"></script>
     <style>
         div.section {margin-top: 15px; margin-bottom: 25px;}
         div.section .btn-default { position: absolute; right: 50px;}
     </style>
 </head>
 <body>
-    <jsp:include page="header.jspf"/>
+    <jsp:include page="../WebContent/header.jspf"/>
 
     <% writeProfileBlock(out, archive, "Apply actions to multiple messages", "");%>
 
@@ -79,23 +79,23 @@
                 </div>
                 <div class="section">
                     <i title="Do not transfer" id="dnt-flag" class="flag fa fa-ban"></i>
-                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="dnt-button">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="dnt-button">Apply to all <img class="spinner" style="height:14px;display:none" src="../WebContent/images/spinner.gif"></button>
                 </div>
                 <div class="section">
                     <i title="Transfer with restrictions" id="twr-flag" class="flag fa fa-exclamation-triangle"></i>
-                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="twr-button">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="twr-button">Apply to all <img class="spinner" style="height:14px;display:none" src="../WebContent/images/spinner.gif"></button>
                 </div>
 
                 <div class="section">
                     <i title="Message Reviewed" id="reviewed-flag" class="flag fa fa-eye"></i>
-                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="reviewed-button">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="reviewed-button">Apply to all <img class="spinner" style="height:14px;display:none" src="../WebContent/images/spinner.gif"></button>
                 </div>
 
                 <div class="section">
                     <div style="display:inline;" id="annotation_div" style="z-index:1000;">
                         <input id="annotation" placeholder="Annotation" style="z-index:1000;width:20em;margin-left:25px"/>
                     </div>
-                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="annotation-button">Apply to all <img class="spinner" style="height:14px;display:none" src="images/spinner.gif"></button>
+                    <button type="button" class="btn btn-default" style="margin-left:25px;margin-right:25px;" id="annotation-button">Apply to all <img class="spinner" style="height:14px;display:none" src="../WebContent/images/spinner.gif"></button>
                 </div>
             </div>
     </div>

@@ -27,7 +27,7 @@ var Navigation = function(){
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         var x = $(document).jog({
             paging_info: {
-                url: 'ajax/jogPageIn.jsp?archiveID=' + archiveID + '&datasetId=' + datasetID,
+                url: 'ajax/jogPageIn.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
                 window_size_back: 30,
                 window_size_fwd: 50
             },
@@ -214,7 +214,7 @@ $(document).ready(function() {
 
     // on page unload, release dataset to free memory
     $(window).unload(function () {
-        epadd.log('releasing dataset ' + datasetID);
-        $.get('ajax/releaseDataset.jsp?datasetId=' + datasetID);
+        epadd.log('releasing dataset ' + docsetID);
+        $.get('ajax/releaseDataset.jsp?docsetID=' + docsetID);
     });
 });

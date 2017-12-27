@@ -6,6 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
 <%@ page import="java.util.stream.Collectors" %>
+<%@ page import="thredds.catalog2.Dataset" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -44,9 +45,11 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 
 //    String dir = request.getParameter ("dir");
     File f = new File(dir);
-    String fname = "epadd-export.mbox";
-    String pathToFile = f.getAbsolutePath() + File.separator + fname;
 
+    String docsetID=request.getParameter("docsetID");
+    String fname = Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+
+    String pathToFile = f.getAbsolutePath() + File.separator + fname;
     PrintWriter pw = null;
     try {
         pw = new PrintWriter(pathToFile, "UTF-8");
@@ -56,54 +59,54 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         return;
     }
 
-    //check if request contains dataSetID then work only on those messages which are in docset
+    //check if request contains docsetID then work only on those messages which are in docset
     //else export all messages of mbox.
-    String dataSetID=request.getParameter("datasetId");
-    Set<Document> selectedDocs;
+    Collection<Document> selectedDocs;
 
-    if(!Util.nullOrEmpty(dataSetID)){
-        selectedDocs = (Set<Document>) session.getAttribute(request.getParameter("datasetId"));
-    }else
+    if(!Util.nullOrEmpty(docsetID)){
+        DataSet docset = (DataSet) session.getAttribute(docsetID);
+        selectedDocs = docset.getDocs();
+    }else {
         selectedDocs = archive.getAllDocs().stream().collect(Collectors.toSet());
+    }
+    JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
-        JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
+// either we do tags (+ or -) from selectedTags
+    // or we do all docs from allDocs
+    String cacheDir = archive.baseDir;
+    String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
+    BlobStore bs = null;
+    try {
+        bs = new BlobStore(attachmentsStoreDir);
+        JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
+    } catch (IOException ioe) {
+        JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
+    }
 
-    // either we do tags (+ or -) from selectedTags
-        // or we do all docs from allDocs
-        String cacheDir = archive.baseDir;
-        String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
-        BlobStore bs = null;
-        try {
-            bs = new BlobStore(attachmentsStoreDir);
-            JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
-        } catch (IOException ioe) {
-            JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
-        }
+    /*
+    String rootDir = JSPHelper.getRootDir(request);
+    new File(rootDir).mkdirs();
+    String userKey = JSPHelper.getUserKey(session);
 
-        /*
-        String rootDir = JSPHelper.getRootDir(request);
-        new File(rootDir).mkdirs();
-        String userKey = JSPHelper.getUserKey(session);
+    String name = request.getParameter("name");
+    if (Util.nullOrEmpty(name))
+        name = String.format("%08x", EmailUtils.rng.nextInt());
+    String filename = name + ".mbox.txt";
 
-        String name = request.getParameter("name");
-        if (Util.nullOrEmpty(name))
-            name = String.format("%08x", EmailUtils.rng.nextInt());
-        String filename = name + ".mbox.txt";
+    String path = rootDir + File.separator + filename;
+    PrintWriter pw = new PrintWriter (path);
+    */
 
-        String path = rootDir + File.separator + filename;
-        PrintWriter pw = new PrintWriter (path);
-        */
-
-        String noAttach = request.getParameter("noattach");
-        boolean noAttachments = "on".equals(noAttach);
-        boolean stripQuoted = "on".equals(request.getParameter("stripQuoted"));
-        for (Document ed: selectedDocs)
-            EmailUtils.printToMbox(archive, (EmailDocument) ed, pw, noAttachments ? null: bs, stripQuoted);
-        pw.close();
-        String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;
-        String linkURL = appURL + "/" +  contentURL;
+    String noAttach = request.getParameter("noattach");
+    boolean noAttachments = "on".equals(noAttach);
+    boolean stripQuoted = "on".equals(request.getParameter("stripQuoted"));
+    for (Document ed: selectedDocs)
+        EmailUtils.printToMbox(archive, (EmailDocument) ed, pw, noAttachments ? null: bs, stripQuoted);
+    pw.close();
+    String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;
+    String linkURL = appURL + "/" +  contentURL;
 
 %>
 

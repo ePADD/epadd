@@ -76,11 +76,11 @@
     }*/
     //</editor-fold>
 
-    String datasetID;
+    String docsetID;
     //<editor-fold desc="generate a random id for this dataset (the terms docset and dataset are used interchangeably)"
     // input="" output="String:datasetID">
     {
-        datasetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+        docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
     }
     //</editor-fold>
 
@@ -112,7 +112,7 @@
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
     <script>var archiveID = '<%=archiveID%>';</script> <!-- make the archiveID available to browse.js -->
-    <script>var datasetID = '<%=datasetID%>';</script> <!-- make the dataset name available to browse.js -->
+    <script>var docsetID = '<%=docsetID%>';</script> <!-- make the dataset name available to browse.js -->
     <script src="js/browse.js" type="text/javascript"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
 
@@ -361,12 +361,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
                             <span style="margin-right:5px;cursor:pointer;" class="bulk-export">
                                 <ul class="pagination">
-                                    <li><a title="Export these messages"><i style="display:inline" class="fa fa-download"></i></a></li>
+                                    <li><a href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages"><i style="display:inline" class="fa fa-download"></i></a></li>
                                 </ul>
                             </span>
                             <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
                                 <ul class="pagination">
-                                    <li><a href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=datasetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
+                                    <li><a href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" + title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
                                 </ul>
                             </span>
                         </div>
@@ -466,11 +466,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
             // note: we currently do not support clustering for "recent" type, only for the chronological type. might be easy to fix if needed in the future.
             if ("recent".equals(sortBy) || "relevance".equals(sortBy) || "chronological".equals(sortBy))
-                pair = EmailRenderer.pagesForDocuments(outputSet, datasetID, MultiDoc.ClusteringType.NONE);
+                pair = EmailRenderer.pagesForDocuments(outputSet, docsetID, MultiDoc.ClusteringType.NONE);
             else {
                 // this path should not be used as it sorts the docs in some order
                 // (old code meant to handle clustered docs, so that tab can jump from cluster to cluster. not used now)
-                pair = EmailRenderer.pagesForDocuments(outputSet, datasetID);
+                pair = EmailRenderer.pagesForDocuments(outputSet, docsetID);
             }
         }catch(Exception e){
             Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
@@ -500,10 +500,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
         String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
         out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";</script>\n");
-        session.setAttribute (datasetID, browseSet);
-        //session.setAttribute ("docs-" + datasetID, new ArrayList<>(docs));
+        session.setAttribute (docsetID, browseSet);
+        //session.setAttribute ("docs-" + docsetID, new ArrayList<>(docs));
         out.println (html);
-        JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + datasetID);
+        JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + docsetID);
 
     %>
 </div> <!--  browsepage -->
