@@ -8,8 +8,6 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.AddressBookManager.Contact;
 import edu.stanford.muse.email.AddressBookManager.MailingList;
-import edu.stanford.muse.email.LabelManager.Label;
-import edu.stanford.muse.email.LabelManager.LabelManager;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
@@ -18,7 +16,6 @@ import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * VIP class. Performs various search functions.
@@ -319,50 +315,7 @@ public class SearchResult {
      * @param inputSet The input search result object on which this filtering needs to be done.
      * @return Another SearchResult object containing filtered messages only.
      */
-    private static SearchResult filterForFlags(SearchResult inputSet) {
-
-        //keep on removing those documents from inputSet which do not satisfy the filter conditions.
-        //Filter1- whether to keep reviewed or not
-        String reviewedValue = JSPHelper.getParam(inputSet.queryParams, "reviewed");
-
-        if (!"either".equals(reviewedValue) && !Util.nullOrEmpty(reviewedValue)) {
-            inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
-                EmailDocument edoc = (EmailDocument) entry.getKey();
-                if (edoc.reviewed == "yes".equals(reviewedValue))
-                    return true;
-                else
-                    return false;
-            }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-        }
-
-
-        //Filter2- whether to keep those marked with do not transfer
-        String dntValue = JSPHelper.getParam(inputSet.queryParams, "doNotTransfer");
-        if (!"either".equals(dntValue) && !Util.nullOrEmpty(dntValue)) {
-            inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
-                EmailDocument edoc = (EmailDocument) entry.getKey();
-                return edoc.doNotTransfer == "yes".equals(dntValue);
-            }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-        }
-
-        //Filter3- whether to keep those marked with transfer with restriction
-        String twrValue = JSPHelper.getParam(inputSet.queryParams, "transferWithRestrictions");
-        if (!"either".equals(twrValue) & !Util.nullOrEmpty(twrValue)) {
-            inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
-                EmailDocument edoc = (EmailDocument) entry.getKey();
-                return edoc.transferWithRestrictions == "yes".equals(twrValue);
-            }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-        }
-
-
-        //Filter4- whether to keep those docs in cart
-        String inCartValue = JSPHelper.getParam(inputSet.queryParams, "inCart");
-        if (!"either".equals(inCartValue) & !Util.nullOrEmpty(inCartValue)) {
-            inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
-                EmailDocument edoc = (EmailDocument) entry.getKey();
-                return edoc.addedToCart == "yes".equals(inCartValue);
-            }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-        }
+    private static SearchResult filterForAnnotationText(SearchResult inputSet) {
 
         String annotationStr = JSPHelper.getParam(inputSet.queryParams, "annotation");
         if (!Util.nullOrEmpty(annotationStr)) {
@@ -376,7 +329,6 @@ public class SearchResult {
                     return false;
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
        }
-
 
         return inputSet;
     }
@@ -1257,7 +1209,7 @@ public class SearchResult {
         outResult = filterForEmailDirection(outResult);
         outResult = filterForEmailSource(outResult);
         outResult = filterForFolder(outResult);
-        outResult = filterForFlags(outResult);
+        outResult = filterForAnnotationText(outResult);
         outResult = filterForDateRange(outResult);
         outResult = filterForLexicons(outResult);
         outResult = filterForEntities(outResult); // searching by entity is probably the most expensive, so keep it near the end

@@ -152,8 +152,6 @@ public class EmailRenderer {
 
 
 					//////////////////////////////////////////DONE reading labels///////////////////////////////////////////////////////////////////////////
-					if (d instanceof EmailDocument && ((EmailDocument) d).addedToCart)
-						html.append(" addToCart=\"true\"");
 					if (d instanceof EmailDocument)
 						html.append(" pageId='" + pageNum++ + "' " + " signature='" + Util.hash (((EmailDocument) d).getSignature()) + "' docId='" + d.getUniqueId() + "'></div>\n");
 				}

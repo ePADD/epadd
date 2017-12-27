@@ -9,21 +9,6 @@
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
 JSPHelper.setPageUncacheable(response);
 
-// careful here: the params names are deliberately *set*DoNotTransfer instead of doNotTransfer, etc. otherwise, the doNotTransfer that we are trying to set is instead taken as a selector in selectDocs
-// was a bug causing flags to only be set, and unable to unset.
-/*
-boolean doNotTransferSet = !Util.nullOrEmpty(request.getParameter("setDoNotTransfer"));
-boolean doNotTransfer = "1".equals(request.getParameter("setDoNotTransfer"));
-boolean transferWithRestrictionsSet = !Util.nullOrEmpty(request.getParameter("setTransferWithRestrictions"));
-boolean transferWithRestrictions = "1".equals(request.getParameter("setTransferWithRestrictions"));
-boolean reviewedSet = !Util.nullOrEmpty(request.getParameter("setReviewed"));
-boolean reviewed = "1".equals(request.getParameter("setReviewed"));
-boolean addToCartSet = !Util.nullOrEmpty(request.getParameter("setAddToCart"));
-boolean addToCart = "1".equals(request.getParameter("setAddToCart"));
-String annotation = request.getParameter("setAnnotation");
-boolean append = "1".equals(request.getParameter("append"));
-*/
-
 //////////////// The request can be of the form docID/docsetID, labels, action=set/unset/only [set/unset/only keep label for all docs in the given set], or
 // ///////////////docID/docsetID, annotation [set annotation for all docs in the given set]
 int nMessages = 0;

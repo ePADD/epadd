@@ -4,26 +4,26 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="org.json.JSONArray"%>
-<%@include file="getArchive.jspf" %>
+<%@include file="../WebContent/getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
 <head>
 	<title>Save cart</title>
 	
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+	<link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
+	<script src="../WebContent/js/jquery.js"></script>
 
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-	<script src="js/jquery.dataTables.min.js"></script>
+	<link href="../WebContent/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+	<script src="../WebContent/js/jquery.dataTables.min.js"></script>
 		
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
 	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
 
-	<jsp:include page="css/css.jsp"/>
-	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<jsp:include page="../WebContent/css/css.jsp"/>
+	<script src="../WebContent/js/muse.js"></script>
+	<script src="../WebContent/js/epadd.js"></script>
 	
 	<style type="text/css">
       .js #table {display: none;}
@@ -34,7 +34,7 @@
 	</script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<jsp:include page="../WebContent/header.jspf"/>
 <script>epadd.nav_mark_active('Cart');</script>
 
 <br/>
@@ -97,7 +97,7 @@ for (EmailDocument ed: docs)
 
 <p>
 
-	<jsp:include page="footer.jsp"/>
+	<jsp:include page="../WebContent/footer.jsp"/>
 <script>
 
 	$(document).ready(function() {

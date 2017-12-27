@@ -4,26 +4,26 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@include file="getArchive.jspf" %>
+<%@include file="../WebContent/getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
 <head>
   <title>Export Cart</title>
 
-  <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+  <link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
 
-  <script src="js/jquery.js"></script>
+  <script src="../WebContent/js/jquery.js"></script>
 
-  <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
   <!-- Optional theme -->
-  <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
 
-  <jsp:include page="css/css.jsp"/>
-  <script src="js/muse.js"></script>
-  <script src="js/epadd.js"></script>
+  <jsp:include page="../WebContent/css/css.jsp"/>
+  <script src="../WebContent/js/muse.js"></script>
+  <script src="../WebContent/js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<jsp:include page="../WebContent/header.jspf"/>
 
 <div class="panel" style="padding-left:10%">
 <%
@@ -90,6 +90,6 @@ On Mac OS X, Linux, and other flavors of Unix, you can usually open a terminal w
 <i>mail -f &lt;saved file&gt;</i>
 <br/>
 </div>
-<jsp:include page="footer.jsp"/>
+<jsp:include page="../WebContent/footer.jsp"/>
 </body>
 </html>
