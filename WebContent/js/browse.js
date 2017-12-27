@@ -212,7 +212,7 @@ $(document).ready(function() {
 
     Labels.setup();
     Annotations.setup();
-    Navigation.setupEvents();
+    Navigation.setupEvents(); // important -- this has to be after labels and annotations setup to render the first page correctly
 
     // on page unload, release dataset to free memory
     $(window).unload(function () {
