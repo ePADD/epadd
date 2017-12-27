@@ -433,7 +433,7 @@
 							<div class="checkbox-inline">
 								<label>
 									<input id="anyAnnotationCheck" name="anyAnnotationCheck" type="checkbox">
-									<span class="label-text">Messages with any annotation</span>
+									<span class="label-text">Any annotation</span>
 								</label>
 							</div>
 					    </div>

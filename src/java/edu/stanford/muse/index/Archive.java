@@ -75,7 +75,7 @@ public class Archive implements Serializable {
     public static final String IMAGES_SUBDIR = "images";
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
     public static final String ENTITYBOOK_SUFFIX = "EntityBook";
-    public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthroities";
+    public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
     public static final String LABELMAPFILE_SUFFIX= "LabelMapper";
 
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
