@@ -2,6 +2,7 @@
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -19,10 +20,13 @@
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	
-	<script type="text/javascript" charset="utf-8">
+	<style>
+		.set-all, .unset-all {
+			cursor: pointer;
+            border-bottom: 1px dotted #000;
+        }
+	</style>
 
-	</script>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
@@ -30,26 +34,26 @@
 
 <%
 	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "Labels", "");
 
-	if(!Util.nullOrEmpty(request.getParameter("labelName"))){
-	    //It means that the request parameter contains information about new label creation or label updation
-		//call JSPHelper method with request parameter to perform the appropriate action.
-		String labelID = JSPHelper.createOrEditLabels(archive,request);
-	}
+    String docsetID = request.getParameter("docsetID");
+    if (docsetID == null)
+        docsetID = "";
+    DataSet browseSet = (DataSet) session.getAttribute(docsetID);
+
+    Collection<EmailDocument> docs = (browseSet == null) ? (Collection) archive.getAllDocs() : (Collection) browseSet.getDocs();
+
+    String title = Util.pluralize (docs.size(), "message");
+    if (!Util.nullOrEmpty(docsetID))
+        title += " (" + docsetID + ")";
+    writeProfileBlock(out, archive, "Labels  ", title);
 %>
-
-<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> New label</button> <!-- no labelID param, so it's taken as a new label -->
-</div>
-
 
 <br/>
 <br/>
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><tr><th>Label</th><th>Type</th><th>Messages</th><th></th></tr></thead>
+	<thead><tr><th>Label</th><th>Type</th><th>Messages</th><th></th><th></th></tr></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -57,7 +61,8 @@
 
 	<%
 		out.flush(); // make sure spinner is seen
-		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
+
+
 		JSONArray resultArray = archive.getLabelCountsAsJson((Collection) docs);
 	%>
 	<script>
@@ -68,14 +73,16 @@
 			return '<a target="_blank" title="' + full[2] + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveId=<%=archiveID%>">' + full[1] + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
-        var edit_label_link = function ( data, type, full, meta ) {
-            if (full[4])  // system label
-                return '<span title="System labels are not editable">Not editable</span>'; // not editable
-            return '<a href="edit-label?labelID=' + full[0] + '&archiveId=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
-        };
+        var label_count = function(data, type, full, meta) { return full[3]; };
+        var label_type = function(data, type, full, meta) { return full[5]; };
 
-        var label_count = function(data, type, full, meta) { return full[3]; }
-        var label_type = function(data, type, full, meta) { return full[5]; }
+        var set_link = function(data, type, full, meta) {
+			return '<span class="set-all" data-labelID="' + full[0] + '">Set for all</span>'; // not editable
+        }
+
+        var unset_link = function(data, type, full, meta) {
+            return '<span class="unset-all" data-labelID="' + full[0] + '">Unset for all</span>'; // not editable
+        }
 
         $('#labels').dataTable({
 			data: labels,
@@ -86,11 +93,36 @@
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
-                {targets: 3, render:edit_label_link},
+                {targets: 3, render:set_link},
+                {targets: 4, render:unset_link},
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
             fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});
 	} );
+
+	// there will only be a single labelID here
+	function do_action (labelID, action) {
+        $.ajax({
+            url:'ajax/applyLabelsAnnotations.jsp',
+            type: 'POST',
+            data: {archiveID: archiveID, labelIDs: labelID, docset: '<%=docsetID%>', action:action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+            dataType: 'json',
+            success: function() { window.location.reload(); },
+            error: function() { epadd.alert('There was an error in saving labels, sorry!');
+            }
+        });
+    }
+
+	$(document).ready(function() {
+		$('.set-all').click (function(e) {
+		    labelID = $(e.target).attr ('labelID');
+            do_action (labelID, 'set');
+        });
+        $('.unset-all').click (function(e) {
+            labelID = $(e.target).attr ('labelID');
+            do_action (labelID, 'unset');
+        });
+	});
 
 </script>
 
