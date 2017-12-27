@@ -7,7 +7,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
@@ -93,7 +93,9 @@
                 if(edoc instanceof  EmailDocument){
                     EmailDocument doc=(EmailDocument)edoc;
                     //Transfer the headers only if the message is not marked as DNT(do not transfer) or TWR(Transfer with restrictions).
-                    if(!doc.doNotTransfer && !doc.transferWithRestrictions) {
+                    // @TODO-Export Take decision on exporting based on labels of this document set
+                    if(true) {
+
                        List record = new ArrayList<String>();
                        //add date in the start..
                         record.add(doc.dateString());

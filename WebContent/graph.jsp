@@ -4,7 +4,7 @@
   request.setCharacterEncoding("UTF-8");
 %>
 <%@ page import="edu.stanford.muse.email.CalendarUtil"%>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact"%>
+<%@ page import="edu.stanford.muse.AddressBookManager.Contact"%>
 <%@ page import="edu.stanford.muse.index.*" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="edu.stanford.muse.util.*" %>
@@ -14,7 +14,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="sun.java2d.pipe.SpanShapeRenderer" %>
 <%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@include file="getArchive.jspf" %>
 <%!
 

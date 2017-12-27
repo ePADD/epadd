@@ -12,8 +12,8 @@
 <%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="edu.stanford.muse.email.LabelManager.Label" %>
-<%@ page import="edu.stanford.muse.email.LabelManager.LabelManager" %>
+<%@ page import="edu.stanford.muse.LabelManager.Label" %>
+<%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
 
 <%@include file="getArchive.jspf" %>
 

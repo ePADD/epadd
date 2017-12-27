@@ -8,7 +8,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
@@ -66,12 +66,16 @@
 	//TimeKeeper.snap();
 	String folder = dir + File.separator + "ePADD archive of " + bestName;
 	List<EmailDocument> docsToExport = new ArrayList<EmailDocument>();
+
+	/*
+	@TODO-Export Take decision on exporting based on labels of this document set
 	for (Document d: archive.getAllDocs())
 	{
 		EmailDocument ed = (EmailDocument) d;
 		if (!ed.doNotTransfer)
 			docsToExport.add(ed);
 	}
+*/
     JSPHelper.log.info("Exporting #"+docsToExport.size()+" docs");
 	// to do: need a progress bar here
 	try {

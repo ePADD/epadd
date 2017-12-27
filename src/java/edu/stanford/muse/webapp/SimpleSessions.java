@@ -2,11 +2,10 @@ package edu.stanford.muse.webapp;
 
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
-import edu.stanford.muse.email.CorrespondentAuthorityMapper;
-import edu.stanford.muse.email.LabelManager.LabelManager;
+import edu.stanford.muse.AddressBookManager.AddressBook;
+import edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.email.MuseEmailFetcher;
-import edu.stanford.muse.ie.AuthorityMapper;
 import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Archive.ProcessingMetadata;

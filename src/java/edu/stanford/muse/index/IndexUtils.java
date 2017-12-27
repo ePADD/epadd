@@ -17,11 +17,11 @@ package edu.stanford.muse.index;
 
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
-import edu.stanford.muse.email.AddressBookManager.Contact;
-import edu.stanford.muse.email.LabelManager.Label;
-import edu.stanford.muse.email.LabelManager.LabelManager;
+import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.LabelManager.Label;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
@@ -660,83 +660,6 @@ public class IndexUtils {
 		if (f_out.totalCount() > 0)
 			result.put("out", f_out);
 
-		return result;
-	}
-
-	private static Map<String, DetailedFacetItem> partitionDocsByDoNotTransfer(Collection<? extends Document> docs)
-	{
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
-		DetailedFacetItem t = new DetailedFacetItem("Transfer", "To be transferred", "doNotTransfer", "no");
-		DetailedFacetItem f = new DetailedFacetItem("Do not transfer", "Not to be transferred", "doNotTransfer", "yes");
-
-		for (Document d : docs)
-		{
-			if (!(d instanceof EmailDocument))
-				continue;
-			EmailDocument ed = (EmailDocument) d;
-
-			if (ed.doNotTransfer)
-				f.addDoc(ed);
-			else
-				t.addDoc(ed);
-		}
-
-		if (f.totalCount() > 0)
-			result.put("Do not transfer", f);
-		if (t.totalCount() > 0)
-			result.put("Transfer", t);
-		return result;
-	}
-
-	private static Map<String, DetailedFacetItem> partitionDocsByTransferWithRestrictions(Collection<? extends Document> docs)
-	{
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
-		DetailedFacetItem t = new DetailedFacetItem("Restrictions", "Transfer with restrictions", "transferWithRestrictions", "yes");
-		DetailedFacetItem f = new DetailedFacetItem("No restrictions", "Transfer with no restrictions", "transferWithRestrictions", "no");
-
-		for (Document d : docs)
-		{
-			if (!(d instanceof EmailDocument))
-				continue;
-			EmailDocument ed = (EmailDocument) d;
-
-			if (ed.transferWithRestrictions)
-				t.addDoc(ed);
-			else
-				f.addDoc(ed);
-		}
-
-		if (t.totalCount() > 0)
-			result.put("Restrictions", t);
-		if (f.totalCount() > 0)
-			result.put("No restrictions", f);
-
-		return result;
-	}
-
-	private static Map<String, DetailedFacetItem> partitionDocsByReviewed(Collection<? extends Document> docs)
-	{
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
-		DetailedFacetItem t = new DetailedFacetItem("Reviewed", "Reviewed", "reviewed", "yes");
-		DetailedFacetItem f = new DetailedFacetItem("Not reviewed", "Not reviewed", "reviewed", "no");
-		result.put("Not reviewed", f);
-
-		for (Document d : docs)
-		{
-			if (!(d instanceof EmailDocument))
-				continue;
-			EmailDocument ed = (EmailDocument) d;
-
-			if (ed.reviewed)
-				t.addDoc(ed);
-			else
-				f.addDoc(ed);
-		}
-
-		if (t.totalCount() > 0)
-			result.put("Reviewed", t);
-		else
-			result.put("Not reviewed", f);
 		return result;
 	}
 

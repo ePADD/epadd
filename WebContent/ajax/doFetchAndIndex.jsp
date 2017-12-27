@@ -8,7 +8,7 @@
 <%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.exceptions.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" %><%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%
 	// core JSP that does fetch, grouping and indexing
 	// sets up archive in the session at the end

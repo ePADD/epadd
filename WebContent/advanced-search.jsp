@@ -2,8 +2,8 @@
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.email.LabelManager.LabelManager" %>
-<%@ page import="edu.stanford.muse.email.LabelManager.Label" %>
+<%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@ page import="edu.stanford.muse.LabelManager.Label" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>

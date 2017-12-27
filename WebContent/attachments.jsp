@@ -8,7 +8,7 @@
 <%@page language="java" import="edu.stanford.muse.datacache.BlobStore"%>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
 <%@page language="java" %>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.util.Pair"%>

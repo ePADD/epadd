@@ -19,9 +19,9 @@ package edu.stanford.muse.index;
 
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.AddressBookManager.AddressBook;
+import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
-import edu.stanford.muse.email.AddressBookManager.Contact;
+import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
@@ -60,7 +60,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	private String errorString; // error string set only if there was an error in reading this message from the original source
 	public long threadID;  // note: valid thread ids must be > 1, 0 means uninitialized
 	//@TODO review the following after converting doNotTransfer, transferWithRestrictions and reviewed as labels.
-	public boolean doNotTransfer, transferWithRestrictions, reviewed, addedToCart; // this is for libraries etc who may want export after redaction
+	//public boolean doNotTransfer, transferWithRestrictions, reviewed, addedToCart; // this is for libraries etc who may want export after redaction
 	
 	// default constructor for serialization
 	public EmailDocument() { /* */ }

@@ -6,9 +6,9 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.Contact" %>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.MailingList" %>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.MailingList" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%

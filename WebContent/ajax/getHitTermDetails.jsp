@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.lens.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%><%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.index.*"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%
 JSPHelper.setPageUncacheable(response);
 	/** returns details for a single hit term */

@@ -3,7 +3,7 @@
 <%@page language="java" import="org.json.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page import="edu.stanford.muse.email.CorrespondentAuthorityMapper"%>
+<%@page import="edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper"%>
 <%
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
 JSPHelper.setPageUncacheable(response);

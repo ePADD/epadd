@@ -8,7 +8,7 @@
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -88,6 +88,8 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 }
 
     int messagesToExport = 0, annotatedMessages = 0, restrictedMessages = 0, messagesNotToExport = 0;
+    /*
+	@TODO-Export Take decision on exporting based on labels of this document set
     for (Document d: archive.getAllDocs()) {
          EmailDocument ed = (EmailDocument) d;
          if (ed.doNotTransfer)
@@ -98,7 +100,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
               messagesToExport++;
          if (!Util.nullOrEmpty(ed.comment))
              annotatedMessages++;
-    }
+    }*/
 %>
 
 <p>

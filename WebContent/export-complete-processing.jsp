@@ -1,7 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.Config"%>
-<%@page language="java" import="edu.stanford.muse.email.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
 <%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
@@ -63,14 +63,17 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	String folder = dir + File.separator + "ePADD archive of " + bestName + "-Delivery";
 	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
 	List<EmailDocument> docsToExport = new ArrayList<EmailDocument>();
+/*
+		@TODO-Export Take decision on exporting based on labels of this document set
 	for (Document d: archive.getAllDocs())
 	{
+	   //take decision of exporting based on set of labels attached with it.
 		EmailDocument ed = (EmailDocument) d;
 		if (!ed.doNotTransfer && !ed.transferWithRestrictions) // important: for processing, transfer with restrictions is not to be exported!
 			docsToExport.add(ed);
 		ed.reviewed = false; // always reset reviewed flag, for both discovery and delivery
 	}
-
+*/
 	// we need to recompute counts here for only the docs that are being exported
 	/*
 	Map<String,Integer> ec = new HashMap<String,Integer>();
