@@ -39,17 +39,24 @@
 	}
 %>
 
-<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> New label</button> <!-- no labelID param, so it's taken as a new label -->
-</div>
-
+<% // new label not available in discovery mode.
+  if (!ModeConfig.isDiscoveryMode()) { %>
+    <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
+        <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> New label</button> <!-- no labelID param, so it's taken as a new label -->
+    </div>
+<% } %>
 
 <br/>
 <br/>
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><tr><th>Label</th><th>Type</th><th>Messages</th><th></th></tr></thead>
+	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
+        <% // this column not available in discovery mode
+            if (!ModeConfig.isDiscoveryMode()) { %>
+            <th></th>
+        <% } %>
+    </tr></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -86,7 +93,10 @@
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
-                {targets: 3, render:edit_label_link},
+                <% if (!ModeConfig.isDiscoveryMode()) { %>
+                    {targets: 3, render:edit_label_link},
+                <% } %>
+
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
             fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});

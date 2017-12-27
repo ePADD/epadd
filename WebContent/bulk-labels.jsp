@@ -53,7 +53,11 @@
 
 <div style="margin:auto; width:900px">
 <table id="labels" style="display:none">
-	<thead><tr><th>Label</th><th>Type</th><th>Messages</th><th></th><th></th></tr></thead>
+	<thead><tr><th>Label</th><th>Type</th><th>Messages</th><th></th>
+        <% if (!ModeConfig.isDiscoveryMode()) { %>
+            <th></th>
+        <% } %>
+    </tr></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -115,11 +119,11 @@
 
 	$(document).ready(function() {
 		$('.set-all').click (function(e) {
-		    labelID = $(e.target).attr ('labelID');
+		    labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'set');
         });
         $('.unset-all').click (function(e) {
-            labelID = $(e.target).attr ('labelID');
+            labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'unset');
         });
 	});

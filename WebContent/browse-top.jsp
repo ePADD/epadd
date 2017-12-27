@@ -125,7 +125,7 @@
 	<div class="cta-box text-center margin30">
 		<a href="entity-types?archiveID=<%=archiveID%>">
 			<i class="icon-browsetoparrow"></i>
-			<i class="fa fa-tag" style="color:#31a354" aria-hidden="true"></i>
+			<i class="fa fa-thumb-tack" style="color:#31a354" aria-hidden="true"></i>
 			<p class="cta-text-1">Other entities (<%=nNonPersonEntities%>)</p>
 			<p class="cta-text-2">Other entities (<%=nNonPersonEntities%>)</p>
 		</a>
@@ -175,7 +175,17 @@
 			</a>
 		</div>
 
-		<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
+	<div class="cta-box text-center margin30">
+		<a href="labels?archiveID=<%=archiveID%>">
+			<i class="icon-browsetoparrow"></i>
+			<i class="fa fa-tags" style="color:#0b967f" aria-hidden="true"></i>
+			<p class="cta-text-1">Labels</p>
+			<p class="cta-text-2">Labels</p>
+		</a>
+	</div>
+
+
+	<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
 			<div class="cta-box text-center margin30">
 				<a href="report?archiveID=<%=archiveID%>">
 					<i class="icon-browsetoparrow"></i>
@@ -185,15 +195,6 @@
 				</a>
 			</div>
 		<% } %>
-
-		<div class="cta-box text-center margin30">
-			<a href="labels?archiveID=<%=archiveID%>">
-				<i class="icon-browsetoparrow"></i>
-				<i class="fa fa-cog" style="color:#888" aria-hidden="true"></i>
-				<p class="cta-text-1">Labels</p>
-				<p class="cta-text-2">Labels</p>
-			</a>
-		</div>
 
 	<% } %>
 
