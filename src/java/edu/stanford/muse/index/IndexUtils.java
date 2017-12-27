@@ -740,8 +740,36 @@ public class IndexUtils {
 		return result;
 	}
 
+	/** Partition documents by the presence/absence of annotation text */
+	private static Map<String, DetailedFacetItem> partitionDocsByAnnotationPresence(Collection<? extends Document> docs) {
 
-	/** Partition documents by label types ******************/
+		Map<String, Set<Document>> tagToDocs = new LinkedHashMap<String, Set<Document>>();
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
+		Set<Document> annotatedDocs = new LinkedHashSet<>();
+		Set<Document> unannotatedDocs = new LinkedHashSet<>();
+		for (Document d : docs) {
+			if (!Util.nullOrEmpty(d.comment))
+				annotatedDocs.add(d);
+			else
+				unannotatedDocs.add(d);
+		}
+
+		if (unannotatedDocs.size() > 0 ){
+			result.put("notannotated",new DetailedFacetItem("Not annotated","Documents with no annotation","isannotated","false"));
+			unannotatedDocs.forEach(doc->result.get("notannotated").addDoc(doc));
+		}
+		if (annotatedDocs.size()>0){
+			result.put("annotated",new DetailedFacetItem("Annotated","Documents with annotation","isannotated","true"));
+			annotatedDocs.forEach(doc->result.get("annotated").addDoc(doc));
+		}
+
+		return result;
+
+
+	}
+
+
+		/** Partition documents by label types ******************/
 	private static Map<String, DetailedFacetItem> partitionDocsByLabelTypes(Collection<? extends Document> docs, Archive archive, LabelManager.LabType type) {
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
 
@@ -842,23 +870,6 @@ public class IndexUtils {
 		}
 		*/
 
-		Set<Document> docSet = new LinkedHashSet<Document>(docs);
-		Map<String, Set<Document>> tagToDocs = new LinkedHashMap<String, Set<Document>>();
-		for (Document d : docs)
-		{
-			if (!Util.nullOrEmpty(d.comment))
-			{
-				String tag = d.comment.toLowerCase();
-				Set<Document> set = tagToDocs.get(tag);
-				if (set == null)
-				{
-					set = new LinkedHashSet<Document>();
-					tagToDocs.put(tag, set);
-				}
-				set.add(d);
-			}
-		}
-
 		if (addressBook != null)
 		{
 			// people
@@ -870,17 +881,20 @@ public class IndexUtils {
 			if  (directionMap.size() > 1)
 				facetMap.put("direction", directionMap.values());
 
+			/*
+			--No longer need this code as restriction, reviewed etc. are handled by labels--
 			// flags -- provide them only if they have at least 2 types in these docs. if all docs have the same value for a particular flag, no point showing it.
 			Map<String, DetailedFacetItem> doNotTransferMap = partitionDocsByDoNotTransfer(docs);
 			if  (doNotTransferMap.size() > 1)
 			facetMap.put("transfer", doNotTransferMap.values());
+
 			Map<String, DetailedFacetItem> transferWithRestrictionsMap = partitionDocsByTransferWithRestrictions(docs);
 			if  (transferWithRestrictionsMap.size() > 1)
 				facetMap.put("restrictions", transferWithRestrictionsMap.values());
 			Map<String, DetailedFacetItem> reviewedMap = partitionDocsByReviewed(docs);
 			if  (reviewedMap.size() > 1)
 				facetMap.put("reviewed", reviewedMap.values());
-
+			*/
 			//facet for restriction labels
 			Map<String, DetailedFacetItem> restrlabels  = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.RESTR_LAB);
 			facetMap.put("Restriction Labels",restrlabels.values());
@@ -890,21 +904,8 @@ public class IndexUtils {
 			facetMap.put("General Labels",genlabels.values());
 			//////////////////////////////////////////////////////////////////////////////////
 
-			List<DetailedFacetItem> tagItems = new ArrayList<DetailedFacetItem>();
-			Set<Document> unannotatedDocs = new LinkedHashSet<Document>(docSet);
-			for (String tag : tagToDocs.keySet())
-			{
-				Set<Document> docsForTag = tagToDocs.get(tag);
-				docsForTag.retainAll(docSet);
-				unannotatedDocs.removeAll(docsForTag);
-				tagItems.add(new DetailedFacetItem(tag, tag, new HashSet<Document>(docsForTag), "annotation", tag));
-			}
-			if (unannotatedDocs.size() > 0)
-				tagItems.add(new DetailedFacetItem("none", "none", new HashSet<Document>(unannotatedDocs), "annotation", "" /* empty value for annotation */));
-
-			if (tagItems.size() > 1)
-				facetMap.put("annotations", tagItems);
-
+			Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs);
+			facetMap.put("Annotations", annotationPresenceMap.values());
 			// attachments
 			if (!ModeConfig.isPublicMode())
 			{

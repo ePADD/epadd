@@ -423,10 +423,21 @@
 					<div class="form-wraper clearfix">
 
 						<!--Annotation-->
-						<div class="margin-btm form-group col-sm-6">
-							<label for="annotation">Annotation</label>
-							<input id="annotation" name="annotation" type="text" class="form-control">
-						</div>
+						<div class="form-group col-sm-6">
+
+							<div class="form-group">
+								<label for="annotation">Annotation</label>
+								<input id="annotation" name="annotation" type="text" class="form-control">
+							</div>
+
+							<div class="checkbox-inline">
+								<label>
+									<input id="anyAnnotationCheck" name="anyAnnotationCheck" type="checkbox">
+									<span class="label-text">Messages with any annotation</span>
+								</label>
+							</div>
+					    </div>
+
 						<div class="form-group col-sm-6">
 
 

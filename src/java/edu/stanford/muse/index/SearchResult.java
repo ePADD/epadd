@@ -888,11 +888,64 @@ public class SearchResult {
                 inputSet.commonHLInfo,inputSet.regexToHighlight);
     }
 
+
+    //////////////////////////////////Annotation based checks////////////////////////////////////
+    /* Why two different API's needed for annotation based filtering?
+    It is because of two different semantics associated with annotation
+    based checks. One API is for the annotation facet which filters documents based on presence of absence of
+    annotations. Another API is for the annotation advanced-search that filters documents based on only the
+    presence of annotations. The semantics of 'off' in filterForAnyAnnotation is not the same as the semantics
+     of "off" in filterForAnnotationPresence. Hence two different end points.
+     */
+    /*Filter based on the presence of any annotation*/
+    private static SearchResult filterForAnyAnnotation(SearchResult inputSet){
+        String anyAnnotationCheck = JSPHelper.getParam(inputSet.queryParams,"anyAnnotationCheck");
+        if(Util.nullOrEmpty(anyAnnotationCheck))
+            return inputSet;
+        boolean anyAnnotation = "on".equals(anyAnnotationCheck);
+        if(!anyAnnotation)
+            return inputSet;
+        else{
+            Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
+            inputSet.matchedDocs.keySet().stream().forEach(doc->{
+                EmailDocument ed = (EmailDocument)doc;
+                if(!Util.nullOrEmpty(ed.comment))
+                    outputDocs.put(doc,inputSet.matchedDocs.get(doc));
+            });
+            return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
+                    inputSet.commonHLInfo,inputSet.regexToHighlight);
+        }
+    }
+    /* Filter docs based on the presence/absence of annotation*/
+    private static SearchResult filterForAnnotationPresence(SearchResult inputSet) {
+        String isAnnotated = JSPHelper.getParam(inputSet.queryParams, "isannotated"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+        if(Util.nullOrEmpty(isAnnotated))
+            return inputSet;
+        boolean isAnn = "true".equals(isAnnotated);
+        Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
+
+        if(isAnn){
+            inputSet.matchedDocs.keySet().stream().forEach(doc->{
+                EmailDocument ed = (EmailDocument)doc;
+                if(!Util.nullOrEmpty(ed.comment))
+                    outputDocs.put(doc,inputSet.matchedDocs.get(doc));
+            });
+        }else{
+            inputSet.matchedDocs.keySet().stream().forEach(doc->{
+                EmailDocument ed = (EmailDocument)doc;
+                if(Util.nullOrEmpty(ed.comment))
+                    outputDocs.put(doc,inputSet.matchedDocs.get(doc));
+            });
+       }
+        return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
+                inputSet.commonHLInfo,inputSet.regexToHighlight);
+    }
+    //////////////////END of annotation based checks///////////////////////////////////////////
     /* Will look in the given docs for given labels passed as parameter*/
 
     private static SearchResult filterForMultipleRestrictionLabels(SearchResult inputSet){
         String multiLabelsCheck = JSPHelper.getParam(inputSet.queryParams, "multiLabelsCheck"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
-        boolean multiLabCheck = "on".equals(multiLabelsCheck)? true:false;
+        boolean multiLabCheck = "on".equals(multiLabelsCheck);
         if(!multiLabCheck)
             return inputSet;
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
@@ -1195,6 +1248,8 @@ public class SearchResult {
                 outResult = filterForContactId(outResult, cid);
         }
 
+        outResult = filterForAnnotationPresence(outResult);
+        outResult = filterForAnyAnnotation(outResult);
         outResult = filterForLabelsAndMultipleRestrictionLabels(outResult);
         outResult = filterForDocId(outResult);
         outResult = filterForMessageId(outResult);
