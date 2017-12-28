@@ -22,6 +22,10 @@ public class LabelManager implements Serializable{
         RESTR_LAB, GEN_LAB
     }
 
+    public enum RestrictionType {
+        OTHER, RESTRICTED_UNTIL, RESTRICTED_FOR_YEARS
+    }
+
     //Map from Document ID to set of Label ID's
     private Map<String,Set<String>> docToLabelMap= null;
     //Map from Label ID's to Label Information

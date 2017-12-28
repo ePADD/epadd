@@ -92,10 +92,31 @@
             </div>
 
         </div>
-    </div>
-        <div style="text-align:center">
-            <button class="btn btn-cta" type="submit" id="save-button">Save <i class="icon-arrowbutton"></i> </button>
+
+        <div style="display:none" class="restriction-details row">
+            <div class="form-group col-sm-6">
+                <label for="restrictionType">Restriction type</label>
+                <select id="restrictionType" name="restrictionType" class="form-control selectpicker">
+                    <option value="" selected disabled>Restriction type</option>
+                    <option value="1">Until date</option>
+                    <option value="2">Years from date of message</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="restrictedUntil"><i class="fa fa-calendar"/> Restricted until</label>
+                <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=label.restrictedUntil%>">
+            </div>
+            <div class="form-group">
+                <label for="restrictedForYears"><i class="fa fa-calendar"/> Restricted for (years)</label>
+                <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=label.restrictedForYears%>">
+            </div>
         </div>
+
+    </div>
+    <div style="text-align:center">
+        <button class="btn btn-cta" type="submit" id="save-button">Save <i class="icon-arrowbutton"></i> </button>
+    </div>
     </div>
 </div>
 </form>
