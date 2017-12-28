@@ -140,7 +140,43 @@
 </div>
 </form>
 <br/>
+<%--Code base/template to submit this form data using ajax. The steps are as following;--%>
+<%--1.Capture the form submit button so that the default action doesn't take place--%>
+<%--2.Get all of the data from our form using jQuery--%>
+<%--3.Submit using AJAX --%>
+<%--4.Show errors if there are any--%>
+<%--//https://scotch.io/tutorials/submitting-ajax-forms-with-jquery--%>
+<script>
+    $(document).ready(function() {
+        // process the form
+        $('form').submit(function(event) {
+            // get the form data using jquery's method
+            var formData = $('form').serialize();
+            /*// there are many ways to get this data using jQuery (you can use the class or id also)
+            var formData = {
+                'name'              : $('input[name=name]').val(),
+                'email'             : $('input[name=email]').val(),
+                'superheroAlias'    : $('input[name=superheroAlias]').val()
+            };*/
 
+            // process the form
+            $.ajax({
+                type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url         : 'ajax/createEditLabels.jsp', // the url where we want to POST
+                data        : formData, // our data object
+                dataType    : 'json', // what type of data do we expect back from the server
+                success: function(data) {epadd.alert('Labels updated!',function(){window.location='labels.jsp?archiveID=<%=archiveID%>'});},
+                error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+            });
+
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+        });
+
+    });
+
+
+</script>
 <jsp:include page="footer.jsp"/>
 </body>
 </html>

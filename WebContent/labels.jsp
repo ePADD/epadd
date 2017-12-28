@@ -32,11 +32,6 @@
 	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "Labels", "");
 
-	if(!Util.nullOrEmpty(request.getParameter("labelName"))){
-	    //It means that the request parameter contains information about new label creation or label updation
-		//call JSPHelper method with request parameter to perform the appropriate action.
-		String labelID = JSPHelper.createOrEditLabels(archive,request);
-	}
 %>
 
 <% // new label not available in discovery mode.
