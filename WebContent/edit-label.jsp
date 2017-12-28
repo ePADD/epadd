@@ -11,12 +11,26 @@
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String labelID = request.getParameter("labelID");
 	String labelName = "", labelDescription = "", labelType = "";
+    String restrictionType = LabelManager.RestrictionType.OTHER.toString();
+	String restrictionUntilTime = "";
+	String restrictedForYears = "";
+	String restrictedText = "";
+
     if (!Util.nullOrEmpty(labelID)) {
         Label label = archive.getLabelManager().getLabel(labelID);
         if (label != null) {
             labelName = label.getLabelName();
             labelDescription = label.getDescription();
             labelType = label.getType().toString();
+            restrictionType = label.getRestrictionType().toString();
+            if (label.getRestrictedUntilTime() > 0)
+                restrictionUntilTime = Long.toString(label.getRestrictedUntilTime());
+            if (label.getRestrictedForYears() > 0)
+                restrictedForYears = Long.toString(label.getRestrictedForYears());
+
+            restrictedText = label.getRestrictedText();
+            if (restrictedText == null)
+                restrictedText = "";
         }
     }
 %>
@@ -78,7 +92,7 @@
                 </select>
             </div>
         </div>
-
+`
         <div class="row">
             <!--Type-->
             <div class="form-group col-sm-12">
@@ -98,19 +112,24 @@
                 <label for="restrictionType">Restriction type</label>
                 <select id="restrictionType" name="restrictionType" class="form-control selectpicker">
                     <option value="" selected disabled>Restriction type</option>
-                    <option value="1">Until date</option>
-                    <option value="2">Years from date of message</option>
+                    <option value="<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>">Until date</option>
+                    <option value="<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>">Years from date of message</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="restrictedUntil"><i class="fa fa-calendar"/> Restricted until</label>
-                <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=label.restrictedUntil%>">
+                <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>">
             </div>
             <div class="form-group">
                 <label for="restrictedForYears"><i class="fa fa-calendar"/> Restricted for (years)</label>
-                <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=label.restrictedForYears%>">
+                <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=restrictedForYears%>">
             </div>
+            <div class="form-group">
+                <label for="restrictedText">Restricted text</label>
+                <input name="restrictedText" id="restrictedText" type="text" class="form-control" value="<%=restrictedText%>">
+            </div>
+
         </div>
 
     </div>
