@@ -137,7 +137,7 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
 
         result.url = "browse?archiveID=" + archiveID + "&adv-search=on&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&correspondent=" + name;
         result.tooltip = tooltip;
-        result.nMessages = nMessages;
+        result.nMessages = nMessages==null?0:nMessages;
 
         AuthorityMapper.AuthorityRecord authRecord = cnameToAuthority.get(cname);
         if (authRecord != null) {
@@ -147,10 +147,10 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
 
         List<AuthorityMapper.AuthorityRecord> candidates = new ArrayList<>();
         Collection<Long> fastIds = cnameToFastIdCandidates.get(cname);
-        if (fastIds != null)
+       /* if (fastIds != null)
             for (Long id : fastIds)
                 candidates.add (getAuthRecordForFASTId(id));
-
+*/
         result.candidates = candidates;
         return result;
     }

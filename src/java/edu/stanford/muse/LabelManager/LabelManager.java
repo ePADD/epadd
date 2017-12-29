@@ -1,6 +1,8 @@
 package edu.stanford.muse.LabelManager;
 
 import com.google.gson.Gson;
+import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.Document;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +19,7 @@ public class LabelManager implements Serializable{
 
     private static Log log = LogFactory.getLog(LabelManager.class);
     private final static long serialVersionUID = 1L;
+    public final static String LABELID_DNT="0";
 
     public enum LabType {
         RESTR_LAB, GEN_LAB
@@ -58,20 +61,23 @@ public class LabelManager implements Serializable{
     //By default we have a few in-built system labels.
     private void InitialLabelSetup(){
         // these are just for testing
-        Label dnt = new Label("Do not transfer",LabType.RESTR_LAB, "0",
+        Label dnt = new Label("Do not transfer",LabType.RESTR_LAB, LABELID_DNT,
                 "Do not transfer this message",true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
 
         //restricted
-        Label twr = new Label("Restricted",LabType.RESTR_LAB,"1", "Transfer this message only after 2040",false);
+        Label twr = new Label("Restricted",LabType.RESTR_LAB,"1",
+                "Transfer this message only after 2040",false);
         labelInfoMap.put(twr.getLabelID(),twr);
 
         // test
-        Label gen = new Label("General",LabType.GEN_LAB,"2", "This is general label",false);
+        Label gen = new Label("General",LabType.GEN_LAB,"2",
+                "This is general label",false);
         labelInfoMap.put(gen.getLabelID(),gen);
 
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"3", "This message was reviewed",true);
+        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"3",
+                "This message was reviewed",true);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
 
@@ -154,4 +160,30 @@ public class LabelManager implements Serializable{
         return labelManager;
     }
 
+    //remove all restricted labels from labelinfomap. It is used during export to delivery/discovery module
+    public Map<String, Label> getLabelInfoMap(){
+        return labelInfoMap;
+    }
+
+    public void setLabelInfoMap(Map<String,Label> labelInfoMap){
+        this.labelInfoMap = labelInfoMap;
+    }
+
+    /*
+    Returns a new labelmanager to capture what all labels and docs are being exported from a module
+     */
+    public LabelManager getLabelManagerForExport(Set<String> docids, Archive.Export_Mode mode){
+        LabelManager tmp = new LabelManager();
+        tmp.labelInfoMap.putAll(labelInfoMap);
+        tmp.docToLabelMap.putAll(docToLabelMap);
+        if(mode== Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING){
+            //all labels are exported.. But in labelDocMap keep only those docs which are being exported.
+            tmp.docToLabelMap.keySet().retainAll(docids);
+        }else{
+            //only non-restricted labels are exported[even if of date type].. In labelDocMap keep only those docs which are being exported.
+            tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->entry.getValue().getType()!=LabType.RESTR_LAB).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+            tmp.docToLabelMap.keySet().retainAll(docids);
+        }
+        return tmp;
+    }
 }

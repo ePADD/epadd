@@ -466,23 +466,23 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>export-complete</servlet-name>
-		<jsp-file>/export-complete.jsp</jsp-file>
+		<servlet-name>export-from-appraisal</servlet-name>
+		<jsp-file>/export-from-appraisal.jsp</jsp-file>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>export-complete</servlet-name>
-		<url-pattern>/export-complete</url-pattern>
+		<servlet-name>export-from-appraisal</servlet-name>
+		<url-pattern>/export-from-appraisal</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>export-complete-processing</servlet-name>
-		<jsp-file>/export-complete-processing.jsp</jsp-file>
+		<servlet-name>export-from-processing</servlet-name>
+		<jsp-file>/export-from-processing.jsp</jsp-file>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>export-complete-processing</servlet-name>
-		<url-pattern>/export-complete-processing</url-pattern>
+		<servlet-name>export-from-processing</servlet-name>
+		<url-pattern>/export-from-processing</url-pattern>
 	</servlet-mapping>
  
 	<servlet>

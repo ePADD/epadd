@@ -11,13 +11,14 @@
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String labelID = request.getParameter("labelID");
 	String labelName = "", labelDescription = "", labelType = "";
-    String restrictionType = LabelManager.RestrictionType.OTHER.toString();
+	String restrictionType = LabelManager.RestrictionType.OTHER.toString();
 	String restrictionUntilTime = "";
 	String restrictedForYears = "";
-	String restrictedText = "";
+	String labelAppliesToMessageText= "";
 
-    if (!Util.nullOrEmpty(labelID)) {
-        Label label = archive.getLabelManager().getLabel(labelID);
+    Label label = null;
+	if (!Util.nullOrEmpty(labelID)) {
+        label = archive.getLabelManager().getLabel(labelID);
         if (label != null) {
             labelName = label.getLabelName();
             labelDescription = label.getDescription();
@@ -28,9 +29,9 @@
             if (label.getRestrictedForYears() > 0)
                 restrictedForYears = Long.toString(label.getRestrictedForYears());
 
-            restrictedText = label.getRestrictedText();
-            if (restrictedText == null)
-                restrictedText = "";
+            labelAppliesToMessageText = label.getLabelAppliesToMessageText();
+            if (labelAppliesToMessageText == null)
+                labelAppliesToMessageText  = "";
         }
     }
 %>
@@ -132,9 +133,9 @@
                     <label for="restrictedForYears">Restricted for (years)</label>
                     <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=restrictedForYears%>">
                 </div>
-                <div class="div-restrictedText form-group col-sm-12">
-                    <label for="restrictedText">Restricted text</label>
-                    <input name="restrictedText" id="restrictedText" type="text" class="form-control" value="<%=restrictedText%>">
+                <div class="div-labelAppliesToMessageText form-group col-sm-12">
+                    <label for="labelAppliesToMessageText">Restricted text</label>
+                    <input name="labelAppliesToMessageText" id="labelAppliesToMessageText" type="text" class="form-control" value="<%=labelAppliesToMessageText%>">
                 </div>
             </div>
 

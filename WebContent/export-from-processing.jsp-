@@ -56,7 +56,7 @@
 	<br/>
 	<script>
 		function submit() {
-			window.location = 'export-complete-processing?archiveID=<%=archiveID%>&dir=' + $('#filepicker .dir').val();
+			window.location = 'export-from-processing?archiveID=<%=archiveID%>&dir=' + $('#filepicker .dir').val();
 		}
 		new FilePicker($('#filepicker'));
 	</script>

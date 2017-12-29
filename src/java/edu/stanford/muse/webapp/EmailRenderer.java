@@ -168,7 +168,7 @@ public class EmailRenderer {
 	 * 
 	 * @param addressBook
 	 */
-	private static String formatAddressesAsHTML(Address addrs[], AddressBook addressBook, int lineWrap, Set<String> highlightUnstemmed, Set<String> highlightNames, Set<String> highlightAddresses)
+	private static String formatAddressesAsHTML(String archiveID,Address addrs[], AddressBook addressBook, int lineWrap, Set<String> highlightUnstemmed, Set<String> highlightNames, Set<String> highlightAddresses)
 	{
 		StringBuilder sb = new StringBuilder();
 		int outputLineLength = 0;
@@ -180,7 +180,7 @@ public class EmailRenderer {
 			if (a instanceof InternetAddress)
 			{
 				InternetAddress ia = (InternetAddress) a;
-				Pair<String, String> p = JSPHelper.getNameAndURL((InternetAddress) a, addressBook);
+				Pair<String, String> p = JSPHelper.getNameAndURL(archiveID,(InternetAddress) a, addressBook);
 				String url = p.getSecond();
 				String str = ia.toString();
                 String addr = ia.getAddress();
@@ -418,6 +418,7 @@ public class EmailRenderer {
 		AddressBook addressBook = searchResult.getArchive().addressBook;
         Set<String> contactNames = new LinkedHashSet<>();
         Set<String> contactAddresses = new LinkedHashSet<>();
+        String archiveID = SimpleSessions.getArchiveIDForArchive(searchResult.getArchive());
         //get contact ids from searchResult object.
         Set<Integer> highlightContactIds = searchResult.getHLInfoContactIDs().stream().map(d->Integer.parseInt(d)).collect(Collectors.toSet());
         if(highlightContactIds!=null)
@@ -441,36 +442,37 @@ public class EmailRenderer {
 		// + this.folderName + "</td></tr>\n");
 		if(debug)
 			result.append("<tr><td>docId: </td><td>"+ed.getUniqueId()+"</td></tr>\n");
-		result.append(JSPHelper.getHTMLForDate(ed.date));
+		result.append(JSPHelper.getHTMLForDate(archiveID,ed.date));
 
 		final String style = "<tr><td align=\"right\" class=\"muted\" valign=\"top\">";
 
 		// email specific headers
 		result.append(style + "From: </td><td align=\"left\">");
 		Address[] addrs = ed.from;
+		//get ArchiveID
 		if (addrs != null)
 		{
-			result.append(formatAddressesAsHTML(addrs, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses));
+			result.append(formatAddressesAsHTML(archiveID,addrs, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses));
 		}
 
 		result.append(style + "To: </td><td align=\"left\">");
 		addrs = ed.to;
 		if (addrs != null)
-			result.append(formatAddressesAsHTML(addrs, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses) + "");
+			result.append(formatAddressesAsHTML(archiveID,addrs, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses) + "");
 
 		result.append("\n</td></tr>\n");
 
 		if (ed.cc != null && ed.cc.length > 0)
 		{
 			result.append(style + "Cc: </td><td align=\"left\">");
-			result.append(formatAddressesAsHTML(ed.cc, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses) + "");
+			result.append(formatAddressesAsHTML(archiveID,ed.cc, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses) + "");
 			result.append("\n</td></tr>\n");
 		}
 
 		if (ed.bcc != null && ed.bcc.length > 0)
 		{
 			result.append(style + "Bcc: </td><td align=\"left\">");
-			result.append(formatAddressesAsHTML(ed.bcc, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses) + "");
+			result.append(formatAddressesAsHTML(archiveID,ed.bcc, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses) + "");
 			result.append("\n</td></tr>\n");
 		}
 
@@ -508,7 +510,7 @@ public class EmailRenderer {
 		result.append("</b>\n");
 		result.append("\n</td></tr>\n");
 		String messageId = Util.hash (ed.getSignature());
-		String messageLink = "(<a href=\"browse?adv-search=1&uniqueId=" + messageId + "\">Link</a>)";
+		String messageLink = "(<a href=\"browse?archiveID="+archiveID+"&adv-search=1&uniqueId=" + messageId + "\">Link</a>)";
 		result.append ("\n" + style + "ID: " + "</td><td>" + messageId + " " + messageLink + "</td></tr>");
 		result.append("</table>\n"); // end docheader table
 

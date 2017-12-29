@@ -62,7 +62,10 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 
 	String folder = dir + File.separator + "ePADD archive of " + bestName + "-Delivery";
 	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
-	List<EmailDocument> docsToExport = new ArrayList<EmailDocument>();
+	//same set of docs are exported from processing to delivery or discovery only difference being the
+		//content of these messages. In case of processing to discovery mode the redaction takes place.
+	List<Document> docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY);
+
 /*
 		@TODO-Export Take decision on exporting based on labels of this document set
 	for (Document d: archive.getAllDocs())
@@ -88,7 +91,7 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	out.println ("Exporting delivery mode archive...<br/>");
 	out.flush();
 	try {
-		archive.export(docsToExport, false, folder, "default");
+		archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default");
 	} catch (Exception e) {
 		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
 		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");
@@ -112,8 +115,8 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	// NOW EXPORT FOR DISCOVERY
 	out.println ("Exporting discovery mode archive...<br/>");
 	out.flush();
-	JSPHelper.log.info("Exporting for delivery");
-	archive.export(docsToExport, true /* public mode */, folderPublic, "default");
+	JSPHelper.log.info("Exporting for discovery");
+	archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default");
 
 	try {
         String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
