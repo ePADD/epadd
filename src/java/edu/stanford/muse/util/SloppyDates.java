@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.stanford.muse.email.CalendarUtil;
 
+/** a sloppy date parser that can handle natural lang. ways of specifying a date, like jan 10, sep 29, etc. */
 public class SloppyDates {
     private static Log log = LogFactory.getLog(SloppyDates.class);
 

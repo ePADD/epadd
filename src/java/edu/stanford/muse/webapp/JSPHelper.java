@@ -201,44 +201,6 @@ public class JSPHelper {
 	}
 
 	/**
-	 * perform XSLT transformation on the XML
-	 * 
-	 * @param xml_fname
-	 * @param xsl_fname
-	 * @param out
-	 * @throws TransformerException
-	 */
-	/*
-	 * public static void xsltTransform(String xml_fname, String xsl_fname, JspWriter out) throws TransformerException
-	 * {
-	 * TransformerFactory factory = TransformerFactory.newInstance();
-	 * Source xslt = new StreamSource(new File(xsl_fname));
-	 * Transformer transformer = factory.newTransformer(xslt);
-	 * 
-	 * Source text = new StreamSource(new File(xml_fname));
-	 * transformer.transform(text, new StreamResult(out));
-	 * }
-	 */
-
-	/**
-	 * gets the root dir for the logged in user -- this is the dir.
-	 * corresponding to /<userkey>
-	 * inside the actual webapp dir.
-	 * currently used only for attachments and save messages. the eventual goal
-	 * is to get
-	 * rid of this method because it is not secure in a multi-user environment.
-	 */
-	public static String getRootDir(HttpServletRequest request)
-	{
-		HttpSession session = request.getSession();
-		String userKey = (String) getSessionAttribute(session, "userKey");
-		ServletContext application = session.getServletContext();
-		String documentRootPath = application.getRealPath("/");
-
-		return documentRootPath + File.separatorChar + userKey;
-	}
-
-	/**
 	 * converts an array of strings from iso-8859-1 to utf8. useful for
 	 * converting i18n chars in http request parameters.
 	 * if throwExceptionIfUnsupportedEncoding is true, throws an exception,
@@ -888,9 +850,10 @@ public class JSPHelper {
 		return selectedDocs;
 	}
 
-	// handles create/edit label request received from edit-label.jsp.
-	// returns JSON with {status: (0 = passed, non-0 = failed), errorMessage: error message that can be shown to a user}
-	public static String createOrEditLabels(HttpServletRequest request){
+	/** handles create/edit label request received from edit-label.jsp.
+	    returns JSON with {status: (0 = passed, non-0 = failed), errorMessage: error message that can be shown to a user}
+	 */
+	public static String createEditLabels(HttpServletRequest request){
 		JSONObject result = new JSONObject();
 
 		try {
