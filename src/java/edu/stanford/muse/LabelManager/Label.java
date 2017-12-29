@@ -23,9 +23,6 @@ public class Label implements Serializable {
 
     boolean isSysLabel; // system labels cannot be edited. but they can be either general or restriction labels.
 
-    public LabelManager.RestrictionType getRestrictionType() {
-        return restrictionType;
-    }
 
     // the following fields are for restriction labels only. they will be don't care for general labels.
     // by default, restrictionType is NONE
@@ -33,23 +30,16 @@ public class Label implements Serializable {
     //RestrictionType.OTHER means any other non-actionable restriction label.
     private LabelManager.RestrictionType restrictionType = LabelManager.RestrictionType.OTHER;
 
-    public long getRestrictedUntilTime() {
-        return restrictedUntilTime;
-    }
-
     private long restrictedUntilTime; // date until restricted (UTC time)
 
-    public int getRestrictedForYears() {
-        return restrictedForYears;
-    }
 
     private int restrictedForYears;
     // if set to non-null and non-empty, the restriction applies only to this text within the body of the message. Otherwise the whole message is restricted.
     // this is orthogonal to restriction time
     String labelAppliesToMessageText = null;
 
-    public String getRestrictedText() {
-        return restrictedText;
+    public String labelAppliesToMessageText() {
+        return labelAppliesToMessageText;
     }
 
     public Label(String name, LabelManager.LabType type, String labid, String description, boolean isSysLabel){
