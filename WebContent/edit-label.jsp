@@ -125,7 +125,7 @@
 
             <div class="form-group">
                 <div style="display:none" class="div-restrictedUntil form-group col-sm-6">
-                    <label for="restrictedUntil"><i class="fa fa-calendar"></i> Restricted until (yyyymmdd)</label>
+                    <label for="restrictedUntil"><i class="fa fa-calendar"></i> Restricted until (yyyy-mm-dd)</label>
                     <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>">
                 </div>
                 <div style="display:none" class="div-restrictedForYears form-group col-sm-6">
@@ -205,6 +205,11 @@
         <%--//https://scotch.io/tutorials/submitting-ajax-forms-with-jquery--%>
 
         $('#save-label-form').submit(do_save);
+
+        $('#restrictedUntil').datepicker({
+            minDate: new Date(1960, 1 - 1, 1),
+            dateFormat: "yy-mm-dd"
+        });
     });
 </script>
 <jsp:include page="footer.jsp"/>

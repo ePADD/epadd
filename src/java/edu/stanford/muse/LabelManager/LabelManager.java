@@ -37,35 +37,18 @@ public class LabelManager implements Serializable{
         InitialLabelSetup();
     }
 
-    public String createLabel(String labelName, String description, boolean isRestricted){
-        //get the labelID that can be assigned to this label.
-        //For now, get the max of all labelIDs present so far and add 1 to that.
-        Set<Integer> labids = labelInfoMap.keySet().stream().map(id->Integer.parseInt(id)).collect(Collectors.toSet());
-        Integer m = labids.stream().mapToInt(v->v).max().orElseThrow(NoSuchElementException::new);
-        m = m+1;//inc by 1 to get new id.
-        String newlabid = m.toString();
-        LabType labt;
-        if(isRestricted)
-            labt = LabType.RESTR_LAB;
-        else
-            labt = LabType.GEN_LAB;
-        labelInfoMap.put(newlabid,new Label(labelName,labt,newlabid,description,false));
-        return newlabid;
-    }
+    /** creates and returns a new label with the given details, assigning it a new, unused labelID */
+    public Label createLabel(String labelName, String description, LabelManager.LabType type) {
 
-    public boolean updateLabel(String labelID, String labelName, String description, boolean isRestricted) {
-        //get Label object for given labelID
-        Label obj = labelInfoMap.get(labelID);
-        if (obj == null) {
-            Util.softAssert(true, "Label id " + labelID + " is not a valid one. Nothing to update", log);
-            return false;
-        }
-        if (isRestricted)
-            obj.updateInfo(labelName, description, LabType.RESTR_LAB);
-        else
-            obj.updateInfo(labelName, description, LabType.GEN_LAB);
+        // look for the first integer that is not taken as a label id
+        int id = 1;
+        while (labelInfoMap.get (Integer.toString(id)) != null)
+            id++;
 
-        return true;
+        String newlabid = Integer.toString(id);
+        Label label = new Label(labelName,type,newlabid,description,false);
+        labelInfoMap.put(newlabid, label);
+        return label;
     }
 
     public String getLabelInfoMapAsJSONString(){

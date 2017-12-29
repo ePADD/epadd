@@ -17,6 +17,7 @@ package edu.stanford.muse.webapp;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -1029,23 +1030,62 @@ public class JSPHelper {
 	}
 
 	//handles create/edit label request received from labels.jsp.
-	//returns labelID that was created/edited.
-	public static String createOrEditLabels(Archive archive,HttpServletRequest request){
-		String labelName = request.getParameter("labelName");
-		String description = request.getParameter("labelDescription");
-		boolean isRestr = LabelManager.LabType.RESTR_LAB.toString().equals(request.getParameter("labelType"));
+	//returns JSON with {status: (0 = passed, non-0 = failed), errorMessage: error message that can be shown to a user}
+	public static String createOrEditLabels(HttpServletRequest request){
+		JSONObject result = new JSONObject();
 
-		//check if it is label creation request or label updation one.
-		String labelID=request.getParameter("labelID");
+		Archive archive = JSPHelper.getArchive(request);
 
-		if(!Util.nullOrEmpty(labelID)){
-			//label updation request.
-			archive.getLabelManager().updateLabel(labelID,labelName,description,isRestr);
+		try {
+			String labelName = request.getParameter("labelName");
+			String description = request.getParameter("labelDescription");
+			LabelManager.LabType type = LabelManager.LabType.valueOf(request.getParameter("labelType"));
+
+			// check if it is label creation request or label updation one.
+			String labelID=request.getParameter("labelID");
+			Label label = archive.getLabelManager().getLabel(labelID);
+
+			// create the label if it doesn't exist, or update it if it does
+			if (label != null) {
+				label.update(labelName, description, type);
+			} else {
+				label = archive.getLabelManager().createLabel(labelName, description, type);
+			}
+
+			if (type == LabelManager.LabType.RESTR_LAB) {
+				// extra fields for restricton labels only
+				long restrictedUntil = -1;
+				int restrictedForYears = -1;
+
+				String restrictedUntilStr = request.getParameter("restrictedUntil"); // this is in the form yyyy-mm-dd
+				String restrictedForYearsStr = request.getParameter("restrictedForYears"); // this is in the form yyyy-mm-dd
+				if (!Util.nullOrEmpty(restrictedUntilStr)) {
+					List<String> startTokens = Util.tokenize(restrictedUntilStr, "-");
+					int y = Integer.parseInt(startTokens.get(0));
+					int m = Integer.parseInt(startTokens.get(1)) - 1; // -1 because Calendar.MONTH starts from 0, while user will input from 1
+					int d = Integer.parseInt(startTokens.get(2));
+					Calendar c = new GregorianCalendar();
+					c.set(Calendar.YEAR, y);
+					c.set(Calendar.MONTH, m);
+					c.set(Calendar.DATE, d);
+					restrictedUntil = c.getTime().getTime();
+				}
+
+				if (!Util.nullOrEmpty(restrictedForYearsStr)) {
+					restrictedForYears = Integer.parseInt(restrictedForYearsStr);
+				}
+
+				label.setRestrictionDetails(LabelManager.RestrictionType.valueOf("restrictionType"), restrictedUntil, restrictedForYears, request.getParameter("restrictedText"));
+			}
+
+			// if no exception happened, status is 0
+			result.put ("status", 0);
+			result.put ("labelID", label.getLabelID());
 			return labelID;
-		}else{
-			//label creation request
-			labelID = archive.getLabelManager().createLabel(labelName,description,isRestr);
-			return labelID;
+		} catch (Exception e) {
+			result.put ("status", 1);
+			result.put ("errorMessage", "Exception while saving label: " + e.getMessage());
 		}
+		return result.toString();
 	}
 }

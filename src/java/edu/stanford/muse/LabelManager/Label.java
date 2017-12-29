@@ -60,6 +60,13 @@ public class Label implements Serializable {
         this.description = description;
         this.isSysLabel = isSysLabel;
     }
+
+    public void update (String name, String description, LabelManager.LabType type) {
+        this.labName = name;
+        this.description = description;
+        this.labType = type;
+    }
+
     public String getLabelName(){
         return labName;
     }
