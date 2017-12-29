@@ -63,9 +63,6 @@ import java.util.*;
 public class JSPHelper {
 	public static Log		log						= LogFactory.getLog(JSPHelper.class);
 
-	public static final int	nColorClasses			= 20;
-	public final static int	DEFAULT_N_CARD_TERMS	= 30;
-
 	// jetty processes request params differently from tomcat
 	// tomcat assumes incoming params (both get/post) are iso8859.
 	// jetty assumes utf-8.
@@ -92,7 +89,7 @@ public class JSPHelper {
 	{
 		String serverInfo = req.getSession().getServletContext().getServerInfo();
 		log.info("Running inside container: " + serverInfo);
-		if (serverInfo.toLowerCase().indexOf("jetty") >= 0)
+		if (serverInfo.toLowerCase().contains("jetty"))
 			RUNNING_ON_JETTY = true;
 		log.info("Running on jetty: " + RUNNING_ON_JETTY);
 	}
@@ -236,7 +233,7 @@ public class JSPHelper {
 		HttpSession session = request.getSession();
 		String userKey = (String) getSessionAttribute(session, "userKey");
 		ServletContext application = session.getServletContext();
-		String documentRootPath = application.getRealPath("/").toString();
+		String documentRootPath = application.getRealPath("/");
 
 		return documentRootPath + File.separatorChar + userKey;
 	}
@@ -256,7 +253,7 @@ public class JSPHelper {
 
 		// newParams will contain only the strings that successfully can be converted to utf-8
 		// others will be reported and ignored
-		List<String> newParams = new ArrayList<String>();
+		List<String> newParams = new ArrayList<>();
 		for (int i = 0; i < params.length; i++)
 		{
 			try {
@@ -302,22 +299,6 @@ public class JSPHelper {
 	{
 		//return "localhost".equals(request.getServerName());
 		return !ModeConfig.isMultiUser();
-	}
-
-    public static boolean runningOnMuseMachine(HttpServletRequest request){
-        String sn = request.getServerName();
-        if(sn!=null){
-            return sn.contains("stanford");
-        }
-        return false;
-    }
-
-	public static boolean runningOnAshokaMachine(HttpServletRequest request){
-		String sn = request.getServerName();
-		if(sn!=null){
-			return sn.contains("ashoka.edu.in");
-		}
-		return false;
 	}
 
 	//	/* this version of fetchemails must have folders defined in request since there is no primary email address */
@@ -486,9 +467,11 @@ public class JSPHelper {
 		// always set up attachmentsStore even if we are not fetching attachments
 		// because the user may already have stuff in it -- if so, we should make it available.
 		String attachmentsStoreDir = baseDir + File.separator + Archive.BLOBS_SUBDIR + File.separator;
-		BlobStore attachmentsStore = null;
+		BlobStore attachmentsStore;
 		try {
-			new File(attachmentsStoreDir).mkdirs();
+			boolean b = new File(attachmentsStoreDir).mkdirs();
+			if (!b)
+				throw new IOException("Unable to create directory: " + attachmentsStoreDir);
 			attachmentsStore = new BlobStore(attachmentsStoreDir);
 		} catch (IOException ioe) {
 			log.error("MAJOR ERROR: Disabling attachments because unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe + " " + Util.stackTrace(ioe));
@@ -497,15 +480,10 @@ public class JSPHelper {
 		return attachmentsStore;
 	}
 
-	public static Archive preparedArchive(HttpServletRequest request, String baseDir) throws IOException
-	{
-		return preparedArchive(request, baseDir, null);
-	}
-
 	/** creates a new archive and returns it */
 	public static Archive preparedArchive(HttpServletRequest request, String baseDir, List<String> extraOptions) throws IOException
 	{
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 
 		if (request != null)
 		{
@@ -575,11 +553,6 @@ public class JSPHelper {
 		return archive;
 	}
 
-	public static String getRequestDescription(HttpServletRequest request)
-	{
-		return getRequestDescription(request, true);
-	}
-
 	/** also sets current thread name to the path of the request */
 	private static String getRequestDescription(HttpServletRequest request, boolean includingParams)
 	{
@@ -587,7 +560,7 @@ public class JSPHelper {
 		String page = request.getServletPath();
 		Thread.currentThread().setName(page);
 		String userKey = (String) session.getAttribute("userKey");
-		StringBuilder sb = new StringBuilder("Request[" + userKey + "@" + request.getRemoteAddr().toString() + "]: " + request.getRequestURL());
+		StringBuilder sb = new StringBuilder("Request[" + userKey + "@" + request.getRemoteAddr() + "]: " + request.getRequestURL());
 		// return here if params are not to be included
 		if (!includingParams)
 			return sb.toString();
@@ -625,11 +598,6 @@ public class JSPHelper {
 
 		sb.append(" link: " + link);
 		return sb.toString();
-	}
-
-	public static void logRequest(HttpServletRequest request, boolean includingParams)
-	{
-		log.info("NEW " + getRequestDescription(request, includingParams));
 	}
 
 	public static void logRequest(HttpServletRequest request)
@@ -677,19 +645,6 @@ public class JSPHelper {
 	public static Collection<String> getParams(Multimap<String, String> params, String key) {
 		Collection<String> values = params.get(key);
 		return values;
-	}
-
-	// returns just the request params as a string
-	public static String getRequestParamsAsString(HttpServletRequest request)
-	{
-		// could probably also do it by looking at request url etc.
-		String requestParams = "";
-		Map<String, String[]> rpmap = request.getParameterMap();
-		for (String key : rpmap.keySet())
-			for (String value : rpmap.get(key))
-				// rpmap has a string array for each param
-				requestParams += (key + '=' + value + "&");
-		return requestParams;
 	}
 
 	/** invoke only from getHTMLForHeader, needs specific context of date etc. */
@@ -751,114 +706,19 @@ public class JSPHelper {
 		if (s == null)
 			s = a.getPersonal();
 		if (s == null)
-			return new Pair<String, String>("", "");
+			return new Pair<>("", "");
 
 		// TODO (maybe after archive data structures re-org): below should pass archive ID to browse page
 		if (addressBook == null) {
-			return new Pair<String, String>(s, "browse?archiveID="+archiveID+"&person=" + s);
+			return new Pair<>(s, "browse?archiveID="+archiveID+"&person=" + s);
 		} else {
 			Contact contact = addressBook.lookupByEmail(a.getAddress());
-			return new Pair<String, String>(s, "browse?archiveID="+archiveID+"&contact=" + addressBook.getContactId(contact));
+			return new Pair<>(s, "browse?archiveID="+archiveID+"&contact=" + addressBook.getContactId(contact));
 		}
 	}
-
-	public static String getURLForGroupMessages(String archiveID,int groupIdx)
-	{
-		return "browse?archiveID="+archiveID+"&groupIdx=" + groupIdx;
-	}
-
-	public static String docControls(String messagesLink, String attachmentsLink, String linksLink)
-	{
-		String result = "";
-		if (messagesLink != null)
-			result += "<a target=\"#\" href=\"" + messagesLink + "\"><img title=\"Messages\" src=\"/muse/images/email.jpg\" width=\"24\"/></a>\n";
-		if (!ModeConfig.isPublicMode()) {
-			if (attachmentsLink != null)
-				result += "<a target=\"#\"  href=\"" + attachmentsLink + "\"><img title=\"Attachments\" width=\"24\" src=\"/muse/images/paperclip.png\"/></a>\n";
-			if (linksLink != null)
-				result += "<a target=\"_links\" href=\"" + linksLink + "\"><img title=\"Links\" width=\"24\" src=\"/muse/images/link.png\"/></a>\n";
-		}
-		return result;
-	}
-
-	/** only used by slant */
-	public static List<LinkInfo> extractLinks(Archive archive, HttpSession session, Collection<Document> docsToIndex, AddressBook addressBook)
-	{
-		try {
-			archive.setAddressBook(addressBook);
-			session.setAttribute("statusProvider", new StaticStatusProvider("Extracting links"));
-			archive.extractLinks(docsToIndex);
-			return EmailUtils.getLinksForDocs(docsToIndex);
-		} catch (Exception e)
-		{
-			Util.print_exception(e, log);
-			session.setAttribute("errorMessage", "An exception occurred");
-			session.setAttribute("exception", e);
-			return null;
-		}
-	}
-
-	// must be kept in sync with NewFilter.isRegexSearch()
-	private static boolean isRegexSearch(HttpServletRequest request)
-	{
-		return "on".equals(request.getParameter("unindexed"));
-	}
-
-
-
-
-
-	private static Set<Document> getAllDocsAsSet(HttpSession session, boolean only_apply_to_filtered_docs, HttpServletRequest request)
-	{
-		Archive archive = JSPHelper.getArchive(request);
-
-		if (!only_apply_to_filtered_docs)
-			return archive.getAllDocsAsSet();
-
-		Collection<Document> docs = (Collection<Document>) getSessionAttribute(session, "emailDocs");
-		if (docs == null)
-			return new LinkedHashSet<Document>(archive.getAllDocsAsSet());
-		return new LinkedHashSet<Document>(docs);
-	}
-
-	/**
-	 * returns whether filter is set. Note that a filter may be set, but in a
-	 * way that covers all docs,
-	 * in which case, we treat the filter as effectively not set.
-	 */
-	public static boolean isFilterSet(HttpSession session)
-	{
-		// if filter set, emailDocs is set and the # of docs it has is < archive docs's size.
-		Archive archive = (Archive) getSessionAttribute(session, "archive");
-		if (archive == null || archive.getAllDocs() == null)
-			return false;
-		Collection<Document> docs = (Collection<Document>) getSessionAttribute(session, "emailDocs");
-		if (docs == null)
-			return false;
-		return (docs.size() < archive.getAllDocs().size());
-	}
-
-
-	public static void setSessionConfigParam(HttpServletRequest request)
-	{
-		String key = request.getParameter("key");
-		String value = request.getParameter("value");
-		log.info("setting session var: " + key + " to " + value);
-		if (key == null)
-			return;
-
-		if (!runningOnLocalhost(request) && ("user".equalsIgnoreCase(key) || "userKey".equalsIgnoreCase(key) || "cacheDir".equalsIgnoreCase(key)))
-		{
-			log.warn("Dropping attempt to set taboo session var: " + key + " = " + value + " -- this can be dangerous in a hosted environment.");
-			return;
-		}
-		request.getSession().setAttribute(key, value);
-	}
-
-
 
 	/** serve up a file from the cache_dir */
-	public static void serveBlob(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public static void serveBlob(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		HttpSession session = request.getSession();
 		String filename = request.getParameter("file");
@@ -870,7 +730,7 @@ public class JSPHelper {
 		assert archive!=null: new AssertionError("ArchiveID not passed to serveAttachment.jsp");
 		String baseDir = archive.baseDir;
 
-		if (filename.indexOf(".." + File.separator) >= 0) // avoid file injection!
+		if (filename.contains(".." + File.separator)) // avoid file injection!
 		{
 			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -884,14 +744,13 @@ public class JSPHelper {
 	}
 
 	/** serve up a file from the cache_dir */
-	public static void serveImage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public static void serveImage(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		HttpSession session = request.getSession();
 		String filename = request.getParameter("file");
 		filename = convertRequestParamToUTF8(filename);
-		String type = request.getParameter("type");
 		String baseDir = (String) getSessionAttribute(session, "cacheDir");
-		if (filename.indexOf(".." + File.separator) >= 0) // avoid file injection!
+		if (filename.contains(".." + File.separator)) // avoid file injection!
 		{
 			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -905,7 +764,7 @@ public class JSPHelper {
 	}
 
 	/** serve up a file from the temp dir, mainly used for serving exported mbox files*/
-	public static void serveTemp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public static void serveTemp(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		HttpSession session = request.getSession();
 		String filename = request.getParameter("file");
@@ -917,7 +776,7 @@ public class JSPHelper {
 		assert archive!=null: new AssertionError("ArchiveID not passed to serveTemp.jsp");
 		String baseDir = archive.baseDir;
 
-		if (filename.indexOf(".." + File.separator) >= 0) // avoid file injection!
+		if (filename.contains(".." + File.separator)) // avoid file injection!
 		{
 			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -1012,7 +871,7 @@ public class JSPHelper {
 
 	public static Collection<DatedDocument> filterByDate(Collection<DatedDocument> docs, String dateSpec)
 	{
-		List<DatedDocument> selectedDocs = new ArrayList<DatedDocument>();
+		List<DatedDocument> selectedDocs = new ArrayList<>();
 		if (Util.nullOrEmpty(dateSpec))
 			return docs;
 
@@ -1034,10 +893,9 @@ public class JSPHelper {
 	public static String createOrEditLabels(HttpServletRequest request){
 		JSONObject result = new JSONObject();
 
-		Archive archive = JSPHelper.getArchive(request);
-
 		try {
-			LabelManager.LabType labelType = null;
+			Archive archive = JSPHelper.getArchive(request);
+			LabelManager.LabType labelType;
 			try {
 				labelType = LabelManager.LabType.valueOf(request.getParameter("labelType"));
 			} catch (Exception e) {

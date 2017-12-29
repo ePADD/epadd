@@ -2,6 +2,9 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
 <%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@ page import="java.util.GregorianCalendar" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Calendar" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
 <%
@@ -24,8 +27,13 @@
             labelDescription = label.getDescription();
             labelType = label.getType().toString();
             restrictionType = (label.getRestrictionType() != null) ? label.getRestrictionType().toString() : "";
-            if (label.getRestrictedUntilTime() > 0)
-                restrictionUntilTime = Long.toString(label.getRestrictedUntilTime());
+            if (label.getRestrictedUntilTime() > 0) {
+                // convert from long to yyyy-mm-dd
+                Calendar c = new GregorianCalendar();
+                c.setTime (new Date(label.getRestrictedUntilTime()));
+                // don't forget the +1 adjustment for month
+                restrictionUntilTime = String.format ("%04d-%02d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DATE));
+            }
             if (label.getRestrictedForYears() > 0)
                 restrictedForYears = Long.toString(label.getRestrictedForYears());
 
@@ -157,55 +165,54 @@
 </form>
 <br/>
 <script>
-    // show or hide restrictions-details div based on whether it's a general or restriction label
-    function label_type_refresh () {
-        var type = $('#labelType').selectpicker('val');
-        if ('<%=LabelManager.LabType.RESTR_LAB.toString()%>' === type)
-            $('.restriction-details').show();
-        else
-            $('.restriction-details').hide();
-    }
-
-    // show/hide the correct option based on restriction type
-    function restriction_type_refresh() {
-        var type = $('#restrictionType').selectpicker('val');
-        if ('<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>' === type) {
-            $('.div-restrictedForYears').show();
-            $('.div-restrictedUntil').hide();
-        } else if ('<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>' === type) {
-            $('.div-restrictedForYears').hide();
-            $('.div-restrictedUntil').show();
-        } else if ('<%=LabelManager.RestrictionType.OTHER.toString()%>' === type) {
-            $('.div-restrictedForYears').hide();
-            $('.div-restrictedUntil').hide();
-        }
-    };
-
-    function do_save(event) {
-        // get the form data using jquery's method
-        var formData = $('form').serialize();
-
-        // process the form
-        $.ajax({
-            type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url         : 'ajax/createEditLabels.jsp', // the url where we want to POST
-            data        : formData, // our data object
-            dataType    : 'json', // what type of data do we expect back from the server
-            success: function(response) {
-                if (!response || response.status !== 0) {
-                    epadd.alert("Error: " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
-                } else {
-                    epadd.alert('Label updated.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
-                }
-            },
-            error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
-        });
-
-        // stop the form from submitting the normal way and refreshing the page
-        event.preventDefault();
-    }
-
     $(document).ready(function() {
+        // show or hide restrictions-details div based on whether it's a general or restriction label
+        function label_type_refresh () {
+            var type = $('#labelType').selectpicker('val');
+            if ('<%=LabelManager.LabType.RESTR_LAB.toString()%>' === type)
+                $('.restriction-details').show();
+            else
+                $('.restriction-details').hide();
+        }
+
+        // show/hide the correct option based on restriction type
+        function restriction_type_refresh() {
+            var type = $('#restrictionType').selectpicker('val');
+            if ('<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>' === type) {
+                $('.div-restrictedForYears').show();
+                $('.div-restrictedUntil').hide();
+            } else if ('<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>' === type) {
+                $('.div-restrictedForYears').hide();
+                $('.div-restrictedUntil').show();
+            } else if ('<%=LabelManager.RestrictionType.OTHER.toString()%>' === type) {
+                $('.div-restrictedForYears').hide();
+                $('.div-restrictedUntil').hide();
+            }
+        }
+
+        function do_save(event) {
+            // get the form data using jquery's method
+            var formData = $('form').serialize();
+
+            // process the form
+            $.ajax({
+                type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url         : 'ajax/createEditLabels.jsp', // the url where we want to POST
+                data        : formData, // our data object
+                dataType    : 'json', // what type of data do we expect back from the server
+                success: function(response) {
+                    if (!response || response.status !== 0) {
+                        epadd.alert("Error: " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
+                    } else {
+                        epadd.alert('Label updated.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
+                    }
+                },
+                error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+            });
+
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+        }
         $('#labelType').on ('change', label_type_refresh);
         $('#restrictionType').on ('change', restriction_type_refresh);
 
@@ -221,14 +228,16 @@
         <%--4.Show errors if there are any--%>
         <%--//https://scotch.io/tutorials/submitting-ajax-forms-with-jquery--%>
 
-        $('#save-label-form').submit(do_save);
 
         $('#restrictedUntil').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
             dateFormat: "yy-mm-dd"
         });
+
+        $('#save-label-form').submit(do_save);
     });
 </script>
+
 <jsp:include page="footer.jsp"/>
 </body>
 </html>
