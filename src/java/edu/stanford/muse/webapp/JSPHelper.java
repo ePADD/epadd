@@ -1029,63 +1029,113 @@ public class JSPHelper {
 		return selectedDocs;
 	}
 
-	//handles create/edit label request received from labels.jsp.
-	//returns JSON with {status: (0 = passed, non-0 = failed), errorMessage: error message that can be shown to a user}
+	// handles create/edit label request received from edit-label.jsp.
+	// returns JSON with {status: (0 = passed, non-0 = failed), errorMessage: error message that can be shown to a user}
 	public static String createOrEditLabels(HttpServletRequest request){
 		JSONObject result = new JSONObject();
 
 		Archive archive = JSPHelper.getArchive(request);
 
 		try {
+			LabelManager.LabType labelType = null;
+			try {
+				labelType = LabelManager.LabType.valueOf(request.getParameter("labelType"));
+			} catch (Exception e) {
+				result.put("status", 1);
+				result.put("errorMessage", "Please specify a type of label.");
+				return result.toString();
+			}
+
 			String labelName = request.getParameter("labelName");
+			if (Util.nullOrEmpty(labelName)) {
+				result.put("status", 8);
+				result.put("errorMessage", "Label name cannot be empty.");
+				return result.toString();
+			}
+
 			String description = request.getParameter("labelDescription");
-			LabelManager.LabType type = LabelManager.LabType.valueOf(request.getParameter("labelType"));
 
 			// check if it is label creation request or label updation one.
-			String labelID=request.getParameter("labelID");
-			Label label = archive.getLabelManager().getLabel(labelID);
+			String labelID = request.getParameter("labelID");
+			LabelManager labelManager = archive.getLabelManager();
+			Label label = labelManager.getLabel(labelID);
 
 			// create the label if it doesn't exist, or update it if it does
 			if (label != null) {
-				label.update(labelName, description, type);
+				label.update(labelName, description, labelType);
 			} else {
-				label = archive.getLabelManager().createLabel(labelName, description, type);
+				label = labelManager.createLabel(labelName, description, labelType);
 			}
 
-			if (type == LabelManager.LabType.RESTR_LAB) {
-				// extra fields for restricton labels only
+			// more processing for restriction labels
+			if (labelType == LabelManager.LabType.RESTR_LAB) {
+				LabelManager.RestrictionType restrictionType = LabelManager.RestrictionType.valueOf(request.getParameter("restrictionType"));
+
+				// read extra fields for restricton labels only
 				long restrictedUntil = -1;
 				int restrictedForYears = -1;
 
-				String restrictedUntilStr = request.getParameter("restrictedUntil"); // this is in the form yyyy-mm-dd
-				String restrictedForYearsStr = request.getParameter("restrictedForYears"); // this is in the form yyyy-mm-dd
-				if (!Util.nullOrEmpty(restrictedUntilStr)) {
-					List<String> startTokens = Util.tokenize(restrictedUntilStr, "-");
-					int y = Integer.parseInt(startTokens.get(0));
-					int m = Integer.parseInt(startTokens.get(1)) - 1; // -1 because Calendar.MONTH starts from 0, while user will input from 1
-					int d = Integer.parseInt(startTokens.get(2));
-					Calendar c = new GregorianCalendar();
-					c.set(Calendar.YEAR, y);
-					c.set(Calendar.MONTH, m);
-					c.set(Calendar.DATE, d);
-					restrictedUntil = c.getTime().getTime();
+				// RESTRICTED_UNTIL processing
+				if (restrictionType == LabelManager.RestrictionType.RESTRICTED_UNTIL) {
+					String restrictedUntilStr = request.getParameter("restrictedUntil"); // this is in the form yyyy-mm-dd
+					try {
+						if (!Util.nullOrEmpty(restrictedUntilStr)) {
+							List<String> startTokens = Util.tokenize(restrictedUntilStr, "-");
+							int y = Integer.parseInt(startTokens.get(0));
+							int m = Integer.parseInt(startTokens.get(1)) - 1; // -1 because Calendar.MONTH starts from 0, while user will input from 1
+							int d = Integer.parseInt(startTokens.get(2));
+							Calendar c = new GregorianCalendar();
+							c.set(Calendar.YEAR, y);
+							c.set(Calendar.MONTH, m);
+							c.set(Calendar.DATE, d);
+							restrictedUntil = c.getTime().getTime();
+						} else {
+							// empty string came in for restrictedUntil
+							result.put("status", 2);
+							result.put("errorMessage", "Please specify the date until which the restriction applies.");
+							return result.toString();
+						}
+					} catch (Exception e) {
+						result.put("status", 3);
+						result.put("errorMessage", "Invalid date string: " + Util.escapeHTML(restrictedUntilStr) + ". Please use the format yyyy-mm-dd. ");
+						return result.toString();
+					}
+				} else if (restrictionType == LabelManager.RestrictionType.RESTRICTED_FOR_YEARS) {
+					// RESTRICTED_FOR_YEARS processing
+					String restrictedForYearsStr = request.getParameter("restrictedForYears"); // this is in the form yyyy-mm-dd
+					try {
+						if (!Util.nullOrEmpty(restrictedForYearsStr)) {
+							restrictedForYears = Integer.parseInt(restrictedForYearsStr);
+							if (restrictedForYears <= 0) {
+								result.put("status", 4);
+								result.put("errorMessage", "Invalid value for #years: " + Util.escapeHTML(restrictedForYearsStr) + ". Number of years restricted should be positive.");
+								return result.toString();
+							}
+						} else {
+							// empty string came in for restrictedForYears
+							result.put("status", 5);
+							result.put("errorMessage", "Please specify the number of years for which the restriction applies.");
+							return result.toString();
+						}
+					} catch (Exception e) {
+						result.put("status", 6);
+						result.put("errorMessage", "Invalid value for #years:  " + Util.escapeHTML(restrictedForYearsStr) + ". Please enter a number.");
+						return result.toString();
+					}
 				}
 
-				if (!Util.nullOrEmpty(restrictedForYearsStr)) {
-					restrictedForYears = Integer.parseInt(restrictedForYearsStr);
-				}
-
-				label.setRestrictionDetails(LabelManager.RestrictionType.valueOf("restrictionType"), restrictedUntil, restrictedForYears, request.getParameter("labelAppliesToMessageText"));
+				String labelAppliesToMessageText = request.getParameter("labelAppliesToMessageText");
+				label.setRestrictionDetails (restrictionType, restrictedUntil, restrictedForYears, labelAppliesToMessageText);
 			}
 
 			// if no exception happened, status is 0
 			result.put ("status", 0);
 			result.put ("labelID", label.getLabelID());
-			return labelID;
+			return result.toString();
 		} catch (Exception e) {
-			result.put ("status", 1);
+			result.put ("status", 7);
 			result.put ("errorMessage", "Exception while saving label: " + e.getMessage());
+			return result.toString();
 		}
-		return result.toString();
 	}
 }

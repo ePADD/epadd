@@ -43,9 +43,13 @@
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css"/>
 	<jsp:include page="css/css.jsp"/>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
+    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
 
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui/jquery-ui.js"></script>
+
     <script src="js/selectpicker.js"></script>
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
@@ -115,6 +119,9 @@
                 <label for="restrictionType">Restriction type</label>
                 <select id="restrictionType" name="restrictionType" class="form-control selectpicker">
                     <option value="" selected disabled>Restriction type</option>
+                    <option value="<%=LabelManager.RestrictionType.OTHER.toString()%>"
+                            <%=LabelManager.RestrictionType.OTHER.toString().equals(restrictionType) ? "selected":""%>
+                    >Not actionable</option>
                     <option value="<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>"
                                  <%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString().equals(restrictionType) ? "selected":""%>
                             >Until date</option>
@@ -153,7 +160,7 @@
     // show or hide restrictions-details div based on whether it's a general or restriction label
     function label_type_refresh () {
         var type = $('#labelType').selectpicker('val');
-        if ('<%=LabelManager.LabType.RESTR_LAB.toString()%>' == type)
+        if ('<%=LabelManager.LabType.RESTR_LAB.toString()%>' === type)
             $('.restriction-details').show();
         else
             $('.restriction-details').hide();
@@ -165,9 +172,12 @@
         if ('<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>' === type) {
             $('.div-restrictedForYears').show();
             $('.div-restrictedUntil').hide();
-        } else {
+        } else if ('<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>' === type) {
             $('.div-restrictedForYears').hide();
             $('.div-restrictedUntil').show();
+        } else if ('<%=LabelManager.RestrictionType.OTHER.toString()%>' === type) {
+            $('.div-restrictedForYears').hide();
+            $('.div-restrictedUntil').hide();
         }
     };
 
@@ -181,7 +191,13 @@
             url         : 'ajax/createEditLabels.jsp', // the url where we want to POST
             data        : formData, // our data object
             dataType    : 'json', // what type of data do we expect back from the server
-            success: function(data) { epadd.alert('Label updated.', function(){window.location='labels?archiveID=<%=archiveID%>'});},
+            success: function(response) {
+                if (!response || response.status !== 0) {
+                    epadd.alert("Error: " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
+                } else {
+                    epadd.alert('Label updated.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
+                }
+            },
             error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
         });
 
@@ -190,12 +206,12 @@
     }
 
     $(document).ready(function() {
-        $('#labelType').on ('change', refresh_label_type);
+        $('#labelType').on ('change', label_type_refresh);
         $('#restrictionType').on ('change', restriction_type_refresh);
 
         // also call once to ensure the correct options are selected
-        refresh_label_type();
-        refresh_restriction_type();
+        label_type_refresh();
+        restriction_type_refresh();
 
         // process the form
         <%--Code base/template to submit this form data using ajax. The steps are as following;--%>

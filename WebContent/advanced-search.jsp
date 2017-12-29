@@ -16,8 +16,8 @@
 	<meta charset="utf-8">
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-		<link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
-		<link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
+	<link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
+	<link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
 
 		<jsp:include page="css/css.jsp"/>
 
@@ -58,9 +58,9 @@
 
 	<script  src="js/jquery-migrate-1.2.1.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-		<script src="js/jquery-ui/jquery-ui.js"></script>
+	<script src="js/jquery-ui/jquery-ui.js"></script>
 
-		<script src="js/modernizr.min.js"></script>
+	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 	<script src="js/selectpicker.js"></script>
 	<script src="js/muse.js"></script>
