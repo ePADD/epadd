@@ -513,6 +513,16 @@
 	    <url-pattern>/settings</url-pattern>
 	</servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>epadd-settings</servlet-name>
+		<jsp-file>/epadd-settings.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>epadd-settings</servlet-name>
+		<url-pattern>/epadd-settings</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>about</servlet-name>
 		<jsp-file>/about.jsp</jsp-file>
