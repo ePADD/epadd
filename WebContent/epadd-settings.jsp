@@ -1,7 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
-<%@include file="getArchive.jspf" %>
+<%--<%@include file="getArchive.jspf" %>--%>
 
 <!DOCTYPE HTML>
 <html lang="en">
@@ -26,7 +26,7 @@
 	</style>
 </head>
 <body style="color:gray;">
-<jsp:include page="header.jspf"/>
+<%--<jsp:include page="header.jspf"/>--%>
 <jsp:include page="alert.jspf"/>
 
 <p>

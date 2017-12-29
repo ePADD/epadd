@@ -144,9 +144,9 @@
 					<%
 						if(haveArchive){
 					%>
-					<li><a target="_blank" href="settings?archiveID=<%=archiveID%>"><i class="menu-icon fa fa-gear"></i>ePADD-Settings</a></li>
+					<li><a target="_blank" href="settings?archiveID=<%=archiveID%>"><i class="menu-icon fa fa-gear"></i>Settings</a></li>
 					<%}%>
-					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>Settings</a></li>
+					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD-Settings</a></li>
 
 					<li><a target="_blank" href="https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc/edit"><i class="menu-icon fa fa-book fa-fw"></i>Documentation</a></li>
 					<li><a target="_blank" href="https://epadd.nimeyo.com"><i class="menu-icon fa fa-user fa-question"></i>User forums</a></li>
