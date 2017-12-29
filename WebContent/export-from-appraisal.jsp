@@ -9,6 +9,8 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
+<%@ page import="java.util.stream.Collectors" %>
+<%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
@@ -65,7 +67,7 @@
 
 	//TimeKeeper.snap();
 	String folder = dir + File.separator + "ePADD archive of " + bestName;
-	List<EmailDocument> docsToExport = new ArrayList<EmailDocument>();
+	List<Document> docsToExport = new ArrayList<Document>();
 
 	/*
 	@TODO-Export Take decision on exporting based on labels of this document set
@@ -76,10 +78,14 @@
 			docsToExport.add(ed);
 	}
 */
+		docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING);
+
+		//From appraisal to processing we do not remove any label from labelManager so pass the current
+		//label info map as an argument to set labelmanager for the exported archive.
     JSPHelper.log.info("Exporting #"+docsToExport.size()+" docs");
 	// to do: need a progress bar here
 	try {
-		archive.export(docsToExport, false /* public mode */, folder, "default");
+		archive.export(docsToExport, Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING, folder, "default");
 	} catch (Exception e) {
 		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
 		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");

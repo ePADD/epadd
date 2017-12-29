@@ -40,8 +40,10 @@ import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.math3.analysis.function.Exp;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 
 import java.io.*;
@@ -78,6 +80,7 @@ public class Archive implements Serializable {
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
     public static final String LABELMAPFILE_SUFFIX= "LabelMapper";
 
+    public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY};
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
 
     ////////////  CACHE variables ///////////////
@@ -853,6 +856,76 @@ public class Archive implements Serializable {
 	 * true; }
 	 */
 
+
+    /** Get docs for export based on the module for which exporting is taking place*/
+    public List<Document> getDocsForExport(Export_Mode mode) {
+        List<Document> docsToExport = new LinkedList<>();
+        if (mode == Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING) {
+            //any message with DNT label will not be transferred
+            for (Document d : getAllDocs()) {
+                EmailDocument ed = (EmailDocument) d;
+                //export the doc only if it does not contain DNT label
+                if (!getLabelIDs(ed).contains(LabelManager.LABELID_DNT))
+                    docsToExport.add(d);
+            }
+        } else if (mode == Export_Mode.EXPORT_PROCESSING_TO_DELIVERY || mode == Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY) {
+            //get a set of general restriction ids from labelManager
+            //get a set of timed-restriction ids from LabelManager
+            Set<Label> allRestrictions = getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
+            Set<String> genRestriction = new HashSet<>();
+            Set<String> timedRestriction = new HashSet<>();
+            allRestrictions.forEach(label -> {
+                if (label.getRestrictionType() == LabelManager.RestrictionType.OTHER)
+                    genRestriction.add(label.getLabelID());
+                else
+                    timedRestriction.add(label.getLabelID());
+            });
+            //any message with any general restriction label (including DNT) will not be transferred
+            //any message with timed-restriction label whose date is not over, will not be transferred
+            //everything else will be transferred.
+            //@TODO- Not yet implemented the labelAppliesToText part of label.
+            for (Document d : getAllDocs()) {
+                EmailDocument ed = (EmailDocument) d;
+                //Do not export if it contains any general restriction label
+                if (Util.setIntersection(getLabelIDs(ed), genRestriction).size() != 0) {
+                    //means at least one general restriction label on this doc, do not export it.
+                    //nothing to be done
+                } else if (Util.setIntersection(getLabelIDs(ed), timedRestriction).size() != 0) {
+                    //0.If we can not find the correct time of this document then be conservative and
+                    //dont' export it.
+                    if(EmailFetcherThread.INVALID_DATE.equals(ed.getDate()))
+                        continue;
+                    Date dt = ed.getDate();
+                    //1.means at least one timed restriction label on this doc. Check for the timed data
+                    //if it is past current date/time then export else dont'
+                    //2.get those timed restrictions
+                    Set<String> timedrestrictions = Util.setIntersection(getLabelIDs(ed),timedRestriction);
+                    //if any of the timedrestriction is not satisfied then don't export it.
+                    for(String labid: timedRestriction){
+                        Label l = getLabelManager().getLabel(labid);
+                        if(l.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_FOR_YEARS){
+                            int year = l.getRestrictedForYears();
+                            Date future = new DateTime(dt).plusYears(year).toDate();
+                            Date today = new DateTime().toDate();
+                            if(future.before(today))//means the time is over
+                                docsToExport.add(d);//add doc
+                        }else if(l.getRestrictionType() == LabelManager.RestrictionType.RESTRICTED_UNTIL){
+                            Date today = new DateTime().toDate();
+                            if(l.getRestrictedUntilTime()<today.getTime())//means the restriction time is over
+                                docsToExport.add(d);//add doc
+                        }
+                    }
+                } else {
+                    //else export it
+                    docsToExport.add(d);
+                }
+            }
+
+        }
+    return docsToExport;
+    }
+
+
     /**
      * a fresh archive is created under out_dir. name is the name of the session
      * under it. blobs are exported into this archive dir. destructive! but
@@ -861,7 +934,7 @@ public class Archive implements Serializable {
      * @param retainedDocs
      * @throws Exception
      */
-    public synchronized String export(Collection<? extends Document> retainedDocs, final boolean exportInPublicMode, String out_dir, String name) throws Exception {
+    public synchronized String export(Collection<? extends Document> retainedDocs, Export_Mode export_mode, String out_dir, String name) throws Exception {
         if (Util.nullOrEmpty(out_dir))
             return null;
         File dir = new File(out_dir);
@@ -872,6 +945,7 @@ public class Archive implements Serializable {
             log.warn("Unable to create directory: " + out_dir);
             return null;
         }
+        boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY? true: false;
         Archive.prepareBaseDir(out_dir);
         if (!exportInPublicMode && new File(baseDir + File.separator + LEXICONS_SUBDIR).exists())
             FileUtils.copyDirectory(new File(baseDir + File.separator + LEXICONS_SUBDIR), new File(out_dir + File.separator + LEXICONS_SUBDIR));
@@ -885,11 +959,15 @@ public class Archive implements Serializable {
 
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
-
+        LabelManager oldLabelManager= getLabelManager();
+        /////////////////saving done//////////////////////////////////
+        //change state of the current archive -temporarily//////////
         allDocs = new ArrayList<>(retainedDocs);
         if (exportInPublicMode)
             replaceDescriptionWithNames(allDocs, this);
-
+        Set<String> retainedDocIDs = retainedDocs.stream().map(f-> f.getUniqueId()).collect(Collectors.toSet());
+        LabelManager newLabelManager = getLabelManager().getLabelManagerForExport(retainedDocIDs,export_mode);
+        setLabelManager(newLabelManager);
         // copy index and if for public mode, also redact body and remove title
         // fields
         final boolean redact_body_instead_of_remove = true;
@@ -971,13 +1049,18 @@ public class Archive implements Serializable {
             // switch to the new blob store (important -- the urls and indexes in the new blob store are different from the old one! */
             blobStore = newBlobStore;
         }
+        String oldBaseDir = baseDir;
+        //change base directory
+        setBaseDir(out_dir);
 
         // write out the archive file
         SimpleSessions.saveArchive(out_dir, name, this); // save .session file.
         log.info("Completed saving archive object");
 
         // restore states
+        setBaseDir(oldBaseDir);
         allDocs = savedAllDocs;
+        setLabelManager(oldLabelManager);
 
         return out_dir;
     }

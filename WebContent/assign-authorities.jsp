@@ -138,7 +138,8 @@
     for (Contact c: contacts) {
         String name = c.pickBestName();
         CorrespondentAuthorityMapper.AuthorityInfo info = cAuthorityMapper.getCorrespondentAuthorityInfo(archiveID,addressBook, name);
-
+        if(info==null)
+            continue;
         boolean showRow = false;
         switch (rowType) {
             case 1:

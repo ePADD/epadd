@@ -390,7 +390,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var $button = $(e.target);
             if ($button.hasClass('faded'))
                 return false; // do nothing;
-            var baseUrl = '<%=ModeConfig.isProcessingMode() ? "export-complete-processing":"export-complete"%>';
+            var baseUrl = '<%=ModeConfig.isProcessingMode() ? "export-from-processing":"export-from-appraisal"%>';
             var dir = $('.dir', $('#export-next')).val();
             if (dir && dir.length > 0)
                 window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;

@@ -692,7 +692,7 @@ public class JSPHelper {
 	}
 
 	/** invoke only from getHTMLForHeader, needs specific context of date etc. */
-	public static StringBuilder getHTMLForDate(Date date)
+	public static StringBuilder getHTMLForDate(String archiveID,Date date)
 	{
 		StringBuilder result = new StringBuilder();
 
@@ -702,8 +702,8 @@ public class JSPHelper {
 			c.setTime(date);
 			int year = c.get(Calendar.YEAR);
 			int month = c.get(Calendar.MONTH) + 1; // we need 1-based, not 0-based.
-			String yearOnclick = "\"javascript:window.location='browse?year=" + year + "'\"";
-			String monthOnclick = "\"javascript:window.location='browse?year=" + year + "&month=" + month + "'\"";
+			String yearOnclick = "\"javascript:window.location='browse?archiveID="+archiveID+"&year=" + year + "'\"";
+			String monthOnclick = "\"javascript:window.location='browse?archiveID="+archiveID+"&year="+year+"&month=" + month + "'\"";
 			String monthSpan = "<span class=\"facet\" onclick=" + monthOnclick + ">" + CalendarUtil.getDisplayMonth(c) + "</span> ";
 			String yearSpan = "<span class=\"facet\" onclick=" + yearOnclick + ">" + c.get(Calendar.YEAR) + "</span> ";
 			result.append("<tr><td width=\"10%\" align=\"right\" class=\"muted\">Date: </td><td>" + monthSpan + " " + c.get(Calendar.DATE) + ", " + yearSpan);
@@ -744,7 +744,7 @@ public class JSPHelper {
 		return result;
 	}
 
-	public static Pair<String, String> getNameAndURL(InternetAddress a, AddressBook addressBook)
+	public static Pair<String, String> getNameAndURL(String archiveID,InternetAddress a, AddressBook addressBook)
 	{
 		String s = a.getAddress();
 		if (s == null)
@@ -754,16 +754,16 @@ public class JSPHelper {
 
 		// TODO (maybe after archive data structures re-org): below should pass archive ID to browse page
 		if (addressBook == null) {
-			return new Pair<String, String>(s, "browse?person=" + s);
+			return new Pair<String, String>(s, "browse?archiveID="+archiveID+"&person=" + s);
 		} else {
 			Contact contact = addressBook.lookupByEmail(a.getAddress());
-			return new Pair<String, String>(s, "browse?contact=" + addressBook.getContactId(contact));
+			return new Pair<String, String>(s, "browse?archiveID="+archiveID+"&contact=" + addressBook.getContactId(contact));
 		}
 	}
 
-	public static String getURLForGroupMessages(int groupIdx)
+	public static String getURLForGroupMessages(String archiveID,int groupIdx)
 	{
-		return "browse?groupIdx=" + groupIdx;
+		return "browse?archiveID="+archiveID+"&groupIdx=" + groupIdx;
 	}
 
 	public static String docControls(String messagesLink, String attachmentsLink, String linksLink)
