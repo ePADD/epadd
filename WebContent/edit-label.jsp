@@ -22,7 +22,7 @@
             labelName = label.getLabelName();
             labelDescription = label.getDescription();
             labelType = label.getType().toString();
-            restrictionType = label.getRestrictionType().toString();
+            restrictionType = (label.getRestrictionType() != null) ? label.getRestrictionType().toString() : "";
             if (label.getRestrictedUntilTime() > 0)
                 restrictionUntilTime = Long.toString(label.getRestrictedUntilTime());
             if (label.getRestrictedForYears() > 0)
@@ -59,7 +59,7 @@
 <br/>
 
 <!-- when posted, this form goes back to labels screen -->
-<form action="labels" method="post">
+<form id="save-label-form">
     <div class="container">
     <!--row-->
     <div class="row">
@@ -107,27 +107,35 @@
 
         </div>
 
-        <div style="display:none" class="restriction-details row">
+        <!-- below div is shown only if it's a restriction label -->
+        <div style="" class="restriction-details row">
+            <br/>
             <div class="form-group col-sm-6">
                 <label for="restrictionType">Restriction type</label>
                 <select id="restrictionType" name="restrictionType" class="form-control selectpicker">
                     <option value="" selected disabled>Restriction type</option>
-                    <option value="<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>">Until date</option>
-                    <option value="<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>">Years from date of message</option>
+                    <option value="<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>"
+                                 <%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString().equals(restrictionType) ? "selected":""%>
+                            >Until date</option>
+                    <option value="<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>"
+                        <%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString().equals(restrictionType) ? "selected":""%>
+                        >Years from date of message</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="restrictedUntil"><i class="fa fa-calendar"/> Restricted until</label>
-                <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>">
-            </div>
-            <div class="form-group">
-                <label for="restrictedForYears"><i class="fa fa-calendar"/> Restricted for (years)</label>
-                <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=restrictedForYears%>">
-            </div>
-            <div class="form-group">
-                <label for="restrictedText">Restricted text</label>
-                <input name="restrictedText" id="restrictedText" type="text" class="form-control" value="<%=restrictedText%>">
+                <div style="display:none" class="div-restrictedUntil form-group col-sm-6">
+                    <label for="restrictedUntil"><i class="fa fa-calendar"></i> Restricted until (yyyymmdd)</label>
+                    <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>">
+                </div>
+                <div style="display:none" class="div-restrictedForYears form-group col-sm-6">
+                    <label for="restrictedForYears">Restricted for (years)</label>
+                    <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=restrictedForYears%>">
+                </div>
+                <div class="div-restrictedText form-group col-sm-12">
+                    <label for="restrictedText">Restricted text</label>
+                    <input name="restrictedText" id="restrictedText" type="text" class="form-control" value="<%=restrictedText%>">
+                </div>
             </div>
 
         </div>
@@ -140,42 +148,64 @@
 </div>
 </form>
 <br/>
-<%--Code base/template to submit this form data using ajax. The steps are as following;--%>
-<%--1.Capture the form submit button so that the default action doesn't take place--%>
-<%--2.Get all of the data from our form using jQuery--%>
-<%--3.Submit using AJAX --%>
-<%--4.Show errors if there are any--%>
-<%--//https://scotch.io/tutorials/submitting-ajax-forms-with-jquery--%>
 <script>
-    $(document).ready(function() {
+    // show or hide restrictions-details div based on whether it's a general or restriction label
+    function label_type_refresh () {
+        var type = $('#labelType').selectpicker('val');
+        if ('<%=LabelManager.LabType.RESTR_LAB.toString()%>' == type)
+            $('.restriction-details').show();
+        else
+            $('.restriction-details').hide();
+    }
+
+    // show/hide the correct option based on restriction type
+    function restriction_type_refresh() {
+        var type = $('#restrictionType').selectpicker('val');
+        if ('<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>' === type) {
+            $('.div-restrictedForYears').show();
+            $('.div-restrictedUntil').hide();
+        } else {
+            $('.div-restrictedForYears').hide();
+            $('.div-restrictedUntil').show();
+        }
+    };
+
+    function do_save(event) {
+        // get the form data using jquery's method
+        var formData = $('form').serialize();
+
         // process the form
-        $('form').submit(function(event) {
-            // get the form data using jquery's method
-            var formData = $('form').serialize();
-            /*// there are many ways to get this data using jQuery (you can use the class or id also)
-            var formData = {
-                'name'              : $('input[name=name]').val(),
-                'email'             : $('input[name=email]').val(),
-                'superheroAlias'    : $('input[name=superheroAlias]').val()
-            };*/
-
-            // process the form
-            $.ajax({
-                type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
-                url         : 'ajax/createEditLabels.jsp', // the url where we want to POST
-                data        : formData, // our data object
-                dataType    : 'json', // what type of data do we expect back from the server
-                success: function(data) {epadd.alert('Labels updated!',function(){window.location='labels.jsp?archiveID=<%=archiveID%>'});},
-                error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
-            });
-
-            // stop the form from submitting the normal way and refreshing the page
-            event.preventDefault();
+        $.ajax({
+            type        : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+            url         : 'ajax/createEditLabels.jsp', // the url where we want to POST
+            data        : formData, // our data object
+            dataType    : 'json', // what type of data do we expect back from the server
+            success: function(data) { epadd.alert('Label updated.', function(){window.location='labels?archiveID=<%=archiveID%>'});},
+            error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
         });
 
+        // stop the form from submitting the normal way and refreshing the page
+        event.preventDefault();
+    }
+
+    $(document).ready(function() {
+        $('#labelType').on ('change', refresh_label_type);
+        $('#restrictionType').on ('change', restriction_type_refresh);
+
+        // also call once to ensure the correct options are selected
+        refresh_label_type();
+        refresh_restriction_type();
+
+        // process the form
+        <%--Code base/template to submit this form data using ajax. The steps are as following;--%>
+        <%--1.Capture the form submit button so that the default action doesn't take place--%>
+        <%--2.Get all of the data from our form using jQuery--%>
+        <%--3.Submit using AJAX --%>
+        <%--4.Show errors if there are any--%>
+        <%--//https://scotch.io/tutorials/submitting-ajax-forms-with-jquery--%>
+
+        $('#save-label-form').submit(do_save);
     });
-
-
 </script>
 <jsp:include page="footer.jsp"/>
 </body>

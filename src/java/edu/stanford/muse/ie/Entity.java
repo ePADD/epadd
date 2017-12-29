@@ -48,8 +48,8 @@ public class Entity extends EntityFeature {
 
 	static String				ENTITIES			= "entities";
 	static Set<String>			sws					= new HashSet<String>();
-	static EnglishAnalyzer		en_an				= new EnglishAnalyzer(Version.LUCENE_CURRENT);
-	static QueryParser			parser				= new QueryParser(Version.LUCENE_CURRENT, "some_field", en_an);
+	static EnglishAnalyzer		en_an				= new EnglishAnalyzer(Version.LUCENE_47);
+	static QueryParser			parser				= new QueryParser(Version.LUCENE_47, "some_field", en_an);
 
 	static {
 		String[] temp = edu.stanford.muse.util.Util.stopwords;

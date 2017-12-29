@@ -167,7 +167,7 @@ final class StandardNumberTokenizer extends Tokenizer {
 	public static void main(String[] args) {
 		try {
             StringReader input = new StringReader("Passport number: k4190175 ");
-            StandardNumberTokenizer t = new StandardNumberTokenizer(Version.LUCENE_CURRENT, input);
+            StandardNumberTokenizer t = new StandardNumberTokenizer(Version.LUCENE_47, input);
 			OffsetAttribute offsetAttribute = t.addAttribute(OffsetAttribute.class);
 			CharTermAttribute charTermAttribute = t.addAttribute(CharTermAttribute.class);
 			TypeAttribute typeAttribute = t.addAttribute(TypeAttribute.class);
