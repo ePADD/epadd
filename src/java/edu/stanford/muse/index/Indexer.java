@@ -94,9 +94,9 @@ public class Indexer implements StatusProvider, java.io.Serializable {
     //I dont see why the presetQueries cannot be static. As we read these from a file, there cannot be two set of preset queries for two (or more) archives in session
 	static String[]		presetQueries				= null;
 
-	private Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<String, EmailDocument>();			// docId -> EmailDoc
-	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<String, Blob>();					// attachment's docid -> Blob
-    private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<String, Map<Integer, String>>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
+	private Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// docId -> EmailDoc
+	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
+    private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
 	transient private Directory directory;
 	transient private Directory	directory_blob;																// for attachments
@@ -163,9 +163,9 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	}
 
 
-	IndexOptions				io;
+	private IndexOptions				io;
 	private boolean				cancel							= false;
-	List<LinkInfo>	links							= new ArrayList<LinkInfo>();
+	List<LinkInfo>	links							= new ArrayList<>();
 
 	// Collection<String> dataErrors = new LinkedHashSet<String>();
 
@@ -225,19 +225,15 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	IndexStats			stats					= new IndexStats();
 
-	List<MultiDoc>	docClusters;
-    // mapping of non-zero time cluster index to actual time cluster index
-    Map<Integer, Integer>		nonEmptyTimeClusterMap	= new LinkedHashMap<Integer, Integer>();
+	private List<MultiDoc>	docClusters;
+	List<Document>				docs					= new ArrayList<>();
 
-	List<Document>				docs					= new ArrayList<Document>();
-
-	Indexer(IndexOptions io) throws IOException
-	{
+	private Indexer(IndexOptions io) {
 		clear();
 		this.io = io;
 	}
 
-	Indexer() throws IOException {
+	private Indexer() throws IOException {
 		this(null, null);
 	}
 
@@ -261,8 +257,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	// (Adapted from http://www.flax.co.uk/blog/2011/06/24/how-to-remove-a-stored-field-in-lucene/)
 
 	// report on whether some of these fields exist in the given directory, and return result
-	private static boolean indexHasFields(Directory dir, String... fields) throws IOException
-	{
+	private static boolean indexHasFields() {
 		return true; // return true pending migration of IndexReader to DirectoryReader
 
 		//		if (Util.nullOrEmpty(fields))
@@ -325,8 +320,6 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 				Set<String> names = setNameFieldsOpenNLP(documentText, doc);
 
 				String s = Util.join(names, NAMES_FIELD_DELIMITER); // just some connector for storing the field
-				if (s == null)
-					s = "";
 
 				doc.add(new Field("names", s, ft));
 
@@ -357,8 +350,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			//if (directory_blob == null) directory_blob = initializeDirectory(directory_blob, INDEX_NAME_ATTACHMENTS); // should already be valid
 			iwriter_blob = openIndexWriter(directory_blob);
 		}
-		attachmentDocIdToBlob = new LinkedHashMap<String, Blob>();
-		Set<Blob> processedBlobSet = new LinkedHashSet<Blob>();
+		attachmentDocIdToBlob = new LinkedHashMap<>();
+		Set<Blob> processedBlobSet = new LinkedHashSet<>();
 		boolean result = true;
 		for (EmailDocument e : docs) {
 			result &= indexAttachments(e, blobStore, processedBlobSet, stats);
@@ -371,7 +364,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	{
 		//return new RAMDirectory();
 		String index_dir = baseDir + File.separator + INDEX_BASE_DIR_NAME;
-		new File(index_dir).mkdir(); // will not create parent basedir if not already exist
+		boolean b = new File(index_dir).mkdir(); // will not create parent basedir if not already exist
+		if (!b) {
+			log.warn ("Unable to create directory: " + index_dir);
+			return null;
+		}
 		return FSDirectory.open(new File(index_dir + File.separator + name));
 	}
 
@@ -386,37 +383,16 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		links.clear();
 	}
 
-	private boolean clustersIncludeAllDocs(Collection<edu.stanford.muse.index.Document> docs)
-	{
-		Set<edu.stanford.muse.index.Document> allIndexerDocs = new LinkedHashSet<edu.stanford.muse.index.Document>();
-		for (MultiDoc mdoc : docClusters)
-			allIndexerDocs.addAll(mdoc.docs);
-		for (edu.stanford.muse.index.Document doc : docs)
-			if (!allIndexerDocs.contains(doc))
-				return false;
-		return true;
-	}
-
 	/*
 	 * public Collection<String> getDataErrors() { return
 	 * Collections.unmodifiableCollection(dataErrors); }
 	 */
 
-	private String computeClusterStats(List<MultiDoc> clusters)
-	{
-		int nClusters = clusters.size();
-		String clusterCounts = "";
-		for (MultiDoc mdoc : clusters)
-			clusterCounts += mdoc.docs.size() + "-";
-		return nClusters + " document clusters with message counts: " + clusterCounts;
-	}
-
 	/**
 	 * quick method for extracting links only, without doing all the parsing and
 	 * indexing - used by slant, etc.
 	 */
-	void extractLinks(Collection<edu.stanford.muse.index.Document> docs) throws IOException
-	{
+	void extractLinks(Collection<edu.stanford.muse.index.Document> docs) {
 		try {
 			for (edu.stanford.muse.index.Document d : docs)
 			{
@@ -429,7 +405,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 					contents = getContents(d, true /* original content only */);
 				}
 
-				List<LinkInfo> linksForThisDoc = new ArrayList<LinkInfo>();
+				List<LinkInfo> linksForThisDoc = new ArrayList<>();
 				IndexUtils.populateDocLinks(d, contents, linksForThisDoc, io.includeQuotedMessages);
 				linksForThisDoc = removeDuplicateLinkInfos(linksForThisDoc);
 				d.links = linksForThisDoc; // not necessarily needed, right ?
@@ -449,7 +425,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	}
 
     //This method cannot be moved to Archive because of stats object
-	protected String computeStats(boolean blur)
+	private String computeStats(boolean blur)
 	{
 		String result = "Index options: " + io.toString(blur) + "\n"; // + " " +
 																		// currentJobDocsetSize
@@ -506,7 +482,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		int doneCount = currentJobDocsProcessed + currentJobErrors;
 		String descriptor = (io.ignoreDocumentBody) ? "headers" : " messages";
 		int pctComplete = (doneCount * 100) / currentJobDocsetSize;
-		String processedMessage = "";
+		String processedMessage;
 		if (pctComplete < 100)
 			processedMessage = "Indexing " + Util.commatize(currentJobDocsetSize) + " " + descriptor;
 		else
@@ -520,7 +496,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	/** -1 => all clusters */
 	private List<edu.stanford.muse.index.Document> getDocsInCluster(int clusterNum)
 	{
-		List<edu.stanford.muse.index.Document> result = new ArrayList<edu.stanford.muse.index.Document>();
+		List<edu.stanford.muse.index.Document> result = new ArrayList<>();
 		if (clusterNum < 0)
 		{
 			for (MultiDoc md : docClusters)
@@ -550,8 +526,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	// remove any duplicate link URLs from the incoming LinkInfos
 	private static List<LinkInfo> removeDuplicateLinkInfos(List<LinkInfo> input)
 	{
-		List<LinkInfo> result = new ArrayList<LinkInfo>();
-		Set<String> seenURLs = new LinkedHashSet<String>();
+		List<LinkInfo> result = new ArrayList<>();
+		Set<String> seenURLs = new LinkedHashSet<>();
 		for (LinkInfo li : input)
 			if (!seenURLs.contains(li.link))
 			{
@@ -649,7 +625,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
         EnglishNumberAnalyzer snAnalyzer = new EnglishNumberAnalyzer(LUCENE_VERSION, MUSE_STOP_WORDS_SET);
 
         // these are the 3 fields for stemming, everything else uses StandardAnalyzer
-        Map<String, Analyzer> map = new LinkedHashMap<String, Analyzer>();
+        Map<String, Analyzer> map = new LinkedHashMap<>();
         map.put("body", snAnalyzer);
         map.put("title", snAnalyzer);
         map.put("body_original", stemmingAnalyzer);
@@ -784,13 +760,13 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			{
 				IndexReader ireader_blob = DirectoryReader.open(directory_blob);
 				isearcher_blob = new IndexSearcher(ireader_blob); // read-only=true
-				blobDocIds = new LinkedHashMap<Integer, String>();
+				blobDocIds = new LinkedHashMap<>();
 
                 numAttachmentDocs = ireader_blob.numDocs();
                 numAttachmentDeletedDocs = ireader_blob.numDeletedDocs();
 
                 Bits liveDocs = MultiFields.getLiveDocs(ireader_blob);
-                Set<String> fieldsToLoad = new HashSet<String>();
+                Set<String> fieldsToLoad = new HashSet<>();
 				fieldsToLoad.add("docId");
 				for(int i=0;i<ireader_blob.maxDoc();i++){
 					org.apache.lucene.document.Document doc = ireader_blob.document(i,fieldsToLoad);
@@ -808,7 +784,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
             log.warn("Number of attachment docs: " + numAttachmentDocs + ", number deleted: " + numAttachmentDeletedDocs);
 
 			if (dirNameToDocIdMap == null)
-				dirNameToDocIdMap = new LinkedHashMap<String, Map<Integer, String>>();
+				dirNameToDocIdMap = new LinkedHashMap<>();
 		} catch (Exception e) {
 			Util.print_exception(e, log);
 		}
@@ -837,7 +813,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			iwriter_blob = openIndexWriter(directory_blob);
 
 		// invalidate content/blobs -> docIdMap map as Lucene doc ID may change after writes (?)
-		dirNameToDocIdMap = new LinkedHashMap<String, Map<Integer, String>>();
+		dirNameToDocIdMap = new LinkedHashMap<>();
 	}
 
 	private synchronized Directory initializeDirectory(Directory dir, String name) throws IOException
@@ -937,7 +913,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		Map<String, List<String>> categoryToNamesMap = mapAndOffsets.first;
 		// we'll get people, places, orgs in this map
 
-		Set<String> allNames = new LinkedHashSet<String>();
+		Set<String> allNames = new LinkedHashSet<>();
 		for (String category : categoryToNamesMap.keySet())
 		{
 			Set<String> namesForThisCategory = Util.scrubNames(categoryToNamesMap.get(category));
@@ -972,7 +948,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 *
 	 * @param stats
 	 */
-	private synchronized int add1DocToIndex(String title, String body, edu.stanford.muse.index.Document d, IndexStats stats) throws Exception
+	private synchronized void add1DocToIndex(String title, String body, Document d, IndexStats stats) throws Exception
 	{
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
 
@@ -1041,7 +1017,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		String bodyOriginal = EmailUtils.getOriginalContent(body);
 		doc.add(new Field("body_original", bodyOriginal, full_ft));
 		int originalTextLength = bodyOriginal.length();
-		Set<String> namesOriginal = null;
+		Set<String> namesOriginal;
 
 		int ns = 0;
 
@@ -1083,7 +1059,6 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			stats.indexedTextSize += title.length() + body.length();
 			stats.indexedTextSizeOriginal += originalTextLength;
 		}
-		return ns;
 	}
 
 	void updateDocument(org.apache.lucene.document.Document doc) {
@@ -1124,7 +1099,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	private List<org.apache.lucene.document.Document> getAllDocs(Boolean attachmentType) throws IOException
 	{
-		List<org.apache.lucene.document.Document> result = new ArrayList<org.apache.lucene.document.Document>();
+		List<org.apache.lucene.document.Document> result = new ArrayList<>();
 
 		// read all the docs in the leaf readers. omit deleted docs.
 		DirectoryReader r;
@@ -1178,7 +1153,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			docs_in_cluster = new LinkedHashSet<>((Collection) getDocsInCluster(cluster));
 
         //should retain the lucene returned order
-		List<edu.stanford.muse.index.Document> result = new ArrayList<edu.stanford.muse.index.Document>();
+		List<edu.stanford.muse.index.Document> result = new ArrayList<>();
 		try {
             //System.err.println("Looking up:"+term);
             long st = System.currentTimeMillis();
@@ -1218,7 +1193,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	Set<Blob> blobsForQuery(String term)
 	{
-		Set<Blob> result = new LinkedHashSet<Blob>();
+		Set<Blob> result = new LinkedHashSet<>();
 
 		if (Util.nullOrEmpty(term))
 			return result;
@@ -1281,7 +1256,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	private List<String> getNamesForLuceneDoc(org.apache.lucene.document.Document doc, QueryType qt)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (doc == null)
 		{
 			log.warn("trying to get names from null doc");
@@ -1309,7 +1284,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
     }
 
     Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException{
-        Pair<Collection<String>,Integer> p = null;
+        Pair<Collection<String>,Integer> p;
         if (!isAttachments)
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher, qt, 1);
         else
@@ -1324,9 +1299,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
      * Caution: This code is not to be touched, unless something is being optimised
      * Introducing something here can seriously affect the search times.
 	 */
-	private Pair<Collection<String>,Integer> luceneLookupAsDocIdsWithTotalHits(String q, int threshold, IndexSearcher searcher, QueryType qt, int lt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException
-	{
-		Collection<String> result = new ArrayList<String>();
+	private Pair<Collection<String>,Integer> luceneLookupAsDocIdsWithTotalHits(String q, int threshold, IndexSearcher searcher, QueryType qt, int lt) throws IOException, ParseException {
+		Collection<String> result = new ArrayList<>();
 
 		//	String escaped_q = escapeRegex(q); // to mimic built-in regex support
 		//TODO: There should also be a general query type that takes any query with field param, i.e. without parser
@@ -1390,7 +1364,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 		Map<Integer, String> map = dirNameToDocIdMap.get(dir_name);
 		if (map == null) {
-			map = new LinkedHashMap<Integer, String>();
+			map = new LinkedHashMap<>();
 			dirNameToDocIdMap.put(dir_name, map);
 			log.info("Adding new entry for dir name to docIdMap");
 		} else {
@@ -1402,7 +1376,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
        for (int i = 0; i < hits.length; i++) {
 			int ldocId = hits[i].doc; // this is the lucene doc id, we need to map it to our doc id.
 
-			String docId = null; // this will be our doc id
+			String docId; // this will be our doc id
 
 			// try to use the new fieldcache id's
 			// if this works, we can get rid of the dirNameToDocIdMap
@@ -1477,7 +1451,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			}
 		}
         log.info(n_added + " docs added to docIdMap cache");
-		return new Pair<Collection<String>,Integer>(result, totalHits);
+		return new Pair<>(result, totalHits);
 	}
 
 	/** returns collection of docId's that hit, at least threshold times */
@@ -1491,7 +1465,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	protected Set<EmailDocument> lookupDocs(String q, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException
 	{
 		Collection<String> docIds = luceneLookupAsDocIds(q, 1, isearcher, qt);
-		Set<EmailDocument> result = new LinkedHashSet<EmailDocument>();
+		Set<EmailDocument> result = new LinkedHashSet<>();
 		for (String docId : docIds)
 		{
 			EmailDocument ed = docIdToEmailDoc.get(docId);
@@ -1524,27 +1498,27 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			Collection<String> docIds = luceneLookupAsDocIds(fileName, 1, isearcher_blob, QueryType.META);
 			if(docIds == null) {
 				log.error("lookup for " + fileName + " returned null");
-				return new Pair<String,String>(null, "Lookup failed!");
+				return new Pair<>(null, "Lookup failed!");
 			}
 			if(docIds.size()>1)
 				log.warn("More than one attachment with the same attachment name: "+fileName);
 			if(docIds.size() == 0) {
 				log.warn("No docIds found for fileName: " + fileName);
-                return new Pair<String,String> (null, "No attachment found with that name");
+                return new Pair<>(null, "No attachment found with that name");
 			}
 
 			String docId = docIds.iterator().next();
 			org.apache.lucene.document.Document ldoc = getLDocAttachment(docId);
 			if(ldoc == null) {
 				log.error("Cannot find lucene doc for docId: "+docId);
-				return new Pair<String,String>(null, "Internal error! Cannot find lucene doc for docId: "+docId);
+				return new Pair<>(null, "Internal error! Cannot find lucene doc for docId: " + docId);
             } else {
                 log.info("Found doc for attachment: "+fileName);
 			}
-			return new Pair<String,String>(ldoc.get("body"),"success");
+			return new Pair<>(ldoc.get("body"), "success");
 		}catch(Exception e){
 			log.info("Exception while trying to fetch content of "+fileName, e);
-			return new Pair<String,String>(null, e.getMessage());
+			return new Pair<>(null, e.getMessage());
 		}
 	}
 
@@ -1599,7 +1573,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
     private synchronized Directory removeFieldsFromDirectory(Directory dir, String... fields_to_be_removed) throws IOException
 	{
-		if (!indexHasFields(dir, fields_to_be_removed))
+		if (!indexHasFields())
 			return dir;
 
 		boolean is_file_based = dir instanceof FSDirectory;
@@ -1714,7 +1688,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	// Use this method only if docID exist and you want to get the corresponding lucene doc.
 	private org.apache.lucene.document.Document getLDoc(String docId, Boolean attachment, Set<String> fieldsToLoad) throws IOException
 	{
-		IndexSearcher searcher = null;
+		IndexSearcher searcher;
 		if(!attachment) {
 			if (isearcher == null) {
 				DirectoryReader ireader = DirectoryReader.open(directory);
@@ -1741,7 +1715,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			return null;
 		}
 
-		org.apache.lucene.document.Document resultdoc = null;
+		org.apache.lucene.document.Document resultdoc;
         if(fieldsToLoad!=null) {
 			resultdoc = searcher.doc(sd[0].doc, fieldsToLoad);
 			if(resultdoc==null) {
@@ -1775,7 +1749,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	String getContents(edu.stanford.muse.index.Document d, boolean originalContentOnly)
 	{
-		org.apache.lucene.document.Document doc = null;
+		org.apache.lucene.document.Document doc;
 		try {
 			doc = getDoc(d);
 		} catch (IOException e) {
@@ -1795,7 +1769,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
     //@TODO
 	String getContents(org.apache.lucene.document.Document doc, boolean originalContentOnly) {
-        String contents = null;
+        String contents;
         try {
             if (originalContentOnly)
                 contents = doc.get("body_original");

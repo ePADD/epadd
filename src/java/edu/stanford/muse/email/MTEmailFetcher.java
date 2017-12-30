@@ -15,18 +15,13 @@
  */
 package edu.stanford.muse.email;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import javax.mail.MessagingException;
 
 import edu.stanford.muse.datacache.BlobStore;
 import org.apache.commons.logging.Log;
@@ -35,9 +30,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 
-import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Util;
 
@@ -62,7 +55,6 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 	transient private ExecutorService executorService; // don't want this to persist across sessions
 
 	List<FolderInfo> folderInfos; // these are the selected folderInfos (of messages to be fetched) as opposed to the store's folderInfos which are all folderinfo's (of messages already fetched) in the account
-	String defaultFolderName = null;
 	private int N_THREADS;
     private int nTotalMessagesInAllFolders;
 	private long startTimeMillis; // start time of current execution
@@ -103,11 +95,11 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 
 	public void clearFolderNames()
 	{
-		this.folderInfos = new ArrayList<FolderInfo>();
+		this.folderInfos = new ArrayList<>();
 	}
 
 	/** given a folder name, gets their message counts and sets up folders for this object */
-	public int addFolderNameAndComputeMessageCount(String folderName) throws MessagingException
+	public int addFolderNameAndComputeMessageCount(String folderName)
 	{
 		// add the root path for the mbox dir, because foldername does not have it when called from MuseEmailFetcher
 		//	if (emailStore instanceof MboxEmailStore)
@@ -162,7 +154,7 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 	}
 
 	/** returns folderinfo's for folders fetched by this fetcher */
-	public synchronized List<FolderInfo> run() throws InterruptedException, MessagingException, IOException, JSONException
+	public synchronized List<FolderInfo> run() throws InterruptedException, JSONException
 	{
 		Thread.currentThread().setName("MTEmailFetcher");
 		log.info ("Starting fetcher run on object: " + this);
@@ -185,10 +177,10 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 
 		startTimeMillis = System.currentTimeMillis();
 
-		List<FolderInfo> fetchedFolderInfos = new ArrayList<FolderInfo>();
+		List<FolderInfo> fetchedFolderInfos = new ArrayList<>();
 
 		// process each folders, read from a array copy because we sometimes see a concurrent modification exception here
-		for (FolderInfo fi : new ArrayList<FolderInfo>(folderInfos))
+		for (FolderInfo fi : new ArrayList<>(folderInfos))
 		{
 			int totalMessagesInFolder = fi.messageCount;
 
@@ -291,29 +283,6 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 		if (aggregateThread != null)
 			return aggregateThread.dataErrors;
 		return null;
-	}
-
-	/** create data set for the given folder (mbox). the email attachment fetching must be complete.
-returns full path of the resulting .html file
-	 * @throws JSONException */
-	public String createBlobSet(Collection<EmailDocument> docs, String root_dir, String prefix) throws IOException
-	{
-		BlobStore fbs = getAttachmentsStore();
-
-		// extract all the attachments for the docs
-		Set<Blob> allBlobsSet = new LinkedHashSet<Blob>();
-		for (EmailDocument d: docs)
-			if (!Util.nullOrEmpty(d.attachments))
-				allBlobsSet.addAll(d.attachments);
-
-		List<Blob> allBlobs = new ArrayList<Blob>(allBlobsSet);
-		log.info("Creating dataset for " + allBlobs.size() + " attachments");
-
-		// BlobSet bs = new BlobSet(root_dir, allBlobs, fbs);
-		String top_level_page = prefix + ".piclens.index.html";
-		// bs.updateSharingInformation();
-		fbs.pack();
-		return top_level_page;
 	}
 
 	private String getFolderDescriptions()

@@ -2,7 +2,6 @@ package edu.stanford.muse.LabelManager;
 
 import com.google.gson.Gson;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.Document;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -158,15 +157,6 @@ public class LabelManager implements Serializable{
         LabelManager labelManager = (LabelManager)Util.readObjectFromFile(filename);
         //No transient fields need to be filled. Just return this object.
         return labelManager;
-    }
-
-    //remove all restricted labels from labelinfomap. It is used during export to delivery/discovery module
-    public Map<String, Label> getLabelInfoMap(){
-        return labelInfoMap;
-    }
-
-    public void setLabelInfoMap(Map<String,Label> labelInfoMap){
-        this.labelInfoMap = labelInfoMap;
     }
 
     /*
