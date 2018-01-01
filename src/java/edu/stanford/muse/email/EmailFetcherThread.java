@@ -1365,7 +1365,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             if (t instanceof OutOfMemoryError)
                 this.mayHaveRunOutOfMemory = true;
             // this is important, because there could be an out of memory etc over here.
-            Util.aggressiveWarn (" A major error seems to have occurded! Processing of messages has been aborted.", 5000,log);
+            Util.aggressiveWarn (" A major error seems to have occurded! Processing of messages has been aborted for folder " + folder_name() + " messages [" + begin_msg_index + ", " + end_msg_index + ")", 5000,log);
             Util.print_exception(t, log);
         } finally {
             try {

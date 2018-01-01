@@ -143,9 +143,7 @@
         </div>
     <% } %>
 
-	<% if (ModeConfig.isDiscoveryMode()) { %>
-		<br/>
-	<% } else { %>
+	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<div class="cta-box text-center margin30">
 				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&startDate=&endDate=">
 					<i class="icon-browsetoparrow"></i>
@@ -174,6 +172,7 @@
 				<p class="cta-text-2">Lexicon search</p>
 			</a>
 		</div>
+	<% } %>
 
 	<div class="cta-box text-center margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
@@ -183,7 +182,6 @@
 			<p class="cta-text-2">Labels</p>
 		</a>
 	</div>
-
 
 	<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
 			<div class="cta-box text-center margin30">
@@ -195,8 +193,6 @@
 				</a>
 			</div>
 		<% } %>
-
-	<% } %>
 
 </div> <!--  allCards -->
 <jsp:include page="footer.jsp"/>

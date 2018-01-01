@@ -364,8 +364,9 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	{
 		//return new RAMDirectory();
 		String index_dir = baseDir + File.separator + INDEX_BASE_DIR_NAME;
-		boolean b = new File(index_dir).mkdir(); // will not create parent basedir if not already exist
-		if (!b) {
+		File f = new File (index_dir);
+		boolean b = f.mkdir(); // will not create parent basedir if not already exist. ignore the return val
+		if (!f.exists() || !f.isDirectory()) {
 			log.warn ("Unable to create directory: " + index_dir);
 			return null;
 		}

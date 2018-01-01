@@ -424,20 +424,22 @@ public class JSPHelper {
 	 * creates a new blob store object from the given location (may already
 	 * exist) and returns it
 	 */
-	private static BlobStore preparedBlobStore(String baseDir)
+	private static BlobStore preparedBlobStore(String baseDir) throws IOException
 	{
 		// always set up attachmentsStore even if we are not fetching attachments
-		// because the user may already have stuff in it -- if so, we should make it available.
+		// because the user may already have stuff isn it -- if so, we should make it available.
 		String attachmentsStoreDir = baseDir + File.separator + Archive.BLOBS_SUBDIR + File.separator;
 		BlobStore attachmentsStore;
 		try {
-			boolean b = new File(attachmentsStoreDir).mkdirs();
-			if (!b)
-				throw new IOException("Unable to create directory: " + attachmentsStoreDir);
+			File f =  new File(attachmentsStoreDir);
+			f.mkdirs(); // the return value is not relevant
+			if (!f.exists() || !f.isDirectory() || !f.canWrite())
+				throw new IOException("Unable to create directory for writing: " + attachmentsStoreDir);
 			attachmentsStore = new BlobStore(attachmentsStoreDir);
 		} catch (IOException ioe) {
 			log.error("MAJOR ERROR: Disabling attachments because unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe + " " + Util.stackTrace(ioe));
-			attachmentsStore = null;
+            attachmentsStore = null;
+			throw (ioe);
 		}
 		return attachmentsStore;
 	}
