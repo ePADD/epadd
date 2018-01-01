@@ -170,7 +170,7 @@
 </form>
 
 <script type="text/javascript">
-	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateAccessionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; /* load_archive_and_call(function() { window.location = "edit-accession"} */});
+	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateAccessionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
 </script>
 
  <jsp:include page="footer.jsp"/>
