@@ -70,11 +70,15 @@
 			return '<a target="_blank" title="' + escapeHTML(full[2]) + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveID=<%=archiveID%>">' + escapeHTML(full[1]) + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
-        var edit_label_link = function ( data, type, full, meta ) {
-            if (full[4])  // system label
-                return '<span title="System labels are not editable">Not editable</span>'; // not editable
-            return '<a href="edit-label?labelID=' + full[0] + '&archiveID=<%=archiveID%>">Edit</a>'; // full[4] has the URL, full[5] has the title tooltip
-        };
+		var dt_right_targets = [1, 2]; // only 2 in discovery mode, convert to [1, 2, 3] in other modes
+        <% if (!ModeConfig.isDiscoveryMode()) { %>
+		    dt_right_targets = [1, 2, 3];
+			var edit_label_link = function ( data, type, full, meta ) {
+				if (full[4])  // system label
+					return '<span title="System labels are not editable">Not editable</span>'; // not editable
+				return '<a href="edit-label?labelID=' + full[0] + '&archiveID=<%=archiveID%>">Edit</a>';
+			};
+        <% } %>
 
         var label_count = function(data, type, full, meta) { return full[3]; };
         var label_type = function(data, type, full, meta) { return full[5]; };
@@ -84,7 +88,7 @@
 			pagingType: 'simple',
 			order:[[1, 'desc']], // (message count), descending
 			columnDefs: [
-                { className: "dt-right", "targets": [ 1, 2, 3 ] },
+                { className: "dt-right", "targets": dt_right_targets },
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
