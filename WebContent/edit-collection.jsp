@@ -47,10 +47,6 @@
 <section>
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
-
-
-		//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
-		//archiveID in all those forms where POST was used to invoke the server page.
 		<div class="div-input-field">
 			<div class="input-field">
 				<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>

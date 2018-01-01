@@ -40,7 +40,6 @@ import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math3.analysis.function.Exp;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
@@ -260,6 +259,10 @@ public class Archive implements Serializable {
         return indexer.stats;
     }
 
+    static public class AccessionMetadata implements java.io.Serializable {
+        private final static long serialVersionUID = 1L; // compatibility
+        public String id, title, date, scope, rights, notes;
+    }
 
     // these fields are used in the library setting
     static public class ProcessingMetadata implements java.io.Serializable {
@@ -274,6 +277,7 @@ public class Archive implements Serializable {
         public Map<Short, Integer> entityCounts;
         public int numPotentiallySensitiveMessages = -1;
         public Date firstDate, lastDate;
+        public List<AccessionMetadata> accessionMetadatas;
 
         private static String mergeField(String a, String b) {
             if (a == null)

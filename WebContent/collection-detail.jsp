@@ -150,6 +150,9 @@
 
         if (ModeConfig.isProcessingMode()) { %>
             <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit</button>
+            <p>
+            <button class="btn-default" id="import-acccession"><i class="fa fa-import"></i> Import accession</button>
+
         <% } %>
     </div>
 
@@ -176,9 +179,23 @@
                 </div>
             <% } %>
 
-<div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
+        <% if (!Util.nullOrEmpty(pm.accessionMetadatas)) {
+            for (Archive.AccessionMetadata am: pm.accessionMetadatas) { %>
+            <div class="panel">
+                About Accession <%=am.id%>
+                <p>
+                Title<br/><%=am.title%>
+                <p></p>
+                Scope and contents: <%=am.scope%>
+                Rights and conditions: <%=am.rights%>
+                Notes: <%=am.notes%>
+            </div>
+        <% }
+        } %>
 
-            <div id="stats"></div>
+        <div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
+
+        <div id="stats"></div>
 
         <p></p>
         <%
@@ -206,10 +223,11 @@
 
     <script>
         var editmetadataparams = {dir: '<%=id%>',editscreen: '1'};
-        //the following call will first load archive and then in that jsp the subsequent screeen 'edit-accession.jsp' will be set as the next page
-        //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-accession.jsp or browse-top.jsp
+        //the following call will first load archive and then in that jsp the subsequent screeen 'edit-collection.jsp' will be set as the next page
+        //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-collection.jsp or browse-top.jsp
         $('#edit-metadata').click (function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), editmetadataparams , null); /* load_archive_and_call(function() { window.location = "edit-accession"} */});
-       //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
+        $('#add-accession').click (function() { window.location = 'add-accession'});
+        //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.
         var enterparams = {dir: '<%=id%>'};
         $('#enter').click(function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); /* load_archive_and_call(function() { window.location = "browse-top"} */});

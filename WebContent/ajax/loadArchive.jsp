@@ -49,7 +49,7 @@
 
         String resultPage;
         if(isEditAccessionNextScreen)
-            resultPage = "edit-accession?id="+dir+"&archiveID="+archiveID;
+            resultPage = "edit-collection?id="+dir+"&archiveID="+archiveID;
         else
             resultPage = "browse-top?archiveID="+archiveID;
         try {
