@@ -96,7 +96,7 @@
         }
     %>
     <script>
-        var correspondents = <%=resultArray.toString(4)%>;
+        var folders = <%=resultArray.toString(4)%>;
         // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
         $(document).ready(function() {
             var clickable_message = function ( data, type, full, meta ) {
@@ -105,11 +105,11 @@
             };
 
             $('#folders').dataTable({
-                data: correspondents,
+                data: folders,
                 pagingType: 'simple',
                 order:[[4, 'desc']], // col 12 (outgoing message count), descending
                 columnDefs: [{width: "550px", targets: 1}, { className: "dt-right", "targets": [ 2,3,4 ] },{width: "50%", targets: 1},{targets: 1, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
-                fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
+                fnInitComplete: function() { $('#spinner-div').hide(); $('#folders').fadeIn(); }
             });
         } );
 

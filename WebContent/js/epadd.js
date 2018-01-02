@@ -339,25 +339,24 @@ epadd.nav_mark_active = function(text) {
 };
 
 /** needs a stats field to update stats in. if successive, will navigate the browser to /collections */
-epadd.import_archive = function(e, dir) {
+epadd.import_accession = function(e, post_params) {
+    $('#gobutton').fadeOut(); // avoid a second submit
+
 	var $spinner = $('.fa-spinner', $(e.target));
 	$spinner.show();
 	$spinner.addClass('fa-spin');
-
-	$('#gobutton').fadeOut();
 	$('#spinner-div').fadeIn();
 
 	// close the file picker first in case its open
 	if (window.fp)
 		fp.close();
 	
-	$('#stats').css('color', 'inherit');
 	$.ajax({type: 'POST',
 	dataType: 'json',
-	url: 'ajax/importArchive.jsp', 
-	data: {dir: dir},
+	url: 'ajax/importAccession.jsp',
+	data: post_params,
 	cache: false,
-	success: function (response, textStatus) {
+	success: function (response) {
 		$spinner.removeClass('fa-spin');
 		$('#spinner-div').fadeOut();
 		$('#gobutton').fadeIn();

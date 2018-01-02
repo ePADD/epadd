@@ -1,9 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@include file="getArchive.jspf" %>
-<%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
 <html>
 <head>
@@ -36,9 +34,10 @@
 <%@include file="div_status.jspf"%>
 <p>
 	<%
-	String id = request.getParameter("id");
-	writeProfileBlock(out, archive, "", "Accession metadata");
+//	writeProfileBlock(out, archive, "", "Accession metadata");
 	assert request.getParameter("archiveID")!=null;
+
+	String id = "", title = "", date = "", scope = "", rights = "", notes = "";
 	%>
 
 
@@ -47,102 +46,56 @@
 <section>
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
-		<div class="div-input-field">
-			<div class="input-field">
-				<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>
-			</div>
-		</div>
-
-		<div class="div-input-field">
-			<div class="input-field-label">Institution</div>
-			<br/>
-			<div class="input-field">
-				<input title="Institution" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.institution)%>" class="form-control" type="text" name="institution"/>
-			</div>
-		</div>
-
-		<div class="div-input-field">
-			<div class="input-field-label">Repository</div>
-			<br/>
-			<div class="input-field">
-				<input title="Repository" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.repository)%>" class="form-control" type="text" name="repository"/>
-			</div>
-		</div>
-
-		<div class="div-input-field">
-			<div class="input-field-label">Collection Title</div>
-			<br/>
-			<div class="input-field">
-				<input title="Collection title" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
-			</div>
-		</div>
-
-		<div class="div-input-field">
-			<div class="input-field-label">Collection ID</div>
-			<br/>
-			<div class="input-field">
-				<input title="Collection ID" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.collectionID)%>" class="form-control" type="text" name="collectionID"/>
-			</div>
-		</div>
+		<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>
 
 		<div class="div-input-field">
 			<div class="input-field-label">Accession ID</div>
 			<br/>
 			<div class="input-field">
-				<input title="Accession ID" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.accessionID)%>" class="form-control" type="text" name="accessionID"/>
+				<input title="Accession ID" value="<%=id%>" class="form-control" type="text" name="accessionID"/>
 			</div>
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Finding Aid Link</div>
+			<div class="input-field-label">Accession title</div>
 			<br/>
 			<div class="input-field">
-				<input title="Finding aid link" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
+				<input title="Accession title" value="<%=Util.escapeHTML(title)%>" class="form-control" type="text" name="accessionTitle"/>
 			</div>
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Catalog Record Link</div>
+			<div class="input-field-label">Accession Date</div>
 			<br/>
 			<div class="input-field">
-				<input title="Catalog record link" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
+				<input title="Accession Date" value="<%=date%>" class="form-control" type="text" name="accessionDate"/>
 			</div>
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Contact Email Address</div>
+			<div class="input-field-label">Scope and Content</div>
 			<br/>
 			<div class="input-field">
-				<input title="Contact email" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
+				<input title="Scope and Content" value="<%=Util.escapeHTML(scope)%>" class="form-control" type="text" name="accessionScope"/>
 			</div>
 		</div>
 
-		<br/>
-
-		<div class="div-input-field">
-			<div class="input-field-label">About</div>
-			<br/>
-			<div class="input-field">
-				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.about)%>
-				</textarea>
-			</div>
-		</div>
 		<div class="div-input-field">
 			<div class="input-field-label">Rights and Conditions</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.rights)%>
-				</textarea>
+				<input title="Rights and Conditions" value="<%=Util.escapeHTML(scope)%>" class="form-control" type="text" name="accessionScope"/>
 			</div>
 		</div>
+
 		<div class="div-input-field">
 			<div class="input-field-label">Notes</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.notes)%>
-				</textarea>
+				<input title="Notes" value="<%=Util.escapeHTML(notes)%>" class="form-control" type="text" name="accessionNotes"/>
 			</div>
 		</div>
+
 		<br/>
 		<br/>
 		<div style="margin-left:40px">
@@ -166,7 +119,7 @@
 </form>
 
 <script type="text/javascript">
-	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateAccessionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
+	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateCollectionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
 </script>
 
  <jsp:include page="footer.jsp"/>

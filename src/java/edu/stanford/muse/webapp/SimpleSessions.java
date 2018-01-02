@@ -225,6 +225,32 @@ public class SimpleSessions {
 		}
 	}
 
+    /**
+     * writes name.processing.metadata to the given basedir. should be used
+     * when quick archive metadata is needed without loading the actual archive
+     * basedir is up to /.../sessions
+     */
+    public static void writeProcessingMetadata(ProcessingMetadata pm, String baseDir, String name)
+    {
+        String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(processingFilename)));
+            oos.writeObject(pm);
+            oos.close();
+            return;
+        } catch (Exception e) {
+            Util.print_exception("Unable to write processing metadata", e, log);
+        } finally {
+            try {
+                if (oos != null)
+                    oos.close();
+            } catch (Exception e1) {
+                Util.print_exception("Unable to write processing metadata", e1, log);
+            }
+        }
+    }
+
 	/** saves the archive in the current session to the cachedir. note: no blobs saved. */
 	public static boolean saveArchive(String baseDir, String name, Archive archive) throws IOException
 	{
@@ -298,7 +324,6 @@ public class SimpleSessions {
         archive.processingMetadata.nDocBlobs = docs;
         archive.processingMetadata.nOtherBlobs = others;
 
-
 		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(filename)));
 		try {
 			oos.writeObject("archive");
@@ -323,7 +348,11 @@ public class SimpleSessions {
 		//////////////LabelManager Writing -- Serialized//////////////////////////////////
 		SimpleSessions.saveLabelManager(archive);
 
-		// now write out the metadata
+        writeProcessingMetadata (archive.processingMetadata, dir, "default");
+
+        /*
+
+        // now write out the metadata
 		String processingFilename = dir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
 		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(processingFilename)));
 		try {
@@ -334,6 +363,7 @@ public class SimpleSessions {
 		} finally {
 			oos.close();
 		}
+		*/
 /*
 
 		if (archive.correspondentAuthorityMapper!= null) {
@@ -445,6 +475,7 @@ public class SimpleSessions {
 	public static Archive readArchiveIfPresent(String baseDir) throws IOException
 	{
 		String archiveFile = baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.SESSION_SUFFIX;
+		String pmFile = baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Config.PROCESSING_METADATA_SUFFIX;
 		if (!new File(archiveFile).exists()) {
 			return null;
 		}
@@ -481,6 +512,18 @@ public class SimpleSessions {
 					return null;
 				}
 				a.setBaseDir(baseDir);
+
+				// override the PM inside the archive with the one in the PM file
+				// this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
+				try {
+					Archive.ProcessingMetadata pm = (Archive.ProcessingMetadata) Util.readObjectFromFile(pmFile); // in the future, this is better encoded as a json string
+					a.processingMetadata = pm;
+				} catch (Exception e) {
+					Util.print_exception ("Error trying to read processing metadata file", e, log);
+				}
+
+				// similarly, we may read the label manager, addressbook, etc. here
+
                 // no need to read archive authorized authorities, they will be loaded on demand from the legacy authorities.ser file
 				addToGlobalArchiveMap(baseDir,a);
 				//check if the loaded archive satisfy the verification condtiions. Call verify method on archive.

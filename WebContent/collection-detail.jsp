@@ -71,15 +71,6 @@
     String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
     String ownerName = Util.nullOrEmpty(pm.ownerName) ? "(unassigned name)" : pm.ownerName;
 %>
-<%!
-    private static String formatMetadataField(String s)
-    {
-        if (s == null)
-            return "Unassigned";
-        else
-            return Util.escapeHTML(s);
-    }
-%>
 
 <div class="collection-detail">
     <div class="heading">
@@ -110,8 +101,9 @@
         <span class="detail"><%=(Util.nullOrEmpty(pm.collectionID) ? "Unassigned" : pm.collectionID)%> </span>
         </p>
     	<p>
-            Accession ID<br/>
-            <span class="detail"><%=(Util.nullOrEmpty(pm.accessionID) ? "Unassigned" : pm.accessionID)%> </span>
+            <% if (!Util.nullOrEmpty(pm.accessionMetadatas)) { %>
+                <span><%= Util.pluralize (pm.accessionMetadatas.size(), "accession")%></span>
+            <% } %>
         </p>
         <p>
             <% if (pm.firstDate != null && pm.lastDate != null) { %>
@@ -151,7 +143,7 @@
         if (ModeConfig.isProcessingMode()) { %>
             <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit</button>
             <p>
-            <button class="btn-default" id="import-acccession"><i class="fa fa-import"></i> Import accession</button>
+            <button class="btn-default" id="add-accession"><i class="fa fa-import"></i> Add accession</button>
 
         <% } %>
     </div>

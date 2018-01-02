@@ -94,7 +94,6 @@
 		<url-pattern>/collection-detail</url-pattern>
 	</servlet-mapping>
 
-
 	<servlet>
 		<servlet-name>assignauthorities-top</servlet-name>
 		<jsp-file>/assignauthorities-top.jsp</jsp-file>
@@ -102,15 +101,6 @@
 	<servlet-mapping>
 		<servlet-name>assignauthorities-top</servlet-name>
 		<url-pattern>/assignauthorities-top</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>import</servlet-name>
-		<jsp-file>/import.jsp</jsp-file>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>import</servlet-name>
-		<url-pattern>/import</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -124,7 +114,7 @@
 
 	<servlet>
 		<servlet-name>edit-accession-metadata</servlet-name>
-		<jsp-file>/edit-collection-metadata.jsp</jsp-file>
+		<jsp-file>/edit-accession-metadata.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>edit-accession-metadata</servlet-name>
@@ -133,7 +123,7 @@
 
 	<servlet>
 		<servlet-name>add-accession</servlet-name>
-		<jsp-file>/add-collection.jsp</jsp-file>
+		<jsp-file>/add-accession.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>add-accession</servlet-name>

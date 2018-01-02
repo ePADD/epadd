@@ -8,18 +8,15 @@
 <html>
 <head>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-	
-	<script src="js/jquery.js"></script>
-	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-	<script src="jqueryFileTree/jqueryFileTree.js"></script>
-
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/jquery.js"></script>
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<jsp:include page="css/css.jsp"/>
-	<title>Accession Metadata</title>
 	<script src="js/muse.js" type="text/javascript"></script>
 	<script src="js/epadd.js" type="text/javascript"></script>
+	<title>Collection Metadata</title>
 
 	<style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}
@@ -37,21 +34,17 @@
 <p>
 	<%
 	String id = request.getParameter("id");
-	writeProfileBlock(out, archive, "", "Accession metadata");
+	writeProfileBlock(out, archive, "", "Collection metadata");
 	assert request.getParameter("archiveID")!=null;
 	%>
 
 
 	<br/>
+		<br/>
 <form id="metadata-form">
 <section>
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
-		<div class="div-input-field">
-			<div class="input-field">
-				<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>
-			</div>
-		</div>
 
 		<div class="div-input-field">
 			<div class="input-field-label">Institution</div>
@@ -82,14 +75,6 @@
 			<br/>
 			<div class="input-field">
 				<input title="Collection ID" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.collectionID)%>" class="form-control" type="text" name="collectionID"/>
-			</div>
-		</div>
-
-		<div class="div-input-field">
-			<div class="input-field-label">Accession ID</div>
-			<br/>
-			<div class="input-field">
-				<input title="Accession ID" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.accessionID)%>" class="form-control" type="text" name="accessionID"/>
 			</div>
 		</div>
 
@@ -166,7 +151,7 @@
 </form>
 
 <script type="text/javascript">
-	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateAccessionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
+	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateCollectionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
 </script>
 
  <jsp:include page="footer.jsp"/>

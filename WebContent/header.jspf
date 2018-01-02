@@ -60,8 +60,8 @@
 			}
 
 			if (ModeConfig.isProcessingMode() && !haveArchive) {
-				out.println("<li style='display:inline'><a href='import'>Add</a></li>");
-				out.println("<li style='display:inline'><a href='email-sources'>New</a></li>");
+				out.println("<li style='display:inline'><a href='add-accession'>Add</a></li>");
+//				out.println("<li style='display:inline'><a href='email-sources'>New</a></li>");
 			}
 
 			// offer the following options only if an archive is actually in the session

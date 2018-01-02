@@ -143,7 +143,7 @@ muse.approximateTimeLeft = function(sec)
 /** collects all input fields on the page, and makes an object out of them with the field names as property names */
 muse.collect_input_fields = function() {
 	var result = {};
-	$('input,select').each (function() {  // select field is needed for accounttype
+	$('input,select,textarea').each (function() {  // select field is needed for accounttype
 		if ($(this).attr('type') == 'button') { return; } // ignore buttons (usually #gobutton)
 		if ($(this).attr('type') == 'checkbox') {
 			if ($(this).is(':checked'))
