@@ -98,9 +98,11 @@
     <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
 <textarea title="Address book update" name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 	<%
-	BufferedWriter bwriter = new BufferedWriter(new StringWriter());
+	StringWriter sw = new StringWriter();
+		BufferedWriter bwriter = new BufferedWriter(sw);
 	addressBook.writeObjectToStream(bwriter,alphaSort);
-	out.print(bwriter.toString());
+	bwriter.flush();
+	out.print(sw.toString());
 	%>
 </textarea>
 <br/>
