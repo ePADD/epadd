@@ -148,10 +148,10 @@
                     <label for="restrictedForYears">Restricted for (years)</label>
                     <input name="restrictedForYears" id="restrictedForYears" type="text" class="form-control" value="<%=restrictedForYears%>">
                 </div>
-                <div class="div-labelAppliesToMessageText form-group col-sm-12">
+                <%--<div class="div-labelAppliesToMessageText form-group col-sm-12">
                     <label for="labelAppliesToMessageText">Restricted text</label>
                     <input name="labelAppliesToMessageText" id="labelAppliesToMessageText" type="text" class="form-control" value="<%=labelAppliesToMessageText%>">
-                </div>
+                </div>--%>
             </div>
 
         </div>

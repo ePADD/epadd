@@ -106,7 +106,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 <p>
 
 <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
-	<b>Review messages</b>
+	<%--<b>Review messages</b>
     <br/>
 	<br/>
 	<div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=transfer'" class="mini-box">
@@ -163,7 +163,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
 	<br/>
 	<br/>
-
+--%>
 	<section>
 		<div class="panel">
 			<div class="panel-heading">Export messages and attachments</div>
