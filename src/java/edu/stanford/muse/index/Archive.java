@@ -1440,25 +1440,20 @@ public class Archive implements Serializable {
     public void Merge(Archive other){
         /////////////////////////////INDEX MERGING AND DOCUMENT COPYING//////////////////////////
         //for each mail document in other process it only if it is not present in this archive.
+        //if not present then call indexer's method to add doc and associated attachments to this index.
         for(Document doc: other.getAllDocs()) {
             if (!getAllDocs().contains(doc)) {
                 EmailDocument edoc = (EmailDocument) doc;
                 try {
-                    indexer.moveDocToThisIndex(other.indexer, edoc);
+                    getAllDocs().add(doc);
+                    getAllDocsAsSet().add(doc);
+                    indexer.moveDocAndAttachmentsToThisIndex(other.indexer, edoc,other.getBlobStore(),blobStore);
                 } catch (IOException e) {
                     log.warn("Unable to copy document with signature" + ((EmailDocument) doc).getSignature() + " from the incoming archive to this archive ");
                     e.printStackTrace();
                 }
             }
         }
-        //attachment handling
-        try {
-            indexer.moveAllAttachmentToThisIndexAndBlobStore(other.indexer,other.getBlobStore(),blobStore);
-        } catch (IOException e) {
-            log.warn("Unable to copy attachments from the incoming archive to this archive");
-            e.printStackTrace();
-        }
-
         ///////////////////////Address book merging////////////////////////////////////////////////
 
         ///////////////////////Label Manager merging///////////////////////////////////////////////
