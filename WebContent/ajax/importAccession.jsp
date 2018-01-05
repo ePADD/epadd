@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="edu.stanford.muse.Config"%>
+<%@ page import="java.util.ArrayList"%>
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
@@ -54,14 +54,14 @@ if (!targetDir.equals(baseDir))
             // new archive objects will anyway not have PM objects embedded within them.
             // see SimpleSessions.readArchiveIfPresent()
             {
-                String pmFile = targetDir + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separatorChar + "default" + Config.PROCESSING_METADATA_SUFFIX;
-                Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata (targetDir + File.separatorChar + Archive.SESSIONS_SUBDIR, "default");
+                String pmDir = targetDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+                Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata (pmDir, "default");
                 if (pm == null)
                     pm = new Archive.ProcessingMetadata();
                 if (pm.accessionMetadatas == null)
                     pm.accessionMetadatas = new ArrayList<>();
                 pm.accessionMetadatas.add(am);
-                SimpleSessions.writeProcessingMetadata (pm, targetDir + File.separatorChar + Archive.SESSIONS_SUBDIR, "default");
+                SimpleSessions.writeProcessingMetadata (pm, pmDir, "default");
             }
             JSPHelper.log.info ("Accession metadata updated");
         }

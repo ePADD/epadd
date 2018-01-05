@@ -104,12 +104,12 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>edit-collection</servlet-name>
-		<jsp-file>/edit-collection.jsp</jsp-file>
+		<servlet-name>edit-collection-metadata</servlet-name>
+		<jsp-file>/edit-collection-metadata.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>edit-collection</servlet-name>
-		<url-pattern>/edit-collection</url-pattern>
+		<servlet-name>edit-collection-metadata</servlet-name>
+		<url-pattern>/edit-collection-metadata</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

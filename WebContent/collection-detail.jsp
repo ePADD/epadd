@@ -142,7 +142,8 @@
 
         if (ModeConfig.isProcessingMode()) { %>
             <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit</button>
-            <p>
+            <br/>
+            <br/>
             <button class="btn-default" id="add-accession"><i class="fa fa-import"></i> Add accession</button>
 
         <% } %>
@@ -215,8 +216,8 @@
 
     <script>
         var editmetadataparams = {dir: '<%=id%>',editscreen: '1'};
-        //the following call will first load archive and then in that jsp the subsequent screeen 'edit-collection.jsp' will be set as the next page
-        //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-collection.jsp or browse-top.jsp
+        //the following call will first load archive and then in that jsp the subsequent screeen 'edit-collection-metadata.jsp' will be set as the next page
+        //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-collection-metadata.jsp or browse-top.jsp
         $('#edit-metadata').click (function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), editmetadataparams , null); /* load_archive_and_call(function() { window.location = "edit-accession"} */});
         $('#add-accession').click (function() { window.location = 'add-accession'});
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence

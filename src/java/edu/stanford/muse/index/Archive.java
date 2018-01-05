@@ -108,7 +108,6 @@ public class Archive implements Serializable {
     private transient LabelManager labelManager; //transient because it will be saved and loaded separately
 
     public ProcessingMetadata processingMetadata = new ProcessingMetadata();
-    public List<String> allAccessions = new ArrayList<String>();
     public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
 
     public String archiveTitle; // this is the name of this archive
