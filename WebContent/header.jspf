@@ -85,7 +85,7 @@
                 <% } %>
 			<% if (ModeConfig.isDiscoveryMode()) { %>
 			<li style="display:inline"><a id="close-only-archive" href="#">Close</a></li>
-			<% } %>
+			<% }
 			} else {
 				if (ModeConfig.isDiscoveryMode()) { %>
 					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>
