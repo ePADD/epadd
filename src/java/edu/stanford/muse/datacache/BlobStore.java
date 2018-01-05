@@ -302,7 +302,7 @@ public class BlobStore implements Serializable {
     }
 
     /** returns the index of the given data item in this store */
-    int index(Blob b)
+    public int index(Blob b)
     {
         Integer i = id_map.get(b);
         if (i == null)

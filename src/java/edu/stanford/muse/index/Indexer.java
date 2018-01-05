@@ -47,6 +47,7 @@ import org.apache.lucene.util.automaton.RegExp;
 
 import javax.mail.Address;
 import java.io.*;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.*;
 
@@ -288,8 +289,10 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			if (processedBlobSet != null && processedBlobSet.contains(b))
 				continue; // skip if already processed (blob may be shared by multiple docs)
 
-			int id_int = iwriter_blob.numDocs();
-			String id = Integer.toString(++id_int);
+			/*int id_int = iwriter_blob.numDocs();
+			String id = Integer.toString(++id_int);*/
+			int id_int = blobStore.index(b);
+			String id = Integer.toString(id_int);
 			if (processedBlobSet != null)
 				processedBlobSet.add(b);
 			attachmentDocIdToBlob.put(id, b);
@@ -1023,7 +1026,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		int ns = 0;
 
 		if(edu.stanford.muse.Config.OPENNLP_NER) {
-            String textForNameExtraction = body + ". " + effectiveSubject; // Sit says put body first so that the extracted NER offsets can be used without further adjustment for epadd redaction
+            String textForNameExtraction = body + ". " + effectiveSubject; // Sit says put body first so
+			// that the extracted NER offsets can be used without further adjustment for epadd redaction
             Set<String> allNames = setNameFieldsOpenNLP(textForNameExtraction, doc);
 
 			String names = Util.join(allNames, NAMES_FIELD_DELIMITER);
@@ -1292,6 +1296,67 @@ public class Indexer implements StatusProvider, java.io.Serializable {
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher_blob, qt, 1);
         return p.second;
     }
+
+
+    /*
+    Moves edoc from src to dest index. Here src is source indexer and the current object (Indexer) is where
+    the doc is going to be moved.
+    The associated attachments also need to be moved from srcBlobStore to destBlobStore.
+    Don't forget to call pack()[BlobStore] after calling this method for every new document that has been added.
+     */
+    public void moveDocAndAttachmentsToThisIndex(Indexer srcindexer, EmailDocument edoc, BlobStore srcBlobStore, BlobStore destBlobStore) throws IOException {
+		//prepare writers if not done by the caller
+		if (iwriter == null)
+			iwriter = openIndexWriter(directory);
+		if (iwriter_blob == null) {
+			//if (directory_blob == null) directory_blob = initializeDirectory(directory_blob, INDEX_NAME_ATTACHMENTS); // should already be valid
+			iwriter_blob = openIndexWriter(directory_blob);
+		}
+		//get lucenedocid of doc wrt src Indexer first without attachment then with attachment.
+		org.apache.lucene.document.Document dsrc = srcindexer.getLDoc(edoc.getUniqueId());
+		LinkedList<org.apache.lucene.document.Document> dattachments = new LinkedList<>();
+		//create a new lucenedoc for adding to iwriter.
+		org.apache.lucene.document.Document newdoc = new org.apache.lucene.document.Document();
+
+		//copy fields from dsrc to newdoc
+		dsrc.getFields().forEach(field -> newdoc.add(field));
+		//add to map docIDtoEmailDoc
+		docIdToEmailDoc.put(edoc.getUniqueId(), edoc);
+
+		for(Blob b: edoc.attachments){
+		///NOTE: For now we are adding blob irrespective of whether it was present in destblobstore or not.
+				//get blobid for this blob
+			String id = Integer.toString(srcBlobStore.index(b));
+			//get lucendoc for this docid.
+			org.apache.lucene.document.Document attachmentsrc = srcindexer.getLDocAttachment(id);
+			//create new doc and add to list of dattachments (for adding it to index at the end atomically)
+			org.apache.lucene.document.Document newattachmentdoc = new org.apache.lucene.document.Document();
+			dattachments.add(newattachmentdoc);
+
+			//copy all fields from attachmentsrc to newattachmentdoc except docid that will be the number
+			//obtained after adding blob to destblobstore and then getting it's index.
+			attachmentsrc.getFields().stream().forEach(field->{
+				if(!"docId".equals(field.name())){
+					newattachmentdoc.add(field);
+				}
+			});
+			String urlstring = srcBlobStore.get_URL(b);
+			URL url = new URL(urlstring);
+			destBlobStore.add(b,url.openStream());
+			String newid = Integer.toString(destBlobStore.index(b));
+			newattachmentdoc.add(new Field("docId", newid, ft));
+			attachmentDocIdToBlob.put(newid,b);
+		}
+
+		//add newdoc to iwriter and all docattachments present in dattachments list to iwriter_blob.
+		iwriter.addDocument(newdoc);
+		for(org.apache.lucene.document.Document d: dattachments){
+			iwriter_blob.addDocument(d);
+		}
+		//pack destbloblstore.
+		destBlobStore.pack();
+	}
+
 
 	/**
 	 * returns collection of docIds of the Lucene docs that hit, at least

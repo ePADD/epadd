@@ -45,9 +45,9 @@
 			function do_lexicon_search(e) {
 			  var cat = $(e.target).text();
 			  if (window.is_regex)
-                  window.open('browse?adv-search=1&archivedID=<%=archiveID%>&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
+                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
 			  else
-                  window.open('browse?adv-search=1&archivedID=<%=archiveID%>&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
+                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
 			};
 
 			//if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page

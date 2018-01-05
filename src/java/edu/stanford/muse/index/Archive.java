@@ -1435,6 +1435,31 @@ public class Archive implements Serializable {
       //  processingMetadata.numPotentiallySensitiveMessages = numMatchesPresetQueries();
     }
 
+
+    public void Merge(Archive other){
+        /////////////////////////////INDEX MERGING AND DOCUMENT COPYING//////////////////////////
+        //for each mail document in other process it only if it is not present in this archive.
+        //if not present then call indexer's method to add doc and associated attachments to this index.
+        for(Document doc: other.getAllDocs()) {
+            if (!getAllDocs().contains(doc)) {
+                EmailDocument edoc = (EmailDocument) doc;
+                try {
+                    getAllDocs().add(doc);
+                    getAllDocsAsSet().add(doc);
+                    indexer.moveDocAndAttachmentsToThisIndex(other.indexer, edoc,other.getBlobStore(),blobStore);
+                } catch (IOException e) {
+                    log.warn("Unable to copy document with signature" + ((EmailDocument) doc).getSignature() + " from the incoming archive to this archive ");
+                    e.printStackTrace();
+                }
+            }
+        }
+        ///////////////////////Address book merging////////////////////////////////////////////////
+
+        ///////////////////////Label Manager merging///////////////////////////////////////////////
+
+        ///////////////////////Entity book merging/////////////////////////////////////////////////
+
+    }
 //    public void merge(Archive other) {
 //        /* originalContentOnly */
 //        other.getAllDocs().stream().filter(doc -> !this.containsDoc(doc)).forEach(doc -> this.addDoc(doc, other.getContents(doc, /* originalContentOnly */false)));

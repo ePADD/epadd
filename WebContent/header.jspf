@@ -86,11 +86,6 @@
 			<% if (ModeConfig.isDiscoveryMode()) { %>
 			<li style="display:inline"><a id="close-only-archive" href="#">Close</a></li>
 			<% } %>
-
-				<% if (ModeConfig.isDeliveryMode()) { %>
-					<li style="display:inline"><a href="review-cart?archiveID=<%=archiveID%>">Cart</a></li>
-				<% }
-
 			} else {
 				if (ModeConfig.isDiscoveryMode()) { %>
 					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>

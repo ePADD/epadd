@@ -11,6 +11,7 @@
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
 String baseDir = request.getParameter("accessionFolder");
+String collectionDir = request.getParameter("collectionFolder");
 if (Util.nullOrEmpty(baseDir))
 {
 	result.put ("status", 1);
@@ -28,15 +29,32 @@ if (!new File(baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separato
 	return;
 }
 
-String archiveName = Util.filePathTailByPlatformSeparator(baseDir);
-String targetDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + archiveName;
-if (!targetDir.equals(baseDir))
+if(Util.nullOrEmpty(collectionDir)){
+
+    String archiveName = Util.filePathTailByPlatformSeparator(baseDir);
+    collectionDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + archiveName;
+    new File(collectionDir).mkdir();
+}
+
+if (!collectionDir.equals(baseDir))
 {
 	try {
-	    // delete the existing directory -- Q: should we give user a warning??
-	    JSPHelper.log.info ("Copying archive files from " + baseDir + " to " + targetDir);
-		FileUtils.deleteDirectory(new File(targetDir));
-		FileUtils.copyDirectory(new File(baseDir), new File(targetDir), true /* preserve file date */);
+	    //Two possible cases, 1. When an accession is being imported to an empty collection
+	    //2. When an accession is being imported to a non-empty collection.
+	    if(new File(collectionDir).listFiles().length==0)//means collection directory is empty
+	        {
+    	    // delete the existing directory -- Q: should we give user a warning??
+	        JSPHelper.log.info ("Copying archive files from " + baseDir + " to " + collectionDir);
+		    FileUtils.deleteDirectory(new File(collectionDir));
+		    FileUtils.copyDirectory(new File(baseDir), new File(collectionDir), true /* preserve file date */);
+	        //load archive and open browse page with appropriate archive ID.
+	        }
+	        else{
+            //read archives present in basedir and collection dir.
+            //call merge on these archives..
+            //add this newly created archive object in global archive map
+            //open merge report page with this archive ID.
+	        }
 
 		JSPHelper.log.info ("Copy complete, creating new accession metadata object");
 
@@ -54,7 +72,7 @@ if (!targetDir.equals(baseDir))
             // new archive objects will anyway not have PM objects embedded within them.
             // see SimpleSessions.readArchiveIfPresent()
             {
-                String pmDir = targetDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+                String pmDir = collectionDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
                 Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata (pmDir, "default");
                 if (pm == null)
                     pm = new Archive.ProcessingMetadata();
