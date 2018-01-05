@@ -158,7 +158,7 @@
 
     </div>
     <div style="text-align:center">
-        <button class="btn btn-cta" type="submit" id="save-button">Save <i class="icon-arrowbutton"></i> </button>
+        <button class="btn btn-cta" type="submit" id="save-button">Update <i class="icon-arrowbutton"></i> </button>
     </div>
     </div>
 </div>

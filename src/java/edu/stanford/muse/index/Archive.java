@@ -46,6 +46,7 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1543,8 +1544,17 @@ public class Archive implements Serializable {
             array.put (2, label.getDescription());
             array.put (3, docCount);
             array.put (4, label.isSysLabel());
-            String labelType = LabelManager.LabType.RESTR_LAB.equals(label.getType()) ? "Restriction" : "General";
-            array.put (5, labelType);
+            String labelTypeDescription = LabelManager.LabType.RESTR_LAB.equals(label.getType()) ? "Restriction" : "General";
+
+            if (LabelManager.LabType.RESTR_LAB.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.equals (label.getRestrictionType())) {
+                labelTypeDescription += " for " + Util.pluralize(label.getRestrictedForYears(), "year");
+            } else if (LabelManager.LabType.RESTR_LAB.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_UNTIL.equals (label.getRestrictionType())) {
+                long time = label.getRestrictedUntilTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+                String description = sdf.format(new Date(time));
+                labelTypeDescription += " until " + description;
+            }
+            array.put (5, labelTypeDescription);
 
             resultArray.put (count++, array);
         }
