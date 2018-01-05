@@ -34,7 +34,20 @@
 
  	  // UI display of folders
        int numFoldersPerRow = 2; // 4;
+	String name = request.getParameter("name");
+	if (name == null)
+	    name = "";
+	String archiveTitle = request.getParameter("archiveTitle");
+	if (archiveTitle == null)
+		archiveTitle = "";
+	String alternateEmailAddrs = request.getParameter("alternateEmailAddrs");
+	if (alternateEmailAddrs == null)
+		alternateEmailAddrs = "";
+	name = Util.escapeHTML(name);
+	archiveTitle = Util.escapeHTML(archiveTitle);
+	alternateEmailAddrs = Util.escapeHTML(alternateEmailAddrs);
  %>
+
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -79,6 +92,8 @@
 
 <div id="div_main" style="min-width:400px" class="folderspage">
 <form id="folders">
+
+
 	<div style="text-align:center;width:90%;margin:auto" >
 
 <%

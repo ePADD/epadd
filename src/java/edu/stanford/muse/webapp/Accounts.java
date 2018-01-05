@@ -67,6 +67,11 @@ public class Accounts {
 				m = new MuseEmailFetcher();
 				session.setAttribute("museEmailFetcher", m);
 			}
+
+			// store metadata in this object, it will be xferred to the archive later
+			m.name = request.getParameter ("name");
+			m.alternateEmailAddrs = request.getParameter ("alternateEmailAddrs");
+			m.archiveTitle = request.getParameter ("archiveTitle");
 		}
 
 		// note: the same params get posted with every accountNum

@@ -51,17 +51,11 @@
 		m.setupFetchers(-1);
 
 		//get ownername, title, alternateemailaddr from the request..
-	    String ownerName = request.getParameter("name");
+	    String ownerName = m.name;
+        String archiveTitle = m.archiveTitle;
+        String alternameEmailAddrs = m.alternateEmailAddrs;
 
-		String archiveTitle = request.getParameter("archiveTitle");
-
-		String alt = request.getParameter("alternateEmailAddrs");
-		if (Util.nullOrEmpty(alt))
-		    alt = (String) JSPHelper.getSessionAttribute(session, "alternateEmailAddrs");
-
-		// could also uniquify the emailAddrs here
-
-		archive.updateUserInfo(ownerName,archiveTitle,alt);
+		archive.updateUserInfo(ownerName,archiveTitle,alternameEmailAddrs);
 
         for (EmailStore store : m.emailStores)
             if (!(Util.nullOrEmpty(store.emailAddress)))

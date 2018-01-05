@@ -94,6 +94,8 @@
                 {targets: 2, render:label_count},
                 <% if (!ModeConfig.isDiscoveryMode()) { %>
                     {targets: 3, render:edit_label_link},
+                	{targets: 4, render:edit_label_link},
+
                 <% } %>
 
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */

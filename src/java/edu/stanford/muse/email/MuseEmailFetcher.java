@@ -50,6 +50,7 @@ import java.util.*;
 public class MuseEmailFetcher {
     private static Log log = LogFactory.getLog(MuseEmailFetcher.class);
 
+    public String name, archiveTitle, alternateEmailAddrs; // temp storage
     private transient List<MTEmailFetcher> fetchers;
 	public transient List<EmailStore> emailStores = new ArrayList<>();
 	
