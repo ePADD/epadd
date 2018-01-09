@@ -79,7 +79,7 @@
 			// if we run out of memory parsing mbox files etc, emailDocs == null is usually the manifestation
 			errorMessage = "You may not be running with enough memory. Please try again with more memory, or on a folder with fewer messages.";
 		} else {
-				resultPage = "browse-top?archiveId="+archiveID;
+				resultPage = "browse-top?archiveID="+archiveID;
 				SimpleSessions.saveArchive(archive);
 			}
 			try {

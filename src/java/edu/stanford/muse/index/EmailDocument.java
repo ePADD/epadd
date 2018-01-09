@@ -36,8 +36,12 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.util.*;
+
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
 
 /** EmailDocument is really like an email header - it stores metadata about a message.
  * use ed.date, ed.to/from/cc/bcc, and ed.getContents() gets its contents, ed.attachments gets its attachments */
@@ -52,7 +56,6 @@ public class EmailDocument extends DatedDocument implements Serializable
 	public String folderName, emailSource;
 	public Set<String> folderNames = new LinkedHashSet<>(), emailSources = new LinkedHashSet<>(); // email can now belong to multiple folders, folderName field also maintained for backward compatibility
 	public Address[] to, from, cc, bcc; // note: for some reason from[] is an array in JavaMail, because it was supposed to be possible for a message to have multiple senders.
-	
 	public String messageID;
 	public String sentToMailingLists[];
 	public List<Blob> attachments;
@@ -82,6 +85,65 @@ public class EmailDocument extends DatedDocument implements Serializable
 			this.emailSource = emailSource;
 	}
 
+	/* This method returns a copy of emaildocument with copied mutable fields. In absence of such a method
+	any modification in delivery/discovery export modified the original fields (because of pointing to same
+	reference)
+	 */
+	public EmailDocument copyMutableFields(){
+		EmailDocument edoc = new EmailDocument(id,emailSource,folderName,to,cc,bcc,from,getSubject(),messageID, date);
+
+		if(!Util.nullOrEmpty(this.description))
+			edoc.description = new String(this.description);
+		if(!Util.nullOrEmpty(this.comment))
+			edoc.comment = new String(this.comment);
+		/*if(!Util.nullOrEmpty(to))
+			edoc.to = Arrays.stream(to).map(address -> {
+				InternetAddress ia = (InternetAddress)address;
+				InternetAddress b = ia;
+				try {
+					b = new InternetAddress(ia.getAddress(),ia.getPersonal());
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				return b;
+			}).toArray(Address[]::new);
+		if(!Util.nullOrEmpty(from))
+			edoc.from = Arrays.stream(from).map(address -> {
+				InternetAddress ia = (InternetAddress)address;
+				InternetAddress b = ia;
+						try {
+							b = new InternetAddress(ia.getAddress(),ia.getPersonal());
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+				return b;
+			}
+			).toArray(Address[]::new);
+		if(!Util.nullOrEmpty(cc))
+			edoc.cc = Arrays.stream(cc).map(address -> {
+				InternetAddress ia = (InternetAddress)address;
+				InternetAddress b = ia;
+				try {
+					b = new InternetAddress(ia.getAddress(),ia.getPersonal());
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				return b;
+			}).toArray(Address[]::new);
+		if(!Util.nullOrEmpty(bcc))
+			edoc.bcc = Arrays.stream(bcc).map(address -> {
+				InternetAddress ia = (InternetAddress)address;
+				InternetAddress b = ia;
+				try {
+					b = new InternetAddress(ia.getAddress(),ia.getPersonal());
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				return b;
+			}).toArray(Address[]::new);
+*/
+		return edoc;
+	}
 	public boolean hasError() { return errorString != null; }
 	public String getErrorString() { return errorString; }
 	public void setErrorString(String errorString) { this.errorString = errorString; }

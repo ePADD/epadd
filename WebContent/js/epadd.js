@@ -361,17 +361,18 @@ epadd.import_accession = function(e, post_params) {
 		$('#spinner-div').fadeOut();
 		$('#gobutton').fadeIn();
 
-		if (response && (response.status == 0)) {
-			var status = 'Success! ' + response.message;
-			epadd.log ('loading archive status: ' + status);
-			window.location = './collections';
-		}
-		else {
-			if (response)
-				epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
-			else
-				epadd.alert('Error! No response from ePADD.');
-		}
+		if (response ) {
+            if (response.status == 0) {
+                var status = 'Success! ' + response.message;
+                epadd.log('loading archive status: ' + status);
+                window.location = './browse-top?archiveID=' + response.archiveID;
+            } else if (response.status == 1) {
+                windos.location = "./mergeReport?archiveID=" + response.archiveID;
+            } else {
+                epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
+            }
+        }   else
+                    epadd.alert('Error! No response from ePADD.');
 	},
 	error: function() {
 		$('#spinner-div').fadeOut();

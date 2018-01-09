@@ -102,7 +102,9 @@
         nEntriesForPiclens = bs.generate_top_level_page(randomPrefix, appURL, extra_mesg,archiveID);
         // attachmentsForDocs
 
-        piclensRSSFilename = "user"+ "/" + randomPrefix + ".photos.rss";
+        //piclensRSSFilename = "user"+ "/" + randomPrefix + ".photos.rss"
+
+        piclensRSSFilename = appURL + "/" + "serveTemp.jsp?archiveID="+archiveID+"%26"+"file="+randomPrefix+".photos.rss";
         //String faviconPlusCSS = "<link rel=\"icon\" type=\"image/png\" href=\"images/muse-favicon.png\">\n<link href=\"css/muse.css\" rel=\"stylesheet\" type=\"text/css\"/>";
 
         //String url = request.getRequestURI();

@@ -2,6 +2,7 @@ package edu.stanford.muse.LabelManager;
 
 import com.google.gson.Gson;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,12 +43,7 @@ public class LabelManager implements Serializable{
     /** creates and returns a new label with the given details, assigning it a new, unused labelID */
     public Label createLabel(String labelName, String description, LabelManager.LabType type) {
 
-        // look for the first integer that is not taken as a label id
-        int id = 1;
-        while (labelInfoMap.get (Integer.toString(id)) != null)
-            id++;
-
-        String newlabid = Integer.toString(id);
+        String newlabid = Integer.toString(getNextLabelNumber());
         Label label = new Label(labelName,type,newlabid,description,false);
         labelInfoMap.put(newlabid, label);
         return label;
@@ -175,5 +171,84 @@ public class LabelManager implements Serializable{
             tmp.docToLabelMap.keySet().retainAll(docids);
         }
         return tmp;
+    }
+
+    private int getNextLabelNumber(){
+        // look for the first integer that is not taken as a label id
+        int id = 1;
+        while (labelInfoMap.get (Integer.toString(id)) != null)
+            id++;
+
+        return id;
+    }
+
+    public class MergeResult{
+        public Set<Label> newLabels;
+        public List<Pair<Label,Label>> labelsWithNameClash;
+    }
+    /* Merging of two label managers. Here the implicit assumptions is that the docs on which these labels were
+    applied are of same type (i.e. emaildocument here). This merging is just a set union of labels' data structure.
+    But before merging, the labelID's in one of the label manager are renamed to make sure
+     */
+    public MergeResult merge(LabelManager other){
+        MergeResult result = new MergeResult();
+        //System labels should not be redefined in other. We assume that they will always have fixed semantics
+        //across different label managers.
+        //a map that holds the mapping of old labelID to newlabel ID before copying them from other to this
+        //lael manager.
+        Map<String,String> oldToNewLabelID = new LinkedHashMap<>();
+        //Also note that, if two labels have same name across two different label managers we will add some
+        //distinguishing prefix before them (say LM1 and LM2, or only Accesion2 in the src label manager)
+        String renamedLM_Name="Accession2.";
+        Map<String,Label> labnameToLabelMap = new LinkedHashMap<>();
+        getAllLabels().stream().forEach(label-> labnameToLabelMap.put(label.getLabelName(),label));
+        //Step 1. Copy labels from other to this while renaming label ID's (except DNT/System label)
+        for(Label lab: other.getAllLabels()){
+            String labid = lab.getLabelID();
+            if(lab.isSysLabel)
+                continue;
+            String newlabid;
+            if(labelInfoMap.containsKey(labid)){
+                //rename labid to newlabid
+                Integer i = getNextLabelNumber();
+                newlabid = Integer.toString(i);
+            }else
+                newlabid = labid;
+
+            //if name of this label clashes with an already existing label of this label manager then add
+            //a prefix before that name.
+            String labname;
+            if(labnameToLabelMap.keySet().contains(lab.getLabelName())) {
+
+                Label inCollection = labnameToLabelMap.get(lab.getLabelName());
+                Pair<Label,Label> clashed = new Pair<>(inCollection,lab);
+                result.labelsWithNameClash.add(clashed);
+                labname = renamedLM_Name + lab.getLabelName();
+            }
+            else {
+                labname = lab.getLabelName();
+                result.newLabels.add(lab);
+            }
+            //create a new label with thisnew label id and other details same as label 'lab'.
+            Label newlab = new Label(labname, lab.labType, newlabid, lab.description, lab.isSysLabel);
+            newlab.setRestrictionDetails(lab.getRestrictionType(),lab.getRestrictedUntilTime(),lab.getRestrictedForYears(),lab.getLabelAppliesToMessageText());
+            //add to labelInfoMap.
+            labelInfoMap.put(newlabid,newlab);
+            //add mapping of oldlabid to newlabid
+            oldToNewLabelID.put(labid,newlabid);
+        }
+        //now iterate over docLabelInfoMap of other and add those documents in this object's docLabelInfoMap
+        //if docid is same then do the set union after renaming old id's to new one (taken from oldToNewLabelIdMap)
+        //if docid is new then simply copy them
+        for(String docid: other.docToLabelMap.keySet()){
+            //get newlabid's generated in above for loop
+            Set<String> newlabels = other.docToLabelMap.get(docid).stream().map(labid->oldToNewLabelID.get(labid)).collect(Collectors.toSet());
+            if(docToLabelMap.containsKey(docid)){
+                docToLabelMap.get(docid).addAll(newlabels);
+            }else
+                docToLabelMap.put(docid,newlabels);
+        }
+
+        return result;
     }
 }

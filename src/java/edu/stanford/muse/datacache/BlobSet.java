@@ -15,6 +15,7 @@
 */
 package edu.stanford.muse.datacache;
 
+import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
@@ -204,10 +205,12 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
     		Util.copy_stream_to_file(is, sorry_fname);
     	}
 
-    	// Make the dir with this dataset name, where we'll copy the data files
-    	String dumpDataDir = rootDir + File.separatorChar + prefix + File.separatorChar;
-    	new File(dumpDataDir).mkdirs();
-    	String piclensRSSPath = rootDir + File.separatorChar + prefix + ".photos.rss";
+    	//No longer true-- Make the dir with this dataset name, where we'll copy the data files
+    	//String dumpDataDir = rootDir + File.separatorChar + prefix + File.separatorChar;
+    	//new File(dumpDataDir).mkdirs();
+		//Now we copy this file to temp subdirectory inside this archive. This fill will be later served
+		//using serveTemp.jsp for being displayed by cooliris plugin.
+    	String piclensRSSPath = rootDir + File.separatorChar + Archive.TEMP_SUBDIR+File.separatorChar+ prefix + ".photos.rss";
     	PrintWriter piclensRSS = new PrintWriter (new FileWriter (piclensRSSPath));
     	piclensRSS.println (photoRSSHeader);
 

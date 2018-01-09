@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import edu.stanford.muse.webapp.JSPHelper;
 import org.json.JSONArray;
@@ -54,6 +55,16 @@ public class Contact extends UnionFindObject {
 	public Set<String> getEmails() {
 		return emails;
 	}
+
+/*
+	public Contact copy() {
+		Contact c = new Contact();
+		c.names = names.stream().map(name -> new String(name)).collect(Collectors.toSet());
+		c.emails = emails.stream().map(email -> new String(email)).collect(Collectors.toSet());
+		c.mailingListState = this.mailingListState;
+		return c;
+	}
+*/
 
 	public String getFirstEmail()
 	{

@@ -116,7 +116,7 @@
     %>
   </div>
   <br/>
-c
+
     <script>
     $(document).ready(function() {
       $('.archive-card').click(function(e) {

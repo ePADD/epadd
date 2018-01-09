@@ -66,32 +66,37 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 		//content of these messages. In case of processing to discovery mode the redaction takes place.
 	List<Document> docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY);
 
-/*
-		@TODO-Export Take decision on exporting based on labels of this document set
-	for (Document d: archive.getAllDocs())
-	{
-	   //take decision of exporting based on set of labels attached with it.
-		EmailDocument ed = (EmailDocument) d;
-		if (!ed.doNotTransfer && !ed.transferWithRestrictions) // important: for processing, transfer with restrictions is not to be exported!
-			docsToExport.add(ed);
-		ed.reviewed = false; // always reset reviewed flag, for both discovery and delivery
-	}
-*/
-	// we need to recompute counts here for only the docs that are being exported
 	/*
-	Map<String,Integer> ec = new HashMap<String,Integer>();
-	if(archive.processingMetadata.entityCounts!=null)
-		for(String str: archive.processingMetadata.entityCounts.keySet())
-			ec.put(str,archive.processingMetadata.entityCounts.get(str));
-	else
-		ec = null;
-	*/
+	Before v5 we faced an issue where after exporting to delivery/discovery the document's content got
+	changed because we are not actually copying the document/index document before making any changes (redaction)
+	in their subject/body. One easy way to avoid this is to save the current archive in delivery/discovery mode,
+	load it again and then make changes to that (redaction etc) and then saving it again. However, note that
+	reading the archive from a directory will result in adding it's archive ID to global archiveID map which
+	we don't want now [because we are loading it only temporarily].
+	 *//*
+
+	//save current archive to delivery directory
+	// save baseDir temporarily and set it back after saving it in delivery/discovery folders.
+	String tmpbasedir = archive.baseDir;
+	archive.setBaseDir(folder);
+	SimpleSessions.saveArchive(archive);
+	//save current archive to discovery directory
+	archive.setBaseDir(folderPublic);
+	SimpleSessions.saveArchive(archive);
+	//set baseDir back for the current archive.
+	archive.setBaseDir(tmpbasedir);
+	//At this point, both folder and folderpublic contain the processing mode archive. We need to read these archives
+	//modify them according to the mode (delivery/discovery) and then save them back to their respective folders (folder/folderpublic)
+	Archive fordelivery = SimpleSessions.readArchiveIfPresent(folder);*/
+	//make sure to remove it from the global map once it's work is done
 	// archive.processingMetadata.entityCounts = null;
 	archive.processingMetadata.numPotentiallySensitiveMessages = -1;
 	out.println ("Exporting delivery mode archive...<br/>");
 	out.flush();
 	try {
 		archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default");
+//		//remove fordelivery archive from the global map
+//		SimpleSessions.removeFromGlobalArchiveMap(folder,fordelivery);
 	} catch (Exception e) {
 		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
 		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");
@@ -113,11 +118,13 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	}
 
 	// NOW EXPORT FOR DISCOVERY
+	//Read archive from folderPublic directory and operate on that.
+	//Archive forDeliveryPublic = SimpleSessions.readArchiveIfPresent(folderPublic);
 	out.println ("Exporting discovery mode archive...<br/>");
 	out.flush();
 	JSPHelper.log.info("Exporting for discovery");
 	archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default");
-
+	//SimpleSessions.removeFromGlobalArchiveMap(folderPublic,forDeliveryPublic);
 	try {
         String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
         if (!Util.nullOrEmpty(csv)) {

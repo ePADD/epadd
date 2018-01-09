@@ -17,6 +17,7 @@ package edu.stanford.muse.index;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.Gson;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
@@ -30,11 +31,9 @@ import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
-import edu.stanford.muse.util.EmailUtils;
-import edu.stanford.muse.util.Pair;
-import edu.stanford.muse.util.Span;
-import edu.stanford.muse.util.Util;
+import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.EmailRenderer;
+import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.io.FileUtils;
@@ -44,6 +43,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
+import org.json.JSONStringer;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -262,6 +262,7 @@ public class Archive implements Serializable {
     static public class AccessionMetadata implements java.io.Serializable {
         private final static long serialVersionUID = 1L; // compatibility
         public String id, title, date, scope, rights, notes;
+
     }
 
     // these fields are used in the library setting
@@ -278,6 +279,10 @@ public class Archive implements Serializable {
         public int numPotentiallySensitiveMessages = -1;
         public Date firstDate, lastDate;
         public List<AccessionMetadata> accessionMetadatas;
+
+        public String toJSON() {
+            return new Gson().toJson(this);
+        }
 
         private static String mergeField(String a, String b) {
             if (a == null)
@@ -930,6 +935,9 @@ public class Archive implements Serializable {
     }
 
 
+    public synchronized  void exportWithNoChange(String destinationDir){
+
+    }
     /**
      * a fresh archive is created under out_dir. name is the name of the session
      * under it. blobs are exported into this archive dir. destructive! but
@@ -964,11 +972,21 @@ public class Archive implements Serializable {
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
         LabelManager oldLabelManager= getLabelManager();
+        AddressBook ab = this.getAddressBook();
         /////////////////saving done//////////////////////////////////
         //change state of the current archive -temporarily//////////
-        allDocs = new ArrayList<>(retainedDocs);
-        if (exportInPublicMode)
+        if (exportInPublicMode){
+            //because message header gets modified so need to create copy of these documents and then set
+            //them as allDocs
+            allDocs = retainedDocs.stream().map(doc->{
+                EmailDocument ed = (EmailDocument)doc;
+                return ed.copyMutableFields();
+            }).collect(Collectors.toList());
+            //replace description with names;
             replaceDescriptionWithNames(allDocs, this);
+        }else{
+            allDocs = new ArrayList<>(retainedDocs);
+        }
         Set<String> retainedDocIDs = retainedDocs.stream().map(f-> f.getUniqueId()).collect(Collectors.toSet());
         LabelManager newLabelManager = getLabelManager().getLabelManagerForExport(retainedDocIDs,export_mode);
         setLabelManager(newLabelManager);
@@ -1032,6 +1050,7 @@ public class Archive implements Serializable {
             List<EmailDocument> eds = new ArrayList<EmailDocument>();
             for (Document doc : docs)
                 eds.add((EmailDocument) doc);
+
             EmailUtils.maskEmailDomain(eds, this.addressBook);
         }
 
@@ -1436,29 +1455,76 @@ public class Archive implements Serializable {
       //  processingMetadata.numPotentiallySensitiveMessages = numMatchesPresetQueries();
     }
 
+    /*
+    Class for storing the merge result data
+     */
+    public class MergeResult{
+        public int nMessagesInCollection=0;
+        public int nAttachmentsInCollection=0;
+        public int nMessagesInAccession=0;
+        public int nAttachmentsInAccession=0;
+        public int nCommonMessages=0;
+        public int nFinalMessages=0;
+        public int nFinalAttachments=0;
+        public String accessionDir;
+        ////For AddressBook Merge report
+        public AddressBook.MergeResult addressBookMergeResult;
+        ///For LabelManager Merge report
+        public LabelManager.MergeResult labManagerMergeResult;
+    }
 
-    public void Merge(Archive other){
+    //////////////////////////Data fields for accessionmerging///////////////////////////
+    transient public MergeResult lastMergeResult;
+    private Map<EmailDocument,String> docToAccessionIDMap;
+    public String baseAccessionID;//This represents the accession ID when an accession is imported
+    //to an empty collection. It is used for ensuring a manageable size of docToAccessionMap for common case
+    //of single accession archives. While getting to know about the accessionID of a doc if it is not found
+    //in the map docToAccessionMap then the ID is assumed to be baseAccessionID. Note that, this id is set
+    //from the accession ID of the first accession imported in an empty collection.
+
+    Map<EmailDocument,String> getDocToAccessionIDMap(){
+        if(docToAccessionIDMap==null)
+            return new LinkedHashMap<>();
+        else
+            return docToAccessionIDMap;
+    }
+
+    //Postcondition: variable MergeResult is set
+    public void merge(Archive other, String accessionID){
+        MergeResult result = new MergeResult();
         /////////////////////////////INDEX MERGING AND DOCUMENT COPYING//////////////////////////
         //for each mail document in other process it only if it is not present in this archive.
         //if not present then call indexer's method to add doc and associated attachments to this index.
+        result.nMessagesInAccession = other.getAllDocs().size();
+        result.nAttachmentsInAccession = other.blobStore.uniqueBlobs.size();
+        result.nMessagesInCollection = getAllDocs().size();
+        result.nAttachmentsInCollection = blobStore.uniqueBlobs.size();
+        result.accessionDir = other.baseDir;
         for(Document doc: other.getAllDocs()) {
             if (!getAllDocs().contains(doc)) {
                 EmailDocument edoc = (EmailDocument) doc;
                 try {
                     getAllDocs().add(doc);
                     getAllDocsAsSet().add(doc);
+                    //add a field called accession id to these documents.
+                    getDocToAccessionIDMap().put(edoc,accessionID);
                     indexer.moveDocAndAttachmentsToThisIndex(other.indexer, edoc,other.getBlobStore(),blobStore);
                 } catch (IOException e) {
                     log.warn("Unable to copy document with signature" + ((EmailDocument) doc).getSignature() + " from the incoming archive to this archive ");
                     e.printStackTrace();
                 }
-            }
+            }else
+                result.nCommonMessages+=1;
         }
+        result.nFinalMessages = getAllDocs().size();
+        result.nFinalAttachments = blobStore.uniqueBlobs.size();
         ///////////////////////Address book merging////////////////////////////////////////////////
-
+        result.addressBookMergeResult = addressBook.merge(other.getAddressBook());
         ///////////////////////Label Manager merging///////////////////////////////////////////////
-
+        result.labManagerMergeResult = labelManager.merge(other.getLabelManager());
         ///////////////////////Entity book merging/////////////////////////////////////////////////
+
+        lastMergeResult = result;
 
     }
 //    public void merge(Archive other) {

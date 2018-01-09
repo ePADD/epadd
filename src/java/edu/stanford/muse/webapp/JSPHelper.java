@@ -780,6 +780,10 @@ public class JSPHelper {
 		if (contentType == null) {
 			contentType = "application/octet-stream";
 		}
+		if(contentType.contains("rss")){
+			contentType = "text/xml";
+		}
+
 
 		// Init servlet response.
 		int DEFAULT_BUFFER_SIZE = 100000;

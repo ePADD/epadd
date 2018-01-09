@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by chinmay on 21/12/17.
  */
-public class Label implements Serializable {
+public class Label implements Serializable{
 
     /** note: these field names are used in JS as well. do not change casually */
 
@@ -38,9 +38,6 @@ public class Label implements Serializable {
     // this is orthogonal to restriction time
     String labelAppliesToMessageText = null;
 
-    public String labelAppliesToMessageText() {
-        return labelAppliesToMessageText;
-    }
 
     public Label(String name, LabelManager.LabType type, String labid, String description, boolean isSysLabel){
         this.labName = name;
@@ -51,6 +48,24 @@ public class Label implements Serializable {
         this.isSysLabel = isSysLabel;
     }
 
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name: "+this.getLabelName()+"\n");
+        sb.append("ID: "+this.getLabelID()+"\n");
+        sb.append("Description: "+this.getDescription()+"\n");
+        sb.append("Label Type: "+this.getType()+"\n");
+        if(this.getType()== LabelManager.LabType.RESTR_LAB)
+        {
+            sb.append("RestrictionType: "+this.getRestrictionType()+"\n");
+            if(this.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_FOR_YEARS)
+                sb.append("Restricted for years: "+this.restrictedForYears);
+            else if (this.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_UNTIL)
+                sb.append("Restricted until: "+this.restrictedUntilTime);
+        }
+
+        return sb.toString();
+
+    }
     public void update (String name, String description, LabelManager.LabType type) {
         this.labName = name;
         this.description = description;
@@ -95,5 +110,21 @@ public class Label implements Serializable {
         this.labName = labelName;
         this.labType = type;
         this.description = description;
+    }
+
+    public boolean equals(Label other){
+        if(other==null)
+            return false;
+
+        if(this.labType.equals(other.labType) && this.labId.equals(other.labId) && this.labName.equals(other.labName)&&
+                this.description.equals(other.description) && this.isSysLabel==other.isSysLabel &&
+                this.restrictionType == other.restrictionType && this.restrictedUntilTime==other.restrictedUntilTime &&
+                this.restrictedForYears==other.restrictedForYears){
+            if(this.labelAppliesToMessageText==null?other.labelAppliesToMessageText==null:this.labelAppliesToMessageText.equals(other.labelAppliesToMessageText))
+                return true;
+            else
+                return false;
+        }else
+            return false;
     }
 }

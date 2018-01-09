@@ -100,7 +100,9 @@
                 <label for="labelType">Label type</label>
                 <select id="labelType" name="labelType" class="form-control selectpicker">
                     <option value="" selected disabled>Choose label type</option>
-                    <option value="<%=LabelManager.LabType.RESTR_LAB.toString()%>" <%=LabelManager.LabType.RESTR_LAB.toString().equals(labelType) ? "selected":""%> >Restriction label</option>
+                    <%if(!ModeConfig.isPublicMode() ){%>
+                        <option value="<%=LabelManager.LabType.RESTR_LAB.toString()%>" <%=LabelManager.LabType.RESTR_LAB.toString().equals(labelType) ? "selected":""%> >Restriction label</option>
+                    <%}%>
                     <option value="<%=LabelManager.LabType.GEN_LAB.toString()%>"  <%=LabelManager.LabType.GEN_LAB.toString().equals(labelType) ? "selected":""%> >General label</option>
                 </select>
             </div>

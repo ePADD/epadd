@@ -24,6 +24,7 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.math3.analysis.function.Add;
 import org.json.JSONArray;
 
 import javax.mail.Address;
@@ -103,7 +104,20 @@ public class AddressBook implements Serializable {
         contactListForIds.add(self);
         contactForSelf = self;
     }
+/*
 
+    public AddressBook copyMutableFields(){
+        //sufficient to do only for non-transient fields as it is used during export in delivery/discovery
+        AddressBook ab = new AddressBook(this.contactForSelf.copy());
+        for(Contact c: contactListForIds){
+            if(!c.equals(contactForSelf)){
+                ab.contactListForIds.add(c.copy());
+            }
+        }
+
+        return ab;
+    }
+*/
 
     /**
      * initialize addressbook from lines of this format:
@@ -838,12 +852,98 @@ public class AddressBook implements Serializable {
         mailingListMap.clear();
     }
 
+    public class MergeResult{
+        public Map<Contact,List<Contact>> mergedContacts;
+        public List<Contact> newlycreatedContacts;
+    }
+/*
+Merge algorithm:
+
+Input: A1 - First Address book, A2- Second address book
+Assumption: A1 is trusted
+
+For each contact C in A2
+ Let names(C) = N1 U N2 such that N1 is the set of names present in A1 and N2 is the new set of names appearing in A2.
+ Case 1: There is a unique contact C' in A1 such that N1 is a subset of names(C')-
+    a) add N2 to the names in C' and mark them as newly added so that user can revisit and confirm them.
+    b) Add modified C' to merged Address book.
+ Case 2: There is no unique contact C' in A1 such that N1 is a subset of names(C')
+    a) Create a new contact C'' in the merged address book with names in the set N2.
+    b) Add N1 in C'' and mark them as strikethrough to denote that they are already present in different contacts and hence can not be added here.
+
+Case 1 example:
+A1: {abc}
+A2: {abxy}
+
+In the merged address book there will be a single contact with names {abcxy}. Here x and y will be highlighted.
+
+Case 2 example:
+A1: {abc}{xy}
+A2: {abcdxz}
+
+In the merged address book there will be three contacts.
+{abc}
+{xy}
+{abcdxz} where a,b,c, and x will be as strikethrough text.
+ */
+    public MergeResult merge(AddressBook other){
+        MergeResult result = new MergeResult();//for filling in the results and displaying as a report.
+        for(Contact c: other.allContacts()){
+            Set<String> existingmails = new LinkedHashSet<>();
+            Set<String> newemails = new LinkedHashSet<>();
+            boolean case2=false;
+            Contact oldcontacttmp = null;
+            for(String email: c.getEmails()){
+                //search for this email in this address book. if not present then add to newemails.
+                //else [if this is same contact as oldcontact then add to existingmails else break- means case 2 in the algorithm]
+                Contact inoldcontact = lookupByEmail(email);
+                if(inoldcontact == null){
+                    //means it is a new email in the incoming archive.
+                    newemails.add(email);
+                }else{
+                    if(oldcontacttmp==null || oldcontacttmp==inoldcontact) {
+                        oldcontacttmp = inoldcontact;
+                        existingmails.add(email);
+                    }else{
+                        existingmails.add(email);
+                        case2=true;  //means we found an instance of Case 2 above (in algorithm)
+                    }
+                }
+            }
+            //INV: case2 == false && oldcontacttmp!=null => all email addresses of c which are also present in this
+            //addressbook are all in one contact and that is reference by oldcontacttmp.
+            if(!case2){
+                //add newmails in oldcontacttmp and mention that they were added because all other mailids
+                //are in the same contact of this address book.
+                for(String email:c.getEmails())
+                    if(!oldcontacttmp.getEmails().contains(email))
+                        addEmailAddressForContact(email,oldcontacttmp);
+                for(String name: c.getNames())
+                    if(!oldcontacttmp.getNames().contains(name))
+                        addNameForContactAndUpdateMaps(name,oldcontacttmp);
+                List<Contact> merged = result.mergedContacts.get(oldcontacttmp);
+                if(merged==null)
+                    merged = new LinkedList<>();
+                merged.add(c);
+            }else{
+                //add c as an altogether new contact in this address book and also mention in report that
+                //existingmailids appear in different contacts of this addressbook whereas they appear together
+                //in the incoming addressbook.
+                contactListForIds.add(c);
+                result.newlycreatedContacts.add(c);
+            }
+
+        }
+        //call fillTransientfields to update transient maps
+        fillTransientFields();
+        return result;
+    }
     /**
      * merges one contact set with another. also recomputes unification classes etc.
      * warning doesn't merge inDates, and outDates etc.
      * TODO: fix this for epadd v5
      */
-    public void merge(AddressBook other) {
+    public void mergeOld(AddressBook other) {
         // TOFIX: mailing lists merging!
         Set<Contact> allContacts = new LinkedHashSet<>();
 

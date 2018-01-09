@@ -1,5 +1,6 @@
 package edu.stanford.muse.webapp;
 
+import com.google.gson.Gson;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -208,17 +209,17 @@ public class SimpleSessions {
 	public static ProcessingMetadata readProcessingMetadata(String baseDir, String name)
 	{
 		String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
-		ObjectInputStream ois = null;
+		Reader reader = null;
 		try {
-			ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(processingFilename)));
-			ProcessingMetadata metadata = (ProcessingMetadata) ois.readObject();
+			reader = new FileReader(processingFilename);
+			ProcessingMetadata metadata = new Gson().fromJson(reader,ProcessingMetadata.class);
 			return metadata;
 		} catch (Exception e) {
 			return null;
 		} finally {
 			try {
-				if (ois != null)
-					ois.close();
+				if (reader != null)
+					reader.close();
 			} catch (Exception e1) {
 				Util.print_exception("Unable to read processing metadata", e1, log);
 			}
@@ -229,26 +230,31 @@ public class SimpleSessions {
      * writes name.processing.metadata to the given basedir. should be used
      * when quick archive metadata is needed without loading the actual archive
      * basedir is up to /.../sessions
+	 * v5- Instead of serializing now this data gets stored in json format.
      */
     public static void writeProcessingMetadata(ProcessingMetadata pm, String baseDir, String name)
     {
         String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
-        ObjectOutputStream oos = null;
-        try {
-            oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(processingFilename)));
-            oos.writeObject(pm);
-            oos.close();
-            return;
-        } catch (Exception e) {
-            Util.print_exception("Unable to write processing metadata", e, log);
-        } finally {
-            try {
-                if (oos != null)
-                    oos.close();
-            } catch (Exception e1) {
-                Util.print_exception("Unable to write processing metadata", e1, log);
-            }
-        }
+
+		Gson gson = new Gson();
+		FileWriter fwriter = null;
+		try {
+			fwriter = new FileWriter(processingFilename);
+			gson.toJson(pm,fwriter);
+		} catch (IOException e) {
+			Util.print_exception("Unable to write processing metadata", e, log);
+			e.printStackTrace();
+		}finally {
+			if(fwriter!=null){
+				try {
+					fwriter.close();
+				} catch (IOException e) {
+					Util.print_exception("Unable to write processing metadata", e, log);
+					e.printStackTrace();
+				}
+			}
+		}
+
     }
 
 	/** saves the archive in the current session to the cachedir. note: no blobs saved. */
@@ -538,7 +544,7 @@ public class SimpleSessions {
 		}
 	}
 
-	private static void addToGlobalArchiveMap(String archiveDir, Archive archive){
+	public static void addToGlobalArchiveMap(String archiveDir, Archive archive){
 
 		//add to globalDirmap
 		globaldirToArchiveMap.put(archiveDir,new WeakReference<Archive>(archive));
@@ -548,6 +554,16 @@ public class SimpleSessions {
 		//for reverse mapping
 		globalArchiveToArchiveIDMap.put(archive,archiveID);
 
+	}
+
+	public static void removeFromGlobalArchiveMap(String archiveDir, Archive archive){
+		globaldirToArchiveMap.remove(archiveDir);
+		//remove from reverse mapping but first get the archive ID.
+		String archiveID = globalArchiveToArchiveIDMap.get(archive);
+		globalArchiveToArchiveIDMap.remove(archive);
+		//remove from archiveID to archive mapping.
+		if(!Util.nullOrEmpty(archiveID))
+			globalArchiveIDToArchiveMap.remove(archiveID);
 	}
 
 

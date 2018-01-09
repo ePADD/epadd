@@ -147,10 +147,10 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
 
         List<AuthorityMapper.AuthorityRecord> candidates = new ArrayList<>();
         Collection<Long> fastIds = cnameToFastIdCandidates.get(cname);
-       /* if (fastIds != null)
+       if (fastIds != null)
             for (Long id : fastIds)
                 candidates.add (getAuthRecordForFASTId(id));
-*/
+
         result.candidates = candidates;
         return result;
     }

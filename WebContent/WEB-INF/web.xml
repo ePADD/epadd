@@ -74,7 +74,16 @@
 	<servlet-mapping>
 		<servlet-name>ner</servlet-name>
 		<url-pattern>/ner</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>mergeReport</servlet-name>
+		<jsp-file>/mergeReport.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mergeReport</servlet-name>
+		<url-pattern>/mergeReport</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>collections</servlet-name>
