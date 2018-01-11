@@ -93,9 +93,9 @@ public class EmailDocument extends DatedDocument implements Serializable
 		EmailDocument edoc = new EmailDocument(id,emailSource,folderName,to,cc,bcc,from,getSubject(),messageID, date);
 
 		if(!Util.nullOrEmpty(this.description))
-			edoc.description = new String(this.description);
+			edoc.description = this.description;
 		if(!Util.nullOrEmpty(this.comment))
-			edoc.comment = new String(this.comment);
+			edoc.comment = this.comment;
 		/*if(!Util.nullOrEmpty(to))
 			edoc.to = Arrays.stream(to).map(address -> {
 				InternetAddress ia = (InternetAddress)address;
@@ -155,7 +155,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	 * x itself can be null in which case an empty list is returned. */
 	private List<String> addressesToList(Address[] x)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (x != null)
 			for (Address a: x)
 				result.add(a.toString()); // should not be null
@@ -289,7 +289,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	 * except for oneself. */
 	public List<String> getAllNonOwnAddrs(Set<String> ownAddrs)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		List<String> allAddrs = getAllAddrs();
 		for (String s: allAddrs)
 			if (!ownAddrs.contains(s))
@@ -299,23 +299,20 @@ public class EmailDocument extends DatedDocument implements Serializable
 
 	public List<Address> getToCCBCC()
 	{
-		List<Address> result = new ArrayList<Address>();
+		List<Address> result = new ArrayList<>();
 		if (to != null)
-			for (Address a: to)
-				result.add(a);
+			Collections.addAll(result, to);
 		if (cc != null)
-			for (Address a: cc)
-				result.add(a);
+			Collections.addAll(result, cc);
 		if (bcc != null)
-			for (Address a: bcc)
-				result.add(a);
+			Collections.addAll(result, bcc);
 		return result;
 	}
 	
 	/** note: this returns a set, so if the same contact is present multiple times on the message, only one contact is returned */
 	public Set<Contact> getToCCBCCContacts(AddressBook ab)
 	{
-		Set<Contact> result = new LinkedHashSet<Contact>();
+		Set<Contact> result = new LinkedHashSet<>();
 		
 		if (to != null)		
 			for (Address a: to) {
@@ -351,7 +348,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	 */
 	public List<String> getParticipatingAddrsExcept(Set<String> addrs)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		List<String> allAddrs = getAllAddrs();
 		for (String s: allAddrs)
 			if (addrs == null || !addrs.contains(s))
@@ -403,7 +400,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	 */
 	public List<Contact> getParticipatingContactsExceptOwn(AddressBook addressBook)
 	{
-		List<Contact> result = new ArrayList<Contact>();
+		List<Contact> result = new ArrayList<>();
 		Contact self = addressBook.getContactForSelf();
 		List<String> rawEmailAddrs = getAllAddrs(); // getParticipatingAddrsExcept(addressBook.getOwnAddrs());
 		for (String s: rawEmailAddrs)
@@ -633,7 +630,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 				result |= EmailDocument.SENT_MASK;
 		}
 
-		Set<Contact> toCCBCC = new LinkedHashSet<Contact>();
+		Set<Contact> toCCBCC = new LinkedHashSet<>();
 		List<Address> addrs = getToCCBCC();
 		for (Address addr: addrs)
 			if (addr instanceof InternetAddress)
@@ -673,7 +670,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 
 		List<String> addrs = this.getAllAddrs(); // get all the involved addresses
 		// assemble tokens within the names for each address, e.g. "Sudheendra" and "Hangal" are 2 tokens for the addr hangal@cs.stanford.edu
-		Set<String> nameTokens = new LinkedHashSet<String>();
+		Set<String> nameTokens = new LinkedHashSet<>();
 		for (String addr: addrs)
 		{
 			Contact c = ab.lookupByEmail(addr);
@@ -708,7 +705,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 
 	public String getAllAttachmentContent(BlobStore store, String separator)
 	{
-		if (Util.nullOrEmpty(attachments)) return new String();
+		if (Util.nullOrEmpty(attachments)) return "";
 
 		StringBuilder result = new StringBuilder();
 
@@ -728,7 +725,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if (this.date != null) {
 			GregorianCalendar cc = new GregorianCalendar();
 			cc.setTime(this.date);
-			formatter.format("%02d:%02d", new Object[]{Integer.valueOf(cc.get(11)), Integer.valueOf(cc.get(12))});
+			formatter.format("%02d:%02d", Integer.valueOf(cc.get(11)), Integer.valueOf(cc.get(12)));
 			sb.append("Date: " + cc.get(5) + " " + CalendarUtil.getDisplayMonth(cc) + " " + cc.get(1) + " " + timeSB + "\n");
 		}
 

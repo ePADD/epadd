@@ -26,7 +26,7 @@ import java.util.Map;
 
 /** called NewFilter only because we have an old class called Filter, that is mostly not used */
 public class NewFilter {
-	private Map<String, String[]> map = new LinkedHashMap<String, String[]>();
+	private Map<String, String[]> map = new LinkedHashMap<>();
     public static Log log = LogFactory.getLog(NewFilter.class);
 	
 	/** in future, could create Filter from a list of detailed facet items to make it more robust

@@ -69,7 +69,7 @@ public String toString()
 
 public static Pair<Date, Date> getFirstLast(List<LinkInfo> list)
 {
-	List<DatedDocument> docs = new ArrayList<DatedDocument>();
+	List<DatedDocument> docs = new ArrayList<>();
 	for (LinkInfo li: list)
 		if (li.doc instanceof DatedDocument)
 			docs.add((DatedDocument) li.doc);
@@ -83,14 +83,14 @@ public static String linksToJson(List<LinkInfo> links)
 		return "[]";
 
 	// create a map of url to link info's
-	Map<String, List<LinkInfo>> map = new LinkedHashMap<String, List<LinkInfo>>();
+	Map<String, List<LinkInfo>> map = new LinkedHashMap<>();
 	for (LinkInfo li: links)
 	{
 		String url = li.link.trim().toLowerCase();
 		List<LinkInfo> list = map.get(url);
 		if (Util.nullOrEmpty(list))
 		{
-			list = new ArrayList<LinkInfo>();
+			list = new ArrayList<>();
 			map.put(url, list);
 		}
 		list.add(li);

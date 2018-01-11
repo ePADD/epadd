@@ -25,7 +25,7 @@ public class NERTokenizer extends MyTokenizer
 	private List<Pair<String,String>> nerTokens;
 	public NERTokenizer(List<Pair<String,String>> tokens)
 	{
-		nerTokens = new ArrayList<Pair<String,String>>(tokens);
+		nerTokens = new ArrayList<>(tokens);
 	}
 
 	private int tok = 0;

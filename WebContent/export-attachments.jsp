@@ -77,7 +77,7 @@
         extensionsNeeded.addAll(Util.tokenize(extension, ";"));
 
             // convert to lower case and remove empty types
-    extensionsNeeded = (Set) extensionsNeeded.stream().filter(x -> !Util.nullOrEmpty(x)).map (x -> x.toLowerCase()).collect (Collectors.toSet());
+    extensionsNeeded = extensionsNeeded.stream().filter(x -> !Util.nullOrEmpty(x)).map (x -> x.toLowerCase()).collect (Collectors.toSet());
     //a variable to select if the extensions needed contain others.
     boolean isOtherSelected = extensionsNeeded.contains("others");
 

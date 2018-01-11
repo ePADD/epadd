@@ -42,7 +42,7 @@
         docsetID = "";
     DataSet browseSet = (DataSet) session.getAttribute(docsetID);
 
-    Collection<EmailDocument> docs = (browseSet == null) ? (Collection) archive.getAllDocs() : (Collection) browseSet.getDocs();
+    Collection<EmailDocument> docs = (browseSet == null) ? archive.getAllDocs() : browseSet.getDocs();
 
     String title = Util.pluralize (docs.size(), "message");
     if (!Util.nullOrEmpty(docsetID))

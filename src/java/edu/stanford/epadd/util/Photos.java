@@ -34,7 +34,7 @@ public class Photos
 	{
 		String filename = request.getParameter("file");
 		filename = JSPHelper.convertRequestParamToUTF8(filename);
-		if (filename.indexOf(".." + File.separator) >= 0) // avoid file injection!
+		if (filename.contains(".." + File.separator)) // avoid file injection!
 		{
 			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);

@@ -97,7 +97,6 @@ public class EmailFetcherThread implements Runnable, Serializable {
     private boolean mayHaveRunOutOfMemory = false;
     private FolderInfo fetchedFolderInfo;
     private transient Folder folder;
-    private boolean use_uid_if_available;
 
     private int threadID;
     private EmailStore emailStore;
@@ -181,7 +180,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
     private transient Store store;                                        // we don't really need this serialized across sessions
 
     private transient Archive archive;
-    Collection<String> dataErrors = new LinkedHashSet<String>();    // log of input data errors
+    Collection<String> dataErrors = new LinkedHashSet<>();    // log of input data errors
 
     private Date prevDate = null;
 
@@ -311,7 +310,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         try {
             // 			allrecip = m.getAllRecipients(); // turns out to be too expensive because it looks for newsgroup headers for imap
             // assemble to, cc, bcc into a list and copy it into allrecip
-            List<Address> list = new ArrayList<Address>();
+            List<Address> list = new ArrayList<>();
             from = m.getFrom();
             to = m.getRecipients(Message.RecipientType.TO);
             if (to != null)
@@ -376,7 +375,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * process the whole message
      */
     private List<String> getAttachmentNames(MimeMessage m, Part p) throws MessagingException, IOException {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try {
             if (p.isMimeType("multipart/*") || p.isMimeType("message/rfc822")) {
                 if (p.isMimeType("multipart/alternative"))
@@ -419,7 +418,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * attachment unless downloadAttachments is true)
      */
     private List<String> processMessagePart(int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
-        List<String> list = new ArrayList<String>(); // return list
+        List<String> list = new ArrayList<>(); // return list
         if (p == null) {
             dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
             return list;
@@ -512,8 +511,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     for (int i = 0; i < parts.length; i++)
                         parts[i] = allParts.getBodyPart(i);
 
-                    for (int i = 0; i < parts.length; i++) {
-                        Part thisPart = parts[i];
+                    for (Part thisPart : parts) {
                         if (thisPart.isMimeType("text/plain")) {
                             // common case, return quickly
                             list.add((String) thisPart.getContent());
@@ -631,7 +629,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         try {
             ct = p.getContentType();
-            if (filename.indexOf(".") < 0) // no ext in filename... let's fix it if possible
+            if (!filename.contains(".")) // no ext in filename... let's fix it if possible
             {
                 // Using startsWith instead of equals because sometimes the ct has crud beyond the image/jpeg;...crud....
                 // Below are the most common file types, more type can be added if needed
@@ -815,7 +813,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 int start_message_num = messages[startMsgIdx].getMessageNumber();
                 int end_message_num = start_message_num;
 
-                List<Integer> messageNums = new ArrayList<Integer>();
+                List<Integer> messageNums = new ArrayList<>();
 
                 // figure out message num range to fetch. if anything is unusual -- bad content type, non-consec. msg nums etc -- break out.
                 // non consec. message numbers are a problem because they cause a very long imap command string, which we found was returning an "invalid command" response.
@@ -904,7 +902,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         if (archive.getAllDocs().size() == 0)
             return messages;
 
-        List<Message> resultList = new ArrayList<Message>();
+        List<Message> resultList = new ArrayList<>();
         for (int i = 0; i < messages.length; i++) {
             //int idx = messages[i].getMessageNumber();
             Message m = messages[i];
@@ -974,7 +972,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         log.info(n - messages.length + " message(s) already in the archive");
 
-        ArrayList<EmailDocument> emails = new ArrayList<EmailDocument>();
+        ArrayList<EmailDocument> emails = new ArrayList<>();
 
         // for performance, we need to do bulk prefetches, instead of fetching 1 message at a time
         // prefetchedMessages will be a temp cache of prefetched messages
@@ -1048,7 +1046,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
 
                     MimeMessage originalMessage = mm; // this is the mm that has all the headers etc.
-                    List<Blob> attachmentsList = new ArrayList<Blob>();
+                    List<Blob> attachmentsList = new ArrayList<>();
 
                     // if we already have it prefetched, use the prefetched version
                     List<String> contents = null;
@@ -1057,7 +1055,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         if (!fetchConfig.downloadAttachments) {
                             // text only means the prefetchedMessages are stored directly as a list of strings
                             String content = (String) prefetchedMessages.get(i - first_i_prefetched); // note: this_mm only has the prefetched content, but not the headers
-                            contents = new ArrayList<String>();
+                            contents = new ArrayList<>();
 
                             try {
                                 // a special for yahoo which routinely uses quoted-printable. content looks like  =0A0D.... = etc.
@@ -1130,7 +1128,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
                     archive.addDoc(ed, contentStr);
 
-                    List<LinkInfo> linkList = new ArrayList<LinkInfo>();
+                    List<LinkInfo> linkList = new ArrayList<>();
                     // linkList might be used only for slant
                     IndexUtils.populateDocLinks(ed, contentStr, linkList, true);
                     ed.links = linkList;
@@ -1213,12 +1211,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
         String descr = emailStore.getAccountID() + ":" + folder;
         boolean haveUID = false;
         int count = folder.getMessageCount();
-        use_uid_if_available = (begin_msg_index == 1 && end_msg_index == count + 1);
+        boolean use_uid_if_available = (begin_msg_index == 1 && end_msg_index == count + 1);
         log.info("use_uid_if_available is set to " + use_uid_if_available);
 
         if (fetchConfig.filter != null && fetchConfig.filter.isActive()) {
             log.info("Issuing server side filters for " + fetchConfig.filter);
-            boolean useReceivedDateTerms = descr.indexOf("yahoo.com") >= 0;
+            boolean useReceivedDateTerms = descr.contains("yahoo.com");
             messages = folder.search(fetchConfig.filter.convertToSearchTerm(useReceivedDateTerms));
         } else {
             // mbox provider claims to provide UIDFolder but the uids are bogus so we treat mboemailstore folders as not uidfolders

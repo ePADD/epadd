@@ -894,7 +894,7 @@
             horiz: menuPadding.horiz +
                   parseInt(menuStyle ? menuStyle.marginLeft : $menu.css('marginLeft')) +
                   parseInt(menuStyle ? menuStyle.marginRight : $menu.css('marginRight')) + 2
-          }
+          };
 
       document.body.removeChild(newElement);
 

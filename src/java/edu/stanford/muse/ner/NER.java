@@ -292,14 +292,11 @@ public class NER implements StatusProvider {
     //arrange offsets such that the end offsets are in increasing order and if there are any overlapping offsets, the bigger of them should appear first
     //makes sure the redaction is proper.
     public static void arrangeOffsets(List<Triple<String,Integer,Integer>> offsets) {
-        Collections.sort(offsets, new Comparator<Triple<String, Integer, Integer>>() {
-            @Override
-            public int compare(Triple<String, Integer, Integer> t1, Triple<String, Integer, Integer> t2) {
-                if (!t1.getSecond().equals(t2.getSecond()))
-                    return t1.getSecond()-t2.getSecond();
-                else
-                    return t2.getThird()-t1.getThird();
-            }
+        offsets.sort((t1, t2) -> {
+            if (!t1.getSecond().equals(t2.getSecond()))
+                return t1.getSecond() - t2.getSecond();
+            else
+                return t2.getThird() - t1.getThird();
         });
     }
 
@@ -354,7 +351,7 @@ public class NER implements StatusProvider {
     public static void main(String[] args){
         String val = "";
         String[] plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
-        List<Span> spans = Arrays.asList(plainSpans).stream().map(Span::parse).filter(s->s!=null).collect(Collectors.toList());
+        List<Span> spans = Arrays.asList(plainSpans).stream().map(Span::parse).filter(Objects::nonNull).collect(Collectors.toList());
         System.out.println(spans);
     }
 }

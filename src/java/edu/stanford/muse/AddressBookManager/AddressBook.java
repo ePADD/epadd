@@ -747,7 +747,7 @@ public class AddressBook implements Serializable {
     /**
      * returns a list of all contacts in the given collection of docs, sorted by outgoing freq.
      */
-    public List<Pair<Contact, Integer>> sortedContactsAndCounts(Collection<EmailDocument> docs) {
+    List<Pair<Contact, Integer>> sortedContactsAndCounts(Collection<EmailDocument> docs) {
         Map<Contact, Integer> contactToCount = new LinkedHashMap<>();
 
         // note that we'll count a recipient twice if 2 different email addresses are present on the message.
@@ -772,8 +772,7 @@ public class AddressBook implements Serializable {
      */
     public String[] computeAllAddrsFor(String emailAddrs[]) {
         Set<String> allMyEmailAddrsSet = new LinkedHashSet<>();
-        for (String s : emailAddrs)
-            allMyEmailAddrsSet.add(s);
+        Collections.addAll(allMyEmailAddrsSet, emailAddrs);
 
         for (String s : emailAddrs) {
             Contact ci = lookupByEmail(s);
@@ -1255,13 +1254,6 @@ In the merged address book there will be three contacts.
         }
     }
 
-    /*
-    Code for serialization of this object. Going forward, we will save this object in a human-readable format.
-    For that, we need to resolve the issue of storing mailingList and dataErrors in a human-readable format.
-     */
-    public void serializeObjectToFile(String filename) throws IOException {
-        Util.writeObjectToFile(filename,this);
-    }
     private void fillTransientFields(){
         contactIdMap.clear();
         nameToContact.clear();
@@ -1279,19 +1271,6 @@ In the merged address book there will be three contacts.
 
     }
 
-    /*
-    Code for deserialization and re-initialization of transient fields of this Class.
-     */
-    public static AddressBook deserializeObjectFromFile(String filename) throws IOException, ClassNotFoundException {
-        AddressBook ab = (AddressBook)Util.readObjectFromFile(filename);
-        //now we need to fill-in four transient fields manually. They are
-        //1.Map<String, Contact> emailToContact
-        //2.Multimap<String, Contact> nameToContact
-        //3.Map<Contact, Integer> contactIdMap
-        ab.fillTransientFields();
-        //4.private Map<String, String> emailMaskingMap -- What about this?
-        return ab;
-    }
     ///////////////////////////Code for writing and reading address book in Human readable format///////
     /*
     MailingList class and data errors seems to be an issue. In this version we will only write addressbook

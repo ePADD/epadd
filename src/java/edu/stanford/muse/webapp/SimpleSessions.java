@@ -84,7 +84,7 @@ public class SimpleSessions {
 		ObjectInputStream ois = null;
 
 		// keep reading till eof exception
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		try {
 			ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(filename)));
 
@@ -330,14 +330,11 @@ public class SimpleSessions {
         archive.processingMetadata.nDocBlobs = docs;
         archive.processingMetadata.nOtherBlobs = others;
 
-		ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(filename)));
-		try {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(filename)))) {
 			oos.writeObject("archive");
 			oos.writeObject(archive);
 		} catch (Exception e1) {
 			Util.print_exception("Failed to write archive: ", e1, log);
-		} finally {
-			oos.close();
 		}
 
 		//Now write modular transient fields to separate files-
@@ -437,11 +434,7 @@ public class SimpleSessions {
 
 		try {
 			archive.getCorrespondentAuthorityMapper().serializeObjectToFile(cAuthorityPath);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (ParseException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
@@ -465,9 +458,9 @@ public class SimpleSessions {
 
 	// an archive in a given dir should be loaded only once into memory.
 	// this map stores the directory -> archive mapping.
-	private static LinkedHashMap<String, WeakReference<Archive>> globaldirToArchiveMap = new LinkedHashMap<String, WeakReference<Archive>>();
-	private static LinkedHashMap<String,Archive> globalArchiveIDToArchiveMap = new LinkedHashMap<String, Archive>();
-	private static LinkedHashMap<Archive,String> globalArchiveToArchiveIDMap = new LinkedHashMap<Archive, String>();
+	private static LinkedHashMap<String, WeakReference<Archive>> globaldirToArchiveMap = new LinkedHashMap<>();
+	private static LinkedHashMap<String,Archive> globalArchiveIDToArchiveMap = new LinkedHashMap<>();
+	private static LinkedHashMap<Archive,String> globalArchiveToArchiveIDMap = new LinkedHashMap<>();
 
 	/** VIP method. Should be the single place to load an archive from disk.
      * loads an archive from the given directory. always re-uses archive objects loaded from the same directory.
@@ -547,7 +540,7 @@ public class SimpleSessions {
 	public static void addToGlobalArchiveMap(String archiveDir, Archive archive){
 
 		//add to globalDirmap
-		globaldirToArchiveMap.put(archiveDir,new WeakReference<Archive>(archive));
+		globaldirToArchiveMap.put(archiveDir, new WeakReference<>(archive));
 		//construct archive ID from the tail of the archiveFile (by sha1)
 		String archiveID = Util.hash(archiveDir);
 		globalArchiveIDToArchiveMap.put(archiveID,archive);
@@ -650,7 +643,7 @@ public class SimpleSessions {
 			JSPHelper.log.info("Good, existing archive found");
 		} else {
 			JSPHelper.log.info("Creating a new archive in " + archiveDir);
-			archive = JSPHelper.preparedArchive(request, archiveDir, new ArrayList<String>());
+			archive = JSPHelper.preparedArchive(request, archiveDir, new ArrayList<>());
 		    //by this time the archive is created
 			// add this to global maps archiveID->archive, archive->archiveID
 			addToGlobalArchiveMap(archiveDir,archive);
@@ -671,7 +664,7 @@ public class SimpleSessions {
 		for (Document d : a.getAllDocs())
 		{
 			String c = a.getContents(d, false);
-			if (c.indexOf(args[1]) >= 0)
+			if (c.contains(args[1]))
 			{
 				System.out.println("\n______________________________" + d + "\n\n" + c + "\n___________________________\n\n\n");
 			}

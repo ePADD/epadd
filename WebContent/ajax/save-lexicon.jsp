@@ -43,7 +43,7 @@
 
 	// now lexiconName and lex are both set correctly.
 	String language = "english";
-	Map<String, String[]> map = new LinkedHashMap<String, String[]>((Map<String, String[]>) request.getParameterMap());
+	Map<String, String[]> map = new LinkedHashMap<String, String[]>(request.getParameterMap());
 	// everything but for the following params is a lexicon category. note: these are not allowed as category names.
 	map.remove("lexicon");
 	map.remove("language");

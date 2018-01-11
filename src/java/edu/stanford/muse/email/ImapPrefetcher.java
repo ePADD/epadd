@@ -52,7 +52,7 @@ static String compactMessageSetString(List<Integer> nums)
 	Collections.sort(nums);
 	
 	// identify contiguous ranges and accumulate them in ranges. ranges are inclusive at both ends.
-	List<Pair<Integer, Integer>> ranges = new ArrayList<Pair<Integer, Integer>>();
+	List<Pair<Integer, Integer>> ranges = new ArrayList<>();
 	int INVALID = -2;
 	int startOfCurrentRange = INVALID, endOfCurrentRange = INVALID; // -2 means an invalid num
 	for (Integer i : nums)
@@ -64,7 +64,7 @@ static String compactMessageSetString(List<Integer> nums)
 			// got a non-contiguous int. add a pair for the prev. range, if we had a valid one
 			if (startOfCurrentRange != INVALID)
 			{
-				Pair<Integer, Integer> p = new Pair<Integer, Integer>(startOfCurrentRange, endOfCurrentRange);
+				Pair<Integer, Integer> p = new Pair<>(startOfCurrentRange, endOfCurrentRange);
 				ranges.add(p);
 			}
 			startOfCurrentRange = endOfCurrentRange = i;
@@ -74,7 +74,7 @@ static String compactMessageSetString(List<Integer> nums)
 	// add a pair for the last one
 	if (startOfCurrentRange != INVALID)
 	{
-		Pair<Integer, Integer> p = new Pair<Integer, Integer>(startOfCurrentRange, endOfCurrentRange);
+		Pair<Integer, Integer> p = new Pair<>(startOfCurrentRange, endOfCurrentRange);
 		ranges.add(p);
 	}	
 	
@@ -109,7 +109,7 @@ public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
 	Response response = r[r.length - 1];
 	if (response.isOK()) 
 	{
-		result = new ArrayList<MimeMessage>();
+		result = new ArrayList<>();
 		for (int i = 0 ; i < r.length - 1 ; i++) 
 		{
 			if (r[i] instanceof IMAPResponse) 
@@ -143,7 +143,7 @@ public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
 public static void main (String args[])
 {
 	// test
-	List<Integer> list = new ArrayList<Integer>();
+	List<Integer> list = new ArrayList<>();
 	list.add(1);
 	list.add(2);
 	list.add(3);

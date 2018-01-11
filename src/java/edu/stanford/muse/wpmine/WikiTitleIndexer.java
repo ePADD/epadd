@@ -80,7 +80,7 @@ public class WikiTitleIndexer {
         line = line.substring(0, line.length() - 1);
         //StringTokenizer st = new StringTokenizer(line, "\\),\\(");
         String[] tuples = StringUtils.splitByWholeSeparator(line, "),(");
-        List<String[]> records = new ArrayList<String[]>();
+        List<String[]> records = new ArrayList<>();
         for (String tuple : tuples) {
             //String tuple = st.nextToken();
             String[] vals = parseTuple(tuple);

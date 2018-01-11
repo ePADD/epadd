@@ -44,9 +44,9 @@ public class Lexicon implements Serializable {
 
 	private static final long serialVersionUID = 1377456163104266479L;//1L;
 
-	public static Map<String, Lexicon> lexiconMap = new LinkedHashMap<String, Lexicon>(); // directory of lexicons // not used but still need when deserialized old archives
+	public static Map<String, Lexicon> lexiconMap = new LinkedHashMap<>(); // directory of lexicons // not used but still need when deserialized old archives
 	public String name;
-	private Map<String, Lexicon1Lang> languageToLexicon = new LinkedHashMap<String, Lexicon1Lang>();
+	private Map<String, Lexicon1Lang> languageToLexicon = new LinkedHashMap<>();
 	
 	/** inner class that stores lexicon for 1 language */
 
@@ -56,13 +56,13 @@ public class Lexicon implements Serializable {
 		/** there are 2 caption -> query maps. the expanded query is the actual query made to the index.
 		 * the rawquery is what the user specified (in the <name>.<lang>.lex.txt file 
 		 */
-		public Map<String, String> captionToExpandedQuery = new LinkedHashMap<String, String>(), captionToRawQuery = new LinkedHashMap<String, String>();
-		public Set<String> usedInOtherCaptions = new LinkedHashSet<String>();
+		public Map<String, String> captionToExpandedQuery = new LinkedHashMap<>(), captionToRawQuery = new LinkedHashMap<>();
+		public Set<String> usedInOtherCaptions = new LinkedHashSet<>();
 		public Lexicon1Lang() {}
 		public Lexicon1Lang(String filename) throws IOException
 		{
-			captionToRawQuery = new LinkedHashMap<String, String>();
-			captionToExpandedQuery = new LinkedHashMap<String, String>();
+			captionToRawQuery = new LinkedHashMap<>();
+			captionToExpandedQuery = new LinkedHashMap<>();
 			List<String> lines = Util.getLinesFromInputStream(new FileInputStream(filename), false /* ignore comment lines = false, we'll strip comments here */);
 			for (String line:lines)
 			{
@@ -192,7 +192,7 @@ public class Lexicon implements Serializable {
 		 */
 		public Map<String, Collection<Document>> getEmotions (Indexer indexer, Collection<Document> docs, boolean originalContentOnly, String... captions)
 		{
-			Map<String, Collection<Document>> result = new LinkedHashMap<String, Collection<Document>>();
+			Map<String, Collection<Document>> result = new LinkedHashMap<>();
 			Set<Document> docs_set = Util.castOrCloneAsSet(docs);
 //			for (String[] emotion: emotionsData)
 			String[] selected_captions = captions.length > 0 ? captions : captionToExpandedQuery.keySet().toArray(new String[0]);
@@ -249,12 +249,12 @@ public class Lexicon implements Serializable {
 			Map<String, Collection<Document>> map = getEmotions (indexer, docs, originalContentOnly);
 
 			// collects docs with any sentiments
-			Set<Document> docsWithAnySentiment = new LinkedHashSet<Document>();
+			Set<Document> docsWithAnySentiment = new LinkedHashSet<>();
 			for (String sentiment: map.keySet())
 				docsWithAnySentiment.addAll(map.get(sentiment));
 
 			// docsWithNoSentiment = allDocs - docsWithAnySentiment
-			Set<Document> docsWithNoSentiment = new LinkedHashSet<Document>();
+			Set<Document> docsWithNoSentiment = new LinkedHashSet<>();
 			for (Document d: allDocs)
 				if (!docsWithAnySentiment.contains(d))
 					docsWithNoSentiment.add(d);
@@ -274,12 +274,12 @@ public class Lexicon implements Serializable {
 			Map<String, Collection<Document>> map = getEmotions (indexer, docs, originalContentOnly);
 
 			// collects docs with any sentiments
-			Set<Document> docsWithAnySentiment = new LinkedHashSet<Document>();
+			Set<Document> docsWithAnySentiment = new LinkedHashSet<>();
 			for (String sentiment: map.keySet())
 				docsWithAnySentiment.addAll(map.get(sentiment));
 
 			// docsWithNoSentiment = allDocs - docsWithAnySentiment
-			Set<Document> docsWithNoSentiment = new LinkedHashSet<Document>();
+			Set<Document> docsWithNoSentiment = new LinkedHashSet<>();
 			for (Document d: allDocs)
 				if (!docsWithAnySentiment.contains(d))
 					docsWithNoSentiment.add(d);
@@ -334,7 +334,7 @@ public class Lexicon implements Serializable {
 			return languageToLexicon.values(); // just return all lexicons
 		
 		Set<String> languages = IndexUtils.allLanguagesInDocs(docs);
-		Set<Lexicon1Lang> lexicons = new LinkedHashSet<Lexicon1Lang>();
+		Set<Lexicon1Lang> lexicons = new LinkedHashSet<>();
 		for (String lang: languages)				
 		{
 			Lexicon1Lang lex = languageToLexicon.get(lang);
@@ -351,7 +351,7 @@ public class Lexicon implements Serializable {
     public Map<String, Integer> getLexiconCounts (Indexer indexer, boolean originalContentOnly, boolean regexSearch){
         List<Document> docs = indexer.docs;
         Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
-        Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+        Map<String, Integer> result = new LinkedHashMap<>();
         Set<Document> docs_set = Util.castOrCloneAsSet(docs);
         // aggregate results for each lang into result
         for (Lexicon1Lang lex: lexicons)
@@ -363,12 +363,8 @@ public class Lexicon implements Serializable {
             for (String caption: resultsForThisLang.keySet())
             {
                 Integer resultCountsThisLang = resultsForThisLang.get(caption);
-                Integer resultCounts = result.get(caption);
                 // if caption doesn't exist already, create a new entry, or else add to the existing set of docs that match this caption
-                if (resultCounts == null)
-                    result.put(caption, resultCountsThisLang);
-                else
-                    result.put(caption, resultCounts + resultCountsThisLang);
+                result.merge(caption, resultCountsThisLang, (a, b) -> a + b);
             }
         }
         return result;
@@ -405,7 +401,7 @@ public class Lexicon implements Serializable {
 	
 	private Set<Document> getDocsWithAnyEmotions(Indexer indexer, Collection<Document> docs, boolean originalContentOnly)
 	{
-		Set<Document> result = new LinkedHashSet<Document>();
+		Set<Document> result = new LinkedHashSet<>();
 		// return all docs that have at least one sentiment
 		Map<String, Collection<Document>> map = getEmotions(indexer, docs, originalContentOnly, false);
 		for (Collection<Document> values: map.values())
@@ -415,7 +411,7 @@ public class Lexicon implements Serializable {
 
 	private Set<Document> getDocsWithNoEmotions(Indexer indexer, Collection<Document> docs, boolean originalContentOnly)
 	{
-		Set<Document> result = new LinkedHashSet<Document>(docs);
+		Set<Document> result = new LinkedHashSet<>(docs);
 		result.removeAll(getDocsWithAnyEmotions(indexer, docs, originalContentOnly));
 		return result;
 	}
@@ -438,19 +434,17 @@ public class Lexicon implements Serializable {
 		// note: we'll pass in null for docs, and intersect with the given set of docs later
 		// otherwise we'd just be doing it again and again for each category and lexer
 		Map<String, Collection<Document>> map = getEmotions(indexer, null, false, originalContentOnly, captions);
-		for (int i = 0; i < sentiments.length; i++)
-		{
-			Collection<Document> temp1 = ("None".equalsIgnoreCase(sentiments[i])) ? getDocsWithNoEmotions(indexer, docs_set, originalContentOnly) : map.get(sentiments[i]);
-			if (temp1 == null)
-			{    // no matches, just return
-				result = new LinkedHashSet<Document>();
-				return result; 
-			}
-			if (result == null)
-				result = temp1;
-			else
-				result.retainAll(temp1);
-		}
+        for (String sentiment : sentiments) {
+            Collection<Document> temp1 = ("None".equalsIgnoreCase(sentiment)) ? getDocsWithNoEmotions(indexer, docs_set, originalContentOnly) : map.get(sentiment);
+            if (temp1 == null) {    // no matches, just return
+                result = new LinkedHashSet<>();
+                return result;
+            }
+            if (result == null)
+                result = temp1;
+            else
+                result.retainAll(temp1);
+        }
 		//result.retainAll(docs);
 		return Util.setIntersection(result, docs_set);
 	}
@@ -460,7 +454,7 @@ public class Lexicon implements Serializable {
 	{
 		// identify all the langs in the docs, and the corresponding lexicons
 		Set<String> languages = IndexUtils.allLanguagesInDocs(docs);
-		Set<Lexicon1Lang> lexicons = new LinkedHashSet<Lexicon1Lang>();
+		Set<Lexicon1Lang> lexicons = new LinkedHashSet<>();
 		for (String lang: languages)				
 		{
 			Lexicon1Lang lex = languageToLexicon.get(lang);
@@ -471,7 +465,7 @@ public class Lexicon implements Serializable {
 				log.warn ("Warning: no support for " + lang + " in lexicon " + name);
 		}
 		
-		Map<String, String> result = new LinkedHashMap<String, String>();
+		Map<String, String> result = new LinkedHashMap<>();
 		// aggregate results for each lang into result
 		for (Lexicon1Lang lex: lexicons)
 		{
@@ -480,12 +474,8 @@ public class Lexicon implements Serializable {
 			for (String caption: resultsForThisLang.keySet())
 			{
 				String queryThisLang = resultsForThisLang.get(caption);
-				String query = result.get(caption);
-				// if caption doesn't exist already, create a new entry, or else add to the existing set of docs that match this caption
-				if (query == null)
-					result.put(caption, queryThisLang);
-				else
-					result.put(caption, query + "|" + queryThisLang);
+                // if caption doesn't exist already, create a new entry, or else add to the existing set of docs that match this caption
+                result.merge(caption, queryThisLang, (a, b) -> a + "|" + b);
 			}				
 		}
 		return result;
@@ -509,13 +499,8 @@ public class Lexicon implements Serializable {
 	public boolean update(String language, Map<String, String> map) throws IOException
 	{
 		language = language.toLowerCase();
-		Lexicon1Lang langLex = languageToLexicon.get(language);
-		if (langLex == null)
-		{
-			langLex = new Lexicon1Lang();  
-			languageToLexicon.put(language, langLex);
-		}
-		langLex.setRawQueryMap(map);
+        Lexicon1Lang langLex = languageToLexicon.computeIfAbsent(language, k -> new Lexicon1Lang());
+        langLex.setRawQueryMap(map);
 		return true;
 	}
 
@@ -547,7 +532,7 @@ public class Lexicon implements Serializable {
 	{
 		if (sentiment == null)
 			return null;
-		Set<String> set = new LinkedHashSet<String>();
+		Set<String> set = new LinkedHashSet<>();
 		String query = captionToQueryMap.get(sentiment);
 		if (query == null)
 			return set;
@@ -564,7 +549,7 @@ public class Lexicon implements Serializable {
 		
 		if (sentiments == null)
 			return null;
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		for (String sentiment: sentiments)
 		{
 			Set<String> set = wordsForSentiment(captionToQueryMap, sentiment);

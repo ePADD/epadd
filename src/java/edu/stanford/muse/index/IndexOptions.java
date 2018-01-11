@@ -26,11 +26,10 @@ import edu.stanford.muse.util.Util;
 class IndexOptions implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-	private List<String> inputPrefixes = new ArrayList<String>();
+	private List<String> inputPrefixes = new ArrayList<>();
 //	String outputPrefix;
 	boolean monthsNotYears = true, noRecipients = false;
 	private boolean do_NER = false;
-	private boolean do_allText = true;
 	private boolean locationsOnly = false;
 	private boolean orgsOnly = false;
 	Filter filter;
@@ -53,54 +52,76 @@ class IndexOptions implements Serializable {
         int optind;
         for (optind = 0; optind < args.length; optind++)
         {
-        	if (args[optind].equals("-i")) {
-        		inputPrefixes.add(args[++optind]);
-        	} else if (args[optind].equals("-o")) {
-        	//	outputPrefix = args[++optind];
-         	} else if (args[optind].equals("-norecipients")) {
-        		noRecipients = true;
-         	} else if (args[optind].equals("-noattachments")) {
-        		indexAttachments = false;
-         	} else if (args[optind].equals("-ignoreDocumentBody")) {
-        		ignoreDocumentBody = true;
-        	} else if (args[optind].equals("-sentOnly")) {
+			switch (args[optind]) {
+				case "-i":
+					inputPrefixes.add(args[++optind]);
+					break;
+				case "-o":
+					//	outputPrefix = args[++optind];
+					break;
+				case "-norecipients":
+					noRecipients = true;
+					break;
+				case "-noattachments":
+					indexAttachments = false;
+					break;
+				case "-ignoreDocumentBody":
+					ignoreDocumentBody = true;
+					break;
+				case "-sentOnly":
 //        		if (filter == null)
- //       			filter = new Filter(null, false, null, null);
-  //      		filter.setSentMessagesOnly(true);
-        	} else if (args[optind].equals("-yearly")) {
-        		monthsNotYears = false;
-        	} else if (args[optind].equals("-NER")) {
-        		do_NER = true;
-        	} else if (args[optind].equals("-subjectWeight")) {
-        		String wStr = args[++optind];
-        		subjectWeight = Integer.parseInt(wStr);
-        	} else if (args[optind].equals("-noalltext")) {
-        		do_allText = false;
-        	} else if (args[optind].equals("-locationsOnly")) {
-        		locationsOnly = do_NER = true; // force NER true
-        	} else if (args[optind].equals("-orgsOnly")) {
-        		orgsOnly = do_NER = true; // force NER true
-        	} else if (args[optind].equals("-date")) {
-        		if (filter == null)
-        			filter = new Filter(null, false, null, null);
-        		filter.setupDateRange(args[++optind]);
-        	} else if (args[optind].equals("-incrementalTFIDF")) {
-        		incrementalTFIDF = true;
-        	} else if (args[optind].equals("-includeQuotedMessages")) {
-        		includeQuotedMessages = true;
-        	} else if (args[optind].equals("-categoryBased")) {
-        		categoryBased = true;
-        	} else if (args[optind].equals("-filter")) {
-        		if (filter == null)
-        			filter = new Filter(null, false, null, null);
-        		filter.addNameOrEmail(args[++optind]);
-        	} else if (args[optind].equals("-keywords")) {
-        		if (filter == null)
-        			filter = new Filter(null, false, null, null);
-        		filter.setupKeywords(args[++optind]);
-        	}
-        	else
-        		Indexer.log.warn("Invalid indexer option: " + args[optind]);
+					//       			filter = new Filter(null, false, null, null);
+					//      		filter.setSentMessagesOnly(true);
+					break;
+				case "-yearly":
+					monthsNotYears = false;
+					break;
+				case "-NER":
+					do_NER = true;
+					break;
+				case "-subjectWeight":
+					String wStr = args[++optind];
+					subjectWeight = Integer.parseInt(wStr);
+					break;
+				case "-noalltext":
+					boolean do_allText = false;
+					break;
+				case "-locationsOnly":
+					locationsOnly = do_NER = true; // force NER true
+
+					break;
+				case "-orgsOnly":
+					orgsOnly = do_NER = true; // force NER true
+
+					break;
+				case "-date":
+					if (filter == null)
+						filter = new Filter(null, false, null, null);
+					filter.setupDateRange(args[++optind]);
+					break;
+				case "-incrementalTFIDF":
+					incrementalTFIDF = true;
+					break;
+				case "-includeQuotedMessages":
+					includeQuotedMessages = true;
+					break;
+				case "-categoryBased":
+					categoryBased = true;
+					break;
+				case "-filter":
+					if (filter == null)
+						filter = new Filter(null, false, null, null);
+					filter.addNameOrEmail(args[++optind]);
+					break;
+				case "-keywords":
+					if (filter == null)
+						filter = new Filter(null, false, null, null);
+					filter.setupKeywords(args[++optind]);
+					break;
+				default:
+					Indexer.log.warn("Invalid indexer option: " + args[optind]);
+					break;
+			}
         }
 	}
 

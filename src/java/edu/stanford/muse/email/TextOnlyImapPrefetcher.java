@@ -113,7 +113,7 @@ public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
 	Response response = r[r.length - 1];
 	if (response.isOK()) 
 	{
-		result = new ArrayList<String>();
+		result = new ArrayList<>();
 		for (int i = 0 ; i < r.length - 1 ; i++) 
 		{
 			String text = r[i].toString();
@@ -172,7 +172,7 @@ public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
 public static void main (String args[])
 {
 	// test
-	List<Integer> list = new ArrayList<Integer>();
+	List<Integer> list = new ArrayList<>();
 	list.add(1);
 	list.add(2);
 	list.add(3);

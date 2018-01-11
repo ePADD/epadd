@@ -167,7 +167,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 			if (status_xhr.readyState==4) {
 				var POLL_MILLIS = MIN_POLL_MILLIS; // default
 				
-				if (!currentOp.done & !currentOp.cancelled) {
+				if (!currentOp.done && !currentOp.cancelled) {
 					//    debugger;
 					if (this.status != 200 && this.status != 0)
 					{
@@ -245,7 +245,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 								}
 								else
 								{
-									$progress.css('width', 4*1); // a small width
+									$progress.css('width', 4); // a small width
 								}
 								
 								// limit needless polling when we're far away from completion...
@@ -369,7 +369,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 
 	kick_off_page_fetch(page, post_params, onready, redirect_page);
 	poll_status();
-	return;
+
 	// end of this function. the rest are private helper functions
 
 

@@ -32,7 +32,7 @@ public class EmailThread
 {
 	private String normalizedSubject;
 	// Set<String> recipients;
-	public List<EmailDocument> emails = new ArrayList<EmailDocument>();
+	public List<EmailDocument> emails = new ArrayList<>();
 	private Date lastDate = null;
 
 	public EmailThread(EmailDocument email, String normalizedSubject)

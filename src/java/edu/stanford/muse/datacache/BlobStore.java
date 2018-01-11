@@ -32,11 +32,11 @@ import java.util.*;
 
 public class BlobStore implements Serializable {
 
-    public Set<Blob> uniqueBlobs = new LinkedHashSet<Blob>();
+    public Set<Blob> uniqueBlobs = new LinkedHashSet<>();
 
     // mapping of each data item to a data id
-    private Map<Blob, Integer> id_map = new LinkedHashMap<Blob, Integer>();
-    private Map<Blob, URL> urlMap = new LinkedHashMap<Blob, URL>(); // -- seems this is not really used
+    private Map<Blob, Integer> id_map = new LinkedHashMap<>();
+    private Map<Blob, URL> urlMap = new LinkedHashMap<>(); // -- seems this is not really used
     // data id's are just assigned sequentially starting from 0
     private int next_data_id = 0;
 
@@ -293,12 +293,10 @@ public class BlobStore implements Serializable {
 
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append ("Data store with " + uniqueBlobs.size() + " unique blobs");
         //int count = 0;
         //for (Data d : unique_datas)
         //    sb.append (count++ + ". " + d + "\n");
-        return sb.toString();
+        return ("Data store with " + uniqueBlobs.size() + " unique blobs");
     }
 
     /** returns the index of the given data item in this store */
@@ -308,7 +306,7 @@ public class BlobStore implements Serializable {
         if (i == null)
             return -1;
         else
-            return i.intValue();
+            return i;
     }
 
     public synchronized boolean contains (Blob b) {
@@ -332,7 +330,7 @@ public class BlobStore implements Serializable {
             return;
         uniqueBlobs.add(b);
         id_map.put (b, next_data_id);
-        views.put (b, new LinkedHashMap<String,Object>());
+        views.put (b, new LinkedHashMap<>());
         next_data_id++;
     }
 

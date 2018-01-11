@@ -24,11 +24,11 @@ import java.util.Map;
 
 public class UnionFindSet<T> {
 
-	private Map<T, UnionFindBox<T>> map = new LinkedHashMap<T, UnionFindBox<T>>();
+	private Map<T, UnionFindBox<T>> map = new LinkedHashMap<>();
 		
 	private UnionFindBox<T> createBox(T element)
 	{
-		UnionFindBox<T> box = new UnionFindBox<T>(element);
+		UnionFindBox<T> box = new UnionFindBox<>(element);
 		map.put(element, box);
 		return box;
 	}
@@ -50,9 +50,9 @@ public class UnionFindSet<T> {
 		int numClasses = UnionFindBox.assignClassNumbers(map.values());
 
 		// allocate result arrays
-		List<List<T>> result = new ArrayList<List<T>>();
+		List<List<T>> result = new ArrayList<>();
 		for (int i = 0; i < numClasses; i++)
-			result.add(new ArrayList<T>());
+			result.add(new ArrayList<>());
 		
 		// populate result arrays based on class numbers of the elements
 		for (T t : map.keySet())
@@ -67,12 +67,7 @@ public class UnionFindSet<T> {
 	public List<List<T>> getClassesSortedByClassSize()
 	{
 		List<List<T>> result = getClasses();
-		Collections.sort (result, new Comparator<List>() { 
-			public int compare (List l1, List l2)
-			{
-				return l2.size() - l1.size();
-			}
-		});
+		result.sort((l1, l2) -> l2.size() - l1.size());
 		
 		return result;
 	}

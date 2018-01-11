@@ -23,7 +23,7 @@ class WPMine {
 	private static PrintStream out = System.out;
     private static PrintStream err = System.err;
 	
-	private static Map<String, Info> hitTitles = new LinkedHashMap<String, Info>();
+	private static Map<String, Info> hitTitles = new LinkedHashMap<>();
 	private static String typesFile = "instance_types_en.nt1";
 	private static String abstractsFile = "short_abstracts_en.nt";
 	private static String pageLengthsFile = "page-lengths";
@@ -75,8 +75,8 @@ class WPMine {
 	
 	public static void main (String args[]) throws IOException
 	{
-		Set<String> posArgs = new LinkedHashSet<String>();
-		Set<String> negArgs = new LinkedHashSet<String>();
+		Set<String> posArgs = new LinkedHashSet<>();
+		Set<String> negArgs = new LinkedHashSet<>();
 		title = args[0];
 		
 		for (String arg: args)
@@ -123,13 +123,13 @@ class WPMine {
 			String url = title.substring(1).substring(0, title.length()-2);
 			title = title.replaceAll("<http://dbpedia.org/resource/", "").replaceAll(">", ""); // .replaceAll("_", " ");
 			title = title.toLowerCase();
-			if (title.indexOf("_of_") >= 0)
+			if (title.contains("_of_"))
 				continue;
-			if (title.indexOf("_in_") >= 0)
+			if (title.contains("_in_"))
 				continue;
-			if (title.indexOf("_at_") >= 0)
+			if (title.contains("_at_"))
 				continue;
-			if (title.indexOf("_the_") >= 0)
+			if (title.contains("_the_"))
 				continue;
 			Info I = new Info(title);
 			I.url = url;
@@ -161,21 +161,16 @@ class WPMine {
 				I.score = len;
 		}
 		
-		List<Info> list = new ArrayList<Info>(hitTitles.values());
+		List<Info> list = new ArrayList<>(hitTitles.values());
 		Collections.sort(list);
 		
-		Map<String, Collection<Info>> typedHits = new LinkedHashMap<String, Collection<Info>>();
+		Map<String, Collection<Info>> typedHits = new LinkedHashMap<>();
 		for (Info I : list)
 		{
 			out.println (I);
 			String type = I.type;
-			Collection<Info> list1 = (typedHits.get(type));
-			if (list1 == null)
-			{
-				list1 = new ArrayList<Info>();
-				typedHits.put(type, list1);
-			}
-			list1.add(I);
+            Collection<Info> list1 = (typedHits.computeIfAbsent(type, k -> new ArrayList<>()));
+            list1.add(I);
 		}
 		
 		out.println ("-------------\n" + typedHits.size() + " categories of typed hits \n--------------");

@@ -15,13 +15,13 @@ public class FriendsLocation {
 	/** finds best locations for input.size() friends to meet */
 	private static Pair<Integer, Integer> findBestLocation(List<Pair<Integer, Integer>> input)	
 	{
-		List<Integer> xs = new ArrayList<Integer>(), ys = new ArrayList<Integer>();
+		List<Integer> xs = new ArrayList<>(), ys = new ArrayList<>();
 		for (Pair<Integer,Integer> p: input)
 		{
 			xs.add(p.getFirst());
 			ys.add(p.getSecond());			
 		}
-		return new Pair<Integer, Integer>(findMedian(xs), findMedian(ys));
+		return new Pair<>(findMedian(xs), findMedian(ys));
 	}
 	
 	/** returns median of the input */
@@ -47,11 +47,11 @@ public class FriendsLocation {
 	
 	public static void main (String args[])
 	{
-		List<Pair<Integer, Integer>> input = new ArrayList<Pair<Integer, Integer>>();
-		input.add(new Pair<Integer, Integer>(1,1));
-		input.add(new Pair<Integer, Integer>(2,3));
-		input.add(new Pair<Integer, Integer>(3,5));
-		input.add(new Pair<Integer, Integer>(4,0));
+		List<Pair<Integer, Integer>> input = new ArrayList<>();
+		input.add(new Pair<>(1, 1));
+		input.add(new Pair<>(2, 3));
+		input.add(new Pair<>(3, 5));
+		input.add(new Pair<>(4, 0));
 		Pair<Integer, Integer> result = findBestLocation(input);
 		System.out.println ("The best place to meet is: " + result.getFirst() + ", " + result.getSecond());
 	}

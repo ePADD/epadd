@@ -61,7 +61,7 @@ public class VerifyEmailSetup {
 	        ps.close();
 	        String contents = Util.getFileContents(filename);
 	        System.out.println (contents);
-	        return new Pair<Boolean, String>(Boolean.TRUE, contents);
+	        return new Pair<>(Boolean.TRUE, contents);
 		} catch (AuthenticationFailedException e) {
 			/* its ok if auth failed. we only want to check if IMAPS network route is blocked.
 			 when network is blocked, we'll get something like
@@ -71,10 +71,10 @@ public class VerifyEmailSetup {
 			...
 			*/
 			log.info ("Verification succeeded: " + Util.stackTrace(e));
-			return new Pair<Boolean, String>(Boolean.TRUE, "");
+			return new Pair<>(Boolean.TRUE, "");
 		} catch (Exception e)  {
 			log.warn ("Verification failed: " + Util.stackTrace(e));
-			return new Pair<Boolean, String>(Boolean.FALSE, e.toString()); // stack track reveals too much about our code... Util.stackTrace(e));			
+			return new Pair<>(Boolean.FALSE, e.toString()); // stack track reveals too much about our code... Util.stackTrace(e));
 		} finally
 		{
 			System.setOut (savedOut);

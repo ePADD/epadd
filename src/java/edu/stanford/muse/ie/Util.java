@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
@@ -56,7 +57,7 @@ public class Util {
 
 		String topic = wikiLink.replaceAll("http://en.wikipedia.org/wiki/", "").replaceAll("_", "");
 		String[] topicArr = topic.split(" ");
-		List<String> topicWords = new ArrayList<String>();
+		List<String> topicWords = new ArrayList<>();
 		for (String t : topicArr)
 			topicWords.add(t.toLowerCase());
 
@@ -66,22 +67,22 @@ public class Util {
 		tmpE.addAll(wikiDoc.select("#References"));
 
 		int scrapPos = Integer.MAX_VALUE;
-		for (int it = 0; it < tmpE.size(); it++) {
+		for (Element aTmpE : tmpE) {
 			scrapPos = Math.min(scrapPos,
-					mainHtml.indexOf(tmpE.get(it).outerHtml()));
-			System.err.println("pos of: " + tmpE.get(it).html()
+					mainHtml.indexOf(aTmpE.outerHtml()));
+			System.err.println("pos of: " + aTmpE.html()
 					+ " is "
-					+ mainHtml.indexOf(tmpE.get(it).outerHtml()));
+					+ mainHtml.indexOf(aTmpE.outerHtml()));
 		}
 
 		double s = 0;
 		String text = wikiDoc.text();
-		Set<String> matches = new HashSet<String>();
-		Map<String, Set<String>> crosscheckWords = new HashMap<String, Set<String>>();
+		Set<String> matches = new HashSet<>();
+		Map<String, Set<String>> crosscheckWords = new HashMap<>();
 
 		for (String c : context) {
 			String[] words = c.split("\\s+");
-			Set<String> tokens = new HashSet<String>();
+			Set<String> tokens = new HashSet<>();
 			//word.tolowercase does bad or good on performance (accuracy)?
 			for (String word : words)
 				tokens.add(word.toLowerCase());
@@ -132,7 +133,7 @@ public class Util {
 			k++;
 		}
 
-		return new Pair<String, Double>(matchStr, s);
+		return new Pair<>(matchStr, s);
 	}
 
 	/**
@@ -147,28 +148,24 @@ public class Util {
 	}
 
 	public static List<Pair<String, Pair<Double, Double>>> sortMapByValue(Map<String, Pair<Double, Double>> map) {
-		List<Pair<String, Pair<Double, Double>>> l = new ArrayList<Pair<String, Pair<Double, Double>>>();
+		List<Pair<String, Pair<Double, Double>>> l = new ArrayList<>();
 		for (String str : map.keySet()) {
-			l.add(new Pair<String, Pair<Double, Double>>(str, map.get(str)));
+			l.add(new Pair<>(str, map.get(str)));
 		}
 
-		Collections.sort(l,
-				new Comparator<Pair<String, Pair<Double, Double>>>() {
-					public int compare(Pair<String, Pair<Double, Double>> x,
-							Pair<String, Pair<Double, Double>> y) {
-						double d1 = x.getSecond().first, d2 = y
-								.getSecond().first;
-						if (d1 == d2) {
-							d1 = x.getSecond().second;
-							d2 = y.getSecond().second;
-							if (d1 == d2)
-								return 0;
-							else
-								return (d1 < d2 ? 1 : -1);
-						}
-						return (d1 < d2 ? 1 : -1);
-					}
-				});
+		l.sort((x, y) -> {
+			double d1 = x.getSecond().first, d2 = y
+					.getSecond().first;
+			if (d1 == d2) {
+				d1 = x.getSecond().second;
+				d2 = y.getSecond().second;
+				if (d1 == d2)
+					return 0;
+				else
+					return (d1 < d2 ? 1 : -1);
+			}
+			return (d1 < d2 ? 1 : -1);
+		});
 		return l;
 	}
 
@@ -185,7 +182,7 @@ public class Util {
 			InputStream in = new FileInputStream(fileName);
             return readFile(in, fileName);
 		} catch (Exception e) {
-            files.put(fileName, new LinkedHashSet<String>());
+            files.put(fileName, new LinkedHashSet<>());
             log.info("Did not find the common words file: " + fileName);
 			return new LinkedHashSet<>();
 		}
@@ -198,7 +195,7 @@ public class Util {
             InputStream in = Util.class.getClassLoader().getResourceAsStream(fileName);
             return readFile(in, fileName);
         } catch (Exception e) {
-            files.put(fileName, new LinkedHashSet<String>());
+            files.put(fileName, new LinkedHashSet<>());
             log.info("Did not find the common words file: " + fileName);
             return new LinkedHashSet<>();
         }
@@ -207,7 +204,7 @@ public class Util {
     static Set<String> readFile(InputStream in, String fileName){
         if (files.containsKey(fileName))
             return files.get(fileName);
-        Set<String> words = new LinkedHashSet<String>();
+        Set<String> words = new LinkedHashSet<>();
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line;

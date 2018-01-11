@@ -26,12 +26,12 @@ import java.util.*;
  */
 public class Entity extends EntityFeature {
 	private static final long	serialVersionUID	= -6930196836983330301L;
-	Set<String>					names				= new HashSet<String>();
+	Set<String>					names				= new HashSet<>();
 	//These are all the co-occurring entities, and those that are not used for closeness measure.
-	Map<String, Integer>		allCE				= new HashMap<String, Integer>();
-	Map<String, Boolean>		extra				= new HashMap<String, Boolean>();
+	Map<String, Integer>		allCE				= new HashMap<>();
+	Map<String, Boolean>		extra				= new HashMap<>();
 	//default time quantization - day
-	public Map<Date, Integer>	timeHistogram		= new HashMap<Date, Integer>();
+	public Map<Date, Integer>	timeHistogram		= new HashMap<>();
 	//in address book?
 	boolean						inAddressBook		= false;
 	//#times referred back in the replay of the message.
@@ -39,7 +39,7 @@ public class Entity extends EntityFeature {
 	//prior probability that denotes the entityness score of this phrase, prior is calculated based on some of the signals above.
 	double						prior				= 0.0;
 	double						entropyCE			= -1, entropyEA = -1, entropyTime = -1;
-	Set<String>					people				= new HashSet<String>();
+	Set<String>					people				= new HashSet<>();
 	boolean						namelike			= false;
 	//number of times this sentence appeared in the start of sentence.
 	int							sentstart			= 0;
@@ -47,22 +47,21 @@ public class Entity extends EntityFeature {
 	int							cifreq				= 0;
 
 	static String				ENTITIES			= "entities";
-	static Set<String>			sws					= new HashSet<String>();
+	static Set<String>			sws					= new HashSet<>();
 	static EnglishAnalyzer		en_an				= new EnglishAnalyzer(Version.LUCENE_47);
 	static QueryParser			parser				= new QueryParser(Version.LUCENE_47, "some_field", en_an);
 
 	static {
 		String[] temp = edu.stanford.muse.util.Util.stopwords;
-		for (String t : temp)
-			sws.add(t);
+        Collections.addAll(sws, temp);
 	}
 
 	public Entity(String name) {
-		this.names = new HashSet<String>();
+		this.names = new HashSet<>();
 		names.add(name);
-		this.cooccuringEntities = new HashMap<String, Integer>();
-		this.emailAddresses = new HashMap<String, Integer>();
-		this.allCE = new HashMap<String, Integer>();
+		this.cooccuringEntities = new HashMap<>();
+		this.emailAddresses = new HashMap<>();
+		this.allCE = new HashMap<>();
 	}
 
 	public static <K> void putAll(Map<K, Integer> target, Map<K, Integer> source) {
@@ -151,10 +150,10 @@ public class Entity extends EntityFeature {
 		Collection<Entity> efts = candidates.values();
 		EntityFeature ef = this;
 		//System.err.println("Size of EA's: " + ef.emailAddresses.size() + " CE's: " + ef.cooccuringEntities.size());
-		List<Pair<Entity, Double>> scores = new ArrayList<Pair<Entity, Double>>();
+		List<Pair<Entity, Double>> scores = new ArrayList<>();
 
 		/////
-		Map<Entity, Double> scoresU = new HashMap<Entity, Double>();
+		Map<Entity, Double> scoresU = new HashMap<>();
 		Map<String, Integer> CE = ef.cooccuringEntities, EA = ef.emailAddresses;
 		//P(CE) and P(EA);
 		double EAMod = 0, CEMod = 0;
@@ -246,7 +245,7 @@ public class Entity extends EntityFeature {
 	//should also get phrases smaller in length and also those of same size.
 	//check for ancronym if the name is all caps or if there are more than one word in the string
 	static Map<String, Entity> getMatches(String name, Map<String, Entity> features) {
-		Map<String, Entity> res = new HashMap<String, Entity>();
+		Map<String, Entity> res = new HashMap<>();
 		if (name == null)
 			return res;
 		String tc = FeatureGeneratorUtil.tokenFeature(name);
@@ -269,9 +268,9 @@ public class Entity extends EntityFeature {
 	}
 
 	public static Map<String, Entity> merge(Map<String, Entity> features) {
-		Set<Entity> considered = new HashSet<Entity>();
+		Set<Entity> considered = new HashSet<>();
 		double THRESHOLD = 0.5;
-		Map<String, Entity> fmerged = new HashMap<String, Entity>();
+		Map<String, Entity> fmerged = new HashMap<>();
 		int i = 0;
 		for (String name : features.keySet()) {
 			Map<String, Entity> matches = getMatches(name, features);
@@ -310,10 +309,10 @@ public class Entity extends EntityFeature {
 
 	//call this b4 merging.
 	public static Map<String, Entity> clean(Map<String, Entity> features) {
-		Map<String, Entity> nf = new HashMap<String, Entity>();
+		Map<String, Entity> nf = new HashMap<>();
 		for (String str : features.keySet()) {
 			String ns = clean(str);
-			Set<String> names = new HashSet<String>();
+			Set<String> names = new HashSet<>();
 			names.add(ns);
 			Entity e = features.get(str);
 			e.names = names;

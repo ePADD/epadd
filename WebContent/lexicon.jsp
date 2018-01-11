@@ -48,9 +48,8 @@
                   window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
 			  else
                   window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
-			};
-
-			//if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
+            }
+            //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
 			var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
 			oTable.fnSort( [ [1,'desc'] ] );
 			$('#table').show();
@@ -175,7 +174,7 @@
 		$(document).ready (function() {
             window.is_regex = <%=isRegex%>;
 			$('#lexiconName').change (changeLexicon);
-			$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';})
+			$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';});
 			$('#create-lexicon').click (function() {
 				var lexiconName = prompt ('Enter the name of the new lexicon:');
 				if (!lexiconName)

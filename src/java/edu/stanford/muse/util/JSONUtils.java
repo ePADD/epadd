@@ -135,13 +135,11 @@ public class JSONUtils {
 	public static float getScoreForHits(List<JSONObject> lensHits) throws JSONException
 	{
 		float score = 0.0f;
-		for (int i = 0; i < lensHits.size(); i++)
-		{
-			JSONObject o = lensHits.get(i);
-			int timesOnPage = o.getInt("timesOnPage");
-			int nMessages = o.getInt("nMessages");
-			score += timesOnPage * nMessages;
-		}
+        for (JSONObject o : lensHits) {
+            int timesOnPage = o.getInt("timesOnPage");
+            int nMessages = o.getInt("nMessages");
+            score += timesOnPage * nMessages;
+        }
 		return score;
 	}
 
@@ -225,14 +223,13 @@ public class JSONUtils {
 
 	public static List<String> getArrayElements(org.json.simple.JSONArray arr)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (arr == null)
 			return result;
-		for (int i = 0; i < arr.size(); i++)
-		{
-        	String s = (String) arr.get(i);
-        	result.add(s);
-		}
+        for (Object anArr : arr) {
+            String s = (String) anArr;
+            result.add(s);
+        }
 
 		return result;
 	}
@@ -309,7 +306,7 @@ public class JSONUtils {
 			
 //			String wp_contents = doc.body().text();
 		//	List<Pair<String,Integer>> list = NER.namesFromURL(wp_page);
-			return new Pair<String, List<Pair<String,Integer>>> (o6, null);
+			return new Pair<>(o6, null);
 //			return new Pair<String, List<Pair<String,Integer>>> (o6, list);
 		} catch (Exception e) { 
 			Util.print_exception(e);
@@ -332,7 +329,7 @@ public class JSONUtils {
 			else 
 				newArr.put(k, elem);
 		}	
-		return new Pair<JSONArray, Map<String, String>> (newArr, reverseMap);
+		return new Pair<>(newArr, reverseMap);
 	}
 	
 	private static Pair<JSONObject, Map<String, String>> hashJsonObject(JSONObject obj, Map<String, String> reverseMap) throws JSONException
@@ -340,7 +337,7 @@ public class JSONUtils {
 		JSONObject result = new JSONObject();
 		
 		if (reverseMap == null)
-			reverseMap = new LinkedHashMap<String, String>();
+			reverseMap = new LinkedHashMap<>();
 		for (Iterator<String> it = obj.keys(); it.hasNext(); )
 		{
 			String key = it.next();
@@ -367,12 +364,12 @@ public class JSONUtils {
 			else
 				result.put(Util.hash(key, reverseMap), value);
 		}
-		return new Pair<JSONObject, Map<String, String>> (result, reverseMap);
+		return new Pair<>(result, reverseMap);
 	}
 	
 	private static List<Pair<String, String>> convertToTuples(String prefix, Object value) throws JSONException
 	{
-		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
+		List<Pair<String, String>> result = new ArrayList<>();
 
 		// flatten any arrays
 		if (value instanceof JSONArray)
@@ -380,16 +377,16 @@ public class JSONUtils {
 		else if (value instanceof JSONObject)
 			result.addAll(convertToTuples(prefix, (JSONObject) value));
 		else if (value instanceof String)
-			result.add(new Pair<String, String>(prefix, (String) value));
+			result.add(new Pair<>(prefix, (String) value));
 		else if (value instanceof Integer)
-			result.add(new Pair<String, String>(prefix, Integer.toString((Integer) value)));
+			result.add(new Pair<>(prefix, Integer.toString((Integer) value)));
 		
 		return result;
 	}
 	
 	private static List<Pair<String, String>> convertToTuples(String prefix, JSONArray arr) throws JSONException
 	{
-		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
+		List<Pair<String, String>> result = new ArrayList<>();
 
 		for (int i = 0; i < arr.length(); i++)
 		{
@@ -401,7 +398,7 @@ public class JSONUtils {
 	
 	private static List<Pair<String, String>> convertToTuples(String prefix, JSONObject obj) throws JSONException
 	{
-		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
+		List<Pair<String, String>> result = new ArrayList<>();
 		
 		for (Iterator<String> it = obj.keys(); it.hasNext(); )
 		{

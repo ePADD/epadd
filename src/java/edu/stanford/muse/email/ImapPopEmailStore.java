@@ -105,7 +105,7 @@ public class ImapPopEmailStore extends EmailStore {
 	private String computeSimpleDisplayName()
 	{
 		// first check if we already have an @. If we do, just use it directly. no point trying user@gapps-hosted-domain@gmail.com
-		if (this.connectOptions.userName.indexOf("@") >= 0)
+		if (this.connectOptions.userName.contains("@"))
 			return this.connectOptions.userName;
 		
 		if (connectOptions.server.endsWith("gmail.com") || connectOptions.server.endsWith("google.com") || connectOptions.server.endsWith("googlemail.com"))
@@ -155,7 +155,7 @@ public class ImapPopEmailStore extends EmailStore {
 		if (folder != null)
 			count = folder.getMessageCount();
 		log.info("Opened folder " + Util.blurKeepingExtension(fname) + " message count " + count);
-		return new Pair<Folder,Integer>(folder, count);
+		return new Pair<>(folder, count);
 	}
 
 	public void computeFoldersAndCounts(String cacheDir /*unused */) throws MessagingException
@@ -166,7 +166,7 @@ public class ImapPopEmailStore extends EmailStore {
 			connect();
 
 		doneReadingFolderCounts = false;
-		this.folderInfos = new ArrayList<FolderInfo>();
+		this.folderInfos = new ArrayList<>();
 		if ("pop3".equals(connectOptions.protocol) || "pop3s".equals(connectOptions.protocol))
 		{
 			Folder f = store.getDefaultFolder();
@@ -193,11 +193,11 @@ public class ImapPopEmailStore extends EmailStore {
 		// ignore hidden files
 		if (f.getFullName().startsWith("."))
 			return;
-		if (f.getFullName().indexOf("/.") >= 0 || f.getFullName().indexOf("\\.") >= 0)
+		if (f.getFullName().contains("/.") || f.getFullName().contains("\\."))
 			return;
 
 		// hack for csl-mail which takes too long to return all the folders
-		if (connectOptions.server.startsWith("csl-mail") && f.getFullName().indexOf("/") >= 0)
+		if (connectOptions.server.startsWith("csl-mail") && f.getFullName().contains("/"))
 			return;
 
 		// TOFIX: apparently imap folders can have both messages and children

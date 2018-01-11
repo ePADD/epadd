@@ -34,8 +34,8 @@ public class CategoryDocument extends Document {
 
 	public static List<MultiDoc> clustersDocsByCategoryName(Collection<CategoryDocument> docs)
 	{
-		Map<String, MultiDoc> map = new LinkedHashMap<String, MultiDoc>();
-		List<MultiDoc> result = new ArrayList<MultiDoc>();
+		Map<String, MultiDoc> map = new LinkedHashMap<>();
+		List<MultiDoc> result = new ArrayList<>();
 
 		int count = 0;
 		for (CategoryDocument d: docs)

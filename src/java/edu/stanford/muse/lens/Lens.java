@@ -38,7 +38,7 @@ import java.util.*;
 public class Lens {
     public static Log log = LogFactory.getLog(JSPHelper.class);
 
-	private static Set<String> knownBadTerms = new LinkedHashSet<String>(); /** imp: canonicalized to lower case */
+	private static Set<String> knownBadTerms = new LinkedHashSet<>(); /** imp: canonicalized to lower case */
 
 	static {
 		String LENS_KILL_FILE = "lens-kill.txt";
@@ -132,16 +132,16 @@ public class Lens {
 			o.put ("score", score);
 		}
 		// sort the results by score
-		Collections.sort (list, new Comparator<JSONObject>() { 
-			public int compare (JSONObject o1, JSONObject o2)
-			{
-				try {
-					double s1 = o1.getDouble("score");
-					double s2 = o2.getDouble("score");
-					//@vihari: BUG_FIX should return 0 when they are equal, else transitive prop doesn't hold and throws Illegalarguementexception
-					if(s1 == s2) return 0;
-					return (s2 > s1) ? 1 : -1;
-				} catch (Exception e) { Util.print_exception(e); return -1; }
+		list.sort((o1, o2) -> {
+			try {
+				double s1 = o1.getDouble("score");
+				double s2 = o2.getDouble("score");
+				//@vihari: BUG_FIX should return 0 when they are equal, else transitive prop doesn't hold and throws Illegalarguementexception
+				if (s1 == s2) return 0;
+				return (s2 > s1) ? 1 : -1;
+			} catch (Exception e) {
+				Util.print_exception(e);
+				return -1;
 			}
 		});
 		
@@ -154,7 +154,7 @@ public class Lens {
 	/** looks up given names in address book + message content index and returns a json of scores. lensPrefs has the user's term preferences */
 	public static List<JSONObject> getHitsQuick(List<Pair<String, Float>> names, LensPrefs lensPrefs, Archive archive, String baseURL, Collection<EmailDocument> allDocs) throws JSONException, IOException, GeneralSecurityException
 	{
-		List<JSONObject> list = new ArrayList<JSONObject>();
+		List<JSONObject> list = new ArrayList<>();
 		
 		Indexer indexer = archive.indexer;
 		AddressBook ab = archive.addressBook;
@@ -221,15 +221,15 @@ public class Lens {
 		int NAME_IN_ADDRESS_BOOK_WEIGHT = 100;
 		// look up term in 2 places -- AB and in the index
 		List<EmailDocument> docsForNameInAddressBook = (List) IndexUtils.selectDocsByPersonsAsList(ab, allDocs, new String[]{term});
-		List<EmailDocument> docsForTerm = (List) new ArrayList<Document>(archive.docsForQuery("\"" + term + "\"", -1, Indexer.QueryType.FULL));
+		List<EmailDocument> docsForTerm = (List) new ArrayList<>(archive.docsForQuery("\"" + term + "\"", -1, Indexer.QueryType.FULL));
 		// weigh any docs for name in addressbook hugely more!
 		double termScore = docsForNameInAddressBook.size() * NAME_IN_ADDRESS_BOOK_WEIGHT + docsForTerm.size();
 		json.put ("indexScore", termScore);
 
-		Set<EmailDocument> finalDocSet = new LinkedHashSet<EmailDocument>();
+		Set<EmailDocument> finalDocSet = new LinkedHashSet<>();
 		finalDocSet.addAll(docsForNameInAddressBook);
 		finalDocSet.addAll(docsForTerm);
-		List<EmailDocument> finalDocList = new ArrayList<EmailDocument>(finalDocSet);
+		List<EmailDocument> finalDocList = new ArrayList<>(finalDocSet);
 		json.put ("nMessages", finalDocList.size());
 
 		// score people
@@ -244,11 +244,7 @@ public class Lens {
 
 				float weight = 1.0f/addrs.size(); // weight = 1/size
 				Contact c = ab.lookupByEmail(s);
-				Float F = peopleScores.get(c);
-				if (F == null)
-					peopleScores.put (c, weight);
-				else
-					peopleScores.put (c, F+weight);
+				peopleScores.merge(c, weight, (a, b) -> a + b);
 			}
 		}
 
@@ -296,7 +292,7 @@ public class Lens {
 	/** looks up given names in the index and returns a json of scores. lensPrefs has the user's term preferences */
 	public static List<JSONObject> getHits(List<Pair<String, Float>> names, LensPrefs lensPrefs, Archive archive, AddressBook ab, String baseURL, Collection<EmailDocument> allDocs) throws JSONException, IOException, GeneralSecurityException
 	{
-		List<JSONObject> list = new ArrayList<JSONObject>();
+		List<JSONObject> list = new ArrayList<>();
 		
 		if (archive == null)
 			return list;

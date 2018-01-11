@@ -246,7 +246,7 @@ public class Variants {
                 Collection<String> existingDentities = cEntityToDEntity.get(cEntity);
                 if (!Util.nullOrEmpty(existingDentities)) {
                     // only print if case invariant difference between existing dentities and the new dentity
-                    Set<String> set = existingDentities.stream().map(s -> s.toLowerCase()).collect(Collectors.toSet());
+                    Set<String> set = existingDentities.stream().map(String::toLowerCase).collect(Collectors.toSet());
                     set.remove(dEntity.toLowerCase());
                     if (!Util.nullOrEmpty(set))
                         log.warn ("Centity = " + cEntity + " dEntity = " + dEntity + " existingDentities = " + Util.join (set, ", "));
@@ -294,11 +294,7 @@ public class Variants {
                     int increment = (tokens.contains(lt)) ? 2 : 1; // more weight if its an original token, instead of via a variant
 
                     for (String centity : centities) {
-                        Integer I = result.get(centity);
-                        if (I == null)
-                            result.put(centity, increment);
-                        else
-                            result.put(centity, I + increment);
+                        result.merge(centity, increment, (a, b) -> a + b);
                     }
                 }
             }

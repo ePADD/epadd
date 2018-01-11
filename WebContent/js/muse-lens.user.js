@@ -51,7 +51,7 @@ init = function() {
 	}
     $_ = $;
     main();
-    return;
+
 };
 
 function inject_html(html) {

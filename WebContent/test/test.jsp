@@ -32,7 +32,7 @@ function dodrop(event) {
 </body>
 <%
 //Archive archive = JSPHelper.getArchive(session);
-Indexer indexer = (Indexer) archive.indexer;
+Indexer indexer = archive.indexer;
 
 String q = "/r..bert/";
 Collection<EmailDocument> docs = indexer.lookupDocs(q, Indexer.QueryType.FULL);

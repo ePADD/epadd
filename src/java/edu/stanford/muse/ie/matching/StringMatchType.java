@@ -5,6 +5,6 @@ enum StringMatchType {
     CONTAINED,
     CONTAINED_DIFFERENT_ORDER;
 
-    private StringMatchType() {
+    StringMatchType() {
     }
 }

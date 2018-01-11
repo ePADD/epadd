@@ -103,7 +103,7 @@ public static String blurPath(String s)
 	// compute all path components, blurring the last one
 	// s: a/b/xyz
 	StringTokenizer st = new StringTokenizer(s, File.separator);
-	List<String> components = new ArrayList<String>();
+	List<String> components = new ArrayList<>();
 	while (st.hasMoreTokens())
 	{
 		String x = st.nextToken();
@@ -227,13 +227,10 @@ public static boolean is_supported_file(String filename)
 public static void sortFilesByTime(File[] files)
 {
 	// sort by creation time of png files to get correct page order
-	Arrays.sort (files, new Comparator<File>() {
-		public int compare(File f1, File f2)
-		{
-			long x = f1.lastModified() - f2.lastModified();
-			return (x < 0) ? -1 : ((x > 0) ? 1 : 0);
-		}
-	});
+	Arrays.sort (files, (f1, f2) -> {
+        long x = f1.lastModified() - f2.lastModified();
+        return (x < 0) ? -1 : ((x > 0) ? 1 : 0);
+    });
 }
 
 public static void run_command (String[] cmd) throws IOException
@@ -244,7 +241,7 @@ public static void run_command (String[] cmd) throws IOException
 public static void run_command (String cmd, String dir) throws IOException
 {
 	StringTokenizer st = new StringTokenizer(cmd);
-	List<String> tokens = new ArrayList<String>();
+	List<String> tokens = new ArrayList<>();
 	while (st.hasMoreTokens())
 		tokens.add(st.nextToken());
 
@@ -439,7 +436,7 @@ public static List<String> getLinesFromInputStream(InputStream in, boolean ignor
 public static List<String> getLinesFromReader(Reader reader, boolean ignoreCommentLines) throws IOException
 {
 	LineNumberReader lnr = new LineNumberReader(reader);
-	List<String> result = new ArrayList<String>();
+	List<String> result = new ArrayList<>();
 	while (true)
 	{
 		String line = lnr.readLine();
@@ -620,7 +617,7 @@ public static boolean isI18N(String s)
 {
 	byte bytes[] = s.getBytes();
 	for (byte b: bytes)
-		if (b < 0 || b > 127)
+		if (b < 0)
 			return true;
 	return false;			
 }
@@ -709,7 +706,7 @@ public static String blurKeepingExtension(String s)
 
 public static List<String> tokenize(String s)
 {
-	List<String> result = new ArrayList<String>();
+	List<String> result = new ArrayList<>();
 	if (Util.nullOrEmpty(s))
 		return result;
 	
@@ -721,7 +718,7 @@ public static List<String> tokenize(String s)
 
 public static List<String> tokenize(String s, String delims)
 {
-	List<String> result = new ArrayList<String>();
+	List<String> result = new ArrayList<>();
 	if (Util.nullOrEmpty(s))
 		return result;
 	
@@ -733,7 +730,7 @@ public static List<String> tokenize(String s, String delims)
 
 public static Collection<String> breakIntoParas(String input) throws IOException
 {
-	List<String> paras = new ArrayList<String>();
+	List<String> paras = new ArrayList<>();
 	LineNumberReader lnr = new LineNumberReader(new StringReader(input));
 	
 	StringBuilder currentPara = new StringBuilder();
@@ -1017,7 +1014,7 @@ public static String getFileContents(String filename) throws IOException
 // interval i is represented by [i]..[i+1] in the returned value
 public static List<Date> getMonthlyIntervals(Date start, Date end)
 {
-	List<Date> intervals = new ArrayList<Date>();
+	List<Date> intervals = new ArrayList<>();
 	GregorianCalendar c = new GregorianCalendar();
 	c.setTime(start);
 	int startMonth = c.get(Calendar.MONTH);
@@ -1048,7 +1045,7 @@ public static List<Date> getMonthlyIntervals(Date start, Date end)
 //interval i is represented by [i]..[i+1] in the returned value
 public static List<Date> getYearlyIntervals(Date start, Date end)
 {
-	List<Date> intervals = new ArrayList<Date>();
+	List<Date> intervals = new ArrayList<>();
 	GregorianCalendar c = new GregorianCalendar();
 	c.setTime(start);
 	int startYear = c.get(Calendar.YEAR);
@@ -1074,7 +1071,7 @@ public static List<Date> getYearlyIntervals(Date start, Date end)
  */
 public static List<Pair<Calendar,Calendar>> getSlidingMonthlyIntervalsForward(Calendar start, Calendar end, int windowSizeInMonths, int stepSizeInMonths)
 {
-	List<Pair<Calendar,Calendar>> intervals = new ArrayList<Pair<Calendar,Calendar>>();
+	List<Pair<Calendar,Calendar>> intervals = new ArrayList<>();
 
 	if (start.after(end)) // error
 	{
@@ -1100,7 +1097,7 @@ public static List<Pair<Calendar,Calendar>> getSlidingMonthlyIntervalsForward(Ca
 		}
 
 		Calendar windowEnd = new GregorianCalendar(windowEndYear, windowEndMonth, 1, 0, 0, 0);
-		intervals.add(new Pair<Calendar, Calendar>(windowStart, windowEnd));
+		intervals.add(new Pair<>(windowStart, windowEnd));
 
 		if (windowEnd.after(end))
 			break;
@@ -1266,7 +1263,7 @@ public static<E extends Comparable<? super E>> String joinSort (Collection<E> c,
 		return "";
 	int n = c.size(), count = 0;
 	StringBuilder result = new StringBuilder();
-	List<E> tmp = new ArrayList<E>(c);
+	List<E> tmp = new ArrayList<>(c);
 	Collections.sort(tmp);
 	for (E e: tmp)
 	{
@@ -1378,7 +1375,7 @@ public static byte[] parseIPAddress(String str)
 {
 	try {
 		StringTokenizer st = new StringTokenizer(str, ".");
-		List<Byte> list = new ArrayList<Byte>();
+		List<Byte> list = new ArrayList<>();
 		boolean invalidAddr = false;
 		while (st.hasMoreTokens())
 		{
@@ -1420,15 +1417,13 @@ public static boolean deleteDir(File f)
     if (f.isDirectory())
     {
         String[] children = f.list();
-        for (int i=0; i<children.length; i++)
-        {
-            boolean success = deleteDir(new File(f, children[i]));
-            if (!success)
-            {
-            	System.err.println ("warning: failed to delete file " + f);
-                return false;
-            }
-        }
+		for (String aChildren : children) {
+			boolean success = deleteDir(new File(f, aChildren));
+			if (!success) {
+				System.err.println("warning: failed to delete file " + f);
+				return false;
+			}
+		}
     }
 
     // The directory is now empty so delete it
@@ -1464,7 +1459,7 @@ public static class MyFilenameFilter implements FilenameFilter {
 
 public static Set<String> filesWithPrefixAndSuffix (String dir, String prefix, String suffix)
 {
-	Set<String> result = new LinkedHashSet<String>();
+	Set<String> result = new LinkedHashSet<>();
 	
 	if (dir == null)
 		return result;
@@ -1519,34 +1514,28 @@ public static Set<String> filesWithSuffix (String dir, String suffix)
 /** sorts in decreasing order of second element of pair */
 public static<S,T extends Comparable<? super T>> void sortPairsBySecondElement(List<Pair<S,T>> input)
 {
-	Collections.sort (input, new Comparator<Pair<?,T>>() {
-		public int compare (Pair<?,T> p1, Pair<?,T> p2) {
-			T i1 = p1.getSecond();
-			T i2 = p2.getSecond();
-			return i2.compareTo(i1);
-		}
+	input.sort((p1, p2) -> {
+		T i1 = p1.getSecond();
+		T i2 = p2.getSecond();
+		return i2.compareTo(i1);
 	});
 }
 
 /** sorts in decreasing order of second element of pair */
 public static<S,T extends Comparable<? super T>> void sortPairsBySecondElementIncreasing(List<Pair<S,T>> input)
 {
-	Collections.sort (input, new Comparator<Pair<?,T>>() {
-		public int compare (Pair<?,T> p1, Pair<?,T> p2) {
-			T i1 = p1.getSecond();
-			T i2 = p2.getSecond();
-			return i1.compareTo(i2);
-		}
+	input.sort((p1, p2) -> {
+		T i1 = p1.getSecond();
+		T i2 = p2.getSecond();
+		return i1.compareTo(i2);
 	});
 }
 public static void sortPairsByFirstElement(List<Pair<Integer, ?>> input)
 {
-	Collections.sort (input, new Comparator<Pair<Integer,?>>() {
-		public int compare (Pair<Integer,?> p1, Pair<Integer,?> p2) {
-			int i1 = p1.getFirst();
-			int i2 = p2.getFirst();
-			return i2 - i1;
-		}
+	input.sort((p1, p2) -> {
+		int i1 = p1.getFirst();
+		int i2 = p2.getFirst();
+		return i2 - i1;
 	});
 }
 
@@ -1554,7 +1543,7 @@ public static void sortPairsByFirstElement(List<Pair<Integer, ?>> input)
 public static<T> List<T> permuteList(List<T> in, int seed)
 {
 	// create a copy of the input
-	List<T> result = new ArrayList<T>();
+	List<T> result = new ArrayList<>();
 	result.addAll(in);
 	
 	Random R = new Random(seed);
@@ -1573,18 +1562,18 @@ public static<T> List<T> permuteList(List<T> in, int seed)
 /** takes in a map K,V and returns a List of Pairs <K,V> sorted by (descending) value */
 public static<K,V> List<Pair<K,V>> mapToListOfPairs(Map<K,V> map)
 {
-	List<Pair<K,V>> result = new ArrayList<Pair<K,V>>();
+	List<Pair<K,V>> result = new ArrayList<>();
 	for (Map.Entry<K,V> e: map.entrySet())
-		result.add(new Pair<K,V>(e.getKey(), e.getValue()));
+		result.add(new Pair<>(e.getKey(), e.getValue()));
 	return result;
 }
 
 /** takes in a map K,V and returns a List of Pairs <K,V> sorted by (descending) value */
 public static<K,V extends Comparable<? super V>> List<Pair<K,V>> sortMapByValue(Map<K,V> map)
 {
-	List<Pair<K,V>> result = new ArrayList<Pair<K,V>>();
+	List<Pair<K,V>> result = new ArrayList<>();
 	for (Map.Entry<K,V> e: map.entrySet())
-		result.add(new Pair<K,V>(e.getKey(), e.getValue()));
+		result.add(new Pair<>(e.getKey(), e.getValue()));
 	Util.sortPairsBySecondElement(result);
 	return result;
 }
@@ -1592,11 +1581,11 @@ public static<K,V extends Comparable<? super V>> List<Pair<K,V>> sortMapByValue(
 /** takes in a map K,V and returns a sorted LinkedHashMap, sorted by (descending) value */
 public static<K,V extends Comparable<? super V>> Map<K,V> reorderMapByValue(Map<K,V> map)
 {
-	List<Pair<K,V>> resultPairs = new ArrayList<Pair<K,V>>();
+	List<Pair<K,V>> resultPairs = new ArrayList<>();
 	for (Map.Entry<K,V> e: map.entrySet())
-		resultPairs.add(new Pair<K,V>(e.getKey(), e.getValue()));
+		resultPairs.add(new Pair<>(e.getKey(), e.getValue()));
 	Util.sortPairsBySecondElement(resultPairs);
-	Map<K, V> result = new LinkedHashMap<K, V>();
+	Map<K, V> result = new LinkedHashMap<>();
 	for (Pair<K,V> p: resultPairs)
 		result.put(p.getFirst(), p.getSecond());
 	return result;
@@ -1606,11 +1595,11 @@ public static<K,V extends Comparable<? super V>> Map<K,V> reorderMapByValue(Map<
  * by sorting, we just mean that a linkedhashmap is returned which can be iterated over in sorted order. */
 public static<K,V> Map<K,Collection<V>> sortMapByListSize(Map<K,Collection<V>> map)
 {
-	List<Pair<K,Integer>> counts = new ArrayList<Pair<K,Integer>>();
+	List<Pair<K,Integer>> counts = new ArrayList<>();
 	for (Map.Entry<K,Collection<V>> e: map.entrySet())
-		counts.add(new Pair<K,Integer>(e.getKey(), e.getValue().size()));
+		counts.add(new Pair<>(e.getKey(), e.getValue().size()));
 	Util.sortPairsBySecondElement(counts);
-	Map<K,Collection<V>> result = new LinkedHashMap<K, Collection<V>>();
+	Map<K,Collection<V>> result = new LinkedHashMap<>();
 	for (Pair<K,Integer> p: counts)
 	{
 		K k = p.getFirst();
@@ -1622,12 +1611,7 @@ public static<K,V> Map<K,Collection<V>> sortMapByListSize(Map<K,Collection<V>> m
 /** takes in a map K,List<V> and adds value to key's list - effectively a multi-map. */
 public static<K,V> void addTo(Map<K,Collection<V>> map, K key, V value)
 {
-	Collection<V> values = map.get(key);
-	if (values == null)
-	{
-		values = new ArrayList<V>(); 
-		map.put(key, values);	
-	}
+	Collection<V> values = map.computeIfAbsent(key, k -> new ArrayList<>());
 	values.add(value);
 }
 
@@ -1665,7 +1649,7 @@ public static Pair<Calendar, Calendar> parseDateInterval(String calendarString)
 	Calendar endDate = null;
 	String startDateString, endDateString = null;
 
-	if (calendarString.indexOf("-") < 0)
+	if (!calendarString.contains("-"))
 	{
 		endDate = new GregorianCalendar(); // current time, default
 		startDateString = calendarString;
@@ -1681,7 +1665,7 @@ public static Pair<Calendar, Calendar> parseDateInterval(String calendarString)
 	if (endDateString != null)
 		endDate = parseDate(endDateString);
 
-	return new Pair<Calendar, Calendar>(startDate, endDate);
+	return new Pair<>(startDate, endDate);
 }
 
 /** parses keyword strings a la google search in the given input string and returns the results.
@@ -1690,7 +1674,7 @@ public static Pair<Calendar, Calendar> parseDateInterval(String calendarString)
  */
 public static List<String> parseKeywords(String keywords)
 {
-	List<String> result = new ArrayList<String>();
+	List<String> result = new ArrayList<>();
 	if (keywords == null)
 		return result;
 	StringTokenizer st = new StringTokenizer(keywords);
@@ -1730,75 +1714,68 @@ public static String fieldsToString(Object o, boolean expand)
     	Class c = o.getClass();
     	result.append (c.getName() + ": ");
     	Field f[] = c.getDeclaredFields();
-    	for (int i = 0; i < f.length; i++)
-    	{
-    		boolean acc = f[i].isAccessible();
-    		if (!acc)
-    			f[i].setAccessible(true); // ok to do in absence of a security manager
+		for (Field aF : f) {
+			boolean acc = aF.isAccessible();
+			if (!acc)
+				aF.setAccessible(true); // ok to do in absence of a security manager
 
-    		Class t = f[i].getType();
-    		String name = f[i].getName();
-    		if (t == double.class)
-    			result.append(name + "=" + f[i].getDouble(o));
-    		else if (t == float.class)
-    			result.append(name + "=" + f[i].getFloat(o));
-    		else if (t == int.class)
-    			result.append(name + "=" + f[i].getInt(o));
-    		else if (t == long.class)
-    			result.append(name + "=" + f[i].getLong(o));
-    		else if (t == char.class)
-    			result.append(name + "=" + f[i].getChar(o) + "(" + Integer.toString(f[i].getChar(o)) + ")");
-    		else if (t == short.class)
-    			result.append(name + "=" + f[i].getShort(o));
-    		else if (t == byte.class)
-    			result.append(name + "=" + f[i].getByte(o));
-    		else if (t == boolean.class)
-    			result.append(name + "=" + f[i].getBoolean(o));
-    		else
-    		{
-    			// field is of object type
-    			Object val = f[i].get(o); // o.f[i]'s type is t, value is val
-    			if (val == null)
-    				result.append (name + "=null");
-    			else
-    			{
-    				Class valClass = val.getClass();
-    				if (valClass.isArray())
-    				{
-    					result.append (name + "=arr{size:" + Array.getLength(val) + " ");
-    					if (expand)
-    						for (int x = 0; x < Array.getLength(val); x++)
-    							result.append (Array.get(val, x) + " ");
-						result.append ("}");
-    				}
-    				else if (java.util.Map.class.isAssignableFrom(valClass)) // could also check t, but val.getClass is more specific
-    				{
-    					Map m = (Map) f[i].get(o);
-    					result.append (name + "=map{size:" + m.keySet().size() + " ");
-    					if (expand)
-    						for (Object x: m.keySet())
-    							result.append (x + "->" + m.get(x) + " ");
-    					result.append ("}");
-    				}
-    				else if (java.util.Collection.class.isAssignableFrom(valClass)) // could also check t, but val.getClass is more specific
-    				{
-    					Collection c1 = (Collection) f[i].get(o);
-    					result.append (name + "=" + valClass.getName() + "{size:" + c1.size() + " ");
-    					if (expand)
-    						for (Object o1: c1)
-    							result.append (o1 + " ");
-    					result.append ("}");
-    				}
-    				else
-    					result.append (name + "=[" + val.toString() + "]");
-    			}
-    		}
+			Class t = aF.getType();
+			String name = aF.getName();
+			if (t == double.class)
+				result.append(name + "=" + aF.getDouble(o));
+			else if (t == float.class)
+				result.append(name + "=" + aF.getFloat(o));
+			else if (t == int.class)
+				result.append(name + "=" + aF.getInt(o));
+			else if (t == long.class)
+				result.append(name + "=" + aF.getLong(o));
+			else if (t == char.class)
+				result.append(name + "=" + aF.getChar(o) + "(" + Integer.toString(aF.getChar(o)) + ")");
+			else if (t == short.class)
+				result.append(name + "=" + aF.getShort(o));
+			else if (t == byte.class)
+				result.append(name + "=" + aF.getByte(o));
+			else if (t == boolean.class)
+				result.append(name + "=" + aF.getBoolean(o));
+			else {
+				// field is of object type
+				Object val = aF.get(o); // o.f[i]'s type is t, value is val
+				if (val == null)
+					result.append(name + "=null");
+				else {
+					Class valClass = val.getClass();
+					if (valClass.isArray()) {
+						result.append(name + "=arr{size:" + Array.getLength(val) + " ");
+						if (expand)
+							for (int x = 0; x < Array.getLength(val); x++)
+								result.append(Array.get(val, x) + " ");
+						result.append("}");
+					} else if (Map.class.isAssignableFrom(valClass)) // could also check t, but val.getClass is more specific
+					{
+						Map m = (Map) aF.get(o);
+						result.append(name + "=map{size:" + m.keySet().size() + " ");
+						if (expand)
+							for (Object x : m.keySet())
+								result.append(x + "->" + m.get(x) + " ");
+						result.append("}");
+					} else if (Collection.class.isAssignableFrom(valClass)) // could also check t, but val.getClass is more specific
+					{
+						Collection c1 = (Collection) aF.get(o);
+						result.append(name + "=" + valClass.getName() + "{size:" + c1.size() + " ");
+						if (expand)
+							for (Object o1 : c1)
+								result.append(o1 + " ");
+						result.append("}");
+					} else
+						result.append(name + "=[" + val.toString() + "]");
+				}
+			}
 
-			result.append (" ");
+			result.append(" ");
 
 			if (!acc)
-				f[i].setAccessible(false);
-    	}
+				aF.setAccessible(false);
+		}
 
     } catch (Throwable e) {
     		System.err.println(e);
@@ -1850,11 +1827,9 @@ public static long getUnprocessedMessage(int done, int total, long elapsedMillis
 /* given 2 arrays of strings, returns their union */
 public static String[] unionOfStringArrays(String x[], String y[])
 {
-	Set<String> set = new LinkedHashSet<String>();
-	for (String s: x)
-		set.add(s);
-	for (String s: y)
-		set.add(s);
+	Set<String> set = new LinkedHashSet<>();
+    Collections.addAll(set, x);
+	Collections.addAll(set, y);
 	String[] arr = new String[set.size()];
 	set.toArray(arr);
 	return arr;
@@ -1972,7 +1947,7 @@ public static List<String> stripCommonPrefix(List<String> list)
 	if (commonPrefix.length() <= 1)
 		return list;
 
-	List<String> result = new ArrayList<String>();
+	List<String> result = new ArrayList<>();
 	for (String s: list)
 		result.add(s.substring(commonPrefix.length()));
 
@@ -2009,14 +1984,13 @@ public static String strippedEmailAddress(String str)
 // removes dups from the input list
 public static<T> List<T> removeDups(List<T> in)
 {
-	Set<T> set = new LinkedHashSet<T>();
+	Set<T> set = new LinkedHashSet<>();
 	set.addAll(in);
 	if (set.size() == in.size())
 		return in;
 
-	List<T> result = new ArrayList<T>();
-	for (T t: set)
-		result.add(t);
+	List<T> result = new ArrayList<>();
+	result.addAll(set);
 	return result;
 }
 
@@ -2025,11 +1999,11 @@ private static String bytesToHexString(byte[] bytes)
 {
 	// http://stackoverflow.com/questions/332079
 	// http://stackoverflow.com/questions/7166129
-	StringBuffer sb = new StringBuffer();
-	for (int i = 0; i < bytes.length; i++) {
-		String hex = Integer.toHexString(0xFF & bytes[i]);
-		if (hex.length() == 1) 
-			sb.append('0');			
+	StringBuilder sb = new StringBuilder();
+	for (byte aByte : bytes) {
+		String hex = Integer.toHexString(0xFF & aByte);
+		if (hex.length() == 1)
+			sb.append('0');
 		sb.append(hex);
 	}
 	return sb.toString();
@@ -2095,7 +2069,7 @@ public static void close(Closeable resource) {
 
 public static<E> boolean hasRedundantElements(Collection<E> c)
 {
-	Map<E,E> m = new LinkedHashMap<E, E>();
+	Map<E,E> m = new LinkedHashMap<>();
 	for (E e : c) {
 		if (m.containsKey(e)) {
 			E e1 = m.get(e);
@@ -2105,7 +2079,7 @@ public static<E> boolean hasRedundantElements(Collection<E> c)
 		}
 		m.put(e, e);
 	}
-	Set<E> s = new LinkedHashSet<E>(c);
+	Set<E> s = new LinkedHashSet<>(c);
 	assert(s.size() <= c.size());
 	return s.size() != c.size();
 }
@@ -2156,9 +2130,9 @@ public static<E> boolean equalsNullSafe(E a, E b)
  */
 public static<E extends Comparable<? super E>> List<E> getRemoveAll(List<E> list1, Collection<E> list2)
 {
-	Set<E> set1 = new LinkedHashSet<E>(list1);
+	Set<E> set1 = new LinkedHashSet<>(list1);
 	set1.removeAll(list2);
-	return new ArrayList<E>(set1);
+	return new ArrayList<>(set1);
 }
 
 /** Return int[] from String[] */
@@ -2204,7 +2178,7 @@ public static String canonicalizeSpaces(String s)
 	// includes replacement for 0xA0 (nbsp), which is not handled by \s alone
 	// http://stackoverflow.com/questions/1702601/unidentified-whitespace-character-in-java
 	if (s == null)
-		return s;
+		return null;
 	return s.replaceAll("[\\s\\xA0]+", " ");
 }
 
@@ -2214,13 +2188,13 @@ public static String canonicalizeSpaces(String s)
  */
 public static<E> Set<E> castOrCloneAsSet(Collection<E> c)
 {
-    return (c == null || c instanceof LinkedHashSet) ? (Set<E>) c : new LinkedHashSet<E>(c);
+    return (c == null || c instanceof LinkedHashSet) ? (Set<E>) c : new LinkedHashSet<>(c);
 }
 
 
 public static List<String> scrubNames(Collection<String> list)
 {
-	Set<String> set = new LinkedHashSet<String>();
+	Set<String> set = new LinkedHashSet<>();
 	for (String s : list) {
 		s = s.replaceAll("[\\r\\n\\a]+", " ")		// newlines
 			 .replaceAll("\\s+", " ")				// whitespaces compaction
@@ -2229,7 +2203,7 @@ public static List<String> scrubNames(Collection<String> list)
 		if (set.contains(s)) continue; // could also do case insensitive
 		set.add(s);
 	}
-	return new ArrayList<String>(set);
+	return new ArrayList<>(set);
 }
 
 // both arguments have to agree on being or not being URL escaped (probably have to be escaped since we assume "&" is the delimiter)
@@ -2263,7 +2237,7 @@ public static String excludeUrlParam(String allParams, String param)
 
 public static boolean isWindowsPlatform()
 {
-	return (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0); 
+	return (System.getProperty("os.name").toLowerCase().contains("windows"));
 }
 
 public static String devNullPath()

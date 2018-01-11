@@ -11,7 +11,7 @@ public class AssignEmailNameTypes {
 
 	static PrintStream out = System.out, err = System.err;
 	
-	static Map<String, Info> hitTitles = new LinkedHashMap<String, Info>();
+	static Map<String, Info> hitTitles = new LinkedHashMap<>();
 	static String typesFile = "instance_types_en.nt1";
 	static String abstractsFile = "short_abstracts_en.nt";
 	static String pageLengthsFile = "page-lengths";
@@ -63,8 +63,8 @@ public class AssignEmailNameTypes {
 	
 	public static void main (String args[]) throws IOException
 	{
-		Set<String> posArgs = new LinkedHashSet<String>();
-		Set<String> negArgs = new LinkedHashSet<String>();
+		Set<String> posArgs = new LinkedHashSet<>();
+		Set<String> negArgs = new LinkedHashSet<>();
 		args = new String[]{"names"};
 		title = args[0];		
 		out = new PrintStream(new FileOutputStream(title + ".out"));
@@ -110,20 +110,15 @@ public class AssignEmailNameTypes {
 				I.score = len;
 		}
 		
-		List<Info> list = new ArrayList<Info>(hitTitles.values());
+		List<Info> list = new ArrayList<>(hitTitles.values());
 		Collections.sort(list);
 		
-		Map<String, Collection<Info>> typedHits = new LinkedHashMap<String, Collection<Info>>();
+		Map<String, Collection<Info>> typedHits = new LinkedHashMap<>();
 		for (Info I : list)
 		{
 			out.println (I);
 			String type = I.type;
-			Collection<Info> list1 = (typedHits.get(type));
-			if (list1 == null)
-			{
-				list1 = new ArrayList<Info>();
-				typedHits.put(type, list1);
-			}
+			Collection<Info> list1 = (typedHits.computeIfAbsent(type, k -> new ArrayList<>()));
 			list1.add(I);
 		}
 		

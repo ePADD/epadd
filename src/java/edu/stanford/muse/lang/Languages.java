@@ -114,9 +114,9 @@ public class Languages {
 		}
 	}
 	
-	public static List<LangInfo> allPatterns = new ArrayList<LangInfo>();
-	public static Set<String> allScripts = new LinkedHashSet<String>();
-	public static Set<String> allLanguages = new LinkedHashSet<String>();
+	public static List<LangInfo> allPatterns = new ArrayList<>();
+	public static Set<String> allScripts = new LinkedHashSet<>();
+	public static Set<String> allLanguages = new LinkedHashSet<>();
 	
 	static { init(); }
 	
@@ -132,7 +132,7 @@ public class Languages {
 		{
 			String scriptName = lang[0];
 			String langString = lang[1];
-			List<String> languages = new ArrayList<String>();
+			List<String> languages = new ArrayList<>();
 			
 			// tokenize langString by ,
 			StringTokenizer st = new StringTokenizer(langString,",");
@@ -162,7 +162,7 @@ public class Languages {
 	public static Set<String> getAllLanguages(String text)
 	{
 		// can make it more efficient by allowing p to point to multiple languages (e.g. Devanagari)
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		for (LangInfo p: allPatterns)
 		{
 			if (p.pattern.matcher(text).matches())

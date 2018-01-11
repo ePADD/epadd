@@ -416,7 +416,7 @@ public class SearchResult {
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k -> {
             EmailDocument ed = (EmailDocument) k.getKey();
             Collection<Contact> contactsInMessage = EmailUtils.getContactsForMessage(ab, ed);
-            return contactsInMessage.stream().anyMatch (c -> searchedContacts.contains(c));
+            return contactsInMessage.stream().anyMatch (searchedContacts::contains);
         }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
 
         return inputSet;
@@ -810,9 +810,8 @@ public class SearchResult {
         if (Util.nullOrEmpty(attachmentTailsList))
             return inputSet;
         String[] attachmentTails = attachmentTailsList.toArray(new String[attachmentTailsList.size()]);
-        Set<String> neededAttachmentTails = new LinkedHashSet<String>();
-        for (String s : attachmentTails)
-            neededAttachmentTails.add(s);
+        Set<String> neededAttachmentTails = new LinkedHashSet<>();
+        Collections.addAll(neededAttachmentTails, attachmentTails);
 
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
         inputSet.matchedDocs.keySet().stream().forEach(k -> {
@@ -1103,7 +1102,7 @@ public class SearchResult {
         boolean isOtherSelected = extensionsToMatch.contains("others");
         //get the options that were displayed for attachment types. This will be used to select attachment extensions if the option 'other'
         //was selected by the user in the drop down box of export.jsp.
-        List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x->Util.tokenize(x,";")).flatMap(col->col.stream()).collect(Collectors.toList());
+        List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x->Util.tokenize(x,";")).flatMap(Collection::stream).collect(Collectors.toList());
 
         SearchResult outputSet = filterDocsByDate(inputSet);
         //Collection<EmailDocument> eDocs = (Collection) filterDocsByDate (params, new HashSet<>((Collection) docs));

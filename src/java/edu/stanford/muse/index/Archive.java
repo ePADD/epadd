@@ -942,7 +942,7 @@ public class Archive implements Serializable {
                 return false;
 
             if (exportInPublicMode) {
-                String text = null;
+                String text;
                 if (redact_body_instead_of_remove) {
                     text = doc.get("body");
                 }
@@ -1077,8 +1077,8 @@ public class Archive implements Serializable {
         StringBuilder sb = new StringBuilder(allDocs.size() + " original docs with " + ownerEmailAddrs.size() + " email addresses " + ownerNames.size()
                 + " names for owner ");
         if (addressBook != null)
-            sb.append(addressBook.getStats() + "\n");
-        sb.append(indexer.computeStats() + "\n" + getLinks().size() + " links");
+            sb.append(addressBook.getStats()).append("\n");
+        sb.append(indexer.computeStats()).append("\n").append(getLinks().size()).append(" links");
         return sb.toString();
     }
 
@@ -1218,7 +1218,7 @@ public class Archive implements Serializable {
         // be defensive here -- some of the fields may be null
         StringBuilder sb = new StringBuilder();
         if (allDocs != null)
-            sb.append("Archive with #docs: " + allDocs.size() + " address book: " + addressBook + " " + getStats() + " ");
+            sb.append("Archive with #docs: ").append(allDocs.size()).append(" address book: ").append(addressBook).append(" ").append(getStats()).append(" ");
         else
             sb.append("Null docs");
         if (indexer != null) {
@@ -1411,7 +1411,7 @@ public class Archive implements Serializable {
     }
 
     //////////////////////////Data fields for accessionmerging///////////////////////////
-    transient public MergeResult lastMergeResult;
+    private transient MergeResult lastMergeResult;
     private Map<EmailDocument,String> docToAccessionIDMap;
     public String baseAccessionID;//This represents the accession ID when an accession is imported
     //to an empty collection. It is used for ensuring a manageable size of docToAccessionMap for common case

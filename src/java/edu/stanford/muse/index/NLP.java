@@ -95,10 +95,10 @@ public class NLP {
 	}
 
 	private static final String          TECH_TERM =                     "((J|N)+(C|N)|N)";
-	private static final Pattern          TECH_TERM_PAT =                     Pattern.compile("((J|N)+(C|N)|N)");
+	private static final Pattern          TECH_TERM_PAT =                     Pattern.compile("(([JN])+(C|N)|N)");
 	private static final String COMPOUND_TECH_TERM = "((J|N)*NO(J|N)*(C|N)|(J|N)+(C|N)|N)";
 
-	private static final Set<String> TAG_NOUNS = new LinkedHashSet<String>( Arrays.asList( "NN", "NNS", "NNP", "NNPS" ) );
+	private static final Set<String> TAG_NOUNS = new LinkedHashSet<>(Arrays.asList("NN", "NNS", "NNP", "NNPS"));
 	private static final String TAG_ADJECTIVE = "JJ";
 	private static final String TAG_CD = "CD";
 

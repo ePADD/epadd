@@ -32,7 +32,7 @@ if(!Util.nullOrEmpty(docsetID)) {
 } else if (!Util.nullOrEmpty(docID))
     docs = archive.getAllDocsAsSet().stream().filter(doc->doc.getUniqueId().equals(docID)).collect(Collectors.toSet());
 else
-    docs = (Set<Document>)archive.getAllDocs();
+    docs = archive.getAllDocs();
 
 boolean error = false;
 String errorMessage = "";

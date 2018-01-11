@@ -164,7 +164,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 	}
 
 	public List<Pair<EntityFeature, Double>> getClosestEntities(Archive archive) {
-        Map<EntityFeature, Double> scoresU = new LinkedHashMap<EntityFeature, Double>();
+        Map<EntityFeature, Double> scoresU = new LinkedHashMap<>();
         Set<EntityFeature> efts = null;
         if(type!=EntityFeature.ACRONYM)
             efts = EntityFeature.getMatches(name.toLowerCase(),archive);
@@ -383,7 +383,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		int f1 = 0, f2 = 0, f3 = 0;
 		boolean istatus = true;
 		if (force || (!exists)) {
-			Map<String, EntityFeature> features = new HashMap<String, EntityFeature>();
+			Map<String, EntityFeature> features = new HashMap<>();
 			Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 			int totalEntities = 0;
 			log.info("No feature index found..., starting to process and index. This can take a while.");
@@ -424,7 +424,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 				if (places != null)
 					c3 += places.size();
 
-				Map<String, String> goodNames = new HashMap<String, String>();
+				Map<String, String> goodNames = new HashMap<>();
 
 				List<String> correspondents = ed.getAllNames();
 				List<String> addresses = ed.getAllAddrs();
@@ -583,7 +583,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		}
 		IndexReader reader = null;
 		IndexSearcher searcher = null;
-		Set<EntityFeature> efs = new HashSet<EntityFeature>();
+		Set<EntityFeature> efs = new HashSet<>();
 		CharArraySet stopWordsSet = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
 		String[] stopWords = new String[stopWordsSet.size()];
 		Iterator it = stopWordsSet.iterator();

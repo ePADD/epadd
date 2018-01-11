@@ -130,7 +130,7 @@ public class DictUtils {
 	  * */
 	public static Set<String> readStreamAndInternStrings(Reader r)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		try {
 			LineNumberReader lnr = new LineNumberReader(r);
 			while (true)
@@ -157,7 +157,7 @@ public class DictUtils {
 
 	public static Set<String> readFileAndInternStrings(String file)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		try {
 			Reader r = null;
 			if (file.toLowerCase().endsWith(".gz"))
@@ -212,7 +212,7 @@ public class DictUtils {
 	/** for a single word only, use canonicalizeMultiWordTerm for phrases */
 	public static String canonicalizeTerm(String term, boolean doStemming)
 	{
-		if (term.indexOf(" ") >= 0 || term.indexOf("\t") >= 0)
+		if (term.contains(" ") || term.contains("\t"))
 			log.warn("Multi word term used in canonicalizeterm: " + term + " \nUse canonicalizeMultiWordTerm() instead");
 		String newTerm = term.toLowerCase();
 
@@ -246,7 +246,7 @@ public class DictUtils {
 
 	public static Set<String> canonicalizeMultiWordTerms(Set<String> set, boolean doStemming)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		if (set == null)
 			return result;
 		for (String s : set)

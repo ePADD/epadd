@@ -42,7 +42,7 @@ public class DataSet {
     public DataSet(Collection<Document> docs, SearchResult result, String datasetTitle) {
         if(docs!=null) {
             //calling assigning new ArrayList<>(docs) is calling sort on docs by default
-            docs.forEach(d->this.docs.add(d));
+            this.docs.addAll(docs);
         }
         this.searchResult = result;
         this.datasetTitle = datasetTitle;

@@ -42,8 +42,8 @@ public class Contact extends UnionFindObject {
 	private final static long serialVersionUID = 1L;
 
 	// we might have track more fields per contact in the future, but right now just emails/names.
-	private Set<String> names = new LinkedHashSet<String>();
-	private Set<String> emails = new LinkedHashSet<String>();
+	private Set<String> names = new LinkedHashSet<>();
+	private Set<String> emails = new LinkedHashSet<>();
 	public int mailingListState = MailingList.DUNNO;
 
 	//	private Set<String> mailers = new LinkedHashSet<String>();
@@ -142,7 +142,7 @@ public class Contact extends UnionFindObject {
 	public void maskEmailDomain(AddressBook ab)
 	{
 
-		Set<String> maskedEmails = new LinkedHashSet<String>();
+		Set<String> maskedEmails = new LinkedHashSet<>();
 		for (String e : emails) {
 			maskedEmails.add(ab.getMaskedEmail(e));
 		}
@@ -310,7 +310,7 @@ public class Contact extends UnionFindObject {
 
 	public void verify()
 	{
-		List<Date> allDates = new ArrayList<Date>();
+		List<Date> allDates = new ArrayList<>();
 		for (Date d: allDates)
 		{
 			Calendar c = new GregorianCalendar();
@@ -333,13 +333,13 @@ public class Contact extends UnionFindObject {
 		sb.append ("-- " + mailingListOutput + " " + description + "\n");
 
 		// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
-		Set<String> uniqueNames = new LinkedHashSet<String>();
+		Set<String> uniqueNames = new LinkedHashSet<>();
 		for (String s: this.getNames())
 			if (!Util.nullOrEmpty(s))
 				uniqueNames.add(s);
 		// uniqueNames.add(s.trim());
 
-		Set<String> uniqueEmails = new LinkedHashSet<String>();
+		Set<String> uniqueEmails = new LinkedHashSet<>();
 		for (String s: this.getEmails())
 			if (!Util.nullOrEmpty(s))
 				uniqueEmails.add(s);

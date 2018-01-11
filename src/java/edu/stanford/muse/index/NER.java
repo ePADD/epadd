@@ -46,10 +46,10 @@ import java.util.zip.GZIPInputStream;
 	public static Log								log						= LogFactory.getLog(NER.class);
 	public static boolean							REMOVE_I18N_CHARS		= false;
 
-	public static final Map<String, LocationInfo>	locations				= new LinkedHashMap<String, LocationInfo>();
-	public static final Map<String, Long>			populations				= new LinkedHashMap<String, Long>();
-	public static final Set<String>					locationsToSuppress		= new LinkedHashSet<String>();
-	public static Map<String, Integer>				defaultTokenTypeWeights	= new LinkedHashMap<String, Integer>();
+	public static final Map<String, LocationInfo>	locations				= new LinkedHashMap<>();
+	public static final Map<String, Long>			populations				= new LinkedHashMap<>();
+	public static final Set<String>					locationsToSuppress		= new LinkedHashSet<>();
+	public static Map<String, Integer>				defaultTokenTypeWeights	= new LinkedHashMap<>();
 	public static final int							MIN_NAME_LENGTH			= 2, MAX_NAME_LENGTH = 100;					// can't have a single char name. max # of chars in a name. above this we'll drop it. avoids NER returning garbage like sometimes it returns a string of 200K 'a's.
 
 	static {
@@ -125,8 +125,7 @@ import java.util.zip.GZIPInputStream;
 					}
 				}
 			}
-			if (is != null)
-				is.close();
+			is.close();
 		} catch (Exception e) {
 			log.warn("Unable to read World Gazetteer file, places info may be inaccurate");
 			log.debug(Util.stackTrace(e));
@@ -210,7 +209,7 @@ import java.util.zip.GZIPInputStream;
 		tokenizer = null;
 	}
 
-	public static Set<String>	allTypes	= new LinkedHashSet<String>();
+	public static Set<String>	allTypes	= new LinkedHashSet<>();
 
 	public synchronized static MyTokenizer parse(String documentText)
 	{
@@ -266,8 +265,8 @@ import java.util.zip.GZIPInputStream;
 		if (REMOVE_I18N_CHARS)
 			documentText = cleanI18NChars(documentText);
 
-		List<Pair<String, String>> namedEntities = new ArrayList<Pair<String, String>>(); // token-type pairs
-		List<Triple<String, Integer, Integer>> allTriples = new ArrayList<Triple<String, Integer, Integer>>(); // string, start-end pairs
+		List<Pair<String, String>> namedEntities = new ArrayList<>(); // token-type pairs
+		List<Triple<String, Integer, Integer>> allTriples = new ArrayList<>(); // string, start-end pairs
 
 		Span sentenceSpans[] = sFinder.sentPosDetect(documentText); // do NER sentence by sentence -- much faster than doing the entire documentText at once
 
@@ -288,14 +287,14 @@ import java.util.zip.GZIPInputStream;
 			Span[] pSpans = pFinder.find(tokens);
 			Span[] lSpans = lFinder.find(tokens);
 			Span[] oSpans = oFinder.find(tokens);
-			List<Triple<String, Integer, Integer>> sentenceTriples = new ArrayList<Triple<String, Integer, Integer>>(); // string, start-end pairs
+			List<Triple<String, Integer, Integer>> sentenceTriples = new ArrayList<>(); // string, start-end pairs
 
 			for (Span span : pSpans)
-				sentenceTriples.add(new Triple<String, Integer, Integer>("PERSON", span.getStart(), span.getEnd()));
+				sentenceTriples.add(new Triple<>("PERSON", span.getStart(), span.getEnd()));
 			for (Span span : lSpans)
-				sentenceTriples.add(new Triple<String, Integer, Integer>("LOCATION", span.getStart(), span.getEnd()));
+				sentenceTriples.add(new Triple<>("LOCATION", span.getStart(), span.getEnd()));
 			for (Span span : oSpans)
-				sentenceTriples.add(new Triple<String, Integer, Integer>("ORGANIZATION", span.getStart(), span.getEnd()));
+				sentenceTriples.add(new Triple<>("ORGANIZATION", span.getStart(), span.getEnd()));
 
 			for (Triple<String, Integer, Integer> t : sentenceTriples)
 			{
@@ -327,7 +326,7 @@ import java.util.zip.GZIPInputStream;
 
 				if (namedEntity.length() < MIN_NAME_LENGTH || namedEntity.length() > MAX_NAME_LENGTH) // drop it
 					continue;
-				namedEntities.add(new Pair<String, String>(namedEntity, type));
+				namedEntities.add(new Pair<>(namedEntity, type));
 				if(log.isDebugEnabled())
                     log.debug(t.first() + " : [" + t.second() + ":" + t.third() + "] " + namedEntity);
 			}
@@ -339,11 +338,11 @@ import java.util.zip.GZIPInputStream;
 				int start = tokSpans[startTok].getStart(), end = tokSpans[endTok - 1].getEnd();
 
 				//allTriples.add(new Triple<String, Integer, Integer>(t.getFirst(), sentenceStartOffset + t.getSecond(), sentenceStartOffset + t.getThird()));
-				allTriples.add(new Triple<String, Integer, Integer>(t.getFirst(), sentenceStartOffset + start, sentenceStartOffset + end));
+				allTriples.add(new Triple<>(t.getFirst(), sentenceStartOffset + start, sentenceStartOffset + end));
 			}
 		}
 
-		return new Pair<MyTokenizer, List<Triple<String, Integer, Integer>>>(new NERTokenizer(namedEntities), allTriples);
+		return new Pair<>(new NERTokenizer(namedEntities), allTriples);
 	}
 
 	private static String getSafeText(String documentText)
@@ -418,7 +417,7 @@ import java.util.zip.GZIPInputStream;
 	/** like namesFromURLs, just takes multiple \s separated urls */
 	public static List<Pair<String, Float>> namesFromURLs(String urls, boolean removeCommonNames)
 	{
-		List<Pair<String, Float>> result = new ArrayList<Pair<String, Float>>();
+		List<Pair<String, Float>> result = new ArrayList<>();
 		StringTokenizer st = new StringTokenizer(urls);
 		while (st.hasMoreTokens())
 		{
@@ -440,7 +439,7 @@ import java.util.zip.GZIPInputStream;
 
 	public static List<Pair<String, Float>> namesFromText(String text, boolean removeCommonNames) throws ClassCastException, IOException, ClassNotFoundException
 	{
-		Map<String, Integer> defaultTokenTypeWeights = new LinkedHashMap<String, Integer>();
+		Map<String, Integer> defaultTokenTypeWeights = new LinkedHashMap<>();
 		defaultTokenTypeWeights.put("PERSON", 100); // 1000 FLAG DEBUG
 		return namesFromText(text, removeCommonNames, defaultTokenTypeWeights);
 	}
@@ -457,7 +456,7 @@ import java.util.zip.GZIPInputStream;
 	{
 		Pair<MyTokenizer, List<Triple<String, Integer, Integer>>> ner_result = NER.parseAndGetOffsets(text);
 		NERTokenizer t = (NERTokenizer) ner_result.first;
-		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		Map<String, List<String>> map = new LinkedHashMap<>();
 
 		// filter tokens first, map them out by category
 		while (t.hasMoreTokens())
@@ -465,15 +464,10 @@ import java.util.zip.GZIPInputStream;
 			Pair<String, String> tokenAndType = t.nextTokenAndType();
 			String token = tokenAndType.getFirst();
 			String type = tokenAndType.getSecond();
-			List<String> list = map.get(type);
-			if (list == null)
-			{
-				list = new ArrayList<String>();
-				map.put(type, list);
-			}
+			List<String> list = map.computeIfAbsent(type, k -> new ArrayList<>());
 			list.add(token);
 		}
-		return new Pair<Map<String, List<String>>, List<Triple<String, Integer, Integer>>>(map, ner_result.second);
+		return new Pair<>(map, ner_result.second);
 	}
 
 	/**
@@ -483,8 +477,8 @@ import java.util.zip.GZIPInputStream;
 	public static List<Pair<String, Float>> namesFromText(String text, boolean removeCommonNames, Map<String, Integer> tokenTypeWeights, boolean normalizeByLength, int max_positional_boost) throws ClassCastException, IOException, ClassNotFoundException
 	{
 		NERTokenizer t = (NERTokenizer) NER.parse(text);
-		Map<String, Float> termFreqMap = new LinkedHashMap<String, Float>();
-		List<Pair<String, String>> tokenList = new ArrayList<Pair<String, String>>();
+		Map<String, Float> termFreqMap = new LinkedHashMap<>();
+		List<Pair<String, String>> tokenList = new ArrayList<>();
 
 		// filter tokens first
 		while (t.hasMoreTokens())
@@ -497,7 +491,7 @@ import java.util.zip.GZIPInputStream;
 			if (removeCommonNames && DictUtils.topNames != null && DictUtils.topNames.contains(token))
 				continue;
 			// drop "terms" with | -- often used as a separator on the web, and totally confuses our indexer's phrase lookup
-			if (token.indexOf("|") >= 0)
+			if (token.contains("|"))
 				continue;
 			tokenList.add(tokenAndType);
 		}
@@ -558,7 +552,7 @@ import java.util.zip.GZIPInputStream;
 		}
 
 		// reconstruct orgTermFreqMap from termFreqMap using the original terms instead of normalized terms
-		Map<String, Float> orgTermFreqMap = new LinkedHashMap<String, Float>();
+		Map<String, Float> orgTermFreqMap = new LinkedHashMap<>();
 		for (Pair<String, String> token : tokenList)
 		{
 			String term = token.getFirst();
@@ -607,7 +601,7 @@ import java.util.zip.GZIPInputStream;
 			return retainOnlyNames(text); // be forgiving
 
 		int len = text.length();
-		offsets.add(new Triple<String, Integer, Integer>(null, len, len)); // sentinel
+		offsets.add(new Triple<>(null, len, len)); // sentinel
 		StringBuilder result = new StringBuilder();
 		int prev_name_end_pos = 0; // pos of first char after previous name
 		for (Triple<String, Integer, Integer> t : offsets)
@@ -655,8 +649,8 @@ import java.util.zip.GZIPInputStream;
 
 		System.err.println("Started reading");
 		long start_time = System.currentTimeMillis();
-		List<String> names = new ArrayList<String>();
-		HashSet<String> namesAdded = new HashSet<String>();
+		List<String> names = new ArrayList<>();
+		HashSet<String> namesAdded = new HashSet<>();
 		long end_time = System.currentTimeMillis();
 		for (String name : names) {
 			if (!namesAdded.contains(name)) {
@@ -693,16 +687,14 @@ import java.util.zip.GZIPInputStream;
 		//		SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
 		String[] splitTexts = sFinder.sentDetect(text); // sentenceDetector.sentDetect(text);
 
-		for (int i = 0; i < splitTexts.length; i++) {
-			String orig_s = splitTexts[i];
+		for (String orig_s : splitTexts) {
 			if (orig_s == null)
 				continue;
 			count++;
 			String s = orig_s.toLowerCase();
 			List<String> tokens = Util.tokenize(s);
 			for (String tok : tokens)
-				if (wordsToSearch.contains(tok))
-				{
+				if (wordsToSearch.contains(tok)) {
 					hitCount++;
 					System.out.println(hitCount + ". " + orig_s.replaceAll("\n", " -> "));
 					break;

@@ -91,14 +91,14 @@ public class WikiGeoApi {
 			System.err.println("Exception while parsing: " + lat + ", " + lon);
 			e.printStackTrace();
 		}
-		List<Pair<String, Double>> pairs = new ArrayList<Pair<String, Double>>();
+		List<Pair<String, Double>> pairs = new ArrayList<>();
 		if (wa != null && wa.query != null && wa.query.pages != null && wa.query.pages != null) {
 			Map<String, Hit> hits = wa.query.pages;
 			for (Hit h : hits.values()) {
 				List<Coordinate> cos = h.coordinates;
 				if (cos.size() > 0) {
-					double dist = calculateDistance(new Pair<Double, Double>(cos.get(0).lat, cos.get(0).lon), new Pair<Double, Double>(lat, lon));
-					pairs.add(new Pair<String, Double>(h.title, dist));
+					double dist = calculateDistance(new Pair<>(cos.get(0).lat, cos.get(0).lon), new Pair<>(lat, lon));
+					pairs.add(new Pair<>(h.title, dist));
 				}
 			}
 		}

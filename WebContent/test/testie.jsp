@@ -40,7 +40,7 @@ String p = request.getParameter("page");
 int numSamples = 80;
 if(p.equals("expandname")){
 	Archive archive = (Archive)request.getSession().getAttribute("archive");
-	Indexer indexer = (Indexer) archive.indexer;
+	Indexer indexer = archive.indexer;
 	Map<String, EmailDocument> docMap = indexer.getDocMap();
 	//Entity string, docId it occurred in and type
 	List<Triple<String,String,String>> allEntities = (List<Triple<String,String,String>>)session.getAttribute("allEntities");

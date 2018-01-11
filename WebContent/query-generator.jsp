@@ -104,7 +104,7 @@ if (ModeConfig.isPublicMode()) {
 
 <script type="text/javascript">
     var archiveID="<%=archiveID%>";
-	window.MUSE_URL = "<%=request.getContextPath()%>" // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
+	window.MUSE_URL = "<%=request.getContextPath()%>"; // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
     if(window.MUSE_URL==null)
         window.MUSE_URL="";
     var handle_submit = function() {

@@ -76,7 +76,7 @@ public class IndexManager {
 	private List<String> getAllFilesWithSuffix(String suffix)
 	{
 		File files[] = new File(rootDir).listFiles();
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (File f: files)
 		{
 			if (f.getName().endsWith(suffix))
@@ -89,6 +89,6 @@ public class IndexManager {
 	{
 		List<String> ftDatasets = getAllFilesWithSuffix(".ft-index");
 		List<String> datasets = getAllFilesWithSuffix(".index");
-		return new Pair<List<String>, List<String>>(datasets, ftDatasets);
+		return new Pair<>(datasets, ftDatasets);
 	}
 }

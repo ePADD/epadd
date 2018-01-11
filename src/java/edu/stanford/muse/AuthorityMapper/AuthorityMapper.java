@@ -64,8 +64,6 @@ public class AuthorityMapper implements java.io.Serializable {
 
     protected Map<String, Integer> cnameToCount = new LinkedHashMap<>(); // name to count of # of times it appears in the archive. applicable only for correspondents currently.
 
-    // lucene querying stuff
-    transient private StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, new CharArraySet(Version.LUCENE_47, new ArrayList<String>(), true /* ignore case */));
     transient private IndexSearcher indexSearcher;
     transient private QueryParser parser;
     transient private IndexReader indexReader;
@@ -209,7 +207,7 @@ public class AuthorityMapper implements java.io.Serializable {
     public void openFastIndex () throws IOException {
         String dir = Config.FAST_INDEX_DIR;
         indexReader = DirectoryReader.open(FSDirectory.open (new File(dir)));
-        analyzer = new StandardAnalyzer(Version.LUCENE_47, new CharArraySet(Version.LUCENE_47, new ArrayList<String>(), true /* ignore case */)); // empty chararrayset, so effectively no stop words
+        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, new CharArraySet(Version.LUCENE_47, new ArrayList<String>(), true /* ignore case */));
         indexSearcher = new IndexSearcher(indexReader);
         parser = new QueryParser(Version.LUCENE_47, FASTIndexer.FIELD_NAME_LABELS, analyzer);
     }

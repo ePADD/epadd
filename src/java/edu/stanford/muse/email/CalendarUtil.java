@@ -76,7 +76,7 @@ public class CalendarUtil {
 	/** divides the given time range into intervals */
 	public static List<Date> divideIntoIntervals(Date start, Date end, int nIntervals)
 	{
-		List<Date> result = new ArrayList<Date>();
+		List<Date> result = new ArrayList<>();
 
 		long startMillis = start.getTime();
 		long endMillis = end.getTime();
@@ -112,7 +112,7 @@ public class CalendarUtil {
 	 */
 	public static List<Date> divideIntoMonthlyIntervals(Date start, Date end)
 	{
-		List<Date> result = new ArrayList<Date>();
+		List<Date> result = new ArrayList<>();
 
 		// result will always have at least 2 entries
 		Calendar c = startOfMonth(start);
@@ -147,7 +147,7 @@ public class CalendarUtil {
 
 		if (ignoreInvalidDates) {
 			int count = 0;
-			List<Date> newDates = new ArrayList<Date>();
+			List<Date> newDates = new ArrayList<>();
 			for (Date d : dates)
 				if (!EmailFetcherThread.INVALID_DATE.equals(d))
 					newDates.add(d);
@@ -347,7 +347,7 @@ public class CalendarUtil {
 		}
 
 		log.info ("date range: " + startDate + "-" + endDate);
-        return new Pair<Date, Date>(startDate, endDate);
+        return new Pair<>(startDate, endDate);
     }
 
 	/** the quarter beginning just before this d */

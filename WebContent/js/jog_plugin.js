@@ -186,7 +186,7 @@ Jog.prototype.createMouseMoveHandler = function () {
 			
 	var currentX, currentY;
     if (event.type === 'mousemove') {
-        currentX = event.clientX, currentY = event.clientY; // clientX/Y are offset w.r.t. client window. http://www.gtalbot.org/DHTMLSection/PositioningEventOffsetXY.html
+        currentX = event.clientX; currentY = event.clientY; // clientX/Y are offset w.r.t. client window. http://www.gtalbot.org/DHTMLSection/PositioningEventOffsetXY.html
     }
     else {
     	// must be a touchmove

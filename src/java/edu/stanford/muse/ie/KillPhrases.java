@@ -6,7 +6,7 @@ import java.util.*;
 import edu.stanford.muse.Config;
 
 public class KillPhrases {
-	private static Set<String> killPhrases = new LinkedHashSet<String>();
+	private static Set<String> killPhrases = new LinkedHashSet<>();
 	static {
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(Config.getResourceAsStream(Config.TABOO_FILE)));

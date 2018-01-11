@@ -44,7 +44,7 @@ public class LensPrefs implements Serializable {
     // key structure: stores term -> page -> score map.
     // default score is 1. If a term is cancelled, it's score gets set to 0.
     // if a term is boosted, it's score gets incremented by 1.
-    private Map<String, Map<String, Float>> prefs = new LinkedHashMap<String, Map<String, Float>>();
+    private Map<String, Map<String, Float>> prefs = new LinkedHashMap<>();
     
 	private final static String PREFS_FILENAME = "lens.prefs"; // TODO: decide which directory this goes in
 	private String pathToPrefsFile;
@@ -80,24 +80,14 @@ public class LensPrefs implements Serializable {
 
 	public void cancelTerm(String pageURL, String term)
 	{
-        Map<String, Float> map = prefs.get(term);
-        if (map == null)
-        {
-            map = new LinkedHashMap<String, Float>();
-            prefs.put(term, map);
-        }
+        Map<String, Float> map = prefs.computeIfAbsent(term, k -> new LinkedHashMap<>());
         map.put(pageURL, 0.0f);
 		savePrefs();
 	}
 
 	public void boostTerm(String pageURL, String term)
 	{
-        Map<String, Float> map = prefs.get(term);
-        if (map == null)
-        {
-            map = new LinkedHashMap<String, Float>();
-            prefs.put(term, map);
-        }
+        Map<String, Float> map = prefs.computeIfAbsent(term, k -> new LinkedHashMap<>());
         Float F = map.get(pageURL);
         if (F == null)
             map.put (pageURL, 2.0f); // default is 1, so boost to 2
@@ -141,13 +131,8 @@ public class LensPrefs implements Serializable {
 			}
 			String term = st.nextToken(), url = st.nextToken(), weight = st.nextToken();
 			Float W = Float.parseFloat(weight);
-			Map<String, Float> map = prefs.get(term);
-			if (map == null)
-			{
-				map = new LinkedHashMap<String, Float>();
-				prefs.put (term, map);
-			}
-			map.put(url, W);
+            Map<String, Float> map = prefs.computeIfAbsent(term, k -> new LinkedHashMap<>());
+            map.put(url, W);
 		}
 	}
 	

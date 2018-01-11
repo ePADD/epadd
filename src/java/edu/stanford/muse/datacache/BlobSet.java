@@ -30,8 +30,8 @@ public class BlobSet {
 private static Log log = LogFactory.getLog(BlobSet.class);
 
 private List<Blob> allBlobs; // all data's known, some of them may be duplicates (in terms of equals()), even though all the items are distinct object
-private Map<String, List<Blob>> personToBlobMap = new LinkedHashMap<String, List<Blob>>();
-private Map<Blob, List<Blob>> uniqueBlobMap = new LinkedHashMap<Blob, List<Blob>>();
+private Map<String, List<Blob>> personToBlobMap = new LinkedHashMap<>();
+private Map<Blob, List<Blob>> uniqueBlobMap = new LinkedHashMap<>();
 private BlobStore blobStore;
 private String rootDir;
 
@@ -62,13 +62,8 @@ private void compute_unique_data_map()
 {
     for (Blob b: allBlobs)
     {
-        List<Blob> blobs = uniqueBlobMap.get(b);
-        if (blobs == null)
-        {
-            blobs = new ArrayList<Blob>();
-            uniqueBlobMap.put (b, blobs);
-        }
-        blobs.add (b);
+		List<Blob> blobs = uniqueBlobMap.computeIfAbsent(b, k -> new ArrayList<>());
+		blobs.add (b);
     }
 }
 
@@ -90,7 +85,7 @@ public BlobSet(String root_dir, List<Blob> allBlobs, BlobStore store) throws IOE
     // be defensive, sometimes due to an error, all_datas gets passed in as null.
     // instead of crashing, better to treat it as an empty dataset.
     if (this.allBlobs == null)
-    	this.allBlobs = new ArrayList<Blob>();
+    	this.allBlobs = new ArrayList<>();
 
     compute_unique_data_map();
     stats = new Blob.BlobStats(0, 0, 0, 0);
@@ -131,7 +126,7 @@ public String index_filename(Blob b)
 private List<Blob> sortBlobsByTime()
 {
 	// create a map of unique data -> earliest time it was seen (based on any of the others it maps to)
-	final Map<Blob,Date> tmpMap = new LinkedHashMap<Blob,Date>();
+	final Map<Blob,Date> tmpMap = new LinkedHashMap<>();
 	for (Map.Entry<Blob,List<Blob>> me : uniqueBlobMap.entrySet())
 	{
 		Blob unique_data = me.getKey();
@@ -150,7 +145,7 @@ private List<Blob> sortBlobsByTime()
 	}
 
 	// now sort the unique_data's by earliest time set in tmpMap
-	List<Blob> result = new ArrayList<Blob>();
+	List<Blob> result = new ArrayList<>();
 	log.info ("Checking blobs consistency for sorting...");
 	result.addAll(tmpMap.keySet());
 	for (Blob b: result)
@@ -162,21 +157,18 @@ private List<Blob> sortBlobsByTime()
 	}
 	
 	try {
-		Collections.sort(result, new Comparator<Blob>() {
-			public int compare(Blob b1, Blob b2)
-			{
-				Date c1 = tmpMap.get(b1);
-				Date c2 = tmpMap.get(b2);
-				if (c1 == null) {
-					return -1;
-				}
-				if (c2 == null)
-					return 1; // this will confuse the sorting, but what the heck...
-				if (c1.before(c2))
-					return 1;
-				else
-					return -1;
+		result.sort((b1, b2) -> {
+			Date c1 = tmpMap.get(b1);
+			Date c2 = tmpMap.get(b2);
+			if (c1 == null) {
+				return -1;
 			}
+			if (c2 == null)
+				return 1; // this will confuse the sorting, but what the heck...
+			if (c1.before(c2))
+				return 1;
+			else
+				return -1;
 		});
 	} catch (Exception e) {
 		log.warn ("Error sorting blobs by time! --");
@@ -215,7 +207,7 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
     	piclensRSS.println (photoRSSHeader);
 
     	List<Blob> unique_datas = sortBlobsByTime();
-    	List<Blob> noTN_datas = new ArrayList<Blob>();
+    	List<Blob> noTN_datas = new ArrayList<>();
 
     	nEntriesForPiclens = 0;
     	
@@ -317,15 +309,11 @@ public int generate_top_level_page(String prefix, String extra_mesg) throws IOEx
 	/** application URL is something like http://localhost:8080/epadd */
 public int generate_top_level_page(String prefix, String applicationURL, String extra_mesg, String archiveID) throws IOException
 {
-    List<Pair<String, List<Blob>>> tmp = new ArrayList<Pair<String, List<Blob>>>();
+    List<Pair<String, List<Blob>>> tmp = new ArrayList<>();
     for (Map.Entry<String, List<Blob>> entry: personToBlobMap.entrySet())
-    		tmp.add (new Pair<String, List<Blob>>(entry.getKey(), entry.getValue()));
+    		tmp.add (new Pair<>(entry.getKey(), entry.getValue()));
     
-    Collections.sort (tmp, new Comparator<Pair<?,List<Blob>>>() {
-                                public int compare(Pair<?,List<Blob>> p1, Pair<?,List<Blob>> p2) {
-                                    return p2.getSecond().size() - p1.getSecond().size();
-                                }
-                             });	
+    tmp.sort((p1, p2) -> p2.getSecond().size() - p1.getSecond().size());
    // print_map_entries (tmp);
 
     log.info (stats.n_total_pics + " total attachments, data size = " + stats.total_data_size + " bytes");

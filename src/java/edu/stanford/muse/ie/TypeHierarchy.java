@@ -10,7 +10,7 @@ import edu.stanford.muse.util.Util;
 
 /** little class to let us pretty toString type hierarchies */
 public class TypeHierarchy {
-	private Map<String, TypeHierarchyNode>	dir	= new LinkedHashMap<String, TypeHierarchyNode>();
+	private Map<String, TypeHierarchyNode>	dir	= new LinkedHashMap<>();
 
 	class TypeHierarchyNode implements Comparable<TypeHierarchyNode> {
 		int						count, ownCount;	// owncount does not include children's count
@@ -19,7 +19,7 @@ public class TypeHierarchy {
 		TypeHierarchyNode		parent;
 
 		private TypeHierarchyNode() {
-			children = new ArrayList<TypeHierarchyNode>();
+			children = new ArrayList<>();
 		}
 
 		@Override
@@ -117,7 +117,7 @@ public class TypeHierarchy {
 
 	private List<TypeHierarchyNode> getRootNodes()
 	{
-		List<TypeHierarchyNode> roots = new ArrayList<TypeHierarchyNode>();
+		List<TypeHierarchyNode> roots = new ArrayList<>();
 		for (TypeHierarchyNode t : dir.values())
 			if (t.parent == null)
 				roots.add(t);

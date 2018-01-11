@@ -1521,8 +1521,7 @@ if ( $.fn.jquery.substring( 0, 3 ) === "1.7" ) {
 	};
 }
 
-;
-/*!
+    /*!
  * jQuery UI Keycode 1.12.1
  * http://jqueryui.com
  *

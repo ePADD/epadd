@@ -29,14 +29,13 @@ public class MailingList implements java.io.Serializable {
 
 	// SUPER_DEFINITE is when we have an explicit List-Post header
 	public final static int USER_ASSIGNED = 16, SUPER_DEFINITE = 8, DEFINITE = 1, MAYBE = 2, DEFINITE_NOT = 4, DUNNO = 0;
-	
-	private Contact ci;
+
 	private Set<Contact> members = new LinkedHashSet<>();
 //	public int state;
 	
 	private MailingList(Contact ci)
 	{
-		this.ci = ci;	
+		Contact ci1 = ci;
 	}
 
 	private void addMember(Contact c)
@@ -110,7 +109,7 @@ public class MailingList implements java.io.Serializable {
 		{
 			// gather all the possible ml's in the to addr that may be mailing lists,
 			// removing definite not's
-			List<Contact> possibleLists = new ArrayList<Contact>();
+			List<Contact> possibleLists = new ArrayList<>();
 			for (Address a : toAddrs)
 			{
 				if (!(a instanceof InternetAddress))
@@ -123,15 +122,10 @@ public class MailingList implements java.io.Serializable {
 
 				if ((c.mailingListState & DEFINITE_NOT) != 0)
 					continue;
-	
-				MailingList ml = ab.mailingListMap.get(c);
-				if (ml == null)
-				{
-					ml = new MailingList(c);
-					ab.mailingListMap.put(c, ml);
-				}
-	
-				possibleLists.add(c);
+
+                MailingList ml = ab.mailingListMap.computeIfAbsent(c, MailingList::new);
+
+                possibleLists.add(c);
 			}
 	
 			// now, of the possible lists, mark as definite or possible lists

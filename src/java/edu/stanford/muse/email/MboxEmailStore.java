@@ -210,7 +210,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		// convert the root path to a filename
 		String cacheFilePath = foldersAndCountsDir + File.separatorChar + CACHE_FILENAME + "." + rootPath.replaceAll("/", "--").replaceAll("\\\\", "--");
 		this.folderCache = new FolderCache(cacheFilePath);
-		this.folderInfos = new ArrayList<FolderInfo>();
+		this.folderInfos = new ArrayList<>();
 		collect_mbox_folders(folderInfos, new File(rootPath));
 		doneReadingFolderCounts = true;
 		folderBeingScanned = "";
@@ -253,7 +253,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		// Notes: we are never deleting cache entries. so they will live on for mbox files that may have been deleted.
 		// doesn't really matter.
 		// in case memory becomes a problem, we may consider not caching folders with 0 messages (right now we cache those too)
-		public Map<String, FolderInfo> cacheMap = new LinkedHashMap<String,FolderInfo>();
+		public Map<String, FolderInfo> cacheMap = new LinkedHashMap<>();
 		private String cacheFile;
 
 		FolderCache(String path)

@@ -120,10 +120,7 @@ public class Label implements Serializable{
                 this.description.equals(other.description) && this.isSysLabel==other.isSysLabel &&
                 this.restrictionType == other.restrictionType && this.restrictedUntilTime==other.restrictedUntilTime &&
                 this.restrictedForYears==other.restrictedForYears){
-            if(this.labelAppliesToMessageText==null?other.labelAppliesToMessageText==null:this.labelAppliesToMessageText.equals(other.labelAppliesToMessageText))
-                return true;
-            else
-                return false;
+            return this.labelAppliesToMessageText == null ? other.labelAppliesToMessageText == null : this.labelAppliesToMessageText.equals(other.labelAppliesToMessageText);
         }else
             return false;
     }

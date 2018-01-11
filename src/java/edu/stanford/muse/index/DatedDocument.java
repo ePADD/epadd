@@ -159,7 +159,7 @@ public class DatedDocument extends Document {
 
 		// should be in one time setup
 		final String punctuationChars = "., \t!)]";
-		final Set<Character> punctuationCharSet = new LinkedHashSet<Character>();
+		final Set<Character> punctuationCharSet = new LinkedHashSet<>();
 		for (int i = 0; i < punctuationChars.length(); i++)
 			punctuationCharSet.add(punctuationChars.charAt(i));
 

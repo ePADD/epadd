@@ -43,7 +43,7 @@
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 // filter all docs to only get the type requested.
-Collection<EmailDocument> newDocs = new ArrayList<EmailDocument>();
+Collection<EmailDocument> newDocs = new ArrayList<>();
 for (EmailDocument ed: docs)
 {
 	if (ed.addedToCart)

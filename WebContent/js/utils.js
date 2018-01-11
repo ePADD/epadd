@@ -3,7 +3,7 @@
 var escape = function(s) {
 	s = title.replace(/"/g, "&quot;");
     s = title.replace(/"/g, "&quot;");
-}
+};
 
 var initialiseqtip = function(){
 	$('.qtip').remove();

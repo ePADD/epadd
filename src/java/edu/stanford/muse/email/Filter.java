@@ -272,7 +272,7 @@ public class Filter implements Serializable {
 		SearchTerm sentOnlyTerm = null;
 		if (sentMessagesOnly)
 		{
-			List<SearchTerm> fromAddrTerms = new ArrayList<SearchTerm>();
+			List<SearchTerm> fromAddrTerms = new ArrayList<>();
 			if (ownContact != null)
 			{
 				for (String e: ownContact.getEmails())

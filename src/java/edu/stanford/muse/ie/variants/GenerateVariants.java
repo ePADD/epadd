@@ -242,17 +242,9 @@ class GenerateVariants {
 
             for (String titleToken : titleTokens)
                 for (String variantToken : variantTokens) {
-                    Map<String, Float> titleToWeight = variantToTitleToWeight.get(variantToken);
-                    if (titleToWeight == null) {
-                        titleToWeight = new HashMap<>();
-                        variantToTitleToWeight.put(variantToken, titleToWeight);
-                    }
+                    Map<String, Float> titleToWeight = variantToTitleToWeight.computeIfAbsent(variantToken, k -> new HashMap<>());
 
-                    Float F = titleToWeight.get(titleToken);
-                    if (F == null)
-                        titleToWeight.put (titleToken, weight);
-                    else
-                        titleToWeight.put (titleToken, F + weight);
+                    titleToWeight.merge(titleToken, weight, (a, b) -> a + b);
                 }
         }
 
@@ -387,9 +379,7 @@ class GenerateVariants {
     /** nulls out stop words, and words of length < 1 char */
     private static List<String> removeNeedlessWords (List<String> tokens) {
         List<String> result = new ArrayList<>();
-        for (int i = 0; i < tokens.size(); i++)
-        {
-            String token = tokens.get(i);
+        for (String token : tokens) {
             if (stopWords.contains(token) || token.length() < 2)
                 continue;
             result.add(token);

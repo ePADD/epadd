@@ -27,7 +27,7 @@
 
 <div class="panel" style="padding-left:10%">
 <%
-  List<EmailDocument> selectedDocs = new ArrayList<EmailDocument>();
+  List<EmailDocument> selectedDocs = new ArrayList<>();
   for (Document d: archive.getAllDocs()) {
       EmailDocument ed = (EmailDocument) d;
       if (ed.addedToCart)

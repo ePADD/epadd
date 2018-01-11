@@ -38,18 +38,18 @@ public class MyTokenizer {
 	private boolean prevTokenEndsSentence = false;
 	private char[] stringChars;
 
-	private static final Set<Character> delimSet = new LinkedHashSet<Character>();
+	private static final Set<Character> delimSet = new LinkedHashSet<>();
 	private static final String delims = " \r\n\t~#^&*_+`=|\\:\"<>/,?.!;()";
 
 	private static final String emailAddressSpecialCharsAllowed = ".-_"; // chars allowed in email addresses, in addition to alphanumerics
 	private static final String emailAddressDelimSet = " ()[]\r\n\t~#^&*`|\\:\"<>/,?!;"; // chars that end an email address
 
-	private static final Set<Character> httpLinkDelimSet = new LinkedHashSet<Character>();
+	private static final Set<Character> httpLinkDelimSet = new LinkedHashSet<>();
 	// don't expect these to occur in http links, but double check in case of trouble.
 	// may need to re-evaluate status of "." because it is sometimes allowed in http links like .do
 	private static final String httpLinkDelims = " \r\n\t^*`|\\\"<>!;";
 
-	private static final Set<Character> sentenceEndSet = new LinkedHashSet<Character>();
+	private static final Set<Character> sentenceEndSet = new LinkedHashSet<>();
 	private static final String sentenceEndChars = "?.!;"; // include comma ?
 
 	static {
@@ -265,11 +265,11 @@ public class MyTokenizer {
 		// simple check: if the string only has opening ( and no closing ) or vice versa,
 		// then it is unbalanced. same thing for the three kinds of braces
 		// full balancing check requires a little more logic, we'll put it in when necessary.
-		if ((s.indexOf("(") >= 0) ^ (s.indexOf(")") >= 0))
+		if ((s.contains("(")) ^ (s.contains(")")))
 			s = Util.removeCharsFromBeginOrEnd(s, "()");
-		if ((s.indexOf("[") >= 0) ^ (s.indexOf("]") >= 0))
+		if ((s.contains("[")) ^ (s.contains("]")))
 			s = Util.removeCharsFromBeginOrEnd(s, "[]");
-		if ((s.indexOf("{") >= 0) ^ (s.indexOf("}") >= 0))
+		if ((s.contains("{")) ^ (s.contains("}")))
 			s = Util.removeCharsFromBeginOrEnd(s, "{}");
 
 		// eliminate runs of length 3 or more of stopChars

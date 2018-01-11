@@ -111,7 +111,7 @@ public class DBpediaTypeParser {
     public static void printStats(String typesFile, String ontologyFile){
         Map<String,String> ontology = parseOntology(ontologyFile);
         int nlines = 0;
-        Set<String> uniqetitles = new LinkedHashSet<String>();
+        Set<String> uniqetitles = new LinkedHashSet<>();
         Map<Short,Set<String>> typeTitles = new LinkedHashMap<>();
         try {
             LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(typesFile), true), "UTF-8"));

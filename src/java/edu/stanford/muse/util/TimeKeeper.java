@@ -14,9 +14,9 @@ public class TimeKeeper {
 	
 	// Thread local variable containing each thread's ID
      private static final ThreadLocal<List<Long>> times = new ThreadLocal<List<Long>>() {
-             @Override 
+             @Override
              protected List<Long> initialValue() {
-            	 return new ArrayList<Long>();
+            	 return new ArrayList<>();
          }
      };
 

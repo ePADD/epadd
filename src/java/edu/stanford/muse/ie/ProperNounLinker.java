@@ -405,7 +405,7 @@ public class ProperNounLinker {
         Collection<DatedDocument> docs = (Collection) archive.getAllDocs();
         List<DatedDocument> sdocs = IndexUtils.selectDocsByDateRange(docs, scal.get(Calendar.YEAR), scal.get(Calendar.MONTH), scal.get(Calendar.DATE),
                 ecal.get(Calendar.YEAR), ecal.get(Calendar.MONTH), ecal.get(Calendar.DATE));
-        Set<String> docIds = sdocs.stream().map(d->d.getUniqueId()).collect(Collectors.toSet());
+        Set<String> docIds = sdocs.stream().map(Document::getUniqueId).collect(Collectors.toSet());
 
         Hierarchy hierarchy = new EmailHierarchy();
         String[] vlevels = new String[hierarchy.getNumLevels()];

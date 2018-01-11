@@ -288,7 +288,7 @@
             }
             result += '</div>';
             return result;
-        }
+        };
 
         $('#people').dataTable({
             data: tableEntries,
@@ -311,7 +311,7 @@
             if (!$(e.target).is(':checked')) {
                 // must be unchecked
                 data.unset = false;
-            };
+            }
             data.archiveID = '<%=archiveID%>';
 
             $.ajax({

@@ -27,7 +27,7 @@ import java.util.Map;
 public class InternTable {
 	// normally i always use LinkedHashMap, but this one appears to be memory critical.
 	// not sure if it saves too much, but probably around 10% ?
-	private final static Map<String,String> internTable = new HashMap<String, String>(10000,0.75f);
+	private final static Map<String,String> internTable = new HashMap<>(10000, 0.75f);
 	private static int internTableChars = 0;
 	public static String intern(String s)
 	{
@@ -64,7 +64,7 @@ public class InternTable {
 
 	public static void dump(String filename) throws IOException
 	{
-		List<String> list = new ArrayList<String>(internTable.keySet());
+		List<String> list = new ArrayList<>(internTable.keySet());
 		//Collections.sort(list);
 		PrintWriter pw = new PrintWriter(new FileOutputStream(filename));
 		for (String s: list)

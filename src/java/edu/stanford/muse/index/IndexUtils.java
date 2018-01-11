@@ -71,7 +71,7 @@ public class IndexUtils {
             for (String e : allEntities)
                 allowedTokens.addAll(Util.tokenize(e.toLowerCase()));
             // names may sometimes still have punctuation; strip it. e.g. a name like "Rep. Duncan" should lead to the tokens "rep" and "duncan"
-            allowedTokens = allowedTokens.stream().map(s -> Util.stripPunctuation(s)).collect(Collectors.toSet());
+            allowedTokens = allowedTokens.stream().map(Util::stripPunctuation).collect(Collectors.toSet());
         }
 
         final char REDACTION_CHAR = '.';
@@ -160,7 +160,7 @@ public class IndexUtils {
 	/** returns list of list of docs organized by a series of time windows */
 	public static List<Window> docsBySlidingWindow(Collection<EmailDocument> allDocs, int windowSizeInMonths, int stepSizeInMonths)
 	{
-		List<Window> result = new ArrayList<Window>();
+		List<Window> result = new ArrayList<>();
 		if (allDocs.size() == 0)
 			return result;
 
@@ -185,12 +185,11 @@ public class IndexUtils {
 		List<Pair<Date, Date>> intervals = Util.getSlidingMonthlyIntervalsBackward(first, last, windowSizeInMonths, stepSizeInMonths);
 
 		int nIntervals = intervals.size();
-		for (int i = 0; i < nIntervals; i++)
-		{
+		for (Pair<Date, Date> interval1 : intervals) {
 			Window w = new Window();
-			w.start = intervals.get(i).getFirst();
-			w.end = intervals.get(i).getSecond();
-			w.docs = new ArrayList<EmailDocument>();
+			w.start = interval1.getFirst();
+			w.end = interval1.getSecond();
+			w.docs = new ArrayList<>();
 			result.add(w);
 		}
 
@@ -233,7 +232,7 @@ public class IndexUtils {
 	// read all the headers
 	public static List<Document> findAllDocs(String prefix) throws ClassNotFoundException, IOException
 	{
-		List<Document> allDocs = new ArrayList<Document>();
+		List<Document> allDocs = new ArrayList<>();
 
 		// weird: sometimes we get a double-slash or double-backslash which kills the matching...
 		// better canonicalize first, which calling new File() and then getAbsolutePath does
@@ -293,7 +292,7 @@ public class IndexUtils {
 	 */
 	public static List<String> splitIntoWords(String s)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (s == null)
 			return result;
 
@@ -332,7 +331,7 @@ public class IndexUtils {
 	 */
 	public static List<String> splitIntoPairWords(String s)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (s == null)
 			return result;
 
@@ -367,7 +366,7 @@ public class IndexUtils {
 	 */
 	public static List<String> getAllWordsInQuery(String s)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		StringTokenizer st = new StringTokenizer(s, "|");
 		while (st.hasMoreTokens())
 		{
@@ -427,7 +426,7 @@ public class IndexUtils {
 		}
 
 		if (contactSet.isEmpty())
-			return new LinkedHashSet<Document>(); // return an empty list
+			return new LinkedHashSet<>(); // return an empty list
 
 		// consider map impl in future where we can go directly from the names to the messages
 		// currently each call to selectDocsByPerson will go through all docs
@@ -574,8 +573,8 @@ public class IndexUtils {
 
 	public static Map<Contact, DetailedFacetItem> partitionDocsByPerson(Collection<? extends Document> docs, AddressBook ab)
 	{
-		Map<Contact, DetailedFacetItem> result = new LinkedHashMap<Contact, DetailedFacetItem>();
-		Map<Contact, Pair<String, String>> tooltip_cache = new LinkedHashMap<Contact, Pair<String, String>>();
+		Map<Contact, DetailedFacetItem> result = new LinkedHashMap<>();
+		Map<Contact, Pair<String, String>> tooltip_cache = new LinkedHashMap<>();
 		for (Document d : docs)
 		{
 			if (!(d instanceof EmailDocument))
@@ -597,7 +596,7 @@ public class IndexUtils {
 						s = Util.maskEmailDomain(s);
 						tooltip = Util.maskEmailDomain(tooltip);
 					}
-					tooltip_cache.put(c, new Pair<String, String>(s, tooltip));
+					tooltip_cache.put(c, new Pair<>(s, tooltip));
 				}
 				DetailedFacetItem f = result.get(c);
 				if (f == null)
@@ -615,7 +614,7 @@ public class IndexUtils {
 
 	public static Map<String, DetailedFacetItem> partitionDocsByFolder(Collection<? extends Document> docs)
 	{
-		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<String, DetailedFacetItem>();
+		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<>();
 		for (Document d : docs)
 		{
 			if (!(d instanceof EmailDocument))
@@ -624,12 +623,7 @@ public class IndexUtils {
 			String s = ed.folderName;
 			if (s == null)
 				continue;
-			DetailedFacetItem f = folderNameMap.get(s);
-			if (f == null)
-			{
-				f = new DetailedFacetItem(Util.filePathTail(s), s, "folder", s);
-				folderNameMap.put(s, f);
-			}
+			DetailedFacetItem f = folderNameMap.computeIfAbsent(s, s1 -> new DetailedFacetItem(Util.filePathTail(s1), s1, "folder", s1));
 			f.addDoc(ed);
 		}
 		return folderNameMap;
@@ -637,7 +631,7 @@ public class IndexUtils {
 
 	private static Map<String, DetailedFacetItem> partitionDocsByDirection(Collection<? extends Document> docs, AddressBook ab)
 	{
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 		DetailedFacetItem f_in = new DetailedFacetItem("Received", "Incoming messages", "direction", "in");
 		DetailedFacetItem f_out = new DetailedFacetItem("Sent", "Outgoing messages", "direction", "out");
 
@@ -666,8 +660,8 @@ public class IndexUtils {
 	/** Partition documents by the presence/absence of annotation text */
 	private static Map<String, DetailedFacetItem> partitionDocsByAnnotationPresence(Collection<? extends Document> docs) {
 
-		Map<String, Set<Document>> tagToDocs = new LinkedHashMap<String, Set<Document>>();
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
+		Map<String, Set<Document>> tagToDocs = new LinkedHashMap<>();
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 		Set<Document> annotatedDocs = new LinkedHashSet<>();
 		Set<Document> unannotatedDocs = new LinkedHashSet<>();
 		for (Document d : docs) {
@@ -694,7 +688,7 @@ public class IndexUtils {
 
 		/** Partition documents by label types ******************/
 	private static Map<String, DetailedFacetItem> partitionDocsByLabelTypes(Collection<? extends Document> docs, Archive archive, LabelManager.LabType type) {
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 
 		Map<String, DetailedFacetItem> tmpresult = new LinkedHashMap<>();//a temp result to hold labelID specific facets. Once fully constructed we will convert labelID to labelName
 		//create as many detailed facetitems as there are number of labels of that type.
@@ -729,7 +723,7 @@ public class IndexUtils {
 	/** note: attachment types are lower-cased */
 	private static Map<String, DetailedFacetItem> partitionDocsByAttachmentType(Collection<? extends Document> docs)
 	{
-		Map<String, DetailedFacetItem> result = new LinkedHashMap<String, DetailedFacetItem>();
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 
 		for (Document d : docs)
 		{
@@ -761,7 +755,7 @@ public class IndexUtils {
 	{
 		AddressBook addressBook = archive.addressBook;
 
-		Map<String, Collection<DetailedFacetItem>> facetMap = new LinkedHashMap<String, Collection<DetailedFacetItem>>();
+		Map<String, Collection<DetailedFacetItem>> facetMap = new LinkedHashMap<>();
 
 		// Note: order is important here -- the facets will be displayed in the order they are inserted in facetMap
 		// current order: sentiments, groups, people, direction, folders
@@ -848,7 +842,7 @@ public class IndexUtils {
 		for (String s : facetMap.keySet())
 		{
 			Collection<DetailedFacetItem> detailedFacets = facetMap.get(s);
-			List<DetailedFacetItem> list = new ArrayList<DetailedFacetItem>(detailedFacets);
+			List<DetailedFacetItem> list = new ArrayList<>(detailedFacets);
 			Collections.sort(list);
 			facetMap.put(s, list);
 		}
@@ -873,7 +867,7 @@ public class IndexUtils {
 			if (dd.date.after(last))
 				last = dd.date;
 		}
-		return new Pair<Date, Date>(first, last);
+		return new Pair<>(first, last);
 	}
 
 	public static String getDateRangeAsString(Collection<? extends DatedDocument> docs)
@@ -916,7 +910,7 @@ public class IndexUtils {
 		--month; // adjust month to be 0 based because that's what calendar gives us
 		boolean invalid_month = month < 0 || month > 11;
         boolean invalid_date = date<1 || date>31;
-		List<D> result = new ArrayList<D>();
+		List<D> result = new ArrayList<>();
 		for (D d : c)
 		{
 			Calendar cal = new GregorianCalendar();
@@ -963,7 +957,7 @@ public class IndexUtils {
 	 */
 	public static List<Document> getDocNumbers(List<Document> docs, String nums[])
 	{
-		List<Document> result = new ArrayList<Document>();
+		List<Document> result = new ArrayList<>();
 
 		if (docs == null || nums == null)
 			return result;
@@ -981,7 +975,7 @@ public class IndexUtils {
 			int startIdx = 0, endIdx = -1;
 
 			try {
-				if (s.indexOf("-") >= 0)
+				if (s.contains("-"))
 				{ // page range
 					StringTokenizer pageST = new StringTokenizer(s, "-");
 					startIdx = Integer.parseInt(pageST.nextToken());
@@ -1013,7 +1007,7 @@ public class IndexUtils {
 	 */
 	public static Set<Blob> getBlobsForAttachments(Collection<? extends Document> docs, String[] attachmentTails, BlobStore attachmentsStore)
 	{
-		Set<Blob> result = new LinkedHashSet<Blob>();
+		Set<Blob> result = new LinkedHashSet<>();
 		if (attachmentTails == null)
 			return result; // empty results
 		if (attachmentsStore == null)
@@ -1022,9 +1016,8 @@ public class IndexUtils {
 			return result;
 		}
 
-		Set<String> neededAttachmentTails = new LinkedHashSet<String>();
-		for (String s : attachmentTails)
-			neededAttachmentTails.add(s);
+		Set<String> neededAttachmentTails = new LinkedHashSet<>();
+		Collections.addAll(neededAttachmentTails, attachmentTails);
 		for (Document d : docs)
 		{
 			if (!(d instanceof EmailDocument))
@@ -1054,11 +1047,10 @@ public class IndexUtils {
 	 */
 	public static Set<Blob> getBlobsForAttachmentTypes(Collection<? extends Document> docs, String[] attachmentTypes)
 	{
-		Set<Blob> result = new LinkedHashSet<Blob>();
+		Set<Blob> result = new LinkedHashSet<>();
 		// convert to a set for fast lookup
-		Set<String> attachmentTypesSet = new LinkedHashSet<String>();
-		for (String t : attachmentTypes)
-			attachmentTypesSet.add(t);
+		Set<String> attachmentTypesSet = new LinkedHashSet<>();
+		Collections.addAll(attachmentTypesSet, attachmentTypes);
 
 		for (Document d : docs)
 		{
@@ -1086,13 +1078,10 @@ public class IndexUtils {
 	/** sort by site-alpha, so e.g. all amazon links show up together */
 	public static void sortLinks(List<String> linksList)
 	{
-		Collections.sort(linksList, new Comparator<String>() {
-			public int compare(String li1, String li2)
-			{
-				String site1 = Util.getTLD(li1);
-				String site2 = Util.getTLD(li2);
-				return site1.compareTo(site2);
-			}
+		linksList.sort((li1, li2) -> {
+			String site1 = Util.getTLD(li1);
+			String site2 = Util.getTLD(li2);
+			return site1.compareTo(site2);
 		});
 	}
 
@@ -1111,7 +1100,7 @@ public class IndexUtils {
 	 * all suffixes of prefixes or all prefixes of suffixes.
 	 * */
 	public static Set<String> computeAllSubstrings(Set<String> set) {
-		Set<String> substrs = new HashSet<String>();
+		Set<String> substrs = new HashSet<>();
 		for (String s : set) {
 			substrs.addAll(computeAllPrefixes(computeAllSuffixes(s)));
 		}
@@ -1119,16 +1108,16 @@ public class IndexUtils {
 	}
 
 	private static List<String> computeAllSubstrings(Set<String> set, boolean sort) {
-		Set<String> substrs = new HashSet<String>();
+		Set<String> substrs = new HashSet<>();
 		for (String s : set) {
 			substrs.addAll(computeAllPrefixes(computeAllSuffixes(s)));
 		}
 		//sort
-		Map<String, Integer> substrlen = new LinkedHashMap<String, Integer>();
+		Map<String, Integer> substrlen = new LinkedHashMap<>();
 		for(String substr: substrs)
 			substrlen.put(substr, substr.length());
 		List<Pair<String,Integer>> ssubstrslen = Util.sortMapByValue(substrlen);
-		List<String> ssubstrs = new ArrayList<String>();
+		List<String> ssubstrs = new ArrayList<>();
 		for(Pair<String,Integer> p: ssubstrslen)
 			ssubstrs.add(p.getFirst());
 		return ssubstrs;
@@ -1137,7 +1126,7 @@ public class IndexUtils {
 	public static Set<String> computeAllSubstrings(String s)
 	{
         s = s.replaceAll("^\\W+|\\W+$","");
-		Set<String> set = new LinkedHashSet<String>();
+		Set<String> set = new LinkedHashSet<>();
 		set.add(s);
 		return computeAllSubstrings(set);
 	}
@@ -1146,14 +1135,14 @@ public class IndexUtils {
 	private static List<String> computeAllSubstrings(String s, boolean sort)
 	{
         s = s.replaceAll("^\\W+|\\W+$","");
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
 		set.add(s);
 		return computeAllSubstrings(set, sort);
 	}
 
 	private static Set<String> computeAllPrefixes(Set<String> set)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		for (String s : set)
 		{
 			String prefix = "";
@@ -1171,14 +1160,14 @@ public class IndexUtils {
 
 	public static Set<String> computeAllPrefixes(String s)
 	{
-		Set<String> set = new LinkedHashSet<String>();
+		Set<String> set = new LinkedHashSet<>();
 		set.add(s);
 		return computeAllPrefixes(set);
 	}
 
 	private static Set<String> computeAllSuffixes(Set<String> set)
 	{
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		for (String s : set) {
 			String suffix = "";
 			String[] words = s.split("\\s+");
@@ -1194,7 +1183,7 @@ public class IndexUtils {
 
 	private static Set<String> computeAllSuffixes(String s)
 	{
-		Set<String> set = new LinkedHashSet<String>();
+		Set<String> set = new LinkedHashSet<>();
 		set.add(s);
 		return computeAllSuffixes(set);
 	}
@@ -1259,7 +1248,7 @@ public class IndexUtils {
 	public static Set<String> readCanonicalOwnNames(AddressBook ab)
 	{
 		// convert own names to canonical form
-		Set<String> canonicalOwnNames = new LinkedHashSet<String>();
+		Set<String> canonicalOwnNames = new LinkedHashSet<>();
 		Set<String> ownNames = (ab != null) ? ab.getOwnNamesSet() : null;
 		if (ownNames == null)
 			return canonicalOwnNames;
@@ -1273,7 +1262,7 @@ public class IndexUtils {
 	/** returns all languages in a set of docs */
 	public static Set<String> allLanguagesInDocs(Collection<? extends Document> docs)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		for (Document d : docs)
 			if (d.languages != null)
 				result.addAll(d.languages);
@@ -1284,7 +1273,7 @@ public class IndexUtils {
 
 	public static List<Document> selectDocsByRegex(Archive archive, Collection<Document> allDocs, String term)
 	{
-		List<Document> result = new ArrayList<Document>();
+		List<Document> result = new ArrayList<>();
 		Pattern pattern = null;
 		try {
 			pattern = Pattern.compile(term);
@@ -1309,7 +1298,7 @@ public class IndexUtils {
 
 	private static Set<Document> selectDocsByContact(AddressBook ab, Collection<EmailDocument> docs, Set<String> contact_names, Set<String> contact_emails)
 	{
-		Set<Document> result = new LinkedHashSet<Document>();
+		Set<Document> result = new LinkedHashSet<>();
 
 		// look up ci for given name
 		// look up emails for ci
@@ -1335,10 +1324,10 @@ public class IndexUtils {
 	private static Set<Document> selectDocsByContact(AddressBook ab, Collection<EmailDocument> docs, Set<Contact> cset)
 	{
 		if (cset == null)
-			return new LinkedHashSet<Document>();
+			return new LinkedHashSet<>();
 
-		Set<String> cnames = new LinkedHashSet<String>();
-		Set<String> cemails = new LinkedHashSet<String>();
+		Set<String> cnames = new LinkedHashSet<>();
+		Set<String> cemails = new LinkedHashSet<>();
 		for (Contact c : cset) {
 			cnames.addAll(c.getNames());
 			cemails.addAll(c.getEmails());

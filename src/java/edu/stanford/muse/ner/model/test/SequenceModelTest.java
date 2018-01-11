@@ -54,14 +54,13 @@ public class SequenceModelTest {
 
         @Override
         public String toString(){
-            StringBuilder sb = new StringBuilder();
-            sb.append("-------------\n");
-            sb.append("Found: " + numFound + " -- Total: " + numReal + " -- Correct: " + numCorrect + " -- Missed due to wrong type: " + numWrongType+"\n");
-            sb.append("Precision: " + precision+"\n");
-            sb.append("Recall: " + recall+"\n");
-            sb.append("F1: " + (2 * precision * recall / (precision + recall))+"\n");
-            sb.append("------------");
-            return sb.toString();
+            String sb = "-------------\n" +
+                    "Found: " + numFound + " -- Total: " + numReal + " -- Correct: " + numCorrect + " -- Missed due to wrong type: " + numWrongType + "\n" +
+                    "Precision: " + precision + "\n" +
+                    "Recall: " + recall + "\n" +
+                    "F1: " + (2 * precision * recall / (precision + recall)) + "\n" +
+                    "------------";
+            return sb;
         }
     }
 
@@ -332,12 +331,10 @@ public class SequenceModelTest {
     }
 
     static boolean compareSpan(Span obj, Span tgt){
-        if(obj.text.equals(tgt.text) &&
+        return obj.text.equals(tgt.text) &&
                 obj.type == tgt.type &&
                 obj.start == tgt.start &&
-                obj.end == tgt.end)
-            return true;
-        return false;
+                obj.end == tgt.end;
     }
 
     //makes sure everything in target is in vals
@@ -444,13 +441,13 @@ public class SequenceModelTest {
 
             params.ignoreSegmentation = true;
             params.onlyMultiWord = false;
-            params.testType = params.testType.testa;
+            params.testType = ParamsCONLL.TEST.testa;
             PerfStats stats = testCONLL(model, false, params);
             assertTrue("Severe drop in F1 score with " + params + "!!!\n" + stats.toString(), 0.72 - stats.f1 < 0.05);
             assertTrue("Severe drop in precision with " + params + "!!!\n" + stats.toString(), 0.75 - stats.precision < 0);
             assertTrue("Severe drop in recall with " + params + "!!!\n" + stats.toString(), 0.65 - stats.recall < 0);
 
-            params.testType = params.testType.testb;
+            params.testType = ParamsCONLL.TEST.testb;
             stats = testCONLL(model, false, params);
             assertTrue("Severe drop in F1 score with " + params + "!!!\n" + stats.toString(), 0.70 - stats.f1 < 0.05);
             assertTrue("Severe drop in precision with " + params + "!!!\n" + stats.toString(), 0.65 - stats.precision < 0);

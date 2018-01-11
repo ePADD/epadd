@@ -58,7 +58,7 @@ public class EntityBook implements Serializable {
             nameToMappedEntity.clear();
 
             List<String> lines = Util.tokenize(text, "\r\n");
-            List<String> linesForEntity = new ArrayList<String>();
+            List<String> linesForEntity = new ArrayList<>();
 
             for (int i = 0; i <= lines.size(); i++) {
                 boolean endOfInput = (i == lines.size());

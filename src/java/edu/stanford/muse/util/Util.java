@@ -151,7 +151,7 @@ public class Util
 		// compute all path components, blurring the last one
 		// s: a/b/xyz
 		StringTokenizer st = new StringTokenizer(s, File.separator);
-		List<String> components = new ArrayList<String>();
+		List<String> components = new ArrayList<>();
 		while (st.hasMoreTokens())
 		{
 			String x = st.nextToken();
@@ -332,13 +332,10 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static void sortFilesByTime(File[] files)
 	{
 		// sort by creation time of png files to get correct page order
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File f1, File f2)
-			{
-				long x = f1.lastModified() - f2.lastModified();
-				return (x < 0) ? -1 : ((x > 0) ? 1 : 0);
-			}
-		});
+		Arrays.sort(files, (f1, f2) -> {
+            long x = f1.lastModified() - f2.lastModified();
+            return (x < 0) ? -1 : ((x > 0) ? 1 : 0);
+        });
 	}
 
 	public static void run_command(String[] cmd) throws IOException
@@ -349,7 +346,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static void run_command(String cmd, String dir) throws IOException
 	{
 		StringTokenizer st = new StringTokenizer(cmd);
-		List<String> tokens = new ArrayList<String>();
+		List<String> tokens = new ArrayList<>();
 		while (st.hasMoreTokens())
 			tokens.add(st.nextToken());
 
@@ -555,7 +552,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static List<String> getLinesFromReader(Reader reader, boolean ignoreCommentLines) throws IOException
 	{
 		LineNumberReader lnr = new LineNumberReader(reader);
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		while (true)
 		{
 			String line = lnr.readLine();
@@ -861,7 +858,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static List<String> tokenize(String s)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (Util.nullOrEmpty(s))
 			return result;
 
@@ -903,7 +900,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	}
 	public static List<String> tokenize(String s, String delims)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (Util.nullOrEmpty(s))
 			return result;
 
@@ -915,7 +912,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static List<String> tokenizeAlphaChars(String s)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (Util.nullOrEmpty(s))
 			return result;
 
@@ -945,7 +942,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static Collection<String> breakIntoParas(String input) throws IOException
 	{
-		List<String> paras = new ArrayList<String>();
+		List<String> paras = new ArrayList<>();
 		LineNumberReader lnr = new LineNumberReader(new StringReader(input));
 
 		StringBuilder currentPara = new StringBuilder();
@@ -1248,7 +1245,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	// interval i is represented by [i]..[i+1] in the returned value
 	public static List<Date> getMonthlyIntervals(Date start, Date end)
 	{
-		List<Date> intervals = new ArrayList<Date>();
+		List<Date> intervals = new ArrayList<>();
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(start);
 		int startMonth = c.get(Calendar.MONTH);
@@ -1277,7 +1274,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	// interval i is represented by [i]..[i+1] in the returned value
 	public static List<Date> getYearlyIntervals(Date start, Date end)
 	{
-		List<Date> intervals = new ArrayList<Date>();
+		List<Date> intervals = new ArrayList<>();
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(start);
 		int startYear = c.get(Calendar.YEAR);
@@ -1518,7 +1515,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 			return "";
 		int n = c.size(), count = 0;
 		StringBuilder result = new StringBuilder();
-		List<E> tmp = new ArrayList<E>(c);
+		List<E> tmp = new ArrayList<>(c);
 		Collections.sort(tmp);
 		for (E e : tmp)
 		{
@@ -1602,7 +1599,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
 		try {
 			StringTokenizer st = new StringTokenizer(str, ".");
-			List<Byte> list = new ArrayList<Byte>();
+			List<Byte> list = new ArrayList<>();
 			boolean invalidAddr = false;
 			while (st.hasMoreTokens())
 			{
@@ -1645,11 +1642,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		if (f.isDirectory())
 		{
 			String[] children = f.list();
-			for (int i = 0; i < children.length; i++)
-			{
-				boolean success = deleteDir(new File(f, children[i]),log);
-				if (!success)
-				{
+			for (String aChildren : children) {
+				boolean success = deleteDir(new File(f, aChildren), log);
+				if (!success) {
 					System.err.println("warning: failed to delete file " + f);
 					return false;
 				}
@@ -1686,7 +1681,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
         content = cleanEmailStuff(content);
 
-        Set<String> acrs = new HashSet<String>();
+        Set<String> acrs = new HashSet<>();
         Matcher m = acronymPattern.matcher(content);
         while (m.find()) {
             String acr = m.group();
@@ -1724,7 +1719,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static String convertSlashUToUnicode (String s) {
 		if (s == null)
 			return s;
-		if (s.indexOf("\\u") < 0)
+		if (!s.contains("\\u"))
 			return s;
 
 		List<Character> out = new ArrayList<>();
@@ -1750,7 +1745,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static Set<String> filesWithPrefixAndSuffix(String dir, String prefix, String suffix)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 
 		if (dir == null)
 			return result;
@@ -1829,36 +1824,30 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	/** sorts in decreasing order of second element of pair */
 	public static <S, T extends Comparable<? super T>> void sortPairsBySecondElement(List<Pair<S, T>> input)
 	{
-		Collections.sort(input, new Comparator<Pair<?, T>>() {
-			public int compare(Pair<?, T> p1, Pair<?, T> p2) {
-				T i1 = p1.getSecond();
-				T i2 = p2.getSecond();
-				return i2.compareTo(i1);
-			}
+		input.sort((p1, p2) -> {
+			T i1 = p1.getSecond();
+			T i2 = p2.getSecond();
+			return i2.compareTo(i1);
 		});
 	}
 
 	/** sorts in decreasing order of second element of pair */
 	public static <S, T extends Comparable<? super T>> void sortPairsBySecondElementIncreasing(List<Pair<S, T>> input)
 	{
-		Collections.sort(input, new Comparator<Pair<?, T>>() {
-			public int compare(Pair<?, T> p1, Pair<?, T> p2) {
-				T i1 = p1.getSecond();
-				T i2 = p2.getSecond();
-				return i1.compareTo(i2);
-			}
+		input.sort((p1, p2) -> {
+			T i1 = p1.getSecond();
+			T i2 = p2.getSecond();
+			return i1.compareTo(i2);
 		});
 	}
 
 	public static <T extends Comparable<? super T>, S> void sortPairsByFirstElement(List<Pair<T, S>> input)
 	{
-		Collections.sort(input, new Comparator<Pair<T, ?>>() {
-			public int compare(Pair<T, ?> p1, Pair<T, ?> p2) {
-				return p1.getFirst().compareTo(p2.getFirst());
-				// int i1 = p1.getFirst();
-				// int i2 = p2.getFirst();
-				// return i2 - i1;
-			}
+		input.sort((p1, p2) -> {
+			return p1.getFirst().compareTo(p2.getFirst());
+			// int i1 = p1.getFirst();
+			// int i2 = p2.getFirst();
+			// return i2 - i1;
 		});
 	}
 
@@ -1866,7 +1855,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
 		System.out.println(edu.stanford.muse.ie.Util.getAcronym("UC Santa Barbara"));
 		test_tail();
-		Map<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
+		Map<Integer, Integer> map = new LinkedHashMap<>();
 		map.put(10, 1);
 		map.put(20, 1);
 		map.put(15, 1);
@@ -1879,19 +1868,17 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static void sortTriplesByThirdElement(List<Triple<?, ?, Integer>> input)
 	{
-		Collections.sort(input, new Comparator<Triple<?, ?, Integer>>() {
-			public int compare(Triple<?, ?, Integer> t1, Triple<?, ?, Integer> t2) {
-				int i1 = t1.getThird();
-				int i2 = t2.getThird();
-				return i2 - i1;
-			}
+		input.sort((t1, t2) -> {
+			int i1 = t1.getThird();
+			int i2 = t2.getThird();
+			return i2 - i1;
 		});
 	}
 
 	public static <T> List<T> permuteList(List<T> in, int seed)
 	{
 		// create a copy of the input
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 		result.addAll(in);
 
 		Random R = new Random(seed);
@@ -1924,7 +1911,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		if (s == null || s.length() < 2)
 			return s;
 
-		List<Character> list = new ArrayList<Character>();
+		List<Character> list = new ArrayList<>();
 		for (char c : s.toCharArray())
 			list.add(c);
 		list = Util.permuteList(list, r.nextInt());
@@ -1940,9 +1927,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <K, V> List<Pair<K, V>> mapToListOfPairs(Map<K, V> map)
 	{
-		List<Pair<K, V>> result = new ArrayList<Pair<K, V>>();
+		List<Pair<K, V>> result = new ArrayList<>();
 		for (Map.Entry<K, V> e : map.entrySet())
-			result.add(new Pair<K, V>(e.getKey(), e.getValue()));
+			result.add(new Pair<>(e.getKey(), e.getValue()));
 		return result;
 	}
 
@@ -1963,9 +1950,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <K, V extends Comparable<? super V>> List<Pair<K, V>> sortMapByValue(Map<K, V> map)
 	{
-		List<Pair<K, V>> result = new ArrayList<Pair<K, V>>();
+		List<Pair<K, V>> result = new ArrayList<>();
 		for (Map.Entry<K, V> e : map.entrySet())
-			result.add(new Pair<K, V>(e.getKey(), e.getValue()));
+			result.add(new Pair<>(e.getKey(), e.getValue()));
 		Util.sortPairsBySecondElement(result);
 		return result;
 	}
@@ -1976,11 +1963,11 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <K, V extends Comparable<? super V>> Map<K, V> reorderMapByValue(Map<K, V> map)
 	{
-		List<Pair<K, V>> resultPairs = new ArrayList<Pair<K, V>>();
+		List<Pair<K, V>> resultPairs = new ArrayList<>();
 		for (Map.Entry<K, V> e : map.entrySet())
-			resultPairs.add(new Pair<K, V>(e.getKey(), e.getValue()));
+			resultPairs.add(new Pair<>(e.getKey(), e.getValue()));
 		Util.sortPairsBySecondElement(resultPairs);
-		Map<K, V> result = new LinkedHashMap<K, V>();
+		Map<K, V> result = new LinkedHashMap<>();
 		for (Pair<K, V> p : resultPairs)
 			result.put(p.getFirst(), p.getSecond());
 		return result;
@@ -1994,11 +1981,11 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <K, V> Map<K, Collection<V>> sortMapByListSize(Map<K, Collection<V>> map)
 	{
-		List<Pair<K, Integer>> counts = new ArrayList<Pair<K, Integer>>();
+		List<Pair<K, Integer>> counts = new ArrayList<>();
 		for (Map.Entry<K, Collection<V>> e : map.entrySet())
-			counts.add(new Pair<K, Integer>(e.getKey(), e.getValue().size()));
+			counts.add(new Pair<>(e.getKey(), e.getValue().size()));
 		Util.sortPairsBySecondElement(counts);
-		Map<K, Collection<V>> result = new LinkedHashMap<K, Collection<V>>();
+		Map<K, Collection<V>> result = new LinkedHashMap<>();
 		for (Pair<K, Integer> p : counts)
 		{
 			K k = p.getFirst();
@@ -2013,12 +2000,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <K, V> void addTo(Map<K, Collection<V>> map, K key, V value)
 	{
-		Collection<V> values = map.get(key);
-		if (values == null)
-		{
-			values = new ArrayList<V>();
-			map.put(key, values);
-		}
+		Collection<V> values = map.computeIfAbsent(key, k -> new ArrayList<>());
 		values.add(value);
 	}
 
@@ -2064,7 +2046,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		Calendar endDate = null;
 		String startDateString, endDateString = null;
 
-		if (calendarString.indexOf("-") < 0)
+		if (!calendarString.contains("-"))
 		{
 			endDate = new GregorianCalendar(); // current time, default
 			startDateString = calendarString;
@@ -2080,7 +2062,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		if (endDateString != null)
 			endDate = parseDate(endDateString);
 
-		return new Pair<Calendar, Calendar>(startDate, endDate);
+		return new Pair<>(startDate, endDate);
 	}
 
 	/**
@@ -2092,7 +2074,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static List<String> parseKeywords(String keywords)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (keywords == null)
 			return result;
 		StringTokenizer st = new StringTokenizer(keywords);
@@ -2127,7 +2109,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static Map<String, String> convertObjectToMap(Object o, boolean expand)
 	{
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<>();
 		if (o == null)
 			return map;
 
@@ -2136,88 +2118,80 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		try {
 			// generate a string to string map of the fields
 			Field f[] = c.getDeclaredFields();
-			for (int i = 0; i < f.length; i++)
-			{
-				boolean acc = f[i].isAccessible();
+			for (Field aF : f) {
+				boolean acc = aF.isAccessible();
 				if (!acc)
-					f[i].setAccessible(true); // ok to do in absence of a security manager
+					aF.setAccessible(true); // ok to do in absence of a security manager
 
-				Class t = f[i].getType();
-				String name = f[i].getName();
+				Class t = aF.getType();
+				String name = aF.getName();
 				if (name.indexOf("$") >= 0) // outer class, skip" +
 					continue;
 				if (t == double.class)
-					map.put(name, Double.toString(f[i].getDouble(o)));
+					map.put(name, Double.toString(aF.getDouble(o)));
 				else if (t == float.class)
-					map.put(name, Float.toString(f[i].getFloat(o)));
+					map.put(name, Float.toString(aF.getFloat(o)));
 				else if (t == int.class)
-					map.put(name, Integer.toString(f[i].getInt(o)));
+					map.put(name, Integer.toString(aF.getInt(o)));
 				else if (t == long.class)
-					map.put(name, Long.toString(f[i].getLong(o)));
+					map.put(name, Long.toString(aF.getLong(o)));
 				else if (t == char.class)
-					map.put(name, f[i].getChar(o) + "(" + Integer.toString(f[i].getChar(o)) + ")");
+					map.put(name, aF.getChar(o) + "(" + Integer.toString(aF.getChar(o)) + ")");
 				else if (t == short.class)
-					map.put(name, Short.toString(f[i].getShort(o)));
+					map.put(name, Short.toString(aF.getShort(o)));
 				else if (t == byte.class)
-					map.put(name, Byte.toString(f[i].getByte(o)));
+					map.put(name, Byte.toString(aF.getByte(o)));
 				else if (t == boolean.class)
-					map.put(name, Boolean.toString(f[i].getBoolean(o)));
-				else
-				{
+					map.put(name, Boolean.toString(aF.getBoolean(o)));
+				else {
 					// field is of object type
-					Object val = f[i].get(o); // o.f[i]'s type is t, value is
-												// val
+					Object val = aF.get(o); // o.f[i]'s type is t, value is
+					// val
 					if (val == null)
 						map.put(name, "null");
-					else
-					{
+					else {
 						Class valClass = val.getClass();
-						if (valClass.isArray())
-						{
+						if (valClass.isArray()) {
 							if (expand)
 								for (int x = 0; x < Array.getLength(val); x++)
 									map.put(name + "[" + x + "]", Array.get(val, x) + "");
-						}
-						else if (java.util.Map.class.isAssignableFrom(valClass)) // could
-																					// also
-																					// check
-																					// t,
-																					// but
-																					// val.getClass
-																					// is
-																					// more
-																					// specific
+						} else if (Map.class.isAssignableFrom(valClass)) // could
+						// also
+						// check
+						// t,
+						// but
+						// val.getClass
+						// is
+						// more
+						// specific
 						{
-							Map m = (Map) f[i].get(o);
+							Map m = (Map) aF.get(o);
 							if (expand)
 								for (Object x : m.keySet())
 									map.put(name + "." + x, m.get(x) + "");
 						}
-                        // could also check t, but val.getClass is more specific
-						else if (java.util.Collection.class.isAssignableFrom(valClass))
-						{
-							Collection c1 = (Collection) f[i].get(o);
-							if (expand)
-							{
+						// could also check t, but val.getClass is more specific
+						else if (Collection.class.isAssignableFrom(valClass)) {
+							Collection c1 = (Collection) aF.get(o);
+							if (expand) {
 								int count = 0;
 								for (Object o1 : c1)
 									map.put(name + "(" + count++ + ")", o1 + ""); // use
-																					// ()
-																					// instead
-																					// of
-																					// []
-																					// to
-																					// distinguish
-																					// from
-																					// arrays
+								// ()
+								// instead
+								// of
+								// []
+								// to
+								// distinguish
+								// from
+								// arrays
 							}
-						}
-						else
+						} else
 							map.put(name, "[" + val.toString() + "]");
 					}
 				}
 				if (!acc)
-					f[i].setAccessible(false);
+					aF.setAccessible(false);
 			}
 
 		} catch (Throwable e) {
@@ -2267,7 +2241,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static Pair<String, String> fieldsToCSV(Object o, boolean expand)
 	{
 		if (o == null)
-			return new Pair<String, String>("", "");
+			return new Pair<>("", "");
 		Map<String, String> map = convertObjectToMap(o, expand);
 		StringBuilder keys = new StringBuilder(), values = new StringBuilder();
 		for (String field : map.keySet())
@@ -2280,7 +2254,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 																							// commas
 			values.append(value + ",");
 		}
-		return new Pair<String, String>(keys.toString(), values.toString());
+		return new Pair<>(keys.toString(), values.toString());
 	}
 
 	/**
@@ -2290,7 +2264,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static Pair<String, String> fieldsToHTMLTD(Object o, boolean expand)
 	{
 		if (o == null)
-			return new Pair<String, String>("", "");
+			return new Pair<>("", "");
 		Map<String, String> map = convertObjectToMap(o, expand);
 		StringBuilder keys = new StringBuilder(), values = new StringBuilder();
 		for (String field : map.keySet())
@@ -2299,7 +2273,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 			String value = map.get(field);
 			values.append("<td>" + Util.escapeHTML(value) + "</td>");
 		}
-		return new Pair<String, String>(keys.toString(), values.toString());
+		return new Pair<>(keys.toString(), values.toString());
 	}
 
 	// converts fq class names to simple names
@@ -2369,11 +2343,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	/* given 2 arrays of strings, returns their union */
 	public static String[] unionOfStringArrays(String x[], String y[])
 	{
-		Set<String> set = new LinkedHashSet<String>();
-		for (String s : x)
-			set.add(s);
-		for (String s : y)
-			set.add(s);
+		Set<String> set = new LinkedHashSet<>();
+        Collections.addAll(set, x);
+		Collections.addAll(set, y);
 		String[] arr = new String[set.size()];
 		set.toArray(arr);
 		return arr;
@@ -2530,7 +2502,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		if (commonPrefix.length() <= 1)
 			return list;
 
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (String s : list)
 			result.add(s.substring(commonPrefix.length()));
 
@@ -2554,14 +2526,13 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	// removes dups from the input list
 	public static <T> List<T> removeDups(List<T> in)
 	{
-		Set<T> set = new LinkedHashSet<T>();
+		Set<T> set = new LinkedHashSet<>();
 		set.addAll(in);
 		if (set.size() == in.size())
 			return in;
 
-		List<T> result = new ArrayList<T>();
-		for (T t : set)
-			result.add(t);
+		List<T> result = new ArrayList<>();
+		result.addAll(set);
 		return result;
 	}
 
@@ -2570,9 +2541,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
 		// http://stackoverflow.com/questions/332079
 		// http://stackoverflow.com/questions/7166129
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < bytes.length; i++) {
-			String hex = Integer.toHexString(0xFF & bytes[i]);
+		StringBuilder sb = new StringBuilder();
+		for (byte aByte : bytes) {
+			String hex = Integer.toHexString(0xFF & aByte);
 			if (hex.length() == 1)
 				sb.append('0');
 			sb.append(hex);
@@ -2642,7 +2613,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static <E> boolean hasRedundantElements(Collection<E> c)
 	{
-		Map<E, E> m = new LinkedHashMap<E, E>();
+		Map<E, E> m = new LinkedHashMap<>();
 		for (E e : c) {
 			if (m.containsKey(e)) {
 				E e1 = m.get(e);
@@ -2652,7 +2623,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 			}
 			m.put(e, e);
 		}
-		Set<E> s = new LinkedHashSet<E>(c);
+		Set<E> s = new LinkedHashSet<>(c);
 		assert (s.size() <= c.size());
 		return s.size() != c.size();
 	}
@@ -2707,9 +2678,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <E extends Comparable<? super E>> List<E> getRemoveAll(List<E> list1, Collection<E> list2)
 	{
-		Set<E> set1 = new LinkedHashSet<E>(list1);
+		Set<E> set1 = new LinkedHashSet<>(list1);
 		set1.removeAll(list2);
-		return new ArrayList<E>(set1);
+		return new ArrayList<>(set1);
 	}
 
 	/** Return int[] from String[] */
@@ -2767,7 +2738,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static <E> Set<E> castOrCloneAsSet(Collection<E> c)
 	{
-		return (c == null || c instanceof HashSet) ? (Set<E>) c : new LinkedHashSet<E>(c);
+		return (c == null || c instanceof HashSet) ? (Set<E>) c : new LinkedHashSet<>(c);
 	}
 
 	/**
@@ -2778,7 +2749,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		// see
 		// http://stackoverflow.com/questions/7574311/efficiently-compute-intersection-of-two-sets-in-java
 		boolean set1IsLarger = set1.size() > set2.size();
-		Set<E> cloneSet = new HashSet<E>(set1IsLarger ? set2 : set1);
+		Set<E> cloneSet = new HashSet<>(set1IsLarger ? set2 : set1);
 		cloneSet.retainAll(set1IsLarger ? set1 : set2);
 		return cloneSet;
 		// if (s1 == null || s2 == null) return null; // let's trigger exception
@@ -2795,7 +2766,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
             return new ArrayList<>(list2);
         if(list2 == null)
             return new ArrayList<>(list1);
-        List<E> cloneList = new ArrayList<E>(list1);
+        List<E> cloneList = new ArrayList<>(list1);
         cloneList.retainAll(list2);
         return cloneList;
     }
@@ -2807,7 +2778,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
 		// if (s1 == null || s2 == null) return null; // let's trigger exception
 		// as caller may want null to represent "all"
-		Set<E> result = new LinkedHashSet<E>(s1);
+		Set<E> result = new LinkedHashSet<>(s1);
 		result.addAll(s2);
 		return result;
 		// return Sets.union(castOrCloneAsSet(s1), castOrCloneAsSet(s2));
@@ -2855,9 +2826,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
     public static <E> List<E> listUnionNullIsEmpty(Collection<E> s1, Collection<E> s2)
     {
         if (s1 == null)
-            return new ArrayList<E>(s2);
+            return new ArrayList<>(s2);
         if (s2 == null)
-            return new ArrayList<E>(s1);
+            return new ArrayList<>(s1);
         return listUnion(s1, s2);
     }
 
@@ -2867,7 +2838,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
      * Puts these in a ste and returns*/
 	public static Set<String> scrubNames(Collection<String> list)
 	{
-		Set<String> set = new LinkedHashSet<String>();
+		Set<String> set = new LinkedHashSet<>();
 		for (String s : list) {
 			s = s.replaceAll("[\\r\\n\\a]+", " ") // newlines
 					.replaceAll("\\s+", " ") // whitespaces compaction
@@ -2924,7 +2895,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static boolean isWindowsPlatform()
 	{
-		return (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0);
+		return (System.getProperty("os.name").toLowerCase().contains("windows"));
 	}
 
 	public static String devNullPath()
@@ -3017,7 +2988,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static List<String> removeStrings(List<String> input, Set<String> stringsToRemove)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 
 		for (String s : input)
 		{

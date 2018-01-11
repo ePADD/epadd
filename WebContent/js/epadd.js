@@ -9,7 +9,7 @@ var escapeHTML = function(s) {
     s = s.replace(/</g, "&lt;");
     s = s.replace(/>/g, "&gt;");
     return s;
-}
+};
 
 epadd.post_message = function(mesg)
 {
@@ -42,7 +42,7 @@ epadd.alert = function(s, f) {
 		$('#alert-modal').on('hidden.bs.modal', f);
 	}
 	$('#alert-modal').modal();
-}
+};
 
 epadd.pluralize = function(count, description)
 {
@@ -275,7 +275,7 @@ epadd.do_logins = function() {
 	});
 
 	return true;
-}
+};
 
 
 
@@ -423,7 +423,11 @@ epadd.saveArchive= function(archiveID,prompt) {
         data: {
             "archiveID": archiveID
         },
-        success: function(data) { if(prompt){epadd.alert('Archive saved successfully!')};},
+        success: function (data) {
+            if (prompt) {
+                epadd.alert('Archive saved successfully!')
+            }
+        },
         error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
     });
 };

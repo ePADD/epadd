@@ -82,10 +82,9 @@ public class Document implements Serializable, Comparable<Document> {
 
 	public String getSubjectWithoutTitle()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append (description + "\n");
-		sb.append("\n");
-		return sb.toString();
+        String sb = (description + "\n") +
+                "\n";
+        return sb;
 	}
 
 //	/** warning: this should be used only by the indexer to interface to the fetcher. */
@@ -212,7 +211,7 @@ public class Document implements Serializable, Comparable<Document> {
 	// select docs that contain tag (contain = true) or do not contain tag (contain = false) 
 	public static Set<Document> selectDocByTag(Collection<Document> allDocs, String tag, boolean contain)
 	{
-		Set<Document> result = new LinkedHashSet<Document>();
+		Set<Document> result = new LinkedHashSet<>();
 		if (tag != null) { // note: empty tag is allowed
 			tag = tag.toLowerCase();
 			for (Document d : allDocs) {

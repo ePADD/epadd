@@ -60,7 +60,7 @@ public class EmailUtils {
 	/** get a list of possible names, like "First Last" from "First.Last@gmail.com" etc */
 	public static List<String> parsePossibleNamesFromEmailAddress(String email)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (email == null)
 			return result;
 		String strippedEmail = getAccountNameFromEmailAddress(email);
@@ -249,18 +249,13 @@ public class EmailUtils {
 	public static List<EmailDocument> threadHeaders(List<EmailDocument> emails)
 	{
 		// map maps normalized subject to a list of threads that all have that thread
-		Map<String, List<EmailThread>> map = new LinkedHashMap<String, List<EmailThread>>();
+		Map<String, List<EmailThread>> map = new LinkedHashMap<>();
 
 		for (EmailDocument email : emails)
 		{
 			String normalizedSubject = normalizedSubject(email.getSubjectWithoutTitle());
 
-			List<EmailThread> threads = map.get(normalizedSubject);
-			if (threads == null)
-			{
-				threads = new ArrayList<EmailThread>();
-				map.put(normalizedSubject, threads);
-			}
+			List<EmailThread> threads = map.computeIfAbsent(normalizedSubject, k -> new ArrayList<>());
 
 			EmailThread existingThread = null;
 			for (EmailThread thread : threads)
@@ -280,7 +275,7 @@ public class EmailUtils {
 
 		System.out.println(map.keySet().size() + " unique subjects");
 
-		List<EmailDocument> result = new ArrayList<EmailDocument>();
+		List<EmailDocument> result = new ArrayList<>();
 
 		for (String normalizedSubject : map.keySet())
 		{
@@ -304,13 +299,12 @@ public class EmailUtils {
 	private static SimpleDateFormat	sdf1	= new SimpleDateFormat("EEE MMM dd hh:mm:ss yyyy");
 	// Date: Wed, 2 Apr 2003 11:53:17 -0800 (PST)
 	private static SimpleDateFormat	sdf2	= new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss");
-	private static Base64			base64encoder;
 	public static Random	rng		= new Random(0);
 
 	static {
 		// if file separator is /, then newline must be \n, otherwise \r\n
 		byte b[] = "/".equals(File.separator) ? new byte[] { (byte) 10 } : new byte[] { (byte) 13, (byte) 10 };
-		base64encoder = new Base64(76, b);
+		Base64 base64encoder = new Base64(76, b);
 	}
 
 	private static void printHeaderToMbox(EmailDocument ed, PrintWriter mbox) throws IOException, GeneralSecurityException
@@ -536,7 +530,7 @@ public class EmailUtils {
 
         // check if an email addr accidentally got passed in, if so, don't do any of the rest
         // sometimes the mbox parser may read
-        if (name.indexOf("@") >= 0) // an email addr, not a real name -- we dunno what's happening, just return it as is, just lowercasing it.
+        if (name.contains("@")) // an email addr, not a real name -- we dunno what's happening, just return it as is, just lowercasing it.
             return name.toLowerCase();
 
         // normalize spaces
@@ -556,7 +550,7 @@ public class EmailUtils {
 
 		String lowerCaseName = name.toLowerCase();
 		for (String bannedString : DictUtils.bannedStringsInPeopleNames)
-			if (lowerCaseName.indexOf(bannedString) >= 0) {
+			if (lowerCaseName.contains(bannedString)) {
 				if (log.isDebugEnabled()) {
 					log.debug("Will not consider name due to banned string: " + name + " due to string: " + bannedString);
 				}
@@ -575,11 +569,11 @@ public class EmailUtils {
 	// removes dups from the input list
 	public static List<String> removeMailingLists(List<String> in)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (String s : in)
 		{
 			s = s.toLowerCase();
-			if (s.indexOf("@yahoogroups") >= 0 || s.indexOf("@googlegroups") >= 0 || s.indexOf("@lists.") >= 0 || s.indexOf("@mailman") >= 0 || s.indexOf("no-reply") >= 0 || s.indexOf("do-not-reply") >= 0)
+			if (s.contains("@yahoogroups") || s.contains("@googlegroups") || s.contains("@lists.") || s.contains("@mailman") || s.contains("no-reply") || s.contains("do-not-reply"))
 			{
 				log.debug("Dropping mailing list or junk address: " + s);
 				continue;
@@ -614,15 +608,13 @@ public class EmailUtils {
 		return lastToken;
 	}
 
-	private final static Set<String>	secondLevelDomains		= new LinkedHashSet<String>();
+	private final static Set<String>	secondLevelDomains		= new LinkedHashSet<>();
 	private final static String[]		secondLevelDomainsArray	= new String[] { "ac", "co" };
 	private final static String[]		serviceProvidersArray	= new String[] { "hotmail", "gmail", "yahoo", "live", "msn", "pacbell", "vsnl", "comcast", "rediffmail" };
-	private final static Set<String>	serviceProviders		= new LinkedHashSet<String>();
+	private final static Set<String>	serviceProviders		= new LinkedHashSet<>();
 	static {
-		for (String s : secondLevelDomainsArray)
-			secondLevelDomains.add(s);
-		for (String s : serviceProvidersArray)
-			serviceProviders.add(s);
+		Collections.addAll(secondLevelDomains, secondLevelDomainsArray);
+		Collections.addAll(serviceProviders, serviceProvidersArray);
 	}
 
 	/** try to get the last name */
@@ -632,7 +624,7 @@ public class EmailUtils {
 			return null;
 
 		StringTokenizer st = new StringTokenizer(email, "@. !");
-		List<String> tokens = new ArrayList<String>();
+		List<String> tokens = new ArrayList<>();
 
 		while (st.hasMoreTokens())
 			tokens.add(st.nextToken());
@@ -692,17 +684,17 @@ public class EmailUtils {
 				last = d;
 		}
 
-		return new Pair<Date, Date>(first, last);
+		return new Pair<>(first, last);
 	}
 
 	public static <T extends Comparable<? super T>> List<T> removeDupsAndSort(List<T> docs)
 	{
 		log.info("-----------------------Detecting duplicates-------------------");
-		Set<T> set = new LinkedHashSet<T>();
+		Set<T> set = new LinkedHashSet<>();
 		set.addAll(docs);
 
 		// maintain a map so when we find a duplicate, we can toString both the dup and the original
-		Map<T, T> map = new LinkedHashMap<T, T>();
+		Map<T, T> map = new LinkedHashMap<>();
 		for (T ed : docs)
 		{
 			if (map.get(ed) != null)
@@ -710,7 +702,7 @@ public class EmailUtils {
 			map.put(ed, ed);
 		}
 
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 		result.addAll(set);
 		Collections.sort(result);
 		//		for (EmailDocument ed: result)
@@ -732,7 +724,7 @@ public class EmailUtils {
 	public static List<LinkInfo> getLinksForDocs(Collection<? extends Document> ds)
 	{
 		// extract links from the given docs
-		List<LinkInfo> links = new ArrayList<LinkInfo>();
+		List<LinkInfo> links = new ArrayList<>();
 		if (ds == null)
 			return links;
 
@@ -790,7 +782,7 @@ public class EmailUtils {
 
 	public static List<Date> datesForDocs(Collection<? extends DatedDocument> c)
 	{
-		List<Date> result = new ArrayList<Date>();
+		List<Date> result = new ArrayList<>();
 		for (DatedDocument d : c)
 			result.add(d.date);
 		return result;
@@ -807,7 +799,7 @@ public class EmailUtils {
 	/** returns set of all messages that have one of these attachments */
 	public static Set<? super EmailDocument> getDocsForAttachments(Collection<EmailDocument> docs, Collection<Blob> blobs)
 	{
-		Set<EmailDocument> result = new LinkedHashSet<EmailDocument>();
+		Set<EmailDocument> result = new LinkedHashSet<>();
 		if (docs == null || blobs == null)
 			return result;
 
@@ -830,12 +822,12 @@ public class EmailUtils {
      * return value also contains email addresses with 0 hits in the archive
 	 * emailAddress should all be lower case. */
     public static Map<String, Set<Document>> getDocsForEAs(Collection<Document> docs, Set<String> emailAddresses){
-        Map<String, Set<Document>> map = new LinkedHashMap<String, Set<Document>>();
+        Map<String, Set<Document>> map = new LinkedHashMap<>();
         if (emailAddresses == null)
             return map;
 
         for (String email: emailAddresses)
-            map.put(email, new LinkedHashSet<Document>());
+            map.put(email, new LinkedHashSet<>());
 
         for(Document doc: docs){
             if(!(doc instanceof EmailDocument))
@@ -861,7 +853,7 @@ public class EmailUtils {
 	 */
 	public static Set<String> parseAlternateEmailAddrs(String alternateAddrs)
 	{
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		if (Util.nullOrEmpty(alternateAddrs))
 			return result;
 
@@ -884,7 +876,7 @@ public class EmailUtils {
 	 */
 	public static Map<Contact, Pair<List<Date>, List<Date>>> computeContactToDatesMap(AddressBook ab, Collection<EmailDocument> list)
 	{
-		Map<Contact, Pair<List<Date>, List<Date>>> result = new LinkedHashMap<Contact, Pair<List<Date>, List<Date>>>();
+		Map<Contact, Pair<List<Date>, List<Date>>> result = new LinkedHashMap<>();
 
 		// note that we'll add the same date twice if the same contact has 2 different email addresses present on the message.
 		// consider changing this if needed.
@@ -904,12 +896,8 @@ public class EmailUtils {
 				if (c == null)
 					continue; // shouldn't happen, but defensive
 
-				Pair<List<Date>, List<Date>> p = result.get(c);
-				if (p == null)
-				{
-					p = new Pair<List<Date>, List<Date>>(new ArrayList<Date>(), new ArrayList<Date>()); // not seen this contact before
-					result.put(c, p);
-				}
+				Pair<List<Date>, List<Date>> p = result.computeIfAbsent(c, k -> new Pair<>(new ArrayList<>(), new ArrayList<>()));
+				// not seen this contact before
 
 				if (senderEmail.equals(email))
 					p.getSecond().add(ed.date);
@@ -1048,7 +1036,7 @@ public class EmailUtils {
 	}
 
 	public static List<String> emailAddrs(Address[] as) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (as == null)
 			return result;
 
@@ -1062,7 +1050,7 @@ public class EmailUtils {
 	}
 
 	public static List<String> personalNames(Address[] as) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (as == null)
 			return result;
 
@@ -1094,12 +1082,7 @@ public class EmailUtils {
 			Collections.sort(addrs);
 			String threadId = canonicalSubject + " " + Util.join(addrs, ",");
 			// canonical id for the thread.
-			Collection<EmailDocument> messagesForThisThread = map.get(threadId);
-			if (messagesForThisThread == null)
-			{
-				messagesForThisThread = new ArrayList<>();
-				map.put(threadId, messagesForThisThread);
-			}
+			Collection<EmailDocument> messagesForThisThread = map.computeIfAbsent(threadId, k -> new ArrayList<>());
 			messagesForThisThread.add(ed);
 		}
 		return map.values();
@@ -1319,7 +1302,7 @@ public class EmailUtils {
 		//sometimes mailing lists may also contain the owner email address.
 		//should there be one more filter for corporate?  
 
-		List<Contact> contacts = new ArrayList<Contact>();
+		List<Contact> contacts = new ArrayList<>();
 		for (Contact c : ab.allContacts()) {
 			boolean ml = false;
 			for (String email : c.getEmails())
@@ -1343,7 +1326,7 @@ public class EmailUtils {
 	 */
 	public static Map<String, String> getNames(List<Contact> contacts) {
 		int allsize = contacts.size();
-		Map<String, String> names = new HashMap<String, String>();
+		Map<String, String> names = new HashMap<>();
 		for (Contact c : contacts) {
 			if (c.getNames()!= null)
 				for (String n : c.getNames()) {

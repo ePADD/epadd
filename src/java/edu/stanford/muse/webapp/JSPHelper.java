@@ -216,12 +216,11 @@ public class JSPHelper {
 		// newParams will contain only the strings that successfully can be converted to utf-8
 		// others will be reported and ignored
 		List<String> newParams = new ArrayList<>();
-		for (int i = 0; i < params.length; i++)
-		{
+		for (String param : params) {
 			try {
-				newParams.add(convertRequestParamToUTF8(params[i]));
+				newParams.add(convertRequestParamToUTF8(param));
 			} catch (UnsupportedEncodingException e) {
-				log.warn("Unsupported encoding exception for " + params[i]);
+				log.warn("Unsupported encoding exception for " + param);
 				Util.print_exception(e, log);
 				if (throwExceptionIfUnsupportedEncoding)
 					throw (e);
@@ -399,7 +398,7 @@ public class JSPHelper {
             //Is there a reliable and more proper way of checking the mode it is running in?
             String logF = System.getProperty("muse.log");
             if (logF == null || logF.endsWith("epadd.log")) {
-                try {
+           //     try {
 //                InternalAuthorityAssigner assignauthorities = new InternalAuthorityAssigner();
 //                session.setAttribute("statusProvider", assignauthorities);
 //                assignauthorities.initialize(archive);
@@ -412,9 +411,9 @@ public class JSPHelper {
 //                    log.warn("Could not build context mixtures for entities");
 //                } else
 //                    log.info("Successfully built context mixtures for entities");
-                } catch (Exception e) {
-                    log.warn("Exception while building context mixtures", e);
-                }
+           //     } catch (Exception e) {
+            //        log.warn("Exception while building context mixtures", e);
+             //   }
             }
         }
         // add the new stores
@@ -649,11 +648,8 @@ public class JSPHelper {
 		if (addrs == null)
 			return result;
 		int index = 0;
-		for (int i = 0; i < addrs.length; i++)
-		{
-			Address a = addrs[i];
-			if (a instanceof InternetAddress)
-			{
+		for (Address a : addrs) {
+			if (a instanceof InternetAddress) {
 				InternetAddress ia = (InternetAddress) a;
 				JSONObject o = new JSONObject();
 				o.put("email", Util.maskEmailDomain(ia.getAddress()));

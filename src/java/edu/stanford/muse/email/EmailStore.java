@@ -39,7 +39,6 @@ public abstract class EmailStore implements Serializable {
 	String displayName;
 	public String emailAddress;
 	boolean DEBUG = false;
-	private String cacheDir;
 
 	List<FolderInfo> folderInfos; // folder lists and counts, could be accessed while it is still being computed
 	private List<String> defaultFolderNames; // specific default folder name for analysis, e.g. [Gmail]/Sent Mail for gmail
@@ -55,7 +54,7 @@ public abstract class EmailStore implements Serializable {
 	public synchronized void addDefaultFolderName(String folderName)
 	{
 		if (defaultFolderNames == null)
-			defaultFolderNames = new ArrayList<String>();
+			defaultFolderNames = new ArrayList<>();
 		defaultFolderNames.add(folderName);
 	}
 
@@ -77,7 +76,7 @@ public abstract class EmailStore implements Serializable {
 		// hoping for TSO :-)
 		result.add("doneReadingFolderCounts", new JsonPrimitive(doneReadingFolderCounts));
 
-		List<FolderInfo> tmp = new ArrayList<FolderInfo>();
+		List<FolderInfo> tmp = new ArrayList<>();
 		if (folderInfos != null)
 			tmp.addAll(folderInfos);
 		if (folderBeingScanned != null && !doneReadingFolderCounts)
@@ -113,7 +112,7 @@ public abstract class EmailStore implements Serializable {
 
 	public void setCacheDir(String dir)
 	{
-		this.cacheDir = dir;
+		String cacheDir = dir;
 	}
 
 	abstract public void computeFoldersAndCounts(String cacheDir) throws MessagingException;

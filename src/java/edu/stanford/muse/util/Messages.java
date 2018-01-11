@@ -32,7 +32,7 @@ public class Messages {
 	}
 
 	static public void main(String[] args) {
-		System.out.println(getMessage("messages", "template",  new Object[]{ "First Param", "Second Param", new Integer(7), new Date()}));
-		System.out.println(getMessage(Locale.GERMANY, "Messages", "template", new Object[]{ "Mars", " Param1", new Integer(7), new Date()}));    	 
+		System.out.println(getMessage("messages", "template",  new Object[]{ "First Param", "Second Param", 7, new Date()}));
+		System.out.println(getMessage(Locale.GERMANY, "Messages", "template", new Object[]{ "Mars", " Param1", 7, new Date()}));
 	}
 } 

@@ -242,7 +242,7 @@ public class LabelManager implements Serializable{
         //if docid is new then simply copy them
         for(String docid: other.docToLabelMap.keySet()){
             //get newlabid's generated in above for loop
-            Set<String> newlabels = other.docToLabelMap.get(docid).stream().map(labid->oldToNewLabelID.get(labid)).collect(Collectors.toSet());
+            Set<String> newlabels = other.docToLabelMap.get(docid).stream().map(oldToNewLabelID::get).collect(Collectors.toSet());
             if(docToLabelMap.containsKey(docid)){
                 docToLabelMap.get(docid).addAll(newlabels);
             }else

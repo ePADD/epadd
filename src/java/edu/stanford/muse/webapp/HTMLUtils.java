@@ -104,7 +104,7 @@ public class HTMLUtils {
 	/* like requestParamMap but returns String -> String instead of String -> String[]. assumes no duplicate params */
 	public static Map<String, String> getRequestParamMap(HttpServletRequest request)
 	{
-		Map<String, String> result = new LinkedHashMap<String, String>();
+		Map<String, String> result = new LinkedHashMap<>();
 		Map<String, String[]> paramMap = request.getParameterMap();
 		for (String key: paramMap.keySet())
 			result.put(key, paramMap.get(key)[0]);
@@ -174,7 +174,7 @@ public class HTMLUtils {
 	
 	public static void main (String args[])
 	{
-		List<String> l = new ArrayList<String>();
+		List<String> l = new ArrayList<>();
 		l.add("/foo/xx/bar");
 		l.add("/foo/xx/xxx");
 		l.add("/foo/xx/yyy");

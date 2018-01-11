@@ -265,7 +265,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		{
 		    //lex can never be null if doSentiments is true. Java was not able to infer this relation
 			//hence giving error that lex is uninitialized.
-			Map<String, Collection<Document>> map = (Map) lex.getEmotions(archive.indexer, (Collection) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
+			Map<String, Collection<Document>> map = lex.getEmotions(archive.indexer, (Collection) allDocs, trackNOTA, request.getParameter("originalContentOnly") != null); // too heavyweight -- we just want to find if the damn graph is empty...
 			for (String key: map.keySet())
 			{
 				Collection<Document> set = map.get(key);

@@ -101,13 +101,13 @@ public class Accounts {
 			loginName = loginName.trim();
 
 		// for these ESPs, the user may have typed in the whole address or just his/her login name
-		if (accountType.equals("gmail") && loginName.indexOf("@") < 0)
+		if (accountType.equals("gmail") && !loginName.contains("@"))
 			loginName = loginName + "@gmail.com";
-		if (accountType.equals("yahoo") && loginName.indexOf("@") < 0)
+		if (accountType.equals("yahoo") && !loginName.contains("@"))
 			loginName = loginName + "@yahoo.com";
-		if (accountType.equals("live") && loginName.indexOf("@") < 0)
+		if (accountType.equals("live") && !loginName.contains("@"))
 			loginName = loginName + "@live.com";
-		if (accountType.equals("stanford") && loginName.indexOf("@") < 0)
+		if (accountType.equals("stanford") && !loginName.contains("@"))
 			loginName = loginName + "@stanford.edu";
 		if (accountType.equals("gmail"))
 			server = "imap.gmail.com";
@@ -180,15 +180,20 @@ public class Accounts {
 							log.info("paramUserName = " + paramUserName);
 							
 							server = paramHostName;
-							imapDBLookupFailed = false;								
-							if(paramUserName.equals("%EMAILADDRESS%")) {
-								// Nothing to do with loginName
-							} else if(paramUserName.equals("%EMAILLOCALPART%") || paramUserName.equals("%USERNAME%")) {
-								// Cut only local part
-								loginName = loginName.substring(0, loginName.indexOf('@') - 1);
-							} else {
-								imapDBLookupFailed = true;								
-								errorMessage = "Invalid auto configuration";
+							imapDBLookupFailed = false;
+							switch (paramUserName) {
+								case "%EMAILADDRESS%":
+									// Nothing to do with loginName
+									break;
+								case "%EMAILLOCALPART%":
+								case "%USERNAME%":
+									// Cut only local part
+									loginName = loginName.substring(0, loginName.indexOf('@') - 1);
+									break;
+								default:
+									imapDBLookupFailed = true;
+									errorMessage = "Invalid auto configuration";
+									break;
 							}
 							
 							break; // break after find first IMAP host name

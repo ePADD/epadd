@@ -76,7 +76,7 @@ $(document).ready(function(){
 
 	$(".close-fltr").click(function(){
 		$(".body-overlay").removeClass("body-overlay-style");
-	})
+	});
 	// .removeClass("body-overlay-style");
 
 

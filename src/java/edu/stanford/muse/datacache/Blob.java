@@ -78,8 +78,7 @@ public String[] getTopics()
 
 public String toString()
 {
-    StringBuilder sb = new StringBuilder("filename " + filename + " size = " + size + "\n");
-    return sb.toString();
+	return "filename " + filename + " size = " + size + "\n";
 }
 
 	/** a blob is the same as another one if it has the same name, and the same content hash */
@@ -172,7 +171,7 @@ public Pair<String, String> getContent(BlobStore store)
 	}
 	else{
 		processedSuccessfully = true;
-		return new Pair<String,String>(metadataBuffer.toString(), handler.toString());
+		return new Pair<>(metadataBuffer.toString(), handler.toString());
 	}
 
 

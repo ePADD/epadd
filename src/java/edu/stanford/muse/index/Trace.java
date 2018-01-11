@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 class Trace {
 	public static final boolean isEnabled = false;
     private static final Log log = LogFactory.getLog("MuseTrace");
-    private static final Set<String> traceTerms = new LinkedHashSet<String>();
+    private static final Set<String> traceTerms = new LinkedHashSet<>();
     static {
 //    	traceTerms.add("mahish");
     }
@@ -35,7 +35,7 @@ class Trace {
     		return;
     	String s = o.toString();
     	for (String traceTerm: traceTerms)
-    		if (s.toString().toLowerCase().indexOf(traceTerm) >= 0)
+    		if (s.toLowerCase().contains(traceTerm))
     			log.info (message + ": " + s);
     }
 
@@ -45,7 +45,7 @@ class Trace {
     		return;
     	String s = o.toString();
     	for (String traceTerm: traceTerms)
-    		if (s.toString().toLowerCase().indexOf(traceTerm) >= 0)
+    		if (s.toLowerCase().contains(traceTerm))
     			log.info (message1 + ": " + message2 + ": " + s);
     }
 
@@ -55,7 +55,7 @@ class Trace {
     		return;
     	String s = o.toString();
     	for (String traceTerm: traceTerms)
-    		if (s.toString().toLowerCase().indexOf(traceTerm) >= 0)
+    		if (s.toLowerCase().contains(traceTerm))
     			log.info (message1 + ": " + message2 + ": " + message3 + ": "+ s);
     }
 }

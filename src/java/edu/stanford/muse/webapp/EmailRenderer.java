@@ -65,7 +65,7 @@ public class EmailRenderer {
     {
 		StringBuilder html = new StringBuilder();
 		int pageNum = 0;
-		List<String> pages = new ArrayList<String>();
+		List<String> pages = new ArrayList<>();
 
 		// need clusters which map to sections in the browsing interface
 		List<MultiDoc> clusters;
@@ -404,7 +404,7 @@ public class EmailRenderer {
 			html = "";
 		}
 
-		return new Pair<String, Boolean>(html, overflow);
+		return new Pair<>(html, overflow);
 	}
 
 	/**
@@ -420,7 +420,7 @@ public class EmailRenderer {
         Set<String> contactAddresses = new LinkedHashSet<>();
         String archiveID = SimpleSessions.getArchiveIDForArchive(searchResult.getArchive());
         //get contact ids from searchResult object.
-        Set<Integer> highlightContactIds = searchResult.getHLInfoContactIDs().stream().map(d->Integer.parseInt(d)).collect(Collectors.toSet());
+        Set<Integer> highlightContactIds = searchResult.getHLInfoContactIDs().stream().map(Integer::parseInt).collect(Collectors.toSet());
         if(highlightContactIds!=null)
             for(Integer hci: highlightContactIds) {
                 if(hci == null)
@@ -525,7 +525,7 @@ public class EmailRenderer {
         public Map<String, Short> ids;
         //person,places,orgs, custom
         public String name;
-        public Set<String> types = new HashSet<String>();
+        public Set<String> types = new HashSet<>();
 
         public Entity(String name, Map<String, Short> ids, Set<String> types) {
             this.name = name;

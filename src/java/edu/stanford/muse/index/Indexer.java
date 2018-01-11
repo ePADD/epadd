@@ -282,7 +282,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		boolean result = true;
 		// bail out if no attachments
 		if (e.attachments == null)
-			return result;
+			return true;
 
 		final String DELIMITER = "\n";
 		for (Blob b : e.attachments) {
@@ -454,7 +454,6 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		return result;
 	}
 
-	private long	currentJobStartTimeMillis	= 0L;
 	private int	currentJobDocsetSize, currentJobDocsProcessed, currentJobErrors;
 
 	public void cancel()
@@ -473,6 +472,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			return JSONUtils.getStatusJSON("Starting indexer...");
 
 		// compute how much time remains
+		long currentJobStartTimeMillis = 0L;
 		long elapsedTimeMillis = System.currentTimeMillis() - currentJobStartTimeMillis;
 		long unprocessedTimeSeconds = -1;
 
@@ -1319,7 +1319,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		org.apache.lucene.document.Document newdoc = new org.apache.lucene.document.Document();
 
 		//copy fields from dsrc to newdoc
-		dsrc.getFields().forEach(field -> newdoc.add(field));
+		dsrc.getFields().forEach(newdoc::add);
 		//add to map docIDtoEmailDoc
 		docIdToEmailDoc.put(edoc.getUniqueId(), edoc);
 
@@ -1439,8 +1439,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 		int n_added = 0;
 		log.info("Found: " + hits.length + " hits for query: " + q);
-       for (int i = 0; i < hits.length; i++) {
-			int ldocId = hits[i].doc; // this is the lucene doc id, we need to map it to our doc id.
+		for (ScoreDoc hit : hits) {
+			int ldocId = hit.doc; // this is the lucene doc id, we need to map it to our doc id.
 
 			String docId; // this will be our doc id
 
@@ -1453,16 +1453,13 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 				continue;
 			}
 
-            if (threshold <= 1)
-			{
+			if (threshold <= 1) {
 				// common case: threshold is 1.
 				result.add(docId);
 				n_added++;
-			}
-			else
-			{
+			} else {
 				// more expensive, do it only if threshold is > 1
-				Explanation expl = searcher.explain(query, hits[i].doc);
+				Explanation expl = searcher.explain(query, hit.doc);
 				Explanation[] details = expl.getDetails();
 				// NB: a catch here is that details.length doesn't reflect the actual # of hits for the query.
 				// sometimes, for a single hit, there are 2 entries, a ComplexExplanation and an Explanation.
@@ -1475,17 +1472,15 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 				//				log.info("doc id " + hits[i].toString() + " #details = " + details.length);
 
 				// HORRIBLE HACK! - because we don't know a better way to find the threshold
-				outer: for (Explanation detail : details)
-				{
+				outer:
+				for (Explanation detail : details) {
 					// log.info(detail.getClass().getName());
 
-					if (detail instanceof ComplexExplanation)
-					{
+					if (detail instanceof ComplexExplanation) {
 						ComplexExplanation ce = (ComplexExplanation) detail;
 						String s = ce.toString();
 						int total_tf = 0;
-						while (true)
-						{
+						while (true) {
 							int idx = s.indexOf("tf(termFreq(");
 							if (idx < 0)
 								break outer;
@@ -1505,8 +1500,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 								log.warn("ERROR parsing complex expl: " + num_str);
 							}
 							total_tf += num;
-							if (total_tf >= threshold)
-							{
+							if (total_tf >= threshold) {
 								result.add(docId);
 								n_added++;
 								break outer;

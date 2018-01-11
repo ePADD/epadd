@@ -36,7 +36,7 @@ public class ThunderbirdUtils {
 		// parse lines like 
 		// user_pref("mail.server.server2.directory-rel", "[ProfD]Mail/Local Folders");
 		// to create a map of user_pref's
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<>();
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(prefsFile), "UTF-8"));
 		while (true)
 		{
@@ -96,7 +96,7 @@ public class ThunderbirdUtils {
 			}
 
 			// ok, now have map. look for accounts and their information.
-			List<List<String>> result = new ArrayList<List<String>>();
+			List<List<String>> result = new ArrayList<>();
 			Map<String, String> userPrefsMap = readUserPrefs(prefs);
 
 			// get the account list: original line looks like: user_pref("mail.accountmanager.accounts", "account2,account1");
@@ -140,7 +140,7 @@ public class ThunderbirdUtils {
 				if (ids == null)
 				{
 						// must be local folders, they don't have any id's
-						List<String> accountParams = new ArrayList<String>();
+						List<String> accountParams = new ArrayList<>();
 						accountParams.add(accountName);
 						accountParams.add(serverRealHostName);
 						accountParams.add(serverType);
@@ -164,7 +164,7 @@ public class ThunderbirdUtils {
 				while (st1.hasMoreTokens())
 				{
 					// create a result entry for each id
-					List<String> accountParams = new ArrayList<String>();
+					List<String> accountParams = new ArrayList<>();
 					accountParams.add(accountName);
 					accountParams.add(serverRealHostName);
 					accountParams.add(serverType);
@@ -225,7 +225,7 @@ public class ThunderbirdUtils {
 			Util.print_exception(e, log);
 		}
 		
-		List<List<String>> result = new ArrayList<List<String>>();
+		List<List<String>> result = new ArrayList<>();
 
 		try {
 			String rootDir = ThunderbirdUtils.getThunderbirdProfileDir();
@@ -271,15 +271,15 @@ public class ThunderbirdUtils {
 			Pattern directoryRelPat = Pattern.compile(".*\"mail.server.server.*\\.directory-rel\".*");
 			Pattern fccFolderPat = Pattern.compile(".*\"mail.identity.id.*\\.fcc_folder\".*");
 
-			Map<String, String> accountNameMap = new LinkedHashMap<String, String>();
-			Map<String, String> hostnameMap = new LinkedHashMap<String, String>();
-			Map<String, String> realHostnameMap = new LinkedHashMap<String, String>();
-			Map<String, String> serverTypeMap = new LinkedHashMap<String, String>();
-			Map<String, String> usernameMap = new LinkedHashMap<String, String>();
-			Map<String, String> userEmailMap = new LinkedHashMap<String, String>();
-			Map<String, String> userRealNameMap = new LinkedHashMap<String, String>();
-			Map<String, String> directoryRelMap = new LinkedHashMap<String, String>();
-			Map<String, String> fccFolderMap = new LinkedHashMap<String, String>();
+			Map<String, String> accountNameMap = new LinkedHashMap<>();
+			Map<String, String> hostnameMap = new LinkedHashMap<>();
+			Map<String, String> realHostnameMap = new LinkedHashMap<>();
+			Map<String, String> serverTypeMap = new LinkedHashMap<>();
+			Map<String, String> usernameMap = new LinkedHashMap<>();
+			Map<String, String> userEmailMap = new LinkedHashMap<>();
+			Map<String, String> userRealNameMap = new LinkedHashMap<>();
+			Map<String, String> directoryRelMap = new LinkedHashMap<>();
+			Map<String, String> fccFolderMap = new LinkedHashMap<>();
 
 			while (true)
 			{
@@ -369,7 +369,7 @@ public class ThunderbirdUtils {
 				if (!s.startsWith("imap") && !s.startsWith("pop") && !"Local Folders".equals(accountNameMap.get(key)))
 					continue;
 
-				List<String> params = new ArrayList<String>();
+				List<String> params = new ArrayList<>();
 				params.add(accountNameMap.get(key));
 				String hostnameToUse = realHostnameMap.get(key);
 				if (hostnameToUse == null)
@@ -424,7 +424,7 @@ public class ThunderbirdUtils {
 		value = value.substring (0, value.indexOf('"'));
 		// value = xenon.stanford.edu
 
-		return new Pair<String, String> (id, value);
+		return new Pair<>(id, value);
 	}
 
 	/* guess from the user agent what the thunderbird root dir is going to be */
@@ -442,7 +442,7 @@ public class ThunderbirdUtils {
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.startsWith("mac"))
 				isMac = true;
-			else if (os.indexOf("linux") >= 0 || os.indexOf("solaris") >= 0 || os.indexOf("hp-ux") >= 0)
+			else if (os.contains("linux") || os.contains("solaris") || os.contains("hp-ux"))
 				isLinux = true;
 			else if (os.startsWith("windows"))
 			{
@@ -549,7 +549,7 @@ public class ThunderbirdUtils {
 		public static List<String> readThunderbirdAccountsRealNames()
 		{
 			List<List<String>> tbirdAccounts = getThunderbirdAccounts();
-			List<String> result = new ArrayList<String>();
+			List<String> result = new ArrayList<>();
 			for (List<String> x: tbirdAccounts)
 			{
 				String name = x.get(5);

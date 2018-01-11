@@ -59,8 +59,8 @@ public class MuseEmailFetcher {
 	/** clear current emailstores */
 	public synchronized void clearAccounts()
 	{
-		emailStores = new ArrayList<EmailStore>();
-		fetchers = new ArrayList<MTEmailFetcher>();
+		emailStores = new ArrayList<>();
+		fetchers = new ArrayList<>();
 	}
 	
 	private synchronized void addEmailStore(EmailStore stores) // should we call this addAccount
@@ -75,7 +75,7 @@ public class MuseEmailFetcher {
 	public void setupFetchers(int last_N_msgs)
 	{
 		// create the fetchers (not connecting yet)
-	    fetchers = new ArrayList<MTEmailFetcher>();
+	    fetchers = new ArrayList<>();
 	    for (EmailStore store: emailStores)
 	    {
 	    	MTEmailFetcher f = new MTEmailFetcher(1, store, last_N_msgs);
@@ -465,7 +465,7 @@ public class MuseEmailFetcher {
 		
 	    setupFoldersForFetchers(fetchers, selectedFolders, useDefaultFolders);
 	    
-	    List<FolderInfo> fetchedFolderInfos = new ArrayList<FolderInfo>();
+	    List<FolderInfo> fetchedFolderInfos = new ArrayList<>();
 	    
 	    // one fetcher will aggregate everything
 		FetchStats stats = new FetchStats();

@@ -267,14 +267,14 @@
 		bi = ei;
 		ei = temp+numEntries;
 		fetchTableEntries(bi,ei);
-	}
+	};
 	
 	getNext = function(){
 		numEntries = parseInt($("#numLoad").val());
 		bi = ei;
 		ei = bi+numEntries;
 		fetchTableEntries(bi,ei);
-	}
+	};
 	
 	createIndex = function(){
 		params = "";
@@ -283,7 +283,7 @@
 		
 		//supplying the ready function to make it not redirect to the other page and give us the handle of the response data.  
 		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), params, null, "assign-authorities-old.jsp?type="+type);
-	}
+	};
 
 	showing = 0;
 	//beginIndex and endIndex of teh entries to be fetched.
@@ -330,15 +330,15 @@
 				" possible matches by clicking <button onclick='getNext()' class='btn-default'>here</button><br/><br/>";
 				
 			$("#extra").html(html);			
-			return;
-		}
+
+		};
 		params = encodeURI("type="+type+"&db="+"freebase"+"&test="+"false"+"&bi="+bi+"&ei="+ei);
 		page = "ajax/getTableEntries.jsp";
 		epadd.log(page+params);
 		
 		//supplying the ready function to make it not redirect the other page and give us the handle of the response data.  
 		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), params, ready, null);	
-	}
+	};
     fetchTableEntries(bi,ei);
 </script>
 

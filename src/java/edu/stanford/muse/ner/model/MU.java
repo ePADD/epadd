@@ -72,7 +72,7 @@ public class MU implements Serializable {
         this.numSeen = 0;
         if (initialParams != null) {
             initialParams.entrySet().forEach(e->muVectorPositive.put(e.getKey(),e.getValue()));
-            numMixture = (float)initialParams.entrySet().stream().filter(e->e.getKey().startsWith("T:")).mapToDouble(e->e.getValue()).sum();
+            numMixture = (float)initialParams.entrySet().stream().filter(e->e.getKey().startsWith("T:")).mapToDouble(Map.Entry::getValue).sum();
             numSeen = numMixture;
         }
         this.id = id;

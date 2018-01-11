@@ -84,7 +84,7 @@ public class SloppyDates {
 
 		int nTokens = st.countTokens();
 		if (nTokens == 0 || nTokens > 3)
-			return new Triple<Integer, Integer, Integer>(-1, -1, -1);
+			return new Triple<>(-1, -1, -1);
 
 		int mm = -1, dd = -1, yy = -1;
 		while (st.hasMoreTokens())
@@ -94,7 +94,7 @@ public class SloppyDates {
 			int num = -1;
 			try { num = Integer.parseInt(token); } catch (NumberFormatException nfe) { isNumber = false; }
 			if (isNumber && num < 0)
-				return new Triple<Integer, Integer, Integer>(-1, -1, -1);
+				return new Triple<>(-1, -1, -1);
 			if (isNumber)
 			{
 				if (dd == -1 && num > 0 && num <= 31)
@@ -107,10 +107,10 @@ public class SloppyDates {
 						yy = (yy > 12) ? (1900 + yy) : (2000 + yy);
 					}
 					if (yy < 1900 || yy > 2015)
-						return new Triple<Integer, Integer, Integer>(-1, -1, -1);
+						return new Triple<>(-1, -1, -1);
 				}
 				else
-					return new Triple<Integer, Integer, Integer>(-1, -1, -1);
+					return new Triple<>(-1, -1, -1);
 			}
 			else
 			{
@@ -118,10 +118,10 @@ public class SloppyDates {
 				if (x >= 0 && mm == -1)
 					mm = x;
 				else
-					return new Triple<Integer, Integer, Integer>(-1, -1, -1);
+					return new Triple<>(-1, -1, -1);
 			}
 		}
-		return new Triple<Integer, Integer, Integer>(dd, mm, yy);
+		return new Triple<>(dd, mm, yy);
 	}
 
 	/** checks if s is a unique prefix for any of the given terms.
@@ -147,7 +147,7 @@ public class SloppyDates {
 
 	public static List<DateRangeSpec> parseDateSpec(String dateSpec)
 	{
-		List<DateRangeSpec> result = new ArrayList<DateRangeSpec>();
+		List<DateRangeSpec> result = new ArrayList<>();
  		StringTokenizer st = new StringTokenizer(dateSpec, ".,;");
  		while (st.hasMoreTokens())
  		{

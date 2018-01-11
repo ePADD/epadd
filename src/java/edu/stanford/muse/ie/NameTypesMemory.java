@@ -60,7 +60,7 @@ class NameTypesMemory {
 			allDocs = (List) archive.getAllDocs();
 
 		// compute name -> NameInfoMemory
-		Map<String, NameInfoMemory> hitTitles = new LinkedHashMap<String, NameInfoMemory>();
+		Map<String, NameInfoMemory> hitTitles = new LinkedHashMap<>();
 		for (EmailDocument ed: allDocs)
 		{
 			String id = ed.getUniqueId();
@@ -94,17 +94,17 @@ class NameTypesMemory {
 		readTypes(nameMap);
 				
 		// sort by size of the type
-		List<NameInfoMemory> list = new ArrayList<NameInfoMemory>(nameMap.values());
+		List<NameInfoMemory> list = new ArrayList<>(nameMap.values());
 		Collections.sort(list);
 
-		Map<String, Collection<NameInfoMemory>> typedHits = new LinkedHashMap<String, Collection<NameInfoMemory>>();
+		Map<String, Collection<NameInfoMemory>> typedHits = new LinkedHashMap<>();
 		for (NameInfoMemory I : list)
 		{
 			String type = I.type;
 			List<NameInfoMemory> list1 = (List) typedHits.get(type);
 			if (list1 == null)
 			{
-				list1 = new ArrayList<NameInfoMemory>();
+				list1 = new ArrayList<>();
 				typedHits.put(type, list1);
 			}
 			list1.add(I);
@@ -134,7 +134,7 @@ class NameTypesMemory {
 			String id = ed.getUniqueId();
 			List<String> names = archive.getNamesForDocId(id, qt);
 			List<Address> mentionedAddresses = ed.getToCCBCC();
-			Set<String> sentimentsForDoc = new LinkedHashSet<String>();
+			Set<String> sentimentsForDoc = new LinkedHashSet<>();
 			for (String sentiment :sentimentToDocs.keySet()){
 				if (sentimentToDocs.get(sentiment).contains(ed))
 					sentimentsForDoc.add(sentiment);
@@ -152,7 +152,7 @@ class NameTypesMemory {
 				
 				//Map sentiment to its prominence in document.
 				if (I.sentimentCatToCount == null)
-					I.sentimentCatToCount = new LinkedHashMap<String, Integer>();
+					I.sentimentCatToCount = new LinkedHashMap<>();
 				for (String sentiment :sentimentsForDoc){
 					if (!I.sentimentCatToCount.containsKey(sentiment)) //if the sentiment isn't there.
 						I.sentimentCatToCount.put(sentiment, 1);
@@ -173,7 +173,7 @@ class NameTypesMemory {
 					String address_string = emailadr.getAddress();
 					Contact associatedcontact = archive.addressBook.lookupByEmail(address_string);
 					if (I.peopleToCount == null)
-						I.peopleToCount = new LinkedHashMap<Contact, Integer>();
+						I.peopleToCount = new LinkedHashMap<>();
 					
 					if (!I.peopleToCount.containsKey(associatedcontact)) //if the contact is not yet associated.
 						I.peopleToCount.put(associatedcontact, 1);

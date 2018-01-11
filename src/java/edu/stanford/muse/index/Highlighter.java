@@ -202,8 +202,8 @@ class Highlighter {
                                                           Set<String> termsToHighlight, Map<String, EmailRenderer.Entity> entitiesWithId,
                                                           Set<String> termsToHyperlink, boolean showDebugInfo) {
         Set<String> highlightTerms = new LinkedHashSet<>(), hyperlinkTerms = new LinkedHashSet<>();
-        if(termsToHighlight!=null) termsToHighlight.forEach(highlightTerms::add);
-        if(termsToHyperlink!= null) termsToHyperlink.forEach(hyperlinkTerms::add);
+        if(termsToHighlight!=null) highlightTerms.addAll(termsToHighlight);
+        if(termsToHyperlink!= null) hyperlinkTerms.addAll(termsToHyperlink);
 
         // remove these special words from the list of hyperlinkterms, otherwise, we just mess up the HTML if any of them is in the hyperlinkTerms
 
@@ -337,10 +337,7 @@ class Highlighter {
 
             try {
                 result = highlight(result, term, preTag, postTag);
-            } catch (IOException|InvalidTokenOffsetsException e) {
-                Util.print_exception("Exception while adding html annotation: " + ann.first, e, log);
-                e.printStackTrace();
-            } catch(ParseException e){
+            } catch (IOException | InvalidTokenOffsetsException | ParseException e) {
                 Util.print_exception("Exception while adding html annotation: " + ann.first, e, log);
                 e.printStackTrace();
             }
@@ -514,8 +511,7 @@ class Highlighter {
             String preHighlightTag = "<B>", postHighlightTag = "</B>";
             //String str = highlightBatch(text, hts, preHighlightTag, postHighlightTag);
             Set<String> htSet = new LinkedHashSet<>();
-            for(String h: hts)
-                htSet.add(h);
+            Collections.addAll(htSet, hts);
             String[] testDocIds = new String[]{"/Users/vihari/epadd-data/Bush 01 January 2003/Top of Outlook data file.mbox-706",
                 "/Users/vihari/epadd-data/Bush 01 January 2003/Top of Outlook data file.mbox-710"};
                     //"/Users/vihari/epadd-data/Bush 01 January 2003/Top of Outlook data file.mbox-38",

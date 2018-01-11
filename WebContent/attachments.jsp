@@ -271,7 +271,7 @@ $(document).ready(function() {
         return ((x < y) ? -1 : ((x > y) ?  1 : 0));
     };
 
-    $.fn.dataTableExt.oSort['sort-kb-desc']  = function(x,y) { return -1 * $.fn.dataTableExt.oSort['sort-kb-asc'](x,y); }
+    $.fn.dataTableExt.oSort['sort-kb-desc']  = function(x,y) { return -1 * $.fn.dataTableExt.oSort['sort-kb-asc'](x,y); };
 
     var attachments = <%=resultArray.toString(4)%>;
 	$('#attachments').dataTable({

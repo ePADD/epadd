@@ -76,10 +76,10 @@ public class Posting implements Comparable<Posting>, java.io.Serializable {
 		int nTokens = st.countTokens();
 
 		// other's pos should be nTokens away from this's pos
-		for (int i = 0; i < pos.length; i++)
-			for (int j = 0; j < other.pos.length; j++)
-				if (pos[i]+nTokens-1 == other.pos[j])
-					return true;
+        for (byte po : pos)
+            for (int j = 0; j < other.pos.length; j++)
+                if (po + nTokens - 1 == other.pos[j])
+                    return true;
 		return false;
 	}
 

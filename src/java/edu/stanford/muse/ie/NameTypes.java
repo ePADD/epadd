@@ -30,8 +30,8 @@ public class NameTypes {
 		try {
 			Map<String, String> dbpedia = EmailUtils.readDBpedia();
 			//LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new GZIPInputStream(NameTypes.class.getClassLoader().getResourceAsStream(typesFile)), "UTF-8"));
-			Set<String> seenTitles = new HashSet<String>();
-			Set<String> ambiguousTitles = new HashSet<String>();
+			Set<String> seenTitles = new HashSet<>();
+			Set<String> ambiguousTitles = new HashSet<>();
 			for (String title : dbpedia.keySet()) {
 				String r = title.toLowerCase();
 				String cr = r.replaceAll(" \\(.*?\\)", "");
@@ -73,10 +73,10 @@ public class NameTypes {
 			allDocs = (List) archive.getAllDocs();
 
 		// compute name -> nameInfo
-		Map<String, NameInfo> hitTitles = new LinkedHashMap<String, NameInfo>();
+		Map<String, NameInfo> hitTitles = new LinkedHashMap<>();
 
 		int i = 0;
-		List<String> upnames = new ArrayList<String>(), unernames = new ArrayList<String>();
+		List<String> upnames = new ArrayList<>(), unernames = new ArrayList<>();
         Tokenizer tokenizer = new CICTokenizer();
         for (EmailDocument ed : allDocs) {
 			if (i % 1000 == 0)
@@ -87,10 +87,10 @@ public class NameTypes {
 			//Set<String> pnames = tokenize.tokenizeWithoutOffsets(content, true);
 			//Note that archive.getAllNames does not fetch the corr. names, but NER names.
             List<String> pnames = ed.getAllNames();
-            List<String> names = new ArrayList<String>();
+            List<String> names = new ArrayList<>();
 
 			//temp to remove duplication.
-			Set<String> unames = new HashSet<String>();
+			Set<String> unames = new HashSet<>();
 			unames.addAll(pnames);
 			names.addAll(unames);
 			//totalNames += names.size();
@@ -116,9 +116,8 @@ public class NameTypes {
 					I.times++;
 			}
 		}
-		Set<String> unp = new HashSet<String>(), unner = new HashSet<String>();
-		for (String u : upnames)
-			unp.add(u);
+		Set<String> unp = new HashSet<>(), unner = new HashSet<>();
+		unp.addAll(upnames);
 		for (String u : unernames)
 			unner.add(u);
 
@@ -135,17 +134,17 @@ public class NameTypes {
 		readTypes(nameMap);
 
 		// sort by size of the type
-		List<NameInfo> list = new ArrayList<NameInfo>(nameMap.values());
+		List<NameInfo> list = new ArrayList<>(nameMap.values());
 		Collections.sort(list);
 
-		Map<String, Collection<NameInfo>> typedHits = new LinkedHashMap<String, Collection<NameInfo>>();
+		Map<String, Collection<NameInfo>> typedHits = new LinkedHashMap<>();
 		for (NameInfo I : list)
 		{
 			String type = I.type;
 			List<NameInfo> list1 = (List) typedHits.get(type);
 			if (list1 == null)
 			{
-				list1 = new ArrayList<NameInfo>();
+				list1 = new ArrayList<>();
 				typedHits.put(type, list1);
 			}
 			list1.add(I);
@@ -174,7 +173,7 @@ public class NameTypes {
 			String id = ed.getUniqueId();
 			List<String> names = archive.getNamesForDocId(id, Indexer.QueryType.FULL);
 			List<Address> mentionedAddresses = ed.getToCCBCC();
-			Set<String> sentimentsForDoc = new LinkedHashSet<String>();
+			Set<String> sentimentsForDoc = new LinkedHashSet<>();
 			for (String sentiment : sentimentToDocs.keySet()) {
 				if (sentimentToDocs.get(sentiment).contains(ed))
 					sentimentsForDoc.add(sentiment);
@@ -192,7 +191,7 @@ public class NameTypes {
 
 				//Map sentiment to its prominence in document.
 				if (I.sentimentCatToCount == null)
-					I.sentimentCatToCount = new LinkedHashMap<String, Integer>();
+					I.sentimentCatToCount = new LinkedHashMap<>();
 				for (String sentiment : sentimentsForDoc) {
 					if (!I.sentimentCatToCount.containsKey(sentiment)) //if the sentiment isn't there.
 						I.sentimentCatToCount.put(sentiment, 1);
@@ -213,7 +212,7 @@ public class NameTypes {
 					String address_string = emailadr.getAddress();
 					Contact associatedcontact = archive.addressBook.lookupByEmail(address_string);
 					if (I.peopleToCount == null)
-						I.peopleToCount = new LinkedHashMap<Contact, Integer>();
+						I.peopleToCount = new LinkedHashMap<>();
 
 					if (!I.peopleToCount.containsKey(associatedcontact)) //if the contact is not yet associated.
 						I.peopleToCount.put(associatedcontact, 1);

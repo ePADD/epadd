@@ -50,8 +50,8 @@
 			
 			$(".loading").remove();
 			window.location.reload();
-			return;
-		}
+
+		};
 		params = "";
 		page = "ajax/checkFeaturesIndex.jsp";
 		epadd.log(page+params);

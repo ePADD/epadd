@@ -147,7 +147,7 @@ public class Log4JUtils {
  	{
  	    try
  	    {
- 	        Set<FileAppender> flushedFileAppenders = new LinkedHashSet<FileAppender>();
+ 	        Set<FileAppender> flushedFileAppenders = new LinkedHashSet<>();
  	        Enumeration currentLoggers = LogManager.getLoggerRepository().getCurrentLoggers();
  	        while (currentLoggers.hasMoreElements())
  	        {
