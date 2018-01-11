@@ -870,7 +870,7 @@ For each contact C in A2
  Case 2: There is no unique contact C' in A1 such that N1 is a subset of names(C')
     a) Create a new contact C'' in the merged address book with names in the set N2.
     b) Add N1 in C'' and mark them as strikethrough to denote that they are already present in different contacts and hence can not be added here.
-
+gma
 Case 1 example:
 A1: {abc}
 A2: {abxy}
