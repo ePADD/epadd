@@ -24,7 +24,6 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math3.analysis.function.Add;
 import org.json.JSONArray;
 
 import javax.mail.Address;
@@ -126,8 +125,7 @@ public class AddressBook implements Serializable {
      * email1.2
      * name1.1
      * -- (separator token)
-     *
-     * @person2 email2.1
+     * #person2 email2.1
      * name2.1
      * etc.
      */
@@ -240,11 +238,9 @@ public class AddressBook implements Serializable {
      * returns the contact for name/email (creates a new contact if needed)
      * name could be null (or empty, which is equivalent), email cannot be
      *
-     * @return
      */
     private synchronized Contact unifyContact(String email, String name) {
         // we'll implement a weaker pre-condition: both name and email could be null
-        Collection<Contact> cNames = null;
         if (Util.nullOrEmpty(email)) {
             log.warn("Confused: email is null or empty:\n" + Util.stackTrace());
             return null;
@@ -259,6 +255,7 @@ public class AddressBook implements Serializable {
         email = email.trim().toLowerCase();
         // get existing contacts for email/name
         Contact cEmail = lookupByEmail(email);
+        Collection<Contact> cNames;
         if (name != null) {
             cNames = lookupByName(name);
             for (Contact cName : cNames) {
@@ -294,7 +291,7 @@ public class AddressBook implements Serializable {
     /**
      * returns the number of contacts in this address book
      */
-    public int size() {
+    private int size() {
         return allContacts().size();
     }
 
@@ -366,10 +363,8 @@ public class AddressBook implements Serializable {
 
         String email = EmailUtils.cleanEmailAddress(a.getAddress());
         Contact selfContact = getContactForSelf();
-        if (selfContact == null)
-            return false;
+        return selfContact != null && selfContact.getEmails().contains(email);
 
-        return selfContact.getEmails().contains(email);
     }
 
     /**
@@ -588,7 +583,7 @@ public class AddressBook implements Serializable {
             }
         }
 
-        return new Pair<Boolean, Boolean>(sent, received);
+        return new Pair<>(sent, received);
     }
 
     /**
@@ -644,11 +639,7 @@ public class AddressBook implements Serializable {
 
         for (Contact c : allContacts) {
             Contact rep = (Contact) c.find();
-            Set<Contact> list = reps.get(rep);
-            if (list == null) {
-                list = new LinkedHashSet<>();
-                reps.put(rep, list);
-            }
+            Set<Contact> list = reps.computeIfAbsent(rep, k -> new LinkedHashSet<>());
             list.add(c);
         }
 
@@ -701,12 +692,12 @@ public class AddressBook implements Serializable {
 
     public List<Contact> allContacts() {
         // get all ci's into a set first to eliminate dups
-        Set<Contact> uniqueContacts = new LinkedHashSet<Contact>();
+        Set<Contact> uniqueContacts = new LinkedHashSet<>();
         uniqueContacts.addAll(emailToContact.values());
         uniqueContacts.addAll(nameToContact.values());
 
         // now put them in a list and sort
-        List<Contact> uniqueContactsList = new ArrayList<Contact>();
+        List<Contact> uniqueContactsList = new ArrayList<>();
         uniqueContactsList.addAll(uniqueContacts);
 
         return uniqueContactsList;
@@ -716,7 +707,7 @@ public class AddressBook implements Serializable {
      * returns a list of all contacts in the given collection of docs, sorted by outgoing freq.
      */
     public List<Contact> sortedContacts(Collection<EmailDocument> docs) {
-        Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>();
+        Map<Contact, Integer> contactInCount = new LinkedHashMap<>(), contactOutCount = new LinkedHashMap<>();
 
         // note that we'll count a recipient twice if 2 different email addresses are present on the message.
         // we'll also count the recipient twice if he sends a message to himself
@@ -772,8 +763,7 @@ public class AddressBook implements Serializable {
             }
         }
 
-        List<Pair<Contact, Integer>> pairs = Util.sortMapByValue(contactToCount);
-        return pairs;
+        return Util.sortMapByValue(contactToCount);
     }
 
     /**
@@ -781,7 +771,7 @@ public class AddressBook implements Serializable {
      * useful for self addrs. user may have missed some
      */
     public String[] computeAllAddrsFor(String emailAddrs[]) {
-        Set<String> allMyEmailAddrsSet = new LinkedHashSet<String>();
+        Set<String> allMyEmailAddrsSet = new LinkedHashSet<>();
         for (String s : emailAddrs)
             allMyEmailAddrsSet.add(s);
 
@@ -1147,7 +1137,7 @@ In the merged address book there will be three contacts.
         }
         */
 
-        Set<Contact> allCs = new LinkedHashSet<Contact>();
+        Set<Contact> allCs = new LinkedHashSet<>();
         allCs.addAll(nameToContact.values());
         Util.ASSERT(allCs.size() == allContacts.size());
         allCs.addAll(emailToContact.values());
@@ -1289,7 +1279,6 @@ In the merged address book there will be three contacts.
 
     }
 
-
     /*
     Code for deserialization and re-initialization of transient fields of this Class.
      */
@@ -1333,7 +1322,7 @@ In the merged address book there will be three contacts.
         {
             // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
             List<Contact> allContacts = this.contactListForIds;
-            Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();
+            Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<>();
             for (Contact c: allContacts)
             {
                 if (c == self)
