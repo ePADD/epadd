@@ -33,7 +33,6 @@ import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.EmailRenderer;
-import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.io.FileUtils;
@@ -43,7 +42,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
-import org.json.JSONStringer;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -64,8 +62,8 @@ import java.util.stream.Stream;
  *
  */
 public class Archive implements Serializable {
-    private static Log log = LogFactory.getLog(Archive.class);
-    private final static long serialVersionUID = 1L;
+    private static final Log log = LogFactory.getLog(Archive.class);
+    private static final long serialVersionUID = 1L;
 
     // the archive structure: the archive's top level dir has these subdirs
     public static final String BLOBS_SUBDIR = "blobs";
@@ -80,7 +78,7 @@ public class Archive implements Serializable {
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
     public static final String LABELMAPFILE_SUFFIX= "LabelMapper";
 
-    public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY};
+    public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
 
     ////////////  CACHE variables ///////////////
@@ -99,9 +97,9 @@ public class Archive implements Serializable {
     transient private Map<String, Lexicon> lexiconMap = null;
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
-    private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<FolderInfo>();    // keep this private since its updated in a controlled way
+    private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
-    public Set<String> ownerNames = new LinkedHashSet<String>(), ownerEmailAddrs = new LinkedHashSet<String>();
+    public Set<String> ownerNames = new LinkedHashSet<>(), ownerEmailAddrs = new LinkedHashSet<>();
     private transient EntityBook entityBook;//transient because it is saved explicitly
     public transient CorrespondentAuthorityMapper correspondentAuthorityMapper; /* transient because this is saved and loaded separately */
     private Map<String, NameInfo> nameMap;
@@ -109,7 +107,7 @@ public class Archive implements Serializable {
     private transient LabelManager labelManager; //transient because it will be saved and loaded separately
 
     public ProcessingMetadata processingMetadata = new ProcessingMetadata();
-    public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
+    public List<FetchStats> allStats = new ArrayList<>(); // multiple stats because usually there is 1 per import
 
     public String archiveTitle; // this is the name of this archive
 
@@ -136,21 +134,15 @@ public class Archive implements Serializable {
 
 
     public void setLabels(Collection<Document> docs, Set<String> labelIDs){
-        docs.stream().forEach(doc->{
-            labelManager.setLabels(doc.getUniqueId(),labelIDs);
-        });
+        docs.forEach(doc-> labelManager.setLabels(doc.getUniqueId(),labelIDs));
     }
 
     public void unsetLabels(Collection<Document> docs, Set<String> labelIDs){
-        docs.stream().forEach(doc->{
-            labelManager.unsetLabels(doc.getUniqueId(),labelIDs);
-        });
+        docs.forEach(doc-> labelManager.unsetLabels(doc.getUniqueId(),labelIDs));
     }
 
     public void putOnlyTheseLabels(Collection<Document> docs, Set<String> labelIDs){
-        docs.stream().forEach(doc->{
-            labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs);
-        });
+        docs.forEach(doc-> labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs));
     }
     //get all labels for an email document and a given type
     public Set<String> getLabelIDs(EmailDocument edoc){
@@ -182,7 +174,7 @@ public class Archive implements Serializable {
     /**
      * @return all the links extracted from the archive content*/
     //This is a better location for this than Indexer, I (@vihari) think
-    public List<LinkInfo> getLinks() {
+    private List<LinkInfo> getLinks() {
         return indexer.links;
     }
 
@@ -209,15 +201,11 @@ public class Archive implements Serializable {
         return indexer.docsForQuery(term, options);
     }
 
-    public Collection<Document> docsForQuery(int cluster, Indexer.QueryType qt) {
+    Collection<Document> docsForQuery(int cluster, Indexer.QueryType qt) {
         Indexer.QueryOptions options = new Indexer.QueryOptions();
         options.setCluster(cluster);
         options.setQueryType(qt);
         return indexer.docsForQuery(null, options);
-    }
-
-    public Collection<EmailDocument> convertToED(Collection<Document> docs) {
-        return indexer.convertToED(docs);
     }
 
     public Collection<edu.stanford.muse.index.Document> docsForQuery(String term, Indexer.QueryType qt) {
@@ -434,11 +422,6 @@ public class Archive implements Serializable {
         addressBook = null;
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
     /*
          * should happen rarely, only while exporting session. fragile operation,
          * make sure blobStore etc are updated consistently
@@ -460,12 +443,12 @@ public class Archive implements Serializable {
             return null;
     }
 
-    public void addOwnerName(String name) {
+    private void addOwnerName(String name) {
         ownerNames.add(name);
         processingMetadata.ownerName = name;
     }
 
-    public void addOwnerEmailAddrs(Collection<String> emailAddrs) {
+    private void addOwnerEmailAddrs(Collection<String> emailAddrs) {
         ownerEmailAddrs.addAll(emailAddrs);
     }
 
@@ -508,35 +491,6 @@ public class Archive implements Serializable {
         }
     }
 
-    public static void clearCache(String baseDir, String rootDir) {
-        log.info("Clearing archive with baseDir: " + baseDir + " rootDir: " + rootDir);
-        if (!Util.nullOrEmpty(baseDir)) {
-            // delete only indexes, blobs, sessions
-            // keep sentiment stuff around
-            Util.deleteDir(baseDir,log);
-			/*
-			Util.deleteDir(baseDir + File.separatorChar + INDEXES_SUBDIR);
-			Util.deleteDir(baseDir + File.separatorChar + SESSIONS_SUBDIR); // could
-			Util.deleteDir(baseDir + File.separatorChar + LEXICONS_SUBDIR); // could
-			Util.deleteDir(baseDir + File.separatorChar + MODELS_SUBDIR); // could
-																			// also
-																			// call
-																			// sessions.deleteallsessions,
-																			// but
-																			// lazy...
-			*/
-            // prepare cache dir anew
-            prepareBaseDir(baseDir);
-        }
-
-        // rootdir is used only for webapp/<user> (piclens etc) we'll get rid of
-        // it in future
-        if (!Util.nullOrEmpty(rootDir)) {
-            Util.deleteDir(rootDir,log);
-            new File(rootDir + File.separator).mkdirs();
-        }
-    }
-
     /** adds alternateEmailAddrs if specified in the request to the session. alternateEmailAddrs are simply appended to. */
     public void updateUserInfo(String name, String archiveTitle, String alteranteEmailAddrs)
     {
@@ -557,8 +511,8 @@ public class Archive implements Serializable {
         if (allDocs == null) {
             synchronized (this) {
                 if (allDocs == null) {
-                    allDocs = new ArrayList<Document>();
-                    allDocsAsSet = new LinkedHashSet<Document>();
+                    allDocs = new ArrayList<>();
+                    allDocsAsSet = new LinkedHashSet<>();
                 }
             }
         }
@@ -570,7 +524,7 @@ public class Archive implements Serializable {
         if (allDocsAsSet == null) {
             synchronized (this) {
                 if (allDocsAsSet == null) {
-                    allDocsAsSet = new LinkedHashSet<Document>(getAllDocs());
+                    allDocsAsSet = new LinkedHashSet<>(getAllDocs());
                     Util.softAssert(allDocs.size() == allDocsAsSet.size(),log);
                 }
             }
@@ -591,16 +545,6 @@ public class Archive implements Serializable {
             }
 
         }
-    }
-
-    public int nDocsInCluster(int i) {
-        if (i < 0 || i >= docClusters.size())
-            return -1;
-        return docClusters.get(i).getDocs().size();
-    }
-
-    public int nClusters() {
-        return docClusters.size();
     }
 
     // work in progress - status provider
@@ -649,7 +593,7 @@ public class Archive implements Serializable {
     }
 
     public Collection<DatedDocument> docsInDateRange(Date start, Date end) {
-        List<DatedDocument> result = new ArrayList<DatedDocument>();
+        List<DatedDocument> result = new ArrayList<>();
         if (Util.nullOrEmpty(allDocs))
             return result;
 
@@ -733,7 +677,7 @@ public class Archive implements Serializable {
      * @throws Exception
      */
     private void prepareAllDocs(Collection<Document> docs, IndexOptions io) throws Exception {
-        allDocs = new ArrayList<Document>();
+        allDocs = new ArrayList<>();
         allDocs.addAll(docs);
         allDocs = EmailUtils.removeDupsAndSort(allDocs);
         log.info(allDocs.size() + " documents after removing duplicates");
@@ -751,7 +695,7 @@ public class Archive implements Serializable {
         }
 
         // if no filter, accept doc (default)
-        List<Document> newAllDocs = new ArrayList<Document>();
+        List<Document> newAllDocs = new ArrayList<>();
         for (Document d : allDocs)
             if (io.filter == null || (io.filter != null && io.filter.matches(d)))
                 newAllDocs.add(d);
@@ -771,7 +715,7 @@ public class Archive implements Serializable {
 
     private void setupFolderInfosMap() {
         if (fetchedFolderInfosMap == null)
-            fetchedFolderInfosMap = new LinkedHashMap<String, FolderInfo>();
+            fetchedFolderInfosMap = new LinkedHashMap<>();
         for (FolderInfo fi : fetchedFolderInfos) {
             fetchedFolderInfosMap.put(getFolderInfosMapKey(fi.accountKey, fi.longName), fi);
         }
@@ -934,10 +878,6 @@ public class Archive implements Serializable {
     return docsToExport;
     }
 
-
-    public synchronized  void exportWithNoChange(String destinationDir){
-
-    }
     /**
      * a fresh archive is created under out_dir. name is the name of the session
      * under it. blobs are exported into this archive dir. destructive! but
@@ -957,7 +897,7 @@ public class Archive implements Serializable {
             log.warn("Unable to create directory: " + out_dir);
             return null;
         }
-        boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY? true: false;
+        boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY;
         Archive.prepareBaseDir(out_dir);
         if (!exportInPublicMode && new File(baseDir + File.separator + LEXICONS_SUBDIR).exists())
             FileUtils.copyDirectory(new File(baseDir + File.separator + LEXICONS_SUBDIR), new File(out_dir + File.separator + LEXICONS_SUBDIR));
@@ -987,72 +927,68 @@ public class Archive implements Serializable {
         }else{
             allDocs = new ArrayList<>(retainedDocs);
         }
-        Set<String> retainedDocIDs = retainedDocs.stream().map(f-> f.getUniqueId()).collect(Collectors.toSet());
+        Set<String> retainedDocIDs = retainedDocs.stream().map(Document::getUniqueId).collect(Collectors.toSet());
         LabelManager newLabelManager = getLabelManager().getLabelManagerForExport(retainedDocIDs,export_mode);
         setLabelManager(newLabelManager);
         // copy index and if for public mode, also redact body and remove title
         // fields
         final boolean redact_body_instead_of_remove = true;
-        Set<String> docIdSet = new LinkedHashSet<String>();
+        Set<String> docIdSet = new LinkedHashSet<>();
         for (Document d : allDocs)
             docIdSet.add(d.getUniqueId());
         final Set<String> retainedDocIds = docIdSet;
-        Indexer.FilterFunctor emailFilter = new Indexer.FilterFunctor() {
-            @Override
-            public boolean filter(org.apache.lucene.document.Document doc) {
-                if (!retainedDocIds.contains(doc.get("docId")))
-                    return false;
+        Indexer.FilterFunctor emailFilter = doc -> {
+            if (!retainedDocIds.contains(doc.get("docId")))
+                return false;
 
-                if (exportInPublicMode) {
-                    String text = null;
-                    if (redact_body_instead_of_remove) {
-                        text = doc.get("body");
-                    }
-                    doc.removeFields("body");
-                    doc.removeFields("body_original");
-
-                    if (text != null) {
-                        String redacted_text = IndexUtils.retainOnlyNames(text, doc);
-                        doc.add(new Field("body", redacted_text, Indexer.full_ft));
-                        //this uses standard analyzer, not stemming because redacted bodys only have names.
-                    }
-                    String title = doc.get("title");
-                    doc.removeFields("title");
-                    if (title != null) {
-                        String redacted_title = IndexUtils.retainOnlyNames(text, doc);
-                        doc.add(new Field("title", redacted_title, Indexer.full_ft));
-                    }
+            if (exportInPublicMode) {
+                String text = null;
+                if (redact_body_instead_of_remove) {
+                    text = doc.get("body");
                 }
-                return true;
+                doc.removeFields("body");
+                doc.removeFields("body_original");
+
+                if (text != null) {
+                    String redacted_text = IndexUtils.retainOnlyNames(text, doc);
+                    doc.add(new Field("body", redacted_text, Indexer.full_ft));
+                    //this uses standard analyzer, not stemming because redacted bodys only have names.
+                }
+                String title = doc.get("title");
+                doc.removeFields("title");
+                if (title != null) {
+                    String redacted_title = IndexUtils.retainOnlyNames(text, doc);
+                    doc.add(new Field("title", redacted_title, Indexer.full_ft));
+                }
             }
+            return true;
         };
 
-        Indexer.FilterFunctor attachmentFilter = new Indexer.FilterFunctor() {
-            @Override
-            public boolean filter(org.apache.lucene.document.Document doc) {
-                if(exportInPublicMode){
-                    return false;
-                }
-                String docId = doc.get("emailDocId");
-                if(docId == null){
-                    Integer di = Integer.parseInt(doc.get("docId"));
-                    //don't want to print too many messages
-                    if(di==null || di<10)
-                        log.error("Looks like this is an old archive, filtering all the attachments!!\n" +
-                                "Consider re-indexing with the latest version for a proper export.");
-                    return false;
-                }
-                return retainedDocIds.contains(docId);
-            }
-        };
+
         if (exportInPublicMode) {
             List<Document> docs = this.getAllDocs();
-            List<EmailDocument> eds = new ArrayList<EmailDocument>();
+            List<EmailDocument> eds = new ArrayList<>();
             for (Document doc : docs)
                 eds.add((EmailDocument) doc);
 
             EmailUtils.maskEmailDomain(eds, this.addressBook);
         }
+
+        Indexer.FilterFunctor attachmentFilter = doc -> {
+            if(exportInPublicMode){
+                return false;
+            }
+            String docId = doc.get("emailDocId");
+            if(docId == null){
+                Integer di = Integer.parseInt(doc.get("docId"));
+                //don't want to print too many messages
+                if(di<10)
+                    log.error("Looks like this is an old archive, filtering all the attachments!!\n" +
+                            "Consider re-indexing with the latest version for a proper export.");
+                return false;
+            }
+            return retainedDocIds.contains(docId);
+        };
 
         indexer.copyDirectoryWithDocFilter(out_dir, emailFilter, attachmentFilter);
         log.info("Completed exporting indexes");
@@ -1060,7 +996,7 @@ public class Archive implements Serializable {
         // save the blobs in a new blobstore
         if (!exportInPublicMode) {
             log.info("Starting to export blobs, old blob store is: " + blobStore);
-            Set<Blob> blobsToKeep = new LinkedHashSet<Blob>();
+            Set<Blob> blobsToKeep = new LinkedHashSet<>();
             for (Document d : allDocs)
                 if (d instanceof EmailDocument)
                     if (!Util.nullOrEmpty(((EmailDocument) d).attachments))
@@ -1127,7 +1063,7 @@ public class Archive implements Serializable {
         return entityTypeToCount;
     }
     public List<Document> docsWithThreadId(long threadID) {
-        List<Document> result = new ArrayList<Document>();
+        List<Document> result = new ArrayList<>();
         for (Document ed : allDocs) {
             if (((EmailDocument) ed).threadID == threadID)
                 result.add(ed);
@@ -1205,11 +1141,11 @@ public class Archive implements Serializable {
         recMap.put(NEType.Type.PERSON.getCode(),"cp");
         recMap.put(NEType.Type.PLACE.getCode(),"cl");
         recMap.put(NEType.Type.ORGANISATION.getCode(),"co");
-        Arrays.asList(names).stream().filter(n -> recMap.keySet().contains(NEType.getCoarseType(n.type).getCode()))
+        Arrays.stream(names).filter(n -> recMap.keySet().contains(NEType.getCoarseType(n.type).getCode()))
                 .forEach(n -> {
                     Set<String> types = new HashSet<>();
                     types.add(recMap.get(NEType.getCoarseType(n.type).getCode()));
-                    entitiesWithId.put(n.text, new EmailRenderer.Entity(n.text, authorisedEntities == null ? null : authorisedEntities.get(n), types));
+                    entitiesWithId.put(n.text, new EmailRenderer.Entity(n.text, authorisedEntities == null ? null : authorisedEntities.get(n), types)); // TOFIX: intellij points out a bug here. authorizedEntities.get(n) will always return false because n is a Span
                 });
         acrs.forEach(acr->{
             Set<String> types = new HashSet<>();
@@ -1218,7 +1154,6 @@ public class Archive implements Serializable {
         });
 
         //don't want "more" button anymore
-        boolean overflow = false;
         String htmlContents;
         if (contents.length() > Config.MAX_TEXT_SIZE_TO_ANNOTATE) // don't try to annotate extraordinarily long messages, probably bad data, as discovered on RF archive
             htmlContents = Util.escapeHTML(contents);
@@ -1230,6 +1165,8 @@ public class Archive implements Serializable {
 
         StringBuilder sb = new StringBuilder();
         sb.append(htmlContents);
+
+        boolean overflow = false;
         return new Pair<>(sb, overflow);
     }
 
@@ -1482,7 +1419,7 @@ public class Archive implements Serializable {
     //in the map docToAccessionMap then the ID is assumed to be baseAccessionID. Note that, this id is set
     //from the accession ID of the first accession imported in an empty collection.
 
-    Map<EmailDocument,String> getDocToAccessionIDMap(){
+    private Map<EmailDocument,String> getDocToAccessionIDMap(){
         if(docToAccessionIDMap==null)
             return new LinkedHashMap<>();
         else
@@ -1537,7 +1474,7 @@ public class Archive implements Serializable {
 
     private static Map<String, Lexicon> createLexiconMap(String baseDir) throws IOException {
         String lexDir = baseDir + File.separatorChar + LEXICONS_SUBDIR;
-        Map<String, Lexicon> map = new LinkedHashMap<String, Lexicon>();
+        Map<String, Lexicon> map = new LinkedHashMap<>();
         File lexDirFile = new File(lexDir);
         if (!lexDirFile.exists()) {
             log.warn("'lexicons' directory is missing from archive");
@@ -1570,7 +1507,7 @@ public class Archive implements Serializable {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
         if (lexiconMap == null)
-            return new LinkedHashSet<String>();
+            return new LinkedHashSet<>();
         return Collections.unmodifiableSet(lexiconMap.keySet());
     }
 
@@ -1633,7 +1570,7 @@ public class Archive implements Serializable {
     }
 
     public Collection<String> getDataErrors() {
-        Collection<String> result = new LinkedHashSet<String>();
+        Collection<String> result = new LinkedHashSet<>();
 
         for (FetchStats as : allStats) {
             Collection<String> asErrors = as.dataErrors;
@@ -1654,14 +1591,14 @@ public class Archive implements Serializable {
 
     public Span[] getOriginalNamesOfATypeInDoc(edu.stanford.muse.index.Document doc, short type) throws IOException{
         Span[] spans = getAllOriginalNamesInDoc(doc);
-        List<Span> req = Arrays.asList(spans).stream().filter(sp->sp.type==type).collect(Collectors.toList());
+        List<Span> req = Arrays.stream(spans).filter(sp->sp.type==type).collect(Collectors.toList());
         return req.toArray(new Span[req.size()]);
     }
 
-    public Span[] getAllOriginalNamesInDoc(edu.stanford.muse.index.Document doc) throws IOException{
+    private Span[] getAllOriginalNamesInDoc(edu.stanford.muse.index.Document doc) throws IOException{
         Span[] spans = getAllNamesInDoc(doc, true);
         String oc = getContents(doc, true);
-        List<Span> req = Arrays.asList(spans).stream().filter(sp->sp.end<oc.length()).collect(Collectors.toList());
+        List<Span> req = Arrays.stream(spans).filter(sp->sp.end<oc.length()).collect(Collectors.toList());
         return req.toArray(new Span[req.size()]);
     }
 
@@ -1673,7 +1610,7 @@ public class Archive implements Serializable {
     /**@return list of all names in the lucene doc without filtering dictionary words*/
     private static Span[] getNamesOfATypeInLuceneDoc(org.apache.lucene.document.Document ldoc, boolean body, short type) {
         Span[] allNames = NER.getNames(ldoc, body);
-        List<Span> req = Arrays.asList(allNames).stream().filter(s->type==s.type).collect(Collectors.toList());
+        List<Span> req = Arrays.stream(allNames).filter(s->type==s.type).collect(Collectors.toList());
         return req.toArray(new Span[req.size()]);
     }
 
@@ -1687,7 +1624,7 @@ public class Archive implements Serializable {
 
     public Span[] getAllNamesMapToInDoc(edu.stanford.muse.index.Document d, boolean body, short coarseType) throws IOException{
         Span[] allNames = getAllNamesInDoc(d, body);
-        List<Span> req = Arrays.asList(allNames).stream().filter(n-> NEType.getCoarseType(n.type).getCode()==coarseType).collect(Collectors.toList());
+        List<Span> req = Arrays.stream(allNames).filter(n-> NEType.getCoarseType(n.type).getCode()==coarseType).collect(Collectors.toList());
         return req.toArray(new Span[req.size()]);
     }
 
@@ -1756,7 +1693,7 @@ public class Archive implements Serializable {
      */
     @Deprecated public static Set<String> extractNamesOpenNLP(String text) throws Exception {
         List<Pair<String, Float>> pairs = edu.stanford.muse.index.NER.namesFromText(text);
-        Set<String> names = new LinkedHashSet<String>();
+        Set<String> names = new LinkedHashSet<>();
         for (Pair<String, ?> p : pairs)
             names.add(p.getFirst());
 
@@ -1765,7 +1702,7 @@ public class Archive implements Serializable {
 
     //maps locId (int) to docId (edu.stanford.muse.index.Document) using indexer storage structures
     public Integer getLDocIdForContentDocId(String docId){
-        return indexer.contentDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(e->e.getKey()).orElse(0);
+        return indexer.contentDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(Map.Entry::getKey).orElse(0);
     }
 
     public String getDocIdForContentLDocId(Integer ldocId){
@@ -1773,104 +1710,11 @@ public class Archive implements Serializable {
     }
 
     public Integer getLDocIdForBlobDocId(String docId){
-        return indexer.blobDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(e->e.getKey()).orElse(0);
+        return indexer.blobDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(Map.Entry::getKey).orElse(0);
     }
 
     public String getDocIdForBlobLDocId(Integer ldocId) {
         return indexer.blobDocIds.get(ldocId);
-    }
-
-    /** transfers actions from one archive to another. returns user-displayable status message */
-    public String transferActionsFrom(String otherArchiveDir) throws ClassNotFoundException, IOException {
-        return "Error: transfer actions disabled in v3!";
-        /*
-        String file = otherArchiveDir + File.separator + SESSIONS_SUBDIR + File.separator + "default.archive.v1"; // note that is v1!
-
-        if (!new File(file).exists()) {
-            return "Error: no archive found in " + file;
-        }
-
-        ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(file)));
-        Object discard = ois.readObject();
-
-        Archive otherArchive = (Archive)ois.readObject();
-        LinkedHashMap otherMap = new LinkedHashMap();
-        Iterator nMatched = otherArchive.allDocs.iterator();
-
-        while(nMatched.hasNext()) {
-            Document nChanged = (Document)nMatched.next();
-            EmailDocument ed = (EmailDocument)nChanged;
-            if(ed.date != null && !ed.date.equals(EmailFetcherThread.INVALID_DATE)) {
-                String d = ed.getSignature();
-                otherMap.put(d, ed);
-            }
-        }
-
-        int matchedMessages = 0;
-        int changedMessages = 0;
-        Iterator it = this.allDocs.iterator();
-
-        while(it.hasNext()) {
-            Document d = (Document) it.next();
-            EmailDocument ed1 = (EmailDocument)d;
-            String edSig = ed1.getSignature();
-            EmailDocument otherEd = (EmailDocument)otherMap.get(edSig);
-            if(otherEd != null) {
-                ++matchedMessages;
-                boolean changed = false;
-                if(otherEd.doNotTransfer != ed1.doNotTransfer) {
-                    ed1.doNotTransfer = otherEd.doNotTransfer;
-                    changed = true;
-                }
-
-                if(otherEd.transferWithRestrictions != ed1.transferWithRestrictions) {
-                    ed1.transferWithRestrictions = otherEd.transferWithRestrictions;
-                    changed = true;
-                }
-
-                if(otherEd.reviewed != ed1.reviewed) {
-                    ed1.reviewed = otherEd.reviewed;
-                    changed = true;
-                }
-
-                if(otherEd.addedToCart != ed1.addedToCart) {
-                    ed1.addedToCart = otherEd.addedToCart;
-                    changed = true;
-                }
-
-                if(otherEd.comment != null && !otherEd.comment.equals(ed1.comment)) {
-                    ed1.comment = otherEd.comment;
-                    changed = true;
-                }
-
-                if(changed) {
-                    ++changedMessages;
-                }
-            }
-        }
-
-        // transfer authorities
-        String authorityTransferStatus = "";
-
-        try {
-            Map<String, Authority> existingMap = getAuthorities();
-            int existingSize = (Util.nullOrEmpty(existingMap)) ? 0 : existingMap.size();
-
-            Map<String, Authority> otherAuthorities = otherArchive.getAuthorities();
-            if (!Util.nullOrEmpty(otherAuthorities)) {
-                // may be better to add to the existing map? what to do if there are conflicts?
-                this.setAuthorities(otherAuthorities);
-                authorityTransferStatus += otherAuthorities.size() + " authorities transferred, overwriting " + existingSize + " existing authorities";
-            }
-        } catch (Exception e2) { Util.print_exception("Unable to read existing authorities file", e2, log); }
-
-        log.info ("Authority transfer status: " + authorityTransferStatus);
-        return "Changes applied to " + Util.pluralize(changedMessages, "message") + " from " + "archive format v1 ("
-                + Util.pluralize(otherArchive.allDocs.size(), "message") + ") in " + otherArchiveDir
-                + " to current archive in format v2 (" + Util.pluralize(this.allDocs.size(), "message") + ").\n"
-                + Util.pluralize(matchedMessages, "message") + " matched"
-                + "\n" + authorityTransferStatus;
-        */
     }
 
     public static void main(String[] args) {
