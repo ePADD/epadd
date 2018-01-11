@@ -90,43 +90,7 @@ public static String blur(String s)
 	return new String(c);
 }
 
-/** takes in a path string like a/b/c and blurs only the last component of it
- */
-public static String blurPath(String s)
-{
-	if (!BLUR)
-		return s;
-
-	if (s == null || s.length() <= 1)
-		return s;
-
-	// compute all path components, blurring the last one
-	// s: a/b/xyz
-	StringTokenizer st = new StringTokenizer(s, File.separator);
-	List<String> components = new ArrayList<>();
-	while (st.hasMoreTokens())
-	{
-		String x = st.nextToken();
-		if (st.hasMoreTokens())
-			components.add(x); // not last token
-		else
-			components.add(blur(x)); // last token
-	}
-
-	// components {a,b,xyz}
-	StringBuilder result = new StringBuilder();
-	for (int i = 0; i < components.size(); i++)
-	{
-		result.append (components.get(i));
-		if (i < components.size()-1)
-			result.append(File.separator);
-	}
-	// result: a/b/x.z
-
-	return result.toString();
-}
-
-/* like assert, bit does not crash */
+	/* like assert, bit does not crash */
 public static boolean softAssert (boolean b)
 {
     warnIf (!b, "Soft assert failed!");
@@ -148,18 +112,6 @@ public static void warnIf (boolean b, String message)
 		// Thread.dumpStack();
 	    breakpoint();
     }
-}
-
-public static void aggressiveWarn (String message, long sleepMillis)
-{
-	System.out.println ("\n\n\n\n\n");
-	System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	System.out.println ("\n\n\n\n\n\n" + message + "\n\n\n\n\n\n");
-	System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
- 	System.out.println ("\n\n\n\n\n");
-
-	if (sleepMillis > 0)
-		try { Thread.sleep (sleepMillis); } catch (Exception e) { }
 }
 
 public static void die(String reason)
@@ -187,67 +139,6 @@ public static String stackTrace ()
     Throwable t = new Exception("Printing current stack trace");
     t.fillInStackTrace();
     return stackTrace(t);
-}
-
-public static boolean is_image_filename(String filename)
-{
-    String lower_case_name = filename.toLowerCase();
-    return lower_case_name.endsWith(".jpg") || lower_case_name.endsWith(".jpeg") || lower_case_name.endsWith(".gif") || lower_case_name.endsWith(".png"); // tif files don't render properly in piclens || lower_case_name.endsWith (".tif");
-}
-
-public static boolean is_html_filename(String filename)
-{
-	// common html extensions
-    String lower_case_name = filename.toLowerCase();
-    return lower_case_name.endsWith(".htm") || lower_case_name.endsWith(".html")
-    || lower_case_name.endsWith(".asp") || lower_case_name.endsWith(".aspx")
-    || lower_case_name.endsWith(".do") || lower_case_name.endsWith(".jsp");
-}
-
-public static boolean is_pdf_filename(String filename)
-{
-    String lower_case_name = filename.toLowerCase();
-    return lower_case_name.endsWith(".pdf");
-}
-
-public static boolean is_office_document(String filename)
-{
-    String lower_case_name = filename.toLowerCase();
-    return lower_case_name.endsWith(".ppt") || lower_case_name.endsWith(".pptx") ||
-    		lower_case_name.endsWith(".doc") || lower_case_name.endsWith(".docx") ||
-    		lower_case_name.endsWith("xls") || lower_case_name.endsWith(".xlsx");
-}
-
-public static boolean is_supported_file(String filename)
-{
-    String lower_case_name = filename.toLowerCase();
-    return lower_case_name.endsWith(".htm") || lower_case_name.endsWith(".html");
-}
-
-public static void sortFilesByTime(File[] files)
-{
-	// sort by creation time of png files to get correct page order
-	Arrays.sort (files, (f1, f2) -> {
-        long x = f1.lastModified() - f2.lastModified();
-        return (x < 0) ? -1 : ((x > 0) ? 1 : 0);
-    });
-}
-
-public static void run_command (String[] cmd) throws IOException
-{
-	run_command(cmd, null);
-}
-
-public static void run_command (String cmd, String dir) throws IOException
-{
-	StringTokenizer st = new StringTokenizer(cmd);
-	List<String> tokens = new ArrayList<>();
-	while (st.hasMoreTokens())
-		tokens.add(st.nextToken());
-
-	String[] tokensArray = new String[tokens.size()];
-	tokens.toArray(tokensArray);
-	run_command(tokensArray, dir);
 }
 
 public static void run_command (String[] cmd, String dir) throws IOException
@@ -279,21 +170,6 @@ public static void run_command (String[] cmd, String dir) throws IOException
 
     try { p.waitFor(); }
     catch (InterruptedException ie) { System.out.println ("Unable to complete command"); throw new RuntimeException(ie); }
-}
-
-public static void copy_url_to_file(String url, String filename) throws IOException
-{
-	URL u = new URL(url);
-	InputStream is = u.openStream();
-	copy_stream_to_file(is, filename);
-}
-
-public static int url_content_size(String url) throws IOException
-{
-	URL u = new URL(url);
-	InputStream is = u.openStream();
-	byte b[] = getBytesFromStream(is);
-	return b.length;
 }
 
 
@@ -328,102 +204,6 @@ public static void copy_file(String from_filename, String to_filename) throws IO
     copy_stream_to_file(new FileInputStream(from_filename), to_filename);
 }
 
-/** returns whether copy was successful */
-public static boolean copyFileIfItDoesntExist(String fromDir, String toDir, String filename) throws IOException
-{
-	String toFile = toDir + File.separator + filename;
-	String fromFile = fromDir + File.separator + filename;
-	if (new File(toFile).exists())
-		return true;
-	if (!new File(fromFile).exists())
-		return false;
-	Util.copy_file (fromDir + File.separator + filename, toFile);
-	return true;
-}
-
-
-/** warning not i18n safe */
-public static void copy_file_to_stream(String filename, Writer pw) throws IOException
-{
-    int bufsize = 64 * 1024;
-    BufferedInputStream bis = null;
-    try {
-        bis = new BufferedInputStream(new FileInputStream(filename), bufsize);
-        byte buf[] = new byte[bufsize];
-        while (true)
-        {
-            int n = bis.read(buf);
-            if (n <= 0)
-                break;
-            for (int i = 0; i < n; i++)
-                pw.write ((char) buf[i]);
-        }
-    } finally {
-        if (bis != null) bis.close();
-    }
-}
-
-/** return byte array from reading entire inputstream given */
-public static byte[] getBytesFromStream(InputStream is) throws IOException
-{
-    BufferedInputStream bis = new BufferedInputStream(is);
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-    // temporary byte buffer
-    byte[] byteBuf = new byte[1024 * 64];
-
-    while (true)
-    {
-        int bytesRead = bis.read(byteBuf);
-        if (bytesRead <= 0)
-            break;
-        baos.write(byteBuf, 0, bytesRead);
-    }
-    bis.close();
-
-    return baos.toByteArray();
-}
-
-/** returns byte array containing contents of file at specified path */
-public static byte[] getBytesFromFile(String filename) throws IOException
-{
-    File f = new File(filename);
-    long len = f.length();
-    if (len >= (1L << 32))
-        throw new RuntimeException ("File " + filename + " is larger than 2^32 bytes: " + len);
-
-    BufferedInputStream is = new BufferedInputStream(new FileInputStream(f));
-
-    int int_len = (int) len;
-    byte b[] = new byte[int_len];
-    int totalBytesRead = 0;
-    while (true)
-    {
-        int bytesToRead = int_len - totalBytesRead;
-        int bytesRead = is.read(b, totalBytesRead, bytesToRead);
-        if (bytesRead == 0)
-            throw new RuntimeException("Unexpected end of file: " + filename);
-        totalBytesRead += bytesRead;
-        if (totalBytesRead == int_len)
-            break;
-    }
-
-    // make sure we read all the bytes... check that the next byte returned is -1
-    if (is.read() != -1)
-        throw new RuntimeException ("File " + filename + " has more than expected bytes: " + len);
-
-    is.close();
-    return b;
-}
-
-
-/** returns collection of lines from given file (UTF-8). 
- * trims spaces from the lines, 
- * ignores lines starting with # if ignoreCommentLines is true  */
-public static List<String> getLinesFromFile(String filename, boolean ignoreCommentLines) throws IOException
-{
-	return getLinesFromInputStream(new FileInputStream (filename), ignoreCommentLines);
-}
 
 public static List<String> getLinesFromInputStream(InputStream in, boolean ignoreCommentLines) throws IOException
 {
@@ -451,42 +231,6 @@ public static List<String> getLinesFromReader(Reader reader, boolean ignoreComme
 	}
     return result;
 }
-
-public static String readFile(String file) throws IOException
-{
-	StringBuilder sb = new StringBuilder();
-	LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(file)));
-	while (true)
-	{
-		String line = lnr.readLine();
-		if (line == null)
-			break;
-		line = line.trim();
-		sb.append(line);
-		sb.append("\n");
-	}
-	lnr.close();
-    return sb.toString();	
-}
-
-public static String byteArrayToHexString(byte[] ba)
-{
-	if (ba == null)
-		return "";
-	StringBuilder sb = new StringBuilder();
-	for (byte b: ba)
-		sb.append(String.format ("%02x", b));
-	return sb.toString();
-}
-
-/** returns true if the given string contains only digits */
-public static boolean hasOnlyDigits(String s)  
-{  
-   for (char c: s.toCharArray())
-	   if (!Character.isDigit(c))
-		   return false; 
-   return true;  
-}  
 
 /** escape some special xml chars. use at your own risk. */
 public static String escapeXML (String str)
@@ -906,43 +650,6 @@ public static String dirName (String s)
 	return dir;
 }
 
-/* returns top level domain of given link */
-public static String getTLD(String link)
-{
-	int idx = link.indexOf("://");
-	// strip the protocol like http:// if present
-	// need to handle trailing :// or /
-	if (idx > 0 && idx+1+"://".length() <= link.length())
-		link = link.substring(idx + "://".length());
-
-	// strip out www* if the site starts with that
-	if (link.startsWith("www"))
-	{
-		int idxDot = link.indexOf(".");
-		if (idxDot >= 0 && idxDot+1 <= link.length())
-			link = link.substring(idxDot+1);
-	}
-	int idxSlash = link.indexOf("/");
-	if (idxSlash >= 0)
-		link = link.substring(0, idxSlash);
-	StringTokenizer st = new StringTokenizer (link, ".");
-	int nTokens = st.countTokens();
-	int tokensNeeded = 2;
-	for (int i = 0; i < (nTokens - tokensNeeded); i++)
-		st.nextToken();
-	String result = "";
-	for (int i = 0; i < tokensNeeded; i++)
-	{
-		if (!st.hasMoreTokens())
-			break;
-		if (result.length() > 0)
-			result += ".";
-		result += st.nextToken();
-	}
-
-	return result.toLowerCase();
-}
-
 /** normalizes histogram in hist to produce ratios of each position to total sum */
 public static double[] normalizeHistogram(int[] hist)
 {
@@ -963,31 +670,7 @@ public static double[] normalizeHistogramToBase(int[] hist, double base)
 }
 
 
-
-/** sanitize domain name for correct email address (so we can identify sent v/s recd. emails) */
-public static String normalizeServerDomain(String s)
-{
-	if (s == null)
-		return null;
-
-	if (s.startsWith("imaps."))
-		s = s.substring ("imaps.".length()); // strip leading imap, usually not part of email addresses, e.g. imap.gmail.com
-	else if (s.startsWith("pop3s."))
-		s = s.substring ("pop3s.".length()); // strip leading imap, usually not part of email addresses, e.g. imap.gmail.com
-	else if (s.startsWith("imap."))
-		s = s.substring ("imap.".length()); // strip leading imap, usually not part of email addresses, e.g. imap.gmail.com
-	else if (s.startsWith("pop3."))
-		s = s.substring ("pop3.".length()); // strip leading imap, usually not part of email addresses, e.g. imap.gmail.com
-	else if (s.equals("xenon.stanford.edu"))
-		s = "cs.stanford.edu";
-	else if (s.equals("csl-mail.stanford.edu"))
-		s = "cs.stanford.edu";
-	else if (s.endsWith(".pobox.stanford.edu"))
-		s = "stanford.edu";
-	return s;
-}
-
-/** reads contents of a (text) file and returns them as a string */
+	/** reads contents of a (text) file and returns them as a string */
 public static String getFileContents(String filename) throws IOException
 {
 	BufferedReader br;
@@ -1275,38 +958,6 @@ public static<E extends Comparable<? super E>> String joinSort (Collection<E> c,
 	return result.toString();
 }
 
-// text is an email message, returns a sanitized version of it
-// after stripping away signatures etc.
-public static String cleanupEmailMessage (String text) throws IOException
-{
-	StringBuilder result = new StringBuilder();
-	BufferedReader br = new BufferedReader(new StringReader(text));
-	while (true)
-	{
-		String line = br.readLine();
-		if (line == null)
-			break;
-		line = line.trim();
-		if (line.equals("--")) // strip all lines including and after signature
-			break;
-
-		if (line.contains("Original message") || line.contains("Forwarded message"))
-		{
-			int idx1 = line.indexOf("-----");
-			int idx2 = line.lastIndexOf("-----");
-			if (idx1 >= 0 && idx2 >= 0 && idx1 != idx2)
-				break;
-		}
-
-		if (line.startsWith("On ") && line.endsWith("wrote:"))
-			break;
-
-		result.append (line + "\n");
-	}
-
-	return result.toString();
-}
-
 // convert an email folder name to something sane for a file system
 public static String sanitizeFolderName(String s)
 {
@@ -1321,53 +972,6 @@ public static String sanitizeFolderName(String s)
 	s = s.replace("[", "");
 	s = s.replace("]", "");
 	return s;
-}
-
-// Replacing any of the disallowed filename characters (\/:*?"<>|&) to _ 
-// (note: & causes problems with URLs for serveAttachment etc, so it's also replaced)
-public static String sanitizeFileName(String filename){
-    if (filename == null) return null;
-    if (filename.contains("/"))
-    {
-    	filename = filename.replace("/", "_");
-    }
-    if (filename.contains(":"))
-    {
-    	filename = filename.replace(":", "_");
-    }
-    if (filename.contains("*"))
-    {
-    	filename = filename.replace("*", "_");
-    }
-    if (filename.contains("?"))
-    {
-    	filename = filename.replace("?", "_");
-    }
-    if (filename.contains("\""))
-    {
-    	filename = filename.replace("\"", "_");
-    }
-    if (filename.contains("<"))
-    {
-    	filename = filename.replace("<", "_");
-    }
-    if (filename.contains(">"))
-    {
-    	filename = filename.replace(">", "_");
-    }
-    if (filename.contains("|"))
-    {
-    	filename = filename.replace("|", "_");
-    }
-    if (filename.contains("\\"))
-    {
-    	filename = filename.replace("\\", "_");
-    }
-    if (filename.contains("&")) // ampersands cause problems with URLs for serveAttachment etc, so just convert them too
-    {
-    	filename = filename.replace("&", "_");
-    }
-	return filename;
 }
 
 // parses a string and returns as byte array
@@ -1981,20 +1585,7 @@ public static String strippedEmailAddress(String str)
 	return str.substring(1);
 }
 
-// removes dups from the input list
-public static<T> List<T> removeDups(List<T> in)
-{
-	Set<T> set = new LinkedHashSet<>();
-	set.addAll(in);
-	if (set.size() == in.size())
-		return in;
-
-	List<T> result = new ArrayList<>();
-	result.addAll(set);
-	return result;
-}
-
-/** util method */
+	/** util method */
 private static String bytesToHexString(byte[] bytes) 
 {
 	// http://stackoverflow.com/questions/332079
