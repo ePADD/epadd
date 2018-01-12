@@ -182,7 +182,7 @@ public class SimpleSessions {
 			// this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
 			try {
 				//Archive.ProcessingMetadata pm = (Archive.ProcessingMetadata) Util.readObjectFromFile(pmFile); // in the future, this is better encoded as a json string
-				archive.processingMetadata = readProcessingMetadata(baseDir,"default");
+				archive.processingMetadata = readProcessingMetadata(baseDir+File.separatorChar+Archive.SESSIONS_SUBDIR,"default");
 			} catch (Exception e) {
 				Util.print_exception ("Error trying to read processing metadata file", e, log);
 			}

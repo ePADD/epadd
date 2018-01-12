@@ -5,6 +5,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
@@ -12,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -193,7 +195,8 @@ public class LabelManager implements Serializable{
         try {
             String str = dirname+ File.separator+JSONFILENAME;
             reader = new FileReader(str);
-            lm.labelInfoMap = new Gson().fromJson(reader,lm.labelInfoMap.getClass());
+            Type type = new TypeToken<Map<String, Label>>(){}.getType();
+            lm.labelInfoMap = new Gson().fromJson(reader,type);
             reader.close();
 
         } catch (IOException e) {

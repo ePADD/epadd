@@ -53,7 +53,7 @@ public class AddressBook implements Serializable {
 
     public static Log log = LogFactory.getLog(AddressBook.class);
     private final static long serialVersionUID = 1L;
-    public final static String PERSON_DELIMITER = "--";
+    public final static String CONTACT_START_PREFIX = "--";
 
     /**
      * there are 3 important maps maintained in the address book.
@@ -102,7 +102,9 @@ public class AddressBook implements Serializable {
     }
 
     public AddressBook(Contact self){
-        contactListForIds.add(self);
+        //Note that self contact is not added to the list. Q: Does it get added to nameContact/emailContact maps?
+        
+        //contactListForIds.add(self);
         contactForSelf = self;
     }
 /*
@@ -334,7 +336,9 @@ public class AddressBook implements Serializable {
         if (c == null || c.getNames()== null || Util.nullOrEmpty(c.getNames()))
             return "";
 
-        return c.getNames().iterator().next(); // pick first name for self (not best name! because the best name tries to find the longest string etc. Here for the own name, we want to stay with whatever was provided when the archive/addressbook was created.)
+        return c.getNames().iterator().next(); // pick first name for self (not best name! because the best name tries to find the longest string etc.
+        // Here for the own name, we want to stay with whatever was provided when the archive/addressbook was
+        // created.)
     }
 
     /**
@@ -1357,10 +1361,7 @@ mergeResult.newContacts.put(C2,savedC2)
                 if (c != self) {
                     c.writeObjectToStream(out, c.pickBestName());
                     //out.print(dumpForContact(c, c.pickBestName()));
-                    //No need to write PERSON_DELIMITER explicitly as it will be written by writeObjectToStream
-                    //method of the contact class. Without it there was no other way to denote that a contact
-                    //has been read in totality.
-                    //out.write(PERSON_DELIMITER);
+
                 }
             }
         }
@@ -1376,7 +1377,6 @@ mergeResult.newContacts.put(C2,savedC2)
         if(self==null)
             return null;
         AddressBook ab = new AddressBook(self);
-
         Contact c = Contact.readObjectFromStream(in);
         while(c!=null){
             ab.contactListForIds.add(c);
