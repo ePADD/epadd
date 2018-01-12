@@ -258,7 +258,7 @@ public class Archive implements Serializable {
         private final static long serialVersionUID = 6304656466358754945L; // compatibility
         public String institution, repository, collectionTitle, collectionID, accessionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes;
         public long timestamp;
-        public TimeZone tz;
+        public String tz;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
         public int nBlobs, nUniqueBlobs, nImageBlobs, nDocBlobs, nOtherBlobs; // this is just a cache so we don't have to read the archive
         public String ownerName, about;

@@ -185,7 +185,7 @@ public class SearchResult {
         //It is caller's responsibility to get their unique names as and when needed.
             //return matchedDocs.get(doc).second.info.keySet();
         EmailDocument edoc = (EmailDocument)doc;
-        List<Blob> result = new LinkedList<>(edoc.attachments);
+        List<Blob> result = (edoc.attachments != null) ? new LinkedList<>(edoc.attachments) : new LinkedList<>();
         result.retainAll(matchedDocs.get(doc).second.info.keySet());
         return result;
     }
