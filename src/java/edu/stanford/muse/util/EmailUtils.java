@@ -16,6 +16,7 @@
 package edu.stanford.muse.util;
 
 import edu.stanford.muse.Config;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
@@ -32,11 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.mail.Address;
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
-import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -44,11 +43,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class EmailUtils {
-	public static Log					log				= LogFactory.getLog(EmailUtils.class);
+	public static final Log					log				= LogFactory.getLog(EmailUtils.class);
 	private static org.apache.commons.collections4.map.CaseInsensitiveMap<String, String> dbpedia			= null;
-	public static long					MILLIS_PER_DAY	= 1000L * 3600 * 24;
 
-	/** Returns the part before @ in an email address, e.g. hangal@gmail.com => hangal.
+    /** Returns the part before @ in an email address, e.g. hangal@gmail.com => hangal.
 	 * Returns the full string if the input does not have @, or null if the input is null. */
 	private static String getAccountNameFromEmailAddress(String email) {
 		if (email == null)
@@ -105,7 +103,7 @@ public class EmailUtils {
 	 * use only for diagnostics, not for user-visible messages.
 	 * treads defensively, this can be called to report on a badly formatted message.
 	 */
-	public static String formatMessageHeader(MimeMessage m) throws MessagingException {
+	public static String formatMessageHeader(MimeMessage m) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("To: ");
 		if (m == null) {
@@ -116,7 +114,7 @@ public class EmailUtils {
 			Address[] tos = m.getAllRecipients();
 			if (tos != null)
 				for (Address a : tos)
-					sb.append(a.toString() + " ");
+					sb.append(a.toString()).append(" ");
 			sb.append("\n");
 		} catch (Exception e) {
 			Util.print_exception(e, log);
@@ -127,15 +125,15 @@ public class EmailUtils {
 			Address[] froms = m.getFrom();
 			if (froms != null)
 				for (Address a : froms)
-					sb.append(a.toString() + " ");
+					sb.append(a.toString()).append(" ");
 			sb.append("\n");
 		} catch (Exception e) {
 			Util.print_exception(e, log);
 		}
 
 		try {
-			sb.append("Subject: " + m.getSubject());
-			sb.append("Message-ID: " + m.getMessageID());
+			sb.append("Subject: ").append(m.getSubject());
+			sb.append("Message-ID: ").append(m.getMessageID());
 		} catch (Exception e) {
 			Util.print_exception(e, log);
 		}
@@ -204,15 +202,7 @@ public class EmailUtils {
 		return result;
 	}
 
-	public static String emailAddrsToString(String[] addrs)
-	{
-		StringBuilder sb = new StringBuilder(addrs.length + " addresses: ");
-		for (String s : addrs)
-			sb.append(s + " ");
-		return sb.toString();
-	}
-
-	// removes re: fwd etc from a subject line
+    // removes re: fwd etc from a subject line
 	public static String cleanupSubjectLine(String subject)
 	{
 		if (subject == null)
@@ -296,9 +286,9 @@ public class EmailUtils {
 	}
 
 	//	From - Tue Sep 29 11:38:30 2009
-	private static SimpleDateFormat	sdf1	= new SimpleDateFormat("EEE MMM dd hh:mm:ss yyyy");
+	private static final SimpleDateFormat	sdf1	= new SimpleDateFormat("EEE MMM dd hh:mm:ss yyyy");
 	// Date: Wed, 2 Apr 2003 11:53:17 -0800 (PST)
-	private static SimpleDateFormat	sdf2	= new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss");
+	private static final SimpleDateFormat	sdf2	= new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss");
 	public static Random	rng		= new Random(0);
 
 	static {
@@ -307,8 +297,7 @@ public class EmailUtils {
 		Base64 base64encoder = new Base64(76, b);
 	}
 
-	private static void printHeaderToMbox(EmailDocument ed, PrintWriter mbox) throws IOException, GeneralSecurityException
-	{
+	private static void printHeaderToMbox(EmailDocument ed, PrintWriter mbox, LabelManager labelManager) {
 		/* http://www.ietf.org/rfc/rfc1521.txt is the official ref. */
 		Date d = ed.date != null ? ed.date : new Date();
 		String s = sdf1.format(d);
@@ -333,14 +322,22 @@ public class EmailUtils {
 			comment = comment.replaceAll("\r", " ");
 			mbox.println("X-ePADD-Annotation: " + comment);
 		}
-		// todo: add Labels
-        String labels = "TODO";
-        mbox.println("X-ePADD-Labels: " + labels);
-    }
+
+		// print labels
+		{
+			String labelDescription = ""; // default, if there are no labels, we'll always output it.
+			Set<String> labelsIDsForThisDoc = labelManager.getLabelIDs(ed.getUniqueId());
+
+			if (!Util.nullOrEmpty(labelsIDsForThisDoc)) {
+				Set<String> labelsForThisDoc = labelsIDsForThisDoc.stream().map(id -> labelManager.getLabel(id).getLabelName()).collect(Collectors.toSet());
+				labelDescription = Util.join(labelsForThisDoc, ";");
+			}
+			mbox.println("X-ePADD-Labels: " + labelDescription);
+		}
+	}
 
 	/** this is an export for other tools to process the message text or names. Writes files called <n>.fill and <n>.names in the givne dir */
-	public static void dumpMessagesAndNamesToDir(Archive archive, Collection<EmailDocument> docs, String dir) throws IOException, GeneralSecurityException, ClassCastException, ClassNotFoundException
-	{
+	public static void dumpMessagesAndNamesToDir(Archive archive, Collection<EmailDocument> docs, String dir) throws ClassCastException {
 		File f = new File(dir);
 		f.mkdirs();
 		int i = 0;
@@ -353,8 +350,8 @@ public class EmailUtils {
 				pw.close();
 
 				Set<String> allEntities = new LinkedHashSet<>();
-				allEntities.addAll(Arrays.asList(archive.getAllNamesInDoc(ed, true)).stream().map(n->n.text).collect(Collectors.toSet()));
-				allEntities.addAll(Arrays.asList(archive.getAllNamesInDoc(ed, false)).stream().map(n->n.text).collect(Collectors.toSet()));
+				allEntities.addAll(Arrays.stream(archive.getAllNamesInDoc(ed, true)).map(n->n.text).collect(Collectors.toSet()));
+				allEntities.addAll(Arrays.stream(archive.getAllNamesInDoc(ed, false)).map(n->n.text).collect(Collectors.toSet()));
 
 				pw = new PrintWriter(new FileOutputStream(dir + File.separatorChar + i + ".names"));
 
@@ -382,9 +379,9 @@ public class EmailUtils {
 	 */
 	public static void printToMbox(Archive archive, EmailDocument ed, PrintWriter mbox, BlobStore blobStore, boolean stripQuoted)
 	{
-		String contents = "";
+		String contents;
 		try {
-			printHeaderToMbox(ed, mbox);
+			printHeaderToMbox(ed, mbox, archive.getLabelManager());
 			contents = archive.getContents(ed, stripQuoted);
 			printBodyAndAttachmentsToMbox(contents, ed, mbox, blobStore);
 		} catch (Exception e) {
@@ -392,8 +389,7 @@ public class EmailUtils {
 		}
 	}
 
-	private static void printBodyAndAttachmentsToMbox(String contents, EmailDocument ed, PrintWriter mbox, BlobStore blobStore) throws IOException, GeneralSecurityException
-	{
+	private static void printBodyAndAttachmentsToMbox(String contents, EmailDocument ed, PrintWriter mbox, BlobStore blobStore) throws IOException {
 		String frontier = "----=_Part_";
 		List<Blob> attachments = null;
 		if (ed != null)
@@ -470,8 +466,8 @@ public class EmailUtils {
 		return emailAddress.substring(0, idx);
 	}
 
-	private static Pattern	parensPattern		= Pattern.compile("\\(.*\\)");
-	private static Pattern	sqBracketsPattern	= Pattern.compile("\\[.*\\]");
+	private static final Pattern	parensPattern		= Pattern.compile("\\(.*\\)");
+	private static final Pattern	sqBracketsPattern	= Pattern.compile("\\[.*\\]");
 
 	/**
 	 * Cleans the given person name, by stripping whitespace at either end, normalizes spaces, so exactly 1 space between tokens.
@@ -584,7 +580,7 @@ public class EmailUtils {
 	}
 
 	/** try to get the last name */
-	public static String getLastName(String fullName)
+	private static String getLastName(String fullName)
 	{
 		StringTokenizer st = new StringTokenizer(fullName);
 		String lastToken = null;
@@ -618,7 +614,7 @@ public class EmailUtils {
 	}
 
 	/** try to get the last name */
-	public static String getOrg(String email)
+	private static String getOrg(String email)
 	{
 		if (!email.contains("@"))
 			return null;
@@ -637,18 +633,6 @@ public class EmailUtils {
 			return null;
 
 		return org;
-	}
-
-	public static void main1(String args[]) throws IOException
-	{
-		testGetOriginalContent();
-
-		String test[] = new String[] { "a@abc.com", "b@b@b.com", "c@cambridge.ac.uk", "d@hotmail.com", "e#live.com", "e@live.com" };
-		for (String s : test)
-			System.out.println(s + " org is: " + getOrg(s));
-		String test1[] = new String[] { "bill gates iii", "Bill gates", "William H. Gates", "Ian Vo", "Ian V" };
-		for (String s : test1)
-			System.out.println(s + " lastname is: " + getLastName(s));
 	}
 
 	public static Pair<Date, Date> getFirstLast(Collection<? extends DatedDocument> allDocs) { return getFirstLast(allDocs, false); }
@@ -711,14 +695,6 @@ public class EmailUtils {
 		log.info("Removed duplicates from " + docs.size() + " messages: " + (docs.size() - result.size()) + " removed, " + result.size() + " left");
 
 		return result;
-	}
-
-	public static boolean allDocsAreDatedDocs(Collection<? extends Document> ds)
-	{
-		for (Document d : ds)
-			if (!(d instanceof DatedDocument))
-				return false;
-		return true;
 	}
 
 	public static List<LinkInfo> getLinksForDocs(Collection<? extends Document> ds)
@@ -796,29 +772,7 @@ public class EmailUtils {
 		}
 	}
 
-	/** returns set of all messages that have one of these attachments */
-	public static Set<? super EmailDocument> getDocsForAttachments(Collection<EmailDocument> docs, Collection<Blob> blobs)
-	{
-		Set<EmailDocument> result = new LinkedHashSet<>();
-		if (docs == null || blobs == null)
-			return result;
-
-		for (EmailDocument ed : docs)
-		{
-			if (ed.attachments == null)
-				continue;
-			for (Blob b : ed.attachments)
-			{
-				if (blobs.contains(b)) {
-					result.add(ed);
-					break; // no need to check its other attachments
-				}
-			}
-		}
-		return result;
-	}
-
-	/** given a set of emailAddress's, returns a map of email address -> docs containing it, from within the given docs.
+    /** given a set of emailAddress's, returns a map of email address -> docs containing it, from within the given docs.
      * return value also contains email addresses with 0 hits in the archive
 	 * emailAddress should all be lower case. */
     public static Map<String, Set<Document>> getDocsForEAs(Collection<Document> docs, Set<String> emailAddresses){
@@ -864,51 +818,12 @@ public class EmailUtils {
 		// log own addrs
 		StringBuilder sb = new StringBuilder();
 		for (String s : result)
-			sb.append(s + " ");
+			sb.append(s).append(" ");
 		AddressBook.log.info(result.size() + " own email addresses: " + sb);
 		return result;
 	}
 
-	/**
-	 * returns contact -> {in_dates, out_dates} map.
-	 * not responsible for dups, i.e. dedup should have been done before.
-	 * we can consider caching this on contacts directly if it becomes a performance problem.
-	 */
-	public static Map<Contact, Pair<List<Date>, List<Date>>> computeContactToDatesMap(AddressBook ab, Collection<EmailDocument> list)
-	{
-		Map<Contact, Pair<List<Date>, List<Date>>> result = new LinkedHashMap<>();
-
-		// note that we'll add the same date twice if the same contact has 2 different email addresses present on the message.
-		// consider changing this if needed.
-		for (EmailDocument ed : list)
-		{
-			String senderEmail = ed.getFromEmailAddress();
-			if (Util.nullOrEmpty(senderEmail))
-				senderEmail = "------ <NONE> -------"; // dummy, we want to process the other addresses even if sender is not available
-
-			List<String> allEmails = ed.getAllAddrs();
-			for (String email : allEmails)
-			{
-				if (ed.date == null)
-					continue; // no date, no point processing
-
-				Contact c = ab.lookupByEmail(email);
-				if (c == null)
-					continue; // shouldn't happen, but defensive
-
-				Pair<List<Date>, List<Date>> p = result.computeIfAbsent(c, k -> new Pair<>(new ArrayList<>(), new ArrayList<>()));
-				// not seen this contact before
-
-				if (senderEmail.equals(email))
-					p.getSecond().add(ed.date);
-				else
-					p.getFirst().add(ed.date);
-			}
-		}
-		return result;
-	}
-
-	/** normalizeNewlines should already have been called on text */
+    /** normalizeNewlines should already have been called on text */
 	public static String getOriginalContent(String text) throws IOException
 	{
 		StringBuilder result = new StringBuilder();
@@ -918,7 +833,7 @@ public class EmailUtils {
 		String stopper = " . ";
 
 		// we'll maintain line and nextLine for lookahead. needed e.g. for the "on .... wrote:" detection below
-		String originalLine = null;
+		String originalLine;
 		String nextLine = br.readLine();
 
 		while (true)
@@ -1029,7 +944,7 @@ public class EmailUtils {
 			if (line.startsWith("On ") && line.endsWith("wrote:"))
 				break;
 
-			result.append(line + "\n");
+			result.append(line).append("\n");
 		}
 
 		return result.toString();
@@ -1088,48 +1003,26 @@ public class EmailUtils {
 		return map.values();
 	}
 
-	/** returns a histogram of the dates, bucketed in quantum of quantum, going backwards from endTime */
-	public static List<Integer> histogram(List<Date> dates, long endTime, long quantumMillis)
-	{
-		ArrayList<Integer> result = new ArrayList<>();
 
-		// input dates may not be sorted, but doesn't matter
-		for (Date d : dates)
-		{
-			int slot = (int) ((endTime - d.getTime()) / quantumMillis);
-
-			// ensure list has enough capacity because there may be gaps
-			while (result.size() <= slot)
-				result.add(0);
-
-			// result.size() is at least slot+1    
-			Integer I = result.get(slot);
-			result.set(slot, I + 1);
-		}
-
-		return result;
-	}
-
-
-	/*
-	 * normalizes names, computing the (internal) name **for the purposes of lookup only**
-	 * it mangles the name, so it should never be displayed to the user!
-	 * e.g.s
-	 * Wetterwald Julien becomes julien wetterwald
-	 * Obama Barack becomes barack obama (all hail the chief!)
-	 * Barack H Obama also becomes barack obama
-	 *
-	 * (this is different from normalizePersonName, which actually changes the display name shown to the user. e.g. in that method
-	 * "'Seng Keat'" becomes "Seng Keat" (stripping the quotes) and "Teh, Seng Keat" becomes "Seng Keat Teh")
-	 *
-	 * it canonicalizes the name by the following rules:
-	 * (1) ordering all the words in the name alphabetically
-	 * (2) there is exactly one space between each word in the output, with no spaces at the end.
-	 * (3) if there are at least 2 names with multiple letters, then single letter initials are dropped.
-	 *
-	 * we assume these forms are really the same person, so they must be looked up consistently.
-	 * this is somewhat aggressive entity resolution. reconsider if it is found to relate unrelated people...
-	 */
+    /*
+     * normalizes names, computing the (internal) name **for the purposes of lookup only**
+     * it mangles the name, so it should never be displayed to the user!
+     * e.g.s
+     * Wetterwald Julien becomes julien wetterwald
+     * Obama Barack becomes barack obama (all hail the chief!)
+     * Barack H Obama also becomes barack obama
+     *
+     * (this is different from normalizePersonName, which actually changes the display name shown to the user. e.g. in that method
+     * "'Seng Keat'" becomes "Seng Keat" (stripping the quotes) and "Teh, Seng Keat" becomes "Seng Keat Teh")
+     *
+     * it canonicalizes the name by the following rules:
+     * (1) ordering all the words in the name alphabetically
+     * (2) there is exactly one space between each word in the output, with no spaces at the end.
+     * (3) if there are at least 2 names with multiple letters, then single letter initials are dropped.
+     *
+     * we assume these forms are really the same person, so they must be looked up consistently.
+     * this is somewhat aggressive entity resolution. reconsider if it is found to relate unrelated people...
+     */
 	public static String normalizePersonNameForLookup(String name)
 	{
 		if (name == null)
@@ -1167,12 +1060,8 @@ public class EmailUtils {
 
 			// if we have at least 2 multi-letter names, then ignore initials
 			if (nMultiLetterTokens >= 2 && nOneLetterTokens >= 1)
-				for (Iterator<String> it = tokens.iterator(); it.hasNext();)
-				{
-					String t = it.next();
-					if (t.length() == 1)
-						it.remove(); // this is an initial, remove it.
-				}
+                // this is an initial, remove it.
+                tokens.removeIf(t -> t.length() == 1);
 		}
 
 		Collections.sort(tokens);
@@ -1273,77 +1162,7 @@ public class EmailUtils {
         return contactsInMessage;
     }
 
-	/** Filters the contact for specifically people. */
-	public static List<Contact> getPeople(Archive archive) {
-		AddressBook ab = archive.addressBook;
-		List<Document> docs = archive.getAllDocs();
-		//recognise as mailing list when none of the owner addresses is in the from or to addresses.
-		Set<String> ownEAs = archive.ownerEmailAddrs;
-		System.err.println("OwnEAs: " + ownEAs);
-
-		//list of mailing list addresses.
-		Set<String> maillists = new HashSet<>();
-		for (Document doc : docs) {
-			EmailDocument ed = (EmailDocument) doc;
-			List<String> addrs = ed.getAllAddrs();
-			boolean notmaillist = false;
-			if (addrs != null)
-				for (String ea : addrs)
-					if (ownEAs.contains(ea)) {
-						notmaillist = true;
-						break;
-					}
-			if (!notmaillist) {
-				System.err.println("Adding ea to mailing lists: " + ed.getToString());
-				maillists.add(ed.getToString());
-			}
-		}
-
-		//sometimes mailing lists may also contain the owner email address.
-		//should there be one more filter for corporate?  
-
-		List<Contact> contacts = new ArrayList<>();
-		for (Contact c : ab.allContacts()) {
-			boolean ml = false;
-			for (String email : c.getEmails())
-				if (maillists.contains(email)) {
-					ml = true;
-					break;
-				}
-			if (!ml)
-				contacts.add(c);
-		}
-		return contacts;
-	}
-
-	/**
-	 * Cleans and returns names from contacts.
-	 * For svm model training file generation, an additional filtering step of ptype score over dbpedia>0.7 is employed.
-	 * 
-	 * Note: this is not efficient call, dont call it often. As it has to read and analyse dbpedia for better filtering of names.
-	 * 
-	 * @return name -> type, type in the case of addressbook names, type is only person.
-	 */
-	public static Map<String, String> getNames(List<Contact> contacts) {
-		int allsize = contacts.size();
-		Map<String, String> names = new HashMap<>();
-		for (Contact c : contacts) {
-			if (c.getNames()!= null)
-				for (String n : c.getNames()) {
-					//dont trust single word names, may contain phrases like Mom, Dad
-					if (n == null || n.split("\\s+").length == 1)
-						continue;
-					String cn = edu.stanford.muse.util.Util.cleanName(n);
-					if (cn != null)
-						names.put(cn, "Person");
-				}
-		}
-		System.err.println("All contacts size: " + allsize + ", good-names: " + names.size());
-
-		return names;
-	}
-
-	public static String cleanEmailContent(String content) {
+    public static String cleanEmailContent(String content) {
 		String[] lines = content.split("\\n");
 		String cont = "";
 		for (String line : lines) {
@@ -1428,7 +1247,7 @@ public class EmailUtils {
                 String[] words = line.split("\\s+");
                 String r = words[0];
 
-                /**
+                /*
                  * The types file contains lines like this:
                  * National_Bureau_of_Asian_Research Organisation|Agent
                  * National_Bureau_of_Asian_Research__1 PersonFunction
