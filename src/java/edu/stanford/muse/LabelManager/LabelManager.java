@@ -1,5 +1,9 @@
 package edu.stanford.muse.LabelManager;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
@@ -7,8 +11,7 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,9 @@ public class LabelManager implements Serializable{
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
 
+    private static String JSONFILENAME="labelinf.data";
+    private static String CSVFILENAME="docidmap.data";
+
     public enum LabType {
         RESTR_LAB, GEN_LAB
     }
@@ -30,12 +36,12 @@ public class LabelManager implements Serializable{
     }
 
     //Map from Document ID to set of Label ID's
-    private Map<String,Set<String>> docToLabelMap= null;
+    private Multimap<String,String> docToLabelID = null;
     //Map from Label ID's to Label Information
     private Map<String,Label> labelInfoMap=null;
 
     public LabelManager(){
-        docToLabelMap = new LinkedHashMap<>();
+        docToLabelID = LinkedHashMultimap.create();
         labelInfoMap = new LinkedHashMap<>();
         InitialLabelSetup();
     }
@@ -78,31 +84,19 @@ public class LabelManager implements Serializable{
 
     //set label for an email document
     public void setLabels(String docid, Set<String> labelIDs){
-        Set<String> labset = docToLabelMap.getOrDefault(docid,null);
-        if(labset==null){
-            docToLabelMap.put(docid,new LinkedHashSet<>());
-            labset = docToLabelMap.get(docid);
-        }
-        labset.addAll(labelIDs);
+        labelIDs.forEach(labelid-> docToLabelID.put(docid,labelid));
+
     }
 
     //remove label for an email document
     public void unsetLabels(String docid, Set<String> labelIDs){
-        Set<String> labset = docToLabelMap.getOrDefault(docid,null);
-        if(labset!=null)
-            labset.removeAll(labelIDs);
+        labelIDs.forEach(labelid-> docToLabelID.remove(docid,labelid));
     }
 
     //put only a set of labels on a document
     public void putOnlyTheseLabels(String docid, Set<String> labelIDs){
-        Set<String> labset = docToLabelMap.getOrDefault(docid,null);
-        if(labset==null)
-        {
-            docToLabelMap.put(docid,new LinkedHashSet<>());
-            labset = docToLabelMap.get(docid);
-        }
-        labset.clear();
-        labset.addAll(labelIDs);
+        docToLabelID.removeAll(docid);
+        labelIDs.forEach(labelid-> docToLabelID.put(docid,labelid));
     }
 
 
@@ -118,7 +112,7 @@ public class LabelManager implements Serializable{
 
     //get all label IDs for an email document ( any type)
     public Set<String> getLabelIDs(String docid){
-        return docToLabelMap.getOrDefault(docid,new HashSet<>());
+        return new LinkedHashSet<>(docToLabelID.get(docid));
     }
 
     //get all labels of a given type
@@ -140,20 +134,98 @@ public class LabelManager implements Serializable{
     }
 
     /*
-      Code for serialization of this object. Going forward, we will save this object in a human-readable format.
-      For that, we need to resolve the issue of storing mailingList and dataErrors in a human-readable format.
-       */
-    public void serializeObjectToFile(String filename) throws IOException {
-        Util.writeObjectToFile(filename,this);
-    }
-    /*
-    Code for deserialization and re-initialization of transient fields of this Class.
+    argument is the directory where json and csv files will be generated. Label meta data will be stored
+    in a json file whereas the mapping of docids to labelids will be stored as csv.
      */
-    public static LabelManager deserializeObjectFromFile(String filename) throws IOException, ClassNotFoundException {
-        LabelManager labelManager = (LabelManager)Util.readObjectFromFile(filename);
-        //No transient fields need to be filled. Just return this object.
-        return labelManager;
+    public void writeObjectToStream(String dirname){
+
+        // writing labelinfo map to json format
+        FileWriter writer = null;
+        try {
+            String str = dirname+ File.separator+JSONFILENAME;
+            writer = new FileWriter(str);
+            new Gson().toJson(labelInfoMap,writer);
+            writer.close();
+
+        } catch (IOException e) {
+            log.warn("Unable to write labelinfo file");
+        }finally {
+            try {
+                writer.close();
+            } catch (IOException e) {
+
+            }
+        }
+
+        //writing docToLabelIDmap to csv
+        try{
+        FileWriter fw = new FileWriter(dirname+ File.separator+CSVFILENAME);
+        CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
+
+        // write the header line: "DocID,LabelID ".
+        List<String> line = new ArrayList<>();
+        line.add ("DocID");
+        line.add ("LabelID");
+        csvwriter.writeNext(line.toArray(new String[line.size()]));
+
+        // write the records
+        for(String docid: docToLabelID.keySet()){
+            for(String labid: docToLabelID.get(docid)) {
+                line = new ArrayList<>();
+                line.add(docid);
+                line.add(labid);
+                csvwriter.writeNext(line.toArray(new String[line.size()]));
+            }
+           }
+            csvwriter.close();
+            fw.close();
+        } catch (IOException e) {
+            log.warn("Unable to write docid to label map in csv file");
+            return;
+        }
+
     }
+
+    public static LabelManager readObjectFromStream(String dirname){
+        // reading labelinfo map from json format
+        LabelManager lm = new LabelManager();
+        FileReader reader = null;
+        try {
+            String str = dirname+ File.separator+JSONFILENAME;
+            reader = new FileReader(str);
+            lm.labelInfoMap = new Gson().fromJson(reader,lm.labelInfoMap.getClass());
+            reader.close();
+
+        } catch (IOException e) {
+            log.warn("Unable to read labelinfo file");
+        }finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                log.warn("Unable to close labelinfo file");
+            }
+        }
+        /// reading docToLabelIDmap from csv
+        try{
+            FileReader fr = new FileReader(dirname+ File.separator+CSVFILENAME);
+            CSVReader csvreader = new CSVReader(fr, ',', '"', '\n');
+
+            // read line by line
+            String[] record = null;
+            while ((record = csvreader.readNext()) != null) {
+                lm.docToLabelID.put(record[0],record[1]);
+            }
+
+            csvreader.close();
+            fr.close();
+        } catch (IOException e) {
+            log.warn("Unable to read docid to label map from csv file");
+
+        }
+
+        return lm;
+    }
+
 
     /*
     Returns a new labelmanager to capture what all labels and docs are being exported from a module
@@ -161,14 +233,14 @@ public class LabelManager implements Serializable{
     public LabelManager getLabelManagerForExport(Set<String> docids, Archive.Export_Mode mode){
         LabelManager tmp = new LabelManager();
         tmp.labelInfoMap.putAll(labelInfoMap);
-        tmp.docToLabelMap.putAll(docToLabelMap);
+        tmp.docToLabelID.putAll(docToLabelID);
         if(mode== Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING){
             //all labels are exported.. But in labelDocMap keep only those docs which are being exported.
-            tmp.docToLabelMap.keySet().retainAll(docids);
+            tmp.docToLabelID.keySet().retainAll(docids);
         }else{
             //only non-restricted labels are exported[even if of date type].. In labelDocMap keep only those docs which are being exported.
             tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->entry.getValue().getType()!=LabType.RESTR_LAB).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-            tmp.docToLabelMap.keySet().retainAll(docids);
+            tmp.docToLabelID.keySet().retainAll(docids);
         }
         return tmp;
     }
@@ -201,12 +273,12 @@ public class LabelManager implements Serializable{
         //distinguishing prefix before them (say LM1 and LM2, or only Accesion2 in the src label manager)
         String renamedLM_Name="Accession2.";
         Map<String,Label> labnameToLabelMap = new LinkedHashMap<>();
-        getAllLabels().stream().forEach(label-> labnameToLabelMap.put(label.getLabelName(),label));
+        getAllLabels().forEach(label-> labnameToLabelMap.put(label.getLabelName(),label));
         //Step 1. Copy labels from other to this while renaming label ID's (except DNT/System label)
         for(Label lab: other.getAllLabels()){
             String labid = lab.getLabelID();
-            if(lab.isSysLabel)
-                continue;
+            /*No special handling for system labels. if(lab.isSysLabel)
+                continue;*/
             String newlabid;
             if(labelInfoMap.containsKey(labid)){
                 //rename labid to newlabid
@@ -240,13 +312,10 @@ public class LabelManager implements Serializable{
         //now iterate over docLabelInfoMap of other and add those documents in this object's docLabelInfoMap
         //if docid is same then do the set union after renaming old id's to new one (taken from oldToNewLabelIdMap)
         //if docid is new then simply copy them
-        for(String docid: other.docToLabelMap.keySet()){
+        for(String docid: other.docToLabelID.keySet()){
             //get newlabid's generated in above for loop
-            Set<String> newlabels = other.docToLabelMap.get(docid).stream().map(oldToNewLabelID::get).collect(Collectors.toSet());
-            if(docToLabelMap.containsKey(docid)){
-                docToLabelMap.get(docid).addAll(newlabels);
-            }else
-                docToLabelMap.put(docid,newlabels);
+            Set<String> newlabels = other.docToLabelID.get(docid).stream().map(labid->oldToNewLabelID.get(labid)).collect(Collectors.toSet());
+            newlabels.forEach(labelid-> docToLabelID.put(docid,labelid));
         }
 
         return result;

@@ -15,8 +15,10 @@
 */
 package edu.stanford.muse.AddressBookManager;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.EmailUtils;
@@ -842,87 +844,121 @@ public class AddressBook implements Serializable {
     }
 
     public class MergeResult{
-        public Map<Contact,List<Contact>> mergedContacts;
-        public List<Contact> newlycreatedContacts;
+        /*mergedContacts map is used to track how a contact in A1 expanded after merging.
+         A1: [a b c d e]
+         A2: [a b x] [c f]
+        Here after merging we will have [abcdefx] and this map will contain [abcdefx]->[abcde] so that
+        we can infer that f and x were added. Note that by the condition of type1 there will be a unique
+        contact in A2 from where these added names/emails must have come [unique for f and unique for x
+        separately]. From the end user point of view
+        he has to decide if f and x should be part of this merged contact or not. Therefore this information is
+        sufficient for him.
+        */
+        public Map<Contact,Contact> mergedContacts = new LinkedHashMap<>();
+
+        /* newlycreatedContacts is used to track the split of a contact in A2. The key of this map
+        is the contact of A2 after split and the values are [multimap] the set of contacts in A2 from where
+        the names/emails of this contact were created.
+        Example: A1:[xy], A2:[ax][ay] here a new contact [a] will be created which will have mapping to
+         [ax] and [ay] separately. For end user we would list all those contacts where a,x,y are present in
+         merged addressbook).
+         */
+        public SetMultimap<Contact,Contact> newlycreatedContacts = LinkedHashMultimap.create();
     }
 /*
 Merge algorithm:
 
 Input: A1 - First Address book, A2- Second address book
 Assumption: A1 is trusted
-
-For each contact C in A2
- Let names(C) = N1 U N2 such that N1 is the set of names present in A1 and N2 is the new set of names appearing in A2.
- Case 1: There is a unique contact C' in A1 such that N1 is a subset of names(C')-
-    a) add N2 to the names in C' and mark them as newly added so that user can revisit and confirm them.
-    b) Add modified C' to merged Address book.
- Case 2: There is no unique contact C' in A1 such that N1 is a subset of names(C')
-    a) Create a new contact C'' in the merged address book with names in the set N2.
-    b) Add N1 in C'' and mark them as strikethrough to denote that they are already present in different contacts and hence can not be added here.
-gma
-Case 1 example:
-A1: {abc}
-A2: {abxy}
-
-In the merged address book there will be a single contact with names {abcxy}. Here x and y will be highlighted.
-
-Case 2 example:
-A1: {abc}{xy}
-A2: {abcdxz}
-
-In the merged address book there will be three contacts.
-{abc}
-{xy}
-{abcdxz} where a,b,c, and x will be as strikethrough text.
+common = names(A1) ^ names(A2)
+for each C2 in A2:{
+Let SC1 = U_e\in [common ^(names(C2)] lookup(e,A1)
+if |SC1| = 1 && |U_e\in [names(C2)-common] lookup(e,A2)| = 1
+{
+//Type 1; --- There exists a unique C1 in A1 such that for all x that are common between A1 and A2,
+// x is only in C1.-- We can unambiguously merge C2 to C1.
+//Example that will not be covered here.. A1:[a b c d] A2:[a b x], [b c y]. Here b appears in two contacts of A2
+//so we still have doubt about it. This is an example of Type 2: Here the merged AB will be A:[a b c d],[x], [y]-- With [x] we will list all
+//contacts (merged) where a b or x appear. With [y] we will list all contacts where b c or y appear.
+Let C1\in SC1;
+Let savedC1 = C1.clone()
+C1=C1 U C2
+//because no merged name will appear again in A2
+mergeResult.mergedContacts.put(C1,savedC1)
+//There was only one contact in A2 which caused expansion of C1.
+}else{
+Let savedC2 = C2.clone()
+C2 = C2 - common
+add C2 (if not empty) in the merged address book.
+mergeResult.newContacts.put(C2,savedC2)
+}
  */
     public MergeResult merge(AddressBook other){
+        Set<String> elementsInCollection = Util.setUnion(nameToContact.keySet(),emailToContact.keySet());
+        Set<String> elementsInAccession =  Util.setUnion(other.nameToContact.keySet(),other.emailToContact.keySet());
+        Set<String> commonelements = Util.setIntersection(elementsInCollection,elementsInAccession);
         MergeResult result = new MergeResult();//for filling in the results and displaying as a report.
-        for(Contact c: other.allContacts()){
-            Set<String> existingmails = new LinkedHashSet<>();
-            Set<String> newemails = new LinkedHashSet<>();
-            boolean case2=false;
-            Contact oldcontacttmp = null;
-            for(String email: c.getEmails()){
-                //search for this email in this address book. if not present then add to newemails.
-                //else [if this is same contact as oldcontact then add to existingmails else break- means case 2 in the algorithm]
-                Contact inoldcontact = lookupByEmail(email);
-                if(inoldcontact == null){
-                    //means it is a new email in the incoming archive.
-                    newemails.add(email);
-                }else{
-                    if(oldcontacttmp==null || oldcontacttmp==inoldcontact) {
-                        oldcontacttmp = inoldcontact;
-                        existingmails.add(email);
-                    }else{
-                        existingmails.add(email);
-                        case2=true;  //means we found an instance of Case 2 above (in algorithm)
-                    }
-                }
+        ///Folllowing two variables are used for bookkeeping so that this addressbook doesn't get modified
+        //while being in this loop.
+        Multimap<Contact,Contact> mergeContacts = LinkedHashMultimap.create();
+        Set<Contact> newContact = new LinkedHashSet<>();
+
+        for(Contact C2: other.allContacts()){
+            Set<String> elementsC2 = Util.setUnion(C2.getEmails(),C2.getNames());
+            Set<String> commonC2 = Util.setIntersection(commonelements,elementsC2);
+            Set<Contact> presentInCollection = new LinkedHashSet<>();
+            for(String element: commonC2){
+                if(lookupByName(element)!=null)
+                    presentInCollection.addAll(lookupByName(element));
+                if(lookupByEmail(element)!=null)
+                    presentInCollection.add(lookupByEmail(element));
             }
-            //INV: case2 == false && oldcontacttmp!=null => all email addresses of c which are also present in this
-            //addressbook are all in one contact and that is reference by oldcontacttmp.
-            if(!case2){
-                //add newmails in oldcontacttmp and mention that they were added because all other mailids
-                //are in the same contact of this address book.
-                for(String email:c.getEmails())
-                    if(!oldcontacttmp.getEmails().contains(email))
-                        addEmailAddressForContact(email,oldcontacttmp);
-                for(String name: c.getNames())
-                    if(!oldcontacttmp.getNames().contains(name))
-                        addNameForContactAndUpdateMaps(name,oldcontacttmp);
-                List<Contact> merged = result.mergedContacts.get(oldcontacttmp);
-                if(merged==null)
-                    merged = new LinkedList<>();
-                merged.add(c);
-            }else{
-                //add c as an altogether new contact in this address book and also mention in report that
-                //existingmailids appear in different contacts of this addressbook whereas they appear together
-                //in the incoming addressbook.
-                contactListForIds.add(c);
-                result.newlycreatedContacts.add(c);
+            Set<String> C2OnlyInA2 = new LinkedHashSet<>(elementsC2);
+            C2OnlyInA2.removeAll(commonC2);
+            Set<Contact> presentInAccession = new LinkedHashSet<>();
+            for(String element: C2OnlyInA2){
+                if(other.lookupByName(element)!=null)
+                    presentInAccession.addAll(other.lookupByName(element));
+                if(other.lookupByEmail(element)!=null)
+                    presentInAccession.add(other.lookupByEmail(element));
             }
 
+            if(presentInCollection.size()==1 && presentInAccession.size()==1){
+                //Type 1 above:
+                Contact C1 = presentInCollection.iterator().next();
+                mergeContacts.put(C1,C2);
+                //once the iteration over all contacts of A2 is over then we will merge them so as to avoid
+                //the change in the behaviour of lookup methods.
+            }else{
+                //Type 2 above:
+                newContact.add(C2);
+            }
         }
+        /////////////Now process newContact and mergedContact data structure to actually update this address
+        /////////book. In this process also fill the mergeResult object.
+        for(Contact C1: mergeContacts.keySet()){
+            Contact copyC1 = C1.copy();
+            Set<Contact> C2 = new LinkedHashSet<Contact>(mergeContacts.get(C1));
+            C2.forEach(contact->contact.getEmails().forEach(email-> addEmailAddressForContact(email,C1)));
+            C2.forEach(contact->contact.getNames().forEach(name->addNameForContactAndUpdateMaps(name,C1)));
+            //put C1 and savedC1 in mergedResult
+            result.mergedContacts.put(C1,copyC1);
+        }
+        //For Tpye 2 processing
+        for(Contact C2: newContact){
+            Contact copyC2 =C2.copy();
+            //C2 = C2 - common
+            C2.getNames().removeAll(commonelements);
+            C2.getEmails().removeAll(commonelements);
+            //add C2 to this addressbook.
+            contactListForIds.add(C2);
+            //put C2 and savedC2 in mergedResult's multimap. Why multimap?
+            //consider common = [x,y] and in A2: [a x] and [a y] then this is a case of type2 [because a appears
+            //in 2 different contacts of A2.] here we will have map of [a] -> [a x] and [a] -> [a y] to show
+            //that these are possible candidates where a can go.
+            result.newlycreatedContacts.put(C2,copyC2);
+        }
+
         //call fillTransientfields to update transient maps
         fillTransientFields();
         return result;

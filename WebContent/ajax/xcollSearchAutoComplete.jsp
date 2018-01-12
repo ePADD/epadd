@@ -1,6 +1,6 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
-<%@ page import="edu.stanford.muse.wpmine.Util" %><%@ page import="org.json.JSONArray"%><%@ page import="org.json.JSONObject"%>
+<%@ page import="edu.stanford.muse.util.Util" %><%@ page import="org.json.JSONArray"%><%@ page import="org.json.JSONObject"%>
 <%@ page import="java.util.LinkedHashSet"%><%@ page import="java.util.Set"%><%@ page import="edu.stanford.muse.xcoll.CrossCollectionSearch"%><%@ page import="java.util.List"%>
 <% 
 	String query = request.getParameter("query");

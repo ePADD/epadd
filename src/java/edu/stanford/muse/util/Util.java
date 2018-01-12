@@ -24,7 +24,6 @@
 // warning: do not introduce package dependencies other than java.* classes in
 // this collection of utils
 // utils that are specific to other libs should go in their own utils file
-
 package edu.stanford.muse.util;
 
 import edu.stanford.muse.webapp.JSPHelper;

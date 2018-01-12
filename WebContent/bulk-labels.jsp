@@ -4,6 +4,7 @@
 <%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.index.Document" %>
 
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
@@ -42,7 +43,7 @@
         docsetID = "";
     DataSet browseSet = (DataSet) session.getAttribute(docsetID);
 
-    Collection<EmailDocument> docs = (browseSet == null) ? archive.getAllDocs() : browseSet.getDocs();
+    Collection<Document> docs = (browseSet == null) ? archive.getAllDocs() : browseSet.getDocs();
 
     String title = Util.pluralize (docs.size(), "message");
     if (!Util.nullOrEmpty(docsetID))

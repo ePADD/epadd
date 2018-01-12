@@ -76,7 +76,7 @@ public class Archive implements Serializable {
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
     public static final String ENTITYBOOK_SUFFIX = "EntityBook";
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
-    public static final String LABELMAPFILE_SUFFIX= "LabelMapper";
+    public static final String LABELMAPDIR= "LabelMapper";
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
@@ -106,8 +106,8 @@ public class Archive implements Serializable {
 
     private transient LabelManager labelManager; //transient because it will be saved and loaded separately
 
-    public ProcessingMetadata processingMetadata = new ProcessingMetadata();
-    public List<FetchStats> allStats = new ArrayList<>(); // multiple stats because usually there is 1 per import
+    public transient ProcessingMetadata processingMetadata = new ProcessingMetadata();//setting it as transient since v5 as it will be stored/read separately
+    public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
 
     public String archiveTitle; // this is the name of this archive
 
@@ -1408,22 +1408,28 @@ public class Archive implements Serializable {
         public AddressBook.MergeResult addressBookMergeResult;
         ///For LabelManager Merge report
         public LabelManager.MergeResult labManagerMergeResult;
+        ///For Lexicon merge report
+        public Set<String> clashedLexicons;
+        public Set<String> newLexicons;
     }
 
     //////////////////////////Data fields for accessionmerging///////////////////////////
     private transient MergeResult lastMergeResult;
-    private Map<EmailDocument,String> docToAccessionIDMap;
+    private Map<String,String> docIDToAccessionID;
     public String baseAccessionID;//This represents the accession ID when an accession is imported
     //to an empty collection. It is used for ensuring a manageable size of docToAccessionMap for common case
     //of single accession archives. While getting to know about the accessionID of a doc if it is not found
     //in the map docToAccessionMap then the ID is assumed to be baseAccessionID. Note that, this id is set
     //from the accession ID of the first accession imported in an empty collection.
 
-    private Map<EmailDocument,String> getDocToAccessionIDMap(){
-        if(docToAccessionIDMap==null)
+    public MergeResult getLastMergeResult(){
+        return lastMergeResult;
+    }
+    private Map<String,String> getDocIDToAccessionID(){
+        if(docIDToAccessionID ==null)
             return new LinkedHashMap<>();
         else
-            return docToAccessionIDMap;
+            return docIDToAccessionID;
     }
 
     //Postcondition: variable MergeResult is set
@@ -1444,7 +1450,7 @@ public class Archive implements Serializable {
                     getAllDocs().add(doc);
                     getAllDocsAsSet().add(doc);
                     //add a field called accession id to these documents.
-                    getDocToAccessionIDMap().put(edoc,accessionID);
+                    getDocIDToAccessionID().put(edoc.getUniqueId(),accessionID);
                     indexer.moveDocAndAttachmentsToThisIndex(other.indexer, edoc,other.getBlobStore(),blobStore);
                 } catch (IOException e) {
                     log.warn("Unable to copy document with signature" + ((EmailDocument) doc).getSignature() + " from the incoming archive to this archive ");
@@ -1461,6 +1467,38 @@ public class Archive implements Serializable {
         result.labManagerMergeResult = labelManager.merge(other.getLabelManager());
         ///////////////////////Entity book merging/////////////////////////////////////////////////
 
+
+        ////////////////////Lexicon merging///////////////////////////////////////////////////////
+        //For merging lexicons copy those lexicon files from other's lexicon directory which are not
+        //present in this archive's lexicon directory.Report the names of the files which are present
+        //and the number of new files imported successfully from other archive.
+        String otherLexDir = other.baseDir + File.separatorChar + LEXICONS_SUBDIR;
+        String thisLexDir = baseDir + File.separatorChar + LEXICONS_SUBDIR;
+        File otherlexDirFile = new File(otherLexDir);
+        result.newLexicons = new LinkedHashSet<>();
+        result.clashedLexicons = new LinkedHashSet<>();
+        try {
+            Map<String,Lexicon> collectionLexiconMap = createLexiconMap(baseDir);
+            if (!otherlexDirFile.exists()) {
+                log.warn("'lexicons' directory is missing from the accession");
+            } else {
+                for (File f : otherlexDirFile.listFiles(new Util.MyFilenameFilter(null, Lexicon.LEXICON_SUFFIX))) {
+                    String name = Lexicon.lexiconNameFromFilename(f.getName());
+                    if (!collectionLexiconMap.containsKey(name)) {
+                        //means collection does not have any lexicon of this name. copy it to thisLexDir and report it
+                        Util.copy_file(f.getAbsolutePath(),thisLexDir+File.separatorChar+f.getName());
+                        result.newLexicons.add(name);
+                    }else{
+                        //means there is a clash on lexicon names. Report it and dont' copy.
+                        result.clashedLexicons.add(name);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.warn("Unable to merge lexicon map");
+        }
+
+        //save result for future reference.
         lastMergeResult = result;
 
     }

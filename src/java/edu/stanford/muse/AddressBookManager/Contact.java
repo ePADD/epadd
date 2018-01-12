@@ -56,7 +56,6 @@ public class Contact extends UnionFindObject {
 		return emails;
 	}
 
-/*
 	public Contact copy() {
 		Contact c = new Contact();
 		c.names = names.stream().map(name -> new String(name)).collect(Collectors.toSet());
@@ -64,7 +63,24 @@ public class Contact extends UnionFindObject {
 		c.mailingListState = this.mailingListState;
 		return c;
 	}
-*/
+
+	public boolean equals(Contact other){
+		if(!getNames().equals(other.getNames()))
+			return false;
+		if(!getEmails().equals(other.getEmails()))
+			return false;
+		if(mailingListState!=other.mailingListState)
+			return false;
+		return true;
+	}
+	public int hashCode(){
+		int hashcode=1;
+		for(String email: getEmails())
+			hashcode=hashcode+email.hashCode();
+		for(String name: getNames())
+			hashcode=hashcode+name.hashCode();
+		return hashcode;
+	}
 
 	public String getFirstEmail()
 	{

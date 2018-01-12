@@ -136,7 +136,7 @@ public class SimpleSessions {
 			String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
 			String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
 			String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
-			String labMapFilePath = dir + File.separatorChar + Archive.LABELMAPFILE_SUFFIX;
+			String labMapDirPath= dir + File.separatorChar + Archive.LABELMAPDIR;
 
 
 			//Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
@@ -169,13 +169,23 @@ public class SimpleSessions {
 			/////////////////Label Mapper/////////////////////////////////////////////////////
 			LabelManager labelManager = null;
 			try {
-				labelManager = LabelManager.deserializeObjectFromFile(labMapFilePath);
+				labelManager = LabelManager.readObjectFromStream(labMapDirPath);
 			} catch (Exception e) {
 				Util.print_exception ("Exception in reading label manager from archive, assigning a new label manager", e, log);
 				labelManager = new LabelManager();
 			}
 
 			archive.setLabelManager(labelManager);
+			///////////////Processing metadata////////////////////////////////////////////////
+			// override the PM inside the archive with the one in the PM file
+			//update: since v5 no pm will be inside the archive.
+			// this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
+			try {
+				//Archive.ProcessingMetadata pm = (Archive.ProcessingMetadata) Util.readObjectFromFile(pmFile); // in the future, this is better encoded as a json string
+				archive.processingMetadata = readProcessingMetadata(baseDir,"default");
+			} catch (Exception e) {
+				Util.print_exception ("Error trying to read processing metadata file", e, log);
+			}
 			/////////////////////////////Done reading//////////////////////////////////////////////////////
 			// most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
 			archive.postDeserialized(baseDir, readOnly);
@@ -443,15 +453,10 @@ public class SimpleSessions {
 	public static void saveLabelManager(Archive archive){
 		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
 		//file path name of labelMap file
-		String labMapFilePath = dir + File.separatorChar + Archive.LABELMAPFILE_SUFFIX;
-		log.info("Saving label mapper to file " + labMapFilePath);
-
-		try {
-			archive.getLabelManager().serializeObjectToFile(labMapFilePath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		String labMapDir = dir + File.separatorChar + Archive.LABELMAPDIR;
+		new File(labMapDir).mkdir();//create dir if not exists.
+		log.info("Saving label mapper to directory " + labMapDir);
+		archive.getLabelManager().writeObjectToStream(labMapDir);
 	}
 
 
@@ -512,16 +517,7 @@ public class SimpleSessions {
 				}
 				a.setBaseDir(baseDir);
 
-				// override the PM inside the archive with the one in the PM file
-				// this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
-				try {
-					Archive.ProcessingMetadata pm = (Archive.ProcessingMetadata) Util.readObjectFromFile(pmFile); // in the future, this is better encoded as a json string
-					a.processingMetadata = pm;
-				} catch (Exception e) {
-					Util.print_exception ("Error trying to read processing metadata file", e, log);
-				}
 
-				// similarly, we may read the label manager, addressbook, etc. here
 
                 // no need to read archive authorized authorities, they will be loaded on demand from the legacy authorities.ser file
 				addToGlobalArchiveMap(baseDir,a);

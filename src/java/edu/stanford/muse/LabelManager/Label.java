@@ -124,4 +124,8 @@ public class Label implements Serializable{
         }else
             return false;
     }
+
+    public int hashCode(){
+        return this.labName.hashCode()+this.labType.hashCode()+this.description.hashCode();
+    }
 }
