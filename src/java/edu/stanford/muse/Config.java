@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /*
 VIP class. This class has constants/settings that generally do not change during an ePADD execution, and are set only at startup.
@@ -52,7 +50,8 @@ public class Config {
     public static String DEFAULT_SETTINGS_DIR = System.getProperty("user.home") + File.separator + "epadd-settings";
     private static String DEFAULT_BASE_DIR = System.getProperty("user.home");
     public static String DEFAULT_LEXICON = "general";
-    public static final Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>();
+    public static final Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>(); // must be lower case
+    public static final Set<String> allAttachmentExtensions = new LinkedHashSet<>(); // all attachment extensions.
 
     private static String EPADD_PROPS_FILE = System.getProperty("user.home") + File.separator + "epadd.properties"; // this need not be visible to the rest of ePADD
 
@@ -142,6 +141,7 @@ public class Config {
         }
 
         {
+            // should be all lower case, delimited with Util.OR_DELIMITER
             attachmentTypeToExtensions.put("Graphics", "jpg;jpeg;svg;png;gif;bmp");
             attachmentTypeToExtensions.put("Document", "doc;docx;pages");
             attachmentTypeToExtensions.put("Presentation", "ppt;pptx;key");
@@ -152,6 +152,12 @@ public class Config {
             attachmentTypeToExtensions.put("Audio", "avi;mp4");
             attachmentTypeToExtensions.put("Database", "fmp;db;mdb;accdb");
             attachmentTypeToExtensions.put("Others", "others");
+
+            attachmentTypeToExtensions.keySet().forEach(k -> {
+                Collection<String> exts = Util.splitFieldForOr(attachmentTypeToExtensions.get(k));
+                if (!"Others".equals(k))
+                    allAttachmentExtensions.addAll(exts);
+            });
         }
 
         {

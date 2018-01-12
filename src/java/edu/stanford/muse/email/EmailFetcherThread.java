@@ -1362,8 +1362,15 @@ public class EmailFetcherThread implements Runnable, Serializable {
         } catch (Throwable t) {
             if (t instanceof OutOfMemoryError)
                 this.mayHaveRunOutOfMemory = true;
-            // this is important, because there could be an out of memory etc over here.
-            Util.aggressiveWarn (" A major error seems to have occurded! Processing of messages has been aborted for folder " + folder_name() + " messages [" + begin_msg_index + ", " + end_msg_index + ")", 5000,log);
+                // this is important, because there could be an out of memory etc over here.
+
+            // if it's not an mbox file at all, it will show up as begin and end msg_indx = 1.
+            // so mild warning in that case.
+            // however, try to give a big warning in case it is a real mbox file.
+            if (begin_msg_index == 1 && end_msg_index == 1)
+                log.warn ("An error parsing mbox file " + folder_name() + " (it may not be an mbox file at all)");
+            else
+                Util.aggressiveWarn(" A major error seems to have occurred! Processing of messages has been aborted for folder " + folder_name() + " messages [" + begin_msg_index + ", " + end_msg_index + ")", 5000, log);
             Util.print_exception(t, log);
         } finally {
             try {

@@ -340,7 +340,7 @@ epadd.nav_mark_active = function(text) {
 
 /** needs a stats field to update stats in. if successive, will navigate the browser to /collections */
 epadd.import_accession = function(e, post_params) {
-    $('#gobutton').fadeOut(); // avoid a second submit
+    $('#gobutton').hide(); // avoid a second submit
 
 	var $spinner = $('.fa-spinner', $(e.target));
 	$spinner.show();
@@ -367,7 +367,7 @@ epadd.import_accession = function(e, post_params) {
                 epadd.log('loading archive status: ' + status);
                 window.location = './browse-top?archiveID=' + response.archiveID;
             } else if (response.status == 1) {
-                windos.location = "./mergeReport?archiveID=" + response.archiveID;
+                window.location = "./mergeReport?archiveID=" + response.archiveID;
             } else {
                 epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
             }

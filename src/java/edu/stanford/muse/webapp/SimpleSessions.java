@@ -216,24 +216,15 @@ public class SimpleSessions {
 	 * reads name.processing.metadata from the given basedir. should be used
 	 * when quick archive metadata is needed without loading the actual archive
 	 */
-	public static ProcessingMetadata readProcessingMetadata(String baseDir, String name)
-	{
+	public static ProcessingMetadata readProcessingMetadata(String baseDir, String name) {
 		String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
-		Reader reader = null;
-		try {
-			reader = new FileReader(processingFilename);
-			ProcessingMetadata metadata = new Gson().fromJson(reader,ProcessingMetadata.class);
+		try (Reader reader = new FileReader(processingFilename)) {
+			ProcessingMetadata metadata = new Gson().fromJson(reader, ProcessingMetadata.class);
 			return metadata;
 		} catch (Exception e) {
-			return null;
-		} finally {
-			try {
-				if (reader != null)
-					reader.close();
-			} catch (Exception e1) {
-				Util.print_exception("Unable to read processing metadata", e1, log);
-			}
+			Util.print_exception("Unable to read processing metadata from file" + processingFilename, e, log);
 		}
+		return null;
 	}
 
     /**
@@ -285,7 +276,7 @@ public class SimpleSessions {
 			archive.processingMetadata = new ProcessingMetadata();
 
 		archive.processingMetadata.timestamp = new Date().getTime();
-		archive.processingMetadata.tz = TimeZone.getDefault();
+		archive.processingMetadata.tz = TimeZone.getDefault().getID();
 		archive.processingMetadata.nDocs = archive.getAllDocs().size();
 		archive.processingMetadata.nUniqueBlobs = archive.blobStore.uniqueBlobs.size();
 

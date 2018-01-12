@@ -16,6 +16,7 @@
 package edu.stanford.muse.email;
 
 
+import edu.stanford.muse.Config;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
@@ -122,6 +123,12 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 							return;
 						if (path.endsWith (".DS_Store")) // explicitly ignore .DS_store and ._.DS_Store files, annoying Mac OS binary files that get read as mbox by our parser
 							return;
+
+						// ignore files from the list of recognized attachment types
+						String extension = Util.getExtension(path);
+						if (extension != null && Config.allAttachmentExtensions.contains(extension.toLowerCase()))
+							return;
+
 						log.info ("Ignoring file " + path + " because it has only 1 message and its name matches a suffix that indicates it's likely not an mbox file.");
 					}
 					Folder f1 = pair.getFirst();
