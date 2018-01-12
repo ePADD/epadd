@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="EntryPointsManager">
+    <pattern value="edu.stanford.muse.util.EmailUtils" method="cleanupEmailMessage" />
+    <pattern value="edu.stanford.muse.util.EmailUtils" method="cleanEmailContent" />
+    <pattern value="edu.stanford.muse.util.EmailUtils" method="dumpMessagesAndNamesToDir" />
+    <pattern value="edu.stanford.muse.util.EmailUtils" method="testGetOriginalContent" />
+  </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$" />
     <file type="web" url="file://$PROJECT_DIR$/../muse" />
