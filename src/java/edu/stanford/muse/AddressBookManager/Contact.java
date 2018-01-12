@@ -64,6 +64,8 @@ public class Contact extends UnionFindObject {
 		return c;
 	}
 
+	/*
+	We should correctly work out these two methods. Because contact class is also used as key in hashmap/set etc.
 	public boolean equals(Contact other){
 		if(!getNames().equals(other.getNames()))
 			return false;
@@ -76,12 +78,12 @@ public class Contact extends UnionFindObject {
 	public int hashCode(){
 		int hashcode=1;
 		for(String email: getEmails())
-			hashcode=hashcode+email.hashCode();
+			hashcode=hashcode*email.hashCode();
 		for(String name: getNames())
-			hashcode=hashcode+name.hashCode();
+			hashcode=hashcode*name.hashCode();
 		return hashcode;
 	}
-
+*/
 	public String getFirstEmail()
 	{
 		Iterator<String> it = emails.iterator();
@@ -346,7 +348,7 @@ public class Contact extends UnionFindObject {
 	public void writeObjectToStream(BufferedWriter out, String description) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		String mailingListOutput = (this.mailingListState & (MailingList.SUPER_DEFINITE | MailingList.USER_ASSIGNED)) != 0 ? MailingList.MAILING_LIST_MARKER : "";
-		sb.append ("-- " + mailingListOutput + " " + description + "\n");
+		sb.append (AddressBook.CONTACT_START_PREFIX + mailingListOutput + " " + description + "\n");
 
 		// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
 		Set<String> uniqueNames = new LinkedHashSet<>();
@@ -366,8 +368,8 @@ public class Contact extends UnionFindObject {
 		}
 		for (String s: uniqueEmails)
 			sb.append (Util.escapeHTML(s) + "\n");
-		sb.append(AddressBook.PERSON_DELIMITER);
-		sb.append("\n");
+		/*sb.append(AddressBook.PERSON_DELIMITER);
+		sb.append("\n");*/
 		out.append(sb.toString());
 	}
 
@@ -376,17 +378,26 @@ public class Contact extends UnionFindObject {
 		String inp = in.readLine();
 		if(inp==null)
 			return null;
+
 		Contact tmp = new Contact();
+		//first line of contact is just a metadata (mailing list state and description). So just skip it.
+		inp = in.readLine();
 		//int state  = 0;
 		//0=name_reading,1= email_reading,2=state_reading
 		while(inp!=null){
-			if(inp.trim().compareTo(AddressBook.PERSON_DELIMITER)==0)
+			if(inp.trim().startsWith(AddressBook.CONTACT_START_PREFIX)) {
+				//reset to the marked position
+				in.reset();
 				return tmp;
+			}
 			else if(inp.trim().contains("@"))
 				tmp.getEmails().add(inp.trim());
 			else
 				tmp.getNames().add(inp.trim());
-			inp = in.readLine();
+			in.mark(1000);//here readAheadLimit tells how many characters stream can read
+			//without losing the mark. In this case we assume that one line of contact can not be more than 1000 characters.
+			//which is a realistic assumption.
+				inp = in.readLine();
 			/*
 			if(inp.trim().compareTo("###Names###")==0){
 				inp = in.readLine();
@@ -411,7 +422,7 @@ public class Contact extends UnionFindObject {
 			}*/
 
 		}
-		Util.warnIf(true,"Control should not reach here while reading a contact object", JSPHelper.log);
+		//Util.warnIf(true,"Control should not reach here while reading a contact object", JSPHelper.log);
 		return tmp;
 	}
 
