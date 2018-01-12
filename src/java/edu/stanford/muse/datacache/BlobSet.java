@@ -203,6 +203,8 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
 		//Now we copy this file to temp subdirectory inside this archive. This fill will be later served
 		//using serveTemp.jsp for being displayed by cooliris plugin.
     	String piclensRSSPath = rootDir + File.separatorChar + Archive.TEMP_SUBDIR+File.separatorChar+ prefix + ".photos.rss";
+    	//create tmp directory just to be on safe side.
+		new File(rootDir+File.separator+Archive.TEMP_SUBDIR).mkdir();
     	PrintWriter piclensRSS = new PrintWriter (new FileWriter (piclensRSSPath));
     	piclensRSS.println (photoRSSHeader);
 
