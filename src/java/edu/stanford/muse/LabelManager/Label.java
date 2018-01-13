@@ -39,6 +39,11 @@ public class Label implements Serializable{
     String labelAppliesToMessageText = null;
 
 
+    /*This constructor should only be used by GSon to convert this class to json format.
+    * Should not be invoked by the user code.*/
+    private Label(){
+
+    }
     public Label(String name, LabelManager.LabType type, String labid, String description, boolean isSysLabel){
         this.labName = name;
         this.labType  = type;
