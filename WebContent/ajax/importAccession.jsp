@@ -48,6 +48,7 @@ if (!collectionDir.equals(baseDir))
 	    //Note that we are storing mergeResult in a transient field of Archive. It will be used for rendering
 	    //the report when a call to displaymergeReport.jsp is made with archiveID.
 	    String accessionID=request.getParameter("accessionID");
+	    Archive collection;
 	    if(new File(collectionDir).listFiles().length==0)//means collection directory is empty
 	        {
     	    // delete the existing directory -- Q: should we give user a warning??
@@ -56,7 +57,7 @@ if (!collectionDir.equals(baseDir))
 		    FileUtils.copyDirectory(new File(baseDir), new File(collectionDir), true /* preserve file date */);
 	        //when should we add accession ID to all messages of this accession?
 	        //for that we should load this accession as well.
-	        Archive collection = SimpleSessions.readArchiveIfPresent(collectionDir);
+	        collection = SimpleSessions.readArchiveIfPresent(collectionDir);
             collection.baseAccessionID=accessionID;//as it is the first accession we can avoid assigning
             //accesion id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
@@ -65,7 +66,7 @@ if (!collectionDir.equals(baseDir))
 	      }
 	        else{
             //read archives present in basedir and collection dir.
-            Archive collection = SimpleSessions.readArchiveIfPresent(collectionDir);
+            collection = SimpleSessions.readArchiveIfPresent(collectionDir);
             Archive accession = SimpleSessions.readArchiveIfPresent(baseDir);
             //call merge on these archives..
             Util.ASSERT(request.getParameter("accessionID")!=null);
@@ -113,6 +114,9 @@ if (!collectionDir.equals(baseDir))
                     pm.accessionMetadatas = new ArrayList<>();
                 pm.accessionMetadatas.add(am);
                 SimpleSessions.writeProcessingMetadata (pm, pmDir, "default");
+                collection.processingMetadata = pm;//IMP otherwise in-memory archive processingmetadata and
+                //the updated metadata on disc will be out of sync. It manifests when saving this archive which
+                //overwrites the latest on-disc PM data with stale in-memory data.
             }
             JSPHelper.log.info ("Accession metadata updated");
         }

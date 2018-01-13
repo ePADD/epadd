@@ -106,9 +106,14 @@
 	    Set<String> updatedElementsInCollectionContact = Util.setUnion(c.getEmails(),c.getNames());
 		//find updated-old to get all new names/emails that were added
 	    updatedElementsInCollectionContact.removeAll(oldElementsInCollectionContact);
-	    mergeReport.append("-----------"+ updatedElementsInCollectionContact.size()+" names/emails were added in the following contact---------------\n");
-		mergeReport.append(c.toString());
-	    mergeReport.append("\n----------------\n");
+	    if(updatedElementsInCollectionContact.size()!=0) {
+			mergeReport.append("-----------" + updatedElementsInCollectionContact.size() + " names/emails were added in the following contact---------------\n");
+			mergeReport.append("***Old mails/names***\n");
+			oldElementsInCollectionContact.forEach(s->mergeReport.append(s+"\n"));
+			mergeReport.append("***Newly added mails/names***\n");
+			updatedElementsInCollectionContact.forEach(s->mergeReport.append(s+"\n"));
+			mergeReport.append("----------------\n");
+		}
 	}
 
 	mergeReport.append("Following new contacts were added from the accession address book\n");

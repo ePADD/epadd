@@ -68,7 +68,7 @@ public class LabelManager implements Serializable{
                 "Do not transfer this message",true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
 
-        //restricted
+        /*//restricted
         Label twr = new Label("Restricted",LabType.RESTR_LAB,"1",
                 "Transfer this message only after 2040",false);
         labelInfoMap.put(twr.getLabelID(),twr);
@@ -77,9 +77,9 @@ public class LabelManager implements Serializable{
         Label gen = new Label("General",LabType.GEN_LAB,"2",
                 "This is general label",false);
         labelInfoMap.put(gen.getLabelID(),gen);
-
+*/
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"3",
+        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"1",
                 "This message was reviewed",true);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
