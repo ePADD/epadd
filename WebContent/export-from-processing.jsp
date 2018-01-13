@@ -139,11 +139,15 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	}
 
 	// Now remember to reload the archive from baseDir, because we've destroyed the archive in memory
-	JSPHelper.log.info("Reading back archive...");
-	out.println ("Reloading saved archive...<br/>");
-	out.flush();
-	String baseDir = archive.baseDir;
-	archive = SimpleSessions.readArchiveIfPresent(baseDir);
+		//after export make sure to load the archive again. However, readArchiveIfPresent will not read from
+		//memroy if the archive and it's ID is already present in gloablArchiveMap (in SimpleSession).
+		//Hence first remove this from the map and then call readArchiveIfPresent method.
+		JSPHelper.log.info("Reading back archive...");
+		out.println ("Reloading saved archive...<br/>");
+		out.flush();
+		String baseDir = archive.baseDir;
+		SimpleSessions.removeFromGlobalArchiveMap(baseDir,archive);
+		archive = SimpleSessions.readArchiveIfPresent(baseDir);
 	/*archive.setBaseDir(baseDir);
 	session.setAttribute("archive", archive);
 	session.setAttribute("userKey", "user");

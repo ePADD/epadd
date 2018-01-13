@@ -912,7 +912,6 @@ public class Archive implements Serializable {
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
         LabelManager oldLabelManager= getLabelManager();
-        AddressBook ab = this.getAddressBook();
         /////////////////saving done//////////////////////////////////
         //change state of the current archive -temporarily//////////
         if (exportInPublicMode){
@@ -964,7 +963,9 @@ public class Archive implements Serializable {
             return true;
         };
 
-
+/*
+Moveing it at the end- after changing the basedir of the archive. Because addressbook is getting saved
+after maskEmailDomain.
         if (exportInPublicMode) {
             List<Document> docs = this.getAllDocs();
             List<EmailDocument> eds = new ArrayList<>();
@@ -973,6 +974,8 @@ public class Archive implements Serializable {
 
             EmailUtils.maskEmailDomain(eds, this.addressBook);
         }
+*/
+
 
         Indexer.FilterFunctor attachmentFilter = doc -> {
             if(exportInPublicMode){
@@ -1011,6 +1014,16 @@ public class Archive implements Serializable {
         String oldBaseDir = baseDir;
         //change base directory
         setBaseDir(out_dir);
+
+        if (exportInPublicMode) {
+            List<Document> docs = this.getAllDocs();
+            List<EmailDocument> eds = new ArrayList<>();
+            for (Document doc : docs)
+                eds.add((EmailDocument) doc);
+
+            EmailUtils.maskEmailDomain(eds, this.addressBook);
+        }
+
 
         // write out the archive file
         SimpleSessions.saveArchive(out_dir, name, this); // save .session file.
