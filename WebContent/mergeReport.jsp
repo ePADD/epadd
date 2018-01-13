@@ -69,6 +69,7 @@
 	</select>
 </div>
 --%>
+<%--
 
 <script>
 
@@ -79,6 +80,7 @@
 		});
 	});
 </script>
+--%>
 
 <%
 	//Prepare a string variable called resultString by appending data from mResult object.
@@ -163,7 +165,7 @@
 		</textarea>
 		<br/>
 		<br/>
-		<button class="btn btn-cta" id="next">Next<i class="icon-arrowbutton"></i> </button>
+		<button class="btn btn-cta" id="next" onclick="window.location='browse-top?archiveID=<%=archiveID%>';">Next<i class="icon-arrowbutton"></i> </button>
 	</form>
 <br/>
 

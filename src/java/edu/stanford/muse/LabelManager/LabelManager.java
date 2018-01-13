@@ -213,8 +213,9 @@ public class LabelManager implements Serializable{
             FileReader fr = new FileReader(dirname+ File.separator+CSVFILENAME);
             CSVReader csvreader = new CSVReader(fr, ',', '"', '\n');
 
-            // read line by line
+            // read line by line, except the first line which is header
             String[] record = null;
+            record = csvreader.readNext();//skip the first line.
             while ((record = csvreader.readNext()) != null) {
                 lm.docToLabelID.put(record[0],record[1]);
             }
@@ -258,8 +259,8 @@ public class LabelManager implements Serializable{
     }
 
     public class MergeResult{
-        public Set<Label> newLabels;
-        public List<Pair<Label,Label>> labelsWithNameClash;
+        public Set<Label> newLabels = new LinkedHashSet<>();
+        public List<Pair<Label,Label>> labelsWithNameClash = new LinkedList<>();
     }
     /* Merging of two label managers. Here the implicit assumptions is that the docs on which these labels were
     applied are of same type (i.e. emaildocument here). This merging is just a set union of labels' data structure.

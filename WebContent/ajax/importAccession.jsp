@@ -75,7 +75,7 @@ if (!collectionDir.equals(baseDir))
             //we don't want to keep any reference to accession directory in our map.
             SimpleSessions.removeFromGlobalArchiveMap(baseDir,accession);
 
-            result.put("status", 0);
+            result.put("status", 1);
 		    result.put ("message", "Accession imported and merged with the collection successfully");
 	        result.put("archiveID",SimpleSessions.getArchiveIDForArchive(collection));
 	        }

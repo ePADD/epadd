@@ -1497,7 +1497,7 @@ after maskEmailDomain.
             } else {
                 for (File f : otherlexDirFile.listFiles(new Util.MyFilenameFilter(null, Lexicon.LEXICON_SUFFIX))) {
                     String name = Lexicon.lexiconNameFromFilename(f.getName());
-                    if (!collectionLexiconMap.containsKey(name)) {
+                    if (!collectionLexiconMap.containsKey(name.toLowerCase())) {
                         //means collection does not have any lexicon of this name. copy it to thisLexDir and report it
                         Util.copy_file(f.getAbsolutePath(),thisLexDir+File.separatorChar+f.getName());
                         result.newLexicons.add(name);
