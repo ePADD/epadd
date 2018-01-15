@@ -1,3 +1,4 @@
+<%@ page import="edu.stanford.muse.util.Util" %>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" %>
@@ -28,6 +29,9 @@
 		.form-group { margin-bottom: 25px;}
 	</style>
 </head>
+<%
+    String collectionID= request.getParameter("collectionID");
+%>
 <body>
     <jsp:include page="header.jspf"/>
     <jsp:include page="div_filepicker.jspf"/>
@@ -36,6 +40,18 @@
 	<section>
         <div class="panel" style="width:900px;margin-left:170px">
 
+            <%
+                if(!Util.nullOrEmpty(collectionID)){
+            %>
+            <div class="one-line">
+                <div class="form-group col-sm-12">
+                    <label for="collectionID">Collection Directory</label>
+                    <input id="collectionID" class="dir form-control" type="text" name="collectionID" value="<%=collectionID%>" readonly/>
+                </div>
+            </div>
+            <%
+                }
+            %>
             <div id="filepicker" >
                 <div class="one-line" id="export-next">
                     <div class="form-group col-sm-10">

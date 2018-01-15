@@ -11,7 +11,7 @@
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
 String baseDir = request.getParameter("accessionFolder");
-String collectionDir = request.getParameter("collectionFolder");
+String collectionID = request.getParameter("collectionID");
 if (Util.nullOrEmpty(baseDir))
 {
 	result.put ("status", 1);
@@ -28,13 +28,14 @@ if (!new File(baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separato
 	out.println (result.toString(4));
 	return;
 }
-
-if(Util.nullOrEmpty(collectionDir)){
+String collectionDir;
+if(Util.nullOrEmpty(collectionID)){
 
     String archiveName = Util.filePathTailByPlatformSeparator(baseDir);
     collectionDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + archiveName;
     new File(collectionDir).mkdir();
-}
+}else
+    collectionDir=edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + collectionID;
 
 if (!collectionDir.equals(baseDir))
 {
