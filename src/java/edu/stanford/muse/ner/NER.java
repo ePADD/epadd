@@ -120,7 +120,8 @@ public class NER implements StatusProvider {
     static {
         ft = new FieldType();
         ft.setStored(true);
-        ft.setIndexed(true);
+        //@TODO: Check if from lucene 7.2 all field types are indexed by default
+        //ft.setIndexed(true);
         ft.freeze();
     }
 

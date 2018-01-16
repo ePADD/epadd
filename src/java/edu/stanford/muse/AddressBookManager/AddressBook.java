@@ -103,7 +103,7 @@ public class AddressBook implements Serializable {
 
     public AddressBook(Contact self){
         //Note that self contact is not added to the list. Q: Does it get added to nameContact/emailContact maps?
-        
+
         //contactListForIds.add(self);
         contactForSelf = self;
     }
@@ -954,13 +954,16 @@ mergeResult.newContacts.put(C2,savedC2)
             //C2 = C2 - common
             C2.getNames().removeAll(commonelements);
             C2.getEmails().removeAll(commonelements);
-            //add C2 to this addressbook.
-            contactListForIds.add(C2);
-            //put C2 and savedC2 in mergedResult's multimap. Why multimap?
-            //consider common = [x,y] and in A2: [a x] and [a y] then this is a case of type2 [because a appears
-            //in 2 different contacts of A2.] here we will have map of [a] -> [a x] and [a] -> [a y] to show
-            //that these are possible candidates where a can go.
-            result.newlycreatedContacts.put(C2,copyC2);
+            //add C2 to this addressbook only if it is non-empty.
+            if(!(C2.getNames().size()==0 && C2.getEmails().size()==0)) {
+                contactListForIds.add(C2);
+
+                //put C2 and savedC2 in mergedResult's multimap. Why multimap?
+                //consider common = [x,y] and in A2: [a x] and [a y] then this is a case of type2 [because a appears
+                //in 2 different contacts of A2.] here we will have map of [a] -> [a x] and [a] -> [a y] to show
+                //that these are possible candidates where a can go.
+                result.newlycreatedContacts.put(C2, copyC2);
+            }
         }
 
         //call fillTransientfields to update transient maps

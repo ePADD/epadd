@@ -15,16 +15,19 @@ package edu.stanford.muse.index;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * --NOTE: Changed this class while porting to Lucene 7.2.1 based on StandardTokenizer class of that version.
+ * It required change in the signature of some methods, however the core method incrementToken remained same
+ * as was present in ePADD 4.0 (with lucene 4.7).
  */
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizerImpl;
-import org.apache.lucene.analysis.standard.StandardTokenizerInterface;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.apache.lucene.util.AttributeFactory;
 import org.apache.lucene.util.Version;
 
 import java.io.IOException;
@@ -62,18 +65,18 @@ final class StandardNumberTokenizer extends Tokenizer {
 
 	private static final int maxTokenLength	= StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
 
-	public StandardNumberTokenizer(Version matchVersion, Reader input) {
-		super(input);
-		init(matchVersion);
+	public StandardNumberTokenizer() {
+		//this.setReader(reader);
+		this.init();
 	}
 
-	public StandardNumberTokenizer(Version matchVersion, AttributeFactory factory, Reader input) {
-		super(factory, input);
-		init(matchVersion);
+	public StandardNumberTokenizer( AttributeFactory factory) {
+		super(factory);
+		//this.setReader(reader);
+		this.init();
 	}
 
-	private final void init(Version matchVersion) {
-		if (matchVersion.onOrAfter(Version.LUCENE_47))
+	private final void init() {
 			this.scanner = new StandardTokenizerImpl(input);
 	}
 
@@ -96,7 +99,7 @@ final class StandardNumberTokenizer extends Tokenizer {
 
 		while (true) {
 			int tokenType = scanner.getNextToken();
-			if (tokenType == StandardTokenizerInterface.YYEOF) {
+			if (tokenType == StandardTokenizerImpl.YYEOF) {
 				return false;
 			}
 
@@ -167,7 +170,8 @@ final class StandardNumberTokenizer extends Tokenizer {
 	public static void main(String[] args) {
 		try {
             StringReader input = new StringReader("Passport number: k4190175 ");
-            StandardNumberTokenizer t = new StandardNumberTokenizer(Version.LUCENE_47, input);
+            StandardNumberTokenizer t = new StandardNumberTokenizer();
+            t.setReader(input);
 			OffsetAttribute offsetAttribute = t.addAttribute(OffsetAttribute.class);
 			CharTermAttribute charTermAttribute = t.addAttribute(CharTermAttribute.class);
 			TypeAttribute typeAttribute = t.addAttribute(TypeAttribute.class);

@@ -381,6 +381,7 @@ public class Contact extends UnionFindObject {
 
 		Contact tmp = new Contact();
 		//first line of contact is just a metadata (mailing list state and description). So just skip it.
+        in.mark(1000);
 		inp = in.readLine();
 		//int state  = 0;
 		//0=name_reading,1= email_reading,2=state_reading

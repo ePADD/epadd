@@ -7,7 +7,7 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -45,7 +45,7 @@ public class FASTIndexer {
             return;
         }
 
-       // index (args[0], args[1]);
+        //index (args[0], args[1]);
         test (args[1]);
     }
 
@@ -62,9 +62,10 @@ public class FASTIndexer {
             outputFile.mkdirs();
         }
 
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, new CharArraySet(Version.LUCENE_47, new ArrayList<String>(), true /* ignore case */)); // empty chararrayset, so effectively no stop words
-        Directory index = FSDirectory.open(outputFile);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_47, analyzer);
+
+        StandardAnalyzer analyzer = new StandardAnalyzer(new CharArraySet(new ArrayList<String>(), true /* ignore case */)); // empty chararrayset, so effectively no stop words
+        Directory index = FSDirectory.open(new File(outputDir).toPath());
+        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         indexWriter = new IndexWriter(index, iwc);
 
@@ -310,9 +311,12 @@ public class FASTIndexer {
             Document luceneDoc = new Document();
             luceneDoc.add(new TextField(FIELD_NAME_LABELS, labels, Field.Store.YES));
 
-            if (fastId >= 0)
-                luceneDoc.add(new LongField(FIELD_NAME_FAST_ID, fastId, Field.Store.YES));
-
+            if (fastId >= 0) {
+             //Change since lucene 7.2.1- ePADD v5,
+                //http://lucene.472066.n3.nabble.com/Storing-numeric-fields-in-Apache-6-td4273399.html
+                luceneDoc.add(new LongPoint(FIELD_NAME_FAST_ID,fastId));
+                luceneDoc.add(new StoredField(FIELD_NAME_FAST_ID, fastId));
+            }
             if (!Util.nullOrEmpty(wikipediaId))
                 luceneDoc.add(new StringField(FIELD_NAME_WIKIPEDIA_ID, wikipediaId, Field.Store.YES));
 
@@ -333,14 +337,14 @@ public class FASTIndexer {
     }
 
     private static void queryFast(String dir, String name, int nExpectedHits) throws IOException, ParseException {
-        IndexReader indexReader = DirectoryReader.open(FSDirectory.open (new File(dir)));
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, new CharArraySet(Version.LUCENE_47, new ArrayList<String>(), true /* ignore case */)); // empty chararrayset, so effectively no stop words
+        IndexReader indexReader = DirectoryReader.open(FSDirectory.open (new File(dir).toPath()));
+        StandardAnalyzer analyzer = new StandardAnalyzer(new CharArraySet(new ArrayList<String>(), true /* ignore case */)); // empty chararrayset, so effectively no stop words
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-        QueryParser parser = new QueryParser(Version.LUCENE_47, FIELD_NAME_LABELS, analyzer);
+        QueryParser parser = new QueryParser(FIELD_NAME_LABELS, analyzer);
 
         Query query = parser.parse("\"" + name + "\"");
-        TopDocs docs = indexSearcher.search (query, null, 10000);
+        TopDocs docs = indexSearcher.search (query,  10000,Sort.RELEVANCE);
 
         // note a quoted
         out.println ("searching for " + name);
@@ -369,7 +373,7 @@ public class FASTIndexer {
         queryFast (dir, "Barack Obama", 1);
         queryFast (dir, "Barak Obama", 1);
         queryFast (dir, "barack", 3);
-        queryFast (dir, "Gandhi", 24);
+        queryFast (dir, "Gandhi", 25);
         queryFast (dir, "Gandhi Mohandas", 1);
         queryFast (dir, "Junk somename", 0);
     }

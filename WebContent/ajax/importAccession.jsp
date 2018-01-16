@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.index.EmailDocument"%><%@ page import="edu.stanford.muse.index.Document"%>
+<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.index.EmailDocument"%><%@ page import="edu.stanford.muse.index.Document"%><%@ page import="java.util.Enumeration"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%>
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
@@ -76,6 +76,15 @@ if (!collectionDir.equals(baseDir))
             collection.merge(accession,accessionID);
             //we don't want to keep any reference to accession directory in our map.
             SimpleSessions.removeFromGlobalArchiveMap(baseDir,accession);
+
+            Enumeration<String> enumeration = session.getAttributeNames();
+            Set<String> remove = new LinkedHashSet<>();
+
+            while(enumeration.hasMoreElements() ) {
+                remove.add(enumeration.nextElement());
+            };
+            for(String s: remove)
+                session.removeAttribute(s);
 
             result.put("status", 1);
 		    result.put ("message", "Accession imported and merged with the collection successfully");

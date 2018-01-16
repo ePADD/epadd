@@ -524,12 +524,17 @@ public class SimpleSessions {
 		}
 	}
 
+	private static String removeTrailingSlashFromDirName(String dir){
+		return new File(dir).getAbsolutePath();
+	}
+
 	public static void addToGlobalArchiveMap(String archiveDir, Archive archive){
 
+		String s = removeTrailingSlashFromDirName(archiveDir);
 		//add to globalDirmap
-		globaldirToArchiveMap.put(archiveDir, new WeakReference<>(archive));
+		globaldirToArchiveMap.put(s, new WeakReference<>(archive));
 		//construct archive ID from the tail of the archiveFile (by sha1)
-		String archiveID = Util.hash(archiveDir);
+		String archiveID = Util.hash(s);
 		globalArchiveIDToArchiveMap.put(archiveID,archive);
 		//for reverse mapping
 		globalArchiveToArchiveIDMap.put(archive,archiveID);
@@ -537,7 +542,8 @@ public class SimpleSessions {
 	}
 
 	public static void removeFromGlobalArchiveMap(String archiveDir, Archive archive){
-		globaldirToArchiveMap.remove(archiveDir);
+		String s = removeTrailingSlashFromDirName(archiveDir);
+		globaldirToArchiveMap.remove(s);
 		//remove from reverse mapping but first get the archive ID.
 		String archiveID = globalArchiveToArchiveIDMap.get(archive);
 		globalArchiveToArchiveIDMap.remove(archive);
@@ -548,7 +554,8 @@ public class SimpleSessions {
 
 
 	private static WeakReference<Archive> getArchiveFromGlobalArchiveMap(String archiveFile){
-		return globaldirToArchiveMap.getOrDefault(archiveFile,null);
+		String s = removeTrailingSlashFromDirName(archiveFile);
+		return globaldirToArchiveMap.getOrDefault(s,null);
 	}
 
 	//If there is only one archive present in the global map then this funciton returns that

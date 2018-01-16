@@ -15,6 +15,8 @@
 */
 package edu.stanford.muse.AddressBookManager;
 
+import edu.stanford.muse.webapp.JSPHelper;
+
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
@@ -145,11 +147,13 @@ public class MailingList implements java.io.Serializable {
 				for (Contact c: possibleLists)
 				{
 					MailingList ml = ab.mailingListMap.get(c); // should be non-null, see above
+					if(ml==null)
+						JSPHelper.log.warn("found null");
 					c.mailingListState |= MAYBE; // if only 1 toaddr, definitely ML, otherwise maybe
 					if (froms != null)
 						for (Address from: froms)
 							if (from instanceof InternetAddress)
-								ml.addMember(ab.registerAddress((InternetAddress) from));
+									ml.addMember(ab.registerAddress((InternetAddress) from));
 				}
 			}
 		}

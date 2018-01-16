@@ -95,7 +95,7 @@
 	mergeReport.append("\n\n\n");
 	mergeReport.append("After merging: Collection has "+mResult.nFinalMessages+" messages and "+ mResult.nFinalAttachments+"\n");
 	mergeReport.append(mResult.nCommonMessages+" messages were common between the accession and this collection\n");
-	mergeReport.append(mResult.nFinalMessages-mResult.nCommonMessages+" messages imported from the accession\n");
+	mergeReport.append(mResult.nMessagesInAccession-mResult.nCommonMessages+" messages imported from the accession\n");
 
 	//For Addressbook report
 	mergeReport.append("Following contacts in the collection addressbook were updated from the names/emails present in accession addressbook\n\n");

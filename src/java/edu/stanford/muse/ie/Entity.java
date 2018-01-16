@@ -2,10 +2,10 @@ package edu.stanford.muse.ie;
 
 import com.google.gson.Gson;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.util.DictUtils;
-import edu.stanford.muse.util.Pair;
+import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.SimpleSessions;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -48,8 +48,8 @@ public class Entity extends EntityFeature {
 
 	static String				ENTITIES			= "entities";
 	static Set<String>			sws					= new HashSet<>();
-	static EnglishAnalyzer		en_an				= new EnglishAnalyzer(Version.LUCENE_47);
-	static QueryParser			parser				= new QueryParser(Version.LUCENE_47, "some_field", en_an);
+	static EnglishAnalyzer		en_an				= new EnglishAnalyzer(new CharArraySet(Arrays.asList(edu.stanford.muse.util.Util.stopwords),true));
+	static QueryParser			parser				= new QueryParser("some_field", en_an);
 
 	static {
 		String[] temp = edu.stanford.muse.util.Util.stopwords;

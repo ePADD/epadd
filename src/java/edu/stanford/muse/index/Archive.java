@@ -1472,6 +1472,12 @@ after maskEmailDomain.
             }else
                 result.nCommonMessages+=1;
         }
+        //pack destbloblstore.
+        try {
+            blobStore.pack();
+        } catch (IOException e) {
+            log.warn("Unable to pack blobstore: Serious error");
+        }
         result.nFinalMessages = getAllDocs().size();
         result.nFinalAttachments = blobStore.uniqueBlobs.size();
         ///////////////////////Address book merging////////////////////////////////////////////////

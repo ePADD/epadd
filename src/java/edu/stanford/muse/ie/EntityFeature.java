@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -303,10 +303,9 @@ public class EntityFeature implements StatusProvider, Serializable {
 		IndexWriter w = null;
 		try {
 			String iDir = getFeaturesDir(archive);
-			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_47);
-			Directory index = FSDirectory.open(new File(iDir));
-			IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_47,
-					analyzer);
+			StandardAnalyzer analyzer = new StandardAnalyzer();
+			Directory index = FSDirectory.open(new File(iDir).toPath());
+			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 			iwc.setOpenMode(OpenMode.CREATE);
 			w = new IndexWriter(index, iwc);
 		} catch (Exception e) {
@@ -504,7 +503,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		String iDir = getFeaturesDir(archive);
 		if (searcher == null || reader == null)
 			try {
-				reader = DirectoryReader.open(FSDirectory.open(new File(iDir)));
+				reader = DirectoryReader.open(FSDirectory.open(new File(iDir).toPath()));
 				searcher = new IndexSearcher(reader);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -534,7 +533,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		String iDir = getFeaturesDir(archive);
 		if (reader == null | searcher == null)
 			try {
-				reader = DirectoryReader.open(FSDirectory.open(new File(iDir)));
+				reader = DirectoryReader.open(FSDirectory.open(new File(iDir).toPath()));
 				searcher = new IndexSearcher(reader);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -548,9 +547,9 @@ public class EntityFeature implements StatusProvider, Serializable {
 		IndexSearcher searcher;
 		Set<EntityFeature> efs = new HashSet<>();
 		try {
-			reader = DirectoryReader.open(FSDirectory.open(new File(iDir)));
+			reader = DirectoryReader.open(FSDirectory.open(new File(iDir).toPath()));
 			searcher = new IndexSearcher(reader);
-			BooleanQuery internal = new BooleanQuery();
+			BooleanQuery.Builder internal = new BooleanQuery.Builder();
 			String[] names = name.split("\\s+");
 			CharArraySet stopWords = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
 
@@ -562,7 +561,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 					internal.add(new TermQuery(new Term(TID, w)),
 							BooleanClause.Occur.MUST);
 			}
-			TopDocs td = searcher.search(internal, Integer.MAX_VALUE);
+			TopDocs td = searcher.search(internal.build(), Integer.MAX_VALUE);
 			for (ScoreDoc sd : td.scoreDocs) {
 				efs.add(new EntityFeature(searcher.doc(sd.doc)));
 			}
@@ -602,7 +601,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		}
 
 		try {
-			reader = DirectoryReader.open(FSDirectory.open(new File(iDir)));
+			reader = DirectoryReader.open(FSDirectory.open(new File(iDir).toPath()));
 			searcher = new IndexSearcher(reader);
 			String word = "[a-zA-Z0-9]", nonword = "[^a-zA-Z0-9]";
 			for (int i = 0; i < name.length(); i++) {
@@ -645,8 +644,8 @@ public class EntityFeature implements StatusProvider, Serializable {
 
         try {
 
-            for (AtomicReaderContext ctx : reader.leaves()) {
-                AtomicReader reader = ctx.reader();
+            for (LeafReaderContext ctx : reader.leaves()) {
+                LeafReader reader = ctx.reader();
                 for (int i = 0; i < reader.maxDoc(); i++) {
                     Document doc = reader.document(i);
 //                    for (IndexableField f: doc.getFields())

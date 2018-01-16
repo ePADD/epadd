@@ -30,7 +30,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.*;
@@ -88,7 +88,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	public static final int		MAX_MAILING_LIST_NAME_LENGTH	= 20;
 	private static final String	LANGUAGE_FIELD_DELIMITER	= "|";								    // warning: make sure this is a single char, not a string because StringTokenizer constructor with "AB" will split on A or B
 	public static final String	NAMES_FIELD_DELIMITER		= "\n";									// this String is not allowed within a name
-	public static final Version LUCENE_VERSION				= Version.LUCENE_47;
+	public static final Version LUCENE_VERSION				= Version.LUCENE_7_2_1;
 	private static final String	INDEX_BASE_DIR_NAME			= Archive.INDEXES_SUBDIR;
 	private static final String	INDEX_NAME_EMAILS			= "emails";
 	private static final String	INDEX_NAME_ATTACHMENTS		= "attachments";
@@ -125,14 +125,18 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 		ft = new FieldType();
 		ft.setStored(true);
-		ft.setIndexed(true);
+		//@TODO: Check if from lucene 7.2 by default this field is indexed.
+		//ft.setIndexed(true);
+		//Since lucene 7.2, a field is indexed if its indexoptions is set anything else than None.
+		ft.setIndexOptions(org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS);
 		ft.setTokenized(false);
 		ft.freeze();
 
 		full_ft = new FieldType();
 		full_ft.setStored(true);
-		full_ft.setIndexed(true);
-		full_ft.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
+		//@TODO: Check if from lucene 7.2 by default this field is indexed.
+		//full_ft.setIndexed(true);
+		full_ft.setIndexOptions(org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
 		full_ft.freeze();
 
         //use this field for spanning regular expression, also tokenises text
@@ -158,7 +162,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 				"that", "the", "their", "then", "there", "these",
 				"they", "this", "to", "was", "will", "with"
 		);
-		final CharArraySet stopSet = new CharArraySet(LUCENE_VERSION, stopWords.size(), false);
+		final CharArraySet stopSet = new CharArraySet(stopWords.size(), false);
 		stopSet.addAll(stopWords);
 		MUSE_STOP_WORDS_SET = CharArraySet.unmodifiableSet(stopSet);
 	}
@@ -373,7 +377,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			log.warn ("Unable to create directory: " + index_dir);
 			return null;
 		}
-		return FSDirectory.open(new File(index_dir + File.separator + name));
+		return FSDirectory.open(new File(index_dir + File.separator + name).toPath());
 	}
 
 	private Directory createDirectory(String name) throws IOException
@@ -625,8 +629,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	private Analyzer newAnalyzer() {
         // we can use LimitTokenCountAnalyzer to limit the #tokens
 
-        EnglishAnalyzer stemmingAnalyzer = new EnglishAnalyzer(LUCENE_VERSION, MUSE_STOP_WORDS_SET);
-        EnglishNumberAnalyzer snAnalyzer = new EnglishNumberAnalyzer(LUCENE_VERSION, MUSE_STOP_WORDS_SET);
+        EnglishAnalyzer stemmingAnalyzer = new EnglishAnalyzer( MUSE_STOP_WORDS_SET);
+        EnglishNumberAnalyzer snAnalyzer = new EnglishNumberAnalyzer(MUSE_STOP_WORDS_SET);
 
         // these are the 3 fields for stemming, everything else uses StandardAnalyzer
         Map<String, Analyzer> map = new LinkedHashMap<>();
@@ -653,7 +657,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 //        }
 
         //do not remove any stop words.
-		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(LUCENE_VERSION, CharArraySet.EMPTY_SET);
+		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
 
 		return new PerFieldAnalyzerWrapper(standardAnalyzer, map);
 	}
@@ -663,7 +667,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	{
 		//IndexWriterConfig config = new IndexWriterConfig(MUSE_LUCENE_VERSION, null);
 		//IndexWriter writer = new IndexWriter(dir, null, IndexWriter.MaxFieldLength.UNLIMITED);
-		IndexWriterConfig iwc = new IndexWriterConfig(LUCENE_VERSION, analyzer);
+		IndexWriterConfig iwc = new IndexWriterConfig( analyzer);
 		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		return new IndexWriter(dir, iwc); // , new IndexWriter.MaxFieldLength(250000));
 	}
@@ -722,11 +726,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			// Parse a simple query that searches for "text":
 			if (parser == null) {
 				//parser = new QueryParser(MUSE_LUCENE_VERSION, defaultSearchField, analyzer);
-				parser = new MultiFieldQueryParser(LUCENE_VERSION, defaultSearchFields, analyzer);
-				parserOriginal = new MultiFieldQueryParser(LUCENE_VERSION, defaultSearchFieldsOriginal, analyzer);
-				parserSubject = new MultiFieldQueryParser(LUCENE_VERSION, defaultSearchFieldSubject, analyzer);
-				parserCorrespondents = new MultiFieldQueryParser(LUCENE_VERSION, defaultSearchFieldCorrespondents, analyzer);
-				parserMeta = new MultiFieldQueryParser(LUCENE_VERSION, metaSearchFields, new KeywordAnalyzer());
+				parser = new MultiFieldQueryParser(defaultSearchFields, analyzer);
+				parserOriginal = new MultiFieldQueryParser( defaultSearchFieldsOriginal, analyzer);
+				parserSubject = new MultiFieldQueryParser(defaultSearchFieldSubject, analyzer);
+				parserCorrespondents = new MultiFieldQueryParser(defaultSearchFieldCorrespondents, analyzer);
+				parserMeta = new MultiFieldQueryParser(metaSearchFields, new KeywordAnalyzer());
 			}
 
 			/**
@@ -824,8 +828,12 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	{
 		if (dir == null)
 			dir = createDirectory(name);
+/*
+@TODO This was commented out when porting to lucene 7.2 because no such API was present. Look carefully if that
+is what we want.
 		if (dir.getLockFactory() == null)
 			dir.setLockFactory(new SingleInstanceLockFactory());
+*/
 		return dir;
 	}
 
@@ -1113,10 +1121,10 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		else
 			r = DirectoryReader.open(directory);
 
-		List<AtomicReaderContext> atomicReaderContexts = r.leaves();
-		for (AtomicReaderContext atomicReaderContext : atomicReaderContexts)
+		List<LeafReaderContext> atomicReaderContexts = r.leaves();
+		for (LeafReaderContext atomicReaderContext : atomicReaderContexts)
 		{
-			AtomicReader atomicReader = atomicReaderContext.reader();
+			LeafReader atomicReader = atomicReaderContext.reader();
 			Bits bits = atomicReader.getLiveDocs();
 			for (int i = 0; i < atomicReader.numDocs(); i++)
 				if (bits!=null && bits.get(i))
@@ -1250,7 +1258,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			}
 			Query query = parserToUse.parse(q);
 			//			query = convertRegex(query); // to mimic built-in regex support
-			ScoreDoc[] hits = isearcher.search(query, null, edu.stanford.muse.Config.MAX_DOCS_PER_QUERY).scoreDocs;
+			ScoreDoc[] hits = isearcher.search(query, edu.stanford.muse.Config.MAX_DOCS_PER_QUERY,Sort.RELEVANCE).scoreDocs;
 			return hits.length;
 		} catch (Exception e) {
 			Util.print_exception(e);
@@ -1314,6 +1322,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		}
 		//get lucenedocid of doc wrt src Indexer first without attachment then with attachment.
 		org.apache.lucene.document.Document dsrc = srcindexer.getLDoc(edoc.getUniqueId());
+		if(dsrc==null)
+			return;//This should not happen.. @TODO debug it if it happens.
 		LinkedList<org.apache.lucene.document.Document> dattachments = new LinkedList<>();
 		//create a new lucenedoc for adding to iwriter.
 		org.apache.lucene.document.Document newdoc = new org.apache.lucene.document.Document();
@@ -1329,6 +1339,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			String id = Integer.toString(srcBlobStore.index(b));
 			//get lucendoc for this docid.
 			org.apache.lucene.document.Document attachmentsrc = srcindexer.getLDocAttachment(id);
+			if(attachmentsrc==null)
+				return;//This should not happen.. @TODO debug it if it happens.
 			//create new doc and add to list of dattachments (for adding it to index at the end atomically)
 			org.apache.lucene.document.Document newattachmentdoc = new org.apache.lucene.document.Document();
 			dattachments.add(newattachmentdoc);
@@ -1353,8 +1365,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		for(org.apache.lucene.document.Document d: dattachments){
 			iwriter_blob.addDocument(d);
 		}
-		//pack destbloblstore.
-		destBlobStore.pack();
+
 	}
 
 
@@ -1379,7 +1390,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			query = parserCorrespondents.parse(q);
 		else if (qt == QueryType.REGEX)
 		{
-			query = new BooleanQuery();
+
+			BooleanQuery.Builder builder = new BooleanQuery.Builder();
 			/**
 			 * Note: this is not a spanning (i.e. doesn't search over more than
 			 * one token) regexp, for spanning regexp use: body_unanlyzed and
@@ -1387,8 +1399,9 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			 */
 			Query query1 = new RegexpQuery(new Term("body", q), RegExp.ALL);
 			Query query2 = new RegexpQuery(new Term("title", q), RegExp.ALL);
-			((BooleanQuery) query).add(query1, org.apache.lucene.search.BooleanClause.Occur.SHOULD);
-			((BooleanQuery) query).add(query2, org.apache.lucene.search.BooleanClause.Occur.SHOULD);
+			builder.add(query1,org.apache.lucene.search.BooleanClause.Occur.SHOULD);
+			builder.add(query2, org.apache.lucene.search.BooleanClause.Occur.SHOULD);
+			query = builder.build();
 		} else /* if (qt == QueryType.PRESET_REGEX) {
 			query = new BooleanQuery();
 			if(presetQueries != null) {
@@ -1412,10 +1425,10 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		int totalHits = 0;
 		ScoreDoc[] hits = null;
 		if(query!=null) {
-			TopDocs tds = searcher.search(query, null, lt);
+			TopDocs tds = searcher.search(query,  lt, Sort.RELEVANCE);
 			log.info("Took: " + (System.currentTimeMillis() - st) + "ms for query:" + query);
 			hits = tds.scoreDocs;
-			totalHits = tds.totalHits;
+			totalHits = (int)tds.totalHits;
 		}else{
 			log.error("Query is null!!");
 		}
@@ -1476,9 +1489,9 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 				for (Explanation detail : details) {
 					// log.info(detail.getClass().getName());
 
-					if (detail instanceof ComplexExplanation) {
-						ComplexExplanation ce = (ComplexExplanation) detail;
-						String s = ce.toString();
+//					if (detail instanceof ComplexExplanation) {
+//						ComplexExplanation ce = (ComplexExplanation) detail;
+						String s = detail.toString();
 						int total_tf = 0;
 						while (true) {
 							int idx = s.indexOf("tf(termFreq(");
@@ -1509,7 +1522,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 					}
 				}
 			}
-		}
+		//}
         log.info(n_added + " docs added to docIdMap cache");
 		return new Pair<>(result, totalHits);
 	}
@@ -1642,15 +1655,15 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		FSDirectory fsdir = null;
 		if (is_file_based) {
 			fsdir = (FSDirectory) dir;
-			tmp_name = fsdir.getDirectory().getName() + tmp_name;
+			tmp_name = fsdir.getDirectory().getFileName() + tmp_name;
 		}
 
 		Directory newDir = copyDirectoryExcludeFields(dir, baseDir, tmp_name, fields_to_be_removed);
 
 		if (is_file_based) {
 			// delete the original dir and rename tmp
-			File org_file = fsdir.getDirectory();
-			File tmp_file = ((FSDirectory) newDir).getDirectory();
+			File org_file = fsdir.getDirectory().toFile();
+			File tmp_file = ((FSDirectory) newDir).getDirectory().toFile();
             FileUtils.deleteDirectory(org_file);
             boolean res = tmp_file.renameTo(org_file);
 		    if(!res)
@@ -1696,7 +1709,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 		int count = docIdToEmailDoc.size();
 
-		IndexWriterConfig cfg = new IndexWriterConfig(LUCENE_VERSION, analyzer);
+		IndexWriterConfig cfg = new IndexWriterConfig( analyzer);
 		IndexWriter writer = new IndexWriter(directory, cfg);
 		//IndexWriter writer = new IndexWriter(directory, analyzer, false, new IndexWriter.MaxFieldLength(250000));
 		assert (writer.numDocs() == docIdToEmailDoc.size());

@@ -10,9 +10,10 @@ import edu.stanford.muse.ie.FASTIndexer;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -118,12 +119,12 @@ public class AuthorityMapper implements java.io.Serializable {
         AuthorityRecord result = new AuthorityRecord();
         String labelSeparator = " ; ";
         result.fastId = fastId;
-        Query query = NumericRangeQuery.newLongRange(FIELD_NAME_FAST_ID, fastId, fastId, true, true); // don't do a string query, must do a numeric range query
+        Query query =  LongPoint.newRangeQuery(FIELD_NAME_FAST_ID, fastId, fastId); // don't do a string query, must do a numeric range query
 
         if (indexSearcher == null)
             this.openFastIndex();
 
-        TopDocs docs = indexSearcher.search (query, null, 10000);
+        TopDocs docs = indexSearcher.search (query, 10000, Sort.RELEVANCE);
 
         // there should be only 1 result
         for (ScoreDoc scoreDoc: docs.scoreDocs) {
@@ -195,7 +196,7 @@ public class AuthorityMapper implements java.io.Serializable {
         name = name.replaceAll ("\"", "");
 
         Query query = parser.parse("\"" + name + "\"");
-        TopDocs docs = indexSearcher.search (query, null, 10000);
+        TopDocs docs = indexSearcher.search (query, 10000,Sort.RELEVANCE);
 
         for (ScoreDoc scoreDoc: docs.scoreDocs) {
             Document d = indexSearcher.doc(scoreDoc.doc);
@@ -206,10 +207,10 @@ public class AuthorityMapper implements java.io.Serializable {
 
     public void openFastIndex () throws IOException {
         String dir = Config.FAST_INDEX_DIR;
-        indexReader = DirectoryReader.open(FSDirectory.open (new File(dir)));
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, new CharArraySet(Version.LUCENE_47, new ArrayList<String>(), true /* ignore case */));
+        indexReader = DirectoryReader.open(FSDirectory.open (new File(dir).toPath()));
+        StandardAnalyzer analyzer = new StandardAnalyzer(new CharArraySet(new ArrayList<String>(), true /* ignore case */));
         indexSearcher = new IndexSearcher(indexReader);
-        parser = new QueryParser(Version.LUCENE_47, FASTIndexer.FIELD_NAME_LABELS, analyzer);
+        parser = new QueryParser(FASTIndexer.FIELD_NAME_LABELS, analyzer);
     }
 
     private void closeFastIndex () throws IOException {

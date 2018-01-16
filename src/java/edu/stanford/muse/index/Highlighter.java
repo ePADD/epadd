@@ -13,7 +13,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -83,30 +83,30 @@ class Highlighter {
         //The Lucene Highlighter introduces tags around every token that matched the query, hence it is required to merge these fragmented annotations into one inorder to fit our needs.
         //To truly differentiate contiguous fragments that match a term supplied we add a unique id to the pretag, hence the randum instance
         //TODO: Explain what is happening here
-        Version lv = Indexer.LUCENE_VERSION;
+        //Version lv = Indexer.LUCENE_VERSION;
         //hell with reset close, stuff. initialized two analyzers to evade the problem.
         //TODO: get rid of two analyzers.
         Analyzer snAnalyzer, snAnalyzer2;
-        snAnalyzer = new EnglishNumberAnalyzer(lv, CharArraySet.EMPTY_SET);
-        snAnalyzer2 = new EnglishNumberAnalyzer(lv, CharArraySet.EMPTY_SET);
+        snAnalyzer = new EnglishNumberAnalyzer( CharArraySet.EMPTY_SET);
+        snAnalyzer2 = new EnglishNumberAnalyzer( CharArraySet.EMPTY_SET);
 
         Fragmenter fragmenter = new NullFragmenter();
-        QueryParser qp = new MultiFieldQueryParser(lv, new String[]{""}, snAnalyzer2);
+        QueryParser qp = new MultiFieldQueryParser(new String[]{""}, snAnalyzer2);
 
-        BooleanQuery query = new BooleanQuery();
+        BooleanQuery.Builder querybuilder = new BooleanQuery.Builder();
         TokenStream stream = snAnalyzer.tokenStream(null, new StringReader(content));
         int r = randnum.nextInt();
         String upreTag = preTag.replaceAll(">$", " data-ignore=" + r + " >");
         Formatter formatter = new SimpleHTMLFormatter(upreTag, postTag);
         //Parse exception may occur while parsing terms like "AND", "OR" etc.
         try {
-            query.add(new BooleanClause(qp.parse(term), BooleanClause.Occur.SHOULD));
+            querybuilder.add(new BooleanClause(qp.parse(term), BooleanClause.Occur.SHOULD));
         }catch(ParseException pe){
             if(log.isDebugEnabled())
                 log.debug("Exception while parsing: "+term,pe);
             return content;
         }
-        Scorer scorer = new QueryScorer(query);
+        Scorer scorer = new QueryScorer(querybuilder.build());
         org.apache.lucene.search.highlight.Highlighter highlighter = new org.apache.lucene.search.highlight.Highlighter(formatter, scorer);
         highlighter.setTextFragmenter(fragmenter);
         highlighter.setMaxDocCharsToAnalyze(Math.max(org.apache.lucene.search.highlight.Highlighter.DEFAULT_MAX_CHARS_TO_ANALYZE,content.length()));
