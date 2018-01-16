@@ -79,9 +79,9 @@ public class LabelManager implements Serializable{
         labelInfoMap.put(gen.getLabelID(),gen);
 */
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"1",
+        /*Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"1",
                 "This message was reviewed",true);
-        labelInfoMap.put(reviewed.getLabelID(),reviewed);
+        labelInfoMap.put(reviewed.getLabelID(),reviewed);*/
     }
 
     //set label for an email document
@@ -281,8 +281,8 @@ public class LabelManager implements Serializable{
         //Step 1. Copy labels from other to this while renaming label ID's (except DNT/System label)
         for(Label lab: other.getAllLabels()){
             String labid = lab.getLabelID();
-            /*No special handling for system labels. if(lab.isSysLabel)
-                continue;*/
+            if(lab.isSysLabel)
+                continue;
             String newlabid;
             if(labelInfoMap.containsKey(labid)){
                 //rename labid to newlabid
@@ -316,6 +316,17 @@ public class LabelManager implements Serializable{
         //now iterate over docLabelInfoMap of other and add those documents in this object's docLabelInfoMap
         //if docid is same then do the set union after renaming old id's to new one (taken from oldToNewLabelIdMap)
         //if docid is new then simply copy them
+
+        ////make sure that system labels' mapping remain same,///////////////////////////////////
+        //i.e. if labelid 0 is system label it will continue to map to 0 in oldToNewLabelIDmap
+        Set<String> syslabelids = new LinkedHashSet<>();
+        getAllLabels().forEach(label-> {
+            if(label.isSysLabel)
+                syslabelids.add(label.getLabelID());
+        });
+        syslabelids.forEach(lid->oldToNewLabelID.put(lid,lid));
+        /////////////////////////////////////////////////////////////////////
+
         for(String docid: other.docToLabelID.keySet()){
             //get newlabid's generated in above for loop
             Set<String> newlabels = other.docToLabelID.get(docid).stream().map(labid->oldToNewLabelID.get(labid)).collect(Collectors.toSet());
