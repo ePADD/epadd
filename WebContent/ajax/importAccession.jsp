@@ -33,7 +33,7 @@ if(Util.nullOrEmpty(collectionID)){
 
     String archiveName = Util.filePathTailByPlatformSeparator(baseDir);
     collectionDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + archiveName;
-    new File(collectionDir).mkdir();
+    new File(collectionDir).mkdirs();
 }else
     collectionDir=edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + collectionID;
 
