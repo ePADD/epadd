@@ -142,7 +142,9 @@
 	LabelManager.MergeResult mResultLM = mResult.labManagerMergeResult;
 		mergeReport.append("------------------------------\n");
 	for(Pair<Label,Label> p: mResultLM.labelsWithNameClash){
+	    mergeReport.append("--Label in Collection--\n");
 	    mergeReport.append(p.first.toString());
+	    mergeReport.append("--Label in Accession--\n");
 	    mergeReport.append(p.second.toString());
 	    mergeReport.append("-------------------------------\n");
 	}

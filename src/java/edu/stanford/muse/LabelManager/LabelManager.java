@@ -79,9 +79,9 @@ public class LabelManager implements Serializable{
         labelInfoMap.put(gen.getLabelID(),gen);
 */
         //reviewed
-        /*Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"1",
-                "This message was reviewed",true);
-        labelInfoMap.put(reviewed.getLabelID(),reviewed);*/
+        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"1",
+                "This message was reviewed",false);
+        labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
 
     //set label for an email document

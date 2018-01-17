@@ -75,9 +75,19 @@
         <table>
             <tr><th>Entity</th><th>Messages</th><th>Correspondent</th><th>Date Range</th></tr>
             <% for (EntityInfo info: infos) { %>
-            <tr>
-                <td><%=Util.escapeHTML(info.displayName)%></td>
-                <td class="right"><%=info.count%></td>
+            <tr><%
+                    if(!info.isCorrespondent){
+                        String term =  Util.escapeHTML(info.displayName);
+                        String entityurl = "browse?adv-search=1&archiveID="+ info.archiveID +"&entity="+Util.URLEncode(term)+"&termSubject=on&termBody=on&termOriginalBody=on";
+            %>
+                <td><a href=<%=entityurl%> ><%=term%></a></td>
+                <% }else{
+                    String term =  Util.escapeHTML(info.displayName);
+                    String entityurl = "browse?adv-search=1&archiveID="+ info.archiveID +"&correspondent="+Util.URLEncode(term)+"&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on";
+                %>
+                <td><a href=<%=entityurl%>><%=term%></a></td>
+                <%}%>
+                <%--<td class="right"><%=info.count%></td>--%>
                 <td class="center">
                     <% if (info.isCorrespondent) { %>
                         <i class="fa fa-check" aria-hidden="true"></i>

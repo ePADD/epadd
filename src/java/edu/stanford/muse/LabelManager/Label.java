@@ -63,9 +63,9 @@ public class Label implements Serializable{
         {
             sb.append("RestrictionType: "+this.getRestrictionType()+"\n");
             if(this.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_FOR_YEARS)
-                sb.append("Restricted for years: "+this.restrictedForYears);
+                sb.append("Restricted for years: "+this.restrictedForYears+"\n");
             else if (this.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_UNTIL)
-                sb.append("Restricted until: "+this.restrictedUntilTime);
+                sb.append("Restricted until: "+this.restrictedUntilTime+"\n");
         }
 
         return sb.toString();
