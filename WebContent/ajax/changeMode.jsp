@@ -35,6 +35,11 @@
 
 		session.removeAttribute("museEmailFetcher");
 		session.removeAttribute("statusProvider");
+
+		// for good measure, delete everything in the session
+		Enumeration<String> names = session.getAttributeNames();
+		while (names.hasMoreElements())
+			session.removeAttribute(names.nextElement());
 	}
 		
 	JSONObject obj = new JSONObject();
