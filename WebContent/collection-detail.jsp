@@ -9,15 +9,14 @@
 
 <html>
 <head>
+    <title>Collection Details</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-    <script src="js/jquery.js"></script>
-
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <!-- Optional theme -->
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <jsp:include page="css/css.jsp"/>
-    <title>Collection Details</title>
+
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
     <style> body { background-color: white; } </style>
@@ -33,42 +32,34 @@
 <%
     /* note: this page doesn't require an archive to be loaded. it should not have a profile block. */
 
-    String topDir = "";
+    String modeBaseDir = "";
     String id = request.getParameter("collection");
     if (ModeConfig.isProcessingMode())
-        topDir = Config.REPO_DIR_PROCESSING;
+        modeBaseDir = Config.REPO_DIR_PROCESSING;
     else if (ModeConfig.isDeliveryMode())
-        topDir = Config.REPO_DIR_DELIVERY;
+        modeBaseDir = Config.REPO_DIR_DELIVERY;
     else if (ModeConfig.isDiscoveryMode())
-        topDir = Config.REPO_DIR_DISCOVERY;
+        modeBaseDir = Config.REPO_DIR_DISCOVERY;
     else {
-        topDir = Config.REPO_DIR_APPRAISAL;
+        modeBaseDir = Config.REPO_DIR_APPRAISAL; // not really needed in appraisal, but just leave it in, since we might some day support multiple archives in appraisal
         id = "user";
     }
-    //JSPHelper.log.info("Top dir: "+topDir);
-    String archiveDir = topDir + File.separator + id;
-    //JSPHelper.log.info("Archive dir: "+archiveDir);
+
+    String archiveDir = modeBaseDir + File.separator + id;
 
     File f = new File(archiveDir);
     if (!f.isDirectory()) {
-        %>
-        <jsp:include page="footer.jsp"/>
-        <%
         return;
     }
 
     String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
-
     if (!new File(archiveFile).exists()) {
-        %>
-        <jsp:include page="footer.jsp"/>
-        <%
         return;
     }
 
     Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
     String fileParam = f.getName() + "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
-    String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
+    String url = "serveImage.jsp?file=" + fileParam;
     String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
 %>
 
@@ -81,7 +72,7 @@
         <% } %>
     </div>
     <p>
-    <div class="banner-img" style="background-image:url('<%=url%>')">
+    <div class="banner-img" style="background-image:url('<%=url%>')"> <!-- escape needed? -->
     </div>
 
     <p>
@@ -89,16 +80,16 @@
         <div class="heading">Collection Details</div>
         <p></p>
         <p>
-        Institution<br/>
-        <span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span>
+            Institution<br/>
+            <span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span>
         </p>
         <p>
-        Repository<br/>
-        <span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span>
+            Repository<br/>
+            <span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span>
         </p>
         <p>
-        Collection ID<br/>
-        <span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span>
+            Collection ID<br/>
+            <span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span>
         </p>
     	<p>
             <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
@@ -135,16 +126,18 @@
 
         <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
             <p>
-            Contact email<br/>
-            <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
-        </p><p>
+                Contact email<br/>
+                <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
+            </p>
         <% }
 
         if (ModeConfig.isProcessingMode()) { %>
+        <p>
             <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit</button>
             <br/>
             <br/>
             <button class="btn-default" id="add-accession"><i class="fa fa-import"></i> Add accession</button>
+        </p>
 
         <% } %>
     </div>
@@ -213,11 +206,8 @@
 </div>
 <br/>
 <br/>
-    <jsp:include page="footer.jsp"/>
 
     <script>
-        //the following call will first load archive and then in that jsp the subsequent screeen 'edit-collection-metadata.jsp' will be set as the next page
-        //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-collection-metadata.jsp or browse-top.jsp
         $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
         $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence

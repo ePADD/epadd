@@ -1,7 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.io.*"%>
-<%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
@@ -9,16 +8,15 @@
 
 <html>
 <head>
-  <title>List Collections</title>
-  <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <title>Collections</title>
+    <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-  <script src="js/jquery.js"></script>
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <jsp:include page="css/css.jsp"/>
 
-  <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-  <!-- Optional theme -->
-  <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-  <jsp:include page="css/css.jsp"/>
-  <script src="js/epadd.js" type="text/javascript"></script>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/epadd.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -57,45 +55,47 @@
   <div>
 
     <%
-      String topDir = "";
+      String modeBaseDir = "";
       if (ModeConfig.isProcessingMode())
-          topDir = Config.REPO_DIR_PROCESSING;
+          modeBaseDir = Config.REPO_DIR_PROCESSING;
       else if (ModeConfig.isDeliveryMode())
-        topDir = Config.REPO_DIR_DELIVERY;
+        modeBaseDir = Config.REPO_DIR_DELIVERY;
       else if (ModeConfig.isDiscoveryMode())
-        topDir = Config.REPO_DIR_DISCOVERY;
+        modeBaseDir = Config.REPO_DIR_DISCOVERY;
 
-
-      File topFile = new File(topDir);
-        JSPHelper.log.info("Reading collections from: " + topDir);
+      File topFile = new File(modeBaseDir);
+        JSPHelper.log.info("Reading collections from: " + modeBaseDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
-          out.println ("Please place some archives in " + topDir);
+          out.println ("Please place some archives in " + modeBaseDir);
         }  else {
           File[] files = topFile.listFiles();
-          for (File f: files)
-          {
-            if (!f.isDirectory())
-              continue;
+          if (files != null) {
+              for (File f : files) {
+                  if (!f.isDirectory())
+                      continue;
 
-            String id = f.getName();
-            String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
+                  String id = f.getName();
+                  String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
 
-            if (!new File(archiveFile).exists())
-              continue;
+                  if (!new File(archiveFile).exists())
+                      continue;
 
-            Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
-            String fileParam = id + "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
-            String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
+                  Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
+                  if (cm != null) {
+                      String fileParam = id + "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
+                      String url = "serveImage.jsp?file=" + fileParam;
 
-            out.println ("<div data-dir=\"" + id + "\" class=\"archive-card\">");
-            out.println ("<div class=\"landing-img\" style=\"background-image:url('" + url + "')\"></div>");
-            out.println ("<div class=\"landing-img-text\">");
-            out.println (Util.nullOrEmpty(cm.ownerName) ?  "No name assigned" : cm.ownerName);
-            out.println ("<br><span class=\"detail\">" + Util.commatize(cm.nDocs) + " messages</span>");
-            out.println ("<br><span class=\"detail\">" + Util.commatize(cm.nBlobs) + " attachments</span>");
-            out.println ("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)+ " </span>");
-            out.println ("</div>");
-            out.println ("</div>");
+                      out.println("<div data-dir=\"" + id + "\" class=\"archive-card\">");
+                      out.println("<div class=\"landing-img\" style=\"background-image:url('" + url + "')\"></div>");
+                      out.println("<div class=\"landing-img-text\">");
+                      out.println(Util.nullOrEmpty(cm.ownerName) ? "No name assigned" : cm.ownerName);
+                      out.println("<br><span class=\"detail\">" + Util.commatize(cm.nDocs) + " messages</span>");
+                      out.println("<br><span class=\"detail\">" + Util.commatize(cm.nBlobs) + " attachments</span>");
+                      out.println("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID) + " </span>");
+                      out.println("</div>");
+                      out.println("</div>");
+                  }
+              }
           }
       }
     %>

@@ -1,12 +1,13 @@
 package edu.stanford.epadd.util;
 
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 
+import edu.stanford.muse.webapp.ModeConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -14,12 +15,9 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by hangal on 4/19/15.
- */
 public class Photos
 {
-	public static Log	log	= LogFactory.getLog(JSPHelper.class);
+    private static final Log log = LogFactory.getLog(JSPHelper.class);
 
 	/**
 	 * serve up an image file.
@@ -30,16 +28,21 @@ public class Photos
 	 * unless given type=discovery/delivery/processing in which case it looks for file path relative to ModeConfig.REPO_DIR_DISCOVERY/DELIVERY/PROCESSING.
 	 * Note: file always has forward slashes for path separator, regardless of platform
 	 */
-	public static void serveImage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public static void serveImage(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		String filename = request.getParameter("file");
-		filename = JSPHelper.convertRequestParamToUTF8(filename);
+		if (Util.nullOrEmpty(filename)) {
+			log.warn("Empty filename sent to serveImage");
+			return;
+		}
+
 		if (filename.contains(".." + File.separator)) // avoid file injection!
 		{
 			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
+		filename = JSPHelper.convertRequestParamToUTF8(filename);
 
 		// the request always has /. On Windows we may need to change that to \
 		if (File.separator.equals("\\"))
@@ -47,20 +50,19 @@ public class Photos
 		else
 			filename = filename.replaceAll("/", File.separator);
 		HttpSession session = request.getSession();
-		String mode = request.getParameter("mode");
 		String baseDir, filePath;
 
-		if ("processing".equalsIgnoreCase(mode))
+		if (ModeConfig.isProcessingMode())
 		{
 			baseDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING;
 			filePath = baseDir + File.separator + filename;
 		}
-		else if ("discovery".equalsIgnoreCase(mode))
+		else if (ModeConfig.isDiscoveryMode())
 		{
 			baseDir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY;
 			filePath = baseDir + File.separator + filename;
 		}
-		else if ("delivery".equalsIgnoreCase(mode))
+		else if (ModeConfig.isDeliveryMode())
 		{
 			baseDir = edu.stanford.muse.Config.REPO_DIR_DELIVERY;
 			filePath = baseDir + File.separator + filename;
@@ -68,7 +70,7 @@ public class Photos
 		else
 		{ //get archiveID from the request parameter and then get the archive. It must be present
 			Archive archive = JSPHelper.getArchive(request);
-			assert archive!=null: new AssertionError("If no mode is set then the archiveID must be passed to serveImage.jsp");
+			assert archive!=null: "If no mode is set then the archiveID must be passed to serveImage.jsp";
 			baseDir = archive.baseDir;
 			filePath = baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
 		}

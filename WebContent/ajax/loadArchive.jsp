@@ -26,7 +26,7 @@
             return;
         }
 
-        dir = dir + java.io.File.separator; //  + "user"; // wish this was cleaner
+        dir = dir + java.io.File.separator;
         if (ModeConfig.isProcessingMode())
           dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + dir;
         else if (ModeConfig.isDeliveryMode())
