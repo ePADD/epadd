@@ -125,7 +125,9 @@
 	        elementsToSearchFor.addAll(cont.getEmails());
 	        elementsToSearchFor.addAll(cont.getNames());
 	    });
-		mergeReport.append(c.toString());
+	    for(String elem: Util.setUnion(c.getEmails(),c.getNames()))
+			mergeReport.append(elem+"\n");
+	    mergeReport.append("-------\n");
 		//Find the potential contact candidates for merging with this contact as below;
 		//For each element in elementsToSearch, search for element in the merged addressbook
 		// display all those contacts (except that is same as 'c') as potential candidates for merging with this contact.

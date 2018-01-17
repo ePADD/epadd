@@ -313,6 +313,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			// imp: for id, should use Field.Index.NOT_ANALYZED field should be http://vuknikolic.wordpress.com/2011/01/03/lucenes-field-options-store-and-index-aka-rtfm/
 			// note: id for attachments index is just sequential numbers, 1, 2, 3. etc.
 			// it is not the full unique id (<folder>-<num>) that the emails index has.
+			//NOTE: docid, emaildocid and languages fields can be stored without position (hence ft as FieldType)
+			//because user can not do a phrase query on these fields.
 			doc.add(new Field("docId", id, ft));
             //Field type ft instead of StoredFiled so as to be able to search over this field
             doc.add(new Field("emailDocId", e.getUniqueId(), ft));
@@ -328,7 +330,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 				String s = Util.join(names, NAMES_FIELD_DELIMITER); // just some connector for storing the field
 
-				doc.add(new Field("names", s, ft));
+				doc.add(new Field("names", s, full_ft));
 
 				if(stats!=null)
 					stats.nIndexedNames_blob += names.size();
@@ -336,8 +338,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 			// log.info ("blob metadata = " + content.first);
 			//meta data does not contain the fileName
-			doc.add(new Field("meta", content.first, ft));
-			doc.add(new Field("fileName", b.filename, ft));
+			doc.add(new Field("meta", content.first, full_ft));
+			doc.add(new Field("fileName", b.filename, full_ft));
 
 			doc.add(new Field("body", content.second, full_ft));
 
@@ -930,7 +932,7 @@ is what we want.
 		{
 			Set<String> namesForThisCategory = Util.scrubNames(categoryToNamesMap.get(category));
 			String s = Util.join(namesForThisCategory, NAMES_FIELD_DELIMITER);
-			doc.add(new Field(category.toLowerCase(), s, ft));
+			doc.add(new Field(category.toLowerCase(), s, full_ft));
 			allNames.addAll(namesForThisCategory);
 		}
 
@@ -994,28 +996,28 @@ is what we want.
 
 			// Store the to, from, cc, bcc fields as string
 			String to_emails = Util.join(EmailUtils.emailAddrs(ed.to), " ");
-			doc.add(new Field("to_emails", to_emails, ft));
+			doc.add(new Field("to_emails", to_emails, full_ft));
 
 			String to_names = Util.join(EmailUtils.personalNames(ed.to), " ");
-			doc.add(new Field("to_names", to_names, ft));
+			doc.add(new Field("to_names", to_names, full_ft));
 
 			String from_emails = Util.join(EmailUtils.emailAddrs(ed.from), " ");
-			doc.add(new Field("from_emails", from_emails, ft));
+			doc.add(new Field("from_emails", from_emails, full_ft));
 
 			String from_names = Util.join(EmailUtils.personalNames(ed.from), " ");
-			doc.add(new Field("from_names", from_names, ft));
+			doc.add(new Field("from_names", from_names, full_ft));
 
 			String cc_emails = Util.join(EmailUtils.emailAddrs(ed.cc), " ");
-			doc.add(new Field("cc_emails", cc_emails, ft));
+			doc.add(new Field("cc_emails", cc_emails, full_ft));
 
 			String cc_names = Util.join(EmailUtils.personalNames(ed.cc), " ");
-			doc.add(new Field("cc_names", cc_names, ft));
+			doc.add(new Field("cc_names", cc_names, full_ft));
 
 			String bcc_emails = Util.join(EmailUtils.emailAddrs(ed.bcc), " ");
-			doc.add(new Field("bcc_emails", bcc_emails, ft));
+			doc.add(new Field("bcc_emails", bcc_emails, full_ft));
 
 			String bcc_names = Util.join(EmailUtils.personalNames(ed.bcc), " ");
-			doc.add(new Field("bcc_names", bcc_names, ft));
+			doc.add(new Field("bcc_names", bcc_names, full_ft));
 
 			doc.add(new Field("body", body, full_ft)); // save raw before preprocessed
 		}
@@ -1043,7 +1045,7 @@ is what we want.
 			// should the names/names_orig filed be analyzed? We don't want them
 			// stemmed, after all. However, we do want to match case-insensitive
 			// NAMES_FIELD_DELIMITER is just some connector for storing the field
-			doc.add(new Field("names", names, ft));
+			doc.add(new Field("names", names, full_ft));
 
 			// just reuse names for the common case of body = bodyOriginal
 			if (bodyOriginal.equals(body))
@@ -1059,7 +1061,7 @@ is what we want.
 			ns = allNames.size();
 
 			String namesOriginalString = Util.join(namesOriginal, NAMES_FIELD_DELIMITER);
-			doc.add(new Field("names_original", namesOriginalString, ft));
+			doc.add(new Field("names_original", namesOriginalString, full_ft));
 		}
 
 		iwriter.addDocument(doc);
