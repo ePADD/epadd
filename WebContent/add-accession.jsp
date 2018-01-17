@@ -83,21 +83,21 @@
             <div class="one-line">
                 <div class="form-group col-sm-12">
                     <label for="accessionScope">Scope and Content</label>
-                    <textarea id="accessionScope" style="resize:vertical;height:100px;" class="dir form-control" name="accessionScope" value=""></textarea>
+                    <textarea id="accessionScope" style="resize:vertical;height:100px;" class="dir form-control" name="accessionScope"></textarea>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
                     <label for="accessionRights">Rights and Conditions</label>
-                    <textarea id="accessionRights" style="resize:vertical;height:100px;" class="dir form-control" type="text" name="accessionRights" value=""></textarea>
+                    <textarea id="accessionRights" style="resize:vertical;height:100px;" class="dir form-control" name="accessionRights"></textarea>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
                     <label for="accessionNotes">Notes</label>
-                    <textarea id="accessionNotes" style="resize:vertical;height:100px;" class="dir form-control" type="text" name="accessionNotes" value=""></textarea>
+                    <textarea id="accessionNotes" style="resize:vertical;height:100px;" class="dir form-control" name="accessionNotes"></textarea>
                 </div>
             </div>
         </div>
@@ -109,7 +109,7 @@
     <br/>
 
     <script>
-        var fp = new FilePicker($('#filepicker'));
+        var fp = new FilePicker($('#filepicker')); // fp is ignored, that's ok.
     </script>
 
     <script type="text/javascript">

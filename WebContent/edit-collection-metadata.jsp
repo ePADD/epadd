@@ -33,19 +33,18 @@
 
 <p>
 	<%
-	String topDir = "/";
 	if (!ModeConfig.isProcessingMode()) {
 		out.println ("Updating collection metadata is allowed only in ePADD's Processing mode.");
 		return;
 	}
 
 	String id = request.getParameter("collection");
-    topDir = Config.REPO_DIR_PROCESSING + File.separator + id;
+    String modeBaseDir = Config.REPO_DIR_PROCESSING + File.separator + id;
 
 	// read cm from archive file
-	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(topDir);
+	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(modeBaseDir);
 	if (cm == null) {
-	    out.println ("Unable to read processing metadata file for archive with id: " + id);
+	    out.println ("Unable to read processing metadata file for collection: " + id);
 	    return;
 	}
 	%>
@@ -64,7 +63,7 @@
 			<div class="input-field-label">Institution</div>
 			<br/>
 			<div class="input-field">
-				<input title="Institution" value="<%=cm == null ? "" : formatMetadataField( cm.institution)%>" class="form-control" type="text" name="institution"/>
+				<input title="Institution" value="<%=formatMetadataField( cm.institution)%>" class="form-control" type="text" name="institution"/>
 			</div>
 		</div>
 
@@ -72,7 +71,7 @@
 			<div class="input-field-label">Repository</div>
 			<br/>
 			<div class="input-field">
-				<input title="Repository" value="<%=cm == null ? "" : formatMetadataField( cm.repository)%>" class="form-control" type="text" name="repository"/>
+				<input title="Repository" value="<%=formatMetadataField( cm.repository)%>" class="form-control" type="text" name="repository"/>
 			</div>
 		</div>
 
@@ -80,7 +79,7 @@
 			<div class="input-field-label">Collection Title</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection title" value="<%=cm == null ? "" : formatMetadataField( cm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
+				<input title="Collection title" value="<%=formatMetadataField( cm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
 			</div>
 		</div>
 
@@ -88,7 +87,7 @@
 			<div class="input-field-label">Collection ID</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection ID" value="<%=cm == null ? "" : formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="collectionID"/> <!-- this is the institutional collection ID, not ePADD's -->
+				<input title="Collection ID" value="<%=formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="collectionID"/> <!-- this is the institutional collection ID, not ePADD's -->
 			</div>
 		</div>
 
@@ -96,7 +95,7 @@
 			<div class="input-field-label">Finding Aid Link</div>
 			<br/>
 			<div class="input-field">
-				<input title="Finding aid link" value="<%=cm == null ? "" : formatMetadataField( cm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
+				<input title="Finding aid link" value="<%=formatMetadataField( cm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
 			</div>
 		</div>
 
@@ -104,7 +103,7 @@
 			<div class="input-field-label">Catalog Record Link</div>
 			<br/>
 			<div class="input-field">
-				<input title="Catalog record link" value="<%=cm == null ? "" : formatMetadataField( cm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
+				<input title="Catalog record link" value="<%=formatMetadataField( cm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
 			</div>
 		</div>
 
@@ -112,7 +111,7 @@
 			<div class="input-field-label">Contact Email Address</div>
 			<br/>
 			<div class="input-field">
-				<input title="Contact email" value="<%=cm == null ? "" : formatMetadataField( cm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
+				<input title="Contact email" value="<%=formatMetadataField( cm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
 			</div>
 		</div>
 

@@ -361,18 +361,19 @@ epadd.import_accession = function(e, post_params) {
 		$('#spinner-div').fadeOut();
 		$('#gobutton').fadeIn();
 
-		if (response ) {
-            if (response.status == 0) {
+		if (response) {
+            if (response.status === 0) {
                 var status = 'Success! ' + response.message;
                 epadd.log('loading archive status: ' + status);
                 window.location = './browse-top?archiveID=' + response.archiveID;
-            } else if (response.status == 1) {
+            } else if (response.status === 1) {
                 window.location = "./mergeReport?archiveID=" + response.archiveID;
             } else {
                 epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
             }
-        }   else
-                    epadd.alert('Error! No response from ePADD.');
+        }
+        else
+			epadd.alert('Error! No response from ePADD.');
 	},
 	error: function() {
 		$('#spinner-div').fadeOut();
@@ -381,13 +382,14 @@ epadd.import_accession = function(e, post_params) {
 	}});
 };
 
+// need to revisit clearCache functionality - sgh, jan '18
 epadd.clearCache = function() {
 	$('#clearCacheSpinner').show();
 	$.ajax({url: "clearCache",
 		dataType: "json",
 		success: function(data) {
 			$('#clearCacheSpinner').hide('slow');
-			if (data.status == 0)
+			if (data.status === 0)
 				$.jGrowl('Archive cleared.');
 			else
 				$.jGrowl('Problems clearing archive.');

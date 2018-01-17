@@ -32,7 +32,7 @@
 <%
     /* note: this page doesn't require an archive to be loaded. it should not have a profile block. */
 
-    String modeBaseDir = "";
+    String modeBaseDir;
     String id = request.getParameter("collection");
     if (ModeConfig.isProcessingMode())
         modeBaseDir = Config.REPO_DIR_PROCESSING;
@@ -58,6 +58,9 @@
     }
 
     Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
+    if (cm == null)
+        return;
+
     String fileParam = f.getName() + "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
     String url = "serveImage.jsp?file=" + fileParam;
     String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
@@ -75,7 +78,6 @@
     <div class="banner-img" style="background-image:url('<%=url%>')"> <!-- escape needed? -->
     </div>
 
-    <p>
     <div class="details">
         <div class="heading">Collection Details</div>
         <p></p>
@@ -106,7 +108,7 @@
                     </p>
                 <% } %>
             <% } %>
-        </p><p>
+        <p>
         <p>
             Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
             <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>

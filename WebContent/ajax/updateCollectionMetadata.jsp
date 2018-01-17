@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive" %>
-<%@page language="java" import="edu.stanford.muse.index.Archive.CollectionMetadata"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
@@ -9,7 +8,7 @@
 <%@page language="java" import="javax.mail.MessagingException"%>
 <%@ page import="java.io.*"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.Config"%>
 <%!
-private String getFileName(final Part part) throws MessagingException
+private String getFileName(final Part part)
 {
     String contentDisposition = part.getHeader("content-disposition");
 //		if (Util.nullOrEmpty((contentDispositions)) || contentDispositions.length < 1)
@@ -39,7 +38,7 @@ private void saveFile(HttpServletRequest request, String param, String filePath)
         out = new FileOutputStream(new File(filePath));
         filecontent = filePart.getInputStream();
 
-        int read = 0;
+        int read;
         final byte[] bytes = new byte[1024];
 
         while ((read = filecontent.read(bytes)) != -1) {
@@ -77,6 +76,12 @@ try {
 
     // read, edit and write back the pm object. keep the other data inside it (such as accessions) unchanged.
 	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(archiveBaseDir);
+
+	if (cm == null) {
+	    // not sure we want to init a new cm. we could simply bail out.
+	    JSPHelper.log.warn ("No existing collection metadata in " + archiveBaseDir);
+	    cm = new Archive.CollectionMetadata();
+    }
 
 	// we could consider providing ownername in the request parameters if the archivist needs to have an option to change the name from what appraisal originally assigned.
 	cm.institution = request.getParameter("institution");
