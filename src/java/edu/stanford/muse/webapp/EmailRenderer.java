@@ -307,15 +307,14 @@ public class EmailRenderer {
 					page.append(attachments.size() + " attachment" + (attachments.size() == 1 ? "" : "s") + ".");
 				} else {
 					page.append("<hr/>\n<div class=\"attachments\">\n");
-					page.append("<table>\n");
 					int i = 0;
 					for (; i < attachments.size(); i++)
 					{
-						if (i % 4 == 0)
-							page.append((i == 0) ? "<tr>\n" : "</tr><tr>\n");
-						page.append("<td>");
-
 						Blob attachment = attachments.get(i);
+						boolean highlight = highlightAttachments != null && highlightAttachments.contains(attachment);
+						String css_class = "attachment" + (highlight ? " highlight":"");
+						page.append("<div class=\"" + css_class + "\">");
+
 						String thumbnailURL = null, attachmentURL = null;
 						boolean is_image = Util.is_image_filename(attachment.filename);
                         BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
@@ -342,11 +341,10 @@ public class EmailRenderer {
 						// cap to a length of 25, otherwise the attachment name
 						// overflows the tn
 						String display = Util.ellipsize(s, 25);
-                        boolean highlight = highlightAttachments != null && highlightAttachments.contains(attachment);
-                        page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(s) + "\" class='" + (highlight?"highlight":"") + "'>"+ Util.escapeHTML(display) + "</span>&nbsp;");
+                        page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(s) + "\">"+ Util.escapeHTML(display) + "</span>&nbsp;");
 						page.append("<br/>");
 
-						String css_class = "attachment-preview" + (is_image ? " img" : "") + (highlight ? " highlight" : "");
+						css_class = "attachment-preview" + (is_image ? " img" : "");
 						String leader = "<img class=\"" + css_class + "\" ";
 
 						// punt on the thumbnail if the attachment tn or content
@@ -355,7 +353,7 @@ public class EmailRenderer {
 						{
 							// d.hashCode() is just something to identify this
 							// page/message
-							page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + attachment.filename + "\" class=\"" + (highlight?"highlight":"") + "\" href=\"" + attachmentURL + "\">");
+							page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(attachment.filename) + "\" href=\"" + attachmentURL + "\">");
 							page.append(leader + "href=\"" + attachmentURL + "\" src=\"" + thumbnailURL + "\"></img>\n");
 							page.append("<a>\n");
 						}
@@ -373,11 +371,8 @@ public class EmailRenderer {
 							if (attachmentURL == null)
 								JSPHelper.log.info("No attachment URL for " + attachment);
 						}
-						page.append("</td>\n");
+						page.append ("</div>");
 					}
-					if (i % 4 != 0)
-						page.append("</tr>");
-					page.append("</table>");
 					page.append("\n</div>  <!-- .muse-doc-attachments -->\n"); // muse-doc-attachments
 				}
 

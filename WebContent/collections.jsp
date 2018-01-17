@@ -108,7 +108,6 @@
             out.println ("<br><span class=\"detail\">" + Util.commatize(pm.nDocs) + " messages</span>");
             out.println ("<br><span class=\"detail\">" + Util.commatize(pm.nBlobs) + " attachments</span>");
             out.println ("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(pm.collectionID) ? "Unassigned" : pm.collectionID)+ " </span>");
-            out.println ("<br><span class=\"detail\">Accession ID: " + (Util.nullOrEmpty(pm.accessionID) ? "Unassigned" : pm.accessionID) + " </span>");
             out.println ("</div>");
             out.println ("</div>");
           }

@@ -256,7 +256,7 @@ public class Archive implements Serializable {
     // these fields are used in the library setting
     static public class ProcessingMetadata implements java.io.Serializable {
         private final static long serialVersionUID = 6304656466358754945L; // compatibility
-        public String institution, repository, collectionTitle, collectionID, accessionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes;
+        public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes;
         public long timestamp;
         public String tz;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
@@ -288,7 +288,6 @@ public class Archive implements Serializable {
             mergeField(this.repository, other.repository);
             mergeField(this.collectionTitle, other.collectionTitle);
             mergeField(this.collectionID, other.collectionID);
-            mergeField(this.accessionID, other.accessionID);
             mergeField(this.findingAidLink, other.findingAidLink);
             mergeField(this.catalogRecordLink, other.catalogRecordLink);
             mergeField(this.contactEmail, other.contactEmail);

@@ -24,3 +24,4 @@
 *.swp
 *.swo
 workspace.xml
+/pom.xml

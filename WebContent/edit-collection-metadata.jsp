@@ -36,6 +36,7 @@
 	String id = request.getParameter("id");
 	writeProfileBlock(out, archive, "", "Collection metadata");
 	assert request.getParameter("archiveID")!=null;
+	Archive.ProcessingMetadata pm = archive.processingMetadata;
 	%>
 
 
@@ -50,7 +51,7 @@
 			<div class="input-field-label">Institution</div>
 			<br/>
 			<div class="input-field">
-				<input title="Institution" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.institution)%>" class="form-control" type="text" name="institution"/>
+				<input title="Institution" value="<%=pm == null ? "" : formatMetadataField( pm.institution)%>" class="form-control" type="text" name="institution"/>
 			</div>
 		</div>
 
@@ -58,7 +59,7 @@
 			<div class="input-field-label">Repository</div>
 			<br/>
 			<div class="input-field">
-				<input title="Repository" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.repository)%>" class="form-control" type="text" name="repository"/>
+				<input title="Repository" value="<%=pm == null ? "" : formatMetadataField( pm.repository)%>" class="form-control" type="text" name="repository"/>
 			</div>
 		</div>
 
@@ -66,7 +67,7 @@
 			<div class="input-field-label">Collection Title</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection title" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
+				<input title="Collection title" value="<%=pm == null ? "" : formatMetadataField( pm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
 			</div>
 		</div>
 
@@ -74,7 +75,7 @@
 			<div class="input-field-label">Collection ID</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection ID" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.collectionID)%>" class="form-control" type="text" name="collectionID"/>
+				<input title="Collection ID" value="<%=pm == null ? "" : formatMetadataField( pm.collectionID)%>" class="form-control" type="text" name="collectionID"/>
 			</div>
 		</div>
 
@@ -82,7 +83,7 @@
 			<div class="input-field-label">Finding Aid Link</div>
 			<br/>
 			<div class="input-field">
-				<input title="Finding aid link" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
+				<input title="Finding aid link" value="<%=pm == null ? "" : formatMetadataField( pm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
 			</div>
 		</div>
 
@@ -90,7 +91,7 @@
 			<div class="input-field-label">Catalog Record Link</div>
 			<br/>
 			<div class="input-field">
-				<input title="Catalog record link" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
+				<input title="Catalog record link" value="<%=pm == null ? "" : formatMetadataField( pm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
 			</div>
 		</div>
 
@@ -98,7 +99,7 @@
 			<div class="input-field-label">Contact Email Address</div>
 			<br/>
 			<div class="input-field">
-				<input title="Contact email" value="<%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
+				<input title="Contact email" value="<%=pm == null ? "" : formatMetadataField( pm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
 			</div>
 		</div>
 
@@ -108,7 +109,7 @@
 			<div class="input-field-label">About</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.about)%>
+				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=pm == null ? "" : formatMetadataField( pm.about)%>
 				</textarea>
 			</div>
 		</div>
@@ -116,7 +117,7 @@
 			<div class="input-field-label">Rights and Conditions</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.rights)%>
+				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=pm == null ? "" : formatMetadataField( pm.rights)%>
 				</textarea>
 			</div>
 		</div>
@@ -124,7 +125,7 @@
 			<div class="input-field-label">Notes</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=archive.processingMetadata == null ? "" : formatMetadataField( archive.processingMetadata.notes)%>
+				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=pm == null ? "" : formatMetadataField( pm.notes)%>
 				</textarea>
 			</div>
 		</div>
