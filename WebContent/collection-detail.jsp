@@ -34,7 +34,7 @@
     /* note: this page doesn't require an archive to be loaded. it should not have a profile block. */
 
     String topDir = "";
-    String id = request.getParameter("id");
+    String id = request.getParameter("collectionID");
     if (ModeConfig.isProcessingMode())
         topDir = Config.REPO_DIR_PROCESSING;
     else if (ModeConfig.isDeliveryMode())
@@ -66,16 +66,16 @@
         return;
     }
 
-    Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
+    Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
     String fileParam = f.getName() + "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
     String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
-    String ownerName = Util.nullOrEmpty(pm.ownerName) ? "(unassigned name)" : pm.ownerName;
+    String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
 %>
 
 <div class="collection-detail">
     <div class="heading">
-        <% if (!Util.nullOrEmpty(pm.collectionTitle)) { %>
-            <%=pm.collectionTitle%>
+        <% if (!Util.nullOrEmpty(cm.collectionTitle)) { %>
+            <%=cm.collectionTitle%>
         <% } else { %>
              <%=ownerName%>, Email Series
         <% } %>
@@ -90,53 +90,53 @@
         <p></p>
         <p>
         Institution<br/>
-        <span class="detail"><%=(Util.nullOrEmpty(pm.institution) ? "Unassigned" : pm.institution)%> </span>
+        <span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span>
         </p>
         <p>
         Repository<br/>
-        <span class="detail"><%=(Util.nullOrEmpty(pm.repository) ? "Unassigned" : pm.repository)%> </span>
+        <span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span>
         </p>
         <p>
         Collection ID<br/>
-        <span class="detail"><%=(Util.nullOrEmpty(pm.collectionID) ? "Unassigned" : pm.collectionID)%> </span>
+        <span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span>
         </p>
     	<p>
-            <% if (!Util.nullOrEmpty(pm.accessionMetadatas)) { %>
-                <span><%= Util.pluralize (pm.accessionMetadatas.size(), "accession")%></span>
+            <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
+                <span><%= Util.pluralize (cm.accessionMetadatas.size(), "accession")%></span>
             <% } %>
         </p>
         <p>
-            <% if (pm.firstDate != null && pm.lastDate != null) { %>
+            <% if (cm.firstDate != null && cm.lastDate != null) { %>
                 Date Range<br/>
-                <span class="detail"><%=Util.formatDate(pm.firstDate)%> to <%=Util.formatDate(pm.lastDate)%></span>
-                <% if (pm.nHackyDates > 0) { %>
+                <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
+                <% if (cm.nHackyDates > 0) { %>
             <br/>
-                        <%=Util.pluralize(pm.nHackyDates, "message")%> undated
+                        <%=Util.pluralize(cm.nHackyDates, "message")%> undated
                     </p>
                 <% } %>
             <% } %>
         </p><p>
         <p>
-            Messages: <span class="detail"><%=Util.commatize(pm.nDocs)%></span>
-            <% if (pm.nIncomingMessages > 0 || pm.nOutgoingMessages > 0) { %>
+            Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
+            <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
-                Incoming: <span class="detail"><%=Util.commatize(pm.nIncomingMessages)%></span><br/>
-                Outgoing: <span class="detail"><%=Util.commatize(pm.nOutgoingMessages)%></span>
+                Incoming: <span class="detail"><%=Util.commatize(cm.nIncomingMessages)%></span><br/>
+                Outgoing: <span class="detail"><%=Util.commatize(cm.nOutgoingMessages)%></span>
             <% } %>
         </p><p>
-            Attachments: <span class="detail"><%=Util.commatize(pm.nBlobs)%></span>
-                <% if (pm.nDocBlobs > 0 || pm.nImageBlobs > 0 || pm.nOtherBlobs > 0) { %>
+            Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
+                <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                     <br/>
-                    Images: <span class="detail"><%=Util.commatize(pm.nImageBlobs)%></span><br/>
-                    Documents: <span class="detail"><%=Util.commatize(pm.nDocBlobs)%></span><br/>
-                    Others: <span class="detail"><%=Util.commatize(pm.nOtherBlobs)%></span>
+                    Images: <span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/>
+                    Documents: <span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/>
+                    Others: <span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span>
                 <% } %>
         </p>
 
-        <% if (!Util.nullOrEmpty(pm.contactEmail)) { /* show contact email, but only if it actually present */ %>
+        <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
             <p>
             Contact email<br/>
-            <span class="detail"><%=(Util.nullOrEmpty(pm.contactEmail) ? "Unassigned" : pm.contactEmail)%> </span>
+            <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
         </p><p>
         <% }
 
@@ -157,33 +157,34 @@
             </div>
 
             <br/>
-            <%=Util.nullOrEmpty(pm.about) ? "No text assigned" : Util.escapeHTML(pm.about)%>
+            <%=Util.nullOrEmpty(cm.about) ? "No text assigned" : Util.escapeHTML(cm.about)%>
 
             <br/>
             <br/>
 
             <div style="font-weight:bold">Rights and Conditions</div>
-                <%=Util.nullOrEmpty(pm.rights) ? "No rights and conditions assigned" : Util.escapeHTML(pm.rights)%>
+                <%=Util.nullOrEmpty(cm.rights) ? "No rights and conditions assigned" : Util.escapeHTML(cm.rights)%>
 
-            <% if (!Util.nullOrEmpty(pm.notes)) { %>
+            <% if (!Util.nullOrEmpty(cm.notes)) { %>
                 <br><br>
                 <div style="font-weight:bold">Notes</div>
-                    <%= Util.escapeHTML(pm.notes)%>
+                    <%= Util.escapeHTML(cm.notes)%>
                 </div>
             <% } %>
 
-        <% if (!Util.nullOrEmpty(pm.accessionMetadatas)) {
-            for (Archive.AccessionMetadata am: pm.accessionMetadatas) { %>
-            <div class="panel">
-                About Accession <%=am.id%>
-                <p>
-                Title<br/><%=am.title%>
-                <p></p>
-                Scope and contents: <%=am.scope%>
-                Rights and conditions: <%=am.rights%>
-                Notes: <%=am.notes%>
-            </div>
-        <% }
+            <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) {
+                Util.pluralize(cm.accessionMetadatas.size(), "accession");
+
+                for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
+                    <hr/>
+                    <div>
+                        <b>Accession ID</b> <%=am.id%>
+                        <p><b>Title</b> <%=am.title%>
+                        <p><b>Scope and contents</b><br/> <%=am.scope%>
+                        <p><b>Rights and conditions</b><br/> <%=am.rights%>
+                        <p><b>Notes</b><br/> <%=am.notes%>
+                    </div>
+                <% }
         } %>
 
         <div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
@@ -193,12 +194,12 @@
         <p></p>
         <%
             // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
-            if (!Util.nullOrEmpty(pm.findingAidLink)) { %>
-            <div class="heading"><a target="_blank" href="<%=pm.findingAidLink%>">Finding Aid</a></div>
+            if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
+            <div class="heading"><a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a></div>
         <% } %>
         <br/>
-        <% if (!Util.nullOrEmpty(pm.catalogRecordLink)) { %>
-            <div class="heading"><a target="_blank" href="<%=pm.catalogRecordLink%>">Catalog Record</a></div>
+        <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
+            <div class="heading"><a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a></div>
             <br/>
         <% } %>
 
@@ -215,10 +216,9 @@
     <jsp:include page="footer.jsp"/>
 
     <script>
-        var editmetadataparams = {dir: '<%=id%>',editscreen: '1'};
         //the following call will first load archive and then in that jsp the subsequent screeen 'edit-collection-metadata.jsp' will be set as the next page
         //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-collection-metadata.jsp or browse-top.jsp
-        $('#edit-metadata').click (function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), editmetadataparams , null); /* load_archive_and_call(function() { window.location = "edit-accession"} */});
+        $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collectionID=<%=id%>'; });
         $('#add-accession').click (function() { window.location = 'add-accession?collectionID=<%=id%>'});
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.

@@ -116,15 +116,15 @@ if (!collectionDir.equals(baseDir))
             // new archive objects will anyway not have PM objects embedded within them.
             // see SimpleSessions.readArchiveIfPresent()
             {
-                String pmDir = collectionDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
-                Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata (pmDir, "default");
-                if (pm == null)
-                    pm = new Archive.ProcessingMetadata();
-                if (pm.accessionMetadatas == null)
-                    pm.accessionMetadatas = new ArrayList<>();
-                pm.accessionMetadatas.add(am);
-                SimpleSessions.writeProcessingMetadata (pm, pmDir, "default");
-                collection.processingMetadata = pm;//IMP otherwise in-memory archive processingmetadata and
+                String topDir = collectionDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+                Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata (topDir, "default");
+                if (cm == null)
+                    cm = new Archive.CollectionMetadata();
+                if (cm.accessionMetadatas == null)
+                    cm.accessionMetadatas = new ArrayList<>();
+                cm.accessionMetadatas.add(am);
+                SimpleSessions.writeProcessingMetadata (cm, topDir, "default");
+                collection.collectionMetadata = cm;//IMP otherwise in-memory archive processingmetadata and
                 //the updated metadata on disc will be out of sync. It manifests when saving this archive which
                 //overwrites the latest on-disc PM data with stale in-memory data.
             }

@@ -79,19 +79,19 @@
 	//int nDocAttachments = EmailUtils.countDocumentAttachmentsInDocs(allDocs);
 	int nFolders = archive.getAllFolders().size();
 	boolean statsAvailable = false;
-	if(archive.processingMetadata.entityCounts != null)
+	if(archive.collectionMetadata.entityCounts != null)
 		statsAvailable = true;
 	String nPersonEntities ="", nSensitiveMessages ="";
 	int nNonPersonEntities = 0;
 	if(statsAvailable){
-		nPersonEntities = Integer.toString(archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode()));
-		for (short fineType: archive.processingMetadata.entityCounts.keySet()) {
+		nPersonEntities = Integer.toString(archive.collectionMetadata.entityCounts.get(NEType.Type.PERSON.getCode()));
+		for (short fineType: archive.collectionMetadata.entityCounts.keySet()) {
 			if (NEType.getTypeForCode (fineType) != NEType.Type.PERSON)
-				nNonPersonEntities += archive.processingMetadata.entityCounts.get(fineType);
+				nNonPersonEntities += archive.collectionMetadata.entityCounts.get(fineType);
 		}
 	}
-	if(archive.processingMetadata.numPotentiallySensitiveMessages>=0)
-		nSensitiveMessages = " ("+archive.processingMetadata.numPotentiallySensitiveMessages+")";
+	if(archive.collectionMetadata.numPotentiallySensitiveMessages>=0)
+		nSensitiveMessages = " ("+archive.collectionMetadata.numPotentiallySensitiveMessages+")";
 
 	int nContacts = ab.allContacts().size();
 %>

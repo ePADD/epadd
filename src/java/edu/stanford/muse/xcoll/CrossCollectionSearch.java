@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class CrossCollectionSearch {
     public static Log log = LogFactory.getLog(CrossCollectionSearch.class);
 
-  /*  public static List<Archive.ProcessingMetadata> archiveMetadatas = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
+  /*  public static List<Archive.CollectionMetadata> archiveMetadatas = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
     public static List<String> archiveDirs = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
 */
     private static Multimap<String, EntityInfo> cTokenToInfos; // this token -> infos mapping is intended to make the lookup more efficient. Otherwise, we'd have to go through all the infos for looking up a string.
@@ -89,11 +89,6 @@ public class CrossCollectionSearch {
                 }
 
                 log.info ("Loaded archive from " + f.getAbsolutePath());
-
-                /*Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
-                archiveMetadatas.add (pm);
-                archiveDirs.add (f.getName());
-*/
                 log.info ("Loaded archive metadata from " + f.getAbsolutePath());
 
                 // process all docs in this archive to set up centityToInfo map

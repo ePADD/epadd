@@ -336,11 +336,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         String jog_contents_class = "message";
         String collectionName = "", repositoryName = "", institutionName = "", collectionID = "";
         if (!ModeConfig.isAppraisalMode()) {
-            Archive.ProcessingMetadata pm = archive.processingMetadata;
-            collectionName = Util.escapeHTML(pm.collectionTitle);
-            repositoryName = Util.escapeHTML(pm.repository);
-            institutionName = Util.escapeHTML(pm.institution);
-            collectionID = Util.escapeHTML(pm.collectionID);
+            Archive.CollectionMetadata cm = archive.collectionMetadata;
+            collectionName = Util.escapeHTML(cm.collectionTitle);
+            repositoryName = Util.escapeHTML(cm.repository);
+            institutionName = Util.escapeHTML(cm.institution);
+            collectionID = Util.escapeHTML(cm.collectionID);
         }
 
         String json = archive.getLabelManager().getLabelInfoMapAsJSONString();

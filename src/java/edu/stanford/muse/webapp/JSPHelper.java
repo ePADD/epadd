@@ -41,12 +41,9 @@ import org.json.JSONObject;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.util.*;
 
@@ -387,13 +384,13 @@ public class JSPHelper {
 				//This is to fix a bug where the count of person entities displayed on browse-top.jsp
 				//page was different than the count of entities actually displayed following a thersold.
 				// @TODO make it more modular
-                //archive.processingMetadata.entityCounts = ner.stats.counts;
+                //archive.collectionMetadata.entityCounts = ner.stats.counts;
 				double theta = 0.001;
-				archive.processingMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
+				archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
                 log.info(ner.stats);
             }
-           // archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
-            log.info("Number of potentially sensitive messages " + archive.processingMetadata.numPotentiallySensitiveMessages);
+           // archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
+            log.info("Number of potentially sensitive messages " + archive.collectionMetadata.numPotentiallySensitiveMessages);
 
             //Is there a reliable and more proper way of checking the mode it is running in?
             String logF = System.getProperty("muse.log");

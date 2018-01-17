@@ -89,8 +89,8 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	//modify them according to the mode (delivery/discovery) and then save them back to their respective folders (folder/folderpublic)
 	Archive fordelivery = SimpleSessions.readArchiveIfPresent(folder);*/
 	//make sure to remove it from the global map once it's work is done
-	// archive.processingMetadata.entityCounts = null;
-	archive.processingMetadata.numPotentiallySensitiveMessages = -1;
+	// archive.collectionMetadata.entityCounts = null;
+	archive.collectionMetadata.numPotentiallySensitiveMessages = -1;
 	out.println ("Exporting delivery mode archive...<br/>");
 	out.flush();
 	try {
@@ -153,7 +153,7 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	session.setAttribute("userKey", "user");
 	session.setAttribute("cacheDir", archive.baseDir);
 */
-//	archive.processingMetadata.entityCounts = ec;
+//	archive.collectionMetadata.entityCounts = ec;
 
 //authority records are exported to authority.csv in delivery mode
 

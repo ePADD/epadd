@@ -79,13 +79,14 @@
       else if (ModeConfig.isDiscoveryMode())
         topDir = Config.REPO_DIR_DISCOVERY;
 
+
       File topFile = new File(topDir);
         JSPHelper.log.info("Reading collections from: "+topDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + topDir);
         }  else {
           File[] files = topFile.listFiles();
-          List<Archive.ProcessingMetadata> foundPMs = new ArrayList<Archive.ProcessingMetadata>();
+          List<Archive.CollectionMetadata> foundPMs = new ArrayList<Archive.CollectionMetadata>();
           for (File f: files)
           {
             if (!f.isDirectory())
@@ -97,17 +98,17 @@
             if (!new File(archiveFile).exists())
               continue;
 
-            Archive.ProcessingMetadata pm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
+            Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
             String fileParam = id + "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
             String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
 
             out.println ("<div data-dir=\"" + id + "\" class=\"archive-card\">");
             out.println ("<div class=\"landing-img\" style=\"background-image:url('" + url + "')\"></div>");
             out.println ("<div class=\"landing-img-text\">");
-            out.println (Util.nullOrEmpty(pm.ownerName) ?  "No name assigned" : pm.ownerName);
-            out.println ("<br><span class=\"detail\">" + Util.commatize(pm.nDocs) + " messages</span>");
-            out.println ("<br><span class=\"detail\">" + Util.commatize(pm.nBlobs) + " attachments</span>");
-            out.println ("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(pm.collectionID) ? "Unassigned" : pm.collectionID)+ " </span>");
+            out.println (Util.nullOrEmpty(cm.ownerName) ?  "No name assigned" : cm.ownerName);
+            out.println ("<br><span class=\"detail\">" + Util.commatize(cm.nDocs) + " messages</span>");
+            out.println ("<br><span class=\"detail\">" + Util.commatize(cm.nBlobs) + " attachments</span>");
+            out.println ("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)+ " </span>");
             out.println ("</div>");
             out.println ("</div>");
           }
@@ -120,7 +121,7 @@
     $(document).ready(function() {
       $('.archive-card').click(function(e) {
         var dir = $(e.target).closest('.archive-card').attr('data-dir');
-        window.location = 'collection-detail?id=' + escape(dir); // worried about single quotes in dir
+        window.location = 'collection-detail?collectionID=' + escape(dir); // worried about single quotes in dir
       });
     });
   </script>

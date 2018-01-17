@@ -44,13 +44,13 @@
 			if (allDocs == null)
 				allDocs = fullEmailDocs;
 			boolean statsAvailable = false;
-			if(archive.processingMetadata.entityCounts != null)
+			if(archive.collectionMetadata.entityCounts != null)
 				statsAvailable = true;
 			String pC="",oC="",lC=""; // , nS="";
 			if(statsAvailable){
-				pC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
-				oC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode())+")";
-				lC=" ("+archive.processingMetadata.entityCounts.get(NEType.Type.PLACE.getCode())+")";
+				pC=" ("+archive.collectionMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
+				oC=" ("+archive.collectionMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode())+")";
+				lC=" ("+archive.collectionMetadata.entityCounts.get(NEType.Type.PLACE.getCode())+")";
 			}
 			AddressBook ab = archive.addressBook;
 			writeProfileBlock(out, archive, "", "Assign authorities");%>

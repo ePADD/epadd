@@ -9,7 +9,7 @@ import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.email.MuseEmailFetcher;
 import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.Archive.ProcessingMetadata;
+import edu.stanford.muse.index.Archive.CollectionMetadata;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.index.Lexicon;
@@ -181,8 +181,7 @@ public class SimpleSessions {
 			//update: since v5 no pm will be inside the archive.
 			// this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
 			try {
-				//Archive.ProcessingMetadata pm = (Archive.ProcessingMetadata) Util.readObjectFromFile(pmFile); // in the future, this is better encoded as a json string
-				archive.processingMetadata = readProcessingMetadata(baseDir+File.separatorChar+Archive.SESSIONS_SUBDIR,"default");
+				archive.collectionMetadata = readProcessingMetadata(baseDir+File.separatorChar+Archive.SESSIONS_SUBDIR,"default");
 			} catch (Exception e) {
 				Util.print_exception ("Error trying to read processing metadata file", e, log);
 			}
@@ -216,10 +215,10 @@ public class SimpleSessions {
 	 * reads name.processing.metadata from the given basedir. should be used
 	 * when quick archive metadata is needed without loading the actual archive
 	 */
-	public static ProcessingMetadata readProcessingMetadata(String baseDir, String name) {
+	public static Archive.CollectionMetadata readProcessingMetadata(String baseDir, String name) {
 		String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
 		try (Reader reader = new FileReader(processingFilename)) {
-			ProcessingMetadata metadata = new Gson().fromJson(reader, ProcessingMetadata.class);
+			CollectionMetadata metadata = new Gson().fromJson(reader, Archive.CollectionMetadata.class);
 			return metadata;
 		} catch (Exception e) {
 			Util.print_exception("Unable to read processing metadata from file" + processingFilename, e, log);
@@ -233,7 +232,7 @@ public class SimpleSessions {
      * basedir is up to /.../sessions
 	 * v5- Instead of serializing now this data gets stored in json format.
      */
-    public static void writeProcessingMetadata(ProcessingMetadata pm, String baseDir, String name)
+    public static void writeProcessingMetadata(Archive.CollectionMetadata cm, String baseDir, String name)
     {
         String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
 
@@ -241,7 +240,7 @@ public class SimpleSessions {
 		FileWriter fwriter = null;
 		try {
 			fwriter = new FileWriter(processingFilename);
-			gson.toJson(pm,fwriter);
+			gson.toJson(cm,fwriter);
 		} catch (IOException e) {
 			Util.print_exception("Unable to write processing metadata", e, log);
 			e.printStackTrace();
@@ -272,13 +271,13 @@ public class SimpleSessions {
 		String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
 		String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
 		*/
-		if (archive.processingMetadata == null)
-			archive.processingMetadata = new ProcessingMetadata();
+		if (archive.collectionMetadata == null)
+			archive.collectionMetadata = new Archive.CollectionMetadata();
 
-		archive.processingMetadata.timestamp = new Date().getTime();
-		archive.processingMetadata.tz = TimeZone.getDefault().getID();
-		archive.processingMetadata.nDocs = archive.getAllDocs().size();
-		archive.processingMetadata.nUniqueBlobs = archive.blobStore.uniqueBlobs.size();
+		archive.collectionMetadata.timestamp = new Date().getTime();
+		archive.collectionMetadata.tz = TimeZone.getDefault().getID();
+		archive.collectionMetadata.nDocs = archive.getAllDocs().size();
+		archive.collectionMetadata.nUniqueBlobs = archive.blobStore.uniqueBlobs.size();
 
         int totalAttachments = 0, images = 0, docs = 0, others = 0, sentMessages = 0, receivedMessages = 0, hackyDates = 0;
         Date firstDate = null, lastDate = null;
@@ -319,17 +318,17 @@ public class SimpleSessions {
             }
         }
 
-        archive.processingMetadata.firstDate = firstDate;
-        archive.processingMetadata.lastDate = lastDate;
-        archive.processingMetadata.nIncomingMessages = receivedMessages;
-        archive.processingMetadata.nOutgoingMessages = sentMessages;
-		archive.processingMetadata.nHackyDates = hackyDates;
+        archive.collectionMetadata.firstDate = firstDate;
+        archive.collectionMetadata.lastDate = lastDate;
+        archive.collectionMetadata.nIncomingMessages = receivedMessages;
+        archive.collectionMetadata.nOutgoingMessages = sentMessages;
+		archive.collectionMetadata.nHackyDates = hackyDates;
 
-        archive.processingMetadata.nBlobs = totalAttachments;
-        archive.processingMetadata.nUniqueBlobs = archive.blobStore.uniqueBlobs.size();
-        archive.processingMetadata.nImageBlobs = images;
-        archive.processingMetadata.nDocBlobs = docs;
-        archive.processingMetadata.nOtherBlobs = others;
+        archive.collectionMetadata.nBlobs = totalAttachments;
+        archive.collectionMetadata.nUniqueBlobs = archive.blobStore.uniqueBlobs.size();
+        archive.collectionMetadata.nImageBlobs = images;
+        archive.collectionMetadata.nDocBlobs = docs;
+        archive.collectionMetadata.nOtherBlobs = others;
 
 		try (ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(filename)))) {
 			oos.writeObject("archive");
@@ -352,7 +351,7 @@ public class SimpleSessions {
 		//////////////LabelManager Writing -- Serialized//////////////////////////////////
 		SimpleSessions.saveLabelManager(archive);
 
-        writeProcessingMetadata (archive.processingMetadata, dir, "default");
+        writeProcessingMetadata (archive.collectionMetadata, dir, "default");
 
         /*
 
@@ -360,7 +359,7 @@ public class SimpleSessions {
 		String processingFilename = dir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
 		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(processingFilename)));
 		try {
-			oos.writeObject(archive.processingMetadata);
+			oos.writeObject(archive.collectionMetadata);
 		} catch (Exception e1) {
             Util.print_exception("Failed to write archive's metadata: ", e1, log);
 			oos.close();

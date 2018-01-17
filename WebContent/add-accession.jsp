@@ -40,18 +40,13 @@
 	<section>
         <div class="panel" style="width:900px;margin-left:170px">
 
-            <%
-                if(!Util.nullOrEmpty(collectionID)){
-            %>
-            <div class="one-line">
-                <div class="form-group col-sm-12">
-                    <label for="collectionID">Collection Directory</label>
-                    <input id="collectionID" class="dir form-control" type="text" name="collectionID" value="<%=collectionID%>" readonly/>
-                </div>
-            </div>
-            <%
-                }
-            %>
+            <% if(!Util.nullOrEmpty(collectionID)) { %>
+                <div class="panel-heading">Collection: <%=Util.escapeHTML(collectionID)%></div>
+                <input type="hidden" name="collectionID" value="<%=Util.escapeHTML(collectionID)%>"/>
+            <% } else { %>
+                 <div class="panel-heading">Starting a new collection</div>
+            <% } %>
+
             <div id="filepicker" >
                 <div class="one-line" id="export-next">
                     <div class="form-group col-sm-10">

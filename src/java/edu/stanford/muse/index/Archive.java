@@ -106,7 +106,7 @@ public class Archive implements Serializable {
 
     private transient LabelManager labelManager; //transient because it will be saved and loaded separately
 
-    public transient ProcessingMetadata processingMetadata = new ProcessingMetadata();//setting it as transient since v5 as it will be stored/read separately
+    public transient CollectionMetadata collectionMetadata = new CollectionMetadata();//setting it as transient since v5 as it will be stored/read separately
     public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
 
     public String archiveTitle; // this is the name of this archive
@@ -254,7 +254,7 @@ public class Archive implements Serializable {
     }
 
     // these fields are used in the library setting
-    static public class ProcessingMetadata implements java.io.Serializable {
+    static public class CollectionMetadata implements java.io.Serializable {
         private final static long serialVersionUID = 6304656466358754945L; // compatibility
         public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes;
         public long timestamp;
@@ -283,7 +283,7 @@ public class Archive implements Serializable {
                 return a + "+" + b;
         }
 
-        public void merge(ProcessingMetadata other) {
+        public void merge(CollectionMetadata other) {
             mergeField(this.institution, other.institution);
             mergeField(this.repository, other.repository);
             mergeField(this.collectionTitle, other.collectionTitle);
@@ -444,7 +444,7 @@ public class Archive implements Serializable {
 
     private void addOwnerName(String name) {
         ownerNames.add(name);
-        processingMetadata.ownerName = name;
+        collectionMetadata.ownerName = name;
     }
 
     private void addOwnerEmailAddrs(Collection<String> emailAddrs) {
@@ -1401,7 +1401,7 @@ after maskEmailDomain.
         }
 
         // recompute... sometimes the processing metadata may be stale, because some messages have been redacted at export.
-      //  processingMetadata.numPotentiallySensitiveMessages = numMatchesPresetQueries();
+      //  collectionMetadata.numPotentiallySensitiveMessages = numMatchesPresetQueries();
     }
 
     /*
@@ -1525,7 +1525,7 @@ after maskEmailDomain.
 //        other.getAllDocs().stream().filter(doc -> !this.containsDoc(doc)).forEach(doc -> this.addDoc(doc, other.getContents(doc, /* originalContentOnly */false)));
 //
 //        addressBook.merge(other.addressBook);
-//        this.processingMetadata.merge(other.processingMetadata);
+//        this.collectionMetadata.merge(other.collectionMetadata);
 //    }
 
     private static Map<String, Lexicon> createLexiconMap(String baseDir) throws IOException {

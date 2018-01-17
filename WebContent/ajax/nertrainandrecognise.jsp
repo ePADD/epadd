@@ -54,14 +54,14 @@ if(archive!=null){
             //This is to fix a bug where the count of person entities displayed on browse-top.jsp
             //page was different than the count of entities actually displayed following a thersold.
             // @TODO make it more modular
-            //archive.processingMetadata.entityCounts = ner.stats.counts;
+            //archive.collectionMetadata.entityCounts = ner.stats.counts;
             double theta = 0.001;
-            archive.processingMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
+            archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
 
             JSPHelper.log.info(ner.stats);
         }
-//        archive.processingMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
-        JSPHelper.log.info("Number of potentially sensitive messages " + archive.processingMetadata.numPotentiallySensitiveMessages);
+//        archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
+        JSPHelper.log.info("Number of potentially sensitive messages " + archive.collectionMetadata.numPotentiallySensitiveMessages);
 
         session.removeAttribute("statusProvider");
         resultPage = "browse-top?archiveID="+archiveID;

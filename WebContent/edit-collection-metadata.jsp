@@ -1,8 +1,11 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@include file="getArchive.jspf" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.index.Archive" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
 <html>
@@ -28,30 +31,40 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Collections');</script>
 
-<!-- this is going to be really quick... -->
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
 <p>
 	<%
-	String id = request.getParameter("id");
-	writeProfileBlock(out, archive, "", "Collection metadata");
-	assert request.getParameter("archiveID")!=null;
-	Archive.ProcessingMetadata pm = archive.processingMetadata;
+	String topDir = "/";
+	if (!ModeConfig.isProcessingMode()) {
+		out.println ("Updating collection metadata is allowed only in ePADD's Processing mode.");
+		return;
+	}
+
+	String id = request.getParameter("collectionID");
+    topDir = Config.REPO_DIR_PROCESSING + File.separator + id;
+
+	// read cm from archive file
+	Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(topDir + File.separatorChar + Archive.SESSIONS_SUBDIR, "default");
+	if (cm == null) {
+	    out.println ("Unable to read processing metadata file for archive with id: " + id);
+	    return;
+	}
 	%>
 
-
-	<br/>
-		<br/>
 <form id="metadata-form">
 <section>
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
+        <div class="panel-heading">
+            Collection: <%=Util.escapeHTML(id)%>
+        </div>
 
-		<div class="div-input-field">
+        <input type="hidden" name="collectionID" value="<%=Util.escapeHTML(id)%>"/>
+
+        <div class="div-input-field">
 			<div class="input-field-label">Institution</div>
 			<br/>
 			<div class="input-field">
-				<input title="Institution" value="<%=pm == null ? "" : formatMetadataField( pm.institution)%>" class="form-control" type="text" name="institution"/>
+				<input title="Institution" value="<%=cm == null ? "" : formatMetadataField( cm.institution)%>" class="form-control" type="text" name="institution"/>
 			</div>
 		</div>
 
@@ -59,7 +72,7 @@
 			<div class="input-field-label">Repository</div>
 			<br/>
 			<div class="input-field">
-				<input title="Repository" value="<%=pm == null ? "" : formatMetadataField( pm.repository)%>" class="form-control" type="text" name="repository"/>
+				<input title="Repository" value="<%=cm == null ? "" : formatMetadataField( cm.repository)%>" class="form-control" type="text" name="repository"/>
 			</div>
 		</div>
 
@@ -67,7 +80,7 @@
 			<div class="input-field-label">Collection Title</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection title" value="<%=pm == null ? "" : formatMetadataField( pm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
+				<input title="Collection title" value="<%=cm == null ? "" : formatMetadataField( cm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
 			</div>
 		</div>
 
@@ -75,7 +88,7 @@
 			<div class="input-field-label">Collection ID</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection ID" value="<%=pm == null ? "" : formatMetadataField( pm.collectionID)%>" class="form-control" type="text" name="collectionID"/>
+				<input title="Collection ID" value="<%=cm == null ? "" : formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="cID"/> <!-- this is the institutional collection ID, not ePADD's -->
 			</div>
 		</div>
 
@@ -83,7 +96,7 @@
 			<div class="input-field-label">Finding Aid Link</div>
 			<br/>
 			<div class="input-field">
-				<input title="Finding aid link" value="<%=pm == null ? "" : formatMetadataField( pm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
+				<input title="Finding aid link" value="<%=cm == null ? "" : formatMetadataField( cm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
 			</div>
 		</div>
 
@@ -91,7 +104,7 @@
 			<div class="input-field-label">Catalog Record Link</div>
 			<br/>
 			<div class="input-field">
-				<input title="Catalog record link" value="<%=pm == null ? "" : formatMetadataField( pm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
+				<input title="Catalog record link" value="<%=cm == null ? "" : formatMetadataField( cm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
 			</div>
 		</div>
 
@@ -99,7 +112,7 @@
 			<div class="input-field-label">Contact Email Address</div>
 			<br/>
 			<div class="input-field">
-				<input title="Contact email" value="<%=pm == null ? "" : formatMetadataField( pm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
+				<input title="Contact email" value="<%=cm == null ? "" : formatMetadataField( cm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
 			</div>
 		</div>
 
@@ -109,7 +122,7 @@
 			<div class="input-field-label">About</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=pm == null ? "" : formatMetadataField( pm.about)%>
+				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=cm == null ? "" : formatMetadataField( cm.about)%>
 				</textarea>
 			</div>
 		</div>
@@ -117,7 +130,7 @@
 			<div class="input-field-label">Rights and Conditions</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=pm == null ? "" : formatMetadataField( pm.rights)%>
+				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=cm == null ? "" : formatMetadataField( cm.rights)%>
 				</textarea>
 			</div>
 		</div>
@@ -125,7 +138,7 @@
 			<div class="input-field-label">Notes</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=pm == null ? "" : formatMetadataField( pm.notes)%>
+				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=cm == null ? "" : formatMetadataField( cm.notes)%>
 				</textarea>
 			</div>
 		</div>
@@ -152,7 +165,23 @@
 </form>
 
 <script type="text/javascript">
-	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateCollectionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
+	$('#gobutton').click (function() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/updateCollectionMetadata.jsp',
+            data: $('#metadata-form').serialize(),
+            success: function (response) {
+                if (response && response.status == 0)
+                    window.location = 'collection-detail?collectionID=<%=id%>';
+                else
+                    epadd.alert ("Sorry, something went wrong while updating collection metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+            },
+            error: function (jqxhr, status, ex) {
+                epadd.alert("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
+            }
+        });
+    });
 </script>
 
  <jsp:include page="footer.jsp"/>

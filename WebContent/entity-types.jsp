@@ -46,7 +46,7 @@
         if(NEType.Type.OTHER.getCode() == type || NEType.Type.PERSON.getCode() == type || desc.get(type)==null)
             continue;
         j.put(0, "<a href='list-entities?type="+type+"&archiveID="+archiveID+"' target='_blank'>"+desc.get(type)+"</a>");
-        j.put(1, archive.processingMetadata.entityCounts.get(type));
+        j.put(1, archive.collectionMetadata.entityCounts.get(type));
         resultArray.put(count++, j);
     }
 
