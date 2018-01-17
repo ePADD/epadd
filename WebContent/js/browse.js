@@ -70,9 +70,9 @@ var Labels = function() {
 
             var class_for_label; // this is one of system/general/restriction label
             {
-                if (label.labType === 'RESTR_LAB')
+                if (label.labType === 'RESTRICTION')
                     class_for_label = 'restriction-label';
-                else if (label.labType === 'GEN_LAB')
+                else if (label.labType === 'GENERAL')
                     class_for_label = 'general-label';
 
                 if (label.isSysLabel)

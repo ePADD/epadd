@@ -171,7 +171,7 @@
             url: 'ajax/updateCollectionMetadata.jsp',
             data: $('#metadata-form').serialize(),
             success: function (response) {
-                if (response && response.status == 0)
+                if (response && response.status === 0)
                     window.location = 'collection-detail?collection=<%=id%>';
                 else
                     epadd.alert ("Sorry, something went wrong while updating collection metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
@@ -180,6 +180,7 @@
                 epadd.alert("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
             }
         });
+        return false;
     });
 </script>
 

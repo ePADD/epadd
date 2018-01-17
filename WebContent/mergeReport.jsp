@@ -40,11 +40,9 @@
 
 <%writeProfileBlock(out, archive, "Merge Report", "");%>
 
-<!--sidebar content-->
-<div class="nav-toggle1 sidebar-icon">
-	<img src="images/sidebar.png" alt="sidebar">
-</div>
 
+<br/>
+<br/>
 <%--
 <nav class="menu1" role="navigation">
 	<h2>Merge report</h2>
@@ -87,18 +85,17 @@
 
 	// start building the string that goes into the text box
 	StringBuilder mergeReport = new StringBuilder();
-	mergeReport.append("-------------Merge Report-------------\n");
 	//For Index report
 	mergeReport.append("Merged accession from "+mResult.accessionDir+"\n");
-	mergeReport.append("Accession had " + mResult.nMessagesInAccession+" messages and "+ mResult.nAttachmentsInAccession+" attachments \n");
-	mergeReport.append("Collection had " + mResult.nMessagesInCollection+" messages and "+ mResult.nAttachmentsInCollection+" attachments \n");
-	mergeReport.append("\n\n\n");
-	mergeReport.append("After merging: Collection has "+mResult.nFinalMessages+" messages and "+ mResult.nFinalAttachments+"\n");
-	mergeReport.append(mResult.nCommonMessages+" messages were common between the accession and this collection\n");
-	mergeReport.append(mResult.nMessagesInAccession-mResult.nCommonMessages+" messages imported from the accession\n");
+	mergeReport.append("The accession had " + mResult.nMessagesInAccession+" messages and "+ mResult.nAttachmentsInAccession+" attachments \n");
+	mergeReport.append("The collection originally had " + mResult.nMessagesInCollection+" messages and "+ mResult.nAttachmentsInCollection+" attachments \n");
+	mergeReport.append("\n");
+	mergeReport.append("After merging, the collection now has "+mResult.nFinalMessages+" messages and "+ mResult.nFinalAttachments+" attachments\n");
+	mergeReport.append(mResult.nCommonMessages+" messages from the accession were already in the original collection\n");
+	mergeReport.append(mResult.nMessagesInAccession-mResult.nCommonMessages+" new messages have been imported from the accession.\n");
 
 	//For Addressbook report
-	mergeReport.append("Following contacts in the collection addressbook were updated from the names/emails present in accession addressbook\n\n");
+	mergeReport.append("The following contacts in the collection's address book were updated from the names/emails present in the accession's address book\n\n");
 	AddressBook.MergeResult mResultAB = mResult.addressBookMergeResult;
 	for(Contact c: mResultAB.mergedContacts.keySet()){
 	    Contact oldContactInCollection = mResultAB.mergedContacts.get(c);
@@ -108,15 +105,15 @@
 	    updatedElementsInCollectionContact.removeAll(oldElementsInCollectionContact);
 	    if(updatedElementsInCollectionContact.size()!=0) {
 			mergeReport.append("-----------" + updatedElementsInCollectionContact.size() + " names/emails were added in the following contact---------------\n");
-			mergeReport.append("***Old mails/names***\n");
+			mergeReport.append("***Old emails/names***\n");
 			oldElementsInCollectionContact.forEach(s->mergeReport.append(s+"\n"));
-			mergeReport.append("***Newly added mails/names***\n");
+			mergeReport.append("***Newly added emails/names***\n");
 			updatedElementsInCollectionContact.forEach(s->mergeReport.append(s+"\n"));
 			mergeReport.append("----------------\n");
 		}
 	}
 
-	mergeReport.append("Following new contacts were added from the accession address book\n");
+	mergeReport.append("The following new contacts were added from the accession's address book\n");
 	mergeReport.append("-----------\n");
 	for(Contact c: mResultAB.newlycreatedContacts.keySet()){
 	    Set<Contact> sourceContactsInAccession = mResultAB.newlycreatedContacts.get(c);
@@ -138,7 +135,7 @@
 	}
 	//For LabelManager report
 	mergeReport.append("\n-----------------------------------------\n");
-	mergeReport.append("Following labels from the accession had same name as in the collection. They have been renamed to avoid clash. Please do the cleanup\n");
+	mergeReport.append("The following labels from the accession had the same name as in the collection. They have been renamed to avoid a clash. Please review.\n");
 	LabelManager.MergeResult mResultLM = mResult.labManagerMergeResult;
 		mergeReport.append("------------------------------\n");
 	for(Pair<Label,Label> p: mResultLM.labelsWithNameClash){
@@ -148,37 +145,28 @@
 	    mergeReport.append(p.second.toString());
 	    mergeReport.append("-------------------------------\n");
 	}
-	mergeReport.append("Following new labels from the accession were added\n");
+	mergeReport.append("The following new labels were imported from the accession\n");
 	mergeReport.append("------------------------------\n");
 	for(Label p: mResultLM.newLabels){
 		mergeReport.append(p.toString());
 		mergeReport.append("-------------------------------\n");
 	}
 	//For lexcion merging report.
-	mergeReport.append("Following new lexicons were imported from the accession \n");
+	mergeReport.append("The following new lexicons were imported from the accession \n");
 	for(String s: mResult.newLexicons)
 	    mergeReport.append(s+"\n");
 	mergeReport.append("----------------------\n");
-	mergeReport.append("Following lexicons were already present in the collection. Merge them manually if they are different\n");
+	mergeReport.append("The following lexicons were already present in the collection. Please merge them manually if they are different\n");
 	for(String s: mResult.clashedLexicons)
 	    mergeReport.append(s+"\n");
 
-
 %>
 
-<p>
-
-<div style="text-align:center">
-    <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
-		<textarea name="entityMerges" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=mergeReport.toString()%>
-		</textarea>
-		<br/>
-		<br/>
-		<button class="btn btn-cta" id="next" onclick="window.location='browse-top?archiveID=<%=archiveID%>';">Next<i class="icon-arrowbutton"></i> </button>
-	</form>
-<br/>
-
+<div style="padding-left:170px">
+	<div class="panel-heading">Merge Report</div>
+	<%=Util.escapeHTML(mergeReport.toString()).replaceAll("\n", "<br/>")%>
 </div>
+
 <p/>
 <br/>
 <jsp:include page="footer.jsp"/>

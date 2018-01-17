@@ -112,7 +112,7 @@
 
 	// labelID will be a single item here, even though applyLabelsAnnotations can support more than one
 	function do_action (labelID, action) {
-        var c = confirm ('Do you really want to '+action+' this label for these messages');
+        var c = confirm ('Do you want to ' + action + ' this label for these messages?');
         if (!c)
             return;
 

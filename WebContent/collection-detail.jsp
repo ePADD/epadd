@@ -78,6 +78,7 @@
     <div class="banner-img" style="background-image:url('<%=url%>')"> <!-- escape needed? -->
     </div>
 
+    <br/>
     <div class="details">
         <div class="heading">Collection Details</div>
         <p></p>
@@ -173,14 +174,16 @@
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <hr/>
                     <div>
-                        <b>Accession ID</b> <%=am.id%>
-                        <p><b>Title</b> <%=am.title%>
+                        <b>Accession ID</b>: <%=am.id%>
+                        <p><b>Title</b>: <%=am.title%>
                         <p><b>Scope and contents</b><br/> <%=am.scope%>
                         <p><b>Rights and conditions</b><br/> <%=am.rights%>
                         <p><b>Notes</b><br/> <%=am.notes%>
                     </div>
-                <% }
-        } %>
+                <% } %>
+                <hr/>
+
+                <% } %>
 
         <div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
 

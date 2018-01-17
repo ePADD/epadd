@@ -70,7 +70,7 @@ private void saveFile(HttpServletRequest request, String param, String filePath)
 		return;
 	}
 
-	String archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collectionID");
+	String archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collection");
 
 try {
 

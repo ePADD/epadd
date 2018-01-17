@@ -31,7 +31,7 @@ public class LabelManager implements Serializable{
     private static String CSVFILENAME="docidmap.csv";
 
     public enum LabType {
-        RESTR_LAB, GEN_LAB
+        RESTRICTION, GENERAL
     }
 
     public enum RestrictionType {
@@ -65,22 +65,22 @@ public class LabelManager implements Serializable{
     //By default we have a few in-built system labels.
     private void InitialLabelSetup(){
         // these are just for testing
-        Label dnt = new Label("Do not transfer",LabType.RESTR_LAB, LABELID_DNT,
+        Label dnt = new Label("Do not transfer",LabType.RESTRICTION, LABELID_DNT,
                 "Do not transfer this message",true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
 
         /*//restricted
-        Label twr = new Label("Restricted",LabType.RESTR_LAB,"1",
+        Label twr = new Label("Restricted",LabType.RESTRICTION,"1",
                 "Transfer this message only after 2040",false);
         labelInfoMap.put(twr.getLabelID(),twr);
 
         // test
-        Label gen = new Label("General",LabType.GEN_LAB,"2",
+        Label gen = new Label("General",LabType.GENERAL,"2",
                 "This is general label",false);
         labelInfoMap.put(gen.getLabelID(),gen);
 */
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.GEN_LAB,"1",
+        Label reviewed = new Label("Reviewed",LabType.GENERAL,"1",
                 "This message was reviewed",false);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
     }
@@ -109,7 +109,7 @@ public class LabelManager implements Serializable{
             Util.softAssert(true,"No label found with the given label id "+labid, log);
             return false;
         }else
-            return lab.getType()==LabType.RESTR_LAB;
+            return lab.getType()==LabType.RESTRICTION;
 
     }
 
@@ -243,7 +243,7 @@ public class LabelManager implements Serializable{
             tmp.docToLabelID.keySet().retainAll(docids);
         }else{
             //only non-restricted labels are exported[even if of date type].. In labelDocMap keep only those docs which are being exported.
-            tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->entry.getValue().getType()!=LabType.RESTR_LAB).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+            tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->entry.getValue().getType()!=LabType.RESTRICTION).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
             tmp.docToLabelID.keySet().retainAll(docids);
         }
         return tmp;

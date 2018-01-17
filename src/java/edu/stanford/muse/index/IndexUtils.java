@@ -813,11 +813,11 @@ public class IndexUtils {
 				facetMap.put("reviewed", reviewedMap.values());
 			*/
 			//facet for restriction labels
-			Map<String, DetailedFacetItem> restrlabels  = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.RESTR_LAB);
+			Map<String, DetailedFacetItem> restrlabels  = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.RESTRICTION);
 			facetMap.put("Restriction Labels",restrlabels.values());
 
 			//facet for general labels
-			Map<String, DetailedFacetItem> genlabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.GEN_LAB);
+			Map<String, DetailedFacetItem> genlabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.GENERAL);
 			facetMap.put("General Labels",genlabels.values());
 			//////////////////////////////////////////////////////////////////////////////////
 

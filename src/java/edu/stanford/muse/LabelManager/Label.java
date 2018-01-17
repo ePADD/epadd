@@ -59,7 +59,7 @@ public class Label implements Serializable{
         sb.append("ID: "+this.getLabelID()+"\n");
         sb.append("Description: "+this.getDescription()+"\n");
         sb.append("Label Type: "+this.getType()+"\n");
-        if(this.getType()== LabelManager.LabType.RESTR_LAB)
+        if(this.getType()== LabelManager.LabType.RESTRICTION)
         {
             sb.append("RestrictionType: "+this.getRestrictionType()+"\n");
             if(this.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_FOR_YEARS)

@@ -101,9 +101,9 @@
                 <select id="labelType" name="labelType" class="form-control selectpicker">
                     <option value="" selected disabled>Choose label type</option>
                     <%if(!ModeConfig.isPublicMode() ){%>
-                        <option value="<%=LabelManager.LabType.RESTR_LAB.toString()%>" <%=LabelManager.LabType.RESTR_LAB.toString().equals(labelType) ? "selected":""%> >Restriction label</option>
+                        <option value="<%=LabelManager.LabType.RESTRICTION.toString()%>" <%=LabelManager.LabType.RESTRICTION.toString().equals(labelType) ? "selected":""%> >Restriction label</option>
                     <%}%>
-                    <option value="<%=LabelManager.LabType.GEN_LAB.toString()%>"  <%=LabelManager.LabType.GEN_LAB.toString().equals(labelType) ? "selected":""%> >General label</option>
+                    <option value="<%=LabelManager.LabType.GENERAL.toString()%>"  <%=LabelManager.LabType.GENERAL.toString().equals(labelType) ? "selected":""%> >General label</option>
                 </select>
             </div>
         </div>
@@ -171,7 +171,7 @@
         // show or hide restrictions-details div based on whether it's a general or restriction label
         function label_type_refresh () {
             var type = $('#labelType').selectpicker('val');
-            if ('<%=LabelManager.LabType.RESTR_LAB.toString()%>' === type)
+            if ('<%=LabelManager.LabType.RESTRICTION.toString()%>' === type)
                 $('.restriction-details').show();
             else
                 $('.restriction-details').hide();

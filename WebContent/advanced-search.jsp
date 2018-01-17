@@ -448,9 +448,9 @@
 								<option value="" selected disabled>Select a label</option>
 								<optgroup label="Restriction Labels">
 								<%
-									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
+									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
 									//get general labels
-									Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GEN_LAB);
+									Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
 									for (Label opt : restrlabels){
 								%>
 										<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>

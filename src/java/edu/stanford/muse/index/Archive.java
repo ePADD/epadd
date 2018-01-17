@@ -823,7 +823,7 @@ public class Archive implements Serializable {
         } else if (mode == Export_Mode.EXPORT_PROCESSING_TO_DELIVERY || mode == Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY) {
             //get a set of general restriction ids from labelManager
             //get a set of timed-restriction ids from LabelManager
-            Set<Label> allRestrictions = getLabelManager().getAllLabels(LabelManager.LabType.RESTR_LAB);
+            Set<Label> allRestrictions = getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
             Set<String> genRestriction = new HashSet<>();
             Set<String> timedRestriction = new HashSet<>();
             allRestrictions.forEach(label -> {
@@ -1603,11 +1603,11 @@ after maskEmailDomain.
             array.put (2, label.getDescription());
             array.put (3, docCount);
             array.put (4, label.isSysLabel());
-            String labelTypeDescription = LabelManager.LabType.RESTR_LAB.equals(label.getType()) ? "Restriction" : "General";
+            String labelTypeDescription = LabelManager.LabType.RESTRICTION.equals(label.getType()) ? "Restriction" : "General";
 
-            if (LabelManager.LabType.RESTR_LAB.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.equals (label.getRestrictionType())) {
+            if (LabelManager.LabType.RESTRICTION.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.equals (label.getRestrictionType())) {
                 labelTypeDescription += " for " + Util.pluralize(label.getRestrictedForYears(), "year");
-            } else if (LabelManager.LabType.RESTR_LAB.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_UNTIL.equals (label.getRestrictionType())) {
+            } else if (LabelManager.LabType.RESTRICTION.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_UNTIL.equals (label.getRestrictionType())) {
                 long time = label.getRestrictedUntilTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
                 String description = sdf.format(new Date(time));

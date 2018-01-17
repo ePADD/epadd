@@ -888,7 +888,7 @@ public class JSPHelper {
 			}
 
 			// more processing for restriction labels
-			if (labelType == LabelManager.LabType.RESTR_LAB) {
+			if (labelType == LabelManager.LabType.RESTRICTION) {
 				LabelManager.RestrictionType restrictionType = LabelManager.RestrictionType.valueOf(request.getParameter("restrictionType"));
 
 				// read extra fields for restricton labels only

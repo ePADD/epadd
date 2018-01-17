@@ -73,7 +73,7 @@
         <div class="panel">
 
         <table>
-            <tr><th>Entity</th><th>Messages</th><th>Correspondent</th><th>Date Range</th></tr>
+            <tr><th>Entity</th><th>Occurrences</th><th>Correspondent</th><th>Date Range</th></tr>
             <% for (EntityInfo info: infos) { %>
             <tr><%
                     if(!info.isCorrespondent){
@@ -87,7 +87,9 @@
                 %>
                 <td><a href=<%=entityurl%>><%=term%></a></td>
                 <%}%>
-                <%--<td class="right"><%=info.count%></td>--%>
+                <td style="text-align:right"><%=info.count%></td>
+
+            <%--<td class="right"><%=info.count%></td>--%>
                 <td class="center">
                     <% if (info.isCorrespondent) { %>
                         <i class="fa fa-check" aria-hidden="true"></i>
