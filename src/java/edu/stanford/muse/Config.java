@@ -20,7 +20,7 @@ Some settings have a default.
 Similarly, resource files should be read only through this class. Resource files are not expected to change during one execution of epadd.
  */
 public class Config {
-    public static final String PROCESSING_METADATA_SUFFIX = ".processing.metadata"; // all session files end with .session
+    public static final String COLLECTION_METADATA_FILE = "collection-metadata.json"; // all session files end with .session
     public static Log log = LogFactory.getLog(Config.class);
     public static String admin, holder, holderContact, holderReadingRoom;
 

@@ -64,7 +64,7 @@
         %>
 
     <%
-        Archive.CollectionMetadata metadata = SimpleSessions.readProcessingMetadata(SimpleSessions.getArchiveForArchiveID(I).baseDir + File.separator + Archive.SESSIONS_SUBDIR,"default");
+        Archive.CollectionMetadata metadata = SimpleSessions.readCollectionMetadata(SimpleSessions.getArchiveForArchiveID(I).baseDir);
         out.println ("Institution: <b>" + Util.escapeHTML(metadata.institution) + "</b> &nbsp;&nbsp;");
         out.println ("Repository: <b>" + Util.escapeHTML(metadata.repository) + "</b> &nbsp;&nbsp;");
         String url = "collection-detail?id=" + SimpleSessions.getArchiveForArchiveID(I).baseDir;

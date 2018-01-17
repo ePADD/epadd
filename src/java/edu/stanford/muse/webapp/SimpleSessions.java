@@ -1,6 +1,7 @@
 package edu.stanford.muse.webapp;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -181,7 +182,7 @@ public class SimpleSessions {
 			//update: since v5 no pm will be inside the archive.
 			// this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
 			try {
-				archive.collectionMetadata = readProcessingMetadata(baseDir+File.separatorChar+Archive.SESSIONS_SUBDIR,"default");
+				archive.collectionMetadata = readCollectionMetadata(baseDir);
 			} catch (Exception e) {
 				Util.print_exception ("Error trying to read processing metadata file", e, log);
 			}
@@ -215,8 +216,8 @@ public class SimpleSessions {
 	 * reads name.processing.metadata from the given basedir. should be used
 	 * when quick archive metadata is needed without loading the actual archive
 	 */
-	public static Archive.CollectionMetadata readProcessingMetadata(String baseDir, String name) {
-		String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
+	public static Archive.CollectionMetadata readCollectionMetadata(String baseDir) {
+		String processingFilename = baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separatorChar + Config.COLLECTION_METADATA_FILE;
 		try (Reader reader = new FileReader(processingFilename)) {
 			CollectionMetadata metadata = new Gson().fromJson(reader, Archive.CollectionMetadata.class);
 			return metadata;
@@ -232,11 +233,11 @@ public class SimpleSessions {
      * basedir is up to /.../sessions
 	 * v5- Instead of serializing now this data gets stored in json format.
      */
-    public static void writeProcessingMetadata(Archive.CollectionMetadata cm, String baseDir, String name)
+    public static void writeCollectionMetadata(Archive.CollectionMetadata cm, String baseDir)
     {
-        String processingFilename = baseDir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
+        String processingFilename = baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separatorChar + Config.COLLECTION_METADATA_FILE;
 
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		FileWriter fwriter = null;
 		try {
 			fwriter = new FileWriter(processingFilename);
@@ -351,12 +352,12 @@ public class SimpleSessions {
 		//////////////LabelManager Writing -- Serialized//////////////////////////////////
 		SimpleSessions.saveLabelManager(archive);
 
-        writeProcessingMetadata (archive.collectionMetadata, dir, "default");
+        writeCollectionMetadata(archive.collectionMetadata, baseDir);
 
         /*
 
         // now write out the metadata
-		String processingFilename = dir + File.separatorChar + name + Config.PROCESSING_METADATA_SUFFIX;
+		String processingFilename = dir + File.separatorChar + name + Config.COLLECTION_METADATA_FILE;
 		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(processingFilename)));
 		try {
 			oos.writeObject(archive.collectionMetadata);
@@ -469,10 +470,10 @@ public class SimpleSessions {
 	public static Archive readArchiveIfPresent(String baseDir) throws IOException
 	{
 		String archiveFile = baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.SESSION_SUFFIX;
-		String pmFile = baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + Config.PROCESSING_METADATA_SUFFIX;
 		if (!new File(archiveFile).exists()) {
 			return null;
 		}
+		String pmFile = baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + Config.COLLECTION_METADATA_FILE;
 
 		/*synchronized (globaldirToLoadCountMap) {
 			Integer loadCount = globaldirToLoadCountMap.get(baseDir);

@@ -5,6 +5,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
@@ -26,8 +27,8 @@ public class LabelManager implements Serializable{
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
 
-    private static String JSONFILENAME="labelinf.data";
-    private static String CSVFILENAME="docidmap.data";
+    private static String JSONFILENAME="label-info.json";
+    private static String CSVFILENAME="docidmap.csv";
 
     public enum LabType {
         RESTR_LAB, GEN_LAB
@@ -140,15 +141,14 @@ public class LabelManager implements Serializable{
     in a json file whereas the mapping of docids to labelids will be stored as csv.
      */
     public void writeObjectToStream(String dirname){
-
         // writing labelinfo map to json format
         FileWriter writer = null;
         try {
             String str = dirname+ File.separator+JSONFILENAME;
             writer = new FileWriter(str);
-            new Gson().toJson(labelInfoMap,writer);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(labelInfoMap,writer);
             writer.close();
-
         } catch (IOException e) {
             log.warn("Unable to write labelinfo file");
         }finally {

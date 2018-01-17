@@ -39,11 +39,11 @@
 		return;
 	}
 
-	String id = request.getParameter("collectionID");
+	String id = request.getParameter("collection");
     topDir = Config.REPO_DIR_PROCESSING + File.separator + id;
 
 	// read cm from archive file
-	Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(topDir + File.separatorChar + Archive.SESSIONS_SUBDIR, "default");
+	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(topDir);
 	if (cm == null) {
 	    out.println ("Unable to read processing metadata file for archive with id: " + id);
 	    return;
@@ -58,7 +58,7 @@
             Collection: <%=Util.escapeHTML(id)%>
         </div>
 
-        <input type="hidden" name="collectionID" value="<%=Util.escapeHTML(id)%>"/>
+        <input type="hidden" name="collection" value="<%=Util.escapeHTML(id)%>"/>
 
         <div class="div-input-field">
 			<div class="input-field-label">Institution</div>
@@ -88,7 +88,7 @@
 			<div class="input-field-label">Collection ID</div>
 			<br/>
 			<div class="input-field">
-				<input title="Collection ID" value="<%=cm == null ? "" : formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="cID"/> <!-- this is the institutional collection ID, not ePADD's -->
+				<input title="Collection ID" value="<%=cm == null ? "" : formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="collectionID"/> <!-- this is the institutional collection ID, not ePADD's -->
 			</div>
 		</div>
 
@@ -173,7 +173,7 @@
             data: $('#metadata-form').serialize(),
             success: function (response) {
                 if (response && response.status == 0)
-                    window.location = 'collection-detail?collectionID=<%=id%>';
+                    window.location = 'collection-detail?collection=<%=id%>';
                 else
                     epadd.alert ("Sorry, something went wrong while updating collection metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
             },

@@ -6,12 +6,12 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.index.EmailDocument"%><%@ page import="edu.stanford.muse.index.Document"%><%@ page import="java.util.Enumeration"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%>
+<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="java.util.Enumeration"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%>
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
 String baseDir = request.getParameter("accessionFolder");
-String collectionID = request.getParameter("collectionID");
+String collectionID = request.getParameter("collection");
 if (Util.nullOrEmpty(baseDir))
 {
 	result.put ("status", 1);
@@ -116,14 +116,13 @@ if (!collectionDir.equals(baseDir))
             // new archive objects will anyway not have PM objects embedded within them.
             // see SimpleSessions.readArchiveIfPresent()
             {
-                String topDir = collectionDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
-                Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata (topDir, "default");
+                Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata (collectionDir);
                 if (cm == null)
                     cm = new Archive.CollectionMetadata();
                 if (cm.accessionMetadatas == null)
                     cm.accessionMetadatas = new ArrayList<>();
                 cm.accessionMetadatas.add(am);
-                SimpleSessions.writeProcessingMetadata (cm, topDir, "default");
+                SimpleSessions.writeCollectionMetadata (cm, collectionDir);
                 collection.collectionMetadata = cm;//IMP otherwise in-memory archive processingmetadata and
                 //the updated metadata on disc will be out of sync. It manifests when saving this archive which
                 //overwrites the latest on-disc PM data with stale in-memory data.

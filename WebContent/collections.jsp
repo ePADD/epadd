@@ -6,10 +6,10 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.Config"%>
-<%@ page import="sun.java2d.pipe.SpanShapeRenderer" %>
 
 <html>
 <head>
+  <title>List Collections</title>
   <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
   <script src="js/jquery.js"></script>
@@ -18,53 +18,39 @@
   <!-- Optional theme -->
   <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
   <jsp:include page="css/css.jsp"/>
-  <title>List Accessions</title>
   <script src="js/epadd.js" type="text/javascript"></script>
-
 </head>
+
 <body>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Collections');</script>
 
 <div style="padding-left:170px;padding-right:50px;">
-  <% if (ModeConfig.isDiscoveryMode()) { %>
-    <h1>Welcome to ePADD.</h1>
-    <p>
-    ePADD is a platform that allows researchers to browse and search historical email archives.
-    <p>
-    Messages have been redacted to ensure the privacy of donors and other correspondents.
-    Please contact the host repository if you would like to request access to full messages, including any attachments.
-  <% } %>
-  <% if (ModeConfig.isDeliveryMode()) { %>
-    <h1>Welcome to the ePADD delivery module.</h1>
+  <%
+    // this is the landing page for discovery, so a special message.
+    if (ModeConfig.isDiscoveryMode()) { %>
+        <h1>Welcome to ePADD.</h1>
+        <p>
+        ePADD is a platform that allows researchers to browse and search historical email archives.
+        <p>
+        Messages have been redacted to ensure the privacy of donors and other correspondents.
+        Please contact the host repository if you would like to request access to full messages, including any attachments.
+  <% } else if (ModeConfig.isDeliveryMode()) { %>
+        <h1>Welcome to the ePADD delivery module.</h1>
   <% } %>
 </div>
-
-<%!
-  private static String formatMetadataField(String s)
-  {
-    if (s == null)
-      return "Unassigned";
-    else
-      return Util.escapeHTML(s);
-  }
-%>
 
 <%
   if (ModeConfig.isAppraisalMode())
   {
     out.println("<div style=\"text-align:center\">Sorry, this page is not available in appraisal mode.</div>");
-    %>
-    <jsp:include page="footer.jsp"/>
-    <%
     return;
   }
 %>
+
   <div style="margin:auto;text-align:center">
   <div style="width:100%;text-align:left;">
 
-    <br/>
-<!--    <%=edu.stanford.muse.util.Messages.getMessage("messages", "discovery.list-archives", new String[]{Config.holder, Config.holderReadingRoom, Config.holderContact}) %> -->
     <br/>
   </div>
   <br/>
@@ -81,12 +67,11 @@
 
 
       File topFile = new File(topDir);
-        JSPHelper.log.info("Reading collections from: "+topDir);
+        JSPHelper.log.info("Reading collections from: " + topDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + topDir);
         }  else {
           File[] files = topFile.listFiles();
-          List<Archive.CollectionMetadata> foundPMs = new ArrayList<Archive.CollectionMetadata>();
           for (File f: files)
           {
             if (!f.isDirectory())
@@ -98,7 +83,7 @@
             if (!new File(archiveFile).exists())
               continue;
 
-            Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
+            Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
             String fileParam = id + "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
             String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
 
@@ -121,7 +106,7 @@
     $(document).ready(function() {
       $('.archive-card').click(function(e) {
         var dir = $(e.target).closest('.archive-card').attr('data-dir');
-        window.location = 'collection-detail?collectionID=' + escape(dir); // worried about single quotes in dir
+        window.location = 'collection-detail?collection=' + escape(dir); // worried about single quotes in dir
       });
     });
   </script>

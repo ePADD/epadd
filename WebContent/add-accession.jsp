@@ -30,7 +30,7 @@
 	</style>
 </head>
 <%
-    String collectionID= request.getParameter("collectionID");
+    String collectionID = request.getParameter("collection");
 %>
 <body>
     <jsp:include page="header.jspf"/>
@@ -42,7 +42,7 @@
 
             <% if(!Util.nullOrEmpty(collectionID)) { %>
                 <div class="panel-heading">Collection: <%=Util.escapeHTML(collectionID)%></div>
-                <input type="hidden" name="collectionID" value="<%=Util.escapeHTML(collectionID)%>"/>
+                <input type="hidden" name="collection" value="<%=Util.escapeHTML(collectionID)%>"/>
             <% } else { %>
                  <div class="panel-heading">Starting a new collection</div>
             <% } %>

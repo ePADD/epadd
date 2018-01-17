@@ -34,7 +34,7 @@
     /* note: this page doesn't require an archive to be loaded. it should not have a profile block. */
 
     String topDir = "";
-    String id = request.getParameter("collectionID");
+    String id = request.getParameter("collection");
     if (ModeConfig.isProcessingMode())
         topDir = Config.REPO_DIR_PROCESSING;
     else if (ModeConfig.isDeliveryMode())
@@ -66,7 +66,7 @@
         return;
     }
 
-    Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR, "default");
+    Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
     String fileParam = f.getName() + "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
     String url = "serveImage.jsp?mode=" + ModeConfig.mode + "&file=" + fileParam;
     String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
@@ -218,8 +218,8 @@
     <script>
         //the following call will first load archive and then in that jsp the subsequent screeen 'edit-collection-metadata.jsp' will be set as the next page
         //edit-screen parameter passed to loadArchive.jsp will help to distinguish whether to set the enxt screen as edit-collection-metadata.jsp or browse-top.jsp
-        $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collectionID=<%=id%>'; });
-        $('#add-accession').click (function() { window.location = 'add-accession?collectionID=<%=id%>'});
+        $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
+        $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.
         var enterparams = {dir: '<%=id%>'};

@@ -71,18 +71,18 @@ private void saveFile(HttpServletRequest request, String param, String filePath)
 		return;
 	}
 
-	String topDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collectionID") + File.separatorChar + Archive.SESSIONS_SUBDIR;
+	String archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collectionID");
 
 try {
 
     // read, edit and write back the pm object. keep the other data inside it (such as accessions) unchanged.
-	Archive.CollectionMetadata cm = SimpleSessions.readProcessingMetadata(topDir , "default");
+	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(archiveBaseDir);
 
 	// we could consider providing ownername in the request parameters if the archivist needs to have an option to change the name from what appraisal originally assigned.
 	cm.institution = request.getParameter("institution");
 	cm.repository = request.getParameter("repository");
 	cm.collectionTitle = request.getParameter("collectionTitle");
-	cm.collectionID = request.getParameter("cID"); // imp. don't read collectionID, which means something different
+	cm.collectionID = request.getParameter("collectionID");
     cm.contactEmail = request.getParameter("contactEmail");
     cm.rights = request.getParameter("rights");
     cm.notes = request.getParameter("notes");
@@ -96,7 +96,7 @@ try {
 	saveFile (request, "bannerImage", archive.baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png");
 */
 
-	SimpleSessions.writeProcessingMetadata(cm, topDir, "default");
+	SimpleSessions.writeCollectionMetadata(cm, archiveBaseDir);
 	result.put ("status", 0);
 	out.println (result.toString(4));
 	return;
