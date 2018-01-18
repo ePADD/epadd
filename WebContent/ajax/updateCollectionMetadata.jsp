@@ -91,6 +91,7 @@ try {
     cm.contactEmail = request.getParameter("contactEmail");
     cm.rights = request.getParameter("rights");
     cm.notes = request.getParameter("notes");
+    cm.scopeAndContent = request.getParameter("scopeAndContent");
 
 	cm.findingAidLink = request.getParameter("findingAidLink");
 	cm.catalogRecordLink = request.getParameter("catalogRecordLink");

@@ -337,10 +337,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         String collectionName = "", repositoryName = "", institutionName = "", collectionID = "";
         if (!ModeConfig.isAppraisalMode()) {
             Archive.CollectionMetadata cm = archive.collectionMetadata;
-            collectionName = Util.escapeHTML(cm.collectionTitle);
-            repositoryName = Util.escapeHTML(cm.repository);
-            institutionName = Util.escapeHTML(cm.institution);
-            collectionID = Util.escapeHTML(cm.collectionID);
+            collectionName = Util.escapeHTML(cm.collectionTitle != null ? cm.collectionTitle : "");
+            repositoryName = Util.escapeHTML(cm.repository != null ? cm.repository : "");
+            institutionName = Util.escapeHTML(cm.institution != null ? cm.institution : "");
+            collectionID = Util.escapeHTML(cm.collectionID != null ? cm.collectionID : "");
         }
 
         String json = archive.getLabelManager().getLabelInfoMapAsJSONString();

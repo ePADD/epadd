@@ -141,6 +141,16 @@
 				</textarea>
 			</div>
 		</div>
+
+		<div class="div-input-field">
+			<div class="input-field-label">Scope and Content</div>
+			<br/>
+			<div class="input-field">
+				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=cm == null ? "" : formatMetadataField( cm.scopeAndContent)%>
+				</textarea>
+			</div>
+		</div>
+
 		<br/>
 		<br/>
 		<div style="margin-left:40px">

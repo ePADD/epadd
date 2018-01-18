@@ -153,19 +153,24 @@
             </div>
 
             <br/>
-            <%=Util.nullOrEmpty(cm.about) ? "No text assigned" : Util.escapeHTML(cm.about)%>
+            <%=Util.nullOrEmpty(cm.about) ? "Unassigned" : Util.escapeHTML(cm.about)%>
 
-            <br/>
-            <br/>
+            <% if (!Util.nullOrEmpty(cm.scopeAndContent)) { %>
+                <br><br>
+                <b>Scope and Content</b><br/>
+                 <%= Util.escapeHTML(cm.scopeAndContent)%>
+            <% } %>
 
-            <div style="font-weight:bold">Rights and Conditions</div>
-                <%=Util.nullOrEmpty(cm.rights) ? "No rights and conditions assigned" : Util.escapeHTML(cm.rights)%>
+            <% if (!Util.nullOrEmpty(cm.rights)) { %>
+                <br><br>
+                <b>Rights and Conditions</b><br/>
+                 <%= Util.escapeHTML(cm.rights)%>
+            <% } %>
 
             <% if (!Util.nullOrEmpty(cm.notes)) { %>
                 <br><br>
-                <div style="font-weight:bold">Notes</div>
-                    <%= Util.escapeHTML(cm.notes)%>
-                </div>
+                <b>Notes</b><br/>
+                <%= Util.escapeHTML(cm.notes)%>
             <% } %>
 
             <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) {
@@ -174,8 +179,10 @@
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <hr/>
                     <div>
-                        <b>Accession ID</b>: <%=am.id%>
-                        <p><b>Title</b>: <%=am.title%>
+                        <b>Accession ID</b>: <%=am.id%><br/>
+                        <b>Title</b>: <%=am.title%><br/>
+                        <b>Date</b>: <%=am.date%><br/><br/>
+
                         <p><b>Scope and contents</b><br/> <%=am.scope%>
                         <p><b>Rights and conditions</b><br/> <%=am.rights%>
                         <p><b>Notes</b><br/> <%=am.notes%>
@@ -185,32 +192,33 @@
 
                 <% } %>
 
-        <div style="text-align:left;margin-top: 40px"> <button id="enter" class="btn btn-cta" style="text-align:left">Enter <i class="icon-arrowbutton"></i> </button></div>
+            <p></p>
+            <%
+                // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
+                if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
+                    <div class="heading"><a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a></div>
+                <% } %>
+                <br/>
+                <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
+                    <div class="heading"><a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a></div>
+                    <br/>
+                <% } %>
+
+        </div>
+        <div style="text-align:center;margin-top: 20px">
+            <button id="enter" class="btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
+        </div>
 
         <div id="stats"></div>
-
-        <p></p>
-        <%
-            // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
-            if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
-            <div class="heading"><a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a></div>
-        <% } %>
-        <br/>
-        <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
-            <div class="heading"><a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a></div>
-            <br/>
-        <% } %>
-
-        <% if (ModeConfig.isDiscoveryMode()) { %>
-            Email messages in the ePADD Discovery Module have been redacted to ensure the privacy of donors and other correspondents.
-            Please contact the host repository if you would like to request access to full messages, including any attachments.
-        <% } %>
-
     </div>
+
+    <% if (ModeConfig.isDiscoveryMode()) { %>
+        Email messages in the ePADD Discovery Module have been redacted to ensure the privacy of donors and other correspondents.
+        Please contact the host repository if you would like to request access to full messages, including any attachments.
+    <% } %>
+
     <br/>
-</div>
-<br/>
-<br/>
+    <br/>
 
     <script>
         $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });

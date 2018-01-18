@@ -1497,7 +1497,7 @@ body {
 .collection-detail .banner-img-text-block { top: 80px; left: 30px; padding: 20px; font-size: 16px; text-align: left; background-color: #f5f5f8;}
 .collection-detail .banner-img-text-large { font-size: 25px; text-align:left;}
 .collection-detail .details { border-right: dotted 1px rgba(127,127,127,0.5); padding-right: 30px; display: inline-block; max-width: 250px; overflow: hidden;}
-.collection-detail .related-links { vertical-align: top; display: inline-block; margin-left: 30px; max-width: 600px;}
+.collection-detail .related-links { vertical-align: top; display: inline-block; margin-left: 30px; width: 660px;}
 .panel {background-color: #f5f5f8;}
 .previous, .next { cursor: pointer}
 

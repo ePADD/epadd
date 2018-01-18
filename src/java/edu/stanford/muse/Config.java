@@ -22,7 +22,7 @@ Similarly, resource files should be read only through this class. Resource files
 public class Config {
     public static final String COLLECTION_METADATA_FILE = "collection-metadata.json"; // all session files end with .session
     public static Log log = LogFactory.getLog(Config.class);
-    public static String admin, holder, holderContact, holderReadingRoom;
+    public static String admin; // this is the admin user for an installation of ePADD
 
     /* default location for dir under which archives are imported/stored. Should not end in File.separator */
     public final static String	REPO_DIR_APPRAISAL;
@@ -87,9 +87,6 @@ public class Config {
         // site-specific settings
         {
             admin = props.getProperty("admin", "Peter Chan, pchan3@stanford.edu");
-            holder = props.getProperty("holder", "NOT SET");
-            holderContact = props.getProperty("holderContact", "NOT SET");
-            holderReadingRoom = props.getProperty("holderReadingRoom", "NOT SET");
         }
 
         // config for file/dir names, etc.

@@ -87,6 +87,7 @@
                 %>
                 <td><a href=<%=entityurl%>><%=term%></a></td>
                 <%}%>
+
                 <td style="text-align:right"><%=info.count%></td>
 
             <%--<td class="right"><%=info.count%></td>--%>
