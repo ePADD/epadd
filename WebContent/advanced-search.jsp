@@ -324,15 +324,12 @@
 
 				<!--Attachment-->
                 <% if (!ModeConfig.isDiscoveryMode()) { %>
-
-                <div class="attachment search-wraper clearfix">
+	                <div class="attachments search-wraper clearfix">
 					<h4>Attachments</h4>
-
 					<!--form-wraper-->
 					<div class="form-wraper clearfix">
 
-						<div class="row">
-
+						<div class="row"> <!-- not sure why this div.row is needed. without it, the attachments panel looks bad -->
 							<!--File Name-->
 							<div class="margin-btm col-sm-6">
 
@@ -357,7 +354,6 @@
 									</fieldset>
 								</div>
 							</div>
-
 							<!--File Size-->
 							<div class="form-group col-sm-6">
 								<label for="attachmentFilesize">File Size</label>
@@ -375,9 +371,10 @@
 						<%
 							Map<String,String> attachmentTypeOptions= Config.attachmentTypeToExtensions;
 						%>
-						<div class="row">
 							<!--Type-->
-							<div class="form-group col-sm-6">
+						<div class="row">
+
+						<div class="form-group col-sm-6">
 								<label for="attachmentType">Type</label>
 								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
 									<option value="" selected disabled>Select</option>
@@ -401,10 +398,6 @@
 								<input name="attachmentExtension" id="attachmentExtension" type="text" class="form-control">
 							</div>
 						</div>
-
-						<div class="row">
-
-						</div>
 					</div>
 				</div>
                 <% } %>
@@ -412,8 +405,6 @@
                 <!--/Attachment-->
 
 				<!--Actions-->
-                <% if (!ModeConfig.isDiscoveryMode()) {
-				%>
 
                 <div class=" actions search-wraper clearfix">
 
@@ -439,8 +430,6 @@
 					    </div>
 
 						<div class="form-group col-sm-6">
-
-
 							<div class="form-group">
 
 							<label for="labelIDs">Labels</label>
@@ -474,118 +463,9 @@
 							</div>
 						</div>
 
-<%--
-						<!--Reviewed-->
-						<div class="form-group col-sm-6">
-							<label for="reviewed">Reviewed</label>
-
-							<fieldset name="reviewed" id="reviewed" class="comman-radio">
-								<legend class="sr-only">Reviewed flters</legend>
-
-								<label class="radio-inline">
-									<input value="yes" type="radio" name="reviewed">
-									<span class="text-radio">Yes</span>
-								</label>
-
-								<label class="radio-inline">
-									<input value="no" type="radio" name="reviewed">
-									<span class="text-radio">No</span>
-								</label>
-
-								<label class="radio-inline">
-									<input id="reviewed-either"  value="either" type="radio" name="reviewed" checked>
-									<span class="text-radio">Either</span>
-								</label>
-
-							</fieldset>
-						</div>
-						<!--/Reviwed-->
-
-						<!--Restricted-->
-                        <% if (!ModeConfig.isDeliveryMode()) { %>
-
-                            <div class="form-group col-sm-6">
-                                <label for="transferWithRestrictions">Restricted</label>
-
-                                <fieldset id="transferWithRestrictions" name="transferWithRestrictions" class="comman-radio">
-                                    <legend class="sr-only">Restricted filters</legend>
-
-                                    <label class="radio-inline">
-                                        <input value="yes" type="radio" name="transferWithRestrictions">
-                                        <span class="text-radio">Yes</span>
-                                    </label>
-
-                                    <label class="radio-inline">
-                                        <input value="no" type="radio" name="transferWithRestrictions">
-                                        <span class="text-radio">No</span>
-                                    </label>
-
-                                    <label class="radio-inline">
-                                        <input id="transferWithRestrictions-either" value="either" type="radio" name="transferWithRestrictions" checked>
-                                        <span class="text-radio">Either</span>
-                                    </label>
-
-                                </fieldset>
-                            </div>
-                            <!--/Restricted-->
-
-                            <!--Transfer-->
-                            <div class="form-group col-sm-6">
-                                <label for="doNotTransfer">Not transferred</label>
-
-                                <fieldset id="doNotTransfer" name="transfer" class="comman-radio">
-                                    <legend class="sr-only">Transfer filters</legend>
-
-                                    <label class="radio-inline">
-                                        <input value="yes" type="radio" name="doNotTransfer">
-                                        <span class="text-radio">Yes</span>
-                                    </label>
-
-                                    <label class="radio-inline">
-                                        <input value="no" type="radio" name="doNotTransfer">
-                                        <span class="text-radio">No</span>
-                                    </label>
-
-                                    <label class="radio-inline">
-                                        <input id="doNotTransfer-either" value="either" type="radio" name="doNotTransfer" checked>
-                                        <span class="text-radio">Either</span>
-                                    </label>
-
-                                </fieldset>
-                            </div>
-						<!--/Transfer-->
---%>
-                        <%--<% } else { %>--%>
-                            <%--<!--Cart-->--%>
-                            <%--<div class="form-group col-sm-6">--%>
-                                <%--<label for="inCart">In cart</label>--%>
-
-                                <%--<fieldset id="inCart" name="inCart" class="comman-radio">--%>
-                                    <%--<legend class="sr-only">Transfer filters</legend>--%>
-
-                                    <%--<label class="radio-inline">--%>
-                                        <%--<input value="yes" type="radio" name="inCart">--%>
-                                        <%--<span class="text-radio">Yes</span>--%>
-                                    <%--</label>--%>
-
-                                    <%--<label class="radio-inline">--%>
-                                        <%--<input value="no" type="radio" name="inCart">--%>
-                                        <%--<span class="text-radio">No</span>--%>
-                                    <%--</label>--%>
-
-                                    <%--<label class="radio-inline">--%>
-                                        <%--<input id="inCart-either" value="either" type="radio" name="inCart" checked>--%>
-                                        <%--<span class="text-radio">Either</span>--%>
-                                    <%--</label>--%>
-
-                                <%--</fieldset>--%>
-                            <%--</div>--%>
-                             <%--<!--/Cart-->--%>
-                        <%--<% } %>--%>
                     </div>
 				</div>
                <!--/Actions-->
-<%}%>
 				<!--Others-->
 				<div class="others search-wraper">
 					<h4>Miscellaneous</h4>

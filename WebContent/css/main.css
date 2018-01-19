@@ -2127,7 +2127,9 @@ ul.dropdown-menu.inner li:first-child {
   .search-wraper h4 {
     padding-bottom: 20px;
     display: inline-block;
-    font-weight: 600; }
+    color: #0175bc;
+    margin-left: -15px;
+    /* font-weight: 600; */ }
   .search-wraper .form-group label {
     font-size: 14px;
     padding-bottom: 13px;
