@@ -135,7 +135,7 @@
 	}
 	//For LabelManager report
 	mergeReport.append("\n-----------------------------------------\n");
-	mergeReport.append("The following labels from the accession had the same name as in the collection. They have been renamed to avoid a clash. Please review.\n");
+	mergeReport.append("The following labels from the accession had the same name as in the collection. \n The clashing labels of accession have been renamed by adding a prefix 'Accession2' before them. Please review and do the necessary cleanup.\n");
 	LabelManager.MergeResult mResultLM = mResult.labManagerMergeResult;
 		mergeReport.append("------------------------------\n");
 	for(Pair<Label,Label> p: mResultLM.labelsWithNameClash){

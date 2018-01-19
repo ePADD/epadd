@@ -119,7 +119,7 @@
 </form>
 
 <script type="text/javascript">
-	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateCollectionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?id=<%=id%>'); return false; });
+	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateCollectionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?collection=<%=id%>'); return false; });
 </script>
 
  <jsp:include page="footer.jsp"/>

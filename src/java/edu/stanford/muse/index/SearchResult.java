@@ -966,11 +966,10 @@ public class SearchResult {
         }
 
         // set up the extensions
-        Set<String> neededExtensions = null; // will be in lower case
+        Set<String> neededExtensions = new LinkedHashSet<>(); // will be in lower case
         if (!Util.nullOrEmpty(neededTypeStr) || !Util.nullOrEmpty(neededExtensionStr))
         {
             // compile the list of all extensions from type (audio/video, etc) and explicitly provided extensions
-            neededExtensions = new LinkedHashSet<>();
             if (!Util.nullOrEmpty(neededTypeStr)) {
                 // will be something like "mp3;ogg,avi;mp4" multiselect picker gives us , separated between types, convert it to ;
                 for (String s: neededTypeStr)
@@ -978,6 +977,13 @@ public class SearchResult {
             }
             if (!Util.nullOrEmpty(neededExtensionStr)) {
                 neededExtensions.addAll(Util.splitFieldForOr(neededExtensionStr));
+            }
+        }else{
+            //if attachment type and attachment extensions are not provided fill in the set neededExtensions set
+            //with the set of all possible extensions/types..
+            Map<String,String> allTypes = Config.attachmentTypeToExtensions;
+            for(String s: allTypes.values()){
+                neededExtensions.addAll(Util.splitFieldForOr(s));
             }
         }
 

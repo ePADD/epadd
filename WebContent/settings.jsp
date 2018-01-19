@@ -84,7 +84,7 @@
 
 			<p><button onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set labels</button>
 
-			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+	<%--		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload?archiveID=<%=archiveID%>'"><i class="fa fa-upload"></i>Correspondents List</button>
 				<p><button onclick="window.location.href='ner?archiveID=<%=archiveID%>'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
 				<%
@@ -100,17 +100,18 @@
 
 				//		out.println("Recompute numbers that are displayed on the landing page by clicking <a id='recompute' style='cursor:pointer'>here</a> <img id='recompute-stat' src='images/spinner.gif' style='display:none'/>");
 				} %>
-
+--%>
     <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
 
 <!--                <p><button onclick="window.location='debug';" class="btn-default"  style='cursor:pointer'><i class="fa fa-flag"></i> Debug Log</button> -->
-                <p><button class="btn-default" id="unload-archive"><i class="fa fa-eject"></i> Unload Archive</button>
+
+    <%--            <p><button class="btn-default" id="unload-archive"><i class="fa fa-eject"></i> Unload Archive</button>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 						<p><button id="delete-archive" class="btn-default"><span class="spinner"><i class="fa fa-trash"></i></span> Delete Archive</button>
 						<!-- <p><button class="btn-default" onclick="window.location='export-mbox'"><i class="fa fa-save"></i> Export archive to mbox</button> -->
 				<%	} %>
-
+--%>
 <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
 
                 <% if (!ModeConfig.isDeliveryMode()) { %>

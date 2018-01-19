@@ -85,65 +85,6 @@ public class EmailDocument extends DatedDocument implements Serializable
 			this.emailSource = emailSource;
 	}
 
-	/* This method returns a copy of emaildocument with copied mutable fields. In absence of such a method
-	any modification in delivery/discovery export modified the original fields (because of pointing to same
-	reference)
-	 */
-	public EmailDocument copyMutableFields(){
-		EmailDocument edoc = new EmailDocument(id,emailSource,folderName,to,cc,bcc,from,getSubject(),messageID, date);
-
-		if(!Util.nullOrEmpty(this.description))
-			edoc.description = this.description;
-		if(!Util.nullOrEmpty(this.comment))
-			edoc.comment = this.comment;
-		/*if(!Util.nullOrEmpty(to))
-			edoc.to = Arrays.stream(to).map(address -> {
-				InternetAddress ia = (InternetAddress)address;
-				InternetAddress b = ia;
-				try {
-					b = new InternetAddress(ia.getAddress(),ia.getPersonal());
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-				return b;
-			}).toArray(Address[]::new);
-		if(!Util.nullOrEmpty(from))
-			edoc.from = Arrays.stream(from).map(address -> {
-				InternetAddress ia = (InternetAddress)address;
-				InternetAddress b = ia;
-						try {
-							b = new InternetAddress(ia.getAddress(),ia.getPersonal());
-						} catch (UnsupportedEncodingException e) {
-							e.printStackTrace();
-						}
-				return b;
-			}
-			).toArray(Address[]::new);
-		if(!Util.nullOrEmpty(cc))
-			edoc.cc = Arrays.stream(cc).map(address -> {
-				InternetAddress ia = (InternetAddress)address;
-				InternetAddress b = ia;
-				try {
-					b = new InternetAddress(ia.getAddress(),ia.getPersonal());
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-				return b;
-			}).toArray(Address[]::new);
-		if(!Util.nullOrEmpty(bcc))
-			edoc.bcc = Arrays.stream(bcc).map(address -> {
-				InternetAddress ia = (InternetAddress)address;
-				InternetAddress b = ia;
-				try {
-					b = new InternetAddress(ia.getAddress(),ia.getPersonal());
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-				return b;
-			}).toArray(Address[]::new);
-*/
-		return edoc;
-	}
 	public boolean hasError() { return errorString != null; }
 	public String getErrorString() { return errorString; }
 	public void setErrorString(String errorString) { this.errorString = errorString; }

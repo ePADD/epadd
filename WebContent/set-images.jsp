@@ -1,4 +1,6 @@
-<%@include file="getArchive.jspf" %>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.index.Archive" %>
+<%--<%@include file="getArchive.jspf" %>--%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +15,9 @@
     <script src="js/epadd.js" type="text/javascript"></script>
 </head>
 <body>
- <% String archiveID = SimpleSessions.getArchiveIDForArchive(archive);%>
+ <%
+     String collectionID = request.getParameter("collection");
+ %>
     <jsp:include page="header.jspf"/>
 
     <script>epadd.nav_mark_active('Collections');</script>
@@ -23,26 +27,36 @@
     <%@include file="div_status.jspf"%>
 
     <div style="margin-left:170px">
-        You can upload images that represent the archive here. Only PNG format files are currently supported.
+        You can upload images that represent the collection here. Only PNG format files are currently supported.
         <p></p>
         <form method="POST" action="upload-images" enctype="multipart/form-data" >
-            //adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
-            //archiveID in all those forms where POST was used to invoke the server page.
-            <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+            <%--adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass--%>
+            <%--archiveID in all those forms where POST was used to invoke the server page.--%>
+            <input type="hidden" value="<%=collectionID%>" name="collection"/>
 
             Profile Photo: (Aspect ratio 1:1)<br/>
-            <div class="profile-small-img"></div>
+            <%
+                String file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
+            %>
+
+                <div class="profile-small-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
             <input type="file" name="profilePhoto" id="profilePhoto" /> <br/><br/>
 
             Landing Page Photo: (Aspect ratio 4:3)<br/>
-            <div class="landing-img" style="background-image:url('serveImage.jsp?archiveID=<%=archiveID%>&file=landingPhoto.png')"></div>
+            <%
+                 file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+            %>
+            <div class="landing-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
             <br/>
             <br/>
             <input type="file" name="landingPhoto" id="landingPhoto" />
             <br/><br/>
 
+            <%
+                file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+            %>
             Banner Image: (Aspect ratio 2.5:1)<br/>
-            <div class="banner-img" style="background-image:url('serveImage.jsp?archiveID=<%=archiveID%>&file=bannerImage.png')">
+            <div class="banner-img" style="background-image:url('serveImage.jsp?&file=<%=file%>')">
             </div>
             <br/>
             <br/>

@@ -1,7 +1,4 @@
 package edu.stanford.muse.index;//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
 
 
 import org.apache.lucene.analysis.CharArraySet;

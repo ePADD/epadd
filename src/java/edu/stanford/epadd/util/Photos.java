@@ -1,5 +1,6 @@
 package edu.stanford.epadd.util;
 
+import edu.stanford.muse.Config;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
@@ -52,7 +53,12 @@ public class Photos
 		HttpSession session = request.getSession();
 		String baseDir, filePath;
 
-		if (ModeConfig.isProcessingMode())
+		Archive archive = JSPHelper.getArchive(request);
+		if(archive!=null){
+				baseDir = archive.baseDir;
+				filePath = baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
+
+		}else if (ModeConfig.isProcessingMode())
 		{
 			baseDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING;
 			filePath = baseDir + File.separator + filename;
@@ -67,13 +73,11 @@ public class Photos
 			baseDir = edu.stanford.muse.Config.REPO_DIR_DELIVERY;
 			filePath = baseDir + File.separator + filename;
 		}
-		else
-		{ //get archiveID from the request parameter and then get the archive. It must be present
-			Archive archive = JSPHelper.getArchive(request);
-			assert archive!=null: "If no mode is set then the archiveID must be passed to serveImage.jsp";
-			baseDir = archive.baseDir;
-			filePath = baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
+		else {
+			baseDir = Config.REPO_DIR_APPRAISAL;
+			filePath = baseDir + File.separator + "user" + File.separator + filename;
 		}
+
 		// could check if user is authorized here... or get the userKey directly from session
 		// log.info("Serving image from: " + filePath + " and filename is: " + filename);
 		JSPHelper.writeFileToResponse(session, response, filePath, true /* asAttachment */);

@@ -914,12 +914,6 @@ public class Archive implements Serializable {
         /////////////////saving done//////////////////////////////////
         //change state of the current archive -temporarily//////////
         if (exportInPublicMode){
-            //because message header gets modified so need to create copy of these documents and then set
-            //them as allDocs
-            allDocs = retainedDocs.stream().map(doc->{
-                EmailDocument ed = (EmailDocument)doc;
-                return ed.copyMutableFields();
-            }).collect(Collectors.toList());
             //replace description with names;
             replaceDescriptionWithNames(allDocs, this);
         }else{

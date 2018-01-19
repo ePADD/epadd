@@ -9,10 +9,11 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@include file="getArchive.jspf" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%--<%@include file="getArchive.jspf" %>--%>
 
 <%
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String collectionID = request.getParameter("collection");
    session.setAttribute("statusProvider", new StaticStatusProvider("Uploading files"));
    JSONObject result = new JSONObject();
 
@@ -28,23 +29,25 @@
     // Parse the request
     String error = null;
     List<FileItem> items = upload.parseRequest(request);
-    for (FileItem item : items)
-    {
-        try
-        {
-            String type = null;
-            if ("profilePhoto".equals(item.getFieldName()))
-                type = "profilePhoto";
-            else if ("bannerImage".equals(item.getFieldName()))
-                type = "bannerImage";
-            else if ("landingPhoto".equals(item.getFieldName()))
-                type = "landingPhoto";
+    for (FileItem item : items) {
+        if (item.isFormField()) {
+            if ("collection".equals(item.getFieldName()))
+                collectionID = item.getString();
+        } else {
+            try {
+                String type = null;
+                if ("profilePhoto".equals(item.getFieldName()))
+                    type = "profilePhoto";
+                else if ("bannerImage".equals(item.getFieldName()))
+                    type = "bannerImage";
+                else if ("landingPhoto".equals(item.getFieldName()))
+                    type = "landingPhoto";
 
-            if (item.getSize() <= 0)
-                continue; // if an input field is left empty, its size is 0
+                if (item.getSize() <= 0)
+                    continue; // if an input field is left empty, its size is 0
 
-            String contentType = item.getContentType();
-            String suffix = null;
+                String contentType = item.getContentType();
+                String suffix = null;
                 /*
                 if ("image/jpeg".equals(contentType)) {
                     suffix = "jpg";
@@ -54,26 +57,34 @@
                 }
                 */
 
-            if ("image/png".equalsIgnoreCase(contentType))
-                suffix = "png";
-            else
-            {
-                error = "Sorry, only PNG files are accepted. Content-type " + contentType + " for " + item.getFieldName();
-                break;
+                if ("image/png".equalsIgnoreCase(contentType))
+                    suffix = "png";
+                else {
+                    error = "Sorry, only PNG files are accepted. Content-type " + contentType + " for " + item.getFieldName();
+                    break;
+                }
+
+                if (type != null && suffix != null) {
+                    //String dir = archive.baseDir + File.separator + Archive.IMAGES_SUBDIR;
+                    String dir = null;
+                    if (ModeConfig.isProcessingMode())
+                        dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + collectionID + File.separatorChar + Archive.IMAGES_SUBDIR;
+                    else if (ModeConfig.isDeliveryMode())
+                        dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + collectionID + File.separatorChar + Archive.IMAGES_SUBDIR;
+                    else if (ModeConfig.isDiscoveryMode())
+                        dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + collectionID + File.separatorChar + Archive.IMAGES_SUBDIR;
+                    new File(dir).mkdirs();
+                    String filename = dir + File.separator + type + "." + suffix;
+                    Util.copy_stream_to_file(item.getInputStream(), filename);
+                    filesUploaded++;
+                }
+            } catch (Exception e) {
+                Util.print_exception(e, JSPHelper.log);
+                error = "Sorry, there was an error uploading files.";
             }
 
-            if (type != null && suffix != null) {
-                String dir = archive.baseDir + File.separator + Archive.IMAGES_SUBDIR;
-                new File(dir).mkdirs();
-                String filename = dir + File.separator + type + "." + suffix;
-                Util.copy_stream_to_file (item.getInputStream(), filename);
-                filesUploaded++;
-            }
-        } catch (Exception e) {
-            Util.print_exception (e, JSPHelper.log);
-            error = "Sorry, there was an error uploading files.";
         }
-
+    }
         if (error != null) {
             result.put("status", 1);
             result.put ("error", error);
@@ -81,7 +92,7 @@
             result.put ("status", 0);
             result.put ("filesUploaded", filesUploaded);
         }
-    }
+
     session.removeAttribute("statusProvider");
        %>
 <html lang="en">
@@ -109,7 +120,7 @@
        <% } %>
        <br/>
        <br/>
-            <button class="btn btn-cta" onclick="window.location='set-images?archiveID=<%=archiveID%>'; return false;">Back <i class="icon-arrowbutton"></i></button>
+            <button class="btn btn-cta" onclick="window.location='set-images?collection=<%=collectionID%>'; return false;">Back <i class="icon-arrowbutton"></i></button>
         </div>
 
        <jsp:include page="footer.jsp"/>

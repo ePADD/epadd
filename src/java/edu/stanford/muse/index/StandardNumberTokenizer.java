@@ -22,6 +22,7 @@ package edu.stanford.muse.index;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizerImpl;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
@@ -37,29 +38,7 @@ import java.io.StringReader;
 final class StandardNumberTokenizer extends Tokenizer {
 	private StandardTokenizerImpl	scanner;
 
-	private static final int			HOST			= 5;
-	private static final int			NUM				= 6;
 
-	private static final int			ACRONYM_DEP		= 8;
-
-
-	/** String token types that correspond to token type int constants */
-	private static final String[]	TOKEN_TYPES		= new String[] {
-													"<ALPHANUM>",
-													"<APOSTROPHE>",
-													"<ACRONYM>",
-													"<COMPANY>",
-													"<EMAIL>",
-													"<HOST>",
-													"<NUM>",
-													"<CJ>",
-													"<ACRONYM_DEP>",
-													"<SOUTHEAST_ASIAN>",
-													"<IDEOGRAPHIC>",
-													"<HIRAGANA>",
-													"<KATAKANA>",
-													"<HANGUL>"
-													};
 
 	private int						skippedPositions;
 
@@ -108,19 +87,12 @@ final class StandardNumberTokenizer extends Tokenizer {
 				scanner.getText(termAtt);
 				final int start = scanner.yychar();
 				offsetAtt.setOffset(correctOffset(start), correctOffset(start + termAtt.length()));
-				// This 'if' should be removed in the next release. For now, it converts
-				// invalid acronyms to HOST. When removed, only the 'else' part should
-				// remain.
-				if (tokenType == StandardNumberTokenizer.ACRONYM_DEP) {
-					typeAtt.setType(StandardNumberTokenizer.TOKEN_TYPES[StandardNumberTokenizer.HOST]);
-					termAtt.setLength(termAtt.length() - 1); // remove extra '.'
-				}
-				else if (tokenType == StandardNumberTokenizer.NUM) {
+			if (tokenType == StandardTokenizer.NUM) {
 					String term = "";
 					int end = start + termAtt.length();
 					while (true) {
 						int type = scanner.getNextToken();
-						if (type != NUM) {
+						if (type != StandardTokenizer.NUM) {
                             scanner.yypushback(scanner.yylength());
 							break;
 						} else {
@@ -131,10 +103,10 @@ final class StandardNumberTokenizer extends Tokenizer {
 					}
 					offsetAtt.setOffset(correctOffset(start), correctOffset(end));
 					termAtt.append(term);
-					typeAtt.setType(StandardNumberTokenizer.TOKEN_TYPES[tokenType]);
+					typeAtt.setType(StandardTokenizer.TOKEN_TYPES[tokenType]);
 				}
 				else{
-					typeAtt.setType(StandardNumberTokenizer.TOKEN_TYPES[tokenType]);
+					typeAtt.setType(StandardTokenizer.TOKEN_TYPES[tokenType]);
 				}
                 return true;
 			} else
@@ -169,7 +141,7 @@ final class StandardNumberTokenizer extends Tokenizer {
 
 	public static void main(String[] args) {
 		try {
-            StringReader input = new StringReader("Passport number: k4190175 ");
+            StringReader input = new StringReader("123-45-6789");
             StandardNumberTokenizer t = new StandardNumberTokenizer();
             t.setReader(input);
 			OffsetAttribute offsetAttribute = t.addAttribute(OffsetAttribute.class);
@@ -183,7 +155,7 @@ final class StandardNumberTokenizer extends Tokenizer {
 				String term = charTermAttribute.toString();
 				String type = typeAttribute.type();
 
-				System.err.println(term + " at: " + startOffset + "," + endOffset + ". Type: " + type);
+				System.out.println(term + " at: " + startOffset + "," + endOffset + ". Type: " + type);
 			}
 
 			t.close();

@@ -40,6 +40,15 @@
 
 </head>
 <body>
+<%
+	//This is to handle the scenario when appraisal mode browse-top is being invoked without archiveID. As
+	//a default behaviour archive is loaded by reading from epadd-appraisal directory. However as no archiveID
+	//is present in the request the headers are not rendered properly. Now we set archiveID from the archive object
+	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
+	//not passed from the request) and used for rendering the header properly.
+	if(archive!=null && request.getParameter("archiveID")==null)
+		request.setAttribute("archiveID",SimpleSessions.getArchiveIDForArchive(archive));
+%>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 

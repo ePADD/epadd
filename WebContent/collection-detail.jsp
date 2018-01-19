@@ -136,7 +136,10 @@
 
         if (ModeConfig.isProcessingMode()) { %>
         <p>
-            <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit</button>
+            <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit Metadata</button>
+            <br/>
+            <br/>
+            <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
             <br/>
             <br/>
             <button class="btn-default" id="add-accession"><i class="fa fa-import"></i> Add accession</button>
@@ -223,6 +226,8 @@
     <script>
         $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
         $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
+        $('#edit-photos').click (function() { window.location = 'set-images?collection=<%=id%>'; });
+
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.
         var enterparams = {dir: '<%=id%>'};

@@ -89,7 +89,7 @@
 	<script type="text/javascript">
 
 		$(document).ready(function() {
-		    var archiveID = <%=archiveID%>;
+		    var archiveID = '<%=archiveID%>';
 			var click_to_search = function (data) {
 				// epadd.do_search will open search result in a new tab.
 				// Note, we have to insert onclick into the rendered HTML,
