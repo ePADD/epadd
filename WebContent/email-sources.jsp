@@ -60,7 +60,7 @@ if (archive != null) {
 	writeProfileBlock(out, archive, "", "Import email into this archive");
 }
 %>
-
+<%--
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
 	<img src="images/sidebar.png" alt="sidebar">
@@ -82,7 +82,7 @@ if (archive != null) {
 	</div>
 
 </nav>
-<!--/sidebar-->
+<!--/sidebar-->--%>
 
 <p>
 

@@ -766,7 +766,7 @@
 			$('#termSubject, #termBody, #termOriginalBody, #termAttachments').prop('checked', true);
 			$('#doNotTransfer-either, #reviewed-either, #transferWithRestrictions-either, #direction-either, #mailingListState-either').prop ('checked', true);
 			// TODO: reset the other fields also, esp. the select picker
-			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy').prop ('selectedIndex', 0);
+			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy,#entityType').prop ('selectedIndex', 0);
 			$('#attachmentType').prop ('selectedIndex', -1); // 0 for this one is not ok
 			$('#labelIDs').prop('selectedIndex',-1);
 			$('.selectpicker').selectpicker('refresh');

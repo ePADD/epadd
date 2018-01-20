@@ -23,6 +23,7 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.EmailRenderer;
+import edu.stanford.muse.webapp.JSPHelper;
 
 import java.util.*;
 
@@ -89,11 +90,11 @@ public class DataSet {
             {
                 // we are assuming one page per doc for now. (true for
                 // emails)
-                Pair<String, Boolean> htmlResut = EmailRenderer.htmlForDocument(docs.get(i), searchResult, datasetTitle,
+                Pair<String, Boolean> htmlResult = EmailRenderer.htmlForDocument(docs.get(i), searchResult, datasetTitle,
                          authorisedEntities, IA_links, inFull, debug,archiveID);
-                boolean overflow = htmlResut.second;
+                boolean overflow = htmlResult.second;
                 Util.ASSERT(!(inFull && overflow));
-                pageContent = htmlResut.first
+                pageContent = htmlResult.first
                         +
                         (overflow ? "<br><span class='nojog' style='color:#500050;text-decoration:underline;font-size:12px' onclick=\"$('#more_spinner').show(); $.fn.jog_page_reload("
                                 + i
@@ -104,8 +105,13 @@ public class DataSet {
             //return pages.get(i);
             return pageContent;
         } catch (Exception e) {
-            Util.print_exception(e);
-            return "Page unavailable";
+            StringBuilder debugString = new StringBuilder();
+            debugString.append ("Problem information: archiveID " + archiveID);
+            debugString.append (" dataset " + datasetTitle);
+            debugString.append (" has " + ((docs == null) ? "(null)" : docs.size()) + " messages");
+            debugString.append (" requested index " + i);
+            Util.print_exception("Exception getting page in dataset " + debugString.toString(), e, JSPHelper.log);
+            return "Page unavailable, check if ePADD is running.<br/>" + debugString.toString(); // also reflect this back to the user
         }
     }
 }

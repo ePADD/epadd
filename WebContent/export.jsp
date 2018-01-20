@@ -179,9 +179,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 </div>
             </div>
 
-            <%--<% if (ModeConfig.isProcessingMode()) { %>--%>
-            <% if (false) {//no longer needed export-mbox support after adding it to browse message set  %>
-
+            <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
                 <div class="one-line" id="export-mbox">
                     <div class="form-group col-sm-8" >
                         <label for="export-mbox-file">Export to mbox</label>

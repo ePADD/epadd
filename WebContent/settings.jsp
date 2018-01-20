@@ -38,6 +38,7 @@
 	<p>
 <p>
 
+<%--
 	<!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
 	<img src="images/sidebar.png" alt="sidebar">
@@ -69,6 +70,7 @@
 
 </nav>
 <!--/sidebar-->
+--%>
 
 	<br/>
 	<%
@@ -114,26 +116,8 @@
 --%>
 <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
 
-                <% if (!ModeConfig.isDeliveryMode()) { %>
-                <div style="font-size:small;margin-top:15px;text-transform:uppercase; ">
-                    <br/>
-                    <div class="row">
-                        <div class="form-group col-sm-3">
-                            <span class="badge" style="background-color:rgb(191,19,19)">Advanced</span><br/>
-                            <label for="mode-select">Select ePADD Module</label><br>
 
-                            <select id="mode-select" name="attachmentFilesize" class="form-control selectpicker">
-                                <option value="" selected disabled>Choose Module</option>
-                                <option value="appraisal" <%=ModeConfig.isAppraisalMode() ? "selected" : ""%> >APPRAISAL</option>
-                                <option value="processing" <%=ModeConfig.isProcessingMode() ? "selected" : ""%> >PROCESSING</option>
-                                <option value="discovery" <%=ModeConfig.isDiscoveryMode() ? "selected" : ""%> >DISCOVERY</option>
-                                <option value="delivery" <%=ModeConfig.isDeliveryMode() ? "selected" : ""%> >DELIVERY</option>
-                            </select>
-                        </div>
-                    </div>
-                    <% } %>
-
-            </div>
+            </p>
 	<% } /* archive != null */ %>
 
         <% } %>
@@ -172,9 +156,6 @@
 		});
 */
 
-		/*$("#unload-archive").click(epadd.unloadArchive('<%=archiveID%>'));
-		$("#delete-archive").click(epadd.deleteArchive('<%=archiveID%>'));
-*/
         // we assume jq is always loaded onto any page that includes this header
         $('#mode-select').change(function() {
             var val = $('#mode-select').val();

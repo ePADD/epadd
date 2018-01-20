@@ -39,35 +39,36 @@
 <p>
 
 	<!--sidebar content-->
-<div class="nav-toggle1 sidebar-icon">
-	<img src="images/sidebar.png" alt="sidebar">
-</div>
+    <%--
 
-<nav class="menu1" role="navigation">
-	<h2>Settings Tips</h2>
-	<!--close button-->
-	<a class="nav-toggle1 show-nav1" href="#">
-		<img src="images/close.png" class="close" alt="close">
-	</a>
+    <div class="nav-toggle1 sidebar-icon">
+        <img src="images/sidebar.png" alt="sidebar">
+    </div>
+    <nav class="menu1" role="navigation">
+        <h2>Settings Tips</h2>
+        <!--close button-->
+        <a class="nav-toggle1 show-nav1" href="#">
+            <img src="images/close.png" class="close" alt="close">
+        </a>
 
-	<!--phrase-->
-	<div class="search-tips">
-		<img src="images/pharse.png" alt="">
-		<p>
-			Text from Josh here.
-		</p>
-	</div>
+        <!--phrase-->
+        <div class="search-tips">
+            <img src="images/pharse.png" alt="">
+            <p>
+                Text from Josh here.
+            </p>
+        </div>
 
-	<!--requered-->
-	<div class="search-tips">
-		<img src="images/requered.png" alt="">
-		<p>
-			More text
-		</p>
-	</div>
+        <!--requered-->
+        <div class="search-tips">
+            <img src="images/requered.png" alt="">
+            <p>
+                More text
+            </p>
+        </div>
 
 
-</nav>
+    </nav>--%>
 <!--/sidebar-->
 
 	<br/>
@@ -78,12 +79,12 @@
 		<div id="advanced_options">
 <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
 
-                <% if (!ModeConfig.isDeliveryMode()) { %>
+                <% if (!ModeConfig.isDeliveryMode() && !ModeConfig.isDiscoveryMode()) { %>
                 <div style="font-size:small;margin-top:15px;text-transform:uppercase; ">
                     <br/>
                     <div class="row">
                         <div class="form-group col-sm-3">
-                            <span class="badge" style="background-color:rgb(191,19,19)">Advanced</span><br/>
+                            <span class="badge" style="background-color:rgb(191,19,19)">Advanced </span> (for debugging only)<br/><br/>
                             <label for="mode-select">Select ePADD Module</label><br>
 
                             <select id="mode-select" name="attachmentFilesize" class="form-control selectpicker">
@@ -94,11 +95,15 @@
                                 <option value="delivery" <%=ModeConfig.isDeliveryMode() ? "selected" : ""%> >DELIVERY</option>
                             </select>
                         </div>
-                    </div>
-                    <% } %>
+
+					</div>
+
+					<% } %>
 
             </div>
-	<% } /* archive != null */ %>
+			<i>You can control this mode from the epadd.properties file.</i>
+
+			<% } /* archive != null */ %>
 
 	<script>
 /*

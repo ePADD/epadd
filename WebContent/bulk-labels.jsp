@@ -48,7 +48,7 @@
     String title = Util.pluralize (docs.size(), "message");
     if (!Util.nullOrEmpty(docsetID))
         title += " (" + docsetID + ")";
-    writeProfileBlock(out, archive, "Labels  ", title);
+    writeProfileBlock(out, archive, "Labels for ", title);
 %>
 
 <br/>
