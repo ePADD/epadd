@@ -40,8 +40,8 @@ var Navigation = function(){
         });
 
         // forward/back nav
-        $('#page_forward').click(jog.forward_func);
-        $('#page_back').click(jog.back_func);
+        $('#page_forward').click(jog.forward);
+        $('#page_back').click(jog.backward);
     };
 
     // annoying, have to declare these connector funcs, because jog is defined only in setupEvents, so can't directly use those funcs in the Navigation's interface.

@@ -104,8 +104,8 @@ function Jog(settings, height, width, trackWidth, forward_handler, backward_hand
 	this.enabled = false;
 	this.height = height;
 	this.width = width;
-	this.forward_handler = this.forward_func = forward_handler; // forward/backward_func for backward compat.
-	this.backward_handler = this.backward_func = backward_handler;
+	this.forward = this.forward_func = forward_handler; // forward/backward_func for backward compat.
+	this.backward = this.backward_func = backward_handler;
 	this.cursorKeysDisabled = false;
 
 	if (!settings.disabled) {
