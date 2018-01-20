@@ -9,6 +9,7 @@ var $pages;
 // interacts with #page_forward, #page_back, and #pageNumbering on screen
 var Navigation = function(){
 
+    var jog;
     // currently called before the new page has been rendered, private method
     var page_change_callback = function(oldPage, currentPage) {
 
@@ -25,7 +26,7 @@ var Navigation = function(){
         // it to retry making the whole thing (the entire browser and the system) to slow down
         //TODO: JOG plugin should not be this aggressive with the logger
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        var x = $(document).jog({
+        jog = $(document).jog({
             paging_info: {
                 url: 'ajax/jogPageIn.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
                 window_size_back: 30,
@@ -39,11 +40,19 @@ var Navigation = function(){
         });
 
         // forward/back nav
-        $('#page_forward').click(x.forward_func);
-        $('#page_back').click(x.back_func);
+        $('#page_forward').click(jog.forward_func);
+        $('#page_back').click(jog.back_func);
     };
 
-    return { setupEvents: setupEvents};
+    // annoying, have to declare these connector funcs, because jog is defined only in setupEvents, so can't directly use those funcs in the Navigation's interface.
+    function disableCursorKeys() { jog.disableCursorKeys();}
+    function enableCursorKeys() { jog.enableCursorKeys();}
+
+    return {
+        setupEvents: setupEvents,
+        disableCursorKeys: disableCursorKeys,
+        enableCursorKeys: enableCursorKeys
+    };
 }();
 
 
@@ -145,17 +154,15 @@ var Annotations = function() {
     // set up event handlers for annotations, should be called only once
     function setup() {
 
-        for (var i = 0; i < TOTAL_PAGES; i++) {
-            annotations[i] = $pages[i].getAttribute('comment');
-        }
-
         // things to do when annotation modal is shown
         function annotation_modal_shown() {
-            $('#annotation-modal .modal-body').text(annotations[PAGE_ON_SCREEN]).focus();
+            $('#annotation-modal .modal-body').val(annotations[PAGE_ON_SCREEN]).focus();
+            Navigation.disableCursorKeys();
         }
 
         // things to do when annotation modal is dismissed
         function annotation_modal_dismissed () {
+            Navigation.enableCursorKeys();
             var annotation = $('#annotation-modal .modal-body').val(); // .val() gets the value of a text area. assume: no html in annotations
             annotations[PAGE_ON_SCREEN] = annotation;
             // post to the backend, and when successful, refresh the labels on screen
@@ -170,10 +177,18 @@ var Annotations = function() {
                 }, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
                 dataType: 'json',
                 success: function (response) {
-                    $('.annotation-area').text(annotation);
+                    $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                  //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                 },
                 error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
             });
+        }
+
+
+        for (var i = 0; i < TOTAL_PAGES; i++) {
+            annotations[i] = $pages[i].getAttribute('comment');
+            if (annotations[i] === null) // protect against null, otherwise the word null uglily (q: is that a word? probably fine. its a better word than bigly.) appears on screen.
+                annotations[i] = '';
         }
 
         // set up handlers for when annotation modal is shown/dismissed
@@ -189,6 +204,7 @@ var Annotations = function() {
     // copies annotation from .annotation-area on screen to the current page's
     function refreshAnnotation() {
         var $annotation = $('.annotation-area');
+        $annotation.show(); // this is needed because annotation area is initially kept at display:none during page load to avoid FOUC
         $annotation.show();
         if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0)
             $annotation.text(annotations[PAGE_ON_SCREEN]);
@@ -196,9 +212,11 @@ var Annotations = function() {
             $annotation.text('No annotation');
     }
 
+
     return {
         setup: setup,
-        refreshAnnotation: refreshAnnotation
+        refreshAnnotation: refreshAnnotation,
+        annotations: annotations // debug only
     };
 }();
 

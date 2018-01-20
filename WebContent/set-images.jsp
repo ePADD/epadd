@@ -27,7 +27,7 @@
     <%@include file="div_status.jspf"%>
 
     <div style="margin-left:170px">
-        You can upload images that represent the collection here. Only PNG format files are currently supported.
+        You can upload images that represent the collection here. Only PNG format files are supported.
         <p></p>
         <form method="POST" action="upload-images" enctype="multipart/form-data" >
             <%--adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass--%>

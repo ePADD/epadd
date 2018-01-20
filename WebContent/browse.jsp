@@ -383,7 +383,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 </div>
             <% } %>
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);">
-                <div style="float:left;position:relative;top:3px">
+                <div style="float:left;position:relative;top:7px">
                     <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
 
                         <select data-selected-text-format="static" name="labelIDs" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
@@ -414,9 +414,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     </div>
 
                     <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
-                    <div class="annotation-area" style="display:inline; margin-left: 50px; padding: 5px; border: solid 1px gray; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
-
-                    </div>
+                    <span class="annotation-area" title="Click to edit annotation" style="position:relative;top:2px;display:none; cursor:pointer;margin-left: 50px; padding: 10px; border: solid 1px #0075bb; border-radius:3px; box-shadow: 2px 2px 2px rgba(0,0,0,0.15);background-color: white; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
+                        <!-- will be filled in by JS -->
+                    </span>
                 </div>
 
                 <div style="float:right;position:relative;top:8px">

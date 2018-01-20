@@ -111,7 +111,7 @@ public class DataSet {
             debugString.append (" has " + ((docs == null) ? "(null)" : docs.size()) + " messages");
             debugString.append (" requested index " + i);
             Util.print_exception("Exception getting page in dataset " + debugString.toString(), e, JSPHelper.log);
-            return "Page unavailable, check if ePADD is running.<br/>" + debugString.toString(); // also reflect this back to the user
+            return "Message unavailable, please try to reload this page.<br/>" + debugString.toString(); // also reflect this back to the user
         }
     }
 }

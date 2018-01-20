@@ -74,14 +74,14 @@
 		    };
       $.extend(settings, options);
 
-function LOG(s, p) { 
-	if (settings.logger) {
-		if (typeof p == 'undefined') 
-			p = true;
-		settings.logger(s, p);
+	function LOG(s, p) {
+		if (settings.logger) {
+			if (typeof p == 'undefined')
+				p = true;
+			settings.logger(s, p);
+		}
 	}
-}
-// LOG ('jog settings = ' + dump_obj(settings));
+	// LOG ('jog settings = ' + dump_obj(settings));
 
       // inject jog_div
         var jog_div = '<div id="jog_div" style="position:fixed;display:none;top:0px;left:0px;opacity:0.9;z-index:1000000000">' 
@@ -92,21 +92,22 @@ function LOG(s, p) {
     	$('body').append(jog_div);
 
 
-LOG ('done appending div');
+	LOG ('done appending div');
         
 
 ////////////////////jog stuff //////////////////////
 
-function Jog(settings, height, width, trackWidth, forward_handler, backward_handler)
-{
+function Jog(settings, height, width, trackWidth, forward_handler, backward_handler)  {
 	this.jogTrackWidth = trackWidth;
 	this.x = 0;
 	this.y = 0;
 	this.enabled = false;
 	this.height = height;
 	this.width = width;
-	this.forward_handler = forward_handler;
-	this.backward_handler = backward_handler;
+	this.forward_handler = this.forward_func = forward_handler; // forward/backward_func for backward compat.
+	this.backward_handler = this.backward_func = backward_handler;
+	this.cursorKeysDisabled = false;
+
 	if (!settings.disabled) {
 //		var x = this.createMouseDownHandler();
  //       $('#jog_img').mousedown(x); // same click handler on jog itself needed also to dismiss
@@ -467,6 +468,11 @@ Jog.prototype.createClickHandler = function() {
 	};
 };
 
+Jog.prototype.enableCursorKeys = function() { this.cursorKeysDisabled = false; }
+Jog.prototype.disableCursorKeys = function() { this.cursorKeysDisabled = true;}
+
+
+////////////////////////// actual Jog function starts here
 	var currentPage = -1, currentCompartment = -1;
 
     if (typeof settings.pages == 'undefined') {
@@ -558,11 +564,11 @@ Jog.prototype.createClickHandler = function() {
 			return true; // don't handle if we've been told to ignore
 		}
 		
-		if (code == 37) // left arrow
+		if (code == 37 && !jog.cursorKeysDisabled) // left arrow
 		{
 		  doPageBackward();
 		  handled = true;
-		} else if (code == 39) // right arrow
+		} else if (code == 39 && !jog.cursorKeysDisabled) // right arrow
 		{
 		  doPageForward();
 		  handled = true;
@@ -1030,7 +1036,9 @@ function update_page_window() {
 	currentWindow.start = newWindow.start;
 	currentWindow.end = newWindow.end;
 }
-	  return {forward_func: doPageForward, back_func: doPageBackward};
-};
+
+return jog;
+
+	};
 })( jQuery );
 
