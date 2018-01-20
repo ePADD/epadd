@@ -715,7 +715,7 @@ var handleTermMenu = function(event, visible) {
 var open_popup = function(hit_details) 
 {
     $('#search-term').html(hit_details.text);
-	$('#nHits').html(hit_details.messages.length);
+	$('#nHits').html(hit_details.nMessages);
 
 	var popup = '';
     // show up to 4 messages
