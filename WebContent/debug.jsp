@@ -1,7 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.util.Log4JUtils"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.util.Version"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.io.File" %>
@@ -17,17 +16,17 @@
 	<jsp:include page="css/css.jsp"/>
 
 	<script src="js/jquery.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tools.min.js" type="text/javascript"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<script src="js/muse.js" type="text/javascript"></script>
 	<script src="js/epadd.js"></script>
 </head>
-<body class="color:gray;background-color:white;>
+<body class="color:gray;background-color:white;">
 <jsp:include page="header.jspf"/>
 <br/>
 
 <div id="main" style="margin:1% 5%">
+
 <br/>
 If you have encountered a problem, please save this page and send it <%=edu.stanford.muse.Config.admin %> to help us fix the problem.<br/>
 
@@ -35,10 +34,8 @@ If you have encountered a problem, please save this page and send it <%=edu.stan
 <b>ePADD version <%=edu.stanford.epadd.Version.version%></b>
 <br/>
 Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
-Built on Muse version <%=Version.version %> <%=Version.buildInfo%></b>
 
-
-<p/>
+<p> </p>
 
 <% if (ModeConfig.isDiscoveryMode()) { return; } %>
 
@@ -65,7 +62,7 @@ Built on Muse version <%=Version.version %> <%=Version.buildInfo%></b>
 		}
 	%>
 	<br/>
-    <b>Session attributes</b><p/>
+    <b>Session attributes</b><p>
     <% long created = session.getCreationTime();
        long accessed = session.getLastAccessedTime();
        long activeTimeSecs = (accessed - created)/1000;
@@ -87,8 +84,7 @@ Built on Muse version <%=Version.version %> <%=Version.buildInfo%></b>
       else
     	  out.println("<b>" + key + "</b>: not printed<br>");
     }
-    String documentRootPath = application.getRealPath("/").toString();
-	%>
+    %>
 	<br/>
 	<%
 		Log4JUtils.flushAllLogs(); // if we dont flush file is sometimes truncated
@@ -113,7 +109,7 @@ Built on Muse version <%=Version.version %> <%=Version.buildInfo%></b>
 			out.println ("No debug log in " + debugFile);
 	%>
 	<br/>
-	<p/>
+    <p> </p>
 
 </div> <!--  main -->
 <%@include file="footer.jsp"%>

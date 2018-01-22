@@ -26,7 +26,6 @@
     <span>ePADD version <%= edu.stanford.epadd.Version.version%>  © Stanford University
         <p>Build information:
         ePADD <%= edu.stanford.epadd.Version.buildInfo%> </span><br/>
-        Muse version <%=edu.stanford.muse.util.Version.version %> <%=edu.stanford.muse.util.Version.buildInfo%>
 
           © Stanford University
       <p>
