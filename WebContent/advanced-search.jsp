@@ -576,6 +576,23 @@
 						</div>
 
 					</div>
+					<% if(!ModeConfig.isAppraisalMode()){%>
+					<div class="row">
+						<!--accessions--, only in modes other than appraisal-->
+						<div class="form-group col-sm-6">
+							<label for="accessionIDs">Accessions</label>
+							<select id="accessionIDs" name="accessionIDs" class="form-control selectpicker">
+								<option value="" selected disabled>Select</option>
+								<% List<Archive.AccessionMetadata> ams= archive.collectionMetadata.accessionMetadatas;
+									for (Archive.AccessionMetadata am: ams) { %>
+								<option value="<%=am.id%>"><%=am.id%></option>
+								<% }%>
+							</select>
+						</div>
+
+					</div>
+					<%}%>
+
 				</div>
 				<!--/Others-->
 

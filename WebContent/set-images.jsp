@@ -1,5 +1,9 @@
 <%@ page import="java.io.File" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +21,17 @@
 <body>
  <%
      String collectionID = request.getParameter("collection");
+     Archive archive= JSPHelper.getArchive(request);
+     String archiveID=null;
+     if(archive!=null)
+         archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+
+     //INV: here collectionID=null && archiveID="" can not be true. Exactly one should be true.
+     //This page can be invoked in two different context. One: from the colleciton-detail page with collection
+     //dir as an argument (in "collection") and two: from epadd-settings page with archiveID as an argument.
+     //collectionID is empty if the mode is appraisal mode. Otherwise we get the basedir from archive and set collecitonid
+     //as the name of the base directory.
+
  %>
     <jsp:include page="header.jspf"/>
 
@@ -30,13 +45,18 @@
         You can upload images that represent the collection here. Only PNG format files are supported.
         <p></p>
         <form method="POST" action="upload-images" enctype="multipart/form-data" >
-            <%--adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass--%>
+            <%--adding a hidden input field to pass collectionID the server. This is a common pattern used to pass--%>
             <%--archiveID in all those forms where POST was used to invoke the server page.--%>
             <input type="hidden" value="<%=collectionID%>" name="collection"/>
+                <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 
             Profile Photo: (Aspect ratio 1:1)<br/>
             <%
-                String file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
+                String file = null;
+                if(!Util.nullOrEmpty(collectionID))
+                    file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
+                else if(!Util.nullOrEmpty(archiveID))
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
             %>
 
                 <div class="profile-small-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
@@ -44,7 +64,10 @@
 
             Landing Page Photo: (Aspect ratio 4:3)<br/>
             <%
-                 file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+                if(!Util.nullOrEmpty(collectionID))
+                    file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+                else if(!Util.nullOrEmpty(archiveID))
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
             %>
             <div class="landing-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
             <br/>
@@ -53,7 +76,10 @@
             <br/><br/>
 
             <%
-                file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+                if(!Util.nullOrEmpty(collectionID))
+                    file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+                else if(!Util.nullOrEmpty(archiveID))
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
             %>
             Banner Image: (Aspect ratio 2.5:1)<br/>
             <div class="banner-img" style="background-image:url('serveImage.jsp?&file=<%=file%>')">

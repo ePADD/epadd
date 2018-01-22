@@ -33,7 +33,17 @@ if(Util.nullOrEmpty(collectionID)){
 
     String archiveName = Util.filePathTailByPlatformSeparator(baseDir);
     collectionDir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + archiveName;
-    new File(collectionDir).mkdirs();
+    File fl = new File(collectionDir);
+    //what if file already exists?
+    if(fl.exists())
+        {
+    	result.put ("status", 2);
+	    result.put("error", "A collection with name " + archiveName + "already exists in the processing directory");
+    	out.println (result.toString(4));
+	    return;
+        }
+    else
+        fl.mkdirs();
 }else
     collectionDir=edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + collectionID;
 

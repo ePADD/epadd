@@ -74,8 +74,8 @@ public class Photos
 			filePath = baseDir + File.separator + filename;
 		}
 		else {
-			baseDir = Config.REPO_DIR_APPRAISAL;
-			filePath = baseDir + File.separator + "user" + File.separator + filename;
+			baseDir = Config.REPO_DIR_APPRAISAL;//filename is coming with 'user' in it. so no need to put it here.
+			filePath = baseDir +  File.separator + filename;
 		}
 
 		// could check if user is authorized here... or get the userKey directly from session

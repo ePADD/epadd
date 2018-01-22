@@ -685,8 +685,51 @@ public class IndexUtils {
 
 	}
 
+	//Does this facet make sense in appraisal mode? Because in appraisal mode there is only one accession
+	//at a time.
+	public static Map<String, DetailedFacetItem> partitionDocsByAccessionID(Collection<? extends Document> docs, Archive archive)
+	{
 
-		/** Partition documents by label types ******************/
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
+		if(archive.collectionMetadata.accessionMetadatas==null)
+			return result;
+		Map<String, DetailedFacetItem> tmpresult = new LinkedHashMap<>();//a temp result to hold accessionID
+		// specific facets. Once fully constructed we will convert accessionID to accessionName
+		Set<String> accessionIDs= new LinkedHashSet<>();
+
+		archive.collectionMetadata.accessionMetadatas.forEach(am->accessionIDs.add(am.id));
+		archive.collectionMetadata.accessionMetadatas.forEach(f->
+				tmpresult.put(f.id,new DetailedFacetItem(f.id,
+						f.notes,"accessionIDs",f.id))
+		);
+		//now iterate over documents and add them to appropriate facet depending upon the accessionID of that document.
+
+		Map<String,String> docIDToAccessionID = archive.getDocIDToAccessionID();
+		for (Document d : docs) {
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+			Set<String> labs = archive.getLabelIDs(ed);
+			String accID;
+			if(docIDToAccessionID.containsKey(ed.getUniqueId()))
+				accID = docIDToAccessionID.get(ed.getUniqueId());
+			else
+				accID = archive.baseAccessionID;
+			//now add document to appropriate facet item.
+			//INV: tmpresult.get(accID)!=null
+			tmpresult.get(accID).addDoc(ed);
+		}
+		//converting tmpresult to result and also take care of 'no doc in a facet' case
+		tmpresult.keySet().forEach(accid-> {
+					if (tmpresult.get(accid).totalCount() > 0)
+						result.put(accid, tmpresult.get(accid));
+				}
+		);
+		return result;
+	}
+
+
+	/** Partition documents by label types ******************/
 	private static Map<String, DetailedFacetItem> partitionDocsByLabelTypes(Collection<? extends Document> docs, Archive archive, LabelManager.LabType type) {
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 
@@ -820,6 +863,11 @@ public class IndexUtils {
 			Map<String, DetailedFacetItem> genlabels = partitionDocsByLabelTypes(docs,archive, LabelManager.LabType.GENERAL);
 			facetMap.put("General Labels",genlabels.values());
 			//////////////////////////////////////////////////////////////////////////////////
+			//facet for accession IDs- only in modes other than appraisal
+			if(!ModeConfig.isAppraisalMode()) {
+				Map<String, DetailedFacetItem> accIDs = partitionDocsByAccessionID(docs, archive);
+				facetMap.put("Accessions", accIDs.values());
+			}
 
 			Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs);
 			facetMap.put("Annotations", annotationPresenceMap.values());

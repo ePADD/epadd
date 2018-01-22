@@ -1431,7 +1431,7 @@ after maskEmailDomain.
     public MergeResult getLastMergeResult(){
         return lastMergeResult;
     }
-    private Map<String,String> getDocIDToAccessionID(){
+    public Map<String,String> getDocIDToAccessionID(){
         if(docIDToAccessionID ==null)
             return new LinkedHashMap<>();
         else

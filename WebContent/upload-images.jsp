@@ -10,6 +10,8 @@
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 
 <%
@@ -28,11 +30,14 @@
     int filesUploaded = 0;
     // Parse the request
     String error = null;
+    String archiveID=null;
     List<FileItem> items = upload.parseRequest(request);
     for (FileItem item : items) {
         if (item.isFormField()) {
             if ("collection".equals(item.getFieldName()))
                 collectionID = item.getString();
+            if("archiveID".equals(item.getFieldName()))
+                archiveID=item.getString();
         } else {
             try {
                 String type = null;
@@ -64,15 +69,24 @@
                     break;
                 }
 
+                String dname=null;
+                if(!"null".equals(collectionID))
+                    dname = collectionID;
+                else if(!"null".equals(archiveID)) {
+                    Archive archive = SimpleSessions.getArchiveForArchiveID(archiveID);
+                    dname = new File(archive.baseDir).getName();
+                }
                 if (type != null && suffix != null) {
                     //String dir = archive.baseDir + File.separator + Archive.IMAGES_SUBDIR;
                     String dir = null;
                     if (ModeConfig.isProcessingMode())
-                        dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + collectionID + File.separatorChar + Archive.IMAGES_SUBDIR;
+                        dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + dname + File.separatorChar + Archive.IMAGES_SUBDIR;
                     else if (ModeConfig.isDeliveryMode())
-                        dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + collectionID + File.separatorChar + Archive.IMAGES_SUBDIR;
+                        dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + dname + File.separatorChar + Archive.IMAGES_SUBDIR;
                     else if (ModeConfig.isDiscoveryMode())
-                        dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + collectionID + File.separatorChar + Archive.IMAGES_SUBDIR;
+                        dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dname + File.separatorChar + Archive.IMAGES_SUBDIR;
+                    else if (ModeConfig.isAppraisalMode())
+                        dir = Config.REPO_DIR_APPRAISAL +File.separator +  dname + File.separator+ Archive.IMAGES_SUBDIR;
                     new File(dir).mkdirs();
                     String filename = dir + File.separator + type + "." + suffix;
                     Util.copy_stream_to_file(item.getInputStream(), filename);
@@ -120,7 +134,13 @@
        <% } %>
        <br/>
        <br/>
+            <%
+                if(!"null".equals(collectionID)){
+            %>
             <button class="btn btn-cta" onclick="window.location='set-images?collection=<%=collectionID%>'; return false;">Back <i class="icon-arrowbutton"></i></button>
+            <%}else if(!"null".equals(archiveID)){%>
+            <button class="btn btn-cta" onclick="window.location='set-images?archiveID=<%=archiveID%>'; return false;">Back <i class="icon-arrowbutton"></i></button>
+            <%}%>
         </div>
 
        <jsp:include page="footer.jsp"/>

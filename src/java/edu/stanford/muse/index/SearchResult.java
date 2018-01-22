@@ -869,7 +869,7 @@ public class SearchResult {
     }
     /* Filter docs based on the presence/absence of annotation*/
     private static SearchResult filterForAnnotationPresence(SearchResult inputSet) {
-        String isAnnotated = JSPHelper.getParam(inputSet.queryParams, "isannotated"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+        String isAnnotated = JSPHelper.getParam(inputSet.queryParams, "isannotated");
         if(Util.nullOrEmpty(isAnnotated))
             return inputSet;
         boolean isAnn = "true".equals(isAnnotated);
@@ -892,6 +892,32 @@ public class SearchResult {
                 inputSet.commonHLInfo,inputSet.regexToHighlight);
     }
     //////////////////END of annotation based checks///////////////////////////////////////////
+    /*Accession ID based filtering**/
+    private static SearchResult filterForAccessionID(SearchResult inputSet){
+        Collection<String> accIDs = JSPHelper.getParams(inputSet.queryParams, "accessionIDs");
+        if(Util.nullOrEmpty(accIDs))
+            return inputSet;
+        Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
+
+        Map<String,String> docIDtoAccID = inputSet.archive.getDocIDToAccessionID();
+        inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
+            EmailDocument ed = (EmailDocument) k;
+            String accID = null;
+            if(docIDtoAccID.containsKey(ed.getUniqueId()))
+                accID = docIDtoAccID.get(ed.getUniqueId());
+            else
+                accID = inputSet.archive.baseAccessionID;
+            if(accIDs.contains(accID))
+                outputDocs.put(k,inputSet.matchedDocs.get(k));
+        });
+        return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
+                inputSet.commonHLInfo,inputSet.regexToHighlight);
+
+    }
+
+
+
+
     /* Will look in the given docs for given labels passed as parameter*/
 
     private static SearchResult filterForMultipleRestrictionLabels(SearchResult inputSet){
