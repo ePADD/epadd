@@ -1234,6 +1234,7 @@ public class SearchResult {
         outResult = filterForAnnotationPresence(outResult);
         outResult = filterForAnyAnnotation(outResult);
         outResult = filterForLabelsAndMultipleRestrictionLabels(outResult);
+        outResult = filterForAccessionID(outResult);
         outResult = filterForDocId(outResult);
         outResult = filterForMessageId(outResult);
         outResult = filterForMailingListState(outResult);

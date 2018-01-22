@@ -1432,8 +1432,10 @@ after maskEmailDomain.
         return lastMergeResult;
     }
     public Map<String,String> getDocIDToAccessionID(){
-        if(docIDToAccessionID ==null)
-            return new LinkedHashMap<>();
+        if(docIDToAccessionID ==null) {
+            docIDToAccessionID = new LinkedHashMap<>();
+            return docIDToAccessionID;
+        }
         else
             return docIDToAccessionID;
     }
@@ -1465,6 +1467,13 @@ after maskEmailDomain.
             }else
                 result.nCommonMessages+=1;
         }
+        try {
+            indexer.commitAfterAddingDocs();
+        } catch (IOException e) {
+            log.warn("Some exception in committing the index after merging");
+        }
+
+        //indexer.close();//to commit the changes to disc so that the next time indexer is read the updated stuff is read
         //pack destbloblstore.
         try {
             blobStore.pack();

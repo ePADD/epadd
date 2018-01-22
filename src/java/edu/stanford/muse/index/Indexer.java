@@ -826,6 +826,16 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		dirNameToDocIdMap = new LinkedHashMap<>();
 	}
 
+	public void commitAfterAddingDocs() throws IOException {
+		iwriter.commit();
+		iwriter.close();
+		iwriter = null;
+		iwriter_blob.commit();
+		iwriter_blob.close();
+		iwriter_blob=null;
+		isearcher = null;
+		isearcher_blob = null;
+	}
 	private synchronized Directory initializeDirectory(Directory dir, String name) throws IOException
 	{
 		if (dir == null)
@@ -1367,6 +1377,7 @@ is what we want.
 		for(org.apache.lucene.document.Document d: dattachments){
 			iwriter_blob.addDocument(d);
 		}
+
 
 	}
 
