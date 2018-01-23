@@ -36,7 +36,6 @@ public class EpaddInitializer implements ServletContextListener {
 				System.err.println ("Sorry, unable to create ePADD base folder: " + f.getPath());
 				throw new RuntimeException();
 			}
-			edu.stanford.muse.util.Version.appName = "epadd";
 			Archive.LEXICONS = new String[]{
 					"general.english.lex.txt",
 					"sensitive.english.lex.txt",
