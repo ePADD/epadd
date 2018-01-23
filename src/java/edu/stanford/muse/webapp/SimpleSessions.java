@@ -553,7 +553,7 @@ public class SimpleSessions {
 	}
 
 
-	private static WeakReference<Archive> getArchiveFromGlobalArchiveMap(String archiveFile){
+	public static WeakReference<Archive> getArchiveFromGlobalArchiveMap(String archiveFile){
 		String s = removeTrailingSlashFromDirName(archiveFile);
 		return globaldirToArchiveMap.getOrDefault(s,null);
 	}
