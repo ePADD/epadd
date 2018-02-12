@@ -44,128 +44,16 @@ public class EmailRenderer {
 		return pagesForDocuments(ds, archive, datasetTitle, highlightContactIds, highlightTerms, null, MultiDoc.ClusteringType.MONTHLY);
 	}
 */
-	public static Pair<DataSet, String> pagesForDocuments(SearchResult result,
+	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> docs,SearchResult result,
                                                           String datasetTitle)
             throws Exception{
-        return pagesForDocuments(result,datasetTitle,MultiDoc.ClusteringType.MONTHLY);
+        return pagesForDocuments(docs,result,datasetTitle,MultiDoc.ClusteringType.MONTHLY);
     }
-
-	/*
-	 * returns pages and html for a collection of docs, which can be put into a
-	 * jog frame. indexer clusters are used to
-	 *
-	 * Changed the first arg type from: Collection<? extends EmailDocument> to Collection<Document>, as we get C
-	 * ollection<Document> in browse page or from docsforquery, its a hassle to make them all return EmailDocument
-	 * especially when no other document type is used anywhere
-	 */
-    public static Pair<DataSet, String> pagesForDocuments(SearchResult result,
-                                                          String datasetTitle,
-                                                          MultiDoc.ClusteringType coptions)
-			throws Exception
-    {
-		StringBuilder html = new StringBuilder();
-		int pageNum = 0;
-		List<String> pages = new ArrayList<>();
-
-		// need clusters which map to sections in the browsing interface
-		List<MultiDoc> clusters;
-
-        // indexer may or may not have indexed all the docs in ds
-		// if it has, use its clustering (could be yearly or monthly or category
-		// wise)
-		// if (indexer != null && indexer.clustersIncludeAllDocs(ds))
-		// if (indexer != null)
-		clusters = result.getArchive().clustersForDocs(result.getDocumentSet(), coptions);
-		/*
-		 * else { // categorize by month if the docs have dates if
-		 * (EmailUtils.allDocsAreDatedDocs(ds)) clusters =
-		 * IndexUtils.partitionDocsByInterval(new ArrayList<DatedDocument>((Set)
-		 * ds), true); else // must be category docs clusters =
-		 * CategoryDocument.clustersDocsByCategoryName((Collection) ds); }
-		 */
-
-		List<Document> datasetDocs = new ArrayList<>();
-		// we build up a hierarchy of <section, document, page>
-		for (MultiDoc md : clusters)
-		{
-			if (md.docs.size() == 0)
-				continue;
-
-			String description = md.description;
-			description = description.replace("\"", "\\\""); // escape a double
-																// quote if any
-																// in the
-																// description
-			html.append("<div class=\"section\" name=\"" + description + "\">\n");
-
-			List<List<String>> clusterResult = new ArrayList<>();
-
-			for (Document d : md.docs)
-			{
-				String pdfAttrib = "";
-				/*
-				 * if (d instanceof PDFDocument) pdfAttrib = "pdfLink=\"" +
-				 * ((PDFDocument) d).relativeURLForPDF + "\"";
-				 */
-				html.append("<div class=\"document\" " + pdfAttrib + ">\n");
-
-				datasetDocs.add(d);
-				pages.add(null);
-				clusterResult.add(null);
-				// clusterResult.add(docPageList);
-				// for (String s: docPageList)
-				{
-					String comment = Util.escapeHTML(d.comment);
-					html.append("<div class=\"page\"");
-					if (!Util.nullOrEmpty(comment))
-						html.append(" comment=\"" + comment + "\"");
-
-					if (!Util.nullOrEmpty(comment) && (d instanceof EmailDocument))
-					{
-						String messageId = d.getUniqueId();
-						html.append(" messageID=\"" + messageId + "\"");
-					}
-					if (d.isLiked())
-						html.append(" liked=\"true\"");
-					/*
-					if (d instanceof EmailDocument && ((EmailDocument) d).doNotTransfer)
-						html.append(" doNotTransfer=\"true\"");
-					if (d instanceof EmailDocument && ((EmailDocument) d).transferWithRestrictions)
-						html.append(" transferWithRestrictions=\"true\"");
-					if (d instanceof EmailDocument && ((EmailDocument) d).reviewed)
-						html.append(" reviewed=\"true\"");
-					*/
-					//getting labels for this document
-					//also make sure that browse.jsp (the jsp calling this function) should have a map of LabelID to Label Name, Label type in javascript
-					if(d instanceof EmailDocument) {
-						Set<String> labels = result.getArchive().getLabelIDs((EmailDocument) d);
-						if (!Util.nullOrEmpty(labels)) {
-							String val = labels.stream().collect(Collectors.joining(","));
-							html.append(" labels=\"" + val +"\"");
-						}else
-							html.append(" labels=\"\"");
-					}
-
-
-					//////////////////////////////////////////DONE reading labels///////////////////////////////////////////////////////////////////////////
-					if (d instanceof EmailDocument)
-						html.append(" pageId='" + pageNum++ + "' " + " signature='" + Util.hash (((EmailDocument) d).getSignature()) + "' docId='" + d.getUniqueId() + "'></div>\n");
-				}
-
-				html.append("</div>"); // document
-			}
-			html.append("</div>\n"); // section
-		}
-
-		DataSet dataset = new DataSet(datasetDocs, result, datasetTitle);
-
-		return new Pair<>(dataset, html.toString());
-	}
 
 	/**
 	 * format given addresses as comma separated html, linewrap after given
 	 * number of chars
-	 * 
+	 *
 	 * @param addressBook
 	 */
 	private static String formatAddressesAsHTML(String archiveID,Address addrs[], AddressBook addressBook, int lineWrap, Set<String> highlightUnstemmed, Set<String> highlightNames, Set<String> highlightAddresses)
@@ -248,7 +136,7 @@ public class EmailRenderer {
 
 	/**
 	 * returns a string for documents.
-	 * 
+	 *
 	 * @param
 	 * @throws Exception
 	 */
@@ -385,7 +273,7 @@ public class EmailRenderer {
 			/*
 			 * DatedDocument dd = (DatedDocument) d; StringBuilder page = new
 			 * StringBuilder();
-			 * 
+			 *
 			 * page.append (dd.getHTMLForHeader()); // directly jam in contents
 			 * page.append ("<div class=\"muse-doc\">\n"); page.append
 			 * (dd.getHTMLForContents(indexer)); // directly jam in contents
@@ -400,6 +288,120 @@ public class EmailRenderer {
 		}
 
 		return new Pair<>(html, overflow);
+	}
+
+	/*
+	 * returns pages and html for a collection of docs, which can be put into a
+	 * jog frame. indexer clusters are used to
+	 *
+	 * Changed the first arg type from: Collection<? extends EmailDocument> to Collection<Document>, as we get C
+	 * ollection<Document> in browse page or from docsforquery, its a hassle to make them all return EmailDocument
+	 * especially when no other document type is used anywhere
+	 */
+	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> docs,SearchResult result,
+														  String datasetTitle,
+														  MultiDoc.ClusteringType coptions)
+			throws Exception
+	{
+		StringBuilder html = new StringBuilder();
+		int pageNum = 0;
+		List<String> pages = new ArrayList<>();
+
+		// need clusters which map to sections in the browsing interface
+		List<MultiDoc> clusters;
+
+		// indexer may or may not have indexed all the docs in ds
+		// if it has, use its clustering (could be yearly or monthly or category
+		// wise
+		// if (indexer != null && indexer.clustersIncludeAllDocs(ds))
+		// if (indexer != null)
+		//IMP: instead of searchResult.getDocsasSet() use the docs that is already ordered by
+		//the sortBy order (in SearchResult.selectDocsAndBlobs method.
+		clusters = result.getArchive().clustersForDocs(docs, coptions);
+		/*
+		 * else { // categorize by month if the docs have dates if
+		 * (EmailUtils.allDocsAreDatedDocs(ds)) clusters =
+		 * IndexUtils.partitionDocsByInterval(new ArrayList<DatedDocument>((Set)
+		 * ds), true); else // must be category docs clusters =
+		 * CategoryDocument.clustersDocsByCategoryName((Collection) ds); }
+		 */
+
+		List<Document> datasetDocs = new ArrayList<>();
+		// we build up a hierarchy of <section, document, page>
+		for (MultiDoc md : clusters)
+		{
+			if (md.docs.size() == 0)
+				continue;
+
+			String description = md.description;
+			description = description.replace("\"", "\\\""); // escape a double
+			// quote if any
+			// in the
+			// description
+			html.append("<div class=\"section\" name=\"" + description + "\">\n");
+
+			List<List<String>> clusterResult = new ArrayList<>();
+
+			for (Document d : md.docs)
+			{
+				String pdfAttrib = "";
+				/*
+				 * if (d instanceof PDFDocument) pdfAttrib = "pdfLink=\"" +
+				 * ((PDFDocument) d).relativeURLForPDF + "\"";
+				 */
+				html.append("<div class=\"document\" " + pdfAttrib + ">\n");
+
+				datasetDocs.add(d);
+				pages.add(null);
+				clusterResult.add(null);
+				// clusterResult.add(docPageList);
+				// for (String s: docPageList)
+				{
+					String comment = Util.escapeHTML(d.comment);
+					html.append("<div class=\"page\"");
+					if (!Util.nullOrEmpty(comment))
+						html.append(" comment=\"" + comment + "\"");
+
+					if (!Util.nullOrEmpty(comment) && (d instanceof EmailDocument))
+					{
+						String messageId = d.getUniqueId();
+						html.append(" messageID=\"" + messageId + "\"");
+					}
+					if (d.isLiked())
+						html.append(" liked=\"true\"");
+					/*
+					if (d instanceof EmailDocument && ((EmailDocument) d).doNotTransfer)
+						html.append(" doNotTransfer=\"true\"");
+					if (d instanceof EmailDocument && ((EmailDocument) d).transferWithRestrictions)
+						html.append(" transferWithRestrictions=\"true\"");
+					if (d instanceof EmailDocument && ((EmailDocument) d).reviewed)
+						html.append(" reviewed=\"true\"");
+					*/
+					//getting labels for this document
+					//also make sure that browse.jsp (the jsp calling this function) should have a map of LabelID to Label Name, Label type in javascript
+					if(d instanceof EmailDocument) {
+						Set<String> labels = result.getArchive().getLabelIDs((EmailDocument) d);
+						if (!Util.nullOrEmpty(labels)) {
+							String val = labels.stream().collect(Collectors.joining(","));
+							html.append(" labels=\"" + val +"\"");
+						}else
+							html.append(" labels=\"\"");
+					}
+
+
+					//////////////////////////////////////////DONE reading labels///////////////////////////////////////////////////////////////////////////
+					if (d instanceof EmailDocument)
+						html.append(" pageId='" + pageNum++ + "' " + " signature='" + Util.hash (((EmailDocument) d).getSignature()) + "' docId='" + d.getUniqueId() + "'></div>\n");
+				}
+
+				html.append("</div>"); // document
+			}
+			html.append("</div>\n"); // section
+		}
+
+		DataSet dataset = new DataSet(datasetDocs, result, datasetTitle);
+
+		return new Pair<>(dataset, html.toString());
 	}
 
 	/**

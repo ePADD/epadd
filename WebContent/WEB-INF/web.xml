@@ -248,7 +248,17 @@
         <url-pattern>/bulk-labels</url-pattern>
     </servlet-mapping>
 
-    <servlet>
+
+	<servlet>
+		<servlet-name>upload-correspondents</servlet-name>
+		<jsp-file>/upload-correspondents.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>upload-correspondents</servlet-name>
+		<url-pattern>/upload-correspondents</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
         <servlet-name>edit-label</servlet-name>
         <jsp-file>/edit-label.jsp</jsp-file>
     </servlet>

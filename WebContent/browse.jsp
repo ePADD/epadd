@@ -456,17 +456,24 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             outputSet.addCommonHLInfoTerm(filter.get("term"));
         }
         */
+        //IMP: github issue #171. Actual sorting of the result is being done by SearchResult class in
+        //main entry method, selectDocsAndBlobs. The list of documents returned from that method
+        //retains the order of the sorting. Earlier this set was not being passed for html rendering
+        //and the documents were taken from the SearchResult class. Note that the order of documents
+        //in searchResult class is different from the ordering obtained by 'sortBy' parameters. Hence
+        //we need to pass that ordered set to getHTML* method below. This fixed the issue.
         Pair<DataSet, String> pair = null;
         try {
             String sortBy = request.getParameter("sortBy");
 
-            // note: we currently do not support clustering for "recent" type, only for the chronological type. might be easy to fix if needed in the future.
+            // note: we currently do not support clustering for "recent" type, only for the chronological type.
+            // might be easy to fix if needed in the future.
             if ("recent".equals(sortBy) || "relevance".equals(sortBy) || "chronological".equals(sortBy))
-                pair = EmailRenderer.pagesForDocuments(outputSet, docsetID, MultiDoc.ClusteringType.NONE);
+                pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID, MultiDoc.ClusteringType.NONE);
             else {
                 // this path should not be used as it sorts the docs in some order
                 // (old code meant to handle clustered docs, so that tab can jump from cluster to cluster. not used now)
-                pair = EmailRenderer.pagesForDocuments(outputSet, docsetID);
+                pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID);
             }
         }catch(Exception e){
             Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);

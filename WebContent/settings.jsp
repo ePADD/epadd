@@ -86,23 +86,25 @@
 
 			<p><button onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'" class="btn-default" style='cursor:pointer'><i class="fa fa-eye"></i> Set labels</button>
 
-	<%--		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 				<p><button class="btn btn-default" style='cursor: pointer' onclick="window.location='bulk-upload?archiveID=<%=archiveID%>'"><i class="fa fa-upload"></i>Correspondents List</button>
-				<p><button onclick="window.location.href='ner?archiveID=<%=archiveID%>'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
-				<%
-				/*
-						int size = archive.getAllDocs().size();
-						if (size > 0) {
-							org.apache.lucene.document.Document doc = archive.getLuceneDoc(archive.getAllDocs().get(0).id);
-							if (doc == null || doc.get(edu.stanford.muse.ner.NER.NAMES) == null)
-								out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
-						} else
-							out.println ("There are no messages in this archive.<br/>");
-							*/
 
-				//		out.println("Recompute numbers that are displayed on the landing page by clicking <a id='recompute' style='cursor:pointer'>here</a> <img id='recompute-stat' src='images/spinner.gif' style='display:none'/>");
-				} %>
+	<%--			<p><button onclick="window.location.href='ner?archiveID=<%=archiveID%>'" class="btn btn-default"><i class="fa fa-tag"></i> Re-recognize entities</button>
+    <%
+    /*
+            int size = archive.getAllDocs().size();
+            if (size > 0) {
+                org.apache.lucene.document.Document doc = archive.getLuceneDoc(archive.getAllDocs().get(0).id);
+                if (doc == null || doc.get(edu.stanford.muse.ner.NER.NAMES) == null)
+                    out.println("ePADD has indexed the email messages, but not yet identified entities in them.<br>");
+            } else
+                out.println ("There are no messages in this archive.<br/>");
+                */
+
+    //		out.println("Recompute numbers that are displayed on the landing page by clicking <a id='recompute' style='cursor:pointer'>here</a> <img id='recompute-stat' src='images/spinner.gif' style='display:none'/>");
 --%>
+
+    <%} %>
     <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
 
 <!--                <p><button onclick="window.location='debug';" class="btn-default"  style='cursor:pointer'><i class="fa fa-flag"></i> Debug Log</button> -->

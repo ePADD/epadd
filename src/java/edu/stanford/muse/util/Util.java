@@ -54,7 +54,7 @@ public class Util
 	public static String[]	stopwords	= new String[] { "but", "be", "with", "such", "then", "for", "no", "will", "not", "are", "and", "their", "if", "this", "on", "into", "a", "there", "in", "that", "they", "was", "it", "an", "the", "as", "at", "these", "to", "of" };
 	public static boolean	BLUR		= true;																																																								// blurring of fnames
 	private static final long KB = 1024;
-	private static final char OR_DELIMITER = ';'; // used to separate parts of fields that can have multipled OR'ed clauses
+	public static final char OR_DELIMITER = ';'; // used to separate parts of fields that can have multipled OR'ed clauses
 
 	public static void setBlur(boolean b) {
 		BLUR = b;

@@ -31,36 +31,27 @@
     <jsp:include page="header.jspf"/>
     <jsp:include page="div_filepicker.jspf"/>
 
-<% writeProfileBlock(out, archive, "Apply flags to multiple messages", "");
+<% writeProfileBlock(out, archive, "Apply labels to multiple messages", "");
 String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 %>
 
 <br/>
 <br/>
-    <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
 
+    <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
         <div class="panel">
             <div class="panel-heading">List of correspondents</div>
+            <form id="uploadCSVform" method="POST" action="upload-correspondents" enctype="multipart/form-data" >
+                <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+                <input type="file" id="correspondentCSV" name="correspondentCSV" value=""/>
 
-            <div id="filepicker" class="one-line">
-                <div class="form-group col-sm-8">
-                    <label for="filePath">CSV file location</label>
-                    <input id="filePath" class="dir form-control" type="text" name="name" value=""/>
-                </div>
-                <div class="form-group col-sm-4 picker-buttons">
-                    <button id="upload-browse" class="btn-default browse-button">Browse</button>
-                    <button onclick="submit()" id="upload-do" style="margin-left: 10px;" class="go-button faded btn-default">Upload</button>
-                </div>
-            </div>
+            <%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
+
         </div>
+            <button id="upload-btn" class="btn btn-cta">Upload <i class="icon-arrowbutton"></i></button>
 
-        <script>
-            var fp = new FilePicker($('#filepicker'));
-            var submit = function(){
-                window.location = "bulk-flags?archiveID=<%=archiveID%>&filePath="+$("#filePath").val();
-            }
-        </script>
+        </form>
+
     </div>
-
 </body>
 </html>
