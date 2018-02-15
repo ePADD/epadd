@@ -79,7 +79,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
     public static Log log = LogFactory.getLog(EmailFetcherThread.class);
 
     // set up INVALID_DATE
-    public static Date INVALID_DATE; // like 0xdeadbeef
+    public static Date
+            INVALID_DATE; // like 0xdeadbeef
 
     static {
         Calendar c = new GregorianCalendar();

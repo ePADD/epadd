@@ -20,9 +20,13 @@
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
-	<script type="text/javascript" charset="utf-8">
+	<style>
+		.remove-label {
+			cursor: pointer;
+			border-bottom: 1px dotted #000;
+		}
+	</style>
 
-	</script>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
@@ -49,7 +53,7 @@
 	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% // this column not available in discovery mode
             if (!ModeConfig.isDiscoveryMode()) { %>
-            <th></th>
+            <th></th><th></th>
         <% } %>
     </tr></thead>
 	<tbody>
@@ -63,7 +67,8 @@
 		JSONArray resultArray = archive.getLabelCountsAsJson((Collection) docs);
 	%>
 	<script>
-	var labels = <%=resultArray.toString(4)%>;
+	var labels = <%=resultArray.toString(5)%>;
+
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
@@ -72,13 +77,45 @@
 
 		var dt_right_targets = [1, 2]; // only 2 in discovery mode, convert to [1, 2, 3] in other modes
         <% if (!ModeConfig.isDiscoveryMode()) { %>
-		    dt_right_targets = [1, 2, 3];
+		    dt_right_targets = [1, 2, 3,4];
 			var edit_label_link = function ( data, type, full, meta ) {
 				if (full[4])  // system label
 					return '<span title="System labels are not editable">Not editable</span>'; // not editable
 				return '<a href="edit-label?labelID=' + full[0] + '&archiveID=<%=archiveID%>">Edit</a>';
 			};
-        <% } %>
+
+        var remove_label_link = function ( data, type, full, meta){
+                if (full[4])  // system label
+                    return '<span title="System labels can not be removed">Not removable</span>'; // not removable
+            	return '<span class="remove-label" data-labelID="' + full[0] + '">Remove</span>';
+//			return '<a href="" data-attr = full[0] onclick="return removereq(full[0])">Remove</div>';
+            }
+
+		<% } %>
+
+		//function to actually remove the label (send ajax request etc.)
+        var removeLabelFn= function(e) {
+            labelID = $(e.target).attr ('data-labelID');
+
+            var c = confirm ('Delete the label? This action cannot be undone!');
+            if (!c)
+                return;
+
+            $.ajax({
+                url:'ajax/removeLabels.jsp',
+                type: 'POST',
+                data: {archiveID: archiveID, labelID: labelID},
+                dataType: 'json',
+                success: function(response) { if(response.status===0)
+                    window.location.reload();
+                else{
+                    epadd.alert(response.error);
+                }
+                },
+                error: function(response) { epadd.alert('There was an error in saving labels, sorry!');
+                }
+            });
+        }
 
         var label_count = function(data, type, full, meta) { return full[3]; };
         var label_type = function(data, type, full, meta) { return full[5]; };
@@ -94,10 +131,12 @@
                 {targets: 2, render:label_count},
                 <% if (!ModeConfig.isDiscoveryMode()) { %>
                     {targets: 3, render:edit_label_link},
+	                {targets: 4, render:remove_label_link},
                 <% } %>
 
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
-            fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
+			//IMP: the event handler for remove_label_link can only be instantiated after the initializatio nof this data table is done.
+            fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn();$('.remove-label').click (removeLabelFn); }
 		});
 	} );
 

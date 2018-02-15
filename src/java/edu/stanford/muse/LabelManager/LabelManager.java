@@ -26,6 +26,7 @@ public class LabelManager implements Serializable{
     private static Log log = LogFactory.getLog(LabelManager.class);
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
+    public final static String LABELID_CFR="2";
 
     private static String JSONFILENAME="label-info.json";
     private static String CSVFILENAME="docidmap.csv";
@@ -83,11 +84,29 @@ public class LabelManager implements Serializable{
         Label reviewed = new Label("Reviewed",LabType.GENERAL,"1",
                 "This message was reviewed",false);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
+
+        //clearForRelease
+        Label readyForRelease = new Label("Clear For Release",LabType.GENERAL,LABELID_CFR,
+                "This message is ready to be released to the next phase",true);
+        labelInfoMap.put(readyForRelease.getLabelID(),readyForRelease);
     }
 
     //set label for an email document
     public void setLabels(String docid, Set<String> labelIDs){
         labelIDs.forEach(labelid-> docToLabelID.put(docid,labelid));
+
+    }
+
+    //remove label; only if this is not applied to any message. otherwise return status as 1 and error message.
+    public Pair<Integer,String> removeLabel(String labid){
+        String name = getLabel(labid).labName;
+        if(docToLabelID.containsValue(labid)){
+            return new Pair(1,"Label "+name+" is applied to some messages. To delete this label make sure to remove this label from every message.");
+        }else{
+            //means this label isnot present in doctOlABelidmap so just remove it from labelinfo
+            labelInfoMap.remove(labid);
+            return new Pair(0,"Successfully remove label "+name);
+        }
 
     }
 
@@ -111,6 +130,17 @@ public class LabelManager implements Serializable{
         }else
             return lab.getType()==LabType.RESTRICTION;
 
+    }
+
+    public Set<String> getRelativeTimedRestrictionLabels()
+    {
+        Set<Label> restrictionlabs = getAllLabels(LabelManager.LabType.RESTRICTION);
+        Set<String> relativeTimedRestrictions = new LinkedHashSet<>();
+        restrictionlabs.forEach(lab-> {
+            if(lab.getRestrictionType().equals(LabelManager.RestrictionType.RESTRICTED_FOR_YEARS))
+                relativeTimedRestrictions.add(lab.getLabelID());
+        });
+        return relativeTimedRestrictions;
     }
 
     //get all label IDs for an email document ( any type)
@@ -258,6 +288,27 @@ public class LabelManager implements Serializable{
         return id;
     }
 
+
+    public Set<String> getGenRestrictions(){
+        Set<Label> allRestrictions = getAllLabels(LabelManager.LabType.RESTRICTION);
+        Set<String> genRestriction = new HashSet<>();
+        allRestrictions.forEach(label -> {
+            if (label.getRestrictionType() == LabelManager.RestrictionType.OTHER)
+                genRestriction.add(label.getLabelID());
+            });
+        return genRestriction;
+    }
+
+    public Set<String> getTimedRestrictions(){
+        Set<Label> allRestrictions = getAllLabels(LabelManager.LabType.RESTRICTION);
+        Set<String> timedRestriction = new HashSet<>();
+        allRestrictions.forEach(label -> {
+            if (label.getRestrictionType() != LabelManager.RestrictionType.OTHER)
+                timedRestriction.add(label.getLabelID());
+        });
+        return timedRestriction;
+
+    }
     public class MergeResult{
         public Set<Label> newLabels = new LinkedHashSet<>();
         public List<Pair<Label,Label>> labelsWithNameClash = new LinkedList<>();
