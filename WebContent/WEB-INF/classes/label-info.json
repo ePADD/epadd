@@ -1,0 +1,15 @@
+{"0":{"labType":"RESTRICTION","labId":"0","labName":"Do not transfer",
+    "description":"Do not transfer this message","isSysLabel":true,
+    "restrictionType":"OTHER","restrictedUntilTime":0,"restrictedForYears":
+    0},"1":{"labType":"GENERAL","labId":"1","labName":"Reviewed",
+    "description":"This message was reviewed","isSysLabel":false,
+    "restrictionType":"OTHER","restrictedUntilTime":0,"restrictedForYears":
+    0},"2":{"labType":"GENERAL","labId":"2","labName":"Clear For Release",
+    "description":"This message is ready to be released to the next phase",
+    "isSysLabel":true,"restrictionType":"OTHER","restrictedUntilTime":0,
+    "restrictedForYears":0},"3":{"labType":
+    "RESTRICTION","labId":"3","labName":"transfer with restriction",
+    "description":
+    "Label corresponding to \u0027transfer with restriction\u0027 flag in ePADD version 4",
+    "isSysLabel":false,"restrictionType":"OTHER","restrictedUntilTime":-1,
+    "restrictedForYears":-1}}

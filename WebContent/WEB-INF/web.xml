@@ -393,6 +393,16 @@
         <url-pattern>/export-mbox</url-pattern>
     </servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>export-for-ver5</servlet-name>
+		<jsp-file>/export-for-ver5.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>export-for-ver5</servlet-name>
+		<url-pattern>/export-for-ver5</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>export-attachments</servlet-name>
 		<jsp-file>/export-attachments.jsp</jsp-file>

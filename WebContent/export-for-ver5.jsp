@@ -41,8 +41,15 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 <%
     // attachmentsForDocs
 
-    String dir = archive.baseDir + File.separator + "tmp" + File.separator + "ver5-metadata";
-    new File(dir).mkdir();//make sure it exists
+    String tmpdir = archive.baseDir + File.separator + "tmp";
+    String metadatadir= tmpdir + File.separator + "ver5-metadata";
+
+    new File(tmpdir).mkdir();//make sure it exists
+
+    File metadata = new File(metadatadir);
+    if(metadata.exists())
+        Util.deleteDir(metadata,JSPHelper.log);
+    new File(metadatadir).mkdir();
     //create mbox file in localtmpdir and put it as a link on appURL.
 
     //There are three files (directories) that we want to create for porting this version of archive to the next version.
@@ -77,7 +84,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         }
         for (String s: uniqueEmails)
         sb.append (Util.escapeHTML(s) + "\n");
-        sb.append("\n");
+        //sb.append("\n");
         return sb.toString();
         }
     %>
@@ -88,32 +95,13 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         if (self != null)
             addressbookop.append(dumpForContact(self, "Archive owner"));
 
-        // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
-        List<Contact> allContacts = addressBook.allContacts();
-        Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<String, Contact>();
-        for (Contact c: allContacts)
-        {
-        if (c == self)
-        continue;
-        String bestEmail = c.pickBestName();
-        if (bestEmail == null)
-        continue;
-        canonicalBestNameToContact.put(bestEmail.toLowerCase(), c);
-        }
-
-        List<Pair<String, Contact>> pairs = Util.mapToListOfPairs(canonicalBestNameToContact);
-        Util.sortPairsByFirstElement(pairs);
-
-        for (Pair<String, Contact> p: pairs)
-        {
-        Contact c = p.getSecond();
-        if (c != self)
-        addressbookop.append(dumpForContact(c, c.pickBestName()));
-        }
-
+        List<Contact> contacts = addressBook.sortedContacts((Collection) archive.getAllDocs());
+        for (Contact c: contacts)
+            if (c != self)
+                addressbookop.append(dumpForContact(c, ""));
 
 //    String dir = request.getParameter ("dir");
-        File f = new File(dir+File.separator+"AddressBook");
+        File f = new File(metadatadir+File.separator+"AddressBook");
         //write addressbookop to file f.
         FileWriter fw = new FileWriter(f);
         fw.write(addressbookop.toString());
@@ -127,7 +115,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     <%
     ///////////labelmanager exporting//////////////////////////////////////////////////////////
         //no need to create label-info.json file as it does not depend upon the archive.. just create it statically once and copy it to LabelMapper directory
-        String labeldir = dir + File.separator + "LabelMapper";
+        String labeldir = metadatadir + File.separator + "LabelMapper";
         new File(labeldir).mkdir();//make sure it exists
         //Map from Document ID to set of Label ID's
         Multimap<String,String> docToLabelID = LinkedListMultimap.create();
@@ -177,6 +165,25 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
             return;
         }
 
+        //now copy label-info.json file from classloader to this LabelMapper directory
+
+        // copy lexicons over to the muse dir
+        // unfortunately, hard-coded because we are loading as a ClassLoader resource and not as a file, so we can't use Util.filesWithSuffix()
+        // we have a different set of lexicons for epadd and muse which will be set up in LEXICONS by the time we reach here
+            try( InputStream is = EmailUtils.class.getClassLoader().getResourceAsStream("label-info.json")) {
+                if (is == null) {
+                    JSPHelper.log.warn("label-info.json file needed for ePADD version 5 porting not found");
+
+                }
+                else {
+                    JSPHelper.log.info("copying label-info.json to " + labeldir);
+                    Util.copy_stream_to_file(is, labeldir + File.separator + "label-info.json");
+                }
+                is.close();
+                } catch (Exception e) {
+                Util.print_exception(e, JSPHelper.log);
+            }
+
     %>
 
 
@@ -192,7 +199,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 
         //export as csv file.. annotations.csv
         try{
-            fw = new FileWriter(dir+ File.separator+"annotations.csv");
+            fw = new FileWriter(metadatadir+ File.separator+"annotations.csv");
             CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
 
             // write the header line: "DocID,annotation".
@@ -223,8 +230,8 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 
 <%    /////////zipping dir directory////////////////////////////////////////////////////////////
 
-    String pathofoutputzip = archive.baseDir + File.separator + "tmp" + File.separator+ "ver5-exported-metadata.zip";//Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
-    String dirtozip = new File(dir).getAbsolutePath();
+    String pathofoutputzip = tmpdir + File.separator+ "ver5-exported-metadata.zip";//Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+    String dirtozip = new File(metadatadir).getAbsolutePath();
 
     Util.createZip(dirtozip,pathofoutputzip);
     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
