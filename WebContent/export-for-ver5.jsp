@@ -220,83 +220,26 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 
 
     %>
-    /////////zipping dir directory////////////////////////////////////////////////////////////
 
-    String fname = "ver5-exported-metadata.zip";//Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+<%    /////////zipping dir directory////////////////////////////////////////////////////////////
 
+    String pathofoutputzip = archive.baseDir + File.separator + "tmp" + File.separator+ "ver5-exported-metadata.zip";//Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+    String dirtozip = new File(dir).getAbsolutePath();
 
-    String pathToFile = dir.getAbsolutePath() + File.separator + fname;
-    PrintWriter pw = null;
-    try {
-        pw = new PrintWriter(pathToFile, "UTF-8");
-    } catch (Exception e) {
-        out.println ("Sorry, error opening mbox file: " + e + ". Please see the log file for more details.");
-        Util.print_exception("Error opening mbox file: ", e, JSPHelper.log);
-        return;
-    }
-
-    //check if request contains docsetID then work only on those messages which are in docset
-    //else export all messages of mbox.
-    Collection<Document> selectedDocs;
-
-    if(!Util.nullOrEmpty(docsetID)){
-        DataSet docset = (DataSet) session.getAttribute(docsetID);
-        selectedDocs = docset.getDocs();
-    }else {
-        selectedDocs = archive.getAllDocs().stream().collect(Collectors.toSet());
-    }
-    JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
-
-
-// either we do tags (+ or -) from selectedTags
-    // or we do all docs from allDocs
-    String cacheDir = archive.baseDir;
-    String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
-    BlobStore bs = null;
-    try {
-        bs = new BlobStore(attachmentsStoreDir);
-        JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
-    } catch (IOException ioe) {
-        JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
-    }
-
-    /*
-    String rootDir = JSPHelper.getRootDir(request);
-    new File(rootDir).mkdirs();
-    String userKey = JSPHelper.getUserKey(session);
-
-    String name = request.getParameter("name");
-    if (Util.nullOrEmpty(name))
-        name = String.format("%08x", EmailUtils.rng.nextInt());
-    String filename = name + ".mbox.txt";
-
-    String path = rootDir + File.separator + filename;
-    PrintWriter pw = new PrintWriter (path);
-    */
-
-    String noAttach = request.getParameter("noattach");
-    boolean noAttachments = "on".equals(noAttach);
-    boolean stripQuoted = "on".equals(request.getParameter("stripQuoted"));
-    for (Document ed: selectedDocs)
-        EmailUtils.printToMbox(archive, (EmailDocument) ed, pw, noAttachments ? null: bs, stripQuoted);
-    pw.close();
+    Util.createZip(dirtozip,pathofoutputzip);
     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-    String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;
+    String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + "ver5-exported-metadata.zip";
     String linkURL = appURL + "/" +  contentURL;
 
 %>
 
     <br/>
 
-    <a href =<%=linkURL%>>Download mbox file</a>
+    <a href =<%=linkURL%>>Download metadata file for ePADD version 5</a>
     <p></p>
-    This file is in mbox format, and can be accessed with many email clients (e.g. <a href="http://www.mozillamessaging.com/">Thunderbird</a>.)
-    It can also be viewed with a text editor.<br/>
-    On Mac OS X, Linux, and other flavors of Unix, you can usually open a terminal window and type the command: <br/>
-    <i>mail -f &lt;saved file&gt;</i>.
-    <p>
-        This mbox file may also have extra headers like X-ePADD-Folder, X-ePADD-Labels and X-ePADD-Annotation.
-    </p>
+    This file is in zip format. Unzip it and copy it's content to the corresponding archive's session subfolder in ePADD version 5.<br/>
+    In the LabelMapper subfolder add one more file named as 'label-info.json". This file can be downloaded separately from github or contact pchan3@stanford.edu to get it
+    <br/>
     <br/>
 </div>
 <jsp:include page="footer.jsp"/>

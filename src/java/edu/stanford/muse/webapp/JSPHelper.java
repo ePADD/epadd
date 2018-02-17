@@ -902,6 +902,33 @@ public class JSPHelper {
 		writeFileToResponse(session, response, filePath, true /* asAttachment */);
 	}
 
+
+	/** serve up a file from the temp dir, mainly used for serving exported mbox files*/
+	public static void serveTemp(HttpServletRequest request, HttpServletResponse response) throws IOException
+	{
+		HttpSession session = request.getSession();
+		String filename = request.getParameter("file");
+		filename = convertRequestParamToUTF8(filename);
+
+		//get archiveID from the request parameter and then get the archive. It must be present
+		//use its baseDir.
+		Archive archive = JSPHelper.getArchive(request);
+		assert archive!=null: new AssertionError("ArchiveID not passed to serveTemp.jsp");
+		String baseDir = archive.baseDir;
+
+		if (filename.contains(".." + File.separator)) // avoid file injection!
+		{
+			log.warn("File traversal attack !? Disallowing serveFile for illegal filename: " + filename);
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+
+		// could check if user is authorized here... or get the userKey directly from session
+
+		String filePath = baseDir + File.separator + "tmp" + File.separator + filename;
+		writeFileToResponse(session, response, filePath, true /* asAttachment */);
+	}
+
 	public static void writeFileToResponse(HttpSession session, HttpServletResponse response, String filePath, boolean asAttachment) throws IOException
 	{
 		// Decode the file name (might contain spaces and on) and prepare file object.

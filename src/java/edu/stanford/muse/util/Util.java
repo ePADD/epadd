@@ -42,6 +42,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * a general set of utils by Sudheendra... don't introduce dependencies in this
@@ -1243,6 +1246,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		br.close();
 		return sb.toString();
 	}
+
 
 	// returns a list of dates representing intervals
 	// interval i is represented by [i]..[i+1] in the returned value
@@ -3107,6 +3111,59 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
             return num;
         }
     }
+
+	public static void createZip(String sourcepath, String zippath) throws IOException {
+		String sourceFile = sourcepath;
+		FileOutputStream fos = new FileOutputStream(zippath);
+		ZipOutputStream zipOut = new ZipOutputStream(fos);
+		File fileToZip = new File(sourceFile);
+
+		zipFile(fileToZip, fileToZip.getName(), zipOut);
+		zipOut.close();
+		fos.close();
+	}
+
+	private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+		if (fileToZip.isHidden()) {
+			return;
+		}
+		if (fileToZip.isDirectory()) {
+			File[] children = fileToZip.listFiles();
+			for (File childFile : children) {
+				zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+			}
+			return;
+		}
+		FileInputStream fis = new FileInputStream(fileToZip);
+		ZipEntry zipEntry = new ZipEntry(fileName);
+		zipOut.putNextEntry(zipEntry);
+		byte[] bytes = new byte[1024];
+		int length;
+		while ((length = fis.read(bytes)) >= 0) {
+			zipOut.write(bytes, 0, length);
+		}
+		fis.close();
+	}
+
+	public static void unzipArchive(String zippath, String outputpath) throws IOException {
+		String fileZip = zippath;
+		byte[] buffer = new byte[1024];
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+		ZipEntry zipEntry = zis.getNextEntry();
+		while(zipEntry != null){
+			String fileName = zipEntry.getName();
+			File newFile = new File(outputpath + File.separator + fileName);
+			FileOutputStream fos = new FileOutputStream(newFile);
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+			fos.close();
+			zipEntry = zis.getNextEntry();
+		}
+		zis.closeEntry();
+		zis.close();
+	}
 
 	public static void testTokenizeAlphaChars() {
 		String[] tests = new String[]{"12abc xyz", "abc", "abc xyz12", "Dr. Prof. Doolit"};
