@@ -161,7 +161,34 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 	<br/>
 	<br/>
 
-	<section>
+    <section>
+        <div class="panel">
+            <div class="panel-heading">Migration to ePADD version 5</div>
+
+            <div class="one-line" id="export-ver5">
+                <div class="form-group col-sm-7">
+                    <label>Export addressbook, labels and annotations for ePADD version 5</label>
+                    <%--<input id="export-ver5-file" class="dir form-control" type="text" name="name" value=""/>--%>
+                </div>
+                <div class="form-group col-sm-4 ">
+                    <%--<button id="export-ver5-browse" class="btn-default browse-button">Browse</button>--%>
+                    <button id="export-ver5-do" style="margin-left: 10px;" class="go-button btn-default">Export</button>
+                </div>
+            </div>
+
+
+            <script>
+                $('#export-ver5 .go-button').click (function(e) {
+                    var $button = $(e.target);
+                    var baseUrl = 'export-for-ver5';
+                    window.location = baseUrl + '?dir=' + dir+"&archiveID="+<%=archiveID%>;
+                });
+            </script>
+
+        </div>
+    </section>
+
+    <section>
 		<div class="panel">
 			<div class="panel-heading">Export messages and attachments</div>
 
