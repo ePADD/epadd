@@ -15,6 +15,7 @@
  */
 package edu.stanford.muse.util;
 
+import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
@@ -297,7 +298,7 @@ public class EmailUtils {
 		Base64 base64encoder = new Base64(76, b);
 	}
 
-	private static void printHeaderToMbox(EmailDocument ed, PrintWriter mbox, LabelManager labelManager) {
+	private static void printHeaderToMbox(EmailDocument ed, PrintWriter mbox, LabelManager labelManager, AnnotationManager annotationManager) {
 		/* http://www.ietf.org/rfc/rfc1521.txt is the official ref. */
 		Date d = ed.date != null ? ed.date : new Date();
 		String s = sdf1.format(d);
@@ -315,9 +316,9 @@ public class EmailUtils {
 		mbox.println("Subject: " + ed.description);
 		mbox.println("Message-ID: " + ed.messageID);
 		mbox.println("X-ePADD-Folder: " + ed.folderName);
-		if (!Util.nullOrEmpty(ed.comment))
+		if (!Util.nullOrEmpty(annotationManager.getAnnotation(ed.getUniqueId())))
 		{
-			String comment = ed.comment;
+			String comment = annotationManager.getAnnotation(ed.getUniqueId());
 			comment = comment.replaceAll("\n", " ");
 			comment = comment.replaceAll("\r", " ");
 			mbox.println("X-ePADD-Annotation: " + comment);
@@ -381,7 +382,7 @@ public class EmailUtils {
 	{
 		String contents;
 		try {
-			printHeaderToMbox(ed, mbox, archive.getLabelManager());
+			printHeaderToMbox(ed, mbox, archive.getLabelManager(),archive.getAnnotationManager());
 			contents = archive.getContents(ed, stripQuoted);
 			printBodyAndAttachmentsToMbox(contents, ed, mbox, blobStore);
 		} catch (Exception e) {

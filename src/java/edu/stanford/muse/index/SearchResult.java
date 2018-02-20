@@ -2,6 +2,7 @@ package edu.stanford.muse.index;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.Multimap;
+import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
@@ -320,10 +321,12 @@ public class SearchResult {
         String annotationStr = JSPHelper.getParam(inputSet.queryParams, "annotation");
         if (!Util.nullOrEmpty(annotationStr)) {
             Set<String> annotations = Util.splitFieldForOr(annotationStr);
+            AnnotationManager annotationManager = inputSet.getArchive().getAnnotationManager();
             inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
                 EmailDocument edoc = (EmailDocument) entry.getKey();
-                if (!Util.nullOrEmpty(edoc.comment)) {
-                    String comment = edoc.comment.toLowerCase();
+                String comment = annotationManager.getAnnotation(edoc.getUniqueId());
+                if (!Util.nullOrEmpty(comment)) {
+                    comment = comment.toLowerCase();
                     return annotations.contains(comment);
                 }else
                     return false;
@@ -857,10 +860,12 @@ public class SearchResult {
         if(!anyAnnotation)
             return inputSet;
         else{
+            AnnotationManager annotationManager = inputSet.getArchive().getAnnotationManager();
             Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
             inputSet.matchedDocs.keySet().stream().forEach(doc->{
                 EmailDocument ed = (EmailDocument)doc;
-                if(!Util.nullOrEmpty(ed.comment))
+                String comment = annotationManager.getAnnotation(ed.getUniqueId());
+                if(!Util.nullOrEmpty(comment))
                     outputDocs.put(doc,inputSet.matchedDocs.get(doc));
             });
             return new SearchResult(outputDocs,inputSet.archive,inputSet.queryParams,
@@ -874,17 +879,18 @@ public class SearchResult {
             return inputSet;
         boolean isAnn = "true".equals(isAnnotated);
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
+        AnnotationManager annotationManager = inputSet.getArchive().getAnnotationManager();
 
         if(isAnn){
             inputSet.matchedDocs.keySet().stream().forEach(doc->{
                 EmailDocument ed = (EmailDocument)doc;
-                if(!Util.nullOrEmpty(ed.comment))
+                if(!Util.nullOrEmpty(annotationManager.getAnnotation(ed.getUniqueId())))
                     outputDocs.put(doc,inputSet.matchedDocs.get(doc));
             });
         }else{
             inputSet.matchedDocs.keySet().stream().forEach(doc->{
                 EmailDocument ed = (EmailDocument)doc;
-                if(Util.nullOrEmpty(ed.comment))
+                if(Util.nullOrEmpty(annotationManager.getAnnotation(ed.getUniqueId())))
                     outputDocs.put(doc,inputSet.matchedDocs.get(doc));
             });
        }

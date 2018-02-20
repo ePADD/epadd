@@ -1,10 +1,12 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="org.json.JSONArray" %>
-<%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.index.Document" %>
+<%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@ page import="edu.stanford.muse.LabelManager.Label" %>
+<%@ page import="java.util.*" %>
 
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
@@ -72,10 +74,17 @@
 
 
 		JSONArray resultArray = archive.getLabelCountsAsJson((Collection) docs);
+		Set<Label> restrictionlabs = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
+		List<String> relativeTimedRestrictions = new LinkedList<>();
+		restrictionlabs.forEach(lab-> {
+		    if(lab.getRestrictionType().equals(LabelManager.RestrictionType.RESTRICTED_FOR_YEARS))
+		        relativeTimedRestrictions.add(lab.getLabelID());
+		});
 	%>
 	<script>
 	var labels = <%=resultArray.toString(4)%>;
-// get the href of the first a under the row of this checkbox, this is the browse url, e.g.
+	var relativeTimedRestrictions = [<% for (int i = 0; i < relativeTimedRestrictions.size(); i++) { %>"<%= relativeTimedRestrictions.get(i) %>"<%= i + 1 < relativeTimedRestrictions.size() ? ",":"" %><% } %>];
+	// get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
 			return '<a target="_blank" title="' + escapeHTML(full[2]) + '" href="browse?adv-search=1&labelIDs=' + full[0] + '&archiveID=<%=archiveID%>">' + escapeHTML(full[1]) + '</a>'; // full[4] has the URL, full[5] has the title tooltip
@@ -112,16 +121,33 @@
 
 	// labelID will be a single item here, even though applyLabelsAnnotations can support more than one
 	function do_action (labelID, action) {
-        var c = confirm ('Do you want to ' + action + ' this label for these messages?');
+	    //if this label is of type time restrction with relative time then inform the user that this label will not be set for messages with unidentified dates
+		//if this label is of type 'clear for release' then inform the user that this label will only be set of messages with general restriction labels or with restriction labels where time has expired.
+		var msg="";
+		/*if(action=="set") {
+            if (labelID === "<%=archive.getLabelManager().LABELID_CFR%>")
+                msg = "This label will be set for only those messages where time restriction has expired or which contain only general restriction labels. All the messages with \"Clear for release\" label will " +
+                    "be exported to the next module. Be careful!";
+
+            if (relativeTimedRestrictions.indexOf(labelID) > -1)//means labelID is a relative timed restriction label.
+                msg = "This label will be set for only those messages where a valid date is present. Note that ePADD puts a dummy date 1 Jan 1960 for the messages with corrupt date field.";
+        }
+*/		var c = confirm (msg+' Do you want to ' + action + ' this label for these messages?');
         if (!c)
             return;
 
+        //$('#alert-modal').on('hidden.bs.modal', window.location.reload());
         $.ajax({
             url:'ajax/applyLabelsAnnotations.jsp',
             type: 'POST',
             data: {archiveID: archiveID, labelIDs: labelID, docsetID: '<%=docsetID%>', action:action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
             dataType: 'json',
-            success: function() { window.location.reload(); },
+            success: function(response) { if(response.status===1) {
+				alert(response.errorMessage);
+				window.location.reload();
+            }else
+                window.location.reload();
+            },
             error: function() { epadd.alert('There was an error in saving labels, sorry!');
             }
         });

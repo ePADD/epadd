@@ -1,7 +1,10 @@
 package edu.stanford.muse.webapp;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -138,7 +141,7 @@ public class SimpleSessions {
 			String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
 			String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
 			String labMapDirPath= dir + File.separatorChar + Archive.LABELMAPDIR;
-
+			String annotationMapPath = dir + File.separatorChar + Archive.ANNOTATION_SUFFIX;
 
 			//Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
 			//above three files are not present. In that case start afresh with importing the email-archive again in processing mode.
@@ -177,6 +180,9 @@ public class SimpleSessions {
 			}
 
 			archive.setLabelManager(labelManager);
+			///////////////Annotation Manager///////////////////////////////////////////////////////
+			AnnotationManager annotationManager = AnnotationManager.readObjectFromStream(annotationMapPath);
+			archive.setAnnotationManager(annotationManager);
 			///////////////Processing metadata////////////////////////////////////////////////
 			// override the PM inside the archive with the one in the PM file
 			//update: since v5 no pm will be inside the archive.
@@ -340,9 +346,10 @@ public class SimpleSessions {
 
 		//Now write modular transient fields to separate files-
 		//By Dec 2017 there are three transient fields which will be saved and loaded separately
-		//1. AddressBook -- Stored in a gzip file with name in the same directory as of archive.
+		//1. AddressBook -- Stored in a gzip file with name in the same `	directory as of archive.
 		//2. EntityBook
 		//3. CorrespondentAuthorityMapper
+		//Before final release of v5 in Feb 2018, modularize annotation out of archive.
 		/////////////////AddressBook Writing -- In human readable form ///////////////////////////////////
 		SimpleSessions.saveAddressBook(archive);
 		////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
@@ -352,6 +359,8 @@ public class SimpleSessions {
 		//////////////LabelManager Writing -- Serialized//////////////////////////////////
 		SimpleSessions.saveLabelManager(archive);
 
+		//////////////AnnotationManager writing-- In human readable form/////////////////////////////////////
+		SimpleSessions.saveAnnotations(archive);
         writeCollectionMetadata(archive.collectionMetadata, baseDir);
 
         /*
@@ -450,6 +459,29 @@ public class SimpleSessions {
 		archive.getLabelManager().writeObjectToStream(labMapDir);
 	}
 
+
+
+	public static void saveAnnotations(Archive archive){
+		//export as csv file.. annotations.csv
+		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+
+		String annotationcsv = dir + File.separatorChar + Archive.ANNOTATION_SUFFIX;
+		archive.getAnnotationManager().writeObjectToStream(annotationcsv);
+
+
+	}
+
+	//read annotation manager from a human readable file
+
+	public static void readAnnotations(Archive archive){
+
+		//if there is an annotations.csv file present in basedir + session directory then read it and  set annotations on
+		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
+
+		String annotationcsv = dir + File.separatorChar + Archive.ANNOTATION_SUFFIX;
+		AnnotationManager amanager = AnnotationManager.readObjectFromStream(annotationcsv);
+		archive.setAnnotationManager(amanager);
+	}
 
 
 	// an archive in a given dir should be loaded only once into memory.

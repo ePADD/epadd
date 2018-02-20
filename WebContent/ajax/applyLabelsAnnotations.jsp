@@ -42,10 +42,8 @@ if (docs != null)
     //annotation apply
     String annotationText = request.getParameter("annotation");
     if(!Util.nullOrEmpty(annotationText)){
-    	docs.stream().forEach(d->{
-    	                            EmailDocument ed = (EmailDocument)d;
-    	                            ed.setComment(annotationText);
-    	                            });
+        Set<String> docids = docs.stream().map(doc->doc.getUniqueId()).collect(Collectors.toSet());
+        archive.getAnnotationManager().setAnnotationToAll(docids,annotationText);
     	archive.clearAllAnnotationsCache();
     }else{
         //labels apply
@@ -53,11 +51,24 @@ if (docs != null)
         // Util.softAssert(!Util.nullOrEmpty(labelIds),JSPHelper.log);
         String action = request.getParameter("action");
         if("set".equals(action)){
-            archive.setLabels(docs,labelIds);
+            Pair<Integer,String> status = archive.setLabels(docs,labelIds);
+            if(status.first>0)
+             {
+                 error=true;
+                errorMessage = status.second;
+                Util.softAssert(true, errorMessage,JSPHelper.log);
+            }
+
         }else if("unset".equals(action)){
             archive.unsetLabels(docs,labelIds);
         }else if("override".equals(action)){
-            archive.putOnlyTheseLabels(docs,labelIds);
+            Pair<Integer,String> status = archive.putOnlyTheseLabels(docs,labelIds);
+            if(status.first>0)
+             {
+                 error=true;
+                errorMessage = status.second;
+                Util.softAssert(true, errorMessage,JSPHelper.log);
+            }
         } else {
             error = true;
             errorMessage = "Action parameter is allowed to contain only one of the following three options: set, unset, override. Unknown action: " + action;

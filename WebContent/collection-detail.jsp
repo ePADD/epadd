@@ -28,6 +28,7 @@
 <!-- need status window on this page because archive might take some time to load -->
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
+<%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
 <%
     /* note: this page doesn't require an archive to be loaded. it should not have a profile block. */
@@ -136,7 +137,7 @@
 
         if (ModeConfig.isProcessingMode()) { %>
         <p>
-            <button class="btn-default" id="edit-metadata"><i class="fa fa-pencil"></i> Edit Metadata</button>
+            <button class="btn-default" id="edit-collection-metadata"><i class="fa fa-pencil"></i> Edit Metadata</button>
             <br/>
             <br/>
             <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
@@ -182,13 +183,15 @@
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <hr/>
                     <div>
-                        <b>Accession ID</b>: <%=am.id%><br/>
-                        <b>Title</b>: <%=am.title%><br/>
-                        <b>Date</b>: <%=am.date%><br/><br/>
+                        <b>Accession ID</b>: <%=formatMetadataField(am.id)%><br/>
+                        <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
+                        <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
 
-                        <p><b>Scope and contents</b><br/> <%=am.scope%>
-                        <p><b>Rights and conditions</b><br/> <%=am.rights%>
-                        <p><b>Notes</b><br/> <%=am.notes%>
+                        <p><b>Scope and contents</b><br/> <%=formatMetadataField(am.scope)%>
+                        <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
+                        <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
+                        <br/><br/>
+                        <button class="btn-default" id="edit-accession-metadata" data-accessionid="<%=am.id%>"><i class="fa fa-pencil"></i> Edit Accession Metadata</button>
                     </div>
                 <% } %>
                 <hr/>
@@ -224,9 +227,13 @@
     <br/>
 
     <script>
-        $('#edit-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
+        $('#edit-collection-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
         $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
         $('#edit-photos').click (function() { window.location = 'set-images?collection=<%=id%>'; });
+        $('#edit-accession-metadata').click (function(e) {
+            var accessionID=$(e.target).attr('data-accessionID');
+            window.location = 'edit-accession-metadata?collection=<%=id%>&accessionID='+accessionID;
+        });
 
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.

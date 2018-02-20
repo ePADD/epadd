@@ -15,6 +15,7 @@
  */
 package edu.stanford.muse.index;
 
+import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -658,14 +659,16 @@ public class IndexUtils {
 	}
 
 	/** Partition documents by the presence/absence of annotation text */
-	private static Map<String, DetailedFacetItem> partitionDocsByAnnotationPresence(Collection<? extends Document> docs) {
+	private static Map<String, DetailedFacetItem> partitionDocsByAnnotationPresence(Collection<? extends Document> docs,Archive archive) {
 
 		Map<String, Set<Document>> tagToDocs = new LinkedHashMap<>();
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 		Set<Document> annotatedDocs = new LinkedHashSet<>();
 		Set<Document> unannotatedDocs = new LinkedHashSet<>();
+		AnnotationManager annotationManager = archive.getAnnotationManager();
+
 		for (Document d : docs) {
-			if (!Util.nullOrEmpty(d.comment))
+			if (!Util.nullOrEmpty(annotationManager.getAnnotation(d.getUniqueId())))
 				annotatedDocs.add(d);
 			else
 				unannotatedDocs.add(d);
@@ -869,7 +872,7 @@ public class IndexUtils {
 				facetMap.put("Accessions", accIDs.values());
 			}
 
-			Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs);
+			Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs,archive);
 			facetMap.put("Annotations", annotationPresenceMap.values());
 			// attachments
 			if (!ModeConfig.isPublicMode())

@@ -382,11 +382,13 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <div style="clear:both"></div>
                 </div>
             <% } %>
+
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);">
                 <div style="float:left;position:relative;top:7px">
                     <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
 
-                        <select data-selected-text-format="static" name="labelIDs" id="attachmentType" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
+
+                        <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
 
                             <optgroup label="Restriction Labels">

@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
+import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Pair;
@@ -327,6 +329,7 @@ public class EmailRenderer {
 		 */
 
 		List<Document> datasetDocs = new ArrayList<>();
+		AnnotationManager annotationManager = result.getArchive().getAnnotationManager();
 		// we build up a hierarchy of <section, document, page>
 		for (MultiDoc md : clusters)
 		{
@@ -341,6 +344,7 @@ public class EmailRenderer {
 			html.append("<div class=\"section\" name=\"" + description + "\">\n");
 
 			List<List<String>> clusterResult = new ArrayList<>();
+
 
 			for (Document d : md.docs)
 			{
@@ -357,7 +361,7 @@ public class EmailRenderer {
 				// clusterResult.add(docPageList);
 				// for (String s: docPageList)
 				{
-					String comment = Util.escapeHTML(d.comment);
+					String comment = Util.escapeHTML(annotationManager.getAnnotation(d.getUniqueId()));
 					html.append("<div class=\"page\"");
 					if (!Util.nullOrEmpty(comment))
 						html.append(" comment=\"" + comment + "\"");
@@ -387,8 +391,22 @@ public class EmailRenderer {
 						}else
 							html.append(" labels=\"\"");
 					}
+					EmailDocument ed = (EmailDocument)d;
 
+					//set if this document has a hacky date or not..based on this the UI will
+					//allow/disallow to set a time duration based restriction label (git issue #165)
+					boolean hackydate = false;
+					if(EmailFetcherThread.INVALID_DATE.equals(ed.getDate()))
+						hackydate = true;
 
+					html.append(" hackyDate=\""+hackydate+"\"");
+
+					/*//set if this message has a timerestriction label that has expired.
+					if(result.getArchive().isCandidateForReleaseLabel(d))
+						html.append(" candidateForClearance=\"true\"");
+					else
+						html.append(" candidateForClearance=\"false\"");
+					*/
 					//////////////////////////////////////////DONE reading labels///////////////////////////////////////////////////////////////////////////
 					if (d instanceof EmailDocument)
 						html.append(" pageId='" + pageNum++ + "' " + " signature='" + Util.hash (((EmailDocument) d).getSignature()) + "' docId='" + d.getUniqueId() + "'></div>\n");

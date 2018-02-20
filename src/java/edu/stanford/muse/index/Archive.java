@@ -23,6 +23,7 @@ import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
 import edu.stanford.muse.AddressBookManager.AddressBook;
+import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper;
 import edu.stanford.muse.LabelManager.Label;
@@ -76,6 +77,7 @@ public class Archive implements Serializable {
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
     public static final String ENTITYBOOK_SUFFIX = "EntityBook";
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
+    public static final String ANNOTATION_SUFFIX = "Annotations.csv";
     public static final String LABELMAPDIR= "LabelMapper";
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
@@ -106,6 +108,7 @@ public class Archive implements Serializable {
 
     private transient LabelManager labelManager; //transient because it will be saved and loaded separately
 
+    private transient AnnotationManager annotationManager;//transient because it will be saved and loaded separately
     public transient CollectionMetadata collectionMetadata = new CollectionMetadata();//setting it as transient since v5 as it will be stored/read separately
     public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
 
@@ -128,21 +131,108 @@ public class Archive implements Serializable {
         return labelManager;
     }
 
+
     public void setLabelManager(LabelManager labelManager) {
         this.labelManager = labelManager;
     }
 
-
-    public void setLabels(Collection<Document> docs, Set<String> labelIDs){
-        docs.forEach(doc-> labelManager.setLabels(doc.getUniqueId(),labelIDs));
+    public synchronized AnnotationManager getAnnotationManager(){
+        if(annotationManager==null)
+            annotationManager = new AnnotationManager();
+        return annotationManager;
     }
 
-    public void unsetLabels(Collection<Document> docs, Set<String> labelIDs){
-        docs.forEach(doc-> labelManager.unsetLabels(doc.getUniqueId(),labelIDs));
+    public void setAnnotationManager(AnnotationManager annotationManager){ this.annotationManager = annotationManager;}
+
+    public boolean isCandidateForReleaseLabel(Document doc){
+        EmailDocument ed = (EmailDocument)doc;
+        Set<String> timeRestrictions = getLabelManager().getTimedRestrictions();
+        //if no timeRestriction then also the following method will return true;
+        return isTimeRestrictionExpired(ed,timeRestrictions);
     }
 
-    public void putOnlyTheseLabels(Collection<Document> docs, Set<String> labelIDs){
-        docs.forEach(doc-> labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs));
+    /*//This method checks if a given label can be applied to a doc or not. It handles two cases.
+    //1. a timed restriction relative label can not be applied to a document with hackydate.
+    //2. a cleared for release label can not be applied to a message unless it is a candidate for release.
+    public Set<String> getAllowedLabels(Document doc, Set<String> labelIDs){
+        EmailDocument ed = (EmailDocument)doc;
+        boolean hackydate = EmailFetcherThread.INVALID_DATE.equals(ed.getDate());
+
+        boolean isCandiateForRelease=isCandidateForReleaseLabel(doc);
+        //NOTE for RESEARCH: Repeated calculation of a method which is guaranteed to yield the same result; can it be avoided? Food for tought
+        Set<String> relativeTimedRestrictionLabels = labelManager.getRelativeTimedRestrictionLabels();
+        Set<String> allowedLabels = new LinkedHashSet<>();
+        labelIDs.forEach(labid->{
+            if(labid.equals(LabelManager.LABELID_CFR)) {
+                if (isCandiateForRelease)
+                    allowedLabels.add(labid);
+            }
+            else if(hackydate && relativeTimedRestrictionLabels.contains(labid)){
+                //don't add it
+            }else{
+                allowedLabels.add(labid);
+            }
+        });
+        return allowedLabels;
+    }
+*/
+
+    public Pair<Integer, String> setLabels(Collection<Document> docs, Set<String> labelIDs){
+
+         int countfail = 0;
+        for(Document doc: docs){
+            Set<String> existinglabs = getLabelIDs((EmailDocument)doc);
+            labelManager.setLabels(doc.getUniqueId(), labelIDs);
+            //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
+            if(Util.setUnion(existinglabs,labelIDs).contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){
+                //don't set the label, log the error message and the count of messages which got this error.
+                countfail=countfail+1;
+                //set the labels to the old labels..
+                labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
+            }else{
+                labelManager.setLabels(doc.getUniqueId(),labelIDs);
+            }
+        }
+
+        String message="";
+        if(countfail>0){
+            if(docs.size()==1)
+                message="'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired.";
+            else
+                message = "This label could not be set for "+countfail +" message(s) because 'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired for these messages";
+
+        }
+        return new Pair(countfail,message);
+    }
+
+    public void unsetLabels(Collection<Document> docs, Set<String> labelIDs) {
+        docs.forEach(doc -> labelManager.unsetLabels(doc.getUniqueId(), labelIDs));
+    }
+
+    public Pair<Integer,String> putOnlyTheseLabels(Collection<Document> docs, Set<String> labelIDs){
+        int countfail = 0;
+
+        for(Document doc: docs){
+            Set<String> existinglabs = getLabelIDs((EmailDocument)doc);
+            labelManager.setLabels(doc.getUniqueId(), labelIDs);
+            //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
+            if(Util.setUnion(existinglabs,labelIDs).contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){
+                //don't set the label, log the error message and the count of messages which got this error.
+                countfail=countfail+1;
+                //set the labels to the old labels..
+                labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
+            }else{
+                labelManager.putOnlyTheseLabels(doc.getUniqueId(),labelIDs);
+            }
+        }
+
+        String message="";
+        if(docs.size()==1)
+            message="'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired.";
+        else
+            message = "This label could not be set for "+countfail +" message(s) because 'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired for these messages";
+
+        return new Pair(countfail,message);
     }
     //get all labels for an email document and a given type
     public Set<String> getLabelIDs(EmailDocument edoc){
@@ -823,60 +913,74 @@ public class Archive implements Serializable {
         } else if (mode == Export_Mode.EXPORT_PROCESSING_TO_DELIVERY || mode == Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY) {
             //get a set of general restriction ids from labelManager
             //get a set of timed-restriction ids from LabelManager
-            Set<Label> allRestrictions = getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
-            Set<String> genRestriction = new HashSet<>();
-            Set<String> timedRestriction = new HashSet<>();
-            allRestrictions.forEach(label -> {
-                if (label.getRestrictionType() == LabelManager.RestrictionType.OTHER)
-                    genRestriction.add(label.getLabelID());
-                else
-                    timedRestriction.add(label.getLabelID());
-            });
+            Set<String> genRestriction = getLabelManager().getGenRestrictions();
+            Set<String> timedRestriction = getLabelManager().getTimedRestrictions();
             //any message with any general restriction label (including DNT) will not be transferred
             //any message with timed-restriction label whose date is not over, will not be transferred
             //everything else will be transferred.
             //@TODO- Not yet implemented the labelAppliesToText part of label.
             for (Document d : getAllDocs()) {
                 EmailDocument ed = (EmailDocument) d;
-                //Do not export if it contains any general restriction label
+                //if it contains any general restriction label
+                boolean genfine = true;
+                boolean timefine =true;
                 if (Util.setIntersection(getLabelIDs(ed), genRestriction).size() != 0) {
-                    //means at least one general restriction label on this doc, do not export it.
-                    //nothing to be done
-                } else if (Util.setIntersection(getLabelIDs(ed), timedRestriction).size() != 0) {
-                    //0.If we can not find the correct time of this document then be conservative and
+                    //if gen restriction then it must contain cfr label for export (unless timed restriction stops it)
+                    if(!getLabelIDs(ed).contains(LabelManager.LABELID_CFR))
+                        genfine=false;
+                }
+                if(!genfine)
+                    continue;
+                if (Util.setIntersection(getLabelIDs(ed), timedRestriction).size() != 0) {
+                    /*//0.If we can not find the correct time of this document then be conservative and
                     //dont' export it.
                     if(EmailFetcherThread.INVALID_DATE.equals(ed.getDate()))
                         continue;
-                    Date dt = ed.getDate();
-                    //1.means at least one timed restriction label on this doc. Check for the timed data
-                    //if it is past current date/time then export else dont'
-                    //2.get those timed restrictions
-                    Set<String> timedrestrictions = Util.setIntersection(getLabelIDs(ed),timedRestriction);
-                    //if any of the timedrestriction is not satisfied then don't export it.
-                    for(String labid: timedRestriction){
-                        Label l = getLabelManager().getLabel(labid);
-                        if(l.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_FOR_YEARS){
-                            int year = l.getRestrictedForYears();
-                            Date future = new DateTime(dt).plusYears(year).toDate();
-                            Date today = new DateTime().toDate();
-                            if(future.before(today))//means the time is over
-                                docsToExport.add(d);//add doc
-                        }else if(l.getRestrictionType() == LabelManager.RestrictionType.RESTRICTED_UNTIL){
-                            Date today = new DateTime().toDate();
-                            if(l.getRestrictedUntilTime()<today.getTime())//means the restriction time is over
-                                docsToExport.add(d);//add doc
-                        }
-                    }
-                } else {
+*/
+                    //if time restriction has expired and it contains cleared for release label then export it.
+                    if(!(isTimeRestrictionExpired(ed,timedRestriction) && getLabelIDs(ed).contains(LabelManager.LABELID_CFR)))
+                        timefine=false;
+                }
+                if(!timefine) {
+                    continue;
+                }
                     //else export it
                     docsToExport.add(d);
-                }
+
             }
 
         }
     return docsToExport;
     }
 
+
+    /*
+    Checks if the timerestrictionlabel applied to a given document has expired or not.
+     */
+    public boolean isTimeRestrictionExpired(EmailDocument ed,Set<String> timedRestriction){
+        //1.means at least one timed restriction label on this doc. Check for the timed data
+        //if it is past current date/time then export else dont'
+        //2.get those timed restrictions
+        boolean isTimedRestrictionExpired=true;
+        Date dt = ed.getDate();
+        Set<String> timedrestrictionsInDoc = Util.setIntersection(getLabelIDs(ed),timedRestriction);
+        //if any of the timedrestriction is not satisfied then don't export it.
+        for(String labid: timedrestrictionsInDoc){
+            Label l = getLabelManager().getLabel(labid);
+            if(l.getRestrictionType()== LabelManager.RestrictionType.RESTRICTED_FOR_YEARS){
+                int year = l.getRestrictedForYears();
+                Date future = new DateTime(dt).plusYears(year).toDate();
+                Date today = new DateTime().toDate();
+                if(future.after(today))//means the time is not over for this label
+                    isTimedRestrictionExpired =false;//don't add doc
+            }else if(l.getRestrictionType() == LabelManager.RestrictionType.RESTRICTED_UNTIL){
+                Date today = new DateTime().toDate();
+                if(l.getRestrictedUntilTime()>today.getTime())//means the restriction time is not over
+                    isTimedRestrictionExpired = false;//don't add doc
+            }
+        }
+        return isTimedRestrictionExpired;
+    }
     /**
      * a fresh archive is created under out_dir. name is the name of the session
      * under it. blobs are exported into this archive dir. destructive! but
@@ -1717,13 +1821,16 @@ after maskEmailDomain.
         allAnnotations = null;
     }
 
-    /**@return list of all email sources */
+    /**@return list of all annotations */
     public synchronized Set<String> getAllAnnotations() {
         if (allAnnotations == null) {
+
             allAnnotations = new LinkedHashSet<>();
-            for (Document d : getAllDocs())
-                if (!Util.nullOrEmpty(d.comment))
-                   allAnnotations.add(d.comment);
+            for (Document d : getAllDocs()) {
+                String annotations = getAnnotationManager().getAnnotation(d.getUniqueId());
+                if (!Util.nullOrEmpty(annotations))
+                    allAnnotations.add(annotations);
+            }
         }
         return allAnnotations;
     }

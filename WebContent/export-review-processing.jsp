@@ -107,13 +107,14 @@ for (EmailDocument ed: docs)
 	count++;
 	String docId = ed.getUniqueId();
 	String subject = ed.description;
+	String comment = archive.getAnnotationManager().getAnnotation(ed.getUniqueId());
 	if (Util.nullOrEmpty(subject))
 		subject = "NONE";
     String messageURL = "browse?docId=" + docId;
 	JSONArray j = new JSONArray();
 	j.put (0, Util.escapeHTML(subject));
 	j.put (1, ed.dateString()); // not sortable??
-	j.put (2, Util.ellipsize(ed.comment == null ? "NONE" : Util.escapeHTML(ed.comment), 60));
+	j.put (2, Util.ellipsize(Util.nullOrEmpty(comment)? "NONE" : Util.escapeHTML(comment), 60));
 	j.put (3, messageURL);
 
 	resultArray.put (count-1, j);

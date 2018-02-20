@@ -1,7 +1,11 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@include file="getArchive.jspf" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.index.Archive" %>
+<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 
 <html>
 <head>
@@ -32,13 +36,39 @@
 <!-- this is going to be really quick... -->
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
-<p>
-	<%
-//	writeProfileBlock(out, archive, "", "Accession metadata");
-	assert request.getParameter("archiveID")!=null;
+<%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
-	String id = "", title = "", date = "", scope = "", rights = "", notes = "";
+<p>
+
+		<%
+	if (!ModeConfig.isProcessingMode()) {
+		out.println ("Updating collection metadata is allowed only in ePADD's Processing mode.");
+		return;
+	}
+
+	String collectionid = request.getParameter("collection");
+    String accessionid = request.getParameter("accessionID");
+	String modeBaseDir = Config.REPO_DIR_PROCESSING + File.separator + collectionid;
+
+	// read cm from archive file
+	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(modeBaseDir);
+	if (cm == null) {
+	    out.println ("Unable to read processing metadata file for collection: " + collectionid);
+	    return;
+	}
+	//get accession corresponding to accessionID from cm
+	Archive.AccessionMetadata ametadata=null;
+	for(Archive.AccessionMetadata am: cm.accessionMetadatas){
+	    if(am.id.equals(accessionid.trim()))
+	        ametadata = am;
+	};
+	if(ametadata==null)
+	    {
+	        out.println("Unable to find accession metadata for accession id: " +accessionid);
+	        return;
+	    }
 	%>
+
 
 
 	<br/>
@@ -46,13 +76,15 @@
 <section>
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
-		<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>
+		<%--<input type="hidden" value="<%=request.getParameter("archiveID")%>" class="form-control" type="text" name="archiveID"/>--%>
+
+			<input type="hidden" name="collection" value="<%=Util.escapeHTML(collectionid)%>"/>
 
 		<div class="div-input-field">
 			<div class="input-field-label">Accession ID</div>
 			<br/>
 			<div class="input-field">
-				<input title="Accession ID" value="<%=id%>" class="form-control" type="text" name="accessionID"/>
+				<input title="Accession ID" value="<%=formatMetadataField(ametadata.id)%>" class="form-control" type="text" readonly name="accessionID"/>
 			</div>
 		</div>
 
@@ -60,7 +92,7 @@
 			<div class="input-field-label">Accession title</div>
 			<br/>
 			<div class="input-field">
-				<input title="Accession title" value="<%=Util.escapeHTML(title)%>" class="form-control" type="text" name="accessionTitle"/>
+				<input title="Accession title" value="<%=formatMetadataField(ametadata.title)%>" class="form-control" type="text" name="accessionTitle"/>
 			</div>
 		</div>
 
@@ -68,7 +100,7 @@
 			<div class="input-field-label">Accession Date</div>
 			<br/>
 			<div class="input-field">
-				<input title="Accession Date" value="<%=date%>" class="form-control" type="text" name="accessionDate"/>
+				<input title="Accession Date" value="<%=formatMetadataField(ametadata.date)%>" class="form-control" type="text" name="accessionDate"/>
 			</div>
 		</div>
 
@@ -76,7 +108,7 @@
 			<div class="input-field-label">Scope and Content</div>
 			<br/>
 			<div class="input-field">
-				<input title="Scope and Content" value="<%=Util.escapeHTML(scope)%>" class="form-control" type="text" name="accessionScope"/>
+				<input title="Scope and Content" value="<%=formatMetadataField(ametadata.scope)%>" class="form-control" type="text" name="accessionScope"/>
 			</div>
 		</div>
 
@@ -84,7 +116,7 @@
 			<div class="input-field-label">Rights and Conditions</div>
 			<br/>
 			<div class="input-field">
-				<input title="Rights and Conditions" value="<%=Util.escapeHTML(scope)%>" class="form-control" type="text" name="accessionScope"/>
+				<input title="Rights and Conditions" value="<%=formatMetadataField(ametadata.rights)%>" class="form-control" type="text" name="accessionRights"/>
 			</div>
 		</div>
 
@@ -92,7 +124,7 @@
 			<div class="input-field-label">Notes</div>
 			<br/>
 			<div class="input-field">
-				<input title="Notes" value="<%=Util.escapeHTML(notes)%>" class="form-control" type="text" name="accessionNotes"/>
+				<input title="Notes" value="<%=formatMetadataField(ametadata.notes)%>" class="form-control" type="text" name="accessionNotes"/>
 			</div>
 		</div>
 
@@ -119,7 +151,28 @@
 </form>
 
 <script type="text/javascript">
-	$('#gobutton').click (function() { fetch_page_with_progress ('ajax/updateCollectionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?collection=<%=id%>'); return false; });
+	$('#gobutton').click (function() {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/updateAccessionMetadata.jsp',
+            data: $('#metadata-form').serialize(),
+            success: function (response) {
+                if (response && response.status === 0)
+                    window.location = 'collection-detail?collection=<%=collectionid%>';
+                else
+                    epadd.alert ("Sorry, something went wrong while updating accession metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+            },
+            error: function (jqxhr, status, ex) {
+                epadd.alert("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
+            }
+        });
+        return false;
+
+	    <%--fetch_page_with_progress ('ajax/updateAccessionMetadata.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), $('#metadata-form').serialize(), null, 'collection-detail?collection=<%=id%>'); return false;--%>
+
+	});
 </script>
 
  <jsp:include page="footer.jsp"/>

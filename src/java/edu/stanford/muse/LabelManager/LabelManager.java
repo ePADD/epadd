@@ -325,7 +325,7 @@ public class LabelManager implements Serializable{
         //lael manager.
         Map<String,String> oldToNewLabelID = new LinkedHashMap<>();
         //Also note that, if two labels have same name across two different label managers we will add some
-        //distinguishing prefix before them (say LM1 and LM2, or only Accesion2 in the src label manager)
+        //distinguishing prefix before them (say LM1 and LM2, or only accession2 in the src label manager)
         String renamedLM_Name="Accession2.";
         Map<String,Label> labnameToLabelMap = new LinkedHashMap<>();
         getAllLabels().forEach(label-> labnameToLabelMap.put(label.getLabelName(),label));

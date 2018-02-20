@@ -70,7 +70,7 @@ if (!collectionDir.equals(baseDir))
 	        //for that we should load this accession as well.
 	        collection = SimpleSessions.readArchiveIfPresent(collectionDir);
             collection.baseAccessionID=accessionID;//as it is the first accession we can avoid assigning
-            //accesion id to each doc by saying that this is a baseAccessionID.
+            //accession id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
 		    result.put ("message", "Import accession completed successfully.");
 	        result.put("archiveID",SimpleSessions.getArchiveIDForArchive(collection));
