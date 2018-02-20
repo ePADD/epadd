@@ -245,7 +245,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     <a href =<%=linkURL%>>Download metadata file for ePADD version 5</a>
     <p></p>
     This file is in zip format. Unzip it and copy it's content to the corresponding archive's session subfolder in ePADD version 5.<br/>
-    In the LabelMapper subfolder add one more file named as 'label-info.json". This file can be downloaded separately from github or contact pchan3@stanford.edu to get it
+    <%--In the LabelMapper subfolder add one more file named as 'label-info.json". This file can be downloaded separately from github or contact pchan3@stanford.edu to get it--%>
     <br/>
     <br/>
 </div>
