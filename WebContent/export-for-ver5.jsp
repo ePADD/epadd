@@ -194,12 +194,12 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         for(Document doc: archive.getAllDocsAsSet()){
         EmailDocument edoc = (EmailDocument)doc;
         if(!Util.nullOrEmpty(edoc.description))
-            docToAnnotationMap.put(edoc.getUniqueId(),edoc.description);
+            docToAnnotationMap.put(edoc.getUniqueId(),edoc.comment);
         }
 
-        //export as csv file.. annotations.csv
+        //export as csv file.. Annotations.csv
         try{
-            fw = new FileWriter(metadatadir+ File.separator+"annotations.csv");
+            fw = new FileWriter(metadatadir+ File.separator+"Annotations.csv");
             CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
 
             // write the header line: "DocID,annotation".
@@ -209,18 +209,18 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
             csvwriter.writeNext(line.toArray(new String[line.size()]));
 
             // write the records
-            for(String docid: docToLabelID.keySet()){
-                for(String labid: docToLabelID.get(docid)) {
+            for(String docid: docToAnnotationMap.keySet()){
+                String annotation= docToAnnotationMap.get(docid); {
                     line = new ArrayList<>();
                     line.add(docid);
-                    line.add(labid);
+                    line.add(annotation);
                     csvwriter.writeNext(line.toArray(new String[line.size()]));
                 }
             }
             csvwriter.close();
             fw.close();
         } catch (IOException e) {
-            JSPHelper.log.warn("Unable to write docid to label map in csv file");
+            JSPHelper.log.warn("Unable to write annotation to label map in csv file");
             return;
         }
 
