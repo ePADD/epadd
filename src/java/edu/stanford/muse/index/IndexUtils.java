@@ -885,7 +885,7 @@ public class IndexUtils {
 		if (!ModeConfig.isPublicMode())
 		{
 			Map<String, DetailedFacetItem> folderNameMap = partitionDocsByFolder(docs);
-			if  (folderNameMap.size() > 1)
+			if  (folderNameMap.size() > 0)
 				facetMap.put("folders", folderNameMap.values());
 		}
 

@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.Config;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -953,10 +954,13 @@ public class SearchResult {
 
         //now iterate over inputSet and retain only those documents whose label's intersection with neededLabelIDs set is same as neededLabelIDs (which means all of them are present in that doc)
         Map<Document,Pair<BodyHLInfo,AttachmentHLInfo>> outputDocs = new HashMap<>();
-
+        Set<String> timedRestrictionLabels = inputSet.archive.getLabelManager().getTimedRestrictions();
         inputSet.matchedDocs.keySet().stream().forEach((Document k) -> {
             EmailDocument ed = (EmailDocument) k;
             Set<String> labIDs = inputSet.getArchive().getLabelIDs(ed);
+            boolean containsTimeRestrictionLabels = !Util.setIntersection(timedRestrictionLabels,labIDs).isEmpty();
+            if(containsTimeRestrictionLabels && inputSet.archive.isCandidateForReleaseLabel(k))
+                labIDs.add(LabelManager.ALL_EXPIRED);
             Set<String> intersection = Util.setIntersection(labIDs,neededLabelIDs);
            /* if(intersection.equals(neededLabelIDs))//if all neededlabIDs were present in the document label set then add it to output doc set.
                 outputDocs.put(k,inputSet.matchedDocs.get(k));--- It is for AND of labelname options*/

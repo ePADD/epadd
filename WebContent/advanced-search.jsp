@@ -452,6 +452,9 @@
 								<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
 								<%}%>
 								</optgroup>
+								<optgroup label="Expired restrictions (except 'Clear for release')">
+								<option value="<%=LabelManager.ALL_EXPIRED%>">All restrictions expired</option>
+								</optgroup>
 							</select>
 
 							</div>

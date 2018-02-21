@@ -31,6 +31,7 @@ public class LabelManager implements Serializable{
     private static String JSONFILENAME="label-info.json";
     private static String CSVFILENAME="docidmap.csv";
 
+    public static String ALL_EXPIRED="allexpired";
     public enum LabType {
         RESTRICTION, GENERAL
     }
