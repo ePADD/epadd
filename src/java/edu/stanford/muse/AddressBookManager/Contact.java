@@ -16,15 +16,7 @@
 package edu.stanford.muse.AddressBookManager;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.stanford.muse.webapp.JSPHelper;
@@ -45,7 +37,7 @@ public class Contact extends UnionFindObject {
 	private Set<String> names = new LinkedHashSet<>();
 	private Set<String> emails = new LinkedHashSet<>();
 	public int mailingListState = MailingList.DUNNO;
-
+	transient private String bestName = null;//no need to explicitly store it.when reading from file.. the first name is stored as best name.
 	//	private Set<String> mailers = new LinkedHashSet<String>();
 	//	private Set<String> messageIDs = new LinkedHashSet<String>();
 	//	private Set<String> ipAddrs = new LinkedHashSet<String>();
@@ -56,11 +48,13 @@ public class Contact extends UnionFindObject {
 		return emails;
 	}
 
+
 	public Contact copy() {
 		Contact c = new Contact();
 		c.names = names.stream().map(name -> new String(name)).collect(Collectors.toSet());
 		c.emails = emails.stream().map(email -> new String(email)).collect(Collectors.toSet());
 		c.mailingListState = this.mailingListState;
+		c.bestName = this.bestName;
 		return c;
 	}
 
@@ -117,8 +111,10 @@ public class Contact extends UnionFindObject {
 	 * no comma preferably i.e. prefer First Last to Last, First. */
 	public String pickBestName()
 	{
-		String bestName = "";
 
+		if(!Util.nullOrEmpty(this.bestName))
+			return this.bestName;
+		String bestName = "";
 		if (names != null) {
 			int bestScore = Integer.MIN_VALUE;
 			for (String name : names) {
@@ -146,6 +142,9 @@ public class Contact extends UnionFindObject {
 		return bestName;
 	}
 
+	public void setBestName(String name){
+		bestName=name;
+	}
 	/** checks whether s occurs anywhere (case normalized) within any name for this contact */
 	public boolean checkIfStringPartOfAnyName(String s)
 	{
@@ -351,8 +350,16 @@ public class Contact extends UnionFindObject {
 		sb.append (AddressBook.CONTACT_START_PREFIX + mailingListOutput + " " + description + "\n");
 
 		// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
-		Set<String> uniqueNames = new LinkedHashSet<>();
-		for (String s: this.getNames())
+		List<String> uniqueNames = new LinkedList<>();
+		//first name should be bestName (if not already null)
+		Set<String> allNames=this.getNames();
+		if(!Util.nullOrEmpty(this.bestName)) {
+			uniqueNames.add(this.bestName);
+			allNames.remove(this.bestName);
+		}
+
+		//why removed this.bestname from allnames? because once it got printed as the first entry we don't want to print it again.
+		for (String s: allNames)
 			if (!Util.nullOrEmpty(s))
 				uniqueNames.add(s);
 		// uniqueNames.add(s.trim());
@@ -387,6 +394,7 @@ public class Contact extends UnionFindObject {
 
 		in.mark(1000);
 		inp = in.readLine();
+		boolean isFirst = true;
 		//int state  = 0;
 		//0=name_reading,1= email_reading,2=state_reading
 		while(inp!=null){
@@ -395,10 +403,20 @@ public class Contact extends UnionFindObject {
 				in.reset();
 				return tmp;
 			}
-			else if(inp.trim().contains("@"))
+			else if(inp.trim().contains("@")) {
+				if(isFirst) {
+					tmp.setBestName(Util.escapeHTML(inp.trim()));
+					isFirst = false;
+				}
 				tmp.getEmails().add(Util.escapeHTML(inp.trim()));
-			else
+			}
+			else {
+				if(isFirst){
+					tmp.setBestName(Util.escapeHTML(inp.trim()));
+					isFirst = false;
+				}
 				tmp.getNames().add(Util.escapeHTML(inp.trim()));
+			}
 			in.mark(1000);//here readAheadLimit tells how many characters stream can read
 			//without losing the mark. In this case we assume that one line of contact can not be more than 1000 characters.
 			//which is a realistic assumption.
