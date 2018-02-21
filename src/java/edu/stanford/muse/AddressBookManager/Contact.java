@@ -396,9 +396,9 @@ public class Contact extends UnionFindObject {
 				return tmp;
 			}
 			else if(inp.trim().contains("@"))
-				tmp.getEmails().add(inp.trim());
+				tmp.getEmails().add(Util.escapeHTML(inp.trim()));
 			else
-				tmp.getNames().add(inp.trim());
+				tmp.getNames().add(Util.escapeHTML(inp.trim()));
 			in.mark(1000);//here readAheadLimit tells how many characters stream can read
 			//without losing the mark. In this case we assume that one line of contact can not be more than 1000 characters.
 			//which is a realistic assumption.

@@ -1362,7 +1362,8 @@ mergeResult.newContacts.put(C2,savedC2)
             {
                 Contact c = p.getSecond();
                 if (c != self) {
-                    c.writeObjectToStream(out, c.pickBestName());
+                    //c.writeObjectToStream(out, c.pickBestName());
+                    c.writeObjectToStream(out, "");
                     //out.print(dumpForContact(c, c.pickBestName()));
 
                 }

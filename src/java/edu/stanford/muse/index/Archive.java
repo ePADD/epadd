@@ -178,30 +178,50 @@ public class Archive implements Serializable {
 */
 
     public Pair<Integer, String> setLabels(Collection<Document> docs, Set<String> labelIDs){
-
+Set<String> timeRestrictedLabels = labelManager.getRelativeTimedRestrictionLabels();
          int countfail = 0;
+int errortype=0;
+        String message="";
         for(Document doc: docs){
             Set<String> existinglabs = getLabelIDs((EmailDocument)doc);
             labelManager.setLabels(doc.getUniqueId(), labelIDs);
-            //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
-            if(Util.setUnion(existinglabs,labelIDs).contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){
+            boolean isHacky = EmailFetcherThread.INVALID_DATE.equals(((EmailDocument)doc).getDate());
+            Set<String> allLabels = Util.setUnion(existinglabs,labelIDs);
+                //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
+            if(allLabels.contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){
                 //don't set the label, log the error message and the count of messages which got this error.
                 countfail=countfail+1;
+                errortype=1;
+                //set the labels to the old labels..
+                labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
+            }else if(Util.setIntersection(allLabels,timeRestrictedLabels).size()!=0 && isHacky){
+                //related timed restriction can not be applied on hacky dates.
+                countfail = countfail+1;
+                errortype=2;
                 //set the labels to the old labels..
                 labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
             }else{
-                labelManager.setLabels(doc.getUniqueId(),labelIDs);
+                //not needed explicitly labelManager.setLabels(doc.getUniqueId(),labelIDs);
             }
         }
 
-        String message="";
-        if(countfail>0){
+        if(countfail>0 && errortype==1){
             if(docs.size()==1)
                 message="'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired.";
             else
                 message = "This label could not be set for "+countfail +" message(s) because 'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired for these messages";
 
         }
+
+        if(countfail>0 && errortype==2){
+            if(docs.size()==1)
+                message="A relative timed restriction can not be applied on this message as it's date got corrupted during import";
+            else
+                message = "This label could not be set for "+countfail +" message(s) because the date/time of these messages got corrupted during import";
+
+        }
+
+
         return new Pair(countfail,message);
     }
 
@@ -210,15 +230,26 @@ public class Archive implements Serializable {
     }
 
     public Pair<Integer,String> putOnlyTheseLabels(Collection<Document> docs, Set<String> labelIDs){
+        Set<String> timeRestrictedLabels = labelManager.getRelativeTimedRestrictionLabels();
         int countfail = 0;
+        int errortype=0;
+        String message="";
 
         for(Document doc: docs){
             Set<String> existinglabs = getLabelIDs((EmailDocument)doc);
-            labelManager.setLabels(doc.getUniqueId(), labelIDs);
+            labelManager.putOnlyTheseLabels(doc.getUniqueId(), labelIDs);
+            boolean isHacky = EmailFetcherThread.INVALID_DATE.equals(((EmailDocument)doc).getDate());
+            Set<String> allLabels = Util.setUnion(existinglabs,labelIDs);
             //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
             if(Util.setUnion(existinglabs,labelIDs).contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){
                 //don't set the label, log the error message and the count of messages which got this error.
                 countfail=countfail+1;
+                //set the labels to the old labels..
+                labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
+            }else if(Util.setIntersection(allLabels,timeRestrictedLabels).size()!=0 && isHacky){
+                //related timed restriction can not be applied on hacky dates.
+                countfail = countfail+1;
+                errortype=2;
                 //set the labels to the old labels..
                 labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
             }else{
@@ -226,12 +257,22 @@ public class Archive implements Serializable {
             }
         }
 
-        String message="";
-        if(docs.size()==1)
-            message="'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired.";
-        else
-            message = "This label could not be set for "+countfail +" message(s) because 'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired for these messages";
 
+        if(countfail>0 && errortype==1){
+            if(docs.size()==1)
+                message="'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired.";
+            else
+                message = "This label could not be set for "+countfail +" message(s) because 'Cleared for release' label can not coexist with a label that is not expired. Either remove the 'cleared for release' label or remove the time restriction label that has not expired for these messages";
+
+        }
+
+        if(countfail>0 && errortype==2){
+            if(docs.size()==1)
+                message="A relative timed restriction can not be applied on this message as it's date got corrupted during import";
+            else
+                message = "This label could not be set for "+countfail +" message(s) because the date/time of these messages got corrupted during import";
+
+        }
         return new Pair(countfail,message);
     }
     //get all labels for an email document and a given type

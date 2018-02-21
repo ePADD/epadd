@@ -191,7 +191,7 @@
                         <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
                         <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
                         <br/><br/>
-                        <button class="btn-default" id="edit-accession-metadata" data-accessionid="<%=am.id%>"><i class="fa fa-pencil"></i> Edit Accession Metadata</button>
+                        <button class="btn-default" id="edit-accession-metadata" data-accessionid="<%=am.id%>"><i class="fa fa-pencil"></i> Edit Metadata</button>
                     </div>
                 <% } %>
                 <hr/>

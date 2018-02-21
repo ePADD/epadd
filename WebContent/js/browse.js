@@ -65,7 +65,7 @@ var Labels = function() {
     var hackydates=[];
     var candidateForClearance=[];
     var currentPageOldLabels;
-    function updateLabelPickerForHackyDate(isHackyDate){
+   /* function updateLabelPickerForHackyDate(isHackyDate){
         if(JSON.parse(isHackyDate)){
             for(var j=0;j<durationalTimeRestrictionaLabels.length;j++)
                 $('.label-selectpicker').find('[value='+durationalTimeRestrictionaLabels[j]+']').prop('disabled',true);
@@ -75,7 +75,7 @@ var Labels = function() {
         }
 
         $('.label-selectpicker').selectpicker('refresh');
-    }
+    }*/
 
 /*
     function updateLabelPickerForReadyToRelease(isCandidateForRelease){
@@ -160,7 +160,7 @@ var Labels = function() {
         // else //this is important otherwise if the last item was unselected from the picker the labelIDs returned null and the label area was not being refreshed/cleaned.
         //     $('.labels-area').html(''); // wipe out existing labels
 
-         updateLabelPickerForHackyDate(hackydates[PAGE_ON_SCREEN]);
+         //updateLabelPickerForHackyDate(hackydates[PAGE_ON_SCREEN]);
          //updateLabelPickerForReadyToRelease(candidateForClearance[PAGE_ON_SCREEN]);
     };
 
