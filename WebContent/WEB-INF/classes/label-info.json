@@ -4,7 +4,7 @@
     0},"1":{"labType":"GENERAL","labId":"1","labName":"Reviewed",
     "description":"This message was reviewed","isSysLabel":false,
     "restrictionType":"OTHER","restrictedUntilTime":0,"restrictedForYears":
-    0},"2":{"labType":"GENERAL","labId":"2","labName":"Clear For Release",
+    0},"2":{"labType":"GENERAL","labId":"2","labName":"Cleared For Release",
     "description":"This message is ready to be released to the next phase",
     "isSysLabel":true,"restrictionType":"OTHER","restrictedUntilTime":0,
     "restrictedForYears":0},"3":{"labType":

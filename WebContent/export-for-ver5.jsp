@@ -127,13 +127,13 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         for(Document doc: archive.getAllDocsAsSet()){
             EmailDocument edoc = (EmailDocument)doc;
             if(edoc.reviewed){
-                docToLabelID.put(edoc.getUniqueId(),"1");
+                docToLabelID.put(Util.hash(edoc.getSignature()),"1");
             }
             if(edoc.doNotTransfer){
-                docToLabelID.put(edoc.getUniqueId(),"0");
+                docToLabelID.put(Util.hash(edoc.getSignature()),"0");
             }
             if(edoc.transferWithRestrictions){
-                docToLabelID.put(edoc.getUniqueId(),"3");
+                docToLabelID.put(Util.hash(edoc.getSignature()),"3");
             }
         }
 
@@ -194,7 +194,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         for(Document doc: archive.getAllDocsAsSet()){
         EmailDocument edoc = (EmailDocument)doc;
         if(!Util.nullOrEmpty(edoc.description))
-            docToAnnotationMap.put(edoc.getUniqueId(),edoc.comment);
+            docToAnnotationMap.put(Util.hash(edoc.getSignature()),edoc.comment);
         }
 
         //export as csv file.. Annotations.csv

@@ -38,7 +38,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 if(request.getParameter("datasetId")!=null)
     docs = (Set<Document>) session.getAttribute(request.getParameter("datasetId"));
 else if (request.getParameter("docId")!=null)
-    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId()==request.getParameter("docId");}).collect(Collectors.toSet());
+    docs = archive.getAllDocsAsSet().stream().filter(doc->{return doc.getUniqueId().equals(request.getParameter("docId"));}).collect(Collectors.toSet());
 else
     {
     assert false : new AssertionError("You tried to apply flags only on a set of documents which is not set yet.");
