@@ -60,34 +60,8 @@ var Navigation = function(){
 // label-selectpicker and .labels-area on screen
 var Labels = function() {
     var labelsOnPage = []; // private to this module
-    var durationalTimeRestrictionaLabels = [];
-    var clearedForReleaseLabelID;
-    var hackydates=[];
-    var candidateForClearance=[];
+    var clearedFor
     var currentPageOldLabels;
-   /* function updateLabelPickerForHackyDate(isHackyDate){
-        if(JSON.parse(isHackyDate)){
-            for(var j=0;j<durationalTimeRestrictionaLabels.length;j++)
-                $('.label-selectpicker').find('[value='+durationalTimeRestrictionaLabels[j]+']').prop('disabled',true);
-        }else{
-            for(var j=0;j<durationalTimeRestrictionaLabels.length;j++)
-                $('.label-selectpicker').find('[value='+durationalTimeRestrictionaLabels[j]+']').prop('disabled',false);
-        }
-
-        $('.label-selectpicker').selectpicker('refresh');
-    }*/
-
-/*
-    function updateLabelPickerForReadyToRelease(isCandidateForRelease){
-        if(JSON.parse(isCandidateForRelease)){
-            $('.label-selectpicker').find('[value='+clearedForReleaseLabelID+']').prop('disabled',false);
-        }else{
-            $('.label-selectpicker').find('[value='+clearedForReleaseLabelID+']').prop('disabled',true);
-        }
-
-        $('.label-selectpicker').selectpicker('refresh');
-    }
-*/
 
     /** renders labels on screen for the current message (but does not change any state in the backend) */
     function refresh_labels_on_screen(labelIds) {
@@ -95,7 +69,7 @@ var Labels = function() {
             return;
 
         // we have to set up the select picker so it will show the right things in the dropdown
-        $('.label-selectpicker').selectpicker('deselectAll');
+        //$('.label-selectpicker').selectpicker('deselectAll');
         $('.label-selectpicker').selectpicker ('val', labelIds); // e.g. setting val, [0, 1, 3] will set the selectpicker state to these 3
 
         // refresh the labels area
@@ -132,6 +106,10 @@ var Labels = function() {
 
     /** private method labelIds is an array of label ids (e.g. [1,2,5]) which are to be applied to the current message */
     function apply_labels(labelIds) {
+        //
+        // if(labelIds.length===0){
+        //     return;
+        // }
 
         // post to the backend, and when successful, refresh the labels on screen
         $.ajax({
@@ -160,29 +138,16 @@ var Labels = function() {
         // else //this is important otherwise if the last item was unselected from the picker the labelIDs returned null and the label area was not being refreshed/cleaned.
         //     $('.labels-area').html(''); // wipe out existing labels
 
-         //updateLabelPickerForHackyDate(hackydates[PAGE_ON_SCREEN]);
-         //updateLabelPickerForReadyToRelease(candidateForClearance[PAGE_ON_SCREEN]);
     };
 
     var setup = function () {
         for (var i = 0; i < TOTAL_PAGES; i++) {
             labelsOnPage[i] = $pages[i].getAttribute('labels').split(",");
-            hackydates[i] = $pages[i].getAttribute('hackyDate');
-           // candidateForClearance[i]=$pages[i].getAttribute('candidateForClearance');
         }
-        for(var j=0; j<Object.keys(allLabels).length;j++){
-            var lab = allLabels[j];
-            if(lab.labType==='RESTRICTION'){
-                if(lab.restrictionType==='RESTRICTED_FOR_YEARS')
-                    durationalTimeRestrictionaLabels.push(lab.labId);
-            }
-        }
-
-        clearedForReleaseLabelID=2;//IMP: This is being hard coded. Is there a good way to make it consistent with the backend java variable in LabelManager.java?
 
         // set up label handling
         $('.label-selectpicker').on('change', function () {
-            var labelIds = $('.label-selectpicker').selectpicker('val');
+            var labelIds = $('.label-selectpicker').selectpicker('val') || [];
             if (labelIds) {
                 currentPageOldLabels = labelsOnPage[PAGE_ON_SCREEN];
                 labelsOnPage[PAGE_ON_SCREEN] = labelIds;

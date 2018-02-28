@@ -122,11 +122,11 @@
 	// labelID will be a single item here, even though applyLabelsAnnotations can support more than one
 	function do_action (labelID, action) {
 	    //if this label is of type time restrction with relative time then inform the user that this label will not be set for messages with unidentified dates
-		//if this label is of type 'clear for release' then inform the user that this label will only be set of messages with general restriction labels or with restriction labels where time has expired.
+		//if this label is of type 'cleared for release' then inform the user that this label will only be set of messages with general restriction labels or with restriction labels where time has expired.
 		var msg="";
 		/*if(action=="set") {
             if (labelID === "<%=archive.getLabelManager().LABELID_CFR%>")
-                msg = "This label will be set for only those messages where time restriction has expired or which contain only general restriction labels. All the messages with \"Clear for release\" label will " +
+                msg = "This label will be set for only those messages where time restriction has expired or which contain only general restriction labels. All the messages with \"Cleared for release\" label will " +
                     "be exported to the next module. Be careful!";
 
             if (relativeTimedRestrictions.indexOf(labelID) > -1)//means labelID is a relative timed restriction label.

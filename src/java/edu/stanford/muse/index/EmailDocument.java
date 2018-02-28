@@ -89,7 +89,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	public String getErrorString() { return errorString; }
 	public void setErrorString(String errorString) { this.errorString = errorString; }
 	@Override
-	public String getUniqueId() { return folderName + "-" + id; }
+	public String getUniqueId() { return Util.hash(getSignature());}//folderName + "-" + id; }
 	
 	/** returns a sorted list of strings based on given addresses.
 	 * none of the addresses should be null!

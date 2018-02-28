@@ -647,6 +647,16 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return sb.toString();
 	}
 
+	public static String repeatUnescapeHTML(String str){
+		if(str== null)
+			return null;
+		String tmp;
+		do{
+			tmp = new String(str);
+			str = unescapeHTML(str);
+		}while(!tmp.equals(str));
+		return tmp;
+	}
 	/**
 	 * escapes the 5 special html chars - see
 	 * http://www.w3schools.com/tags/ref_entities.asp

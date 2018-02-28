@@ -93,10 +93,10 @@
 	String nPersonEntities ="", nSensitiveMessages ="";
 	int nNonPersonEntities = 0;
 	if(statsAvailable){
-		nPersonEntities = Integer.toString(archive.collectionMetadata.entityCounts.get(NEType.Type.PERSON.getCode()));
+		nPersonEntities = Integer.toString(archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PERSON.getCode(),0));
 		for (short fineType: archive.collectionMetadata.entityCounts.keySet()) {
 			if (NEType.getTypeForCode (fineType) != NEType.Type.PERSON)
-				nNonPersonEntities += archive.collectionMetadata.entityCounts.get(fineType);
+				nNonPersonEntities += archive.collectionMetadata.entityCounts.getOrDefault(fineType,0);
 		}
 	}
 	if(archive.collectionMetadata.numPotentiallySensitiveMessages>=0)

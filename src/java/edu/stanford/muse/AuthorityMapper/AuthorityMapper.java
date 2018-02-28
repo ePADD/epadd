@@ -50,7 +50,7 @@ public class AuthorityMapper implements java.io.Serializable {
         public String lcshId, lcnafId, wikipediaId, viafId, localId;
         public String preferredLabel, altLabels;
         public String extent; /* e.g. 1940-2012, or b. 1223 */
-        boolean isManuallyAssigned;
+        public boolean isManuallyAssigned;
     }
 
     /** the core data in this class is:
@@ -78,6 +78,7 @@ public class AuthorityMapper implements java.io.Serializable {
 
         // write the header line: "name, fast, viaf, " etc.
         List<String> line = new ArrayList<>();
+        line.add("Canonical Name");
         line.add ("Name");
         line.add ("FAST Id");
         line.add ("VIAF Id");
@@ -92,9 +93,11 @@ public class AuthorityMapper implements java.io.Serializable {
 
         // write the records
         if (cnameToAuthority != null) {
-            for (AuthorityRecord auth : cnameToAuthority.values()) {
+            for(String canonname : cnameToAuthority.keySet()){
+                AuthorityRecord auth = cnameToAuthority.get(canonname);
                 // note: the cname itself is not exported.
                 line = new ArrayList<>();
+                line.add(canonname);
                 line.add(auth.preferredLabel);
                 line.add(Long.toString(auth.fastId));
                 line.add(auth.viafId);
@@ -218,21 +221,6 @@ public class AuthorityMapper implements java.io.Serializable {
             indexReader.close();
     }
 
-    /*
-    Code for serialization of this object. Going forward, we will save this object in a human-readable format.
-    For that, we need to resolve the issue of storing mailingList and dataErrors in a human-readable format.
-     */
-    public void serializeObjectToFile(String filename) throws IOException {
-        Util.writeObjectToFile(filename,this);
-    }
-    /*
-    Code for deserialization and re-initialization of transient fields of this Class.
-     */
-    public static AuthorityMapper deserializeObjectFromFile(String filename) throws IOException, ClassNotFoundException {
-        AuthorityMapper amapper = (AuthorityMapper)Util.readObjectFromFile(filename);
-        //No transient fields need to be filled. Just return this object.
-        return amapper;
-    }
 
 
 

@@ -959,7 +959,8 @@ public class SearchResult {
             EmailDocument ed = (EmailDocument) k;
             Set<String> labIDs = inputSet.getArchive().getLabelIDs(ed);
             boolean containsTimeRestrictionLabels = !Util.setIntersection(timedRestrictionLabels,labIDs).isEmpty();
-            if(containsTimeRestrictionLabels && inputSet.archive.isCandidateForReleaseLabel(k))
+            //if this document is a candidate for release (all timed restrictions expired) and the label CFR is not set then add a dummy label 'ALL_EXPIRED' to it.
+            if(containsTimeRestrictionLabels && inputSet.archive.isCandidateForReleaseLabel(k) && !labIDs.contains(LabelManager.LABELID_CFR))
                 labIDs.add(LabelManager.ALL_EXPIRED);
             Set<String> intersection = Util.setIntersection(labIDs,neededLabelIDs);
            /* if(intersection.equals(neededLabelIDs))//if all neededlabIDs were present in the document label set then add it to output doc set.

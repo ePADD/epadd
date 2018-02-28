@@ -87,7 +87,7 @@ public class LabelManager implements Serializable{
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
 
         //clearForRelease
-        Label readyForRelease = new Label("Clear For Release",LabType.GENERAL,LABELID_CFR,
+        Label readyForRelease = new Label("Cleared For Release",LabType.GENERAL,LABELID_CFR,
                 "This message is ready to be released to the next phase",true);
         labelInfoMap.put(readyForRelease.getLabelID(),readyForRelease);
     }

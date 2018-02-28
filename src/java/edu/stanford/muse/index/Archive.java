@@ -185,7 +185,7 @@ int errortype=0;
         for(Document doc: docs){
             Set<String> existinglabs = getLabelIDs((EmailDocument)doc);
             labelManager.setLabels(doc.getUniqueId(), labelIDs);
-            boolean isHacky = EmailFetcherThread.INVALID_DATE.equals(((EmailDocument)doc).getDate());
+            boolean isHacky = ((EmailDocument) doc).hackyDate ;//EmailFetcherThread.INVALID_DATE.equals(((EmailDocument)doc).getDate());
             Set<String> allLabels = Util.setUnion(existinglabs,labelIDs);
                 //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
             if(allLabels.contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){
@@ -238,7 +238,7 @@ int errortype=0;
         for(Document doc: docs){
             Set<String> existinglabs = getLabelIDs((EmailDocument)doc);
             labelManager.putOnlyTheseLabels(doc.getUniqueId(), labelIDs);
-            boolean isHacky = EmailFetcherThread.INVALID_DATE.equals(((EmailDocument)doc).getDate());
+            boolean isHacky = ((EmailDocument)doc).hackyDate;// EmailFetcherThread.INVALID_DATE.equals(((EmailDocument)doc).getDate());
             Set<String> allLabels = Util.setUnion(existinglabs,labelIDs);
             //check if existingIds U labelIDs contain cleared for release and is not candidateForRelease..
             if(Util.setUnion(existinglabs,labelIDs).contains(LabelManager.LABELID_CFR) && !isCandidateForReleaseLabel(doc)){

@@ -106,9 +106,9 @@
 	    if(updatedElementsInCollectionContact.size()!=0) {
 			mergeReport.append("-----------" + updatedElementsInCollectionContact.size() + " names/emails were added in the following contact---------------\n");
 			mergeReport.append("***Old emails/names***\n");
-			oldElementsInCollectionContact.forEach(s->mergeReport.append(s+"\n"));
+			oldElementsInCollectionContact.forEach(s->mergeReport.append(Util.repeatUnescapeHTML(s)+"\n"));
 			mergeReport.append("***Newly added emails/names***\n");
-			updatedElementsInCollectionContact.forEach(s->mergeReport.append(s+"\n"));
+			updatedElementsInCollectionContact.forEach(s->mergeReport.append(Util.repeatUnescapeHTML(s)+"\n"));
 			mergeReport.append("----------------\n");
 		}
 	}
@@ -123,7 +123,7 @@
 	        elementsToSearchFor.addAll(cont.getNames());
 	    });
 	    for(String elem: Util.setUnion(c.getEmails(),c.getNames()))
-			mergeReport.append(elem+"\n");
+			mergeReport.append(Util.repeatUnescapeHTML(elem)+"\n");
 	    mergeReport.append("-------\n");
 		//Find the potential contact candidates for merging with this contact as below;
 		//For each element in elementsToSearch, search for element in the merged addressbook

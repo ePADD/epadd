@@ -48,9 +48,9 @@
 				statsAvailable = true;
 			String pC="",oC="",lC=""; // , nS="";
 			if(statsAvailable){
-				pC=" ("+archive.collectionMetadata.entityCounts.get(NEType.Type.PERSON.getCode())+")";
-				oC=" ("+archive.collectionMetadata.entityCounts.get(NEType.Type.ORGANISATION.getCode())+")";
-				lC=" ("+archive.collectionMetadata.entityCounts.get(NEType.Type.PLACE.getCode())+")";
+				pC=" ("+archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PERSON.getCode(),0)+")";
+				oC=" ("+archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.ORGANISATION.getCode(),0)+")";
+				lC=" ("+archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PLACE.getCode(),0)+")";
 			}
 			AddressBook ab = archive.addressBook;
 			writeProfileBlock(out, archive, "", "Assign authorities");%>

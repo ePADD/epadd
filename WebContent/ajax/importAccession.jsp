@@ -141,7 +141,7 @@ if (!collectionDir.equals(baseDir))
         }
 
 	} catch (Exception e) {
-		result.put("status", 1);
+		result.put("status", 2);
 		result.put ("error", "Unable to import accession: " + e.getMessage());
 	}
 	out.println (result.toString(4));

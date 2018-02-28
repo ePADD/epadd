@@ -19,7 +19,6 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import edu.stanford.muse.webapp.JSPHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -371,10 +370,10 @@ public class Contact extends UnionFindObject {
 
 		for (String s: uniqueNames)
 		{
-			sb.append (Util.escapeHTML(s) + "\n");
+			sb.append (Util.repeatUnescapeHTML(s) + "\n");
 		}
 		for (String s: uniqueEmails)
-			sb.append (Util.escapeHTML(s) + "\n");
+			sb.append (Util.repeatUnescapeHTML(s) + "\n");
 		/*sb.append(AddressBook.PERSON_DELIMITER);
 		sb.append("\n");*/
 		out.append(sb.toString());

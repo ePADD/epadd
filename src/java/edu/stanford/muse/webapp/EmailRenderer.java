@@ -391,16 +391,15 @@ public class EmailRenderer {
 						}else
 							html.append(" labels=\"\"");
 					}
-					EmailDocument ed = (EmailDocument)d;
 
 					//set if this document has a hacky date or not..based on this the UI will
 					//allow/disallow to set a time duration based restriction label (git issue #165)
-					boolean hackydate = false;
+					/*boolean hackydate = false;
 					if(EmailFetcherThread.INVALID_DATE.equals(ed.getDate()))
 						hackydate = true;
 
 					html.append(" hackyDate=\""+hackydate+"\"");
-
+*/
 					/*//set if this message has a timerestriction label that has expired.
 					if(result.getArchive().isCandidateForReleaseLabel(d))
 						html.append(" candidateForClearance=\"true\"");

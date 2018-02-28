@@ -163,12 +163,8 @@ public class SimpleSessions {
 			br.close();
 			///////////////CorrespondentAuthorityMapper/////////////////////////////
 			CorrespondentAuthorityMapper cmapper = null;
-			try {
-				//Cast is no issue as there is no extra field in the inherited class CorrespondentAuthorityMapper.
-				cmapper = (CorrespondentAuthorityMapper)CorrespondentAuthorityMapper.deserializeObjectFromFile(cAuthorityPath);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			cmapper = CorrespondentAuthorityMapper.readObjectFromStream(cAuthorityPath);
+
 			archive.correspondentAuthorityMapper = cmapper;
 			/////////////////Label Mapper/////////////////////////////////////////////////////
 			LabelManager labelManager = null;
@@ -440,10 +436,11 @@ public class SimpleSessions {
 		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
 		//file path name of entitybook
 		String cAuthorityPath = dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
-		log.info("Saving entity book to file " + cAuthorityPath);
+		new File(cAuthorityPath).mkdir();
+		log.info("Saving correspondent Authority mappings to directory" + cAuthorityPath);
 
 		try {
-			archive.getCorrespondentAuthorityMapper().serializeObjectToFile(cAuthorityPath);
+			archive.getCorrespondentAuthorityMapper().writeObjectToStream(cAuthorityPath);
 		} catch (ParseException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}

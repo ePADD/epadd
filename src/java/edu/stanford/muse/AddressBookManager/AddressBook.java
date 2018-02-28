@@ -433,6 +433,7 @@ public class AddressBook implements Serializable {
         String email = a.getAddress();
         email = EmailUtils.cleanEmailAddress(email);
         String name = a.getPersonal();
+        name = Util.unescapeHTML(name);
         name = EmailUtils.cleanPersonName(name);
 
         if (!Util.nullOrEmpty(name)) {
@@ -1388,6 +1389,8 @@ mergeResult.newContacts.put(C2,savedC2)
         }
         //fillTransientVariables
         ab.fillTransientFields();
+        //unify
+        ab.organizeContacts();
         return ab;
 
     }
