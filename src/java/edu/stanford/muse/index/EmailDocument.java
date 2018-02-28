@@ -686,6 +686,8 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if(this.description == null) {
 			this.description = "<None>";
 		}
+		if(this.messageID !=null)
+			sb.append("MessageID: "+this.messageID + "\n");
 
 		sb.append("Subject: " + this.description + "\n");
 		sb.append("\n");

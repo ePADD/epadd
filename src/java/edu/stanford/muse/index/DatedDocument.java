@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -61,14 +62,24 @@ public class DatedDocument extends Document {
 		DatedDocument other = (DatedDocument) o;
 		if (this == other) return 0;
 
-		if (this.date != other.date) {
+		int result = Util.compareToNullSafe(this.date,other.date);
+		if(result!=0) {
+//			//check if the application of Util.compareToNullSafe(other.date,this.date) is different sign than this one.
+//			int tmp = Util.compareToNullSafe(other.date,this.date);
+//			if(tmp<0 && result<0)
+//				assert(Util.softAssert(true, "Some error as both can't be of same sign", JSPHelper.log));
+//			if(tmp>0 && result>0)
+//				assert(Util.softAssert(true, "Some error as both can't be of same sign", JSPHelper.log));
+			return result;
+		}
+		/*if (this.date != other.date) {
 			// check for null date and ordered it after
-			if (this.date == null) return 1;
-			if (other.date == null)	return -1;
+			if (this.date == null) return -1;
+			if (other.date == null)	return 1;
 
 			int result = date.compareTo(other.date);
 			if (result != 0) return result;
-		}
+		}*/
 
 		//return this.toString().compareTo(other.toString()); // this would compare docId which we may not want to. 
 		//return super.compareTo(other); // this would compare url which we may not want to.
