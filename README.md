@@ -18,16 +18,16 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 
 **System Requirements**
 
-OS: Windows 7 SP1 / 10, Mac OS X  10.10 / 10.11
+OS: Windows 7 SP1 / 10, Mac OS X  10.12 / 10.13, Ubuntu 16.04 
 Memory:  8 GB RAM (4 GB RAM allocated to the application by default)
-Browser:  Chrome 60 or later, Firefox 55 or later
+Browser:  Chrome 64 or later, Firefox 58 or later
 Windows installations: Java Runtime Environment 8u101 or later required. 
 
 **Installation** 
 
-(Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1joUmI8yZEOnFzuWaVN1A5gAEA8UawC-UnKycdcuG5Xc).
+(Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1ZMuWU0z-IVsk80_lUEYMfVrwfCsS1bp0sjL28GBGcMU/edit#).
 
-ePADD has been tested on and optimized for Windows 7 SP1 / 10 and  Mac OS X  10.10 / 10.11. Please follow the instructions below for your operating system.
+ePADD has been tested on and optimized for Windows 7 SP1 / 10, Mac OS X  10.12 / 10.13, and Ubuntu 16.04 . Please follow the instructions below for your operating system.
 
 *Installing ePADD on Windows*
 
@@ -93,6 +93,7 @@ Unless otherwise indicated, software items in this repository are distributed un
 - Mike Giarlo, Stanford University;
 - Marie Hicks, Illinois Institute of Technology;
 - Peter Hirtle, Cornell University;
+- Lise Jaillart, Loughborough University;
 - Jeremy Leighton John, British Library;
 - Cal Lee, University of North Carolina, Chapel Hill;
 - Evelyn McLellan, Artefactual;
