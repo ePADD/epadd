@@ -57,6 +57,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	public Set<String> folderNames = new LinkedHashSet<>(), emailSources = new LinkedHashSet<>(); // email can now belong to multiple folders, folderName field also maintained for backward compatibility
 	public Address[] to, from, cc, bcc; // note: for some reason from[] is an array in JavaMail, because it was supposed to be possible for a message to have multiple senders.
 	public String messageID;
+	private String uniqueID=null;
 	public String sentToMailingLists[];
 	public List<Blob> attachments;
 	public boolean attachmentsYetToBeDownloaded;
@@ -78,18 +79,29 @@ public class EmailDocument extends DatedDocument implements Serializable
 		this.bcc = bcc;
 		this.from = from;
 		this.messageID = messageID;
-//		this.url = url;
+
+		//		this.url = url;
 		if (folderName != null)
 			this.folderName = InternTable.intern(folderName); // many messages will have the same foldername so better to intern
 		if (emailSource != null)
 			this.emailSource = emailSource;
+		this.uniqueID = Util.hash(getSignature());
 	}
 
 	public boolean hasError() { return errorString != null; }
 	public String getErrorString() { return errorString; }
 	public void setErrorString(String errorString) { this.errorString = errorString; }
 	@Override
-	public String getUniqueId() { return Util.hash(getSignature());}//folderName + "-" + id; }
+	public String getUniqueId()
+	{
+		if(!Util.nullOrEmpty(uniqueID))
+									return uniqueID;
+		else
+		{
+			uniqueID = Util.hash(getSignature());
+			return uniqueID;
+		}
+	}//folderName + "-" + id; }
 	
 	/** returns a sorted list of strings based on given addresses.
 	 * none of the addresses should be null!
