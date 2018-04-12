@@ -193,7 +193,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         Map<String,String> docToAnnotationMap = new LinkedHashMap<>();
         for(Document doc: archive.getAllDocsAsSet()){
         EmailDocument edoc = (EmailDocument)doc;
-        if(!Util.nullOrEmpty(edoc.description))
+        if(!Util.nullOrEmpty(edoc.comment))
             docToAnnotationMap.put(Util.hash(edoc.getSignature()),edoc.comment);
         }
 
