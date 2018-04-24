@@ -451,7 +451,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 					log.warn (f);
 			}
 			InternetAddress ia = (InternetAddress) from[0];
-			fromSB.append (ia + " ");
+			fromSB.append (ia.toUnicodeString() + " ");
 		}
 		else
 			fromSB.append ("<None>");
@@ -471,7 +471,9 @@ public class EmailDocument extends DatedDocument implements Serializable
 		{
 			for (int i = 0; i < as.length; i++)
 			{
-				sb.append (as[i]);
+				InternetAddress b = (InternetAddress)as[i];
+
+				sb.append (b.toUnicodeString());
 				if (i < as.length-1)
 					sb.append(", ");
 			}
@@ -665,7 +667,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if (this.date != null) {
 			GregorianCalendar cc = new GregorianCalendar();
 			cc.setTime(this.date);
-			formatter.format("%02d:%02d", new Object[]{Integer.valueOf(cc.get(11)), Integer.valueOf(cc.get(12))});
+			formatter.format("%02d:%02d", Integer.valueOf(cc.get(11)), Integer.valueOf(cc.get(12)));
 			sb.append("Date: " + cc.get(5) + " " + CalendarUtil.getDisplayMonth(cc) + " " + cc.get(1) + " " + timeSB + "\n");
 		}
 

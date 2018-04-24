@@ -30,6 +30,7 @@ package edu.stanford.muse.util;
 import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
+import java.nio.charset.StandardCharsets;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -2591,7 +2592,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		String hash = null;
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
-			digest.update(s.getBytes());
+			digest.update(s.getBytes(StandardCharsets.UTF_8));
 			hash = bytesToHexString(digest.digest());
 		} catch (NoSuchAlgorithmException e1) {
 			// TODO Auto-generated catch block

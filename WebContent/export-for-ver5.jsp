@@ -119,7 +119,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         new File(labeldir).mkdir();//make sure it exists
         //Map from Document ID to set of Label ID's
         Multimap<String,String> docToLabelID = LinkedListMultimap.create();
-
+Map<String,String> docidToSignature = new LinkedHashMap<>();
         //we are assuming the following labelid's for default labels..
         //0- do not transfer
         //1- Reviewed
@@ -135,18 +135,20 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
             if(edoc.transferWithRestrictions){
                 docToLabelID.put(Util.hash(edoc.getSignature()),"3");
             }
+	    docidToSignature.put(Util.hash(edoc.getSignature()),edoc.getSignature());
         }
 
         //export docToLabelID map as csv file and put it in dir+"docidmap.csv"
 //writing docToLabelIDmap to csv
         try{
             fw = new FileWriter(labeldir+ File.separator+"docidmap.csv");
-            CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
+            CSVWriter csvwriter = new CSVWriter(fw, ',', CSVWriter.NO_QUOTE_CHARACTER,CSVWriter.NO_ESCAPE_CHARACTER);
 
             // write the header line: "DocID,LabelID ".
             List<String> line = new ArrayList<>();
             line.add ("DocID");
             line.add ("LabelID");
+	    //line.add ("Signature");
             csvwriter.writeNext(line.toArray(new String[line.size()]));
 
             // write the records
@@ -155,7 +157,12 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
                     line = new ArrayList<>();
                     line.add(docid);
                     line.add(labid);
-                    csvwriter.writeNext(line.toArray(new String[line.size()]));
+                    String sig = docidToSignature.getOrDefault(docid,"ERROR! No document found in archive for this unique id");
+                    String d =sig.replace("\n","").replace("\"","").replace(","," ");
+                    //get the signature of this doc from docidToSignature map
+                    //line.add(d);
+
+            csvwriter.writeNext(line.toArray(new String[line.size()]));
                 }
             }
             csvwriter.close();
@@ -200,12 +207,13 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
         //export as csv file.. Annotations.csv
         try{
             fw = new FileWriter(metadatadir+ File.separator+"Annotations.csv");
-            CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
+            CSVWriter csvwriter = new CSVWriter(fw, ',', CSVWriter.NO_QUOTE_CHARACTER,CSVWriter.NO_ESCAPE_CHARACTER);
 
             // write the header line: "DocID,annotation".
             List<String> line = new ArrayList<>();
             line.add ("DocID");
             line.add ("annotation");
+	    //line.add ("Signature");
             csvwriter.writeNext(line.toArray(new String[line.size()]));
 
             // write the records
@@ -214,6 +222,11 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
                     line = new ArrayList<>();
                     line.add(docid);
                     line.add(annotation);
+                    String sig = docidToSignature.getOrDefault(docid,"ERROR! No document found in archive for this unique id");
+                    String d =sig.replace("\n","").replace("\"","").replace(",","");
+                    //get the signature of this doc from docidToSignature map
+                    //line.add(d);
+
                     csvwriter.writeNext(line.toArray(new String[line.size()]));
                 }
             }
