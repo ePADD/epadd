@@ -132,21 +132,24 @@ public class EmailDocument extends DatedDocument implements Serializable
 	}
 
 	@Override
+	//This is a subtle method. We were earlier using the logic of this.hashcode()-other.hashcode() to decide if one is smaller than other or not.
+	//However, this can cause overflow and that will break the transitivity. Note that it is not sufficient to check that the sign of compare(a,b) is opposite of
+	//sign of compare(b,a). Moreover, if a<b and b<c and compare(a,c) should be negative and compare(c,a) should be positive. This might break if there is an overflow
+	//when computing a-c or c-a and as a result the sign changes.
 	public int compareTo(Document o)
 	{
 		EmailDocument other = (EmailDocument) o;
 
 		if (this == other) return 0;
 
+		if(other==null) return 1;
 		int result = super.compareTo(other);
 		if (result != 0) return result;
 
-		// should we need to check "from", "to", "cc", "bcc"?
-		// compare the hashCode for convenience, but not 100% correct. TODO.
-		result = hashCode() - other.hashCode();
-		if (result == 0)
-			assert(Util.softAssert(equals(other), "same hashCode/compareTo==0 should imply equals==true",log));
-		return result;
+
+		String thisid = uniqueID;
+		String otherid = other.getUniqueId();
+		return thisid.compareTo(otherid);
 	}
 
 	@Override
@@ -166,7 +169,11 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if (messageID != null && other.messageID != null && !messageID.equals(other.messageID))
 			return false;
 
-		return addressArraysEqual(to, other.to) && addressArraysEqual(cc, other.cc) && addressArraysEqual(bcc, other.bcc) && addressArraysEqual(from, other.from);
+		boolean result  = addressArraysEqual(to, other.to) && addressArraysEqual(cc, other.cc) && addressArraysEqual(bcc, other.bcc) && addressArraysEqual(from, other.from);
+		if(result)
+			Util.softAssert((this.compareTo(other)==0) && (other.compareTo(this)==0), "same hashCode/compareTo==0 should imply equals==true",log);
+		return result;
+
 	}
 
 	@Override
@@ -464,7 +471,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 					log.warn (f);
 			}
 			InternetAddress ia = (InternetAddress) from[0];
-			fromSB.append (ia + " ");
+			fromSB.append (ia.toUnicodeString() + " ");
 		}
 		else
 			fromSB.append ("<None>");
@@ -484,7 +491,9 @@ public class EmailDocument extends DatedDocument implements Serializable
 		{
 			for (int i = 0; i < as.length; i++)
 			{
-				sb.append (as[i]);
+				InternetAddress b = (InternetAddress)as[i];
+
+				sb.append (b.toUnicodeString());
 				if (i < as.length-1)
 					sb.append(", ");
 			}

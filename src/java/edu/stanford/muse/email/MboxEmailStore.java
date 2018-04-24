@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.mail.*;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 /** email store in mbox format. caches message counts in folders.
@@ -73,7 +74,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	{
 		// Get a Session object
 		// can customize javamail properties here if needed, see e.g. http://java.sun.com/products/javamail/javadocs/com/sun/mail/imap/package-summary.html
-
+		mstorProps.setProperty("mail.mime.address.strict", "false");
 		Session session = Session.getInstance(mstorProps, null);
 		session.setDebug(DEBUG);
 
@@ -83,11 +84,22 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		return store;
 	}
 
-	private void collect_mbox_folders(List<FolderInfo> list, File f) throws MessagingException
+	private void collect_mbox_folders(List<FolderInfo> list, File f, Set<String> seenfolders) throws MessagingException
 	{
+
 		if (!f.exists())
 			return;
 		boolean noChildren = !f.isDirectory();
+		try {
+			if(seenfolders.contains(f.getCanonicalPath()))
+                return;
+			else
+				seenfolders.add(f.getCanonicalPath());
+		} catch (IOException e) {
+			log.info("Serious:!! Unable to get the canonical path of "+f);
+			return;
+		}
+
 
 		if (noChildren)
 		{
@@ -158,7 +170,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 			File filesInDir[] = f.listFiles();
 			if (filesInDir != null) // somehow this can be null when run on /tmp (maybe due to soft links etc).
 				for (File child : filesInDir)
-					collect_mbox_folders(list, child);
+					collect_mbox_folders(list, child,seenfolders);
 		}
 	}
 
@@ -218,7 +230,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		String cacheFilePath = foldersAndCountsDir + File.separatorChar + CACHE_FILENAME + "." + rootPath.replaceAll("/", "--").replaceAll("\\\\", "--");
 		this.folderCache = new FolderCache(cacheFilePath);
 		this.folderInfos = new ArrayList<>();
-		collect_mbox_folders(folderInfos, new File(rootPath));
+		Set<String> seenfolders = new LinkedHashSet<>();
+		collect_mbox_folders(folderInfos, new File(rootPath),seenfolders);
 		doneReadingFolderCounts = true;
 		folderBeingScanned = "";
 
@@ -234,7 +247,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 	public static void main (String args[]) throws MessagingException, IOException
 	{
-		LineNumberReader lnr = new LineNumberReader (new BufferedReader(new InputStreamReader(new FileInputStream("/Users/hangal/Local Folders/gmail-sent"))));
+	/*	LineNumberReader lnr = new LineNumberReader (new BufferedReader(new InputStreamReader(new FileInputStream("/Users/hangal/Local Folders/gmail-sent"))));
 		int count = 0;
 		while (true)
 		{
@@ -244,7 +257,10 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 			if (line.startsWith("From "))
 				count++;
 		}
-		System.out.println (count + " messages found");
+		System.out.println (count + " messages found");*/
+		MboxEmailStore me = 	new MboxEmailStore();
+		me.rootPath = "/home/chinmay/Projects/archive/Bush Small/mbox1";
+		me.computeFoldersAndCounts("/home/chinmay/epadd-appraisal/user");
 	}
 
 	public String toString()

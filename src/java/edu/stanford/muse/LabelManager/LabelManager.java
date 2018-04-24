@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.Document;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
@@ -171,7 +172,7 @@ public class LabelManager implements Serializable{
     argument is the directory where json and csv files will be generated. Label meta data will be stored
     in a json file whereas the mapping of docids to labelids will be stored as csv.
      */
-    public void writeObjectToStream(String dirname){
+    public void writeObjectToStream(String dirname,Map<String,String> docidToSignature){
         // writing labelinfo map to json format
         FileWriter writer = null;
         try {
@@ -190,15 +191,17 @@ public class LabelManager implements Serializable{
             }
         }
 
+
         //writing docToLabelIDmap to csv
         try{
         FileWriter fw = new FileWriter(dirname+ File.separator+CSVFILENAME);
-        CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
+            CSVWriter csvwriter = new CSVWriter(fw, ',', '"',' ',"\n");
 
-        // write the header line: "DocID,LabelID ".
+        // write the header line: "DocID,LabelID,signature ".
         List<String> line = new ArrayList<>();
         line.add ("DocID");
         line.add ("LabelID");
+        //line.add("Signature");
         csvwriter.writeNext(line.toArray(new String[line.size()]));
 
         // write the records
@@ -207,6 +210,10 @@ public class LabelManager implements Serializable{
                 line = new ArrayList<>();
                 line.add(docid);
                 line.add(labid);
+                String sig = docidToSignature.getOrDefault(docid,"ERROR! No document found in archive for this unique id");
+                String d = sig.replace("\n","").replace("\"","").replace(","," ");
+                                //get the signature of this doc from docidToSignature map
+                //line.add(d);
                 csvwriter.writeNext(line.toArray(new String[line.size()]));
             }
            }
@@ -242,13 +249,13 @@ public class LabelManager implements Serializable{
         /// reading docToLabelIDmap from csv
         try{
             FileReader fr = new FileReader(dirname+ File.separator+CSVFILENAME);
-            CSVReader csvreader = new CSVReader(fr, ',', '"', '\n');
+            CSVReader csvreader = new CSVReader(fr, ',', '"', ' ');
 
             // read line by line, except the first line which is header
             String[] record = null;
             record = csvreader.readNext();//skip the first line.
             while ((record = csvreader.readNext()) != null) {
-                lm.docToLabelID.put(record[0],record[1]);
+                lm.docToLabelID.put(record[0],record[1]);//skip record 2 for the time being..
             }
 
             csvreader.close();

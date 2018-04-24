@@ -102,9 +102,8 @@ public class AddressBook implements Serializable {
     }
 
     public AddressBook(Contact self){
-        //Note that self contact is not added to the list. Q: Does it get added to nameContact/emailContact maps?
 
-        //contactListForIds.add(self);
+        contactListForIds.add(self);
         contactForSelf = self;
     }
 /*
@@ -235,6 +234,13 @@ public class AddressBook implements Serializable {
         // nameToContact is very important, so only add to it if we're fairly certain about the name.
         if (Util.tokenize(name).size() > 1)
             nameToContact.put(EmailUtils.normalizePersonNameForLookup(name), c);
+        else {
+            //consider the case when there is no space but special character like . as we found in an example. In that case one should separate that out
+            StringTokenizer st = new StringTokenizer(name, ".", false);
+            if (st.countTokens() > 1)
+                nameToContact.put(EmailUtils.normalizePersonNameForLookup(name), c);
+
+        }
     }
 
     /**
@@ -257,30 +263,59 @@ public class AddressBook implements Serializable {
             name = null;
 
         email = email.trim().toLowerCase();
+
         // get existing contacts for email/name
+
+
+           //two cases appear; 1. Found a contact by name but not by email   --- INV: There should be only one contact with that name..Add email to that contact
+
+           //2. Found a contact by email but not by name -- add name to the contact that was found by name
+        
+           //3. No contact found either by email or by name               
+
+           //Case 3- create a new contact
+
         Contact cEmail = lookupByEmail(email);
         Collection<Contact> cNames;
+
+
+
+
+
         if (name != null) {
             cNames = lookupByName(name);
+            if(cNames.size()>1)
+                log.debug("something problematic");
+            Util.softAssert(cNames.size()<=1,"When building the addressbook " +
+                    "we should ensure that one name does not appear in two different contacts. Later user can manually break this invariant in the edit correspondent page",log);
             for (Contact cName : cNames) {
                 // if name and email have different CIs, unify them first
                 if (cName != null && cEmail != null && cName != cEmail) {
                     log.debug("Merging contacts due to message with name=" + name + ", email=" + email + " Contacts are: " + cName + " -- and -- " + cEmail);
                     cEmail.unify(cName);
                     addEmailAddressForContact(email, cName);
+                    return cName;
+                }else if(cName!=null){
+                    log.debug("Merging contacts due to message with name="+name+" Contact is --" + cName);
+                    addEmailAddressForContact(email,cName);
+                    return cName;
                 }
             }
         }
-
         if (cEmail != null) {
             if (name != null)
                 addNameForContactAndUpdateMaps(name, cEmail);
             return cEmail;
         }
 
-        // neither cEmail nor cName was found. new contact.
-
-        Contact c = new Contact(); // this blank Contact will be set up on the fly later
+        // neither cEmail nor cName was found. Case 3 above- create a new contact.
+      /*  if(name!=null && EmailUtils.normalizePersonNameForLookup("Gayle B.Harrell").equals( EmailUtils.normalizePersonNameForLookup(name))){
+            log.debug("found");
+        }
+        if(email.compareTo("harrell.gayle@leg.state.fl.us")==0){
+            log.debug("foudn case");
+        }
+*/        Contact c = new Contact(); // this blank Contact will be set up on the fly later
         contactIdMap.put(c, contactListForIds.size());
         contactListForIds.add(c);
         addEmailAddressForContact(email, c);
@@ -595,7 +630,7 @@ public class AddressBook implements Serializable {
 
     /**
      * how many of the messages in the given collection are outgoing?
-     */
+     */ 
     public int getOutMessageCount(Collection<EmailDocument> docs) {
         int count = 0;
         Contact me = getContactForSelf();
@@ -1302,6 +1337,7 @@ mergeResult.newContacts.put(C2,savedC2)
         contactIdMap.clear();
         nameToContact.clear();
         emailToContact.clear();
+
         for(int i =0; i<contactListForIds.size();i++){
             Contact c = contactListForIds.get(i);
             contactIdMap.put(c,i);
@@ -1381,7 +1417,9 @@ mergeResult.newContacts.put(C2,savedC2)
         Contact self = Contact.readObjectFromStream(in);
         if(self==null)
             return null;
+
         AddressBook ab = new AddressBook(self);
+
         Contact c = Contact.readObjectFromStream(in);
         while(c!=null){
             ab.contactListForIds.add(c);
@@ -1389,8 +1427,8 @@ mergeResult.newContacts.put(C2,savedC2)
         }
         //fillTransientVariables
         ab.fillTransientFields();
-        //unify
-        ab.organizeContacts();
+        //unify-- may be not.. because the invariant "one name can not be in two contacts" might be broken after editing.
+        //ab.organizeContacts();
         return ab;
 
     }

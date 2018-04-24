@@ -351,10 +351,13 @@ public class Contact extends UnionFindObject {
 		// extra defensive. c.names is already supposed to be a set, but sometimes got an extra blank at the end.
 		List<String> uniqueNames = new LinkedList<>();
 		//first name should be bestName (if not already null)
-		Set<String> allNames=this.getNames();
+		Set<String> allNames=new LinkedHashSet<>(this.getNames());
+		Set<String> allEmails = new LinkedHashSet<>(this.getEmails());
 		if(!Util.nullOrEmpty(this.bestName)) {
 			uniqueNames.add(this.bestName);
 			allNames.remove(this.bestName);
+			//what if the first entry is not name but mail id? This may cause the same mail id appear twice in a contact. Therefore remove it from allEmails
+			allEmails.remove(this.bestName);
 		}
 
 		//why removed this.bestname from allnames? because once it got printed as the first entry we don't want to print it again.
@@ -364,7 +367,7 @@ public class Contact extends UnionFindObject {
 		// uniqueNames.add(s.trim());
 
 		Set<String> uniqueEmails = new LinkedHashSet<>();
-		for (String s: this.getEmails())
+		for (String s: allEmails)
 			if (!Util.nullOrEmpty(s))
 				uniqueEmails.add(s);
 

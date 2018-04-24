@@ -35,6 +35,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -2567,7 +2568,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		String hash = null;
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
-			digest.update(s.getBytes());
+			digest.update(s.getBytes(StandardCharsets.UTF_8));
 			hash = bytesToHexString(digest.digest());
 		} catch (NoSuchAlgorithmException e1) {
 			// TODO Auto-generated catch block

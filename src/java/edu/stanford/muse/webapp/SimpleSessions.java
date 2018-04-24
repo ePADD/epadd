@@ -24,6 +24,7 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.LockObtainFailedException;
 
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.*;
@@ -453,7 +454,14 @@ public class SimpleSessions {
 		String labMapDir = dir + File.separatorChar + Archive.LABELMAPDIR;
 		new File(labMapDir).mkdir();//create dir if not exists.
 		log.info("Saving label mapper to directory " + labMapDir);
-		archive.getLabelManager().writeObjectToStream(labMapDir);
+		//TEMP: create a map of signature to docid and pass it to Labelmanager.write method.. This is done to expand the csv file's signature to include
+		//the signature of the document as well (for readability and debuggability)
+		Map<String,String> docidToSignature = new LinkedHashMap<>();
+		for(Document d: archive.getAllDocsAsSet()){
+			EmailDocument ed = (EmailDocument)d;
+			docidToSignature.put(ed.getUniqueId(),ed.getSignature());
+		}
+		archive.getLabelManager().writeObjectToStream(labMapDir,docidToSignature);
 	}
 
 
@@ -463,7 +471,12 @@ public class SimpleSessions {
 		String dir = archive.baseDir + File.separatorChar + Archive.SESSIONS_SUBDIR;
 
 		String annotationcsv = dir + File.separatorChar + Archive.ANNOTATION_SUFFIX;
-		archive.getAnnotationManager().writeObjectToStream(annotationcsv);
+		Map<String,String> docidToSignature = new LinkedHashMap<>();
+		for(Document d: archive.getAllDocsAsSet()){
+			EmailDocument ed = (EmailDocument)d;
+			docidToSignature.put(ed.getUniqueId(),ed.getSignature());
+		}
+		archive.getAnnotationManager().writeObjectToStream(annotationcsv,docidToSignature);
 
 
 	}

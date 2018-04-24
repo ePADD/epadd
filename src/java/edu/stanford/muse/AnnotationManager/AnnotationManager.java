@@ -55,10 +55,10 @@ public class AnnotationManager{
 
     //write annotation manager in human readable format
 
-    public void writeObjectToStream(String filepath){
+    public void writeObjectToStream(String filepath, Map<String,String> docidToSignature){
         try{
             FileWriter fw = new FileWriter(filepath);
-            CSVWriter csvwriter = new CSVWriter(fw, ',', '"', '\n');
+            CSVWriter csvwriter = new CSVWriter(fw, ',', '"',' ',"\n");
 
             // write the header line: "DocID,annotation".
             List<String> line = new ArrayList<>();
@@ -72,6 +72,10 @@ public class AnnotationManager{
                     line = new ArrayList<>();
                     line.add(docid);
                     line.add(annotation);
+                    String sig = docidToSignature.getOrDefault(docid,"ERROR! No document found in archive for this unique id");
+                    String d = sig.replace("\n","").replace("\"","").replace(","," ");
+                    //get the signature of this doc from docidToSignature map
+                    //line.add(d);
                     csvwriter.writeNext(line.toArray(new String[line.size()]));
                 }
             }
@@ -92,14 +96,14 @@ public class AnnotationManager{
             //read the annotations and assign them to a document in archive (based on unique id)
             try{
                 FileReader fr = new FileReader(annotationfile);
-                CSVReader csvreader = new CSVReader(fr, ',', '"', '\n');
+                CSVReader csvreader = new CSVReader(fr, ',', '"', ' ');
 
                 // read line by line, except the first line which is header
                 String[] record = null;
                 record = csvreader.readNext();//skip the first line.
                 while ((record = csvreader.readNext()) != null) {
                     String docid = record[0];
-                    String annotation = record[1];
+                    String annotation = record[1];//skip record[2] for the time being
                     annotationManager.docToAnnotation.put(docid,annotation);
                 }
 
