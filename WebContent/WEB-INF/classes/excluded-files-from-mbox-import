@@ -1,0 +1,5 @@
+# these are the names of the files which are not shown up in folder listing when importing emails.
+.plist
+.lock
+.DS_Store
+Icon
