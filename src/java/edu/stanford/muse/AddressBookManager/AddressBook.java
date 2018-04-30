@@ -628,9 +628,10 @@ public class AddressBook implements Serializable {
         return new Pair<>(sent, received);
     }
 
-    /**
+   /* *//**
      * how many of the messages in the given collection are outgoing?
-     */ 
+     *//* This was the wrong implementation hence commenting out so that no one uses it in future. The correct logic is written in
+      * the saveArchive method of SimplesSession class where incoming and outgoing message fields of collection metadata is set
     public int getOutMessageCount(Collection<EmailDocument> docs) {
         int count = 0;
         Contact me = getContactForSelf();
@@ -643,7 +644,7 @@ public class AddressBook implements Serializable {
             }
         }
         return count;
-    }
+    }*/
 
     public synchronized Collection<String> getDataErrors() {
         if (dataErrors == null)
