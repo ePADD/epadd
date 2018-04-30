@@ -1046,7 +1046,7 @@ public class EmailUtils {
 		// gather all the words in the name into tokens and sort it
 		List<String> tokens = Util.tokenize (name.toLowerCase());
 		if (tokens.size() <= 1)
-		    return name;
+		    return name.toLowerCase();//IMP: as all tokens which are being returned, are in lower case.
 
 		if (tokens.size() > 2)
 		{
