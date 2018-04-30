@@ -81,17 +81,18 @@
 
 	Collection<EmailDocument> allDocs = (Collection) archive.getAllDocs();
 
-	int outCount = ab.getOutMessageCount(allDocs);
-	int inCount = allDocs.size()-outCount;
-	int nAttachments = EmailUtils.countAttachmentsInDocs(allDocs);
-	int nImageAttachments = EmailUtils.countImageAttachmentsInDocs(allDocs);
 	//int nDocAttachments = EmailUtils.countDocumentAttachmentsInDocs(allDocs);
 	int nFolders = archive.getAllFolders().size();
 	boolean statsAvailable = false;
 	if(archive.collectionMetadata.entityCounts != null)
 		statsAvailable = true;
 	String nPersonEntities ="", nSensitiveMessages ="";
-	int nNonPersonEntities = 0;
+	int nNonPersonEntities = 0,outCount=0,inCount=0,nAttachments=0,nImageAttachments=0;
+	outCount = archive.collectionMetadata.nOutgoingMessages;
+	inCount = archive.collectionMetadata.nIncomingMessages;
+	nAttachments = archive.collectionMetadata.nBlobs;//EmailUtils.countAttachmentsInDocs(allDocs);
+	nImageAttachments = archive.collectionMetadata.nImageBlobs;//EmailUtils.countImageAttachmentsInDocs(allDocs);
+
 	if(statsAvailable){
 		nPersonEntities = Integer.toString(archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PERSON.getCode(),0));
 		for (short fineType: archive.collectionMetadata.entityCounts.keySet()) {
