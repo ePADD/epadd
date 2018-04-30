@@ -32,7 +32,7 @@ public class DictUtils {
 	public static Set<String>	commonDictWords5000 = new HashSet<>();
 	public static Set<String>	topNames		= new HashSet<>();				// used for NER
 	public static Set<String>	tabooNames		= new LinkedHashSet<>();		// this will be ignored by NER
-
+	public static Set<String>   excludedFilesFromImport = new LinkedHashSet<>(); //this will be ignored when listing the mbox files during import.
 	// bannedWords => discrete word; bannedStrings => occurs anywhere in the name
 	// both should be lower case
 	public static Set<String>	bannedWordsInPeopleNames	= new HashSet<>(), bannedStringsInPeopleNames = new HashSet<>();
@@ -114,6 +114,12 @@ public class DictUtils {
 			is = Config.getResourceAsStream("bannedStartStringsForEmailAddresses.txt");
 			if (is != null) {
 				bannedStartStringsForEmailAddresses = new LinkedHashSet<>(Util.getLinesFromInputStream(is, true));
+				is.close();
+			}
+
+			is = Config.getResourceAsStream("excluded-files-from-mbox-import");
+			if (is != null) {
+				excludedFilesFromImport = new LinkedHashSet<>(Util.getLinesFromInputStream(is, true));
 				is.close();
 			}
 
