@@ -334,9 +334,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
         }
 
         //following case is to handle scenario when an icon file is considered as an mbox file with 1 message.
-        if(hackyDate && from==null && to==null && cc==null && bcc==null)
-            return null;
-        // take a deep breath. This object is going to live longer than most of us.
+     /*   if(hackyDate && from==null && to==null && cc==null && bcc==null) {
+            dataErrors.add("IMP:::: hacky date with all as null (from, to, cc, bcc) for folder "+folder_name() + " message id " + id );
+            //return null;
+
+        }
+*/        // take a deep breath. This object is going to live longer than most of us.
         EmailDocument ed = new EmailDocument(id, email_source(), folder_name(), to, cc, bcc, from, m.getSubject(), m.getMessageID(), c.getTime());
 
         String[] headers = m.getHeader("List-Post");
@@ -1042,11 +1045,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     // well, we already converted to emaildoc above during removeMessagesAlreadyInArchive
                     // not a serious perf. concern now, but revisit if needed
                     EmailDocument ed = convertToEmailDocument(mm, unique_id_as_string); // this messageNum is mostly for debugging, it should not be used for equals etc.
-                    //if ed is null then continue;// when will it be null? when it finds an icon file interpreted as message. It does not contain any date, from-to etc and no body
+                  /*  //if ed is null then continue;// when will it be null? when it finds an icon file interpreted as message. It does not contain any date, from-to etc and no body
+                    right now folder listing will not show a file named with icon.
                     if(ed==null)
                     {
                         continue;
-                    }
+                    }*/
                     // need to check this again, because there might be duplicates such within the set we are currently processing.
                     if (archive.containsDoc(ed)) {
                         stats.nMessagesAlreadyPresent++;

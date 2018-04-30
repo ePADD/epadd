@@ -17,6 +17,7 @@ package edu.stanford.muse.email;
 
 
 import edu.stanford.muse.Config;
+import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
@@ -89,18 +90,18 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 		if (!f.exists())
 			return;
-		boolean noChildren = !f.isDirectory();
+
 		try {
 			if(seenfolders.contains(f.getCanonicalPath()))
                 return;
 			else
 				seenfolders.add(f.getCanonicalPath());
 		} catch (IOException e) {
-			log.info("Serious:!! Unable to get the canonical path of "+f);
+			log.warn("Serious:!! Unable to get the canonical path of "+f);
 			return;
 		}
 
-
+		boolean noChildren = !f.isDirectory();
 		if (noChildren)
 		{
 			FolderInfo cachedFolderInfo = folderCache.lookup(f.getPath());
@@ -129,12 +130,11 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 					Pair<Folder, Integer> pair = openFolder(null, f.getPath());
 					int count = pair.getSecond();
 					if (count == 1) { // many files are wrongly considered mbox with count 1. Ignore them if they also have a suffix that is known to cause noise. we're being cautious and ignoring these files only if they are noisy
-						if (path.endsWith (".plist"))
-							return;
-						if (path.endsWith (".lock"))
-							return;
-						if (path.endsWith (".DS_Store")) // explicitly ignore .DS_store and ._.DS_Store files, annoying Mac OS binary files that get read as mbox by our parser
-							return;
+						for(String disallowedFileName : DictUtils.excludedFilesFromImport){
+							if (path.endsWith (disallowedFileName))
+								return;
+
+						}
 
 						// ignore files from the list of recognized attachment types
 						String extension = Util.getExtension(path);
