@@ -1060,6 +1060,7 @@ int errortype=0;
         //change state of the current archive -temporarily//////////
         if (exportInPublicMode){
             //replace description with names;
+            allDocs = new ArrayList<>(retainedDocs);
             replaceDescriptionWithNames(allDocs, this);
         }else{
             allDocs = new ArrayList<>(retainedDocs);
@@ -1163,6 +1164,9 @@ after maskEmailDomain.
         }
 
 
+        //recompute entity count because some documents have been redacted
+        double theta = 0.001;
+        this.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(this,theta);
         // write out the archive file
         SimpleSessions.saveArchive(out_dir, name, this); // save .session file.
         log.info("Completed saving archive object");
