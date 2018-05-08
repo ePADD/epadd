@@ -1138,7 +1138,7 @@ is what we want.
 		{
 			LeafReader atomicReader = atomicReaderContext.reader();
 			Bits bits = atomicReader.getLiveDocs();
-			for (int i = 0; i < atomicReader.numDocs(); i++)
+			for (int i = 0; i < atomicReader.maxDoc(); i++)
 				if (bits!=null && bits.get(i))
 					result.add(r.document(i));
 				else if(bits == null)
@@ -1617,7 +1617,7 @@ is what we want.
 		IndexWriter writer = openIndexWriter(newDir);
 		//log.info("Removing field(s) " + Util.join(fields_to_be_removed, ", ") + " from index.");
 
-		for (int i = 0; i < reader.numDocs(); i++) {
+		for (int i = 0; i < reader.maxDoc(); i++) {
 			org.apache.lucene.document.Document doc = reader.document(i);
 			for (String field : fields_to_be_removed)
 				doc.removeFields(field);
@@ -1640,8 +1640,10 @@ is what we want.
 		IndexWriter writer = openIndexWriter(newDir);
 		//log.info("Removing field(s) " + Util.join(fields_to_be_removed, ", ") + " from index.");
 
+		//https://stackoverflow.com/questions/2311845/is-it-possible-to-iterate-through-documents-stored-in-lucene-index
 		int count = 0;
-		for (int i = 0; i < reader.numDocs(); i++) {
+		//for (int i = 0; i < reader.numDocs(); i++) {
+		for (int i = 0; i < reader.maxDoc(); i++) {
 			org.apache.lucene.document.Document doc = reader.document(i);
 			if (filter_func == null || filter_func.filter(doc))
 			{
