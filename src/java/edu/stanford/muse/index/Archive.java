@@ -1071,12 +1071,12 @@ int errortype=0;
         // copy index and if for public mode, also redact body and remove title
         // fields
         final boolean redact_body_instead_of_remove = true;
-        Set<String> docIdSet = new LinkedHashSet<>();
+       /* Set<String> docIdSet = new LinkedHashSet<>();
         for (Document d : allDocs)
             docIdSet.add(d.getUniqueId());
-        final Set<String> retainedDocIds = docIdSet;
+        final Set<String> retainedDocIds = docIdSet;*/
         Indexer.FilterFunctor emailFilter = doc -> {
-            if (!retainedDocIds.contains(doc.get("docId")))
+            if (!retainedDocIDs.contains(doc.get("docId")))
                 return false;
 
             if (exportInPublicMode) {
@@ -1129,7 +1129,7 @@ after maskEmailDomain.
                             "Consider re-indexing with the latest version for a proper export.");
                 return false;
             }
-            return retainedDocIds.contains(docId);
+            return retainedDocIDs.contains(docId);
         };
 
         indexer.copyDirectoryWithDocFilter(out_dir, emailFilter, attachmentFilter);
