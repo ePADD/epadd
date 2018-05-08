@@ -284,21 +284,29 @@ public class AddressBook implements Serializable {
 
         if (name != null) {
             cNames = lookupByName(name);
-            if(cNames.size()>1)
-                log.debug("something problematic");
-            Util.softAssert(cNames.size()<=1,"When building the addressbook " +
-                    "we should ensure that one name does not appear in two different contacts. Later user can manually break this invariant in the edit correspondent page",log);
-            for (Contact cName : cNames) {
-                // if name and email have different CIs, unify them first
-                if (cName != null && cEmail != null && cName != cEmail) {
-                    log.debug("Merging contacts due to message with name=" + name + ", email=" + email + " Contacts are: " + cName + " -- and -- " + cEmail);
-                    cEmail.unify(cName);
-                    addEmailAddressForContact(email, cName);
-                    return cName;
-                }else if(cName!=null){
-                    log.debug("Merging contacts due to message with name="+name+" Contact is --" + cName);
-                    addEmailAddressForContact(email,cName);
-                    return cName;
+            if(cNames!=null) {
+                if(cNames.size()>1){
+                    StringBuilder s = new StringBuilder("INFO:::When building the addressbook, name " + name + " mapped to the following contacts\n");
+                    s.append("</br>");
+                    for(Contact cName: cNames){
+                        s.append(cName.toString());
+                        s.append("</br>--------------</br>");
+                    }
+                    dataErrors.add(s.toString());
+                }
+
+                for (Contact cName : cNames) {
+                    // if name and email have different CIs, unify them first
+                    if (cName != null && cEmail != null && cName != cEmail) {
+                        log.debug("Merging contacts due to message with name=" + name + ", email=" + email + " Contacts are: " + cName + " -- and -- " + cEmail);
+                        cEmail.unify(cName);
+                        addEmailAddressForContact(email, cName);
+                        return cName;
+                    } else if (cName != null) {
+                        log.debug("Merging contacts due to message with name=" + name + " Contact is --" + cName);
+                        addEmailAddressForContact(email, cName);
+                        return cName;
+                    }
                 }
             }
         }
@@ -436,17 +444,17 @@ public class AddressBook implements Serializable {
      */
     public Collection<Contact> lookupByName(String s) {
         if (s == null)
-            return null;
+            return Collections.EMPTY_LIST;
         String normalizedName = EmailUtils.normalizePersonNameForLookup(s);
-        if (normalizedName == null)
-            return null;
+        if (normalizedName == null || normalizedName.equals(""))
+            return Collections.EMPTY_LIST;
 
         return nameToContact.get(normalizedName);
     }
 
     public Collection<Contact> lookupByEmailOrName(String s) {
         if (s == null)
-            return null;
+            return Collections.EMPTY_LIST;
 
         s = s.trim().toLowerCase();
         Contact c = lookupByEmail(s);
