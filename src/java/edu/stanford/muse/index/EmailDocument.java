@@ -141,13 +141,15 @@ public class EmailDocument extends DatedDocument implements Serializable
 		EmailDocument other = (EmailDocument) o;
 
 		if (this == other) return 0;
+/*
 
 		if(other==null) return 1;
 		int result = super.compareTo(other);
 		if (result != 0) return result;
+*/
 
 
-		String thisid = uniqueID;
+		String thisid = getUniqueId();
 		String otherid = other.getUniqueId();
 		return thisid.compareTo(otherid);
 	}
@@ -158,8 +160,14 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if (!(o instanceof EmailDocument))
 			return false;
 
+
 		EmailDocument other = (EmailDocument) o;
 
+		if(this.compareTo(other)==0)
+			return true;
+		else
+			return false;
+		/*
 		// check super equals first (for date and time)
 		if (!super.equals(o))
 			return false;
@@ -173,13 +181,15 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if(result)
 			Util.softAssert((this.compareTo(other)==0) && (other.compareTo(this)==0), "same hashCode/compareTo==0 should imply equals==true",log);
 		return result;
-
+*/
 	}
 
 	@Override
 	public int hashCode()
 	{
-		int result = super.hashCode();
+		return getUniqueId().hashCode();//Integer.parseInt(Util.hash(getSignature()));/*
+
+		/*int result = super.hashCode();
 		if (messageID != null)
 			result = result*37 ^ messageID.hashCode();
 		if (to != null)
@@ -197,7 +207,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		// without ^ 1,2,4 above a single email addr in either to/cc/bcc will result in same hash value.
 		// but changing the code here now will affect existing archives.
 
-		return result;
+		return result;*/
 	}
 
 	/** get all addrs associated with the message -- from, to, cc, bcc */
@@ -605,6 +615,8 @@ public class EmailDocument extends DatedDocument implements Serializable
 				result |= EmailDocument.RECEIVED_MASK;
 				break;
 			}
+			if(result==0)//if neither sent or received then it is received by default.
+				return EmailDocument.RECEIVED_MASK;
 		return result;
 	}
 
