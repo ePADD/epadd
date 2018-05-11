@@ -70,6 +70,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	public EmailDocument() { /* */ }
 	public EmailDocument(String id) { this.id = id; } /* prob. useful only for errors */
     private static Log log						= LogFactory.getLog(EmailDocument.class);
+	public static transient Map<String,String> uniqueIdToSignature = new LinkedHashMap<>();
 
 	public EmailDocument(String id, String emailSource, String folderName, Address[] to, Address[] cc, Address[] bcc, Address[] from, String subject, String messageID, Date date)
 	{
@@ -94,11 +95,17 @@ public class EmailDocument extends DatedDocument implements Serializable
 	@Override
 	public String getUniqueId()
 	{
-		if(!Util.nullOrEmpty(uniqueID))
-									return uniqueID;
+		if(!Util.nullOrEmpty(uniqueID)) {
+			//also store in map (transient)-- for debugging purpose so that we know the mapping of uniqueid to signature of the email document
+			if(!EmailDocument.uniqueIdToSignature.containsKey(uniqueID))
+				EmailDocument.uniqueIdToSignature.put(uniqueID,getSignature());
+			return uniqueID;
+		}
 		else
 		{
 			uniqueID = Util.hash(getSignature());
+			//also store in map (transient)
+			EmailDocument.uniqueIdToSignature.put(uniqueID,getSignature());
 			return uniqueID;
 		}
 	}//folderName + "-" + id; }
