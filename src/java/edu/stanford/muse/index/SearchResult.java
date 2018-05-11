@@ -460,7 +460,7 @@ public class SearchResult {
 
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
             EmailDocument ed = (EmailDocument)k.getKey();
-            String messageSig = Util.hash (ed.getSignature()); // should be made more efficient by storing the hash inside the ed
+            String messageSig = ed.getUniqueId(); // should be made more efficient by storing the hash inside the ed
             if (!Util.nullOrEmpty (messageSig))
                 if (messageIds.contains(messageSig))
                     return true;//resultDocs.add(ed);
