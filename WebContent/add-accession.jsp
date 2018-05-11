@@ -61,7 +61,7 @@
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionID">Accession ID</label>
+                    <label for="accessionID">Accession ID*</label>
                     <input id="accessionID" class="dir form-control" type="text" name="accessionID" value=""/>
                 </div>
             </div>
@@ -116,7 +116,17 @@
         $('#gobutton').click(function(e) {
             // this currently just copies the archive into the accession.
             // it has to be extended to do a merge if the collection already exists
-            epadd.import_accession(e, muse.collect_input_fields());
+            var accid = $('#accessionID').val();
+            var accpath = $('#accessionFolder').val()
+
+                if (accpath && accpath.length > 0) {
+                    if (accid && accid.length > 0)
+                        epadd.import_accession(e, muse.collect_input_fields());
+                    else
+                        epadd.alert("Please provide an accession ID for this accession");
+                }
+                else
+                    epadd.alert("Please provide an accession folder for this accession");
             // should not reach here, because load_archive redirect, but just in case...
             return false;
         });
