@@ -40,7 +40,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.SingleInstanceLockFactory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.automaton.RegExp;
@@ -1148,6 +1147,40 @@ is what we want.
 		return result;
 	}
 
+	private List<org.apache.lucene.document.Document> getAllDocsWithFields(Boolean attachmentType) throws IOException
+	{
+		List<org.apache.lucene.document.Document> result = new ArrayList<>();
+
+		// read all the docs in the leaf readers. omit deleted docs.
+		DirectoryReader r;
+		if(attachmentType)
+			r = DirectoryReader.open(directory_blob);
+		else
+			r = DirectoryReader.open(directory);
+
+		Bits liveDocs = MultiFields.getLiveDocs(r);
+		String fieldsArray[] = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+			"cc_names","bcc_names","languages","names","names_original","en_names_title"};
+		Set<String> fieldsToLoad = new HashSet<String>();
+
+        for(String s: fieldsArray){
+            fieldsToLoad.add(s);
+        }
+
+		for(int i=0;i<r.maxDoc();i++){
+			org.apache.lucene.document.Document doc = r.document(i,fieldsToLoad);
+			if(liveDocs!=null && !liveDocs.get(i))
+				continue;
+
+			if(doc == null || doc.get("docId") == null)
+				continue;
+			result.add(doc);
+			//contentDocIds.put(i, doc.get("docId"));
+		}
+		r.close();
+		return result;
+	}
+
 	EmailDocument docForId(String id) {
 		return docIdToEmailDoc.get(id);
 	}
@@ -1609,32 +1642,37 @@ is what we want.
 	}
 
 	// since we may need to rebuild the index in a new directory, the analyzer needs to have been initialized apriori
-	private synchronized Directory copyDirectoryExcludeFields(Directory dir, String out_basedir, String out_name, String... fields_to_be_removed) throws IOException
+	private synchronized Directory copyDirectoryExcludeFields(boolean attachmentType, String out_basedir, String out_name, String... fields_to_be_removed) throws IOException
 	{
-		IndexReader reader = DirectoryReader.open(dir); // IndexReader.open(dir, true); // read-only=true
+		List<org.apache.lucene.document.Document> allDocsLive = getAllDocsWithFields(attachmentType);
+		//IndexReader reader = DirectoryReader.open(dir); // IndexReader.open(dir, true); // read-only=true
 
 		Directory newDir = createDirectory(out_basedir, out_name);
 		IndexWriter writer = openIndexWriter(newDir);
 		//log.info("Removing field(s) " + Util.join(fields_to_be_removed, ", ") + " from index.");
 
-		for (int i = 0; i < reader.maxDoc(); i++) {
-			org.apache.lucene.document.Document doc = reader.document(i);
+		for(org.apache.lucene.document.Document doc: allDocsLive){
 			for (String field : fields_to_be_removed)
 				doc.removeFields(field);
 			writer.addDocument(doc);
 		}
+		/*for (int i = 0; i < reader.maxDoc(); i++) {
+			org.apache.lucene.document.Document doc = reader.document(i);
+
+		}*/
 
 		writer.close();
-		reader.close();
+		//reader.close();
 
 		return newDir;
 	}
 
 	// since we may need to rebuild the index in a new directory, the analyzer needs to have been initialized apriori
-	private synchronized Directory copyDirectoryWithDocFilter(Directory dir, String out_basedir, String out_name, FilterFunctor filter_func) throws IOException
+	private synchronized Directory copyDirectoryWithDocFilter(boolean attachmentType, String out_basedir, String out_name, FilterFunctor filter_func) throws IOException
 	{
 		long startTime = System.currentTimeMillis();
-		IndexReader reader = DirectoryReader.open(dir); // IndexReader.open(dir, true); // read-only=true
+		List<org.apache.lucene.document.Document> alldocsLive = getAllDocsWithFields(attachmentType);
+//		IndexReader reader = DirectoryReader.open(dir); // IndexReader.open(dir, true); // read-only=true
 
 		Directory newDir = createDirectory(out_basedir, out_name);
 		IndexWriter writer = openIndexWriter(newDir);
@@ -1642,24 +1680,29 @@ is what we want.
 
 		//https://stackoverflow.com/questions/2311845/is-it-possible-to-iterate-through-documents-stored-in-lucene-index
 		int count = 0;
-		//for (int i = 0; i < reader.numDocs(); i++) {
-		for (int i = 0; i < reader.maxDoc(); i++) {
-			org.apache.lucene.document.Document doc = reader.document(i);
+		for(org.apache.lucene.document.Document doc: alldocsLive){
 			if (filter_func == null || filter_func.filter(doc))
 			{
 				writer.addDocument(doc);
 				count++;
-            }
+			}
 		}
+		/*//for (int i = 0; i < reader.numDocs(); i++) {
+		for (int i = 0; i < reader.maxDoc(); i++) {
+
+			org.apache.lucene.document.Document doc = reader.document(i);
+			//add only if it is not deleted...
+
+		}*/
 
 		writer.close();
-		reader.close();
+		//reader.close();
 
 		log.info ("CopyDirectoryWithtDocFilter to dir:" + out_basedir + " name: " + baseDir + " time: " + (System.currentTimeMillis() - startTime) + " ms docs: " + count);
 		return newDir;
 	}
 
-    private synchronized Directory removeFieldsFromDirectory(Directory dir, String... fields_to_be_removed) throws IOException
+    private synchronized Directory removeFieldsFromDirectory(Directory dir, boolean attachmentType, String... fields_to_be_removed) throws IOException
 	{
 		if (!indexHasFields())
 			return dir;
@@ -1673,7 +1716,7 @@ is what we want.
 			tmp_name = fsdir.getDirectory().getFileName() + tmp_name;
 		}
 
-		Directory newDir = copyDirectoryExcludeFields(dir, baseDir, tmp_name, fields_to_be_removed);
+		Directory newDir = copyDirectoryExcludeFields(attachmentType, baseDir, tmp_name, fields_to_be_removed);
 
 		if (is_file_based) {
 			// delete the original dir and rename tmp
@@ -1690,22 +1733,33 @@ is what we want.
 	// since we may need to rebuild the index in a new directory, the analyzer needs to have been initialized apriori
 	private synchronized void removeFieldsFromDirectory(String... fields_to_be_removed) throws IOException
 	{
-		directory = removeFieldsFromDirectory(directory, fields_to_be_removed);
-		directory_blob = removeFieldsFromDirectory(directory_blob, fields_to_be_removed);
+		//directory = removeFieldsFromDirectory(directory, fields_to_be_removed);
+		//updated the signature so that now along with directory attachment type (false for email index and true for attachment index) is passed
+		//this additional variable is used for subsequent method call in removeFieldsFromDirectory method.
+		directory = removeFieldsFromDirectory(directory,false, fields_to_be_removed);
+		directory_blob = removeFieldsFromDirectory(directory_blob,true, fields_to_be_removed);
+		//directory_blob = removeFieldsFromDirectory(directory_blob, fields_to_be_removed);
+
 	}
 
+	//Method not used till v5 but if used in future, it should be updated (signature) along the lines of previous method.
 	private synchronized void copyDirectoryExcludeFields(String out_dir, String... fields_to_be_removed) throws IOException
 	{
-		directory = copyDirectoryExcludeFields(directory, out_dir, INDEX_NAME_EMAILS, fields_to_be_removed);
-		directory_blob = copyDirectoryExcludeFields(directory_blob, out_dir, INDEX_NAME_ATTACHMENTS, fields_to_be_removed);
+		//directory = copyDirectoryExcludeFields(directory, out_dir, INDEX_NAME_EMAILS, fields_to_be_removed);
+		//directory_blob = copyDirectoryExcludeFields(directory_blob, out_dir, INDEX_NAME_ATTACHMENTS, fields_to_be_removed);
+		directory = copyDirectoryExcludeFields(false, out_dir, INDEX_NAME_EMAILS, fields_to_be_removed);
+		directory_blob = copyDirectoryExcludeFields(true, out_dir, INDEX_NAME_ATTACHMENTS, fields_to_be_removed);
 	}
 
 	synchronized void copyDirectoryWithDocFilter(String out_dir, FilterFunctor emailFilter, FilterFunctor attachmentFilter) throws IOException
 	{
-		directory = copyDirectoryWithDocFilter(directory, out_dir, INDEX_NAME_EMAILS, emailFilter);
+		//directory = copyDirectoryWithDocFilter(directory, out_dir, INDEX_NAME_EMAILS, emailFilter);
+		directory = copyDirectoryWithDocFilter(false, out_dir, INDEX_NAME_EMAILS, emailFilter);
         //the docIds of the attachment docs are not the same as email docs, hence the same filter won't work.
         //by supplying a null filter, we are not filtering attachments at all, is this the right thing to do? Because this may retain attachment doc(s) corresponding to a removed email doc
-		directory_blob = copyDirectoryWithDocFilter(directory_blob, out_dir, INDEX_NAME_ATTACHMENTS, attachmentFilter);
+		//directory_blob = copyDirectoryWithDocFilter(directory_blob, out_dir, INDEX_NAME_ATTACHMENTS, attachmentFilter);
+		directory_blob = copyDirectoryWithDocFilter(true, out_dir, INDEX_NAME_ATTACHMENTS, attachmentFilter);
+
 	}
 
 	// CAUTION: permanently change the index!
@@ -1794,12 +1848,12 @@ is what we want.
 
 		TermQuery q = new TermQuery(new Term("docId", docId));
 		TopDocs td = searcher.search(q, 1); // there must be only 1 doc with this id anyway
-		Util.softAssert(td.totalHits <= 1, "docId = " + docId + " is not unique. Found: "+td.totalHits+" hits!",log);
+		Util.softAssert(td.totalHits <= 1, "docId = " + docId + " is not unique. Found: "+td.totalHits+" hits!, Signature is " + EmailDocument.uniqueIdToSignature.get(docId)+"----\n",log);
 		ScoreDoc[] sd = td.scoreDocs;
 		if (sd.length != 1)
 		{
 			// something went wrong... report it and ignore this doc
-			Util.warnIf(true, "lookup failed for id " + docId +": " + sd.length + " documents found for this id",log);
+			Util.warnIf(true, "lookup failed for id " + docId +": " + sd.length + " documents found for this id, Signature is " + EmailDocument.uniqueIdToSignature.get(docId)+"---\n",log);
 			return null;
 		}
 
