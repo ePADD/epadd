@@ -50,7 +50,7 @@
             <div id="filepicker" >
                 <div class="one-line" id="export-next">
                     <div class="form-group col-sm-10">
-                        <label for="accessionFolder"><i class="fa fa-folder-o"></i> Accession folder</label>
+                        <label for="accessionFolder"><i class="fa fa-folder-o"></i> Accession folder*</label>
                         <input id="accessionFolder" class="dir form-control" type="text" name="accessionFolder" value=""/>
                     </div>
                     <div class="form-group col-sm-2 picker-buttons">
