@@ -720,11 +720,12 @@ public class IndexUtils {
 				accID = archive.baseAccessionID;
 			//now add document to appropriate facet item.
 			//INV: tmpresult.get(accID)!=null
+			if(tmpresult.get(accID)!=null)
 			tmpresult.get(accID).addDoc(ed);
 		}
 		//converting tmpresult to result and also take care of 'no doc in a facet' case
 		tmpresult.keySet().forEach(accid-> {
-					if (tmpresult.get(accid).totalCount() > 0)
+					if (tmpresult.get(accid)!=null && tmpresult.get(accid).totalCount() > 0)
 						result.put(accid, tmpresult.get(accid));
 				}
 		);
