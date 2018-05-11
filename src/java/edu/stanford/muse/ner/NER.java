@@ -248,7 +248,12 @@ public class NER implements StatusProvider {
             snoTime += System.currentTimeMillis() - st;
             st = System.currentTimeMillis();
 
-            ldoc.removeField(NAMES);ldoc.removeField(NAMES_TITLE);
+            String[] updateFields = new String[]{NAMES,NAMES_ORIGINAL,NAMES_TITLE};
+            for(String s: updateFields){
+                if(ldoc.get(s)!=null)
+                    ldoc.removeField(s);
+            }
+            //ldoc.removeField(NAMES);ldoc.removeField(NAMES_TITLE);//may be NAMES_ORIGINAL was left to be deleted hence delete docs were added.
 
             ldoc.add(new StoredField(NAMES,
                     Util.join(Arrays.asList(names).stream().map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));

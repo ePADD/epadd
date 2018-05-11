@@ -128,7 +128,6 @@ public class SimpleSessions {
 		log.info("Memory status: " + Util.getMemoryStats());
 
 		Archive archive = (Archive) result.get("archive");
-
 		// no groups in public mode
 		if (archive != null)
 		{
@@ -443,6 +442,7 @@ public class SimpleSessions {
 		try {
 			archive.getCorrespondentAuthorityMapper().writeObjectToStream(cAuthorityPath);
 		} catch (ParseException | IOException | ClassNotFoundException e) {
+			log.warn("Exception while writing correspondent authority files"+e.getMessage());
 			e.printStackTrace();
 		}
 
