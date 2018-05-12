@@ -148,14 +148,17 @@ public class EmailDocument extends DatedDocument implements Serializable
 		EmailDocument other = (EmailDocument) o;
 
 		if (this == other) return 0;
+		int result = super.compareTo(other);
+		if(result!=0)
+			return result;
 /*
 
 		if(other==null) return 1;
 		int result = super.compareTo(other);
 		if (result != 0) return result;
 */
-
-
+//what happens if we only use uniqueid subtraction to order documents? Hint: chronological ordering is not hash friendly
+	//else use uniqueid to order documents.
 		String thisid = getUniqueId();
 		String otherid = other.getUniqueId();
 		return thisid.compareTo(otherid);
