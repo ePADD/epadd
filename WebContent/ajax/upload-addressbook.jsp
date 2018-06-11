@@ -5,7 +5,7 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.Set"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="java.util.Map"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="java.io.FileReader"%><%@ page import="au.com.bytecode.opencsv.CSVReader"%><%@ page import="java.io.IOException"%><%@ page import="com.google.common.collect.LinkedHashMultimap"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.index.SearchResult"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.index.DataSet"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.LabelManager.LabelManager"%>
+<%@ page import="java.util.Set"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="java.util.Map"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="java.io.FileReader"%><%@ page import="au.com.bytecode.opencsv.CSVReader"%><%@ page import="java.io.IOException"%><%@ page import="com.google.common.collect.LinkedHashMultimap"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.index.SearchResult"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.index.DataSet"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.LabelManager.LabelManager"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <% 
 	   session.setAttribute("statusProvider", new StaticStatusProvider("Uploading files"));
    JSONObject result = new JSONObject();
@@ -23,20 +23,20 @@
     if ("null".equals(archiveID)) {
                 error = "Sorry, no archive ID found";
             } else {
-                String filename = params.get("labeljson");
+                String filename = params.get("addressbookfile");
                 archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
-                    //Now copy the file 'filename' to LabMapper directory inside session
-                    String labelmapdir = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SESSIONS_SUBDIR + File.separator + Archive.LABELMAPDIR + File.separator;
-                    Util.copy_file(filename,labelmapdir+File.separator+"label-info.json");
+                    //Now copy the file 'filename' inside session
+                    String sessiondir = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SESSIONS_SUBDIR + File.separator;
+                    Util.copy_file(filename,sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX);
                     //update bag metadata
-                    archive.updateFileInBag(labelmapdir,archive.baseDir);
-                    //read labelmapper again
-                    LabelManager lb = ArchiveReaderWriter.readLabelManager(labelmapdir);
-                    if(lb==null){
-                        error="Invalid label description file added";
+                    archive.updateFileInBag(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX,archive.baseDir);
+                    //read addressbook again
+                    AddressBook ab = ArchiveReaderWriter.readAddressBook(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX);
+                    if(ab==null){
+                        error="Invalid addressbook file used";
                     }else{
-                    //set as current archive's label mapper
-                    archive.setLabelManager(lb);
+                    //set as current archive's addressbook
+                    archive.setAddressBook(ab);
                     }
 
             }
@@ -46,7 +46,7 @@
             result.put ("error", error);
         } else {
             result.put ("status", 0);
-            result.put ("urltoload", "labels.jsp");
+            //result.put ("urltoload", "labels.jsp");
         }
 out.println (result.toString(4));
     session.removeAttribute("statusProvider");
