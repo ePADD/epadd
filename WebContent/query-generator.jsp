@@ -1,3 +1,4 @@
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
@@ -73,7 +74,7 @@ if (ModeConfig.isPublicMode()) {
             <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px; height: auto">
                 <%
                     String req = request.getParameter("refText");
-                    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+                    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
                     out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
                 %>
             </div>

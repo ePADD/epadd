@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import edu.stanford.muse.ner.featuregen.FeatureUtils;
+import edu.stanford.muse.index.ArchiveReaderWriter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.stanford.muse.Config;
@@ -19,7 +19,6 @@ import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.webapp.JSPHelper;
-import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +34,6 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 
 /**
  * Data structure to represent mixtures of an entity mention in archive
@@ -632,7 +630,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		Archive archive = null;
 		try {
 			String aFile = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
-			archive = SimpleSessions.readArchiveIfPresent(aFile);
+			archive = ArchiveReaderWriter.readArchiveIfPresent(aFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

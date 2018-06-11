@@ -139,7 +139,7 @@ public class Config {
 
         {
             // should be all lower case, delimited with Util.OR_DELIMITER
-            attachmentTypeToExtensions.put("Graphics", "jpg;jpeg;svg;png;gif;bmp");
+            attachmentTypeToExtensions.put("Graphics", "jpg;jpeg;svg;png;gif;bmp;tif");
             attachmentTypeToExtensions.put("Document", "doc;docx;pages");
             attachmentTypeToExtensions.put("Presentation", "ppt;pptx;key");
             attachmentTypeToExtensions.put("Spreadsheet", "xls;xlsx;numbers");

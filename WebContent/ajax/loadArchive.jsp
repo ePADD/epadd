@@ -8,7 +8,7 @@
 <%@page language="java" import="org.json.JSONObject"%>
 <%@page language="java" import="java.io.File"%>
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@page import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%
 
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading archive"));
@@ -35,7 +35,7 @@
             dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dir;
         JSPHelper.log.info("Loading archive from: "+dir);
 
-        Archive archive = SimpleSessions.readArchiveIfPresent(dir);
+        Archive archive = ArchiveReaderWriter.readArchiveIfPresent(dir);
         if (archive == null)
         {
             result.put ("status", 2);
@@ -44,7 +44,7 @@
             return;
         }
         //by this time the archive must have an archiveID present in SimpleSession mapper.
-        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         assert archiveID!=null : new AssertionError("Some serious issue, the archive has been laoded by the readArchiveIfPresent method but the archiveID is absent in the mapper");
 
         String resultPage;

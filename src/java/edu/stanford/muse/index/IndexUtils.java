@@ -768,7 +768,7 @@ public class IndexUtils {
 		return result;
 	}
 	/** note: attachment types are lower-cased */
-	private static Map<String, DetailedFacetItem> partitionDocsByAttachmentType(Collection<? extends Document> docs)
+	private static Map<String, DetailedFacetItem> partitionDocsByAttachmentType(Archive archive, Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 
@@ -781,7 +781,7 @@ public class IndexUtils {
 			if (attachments != null)
 				for (Blob b : attachments)
 				{
-					String ext = Util.getExtension(b.filename);
+					String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
 					if (ext == null)
 						ext = "none";
 					ext = ext.toLowerCase();
@@ -878,7 +878,7 @@ public class IndexUtils {
 			// attachments
 			if (!ModeConfig.isPublicMode())
 			{
-				Map<String, DetailedFacetItem> attachmentTypesMap = partitionDocsByAttachmentType(docs);
+				Map<String, DetailedFacetItem> attachmentTypesMap = partitionDocsByAttachmentType(archive,docs);
 				facetMap.put("attachment type", attachmentTypesMap.values());
 			}
 		}
@@ -1097,7 +1097,7 @@ public class IndexUtils {
 	 * ("none" is a valid type) and matches attachments that don't have an
 	 * extension.
 	 */
-	public static Set<Blob> getBlobsForAttachmentTypes(Collection<? extends Document> docs, String[] attachmentTypes)
+	/*public static Set<Blob> getBlobsForAttachmentTypes(Collection<? extends Document> docs, String[] attachmentTypes)
 	{
 		Set<Blob> result = new LinkedHashSet<>();
 		// convert to a set for fast lookup
@@ -1114,7 +1114,7 @@ public class IndexUtils {
 				continue;
 			for (Blob b : ed.attachments)
 			{
-				String ext = Util.getExtension(b.filename);
+				String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b););
 				if (ext == null)
 					ext = "none";
 				ext = ext.toLowerCase();
@@ -1126,7 +1126,7 @@ public class IndexUtils {
 		}
 		return result;
 	}
-
+*/
 	/** sort by site-alpha, so e.g. all amazon links show up together */
 	public static void sortLinks(List<String> linksList)
 	{

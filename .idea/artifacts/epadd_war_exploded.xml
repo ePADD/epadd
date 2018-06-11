@@ -17,6 +17,10 @@
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.5" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
           <element id="library" level="project" name="Maven: tw.edu.ntu.csie:libsvm:3.17" />
+          <element id="library" level="project" name="Maven: gov.loc:bagit:5.1.1" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.0.pr4" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.9.0.pr4" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.9.0.pr4" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-core:7.2.1" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-queries:7.2.1" />
           <element id="library" level="project" name="Maven: org.apache.lucene:lucene-analyzers-common:7.2.1" />
@@ -114,7 +118,6 @@
           <element id="library" level="project" name="Maven: org.apache.sis.core:sis-metadata:0.6" />
           <element id="library" level="project" name="Maven: org.opengis:geoapi:3.0.0" />
           <element id="library" level="project" name="Maven: javax.measure:jsr-275:0.9.3" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.1" />
           <element id="library" level="project" name="Maven: org.apache.tika:tika-core:1.14" />
           <element id="library" level="project" name="Maven: org.apache.opennlp:opennlp-tools:1.5.3" />
           <element id="library" level="project" name="Maven: org.apache.opennlp:opennlp-maxent:3.0.3" />

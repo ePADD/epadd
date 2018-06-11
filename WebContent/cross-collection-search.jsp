@@ -9,6 +9,7 @@
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -64,10 +65,10 @@
         %>
 
     <%
-        Archive.CollectionMetadata metadata = SimpleSessions.readCollectionMetadata(SimpleSessions.getArchiveForArchiveID(I).baseDir);
+        Archive.CollectionMetadata metadata = ArchiveReaderWriter.readCollectionMetadata(ArchiveReaderWriter.getArchiveForArchiveID(I).baseDir);
         out.println ("Institution: <b>" + Util.escapeHTML(metadata.institution) + "</b> &nbsp;&nbsp;");
         out.println ("Repository: <b>" + Util.escapeHTML(metadata.repository) + "</b> &nbsp;&nbsp;");
-        String url = "collection-detail?collection=" + new File(SimpleSessions.getArchiveForArchiveID(I).baseDir).getName();
+        String url = "collection-detail?collection=" + new File(ArchiveReaderWriter.getArchiveForArchiveID(I).baseDir).getName();
         out.println ("Collection: <b><a target=\"blank\" href=\"" + url + "\">" + Util.escapeHTML(metadata.collectionTitle) + "</a></b> &nbsp;&nbsp;");
     %>
         <div class="panel">

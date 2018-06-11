@@ -98,7 +98,7 @@
             continue;
 
         for (Blob blob : blobs) {
-            String blobName = blob.getName(); // blobStore.full_filename(blob);
+            String blobName = archive.getBlobStore().get_URL_Normalized(blob);; // blobStore.full_filename(blob);
             fullNameToBlob.put (blobName.toLowerCase(), blob);
         }
     }

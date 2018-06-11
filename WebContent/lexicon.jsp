@@ -1,13 +1,19 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="edu.stanford.muse.index.DatedDocument" %>
-<%@ page import="edu.stanford.muse.index.Indexer" %>
-<%@ page import="edu.stanford.muse.index.Lexicon" %>
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.LinkedHashSet"%>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="edu.stanford.muse.index.*" %>
+<%@ page import="org.json.JSONArray" %>
 <%@include file="getArchive.jspf" %>
+<style>
+	.modal-body {
+		/* 100% = dialog height, 120px = header + footer */
+		max-height: calc(100% - 120px);
+		overflow-y: scroll;
+	}
+</style>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -36,7 +42,8 @@
     </style>
 
 	<%
-		String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+
 	%>
 	<script type="text/javascript" charset="utf-8">
 		// we're using a simple datatables data source here, because this will be a small table
@@ -93,6 +100,8 @@
 	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit Lexicon </button>
 	&nbsp;&nbsp;
 	<button id="create-lexicon" class="btn-default"><i class="fa fa-plus"></i> Create new lexicon</button>
+	&nbsp;&nbsp;
+	<button id="import-lexicon" class="btn-default"><i class="fa fa-plus"></i> Import lexicon</button>
 </div>
 <br/>
 
@@ -128,6 +137,7 @@
 //		session.setAttribute("lexicon", lex);
 		Map<String, Integer> map = lex.getLexiconCounts(archive.indexer, !isRegex /* originalContent only */, isRegex);
 		Collection<String> lexiconNames = archive.getAvailableLexicons();
+		JSONArray jsonArray = new JSONArray(lexiconNames);
 		if (ModeConfig.isDeliveryMode()) {
 			lexiconNames = new LinkedHashSet(lexiconNames); // we can't call remve on the collection directly, it throws an unsupported op.
 			lexiconNames.remove(Lexicon.SENSITIVE_LEXICON_NAME);
@@ -181,10 +191,121 @@
 					return;
 				window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;
 			});
-		});
+
+            $('#import-lexicon').click(function(){
+                //open modal box to get the lexicon file and upload
+                $('#lexicon-upload-modal').modal('show');
+            });
+
+
+        });
+
+
+        var uploadLexiconHandler=function() {
+            //collect archiveID,lexicon-name and lexiconfile field. If either of them is empty return false;
+            var lexiconname = $('#lexicon-name').val();
+            var existinlexiconnames = <%=jsonArray.toString(5)%>;
+            if (!lexiconname) {
+                alert('Please provide the name of the lexicon');
+                return false;
+            }
+            var lexiconlang = $('#lexicon-lang').val();
+            if (!lexiconname) {
+                alert('Please provide the language of the lexicon');
+                return false;
+            }
+            var lexiconfilename = $('#lexiconfile').val();
+            if (!lexiconfilename) {
+                alert('Please provide the path of the lexicon file');
+                return false;
+            }
+            //if lexicon-name is already one of the lexicon then prompt a confirmation box
+            if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
+                var c = confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
+                if (!c)
+                    return;
+            }
+            var form = $('#uploadlexiconform')[0];
+
+            // Create an FormData object
+            var data = new FormData(form);
+            //hide the modal.
+            $('#lexicon-upload-modal').modal('hide');
+            //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+
+            $.ajax({
+                type: 'POST',
+                enctype: 'multipart/form-data',
+                processData: false,
+                url: "ajax/upload-lexicon.jsp",
+                contentType: false,
+                cache: false,
+                data: data,
+                success: function (data) {
+                    epadd.alert('Lexicon uploaded successfully!', function () {
+                        window.location.reload();
+                    });
+                },
+                error: function (jq, textStatus, errorThrown) {
+                    var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                    epadd.log(message);
+                    epadd.alert(message);
+                }
+            });
+        }
+
+
 	</script>
 
-<% } // lex != null %> 
-	<jsp:include page="footer.jsp"/>
+<% } // lex != null %>
+<div>
+	<div id="lexicon-upload-modal" class="modal fade" style="z-index:9999">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Specify the lexicon description</h4>
+				</div>
+				<div class="modal-body">
+					<form id="uploadlexiconform" method="POST" enctype="multipart/form-data" >
+						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+						<div class="form-group **text-left**">
+							<label for="lexicon-name" class="col-sm-2 control-label **text-left**">Name</label>
+							<div class="col-sm-10">
+								<input id="lexicon-name" class="dir form-control" type="text"  value="" name="lexicon-name"/>
+							</div>
+						</div>
+						&nbsp;&nbsp;
+						<div class="form-group **text-left**">
+							<label for="lexicon-lang" class="col-sm-2 control-label **text-left**">Language</label>
+							<div class="col-sm-10">
+								<input id="lexicon-lang" class="dir form-control" type="text"  value="english" name="lexicon-lang"/>
+							</div>
+						</div>
+						&nbsp;&nbsp;
+						<div class="form-group **text-left**">
+							<label for="lexiconfile" class="col-sm-2 control-label **text-left**">File</label>
+							<div class="col-sm-10">
+								<input type="file" id="lexiconfile" name="lexiconfile" value=""/>
+							</div>
+						</div>
+						<%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
+
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadLexiconHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+
+
+					<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+					<%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</div>
+
+
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

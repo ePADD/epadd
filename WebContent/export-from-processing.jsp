@@ -11,6 +11,7 @@
 <%@ page import="java.io.FileWriter" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
@@ -32,7 +33,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Export');</script>
 <% 	AddressBook addressBook = archive.addressBook;
-String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "", "Export archive");
 %>
@@ -58,7 +59,7 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	JSPHelper.log.info("Saving archive in " + archive.baseDir);
 	out.println("Saving current archive...<br/>");
 	out.flush();
-	SimpleSessions.saveArchive(archive);
+	ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 
 	String folder = dir + File.separator + "ePADD archive of " + bestName + "-Delivery";
 	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
@@ -102,7 +103,8 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");
 	}
 
-	try {
+	/* v6- Why were we exporting correspondent authority file separately??- removed now
+		*try {
         String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
         if (!Util.nullOrEmpty(csv)) {
             String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
@@ -115,7 +117,7 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	} catch(Exception e) {
 		out.println ("Warning: unable to write authorities CSV file into " + file);
 		JSPHelper.log.warn(e);
-	}
+	}*/
 
 	// NOW EXPORT FOR DISCOVERY
 	//Read archive from folderPublic directory and operate on that.
@@ -123,9 +125,8 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 	out.println ("Exporting discovery mode archive...<br/>");
 	out.flush();
 	JSPHelper.log.info("Exporting for discovery");
-	archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default");
-	//SimpleSessions.removeFromGlobalArchiveMap(folderPublic,forDeliveryPublic);
-	try {
+	/*v6- why were we exporting correspondent authority file separately? Removed now.
+		try {
         String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
         if (!Util.nullOrEmpty(csv)) {
             String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
@@ -137,8 +138,11 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 		out.println ("Warning: unable to write authorities CSV file into " + file);
 		JSPHelper.log.warn(e);
 	}
+	*/
+	archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default");
 
-	// Now remember to reload the archive from baseDir, because we've destroyed the archive in memory
+
+		// Now remember to reload the archive from baseDir, because we've destroyed the archive in memory
 		//after export make sure to load the archive again. However, readArchiveIfPresent will not read from
 		//memroy if the archive and it's ID is already present in gloablArchiveMap (in SimpleSession).
 		//Hence first remove this from the map and then call readArchiveIfPresent method.
@@ -146,8 +150,8 @@ String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
 		out.println ("Reloading saved archive...<br/>");
 		out.flush();
 		String baseDir = archive.baseDir;
-		SimpleSessions.removeFromGlobalArchiveMap(baseDir,archive);
-		archive = SimpleSessions.readArchiveIfPresent(baseDir);
+		ArchiveReaderWriter.removeFromGlobalArchiveMap(baseDir,archive);
+		archive = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
 	/*archive.setBaseDir(baseDir);
 	session.setAttribute("archive", archive);
 	session.setAttribute("userKey", "user");

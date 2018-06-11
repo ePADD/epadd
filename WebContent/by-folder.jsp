@@ -38,7 +38,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     AddressBook ab = archive.addressBook;
 %>
 

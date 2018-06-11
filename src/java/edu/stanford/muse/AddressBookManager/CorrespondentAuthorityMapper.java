@@ -2,14 +2,12 @@ package edu.stanford.muse.AddressBookManager;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.AuthorityMapper.AuthorityMapper;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
@@ -130,7 +128,7 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
         //////Following snippet was added to handle the case when cnameToCount map was not initialized (from createCorrespondentAuthorityMapper method) because
         //it was read from two csv files (candidateCorrespondentAuthorities.csv and confirmedCorrespondentAuthorities.csv).
         if(cnameToCount==null || cnameToCount.size()==0){
-            Archive archive = SimpleSessions.getArchiveForArchiveID(archiveID);
+            Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
 
             List<Pair<Contact, Integer>> pairs = ab.sortedContactsAndCounts((Collection) archive.getAllDocs());
             for (Pair<Contact, Integer> p : pairs) {

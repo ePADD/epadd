@@ -181,8 +181,8 @@ var Annotations = function() {
             Navigation.disableCursorKeys();
         }
 
-        // things to do when annotation modal is dismissed
-        function annotation_modal_dismissed () {
+        // things to do when user clicks on 'apply to this message'
+        function annotation_modal_dismissed_apply_to_this_message () {
             Navigation.enableCursorKeys();
             var annotation = $('#annotation-modal .modal-body').val(); // .val() gets the value of a text area. assume: no html in annotations
             annotations[PAGE_ON_SCREEN] = annotation;
@@ -206,6 +206,36 @@ var Annotations = function() {
         }
 
 
+        // things to do when user clicks on 'apply to all messages'
+        function annotation_modal_dismissed_apply_to_all_messages() {
+            //ask user that 'all existing annotations on selected # of messages will be overwritten. Do you want to continue?'
+            var c = confirm ('Existing annotations on all '+numMessages+' messages will be overwritten. Do you want to continue?');
+            if (!c)
+                return;
+            //If user confirms then proceed.
+            Navigation.enableCursorKeys();
+            var annotation = $('#annotation-modal .modal-body').val(); // .val() gets the value of a text area. assume: no html in annotations
+            for(var i =0; i< TOTAL_PAGES; i++)
+                annotations[i] = annotation;
+            // post to the backend, and when successful, refresh the labels on screen
+            $.ajax({
+                url: 'ajax/applyLabelsAnnotations.jsp',
+                type: 'POST',
+                data: {
+                    archiveID: archiveID,
+                    docsetID: docsetID,
+                    annotation: annotation,
+                    action: "override"
+                }, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+                dataType: 'json',
+                success: function (response) {
+                    $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                    //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
+                },
+                error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
+            });
+        }
+
         for (var i = 0; i < TOTAL_PAGES; i++) {
             annotations[i] = $pages[i].getAttribute('comment');
             if (annotations[i] === null) // protect against null, otherwise the word null uglily (q: is that a word? probably fine. its a better word than bigly.) appears on screen.
@@ -213,7 +243,11 @@ var Annotations = function() {
         }
 
         // set up handlers for when annotation modal is shown/dismissed
-        $('#annotation-modal').on('shown.bs.modal', annotation_modal_shown).on('hidden.bs.modal', annotation_modal_dismissed);
+        //$('#annotation-modal').on('shown.bs.modal', annotation_modal_shown).on('hidden.bs.modal', annotation_modal_dismissed);
+        //set up handlers when different buttons are clicked on annotation modal. For 'Apply to this message' invoke different handler,
+        //For 'Apply to all messages' invoke another handler. When modal is dismissed, by default the behaviour will be nothing.
+        $('#annotation-modal').find('#ok-button').click(annotation_modal_dismissed_apply_to_this_message);
+        $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
 
         // when annotation is clicked, invoke modal
         $('.annotation-area').click(function () {
@@ -256,6 +290,9 @@ $(document).ready(function() {
     Labels.setup();
     Annotations.setup();
     Navigation.setupEvents(); // important -- this has to be after labels and annotations setup to render the first page correctly
+
+
+
 
     // on page unload, release dataset to free memory
     $(window).unload(function () {

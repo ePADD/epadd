@@ -86,7 +86,7 @@
     }
     //</editor-fold>
 
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
 %>
 <!DOCTYPE HTML>
@@ -138,7 +138,8 @@
 
             </textarea>
             <div class="modal-footer">
-                <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
+                <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -146,7 +147,26 @@
 
 <body > <!--  override margin because this page is framed. -->
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
+<script>epadd.nav_mark_active('Browse');
+
+    $('body').on('click','#normalizationInfo',function(e){
+        // get the attribute's values - originalURL and originalName.
+        var origianlURL = $(e.target).data('originalurl');
+        var originalName = $(e.target).data('originalname');
+        var msg='';
+        //prepare the message in html based on these two values.
+        if(origianlURL){
+            //if originalURL is not null - This file was converted during the preservation process. Click here to download the original file.
+            msg="This file was converted during the preservation process. Click <a href="+origianlURL+">here </a> to download the original file";
+        }else {
+            //if originalURL is null and original Name is not null- This file was renamed during the preservation process. The name of the original file was -
+            msg="This file name was cleaned up during the preservation process. The original file name was "+originalName;
+        }
+        $('#normalization-description').html (msg);
+        $('#normalization-info-modal').modal('show');
+
+    });
+</script>
 
 <!--  important: include jog_plugin AFTER header.jsp, otherwise the extension is applied to
 a jquery ($) object that is overwritten when header.jsp is included! -->
@@ -292,7 +312,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                         String c = facetAlreadySelected ? " selected-facet rounded" : "";
 
-                        url = url + "&archiveID="+ SimpleSessions.getArchiveIDForArchive(archive);
+                        url = url + "&archiveID="+ ArchiveReaderWriter.getArchiveIDForArchive(archive);
                         String html = "<span class=\"facet nojog" + c + "\" style=\"padding-left:2px;padding-right:2px\" onclick=\"javascript:self.location.href='" + url + "';\" title=\"" + Util.escapeHTML(f.description) + "\">" + Util.escapeHTML(name)
                                 + " <span class=\"facet-count\">(" + f.totalCount() + ")</span>"
                                 + "</span><br/>\n";
@@ -504,7 +524,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         }
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
         String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
-        out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";</script>\n");
+        out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+browseSet.size()+";</script>\n");
         session.setAttribute (docsetID, browseSet);
         //session.setAttribute ("docs-" + docsetID, new ArrayList<>(docs));
         out.println (html);
@@ -553,12 +573,35 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 </div>
-
-<div style="clear:both"></div>
-<jsp:include page="footer.jsp"/>
+<%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
+<div>
+    <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>--%>
+                    <%--<h4 class="modal-title">Confirm</h4>--%>
+                </div>
+                <div class="modal-body">
+                    <span id="normalization-description"></span>
+                </div>
+                <div class="modal-footer">
+                    <%--<button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>--%>
+                    <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+                    <%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
 <script>
 
 
+//    });
+
 </script>
+
+<div style="clear:both"></div>
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

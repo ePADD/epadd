@@ -6,6 +6,7 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.Util;
@@ -82,7 +83,7 @@ public class CrossCollectionSearch {
                 if (!new File(archiveFile).exists())
                     continue;
 
-                Archive archive = SimpleSessions.readArchiveIfPresent(f.getAbsolutePath());
+                Archive archive = ArchiveReaderWriter.readArchiveIfPresent(f.getAbsolutePath());
                 if (archive == null) {
                     log.warn ("failed to read archive from " + f.getAbsolutePath());
                     continue;
@@ -92,7 +93,7 @@ public class CrossCollectionSearch {
                 log.info ("Loaded archive metadata from " + f.getAbsolutePath());
 
                 // process all docs in this archive to set up centityToInfo map
-                String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+                String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
                 Map<String, EntityInfo> centityToInfo = new LinkedHashMap<>();
                 {
                     AddressBook ab = archive.addressBook;

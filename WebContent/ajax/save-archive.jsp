@@ -8,7 +8,7 @@
 <%@page language="java" contentType="application/json; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.index.Archive"%>
+<%@page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.index.Archive"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%
 JSONObject result = new JSONObject();
 Archive archive = JSPHelper.getArchive(request);
@@ -21,7 +21,7 @@ Archive archive = JSPHelper.getArchive(request);
         }
 
 try{
-        SimpleSessions.saveArchive(archive);
+        ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         JSPHelper.log.info ("session saved");
 	    result.put("status", 0);
 	    result.put("message", "Session saved");

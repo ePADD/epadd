@@ -86,6 +86,14 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>verifyArchive</servlet-name>
+		<jsp-file>/verifyArchive.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>verifyArchive</servlet-name>
+		<url-pattern>/verifyArchive</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>collections</servlet-name>
 		<jsp-file>/collections.jsp</jsp-file>
 	</servlet>
@@ -250,12 +258,12 @@
 
 
 	<servlet>
-		<servlet-name>upload-correspondents</servlet-name>
-		<jsp-file>/upload-correspondents.jsp</jsp-file>
+		<servlet-name>upload-correspondents-for-search</servlet-name>
+		<jsp-file>/upload-correspondents-for-search.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>upload-correspondents</servlet-name>
-		<url-pattern>/upload-correspondents</url-pattern>
+		<servlet-name>upload-correspondents-for-search</servlet-name>
+		<url-pattern>/upload-correspondents-for-search</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -328,6 +336,16 @@
 	<servlet-mapping>
 		<servlet-name>image-attachments</servlet-name>
 		<url-pattern>/image-attachments</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>serveAttachment</servlet-name>
+		<jsp-file>/serveAttachment.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>serveAttachment</servlet-name>
+		<url-pattern>/serveAttachment</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

@@ -27,7 +27,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Export');</script>
 <% 	AddressBook addressBook = archive.addressBook;
-String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "", "Export archive");
 %>
@@ -37,7 +37,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 <%
     // attachmentsForDocs
 
-    String dir = archive.baseDir + File.separator + Archive.TEMP_SUBDIR + File.separator;
+    String dir = Archive.TEMP_SUBDIR + File.separator;
     new File(dir).mkdir();//make sure it exists
     //create mbox file in localtmpdir and put it as a link on appURL.
 
@@ -73,7 +73,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 // either we do tags (+ or -) from selectedTags
     // or we do all docs from allDocs
     String cacheDir = archive.baseDir;
-    String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
+    String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  "blobs" + File.separator;
     BlobStore bs = null;
     try {
         bs = new BlobStore(attachmentsStoreDir);

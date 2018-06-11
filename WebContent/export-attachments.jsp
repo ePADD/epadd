@@ -35,7 +35,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Export');</script>
 <%
-    String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
     AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "", "Export archive");
@@ -107,7 +107,7 @@
                 continue nextBlob;
             }
             try {
-                String blobName = blob.getName();
+                String blobName = archive.getBlobStore().get_URL_Normalized(blob);;
                 // get rid of any file separators first... don't want them to cause any confusion
                 if (blobName == null)
                     blobName = "";

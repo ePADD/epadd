@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="org.json.JSONObject"%>
 <%@page language="java" import="javax.mail.MessagingException"%>
-<%@ page import="java.io.*"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.Config"%><%@ page import="java.lang.ref.WeakReference"%>
+<%@ page import="java.io.*"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.Config"%><%@ page import="java.lang.ref.WeakReference"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%!
 private String getFileName(final Part part)
 {
@@ -75,7 +75,7 @@ private void saveFile(HttpServletRequest request, String param, String filePath)
 try {
 
     // read, edit and write back the pm object. keep the other data inside it (such as accessions) unchanged.
-	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(archiveBaseDir);
+	Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(archiveBaseDir);
 
 	if (cm == null) {
 	    // not sure we want to init a new cm. we could simply bail out.
@@ -102,14 +102,18 @@ try {
 	saveFile (request, "bannerImage", archive.baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png");
 */
 
-	SimpleSessions.writeCollectionMetadata(cm, archiveBaseDir);
 	//if the archive is loaded (in global map) then we need to set the collectionmetadata field to this/or invalidate that.
 	//ideally we should invalidate that and getCollectionMetaData's responsibility will be to read it again if invalidated.
 	//however for now we will just set it explicitly.
-	WeakReference<Archive> warchive= SimpleSessions.getArchiveFromGlobalArchiveMap(archiveBaseDir);
-	if(warchive!=null)
+	WeakReference<Archive> warchive= ArchiveReaderWriter.getArchiveFromGlobalArchiveMap(archiveBaseDir);
+	if(warchive!=null){
 	    warchive.get().collectionMetadata= cm;
-	result.put ("status", 0);
+
+	}else{
+	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
+
+	}
+	    result.put ("status", 0);
 	out.println (result.toString(4));
 	return;
 } catch (Exception e) {

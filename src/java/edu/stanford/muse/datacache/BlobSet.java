@@ -120,7 +120,7 @@ private void print_map_entries(List<Map.Entry<String, List<Blob>>> l)
 
 public String index_filename(Blob b)
 {
-    return blobStore.index(b) + "." + b.filename + ".index.html";
+    return blobStore.index(b) + "." + blobStore.get_URL_Normalized(b)+ ".index.html";
 }
 
 private List<Blob> sortBlobsByTime()
@@ -202,9 +202,9 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
     	//new File(dumpDataDir).mkdirs();
 		//Now we copy this file to temp subdirectory inside this archive. This fill will be later served
 		//using serveTemp.jsp for being displayed by cooliris plugin.
-    	String piclensRSSPath = rootDir + File.separatorChar + Archive.TEMP_SUBDIR+File.separatorChar+ prefix + ".photos.rss";
+    	String piclensRSSPath = Archive.TEMP_SUBDIR+File.separatorChar+ prefix + ".photos.rss";
     	//create tmp directory just to be on safe side.
-		new File(rootDir+File.separator+Archive.TEMP_SUBDIR).mkdir();
+		new File(Archive.TEMP_SUBDIR).mkdir();
     	PrintWriter piclensRSS = new PrintWriter (new FileWriter (piclensRSSPath));
     	piclensRSS.println (photoRSSHeader);
 
@@ -215,8 +215,8 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
     	
     	for (Blob b: unique_datas)
     	{
-    		String title = b.filename;
-    		String description = b.filename;
+    		String title = blobStore.get_URL_Normalized(b);;
+    		String description = blobStore.get_URL_Normalized(b);;
     		String contentURL, thumbURL, linkURL;
 
     		// copy over the data content and its thumbnail from the data store to the dataset directory
@@ -230,7 +230,7 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
     		}
     		else
     		{
-	        	String contentFileDataStoreURL = blobStore.get_URL(b);
+	        	String contentFileDataStoreURL = blobStore.get_URL_Normalized(b);
 	        	// could either serve up the attachment directly or break out to the message containing the attachment.
 	        	// both are reasonable...
 	        	contentURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
@@ -247,7 +247,7 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
 
 	    		if (thumbFileDataStoreURL == null)
 	    		{
-	    			if (b.is_image())
+	    			if (blobStore.is_image(b))
 	    			{
 	    				// if image, we'll just assign the full attachment for the thumbnail and let piclens deal with it
 	    				thumbURL = contentURL;
@@ -335,7 +335,7 @@ public void verify()
 }
 
 public String getURL(Blob b){
-	return (blobStore.get_URL(b));
+	return (blobStore.get_URL_Normalized(b));
 }
 
 }

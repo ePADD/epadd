@@ -40,7 +40,7 @@
 
 <%
     String type=request.getParameter("type");
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String et = "";
     Short ct = NEType.Type.PERSON.getCode();
 	if("en_person".equals(type)||"person".equals(type)) {
@@ -71,61 +71,12 @@
 <%
 		out.flush();
 
-	Map<String, Integer> counts = new LinkedHashMap<>();
-    Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
-
-    double cutoff = 0.001;
-    Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-    for (EmailDocument ed: docs) {
-        Span[] es = archive.getEntitiesInDoc(ed,true);
-        List<Span> est = new ArrayList<>();
-        for(Span e: es)
-            if(NEType.getCoarseType(e.type).getCode() == ct)
-                est.add(e);
-
-        Span[] fes = edu.stanford.muse.ie.Util.filterEntitiesByScore(est.toArray(new Span[est.size()]),cutoff);
-        //filter the entities to remove obvious junk
-        fes = edu.stanford.muse.ie.Util.filterEntities(fes);
-	    // note that entities could have repetitions.
-	    // so we create a *set* of entities, but after canonicalization.
-	    // canonical to original just uses an arbitrary (first) occurrence of the entity
-        Set<String> canonicalEntities = new LinkedHashSet<String>();
-        for (Span esp: fes) {
-            String e = esp.getText();
-            String canonicalEntity = IndexUtils.canonicalizeEntity(e);
-            if (canonicalToOriginal.get(canonicalEntity) == null)
-                canonicalToOriginal.put(canonicalEntity, e);
-            canonicalEntities.add(canonicalEntity);
-        }
-
-        for (String ce: canonicalEntities)
-        {
-            Integer I = counts.get(ce);
-            counts.put(ce, (I == null) ? 1 : I+1);
-        }
-    }
-
 //	Contact ownContact = ab.getContactForSelf();
 //    List<Contact> allContacts = ab.sortedContacts((Collection) docs);
 //    Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
-%>
-<%
-    List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
     int MAX_DEFAULT_RECORDS = 100000;
     int max = HTMLUtils.getIntParam(request, "max", MAX_DEFAULT_RECORDS);
-    int count = 0;
-    JSONArray resultArray = new JSONArray();
-	for (Pair<String, Integer> p: pairs) {
-        if (++count > max)
-            break;
-        String entity = p.getFirst();
-        String entityToPrint = canonicalToOriginal.get(entity);
-        JSONArray j = new JSONArray();
-        j.put (0, Util.escapeHTML(entityToPrint));
-        j.put (1, counts.get(entity));
-
-        resultArray.put (count-1, j);
-    }
+    JSONArray entityinfo = archive.getEntitiesCountAsJSON(ct,max);
 %>
 <table id="entities" style="display:none">
 	<thead><th>Entity</th><th>Messages</th></thead>
@@ -145,7 +96,7 @@
 				return '<span style="cursor:pointer" onclick="epadd.do_search(event)">' + data + '</span>';
 			};
 
-			var entities = <%=resultArray.toString(4)%>;
+			var entities = <%=entityinfo.toString(4)%>;
 			$('#entities').dataTable({
 				data: entities,
 				pagingType: 'simple',
@@ -159,3 +110,6 @@
 	<jsp:include page="footer.jsp"/>
 </body>
 </html>
+<%!
+
+%>

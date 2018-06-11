@@ -302,7 +302,7 @@ public class Lexicon implements Serializable {
 	}
 
 	// avoid file traversal vuln's, don't allow / or \ in lexicon names;
-	private static String sanitizeLexiconName(String lex)
+	public static String sanitizeLexiconName(String lex)
 	{
 		return lex.replaceAll("/", "__").replaceAll("\\\\", "__"); // the pattern itself needs 2 backslashes since \ is a regex escape char
 	}

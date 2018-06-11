@@ -20,7 +20,6 @@ import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Triple;
 import edu.stanford.muse.util.Util;
-import edu.stanford.muse.webapp.SimpleSessions;
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.sentdetect.SentenceDetectorME;
@@ -773,7 +772,7 @@ import java.util.zip.GZIPInputStream;
 
 			String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
 			userDir = Config.SETTINGS_DIR + File.separator + "ePADD archive of Unknown";
-			Archive archive = SimpleSessions.readArchiveIfPresent(userDir);
+			Archive archive = ArchiveReaderWriter.readArchiveIfPresent(userDir);
 			//List<Document> docs = archive.getAllDocs();
 			String[] dIds = new String[] { "/Users/viharipiratla/epadd-settings/palin.mbox-1090" };//"/home/hangal/data/creeley/1/Mail[447610]-310" };//"/home/hangal/data/creeley/1/MAIL[96410]-990", "/home/hangal/data/creeley/1/LERNER.000-0" };
 			//"/home/hangal/data/creeley/1/Mail[447842]-206", "/home/hangal/data/creeley/1/YAU.003-0", " /home/hangal/data/creeley/1/YAU.003-0" };//, "/home/hangal/data/creeley/1/INBOX[325606]-6", "/home/hangal/data/creeley/1/INBOX[325606]-10" };

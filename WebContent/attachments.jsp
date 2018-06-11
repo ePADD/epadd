@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
-<%
+<%!
+    private boolean IsNormalized=false;
+%><%
 	JSPHelper.checkContainer(request); // do this early on so we are set up
 	request.setCharacterEncoding("UTF-8");
 %>
@@ -9,14 +11,14 @@
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
 <%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.Document"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
+<%@page language="java" %>
+<%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="com.google.common.collect.Multimap" %>
+<%@ page import="edu.stanford.muse.index.*" %>
 <%@include file="getArchive.jspf" %>
 
 <!DOCTYPE HTML>
@@ -67,7 +69,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	JSONArray resultArray = new JSONArray();
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
@@ -80,8 +82,9 @@
     List<Blob> allAttachments = new LinkedList<>();
     for (Document doc: docset){
         EmailDocument edoc = (EmailDocument)doc;
+        final BlobStore blobstore = archive.getBlobStore();
         //get all attachments of edoc which satisifed the given filter.
-        List<Blob> tmp = resultSet.getAttachmentHighlightInformation(edoc).stream().filter(b-> !b.is_image()).collect(Collectors.toList());
+        List<Blob> tmp = resultSet.getAttachmentHighlightInformation(edoc).stream().filter(b-> !blobstore.is_image(b)).collect(Collectors.toList());
         allAttachments.addAll(tmp);
     }
 
@@ -195,14 +198,9 @@
 
 </div>
 
-    <% if (docset.size() > 0) { %>
-        <br/>
-        <div style="margin:auto; width:1000px">
-            <table id="attachments">
-            <thead><tr><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th></tr></thead>
-            <tbody>
+    <% if (docset.size() > 0) {
 
-            <%
+
             int count = 0;
             BlobStore blobStore = archive.blobStore;
             for (Document  doc: docset) {
@@ -211,27 +209,58 @@
                 //get the set of attachments matching in this document against search query.
                 List<Blob> blobs = resultSet.getAttachmentHighlightInformation(ed);
                 for( Blob b : blobs) {
-                    String contentFileDataStoreURL = blobStore.get_URL(b);
+                    String contentFileDataStoreURL = blobStore.get_URL_Normalized(b);
                     String blobURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
                     String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
                     String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
+                    String displayFileName = archive.getBlobStore().full_filename_normalized(b);
+//if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+                    //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+                    //so the attributes are either only originalfilename or cleanedupfileURL or both.
+                    String cleanedupname = blobStore.full_filename_cleanedup(b);
+                    String normalizedname=blobStore.full_filename_normalized(b);
+                    String cleanupurl = blobStore.get_URL_Cleanedup(b);
+                    boolean isNormalized = !cleanedupname.equals(normalizedname);
+                    boolean isCleanedName = !cleanedupname.equals(blobStore.full_filename_original(b));
 
                     JSONArray j = new JSONArray();
                     j.put(0, Util.escapeHTML(subject));
                     j.put(1, ed.dateString());
                     j.put(2, b.size);
-                    j.put(3, Util.escapeHTML(Util.ellipsize(b.filename, 50)));
+                    j.put(3, Util.escapeHTML(Util.ellipsize(displayFileName, 50)));
 
                     // urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
                     j.put(4, messageURL);
                     j.put(5, blobURL);
-                    j.put(6, Util.escapeHTML(b.filename));
+                    j.put(6, Util.escapeHTML(displayFileName));
+                    String msg="";
+                    if(isNormalized || isCleanedName){
+                        String completeurl_cleanup ="serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(cleanupurl);
 
+                        if(isNormalized){
+                            msg="This file was converted during the preservation process. Click <a href="+completeurl_cleanup+">here </a> to download the original file";
+                        }
+                        else if(isCleanedName){
+                            msg="This file name was cleaned up during the preservation process. The original file name was "+blobStore.full_filename_original(b);
+                        }
+                        j.put(7,msg);
+                        IsNormalized=true;
+                    }
                     resultArray.put(count++, j);
                 }
             }
 
             %>
+            <br/>
+            <div style="margin:auto; width:1000px">
+            <table id="attachments">
+            <% if(IsNormalized) {%>
+                <thead><tr><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th><th>More Infomration</th></tr></thead>
+            <%} else {%>
+                <thead><tr><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th></tr></thead>
+                <%}%>
+                <tbody>
+
             </tbody>
             </table>
         </div>
@@ -240,6 +269,13 @@
 <br/>
 <jsp:include page="footer.jsp"/>
 <script>
+    $('body').on('click','#normalizationInfo',function(e){
+        // get the attribute's values - originalURL and originalName.
+        var message = $(e.target).data('normalization-info');
+        $('#normalization-description').html (message);
+        $('#normalization-info-modal').modal('show');
+
+    });
 
 $(document).ready(function() {
     //installing input tags as datepickers
@@ -257,8 +293,15 @@ $(document).ready(function() {
 		return '<a target="_blank" href="' + full[4] + '">' + data + '</a>';
 	};
 	var clickable_attachment = function ( data, type, full, meta ) {
-		return '<a title="' + full[6] + '" target="_blank" href="' + full[5] + '">' + data + '</a>';
+//	    var moreinfo = "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" </span>";
+        return '<a title="' + full[6] + '" target="_blank" href="' + full[5] + '">' + data + '</a>' ;
 	};
+	var clickable_normalization_info = function(data,type,full,meta){
+	    if(full[7]){
+            return "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" data-normalization-info=\""+full[7]+"\"</span>";
+        }else
+            return '';
+    }
     var sortable_size = function(data, type, full, meta) {
         return Math.floor(full[2]/1024) + " KB";
     };
@@ -273,12 +316,15 @@ $(document).ready(function() {
 
     $.fn.dataTableExt.oSort['sort-kb-desc']  = function(x,y) { return -1 * $.fn.dataTableExt.oSort['sort-kb-asc'](x,y); };
 
-    var attachments = <%=resultArray.toString(4)%>;
+    var attachments = <%=resultArray.toString(5)%>;
 	$('#attachments').dataTable({
 		data: attachments,
 		pagingType: 'simple',
 		columnDefs: [{targets: 0,render:clickable_message},
             {targets:3,render:clickable_attachment},
+            <%if(IsNormalized){%>
+            {targets:4, render:clickable_normalization_info},
+            <% } %>
             {targets:1,width:'180px',className: "dt-right"},
             {targets:2,render:sortable_size,width:'100px',type:'sort-kb',className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
 		order:[[1, 'asc']], // col 1 (date), ascending
@@ -286,5 +332,26 @@ $(document).ready(function() {
 	});
 });
 </script>
+<div>
+    <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>--%>
+                    <%--<h4 class="modal-title">Confirm</h4>--%>
+                </div>
+                <div class="modal-body">
+                    <span id="normalization-description"></span>
+                </div>
+                <div class="modal-footer">
+                    <%--<button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>--%>
+                    <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+                    <%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
 </body>
 </html>

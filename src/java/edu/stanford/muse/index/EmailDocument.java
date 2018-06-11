@@ -687,7 +687,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		maskEmailDomain(bcc, ab);
 	}
 
-	public String getAllAttachmentContent(BlobStore store, String separator)
+	/*public String getAllAttachmentContent(BlobStore store, String separator)
 	{
 		if (Util.nullOrEmpty(attachments)) return "";
 
@@ -701,7 +701,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 
 		return result.toString();
 	}
-
+*/
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder timeSB = new StringBuilder();

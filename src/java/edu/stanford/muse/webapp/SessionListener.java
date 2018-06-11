@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import edu.stanford.muse.index.ArchiveReaderWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +54,7 @@ public class SessionListener implements HttpSessionListener {
 			Archive archive = (Archive) session.getAttribute("archive");
 			if (archive != null)
 				try {
-					SimpleSessions.saveArchive(archive);
+					ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 				} catch (Exception e) {
 					Util.print_exception(e, log);
 					return;

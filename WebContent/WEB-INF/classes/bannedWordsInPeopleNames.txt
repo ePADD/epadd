@@ -1,5 +1,6 @@
 # if any of these words are present (as a full word (not part of some other substring) in a person's "name" in the email header, that name will be ignored.
 # these strings are case-insensitive
+alumni
 return
 request
 requested

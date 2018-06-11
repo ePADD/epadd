@@ -5,6 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
+<%@ page import="java.io.File" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
 <% 
@@ -13,7 +14,7 @@
 
 	boolean freshLexicon = false; // track whether this is a newly created lexicon -- we suppress the "create new lexicon" option if so.
 
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String lexiconName = request.getParameter("lexicon");
 
@@ -23,7 +24,7 @@
 
 	// read the default lexicon from the session if no explicit parameter for the lexicon name
 	if (lex == null) {
-		lex = new Lexicon(archive.baseDir, lexiconName);
+		lex = new Lexicon(archive.baseDir+ File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR, lexiconName);
 		JSPHelper.log.info ("Creating new lexicon: " + lexiconName);
 	}
 
@@ -110,7 +111,7 @@
 						(<a target="_blank" class="test-lexicon" href="#">Test</a>)
 					<% } %>
                     <br/>
-					<textarea style="padding:5px" cols="120" rows="<%=nRows%>" name="<%=sentiment%>" ><%=query%></textarea>
+					<textarea style="padding:5px" cols="120" rows="<%=nRows+1%>" name="<%=sentiment%>" ><%=query%></textarea>
 				</div>
 				<%
 			}
@@ -124,14 +125,34 @@
 		}
 		%>
 	</div> <!--  categories -->
-	<p>
 <br/>
 	<button id="add-category" class="btn-default" class="tools-pushbutton" ><i class="fa fa-plus"></i> Add a category</button>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save Lexicon</button>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<button class="btn-default" id="export-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" onclick="exportLexiconHandler();"><i class="fa fa-save"></i> Export Lexicon</button>
 
 	<script type="text/javascript">
-		$(document).ready(function() {
+        var exportLexiconHandler=function(){
+            $.ajax({
+                type: 'POST',
+                url: "ajax/downloadData.jsp",
+                data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
+                dataType: 'json',
+                success: function (data) {
+                    epadd.alert('Lexicon file will be downloaded in your download folder!', function () {
+                        window.location=data.downloadurl;
+                    });
+                },
+                error: function (jq, textStatus, errorThrown) {
+                    var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                    epadd.log(message);
+                    epadd.alert(message);
+                }
+            });
+        }
+
+        $(document).ready(function() {
 			function addCategory() {
 				var name = prompt("Category name");
 				if (name == null || name.length == 0)

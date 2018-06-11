@@ -15,10 +15,19 @@
 */
 package edu.stanford.muse.datacache;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.Multimap;
+import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -42,6 +51,9 @@ public class BlobStore implements Serializable {
 
     // mapping of each data to its views
     private Map<Blob, Map<String,Object>> views = new LinkedHashMap<>();
+    //map of original file name and (cleanedupname, normalizedname) generated from Amatica normalization
+    //transient because this can always be built from the normalziation info file (csv) present in session directory of the archive.
+    private transient  Map<String,Pair<String,String>> normalizationMap = new LinkedHashMap<>();
 
     public Multimap<Blob, String> getBlobToKeywords() {
         return blobToKeywords;
@@ -76,11 +88,12 @@ public class BlobStore implements Serializable {
         log.info("Opening file repository in " + dir);
         this.dir = dir;
         File dir_file = new File(dir);
+        dir_file.getParentFile().mkdir();//just to make sure that data folder is present
         if (!dir_file.exists())
             dir_file.mkdirs();
         else {
             // could also lock the dir to make sure no other data store object uses this dir inadvertently
-            File f = new File(this.dir + File.separatorChar + META_DATA_FILENAME);
+            File f = new File(this.dir + File.separatorChar +  META_DATA_FILENAME);
             if (f.exists()) {
                 unpack();
                 log.info("File repository in " + dir + " has " + uniqueBlobs.size() + " entries");
@@ -103,13 +116,13 @@ public class BlobStore implements Serializable {
         for (Blob b : blobs) {
             try {
                 // path can be something like E:\/Users/xyz
-                // get_URL(b) can return something like file:E:\/Users\hangal\ePADD archive of hangal@gmail.com\blobs
-                String urlString = get_URL(b); // .replaceAll("\\\\", "/");
+                // get_URL_Normalized(b) can return something like file:E:\/Users\hangal\ePADD archive of hangal@gmail.com\blobs
+                String urlString = get_URL_Normalized(b); // .replaceAll("\\\\", "/");
                 // urlString can be something like file:E://Users/hangal/ePADD archive of hangal@gmail.com/blobs
                 // very importantly, the E:/Users/... needs to be made E://
                 //	    urlString = urlString.replaceAll(":/", "://"); //
                 URL url = new URL(urlString); // replaceAll expects a regex, so it needs to get a \\, so we need to write \\\\ !
-                fbs.add(b, url.openStream()); // get_URL returns things with \ sometimes
+                fbs.add(b, url.openStream()); // get_URL_Normalized returns things with \ sometimes
             /* this code is causing trouble, so drop these views. openstreams are not serializable, dunno why they are kept with the views
 			for (String view: getViews(b))
 				fbs.addView(b, view, new URL(getViewURL(b, view)).openStream());
@@ -167,20 +180,51 @@ public class BlobStore implements Serializable {
     /**
      * full filename for data
      */
-    private String full_filename(Blob b) {
-        return full_filename(b, b.filename);
+    public String full_filename_normalized(Blob b) {
+        return full_filename_normalized(b, b.filename);
     }
 
     /**
      * full filename for an arbitrary file associated with d
      */
-    private String full_filename(Blob b, String fname) {
+    private String full_filename_normalized(Blob b, String fname) {
         int idx = index(b);
+        String actualname = (idx < 0)? fname: idx + "." + fname;
+        //now check if normalizationinfo map has a mapping for this file or not. If it has then return the cleanedup/normalized name instead of the
+        //actual name of the blob.
+        if(normalizationMap==null || !normalizationMap.containsKey(actualname)){
+            return actualname;
+        }else{
+            return normalizationMap.get(actualname).second;//
+        }
+    }
 
-        if (idx < 0)
-            return fname;
-        else
-            return idx + "." + fname;
+    public String full_filename_cleanedup(Blob b) {
+        return full_filename_cleanedup(b, b.filename);
+    }
+    /**
+     * full filename for an arbitrary file associated with d
+     */
+    private String full_filename_cleanedup(Blob b, String fname) {
+        int idx = index(b);
+        String actualname = (idx < 0)? fname: idx + "." + fname;
+        //now check if normalizationinfo map has a mapping for this file or not. If it has then return the cleanedup/normalized name instead of the
+        //actual name of the blob.
+        if(normalizationMap==null || !normalizationMap.containsKey(actualname)){
+            return actualname;
+        }else{
+            return normalizationMap.get(actualname).first;//second denote if it was cleaned/normalized or both?
+        }
+    }
+
+    public String full_filename_original(Blob b) {
+        return full_filename_original(b, b.filename);
+    }
+
+    private String full_filename_original(Blob b, String fname) {
+        int idx = index(b);
+        String actualname = (idx < 0)? fname: idx + "." + fname;
+        return actualname;
     }
 
     /**
@@ -214,7 +258,7 @@ public class BlobStore implements Serializable {
             // and check if it already exists in the blob store. if not, we assign it in the id_map etc. and then rename the temp file to the proper location in the blob store.
 
             DigestInputStream din = new DigestInputStream(is, MessageDigest.getInstance("SHA-1"));
-            log.info(" adding file to blob store = " + blob.filename);
+            log.info(" adding file to blob store = " + get_URL_Normalized(blob));
             Path tmpPath = Files.createTempFile(new File(System.getProperty("java.io.tmpdir")).toPath(), "epadd.", ".temp");
             File tmpFile = tmpPath.toFile();
             nBytes = Util.copy_stream_to_file(din, tmpFile.getAbsolutePath());
@@ -237,8 +281,8 @@ public class BlobStore implements Serializable {
             // blob doesn't already exist, add it, and move it from the temp dir to its actual place in the blobstore
 
             add(blob);
-            // move it from the temp file to the blobs dir. don't do this before add(blob), because full_filename will not be set up correctly until the blob object can be lookedup
-            String destination = dir + File.separatorChar + full_filename(blob);
+            // move it from the temp file to the blobs dir. don't do this before add(blob), because full_filename_normalized will not be set up correctly until the blob object can be lookedup
+            String destination = dir + File.separatorChar + full_filename_normalized(blob);
             Files.move (tmpPath, new File(destination).toPath());
         } catch (IOException ioe) {
             // we couldn't copy the stream to the data store, so undo everything
@@ -365,13 +409,13 @@ public class BlobStore implements Serializable {
     private synchronized void addView(Blob primary_data, String filename, String view, InputStream is) throws IOException {
         // for file data store, the object stored for the View is the file name
         addView(primary_data, view, filename);
-        Util.copy_stream_to_file(is, dir + File.separatorChar + full_filename(primary_data, filename));
+        Util.copy_stream_to_file(is, dir + File.separatorChar + full_filename_normalized(primary_data, filename));
     }
 
     public InputStream getInputStream(Blob b) throws IOException {
         URL u = urlMap.get(b);
         if (u == null)
-            return new FileInputStream(dir + File.separatorChar + full_filename(b));
+            return new FileInputStream(dir + File.separatorChar + full_filename_normalized(b));
         else
             return u.openStream();
     }
@@ -392,20 +436,29 @@ public class BlobStore implements Serializable {
         }
     }
 
-    public String get_URL(Blob b) {
+    public String get_URL_Normalized(Blob b) {
         URL u = urlMap.get(b);
         if (u != null)
             return u.toString();
         else
-            return get_cache_URL(full_filename(b));
+            return get_cache_URL(full_filename_normalized(b));
     }
+
+    public String get_URL_Cleanedup(Blob b) {
+        URL u = urlMap.get(b);
+        if (u != null)
+            return u.toString();
+        else
+            return get_cache_URL(full_filename_cleanedup(b));
+    }
+
 
     public String getRelativeURL(Blob b) {
         URL u = urlMap.get(b);
         if (u != null)
             return u.toString();
         else
-            return full_filename(b);
+            return full_filename_normalized(b);
     }
 
     public String getViewURL(Blob b, String key) {
@@ -413,13 +466,13 @@ public class BlobStore implements Serializable {
         if (filename == null)
             return null;
         else
-            return get_cache_URL(full_filename(b, filename));
+            return get_cache_URL(full_filename_normalized(b, filename));
     }
 
     public byte[] getDataBytes(Blob b) throws IOException {
         URL u = urlMap.get(b);
         if (u == null) {
-            String filename = dir + File.separatorChar + full_filename(b);
+            String filename = dir + File.separatorChar + full_filename_normalized(b);
             return Util.getBytesFromFile(filename);
         } else {
             return Util.getBytesFromStream(u.openStream());
@@ -428,7 +481,75 @@ public class BlobStore implements Serializable {
 
     public byte[] getViewData(Blob b, String key) throws IOException {
         String filename = (String) getView(b, key);
-        return Util.getBytesFromFile(dir + File.separatorChar + full_filename(b, filename));
+        return Util.getBytesFromFile(dir + File.separatorChar +  full_filename_normalized(b, filename));
+    }
+
+
+    public boolean is_image(Blob blob)
+    {
+        return Util.is_image_filename (get_URL_Normalized(blob));
+    }
+
+
+    public Pair<String, String> getContent(Blob blob)
+    {
+        Metadata metadata = new Metadata();
+        StringBuilder metadataBuffer = new StringBuilder();
+        ContentHandler handler = new BodyContentHandler(-1); // no character limit
+        InputStream stream = null;
+        boolean failed = false;
+
+        Parser parser = new AutoDetectParser();
+        ParseContext context = new ParseContext();
+        try {
+            stream = getInputStream(blob);
+
+            try {
+                // skip mp3 files, tika has trouble with it and hangs
+                String fname = get_URL_Normalized(blob);
+                if (!Util.nullOrEmpty(fname) && !fname.toLowerCase().endsWith(".mp3"))
+                    parser.parse(stream, handler, metadata, context);
+
+                String[] names = metadata.names();
+                //Arrays.sort(names);
+                for (String name : names) {
+                    // some metadata tags are problematic and result in large hex strings... ignore them. (caused memory problems with Henry's archive)
+                    // https://github.com/openplanets/SPRUCE/blob/master/TikaFileIdentifier/python/config.py
+                    // we've seen at least unknown tags: (0x8649) (0x935c) (0x02bc)... better to drop them all
+                    String lname = name.toLowerCase();
+                    if (lname.startsWith("unknown tag") || lname.startsWith("intel color profile"))
+                    {
+                        log.info ("Warning: dropping metadata tag: " + name + " for blob: " + fname);
+                        continue;
+                    }
+                    metadataBuffer.append(": ");
+                    metadataBuffer.append(metadata.get(name));
+                    metadataBuffer.append("\n");
+                }
+            } catch (Exception e) {
+                log.warn("Tika is unable to extract content of blob " + this + ":" + Util.stackTrace(e));
+                // often happens for psd files, known tika issue:
+                // http://mail-archives.apache.org/mod_mbox/tika-dev/201210.mbox/%3Calpine.DEB.2.00.1210111525530.7309@urchin.earth.li%3E
+                failed = true;
+            } finally {
+                try { stream.close(); } catch (Exception e) { failed = true; }
+            }
+
+        } catch (IOException e) {
+            log.warn("Unable to access content of blob " + get_URL_Normalized(blob) + ":" + Util.stackTrace(e));
+            failed = true;
+        }
+
+        if (failed){
+            blob.processedSuccessfully = false;
+            return null;
+        }
+        else{
+            blob.processedSuccessfully = true;
+            return new Pair<>(metadataBuffer.toString(), handler.toString());
+        }
+
+
     }
 
     /**
@@ -440,12 +561,12 @@ public class BlobStore implements Serializable {
             return;
         }
 
-        String filename = "tn." + b.filename;
+        String filename = "tn." + get_URL_Normalized(b);;
         String tmp_filename = TMP_DIR + File.separatorChar + filename;
         String tnFilename = null;
         boolean noThumb = false;
         String MOGRIFY = "/opt/local/bin/mogrify";
-        if (Util.is_image_filename(b.filename) && new File(MOGRIFY).exists()) {
+        if (Util.is_image_filename(get_URL_Normalized(b)) && new File(MOGRIFY).exists()) {
             // mogrify will update tmp_filename in place, creating a thumbnail
             tnFilename = tmp_filename;
             createBlobCopy(b, tmp_filename);
@@ -455,7 +576,7 @@ public class BlobStore implements Serializable {
                 log.warn("mogrify failed: " + e.getMessage() + "\n" + Util.stackTrace(e));
                 noThumb = true;
             }
-        } else if (!NO_CONVERT_PDFS && Util.is_pdf_filename(b.filename)) {
+        } else if (!NO_CONVERT_PDFS && Util.is_pdf_filename(get_URL_Normalized(b))) {
 //    	tnFilename = tmp_filename + ".jpg";
 //    	// [0] converts only page 0
 //    	// only works on mac, after port install imagemagick
@@ -501,13 +622,13 @@ public class BlobStore implements Serializable {
     public String createBlobCopy(Blob b, String filePath) throws IOException {
         // create a copy of the image first in filePath
         InputStream is = null;
-        String url = this.get_URL(b);
+        String url = this.get_URL_Normalized(b);
         url = url.replace("%", "%25");
 
         try {
             URL u = new URL(url);
             if ("file".equalsIgnoreCase(u.getProtocol())) {
-                File f = new File (dir + File.separator + full_filename(b));
+                File f = new File (dir + File.separator +  full_filename_normalized(b));
                 is = new FileInputStream (f);
             } else {
                 is = new URL(url).openStream();
@@ -520,4 +641,73 @@ public class BlobStore implements Serializable {
         return url;
     }
 
+    public void setNormalizationMap(String blobNormalizationMapPath) {
+
+        if(normalizationMap==null)
+            normalizationMap=new LinkedHashMap<>();
+        //read the normalization info file and put it in a map
+        try{
+            FileReader fr = new FileReader(blobNormalizationMapPath);
+            CSVReader csvreader = new CSVReader(fr, ',', '"');
+
+            // read line by line, except the first line which is header
+            String[] record = null;
+            record = csvreader.readNext();//skip the first line.
+            while ((record = csvreader.readNext()) != null) {
+                String filename = record[0];
+                String cleanedupname = record[1];
+                String normalizedname = record[2];
+                this.normalizationMap.put(filename,new Pair<String,String>(cleanedupname,normalizedname));
+            }
+
+            csvreader.close();
+            fr.close();
+        } catch (IOException e) {
+            log.warn("Unable to read docid to label map from csv file");
+
+        }
+
+    }
+
+    public Map<String,Pair<String,String>> getNormalizationMap() {
+        return normalizationMap;
+    }
+
+    public void setNormalizationMap(Map<String, Pair<String, String>> normalizationMap) {
+        this.normalizationMap=normalizationMap;
+    }
+
+    public boolean isNormalized() {
+        return normalizationMap!=null && normalizationMap.size()>0;
+    }
+
+    /*public void writeNormalizationMap(String filename){
+        try{
+            FileWriter fw = new FileWriter(filename);
+            CSVWriter csvWriter = new CSVWriter(fw, ',', '"');
+            List<String> line = new ArrayList<>();
+            line.add ("OriginalFile");
+            line.add ("CleanedupName");
+            line.add ("NormalizedName");
+
+            csvWriter.writeNext(line.toArray(new String[line.size()]));
+
+            for(String orig: normalizationMap.keySet()){
+                String cleanedupname = normalizationMap.get(orig).first;
+                String normalizedname = normalizationMap.get(orig).second;
+                line = new ArrayList<>();
+                line.add (orig);
+                line.add (cleanedupname);
+                line.add (normalizedname);
+                csvWriter.writeNext(line.toArray(new String[line.size()]));
+            }
+        csvWriter.close();
+        fw.close();
+        } catch (IOException e) {
+            log.warn("Unable to writer normalization info file");
+
+        }
+
+    }
+*/
 }

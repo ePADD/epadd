@@ -9,6 +9,8 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
+<%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -69,7 +71,7 @@
 
 <%
 Archive archive = JSPHelper.getArchive(request);
-String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 String bestName = "";
 String bestEmail = "";
 if (archive != null) {
@@ -328,19 +330,30 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
     <% } %>
 
 
-    <% if (ModeConfig.isProcessingMode()) { %>
-    <section>
-            <div class="panel" id="export-auth">
-                <div class="panel-heading">Export authorities (CSV)</div>
+    <% if (ModeConfig.isProcessingMode()) {
+        Map<Short, String> entitytypes= new LinkedHashMap<>();
+        entitytypes.put(Short.MAX_VALUE,"All");
+        for(NEType.Type t: NEType.Type.values())
+            entitytypes.put(t.getCode(), t.getDisplayName());
 
+
+
+    %>
+    <section>
+            <div class="panel" id="export-entities">
+                <div class="panel-heading">Export entities</div>
                 <div class="one-line">
                     <div class="form-group col-sm-8">
-                        <label for="export-auth-file">Specify location</label>
-                        <input id="export-auth-file" class="dir form-control" type="text" name="name" value=""/>
+                        <select id="entityType" name="entityType" class="form-control selectpicker">
+                            <option value="" selected disabled>Select</option>
+                            <%for (Short s : entitytypes.keySet()){
+                            %>
+                            <option value = "<%=s%>"><%=entitytypes.get(s)%></option>
+                            <%}%>
+                        </select>
                     </div>
-                    <div class="form-group col-sm-4 picker-buttons">
-                        <button id="export-auth-browse" class="btn-default browse-button">Browse</button>
-                        <button id="export-auth-do" style="margin-left: 10px;" class="go-button faded btn-default">Export</button>
+                    <div class="form-group col-sm-4">
+                        <button id="export-entities-do"  class="go-button btn-default">Export</button>
                     </div>
                 </div>
 
@@ -350,17 +363,87 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
     </section>
 
     <script>
-        $('#export-auth .go-button').click (function(e) {
-            var $button = $(e.target);
-            if ($button.hasClass('faded'))
-                return false; // do nothing;
-            var baseUrl = 'export-authorities';
-            var dir = $('.dir', $button.closest('.panel')).val();
-            if (dir && dir.length > 0)
-                window.location = baseUrl + '?archiveID=<%=archiveID%>&exportType=csv&dir=' + dir;
+        $('#export-entities .go-button').click (function(e) {
+            var entityType=$('#entityType').val();
+            var option;
+            var msg;
+            if(!entityType){
+                alert("Please select an entity type");
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url: "ajax/downloadData.jsp",
+                data: {archiveID: archiveID, data: "entities",type:entityType},
+                dataType: 'json',
+                success: function (data) {
+                    epadd.alert('List of selected entities will be downloaded in your download folder!', function () {
+                        window.location=data.downloadurl;
+                    });
+                },
+                error: function (jq, textStatus, errorThrown) {
+                    var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                    epadd.log(message);
+                    epadd.alert(message);
+                }
+            });
         });
         </script>
-    <% } %>
+
+        <section>
+            <div class="panel" id="export-auth">
+                <div class="panel-heading">Export correspondents</div>
+                <div class="one-line">
+                    <div class="form-group col-sm-8">
+                        <select id="correspondentType" name="correspondentType" class="form-control selectpicker">
+                            <option value="" selected disabled>Select</option>
+                            <option value="confirmed">Confirmed Correspondents</option>
+                            <option value="unconfirmed">Unconfirmed Correspondents</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <button id="export-auth-do"  class="go-button btn-default">Export</button>
+                    </div>
+                </div>
+
+
+                <br/>
+            </div>
+        </section>
+
+        <script>
+            $('#export-auth .go-button').click (function(e) {
+                var correspondentType=$('#correspondentType').val();
+                if(!correspondentType)
+                {
+                    alert("Please select a correspondent type");
+                    return false;
+                }
+                var option;
+                if(correspondentType=="confirmed")
+                    option="confirmedCorrespondents";
+                else
+                    option="unconfirmedCorrespondents";
+                $.ajax({
+                    type: 'POST',
+                    url: "ajax/downloadData.jsp",
+                    data: {archiveID: archiveID, data: option},
+                    dataType: 'json',
+                    success: function (data) {
+                        epadd.alert('Label description file will be downloaded in your download folder!', function () {
+                            window.location=data.downloadurl;
+                        });
+                    },
+                    error: function (jq, textStatus, errorThrown) {
+                        var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                        epadd.log(message);
+                        epadd.alert(message);
+                    }
+                });
+            });
+
+        </script>
+        <% } %>
 
 
 </div> <!--  all fields -->
@@ -372,7 +455,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             new FilePicker($('#export-next'));
             new FilePicker($('#export-mbox'));
             new FilePicker($('#export-attach'));
-            new FilePicker($('#export-auth'));
+//            new FilePicker($('#export-auth'));
             new FilePicker($('#export-headers'));
 		});
 

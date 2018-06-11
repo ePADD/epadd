@@ -4,7 +4,7 @@
 <%@page language="java" import="org.json.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
+<%@page language="java" import="edu.stanford.muse.webapp.*"%><%@ page import="java.io.File"%>
 
 <%
 	// params:
@@ -24,7 +24,7 @@
     }
     String lexiconName = request.getParameter("lexicon");
 
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	Lexicon lex = null;
 	if (!Util.nullOrEmpty(lexiconName))
 		lex = archive.getLexicon(lexiconName);
@@ -33,7 +33,7 @@
 	if (lex == null)
 	{
 		// it doesn't already exist, we have to create a brand new one
-		lex = new Lexicon(archive.baseDir, lexiconName);
+		lex = new Lexicon(archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR, lexiconName);
 		JSPHelper.log.info ("Creating new lexicon: " + lexiconName);
 	}
 	else
@@ -62,7 +62,7 @@
 		JSPHelper.log.info ("updating lexicon for " + lexiconName + " in language " + language + " with " + newMap.size() + " entries");
 		// should we clear an existing lex first?
 		lex.update(language, newMap);
-		lex.save(archive.baseDir + java.io.File.separatorChar + "lexicons", language);
+		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language);
 	}
 
 	result.put("status", 0);

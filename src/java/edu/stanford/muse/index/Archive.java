@@ -30,12 +30,38 @@ import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBook;
+import edu.stanford.muse.ner.Entity;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.EmailRenderer;
 import edu.stanford.muse.webapp.ModeConfig;
-import edu.stanford.muse.webapp.SimpleSessions;
+/*
+import gov.loc.repository.bagit.creator.BagCreator;
+import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.domain.Manifest;
+import gov.loc.repository.bagit.exceptions.*;
+import gov.loc.repository.bagit.hash.Hasher;
+import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
+import gov.loc.repository.bagit.reader.BagReader;
+import gov.loc.repository.bagit.util.PathUtils;
+import gov.loc.repository.bagit.verify.BagVerifier;
+import gov.loc.repository.bagit.writer.BagWriter;
+import org.apache.commons.collections4.BagUtils;
+import org.apache.commons.collections4.bag.HashBag;
+*/
+import gov.loc.repository.bagit.creator.BagCreator;
+import gov.loc.repository.bagit.creator.CreatePayloadManifestsVistor;
+import gov.loc.repository.bagit.creator.CreateTagManifestsVistor;
+import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.domain.Manifest;
+import gov.loc.repository.bagit.exceptions.*;
+import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
+import gov.loc.repository.bagit.reader.BagReader;
+import gov.loc.repository.bagit.util.PathUtils;
+import gov.loc.repository.bagit.verify.BagVerifier;
+import gov.loc.repository.bagit.writer.ManifestWriter;
+import gov.loc.repository.bagit.writer.MetadataWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +71,10 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,11 +97,12 @@ public class Archive implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // the archive structure: the archive's top level dir has these subdirs
+    public static final String BAG_DATA_FOLDER="data";
     public static final String BLOBS_SUBDIR = "blobs";
-    public static final String TEMP_SUBDIR = "tmp";
+    public static final String TEMP_SUBDIR = System.getProperty("java.io.tmpdir");
     public static final String INDEXES_SUBDIR = "indexes";
     public static final String SESSIONS_SUBDIR = "sessions"; // original idea was that there would be different sessions on the same archive (index). but in practice we only have one session
-    private static final String LEXICONS_SUBDIR = "lexicons";
+    public static final String LEXICONS_SUBDIR = "lexicons";
     private static final String FEATURES_SUBDIR = "mixtures";
     public static final String IMAGES_SUBDIR = "images";
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
@@ -79,10 +110,12 @@ public class Archive implements Serializable {
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
     public static final String ANNOTATION_SUFFIX = "Annotations.csv";
     public static final String LABELMAPDIR= "LabelMapper";
+    public static final String BLOBLNORMALIZATIONFILE_SUFFIX="NormalizationInfo.csv";
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
-
+    public enum Save_Archive_Mode {INCREMENTAL_UPDATE, FRESH_CREATION};
+    ////////////  CACHE variables ////////
     ////////////  CACHE variables ///////////////
     // these 5 variables cache the list of all entities/blob names/annotations/folders/ email sources in the archive
     // of these folders, email source and blob names generally don't change
@@ -90,7 +123,7 @@ public class Archive implements Serializable {
     // for good measure, we invalidate all of them when close() is called on the archive
     private transient Set<String> allEntities, allBlobNames, allAnnotations, allFolders, allEmailSources;
     ////////////  END CACHE variables ///////////////
-
+    private transient Bag archiveBag;
     /* all of the following don't change based on the current filter */
     public Indexer indexer;
     private IndexOptions indexOptions;
@@ -114,6 +147,13 @@ public class Archive implements Serializable {
 
     public String archiveTitle; // this is the name of this archive
 
+    public Bag getArchiveBag(){
+        return archiveBag;
+    }
+
+    public void setArchiveBag(Bag bag){
+        this.archiveBag=bag;
+    }
     public synchronized CorrespondentAuthorityMapper getCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
         // auth mapper is transient, so may have to be created each time. but it will be loaded from a file if it already exists
         if (correspondentAuthorityMapper == null)
@@ -434,7 +474,7 @@ int errortype=0;
      * */
     public void setBaseDir(String dir) {
         baseDir = dir;
-        blobStore.setDir(dir + File.separator + BLOBS_SUBDIR);
+        blobStore.setDir(dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + BLOBS_SUBDIR );
     }
 
     /**
@@ -528,11 +568,11 @@ int errortype=0;
      * */
     public void setup(String baseDir, BlobStore blobStore, String args[]) throws IOException {
         prepareBaseDir(baseDir);
-        lexiconMap = createLexiconMap(baseDir);
+        lexiconMap = createLexiconMap(baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER);
         indexOptions = new IndexOptions();
         indexOptions.parseArgs(args);
         log.info("Index options are: " + indexOptions);
-        indexer = new Indexer(baseDir, indexOptions);
+        indexer = new Indexer(baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER, indexOptions);
         if(blobStore!=null)
             setBlobStore(blobStore);
     }
@@ -590,7 +630,7 @@ int errortype=0;
      * This should be the only place that creates the cache dir.
      */
     public static void prepareBaseDir(String dir) {
-        dir = dir + File.separatorChar + LEXICONS_SUBDIR;
+        dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar+ LEXICONS_SUBDIR;
         File f_dir = new File(dir);
 
         f_dir.mkdirs();
@@ -1043,15 +1083,24 @@ int errortype=0;
         }
         boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY;
         Archive.prepareBaseDir(out_dir);
-        if (!exportInPublicMode && new File(baseDir + File.separator + LEXICONS_SUBDIR).exists())
-            FileUtils.copyDirectory(new File(baseDir + File.separator + LEXICONS_SUBDIR), new File(out_dir + File.separator + LEXICONS_SUBDIR));
-        if (new File(baseDir + File.separator + IMAGES_SUBDIR).exists())
-            FileUtils.copyDirectory(new File(baseDir + File.separator + IMAGES_SUBDIR), new File(out_dir + File.separator + IMAGES_SUBDIR));
+        if (!exportInPublicMode && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR).exists())
+            FileUtils.copyDirectory(new File(baseDir +  File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR));
+        //copy normalization file if it exists
+        if (!exportInPublicMode && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separator + Archive.BLOBLNORMALIZATIONFILE_SUFFIX).exists())
+            FileUtils.copyFile(new File(baseDir +  File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separator + Archive.BLOBLNORMALIZATIONFILE_SUFFIX),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separator + Archive.BLOBLNORMALIZATIONFILE_SUFFIX));
+
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + IMAGES_SUBDIR).exists())
+            FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + IMAGES_SUBDIR),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + IMAGES_SUBDIR));
         //internal disambiguation cache
-        if (new File(baseDir + File.separator + FEATURES_SUBDIR).exists())
-            FileUtils.copyDirectory(new File(baseDir + File.separator + FEATURES_SUBDIR), new File(out_dir + File.separator + FEATURES_SUBDIR));
-        if (new File(baseDir + File.separator + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME).exists())
-            FileUtils.copyFile(new File(baseDir + File.separator + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME), new File(out_dir + File.separator + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME));
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + FEATURES_SUBDIR).exists())
+            FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + FEATURES_SUBDIR),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + FEATURES_SUBDIR));
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME).exists())
+            FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME));
 
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
@@ -1132,7 +1181,7 @@ after maskEmailDomain.
             return retainedDocIDs.contains(docId);
         };
 
-        indexer.copyDirectoryWithDocFilter(out_dir, emailFilter, attachmentFilter);
+        indexer.copyDirectoryWithDocFilter(out_dir + File.separatorChar + Archive.BAG_DATA_FOLDER, emailFilter, attachmentFilter);
         log.info("Completed exporting indexes");
 
         // save the blobs in a new blobstore
@@ -1143,7 +1192,7 @@ after maskEmailDomain.
                 if (d instanceof EmailDocument)
                     if (!Util.nullOrEmpty(((EmailDocument) d).attachments))
                         blobsToKeep.addAll(((EmailDocument) d).attachments);
-            String blobsDir = out_dir + File.separatorChar + BLOBS_SUBDIR;
+            String blobsDir = out_dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar +  BLOBS_SUBDIR;
             new File(blobsDir).mkdirs();
             BlobStore newBlobStore = blobStore.createCopy(blobsDir, blobsToKeep);
             log.info("Completed exporting blobs, newBlobStore in dir: " + blobsDir + " is: " + newBlobStore);
@@ -1167,8 +1216,8 @@ after maskEmailDomain.
         //recompute entity count because some documents have been redacted
         double theta = 0.001;
         this.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(this,theta);
-        // write out the archive file
-        SimpleSessions.saveArchive(out_dir, name, this); // save .session file.
+        // write out the archive file.. note that this is a fresh creation of archive in the exported folder
+        ArchiveReaderWriter.saveArchive(out_dir, name, this,Save_Archive_Mode.FRESH_CREATION); // save .session file.
         log.info("Completed saving archive object");
 
         // restore states
@@ -1216,6 +1265,77 @@ after maskEmailDomain.
         }
 
         return entityTypeToCount;
+    }
+
+    public JSONArray getEntitiesInfoJSON( Short type) {
+        Map<String,Entity> entities = new LinkedHashMap();
+        double theta = 0.001;
+        EntityBook entityBook = getEntityBook();
+
+        for (Document doc: getAllDocs()){
+//            Span[] es = archive.getEntitiesInDoc(doc,true);
+            Span[] es1 = getEntitiesInDoc(doc,true);
+            Span[] es2 =  getEntitiesInDoc(doc,false);
+            Set<Span> ss = Arrays.stream(es1).collect(Collectors.toSet());
+            Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
+            ss.addAll(ss1);
+            Set<String> seenInThisDoc = new LinkedHashSet<>();
+
+            for (Span span: ss) {
+                if (span.type != type || span.typeScore<theta)
+                    continue;
+
+                String name = span.getText();
+                String displayName = name;
+
+                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
+                if (entityBook != null)
+                    displayName = entityBook.getDisplayName(name, span.type);
+
+                displayName = displayName.trim();
+
+                if (seenInThisDoc.contains(displayName.toLowerCase()))
+                    continue; // count an entity in a doc only once
+
+                seenInThisDoc.add (displayName.toLowerCase());
+
+                //fixed: Here entities map was keeping the keys without lowercase conversion as a result
+                // two entities which are same but differ only in their display name case (lower/upper) were
+                // being identified as separate entities. As a result the count in listing page was shown differently from the
+                //count on the processing metadata page (by a difference of 30 or so). This fix was done after
+                //the fix to handle a large difference in person entities count. For that refer to JSPHelper.java
+                //file fetchAndIndex method.
+                if (!entities.containsKey(displayName.toLowerCase()))
+                    entities.put(displayName.toLowerCase(), new Entity(displayName, span.typeScore));
+                else
+                    entities.get(displayName.toLowerCase()).freq++;
+            }
+        }
+
+        Map<Entity, Double> vals = new LinkedHashMap<>();
+        for(Entity e: entities.values()) {
+            vals.put(e, e.score);
+            //System.err.println("Putting: "+e+", "+e.score);
+        }
+        List<Pair<Entity,Double>> lst = Util.sortMapByValue(vals);
+
+        JSONArray resultArray = new JSONArray();
+        int count = 0;
+        for (Pair<Entity, Double> p: lst) {
+            count++;
+            String entity = p.getFirst().entity;
+            JSONArray j = new JSONArray();
+
+            Set<String> altNamesSet = entityBook.getAltNamesForDisplayName(entity, type);
+            String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
+            j.put (0, Util.escapeHTML(entity));
+            j.put (1, (float)p.getFirst().score);
+            j.put (2, p.getFirst().freq);
+            j.put (3, altNames);
+
+            resultArray.put (count-1, j);
+        }
+        return resultArray;
     }
     public List<Document> docsWithThreadId(long threadID) {
         List<Document> result = new ArrayList<>();
@@ -1529,7 +1649,7 @@ after maskEmailDomain.
 
         log.info(indexer.computeStats());
 
-        indexer.setBaseDir(baseDir);
+        indexer.setBaseDir(baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER+ File.separatorChar);
         openForRead();
 
         if (!readOnly)
@@ -1540,7 +1660,7 @@ after maskEmailDomain.
         }
 
         if (lexiconMap == null) {
-            lexiconMap = createLexiconMap(baseDir);
+            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         }
 
         // recompute... sometimes the processing metadata may be stale, because some messages have been redacted at export.
@@ -1642,13 +1762,13 @@ after maskEmailDomain.
         //For merging lexicons copy those lexicon files from other's lexicon directory which are not
         //present in this archive's lexicon directory.Report the names of the files which are present
         //and the number of new files imported successfully from other archive.
-        String otherLexDir = other.baseDir + File.separatorChar + LEXICONS_SUBDIR;
-        String thisLexDir = baseDir + File.separatorChar + LEXICONS_SUBDIR;
+        String otherLexDir = other.baseDir + File.separatorChar +Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR;
+        String thisLexDir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR;
         File otherlexDirFile = new File(otherLexDir);
         result.newLexicons = new LinkedHashSet<>();
         result.clashedLexicons = new LinkedHashSet<>();
         try {
-            Map<String,Lexicon> collectionLexiconMap = createLexiconMap(baseDir);
+            Map<String,Lexicon> collectionLexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
             if (!otherlexDirFile.exists()) {
                 log.warn("'lexicons' directory is missing from the accession");
             } else {
@@ -1680,7 +1800,10 @@ after maskEmailDomain.
 //        this.collectionMetadata.merge(other.collectionMetadata);
 //    }
 
-    private static Map<String, Lexicon> createLexiconMap(String baseDir) throws IOException {
+    /*IMP: If there were two lexicons with same name but different languages then the following method will pick only the first one
+    So, how do we support a mix language archive?
+     */
+    public static Map<String, Lexicon> createLexiconMap(String baseDir) throws IOException {
         String lexDir = baseDir + File.separatorChar + LEXICONS_SUBDIR;
         Map<String, Lexicon> map = new LinkedHashMap<>();
         File lexDirFile = new File(lexDir);
@@ -1697,10 +1820,16 @@ after maskEmailDomain.
         return map;
     }
 
+    //Method added to support importing new lexicon from UI.
+    public void setLexiconMap(Map<String,Lexicon> lexmap){
+        this.lexiconMap=lexmap;
+
+    }
+
     public Lexicon getLexicon(String lexName) {
         // lexicon map could be stale, re-read it
         try {
-            lexiconMap = createLexiconMap(baseDir);
+            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -1710,7 +1839,7 @@ after maskEmailDomain.
     public Set<String> getAvailableLexicons() {
         // lexicon map could be stale, re-read it
         try {
-            lexiconMap = createLexiconMap(baseDir);
+            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -1889,8 +2018,8 @@ after maskEmailDomain.
                 if (!Util.nullOrEmpty(d.attachments)) {
                     List<Blob> blobs = d.attachments;
                     for (Blob b : blobs) {
-                        if (!Util.nullOrEmpty(b.getName()))
-                            allBlobNames.add(b.getName());
+                        if (!Util.nullOrEmpty(this.getBlobStore().get_URL_Normalized(b)))
+                            allBlobNames.add(this.getBlobStore().get_URL_Normalized(b));
                     }
                 }
         }
@@ -1928,10 +2057,260 @@ after maskEmailDomain.
         return indexer.blobDocIds.get(ldocId);
     }
 
+    //input is a bag present in userdir
+    public static Bag readArchiveBag(String userdir) {
+        Path rootDir = Paths.get(userdir);
+        BagReader reader = new BagReader();
+        String errorMessage = "";
+        Bag bag = null;
+        try {
+            bag = reader.read(rootDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            errorMessage = "Could not read directory " + rootDir;
+        } catch (UnparsableVersionException e) {
+            e.printStackTrace();
+            errorMessage = "Bag is of unparsable version: " + e.getMessage();
+        } catch (MaliciousPathException e) {
+            e.printStackTrace();
+            errorMessage = "Malicious path found for the bag: " + e.getMessage();
+        } catch (UnsupportedAlgorithmException e) {
+            e.printStackTrace();
+            errorMessage = "The bag has checksums for unsupported algorithms: " + e.getMessage();
+        } catch (InvalidBagitFileFormatException e) {
+            e.printStackTrace();
+            errorMessage = "The file format of the bag is invalid :" + e.getMessage();
+        }
+        //If error in reading the bag return null;
+        if (!Util.nullOrEmpty(errorMessage))
+            return null;
+
+        BagVerifier bv = new BagVerifier();
+        try {
+            bv.isValid(bag, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            errorMessage = "IO Exception:" + e.getMessage();
+        } catch (MissingPayloadManifestException e) {
+            e.printStackTrace();
+            errorMessage = "Payload manifest missing: " + e.getMessage();
+        } catch (MissingBagitFileException e) {
+            e.printStackTrace();
+            errorMessage = "Bagit file missing: " + e.getMessage();
+        } catch (MissingPayloadDirectoryException e) {
+            e.printStackTrace();
+            errorMessage = "Payload directory missing: " + e.getMessage();
+        } catch (FileNotInPayloadDirectoryException e) {
+            e.printStackTrace();
+            errorMessage = "No file in payload directory: " + e.getMessage();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            errorMessage = "Validation procedure interrupted :" + e.getMessage();
+        } catch (MaliciousPathException e) {
+            e.printStackTrace();
+            errorMessage = "Malicious Path found: " + e.getMessage();
+        } catch (CorruptChecksumException e) {
+            e.printStackTrace();
+            errorMessage = "Checksum is corrupted: " + e.getMessage();
+        } catch (VerificationException e) {
+            e.printStackTrace();
+            errorMessage = "Can not verify the bag: " + e.getMessage();
+        } catch (UnsupportedAlgorithmException e) {
+            e.printStackTrace();
+            errorMessage = "Algorithm used for constructing the bag is not supported: " + e.getMessage();
+        } catch (InvalidBagitFileFormatException e) {
+            e.printStackTrace();
+            errorMessage = "Bag file format is invalid: " + e.getMessage();
+        }
+        // If error in verification return null;
+        if (!Util.nullOrEmpty(errorMessage))
+            return null;
+        else
+            return bag;
+    }
+/* //Read the archive
+        try {
+            SimpleSessions.readArchiveIfPresent(userdir);
+        } catch (IOException e) {
+            errorMessage=e.getMessage();
+            return null;
+        }*//*
+
+        return bag;
+
+
+    }
+
+    public static void saveArchiveBag(String destDir){
+        //first call SimpleSession saveArchive (destDir+"/data")
+
+        //remove bag metadata from destDir (manifest*.txt, bagit.txt etc)
+
+
+        //then create
+    }
+*/
+
+    public void updateFileInBag(String fileOrDirectoryName, String baseDir) {
+        Path filepathname = Paths.get(fileOrDirectoryName);
+        Path baginfofile = Paths.get(baseDir+File.separatorChar+"bag-info.txt");
+        Path manifestinfofile = Paths.get(baseDir +File.separatorChar+"manifest-md5.txt");
+        //get bag
+        Bag archiveBag = this.getArchiveBag();
+
+        //updatePayloadManifests(bag, algorithms, includeHidden);
+        MessageDigest messageDigest = null;
+        Map<Manifest, MessageDigest> manifestToMessageDigest= new HashMap<>();
+        boolean includeHiddenFiles = false;
+        //updateMetadataFile(bag, metadata);
+
+        final String payloadOxum;
+        try {
+            payloadOxum = PathUtils.generatePayloadOxum(PathUtils.getDataDir(archiveBag));
+            archiveBag.getMetadata().upsertPayloadOxum(payloadOxum);
+            archiveBag.getMetadata().remove("Bagging-Date"); //remove the old bagging date if it exists so that there is only one
+            archiveBag.getMetadata().add("Bagging-Date", new SimpleDateFormat().format(new Date()));
+            MetadataWriter.writeBagMetadata(archiveBag.getMetadata(), archiveBag.getVersion(), PathUtils.getBagitDir(archiveBag), archiveBag.getFileEncoding());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            messageDigest = MessageDigest.getInstance(StandardSupportedAlgorithms.MD5.name());
+            MessageDigest finalMessageDigest = messageDigest;
+            archiveBag.getPayLoadManifests().forEach(manifest->manifestToMessageDigest.put(manifest, finalMessageDigest));
+            CreatePayloadManifestsVistor sut = new CreatePayloadManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
+            Files.walkFileTree(filepathname, sut);
+            //Files.walkFileTree(baginfofile,sut);
+            /////Now write payload manifest
+            archiveBag.getPayLoadManifests().clear();
+            archiveBag.getPayLoadManifests().addAll(manifestToMessageDigest.keySet());
+            ManifestWriter.writePayloadManifests(archiveBag.getPayLoadManifests(), PathUtils.getBagitDir(archiveBag),archiveBag.getRootDir(),archiveBag.getFileEncoding());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //updateTagManifests(bag, algorithms, includeHidden);
+        try {
+            MessageDigest finalMessageDigest = messageDigest;
+            manifestToMessageDigest.clear();
+            archiveBag.getTagManifests().forEach(manifest->manifestToMessageDigest.put(manifest, finalMessageDigest));
+            final CreateTagManifestsVistor tagVistor = new CreateTagManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
+           //Files.walkFileTree(filepathname, tagVistor);
+            Files.walkFileTree(baginfofile,tagVistor);
+            Files.walkFileTree(manifestinfofile,tagVistor);
+            //update bag'stagemanifest
+            archiveBag.getTagManifests().clear();
+            archiveBag.getTagManifests().addAll(manifestToMessageDigest.keySet());
+            ManifestWriter.writeTagManifests(archiveBag.getTagManifests(), PathUtils.getBagitDir(archiveBag), archiveBag.getRootDir(), archiveBag.getFileEncoding());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    public JSONArray getEntitiesCountAsJSON(Short entityType,int maxrecords){
+
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
+
+        double cutoff = 0.001;
+        getEntitiesInfo( entityType, counts, canonicalToOriginal, cutoff);
+        List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
+         int count = 0;
+        JSONArray resultArray = new JSONArray();
+        for (Pair<String, Integer> p: pairs) {
+            if (++count > maxrecords)
+                break;
+            String entity = p.getFirst();
+            String entityToPrint = canonicalToOriginal.get(entity);
+            JSONArray j = new JSONArray();
+            j.put (0, Util.escapeHTML(entityToPrint));
+            j.put (1, counts.get(entity));
+
+            resultArray.put (count-1, j);
+        }
+        return resultArray;
+    }
+
+    private void getEntitiesInfo(Short entitiyType, Map<String, Integer> counts, Map<String, String> canonicalToOriginal, double cutoff) {
+        Collection<EmailDocument> docs = (Collection) getAllDocs();
+        for (EmailDocument ed: docs) {
+            Span[] es = getEntitiesInDoc(ed,true);
+            List<Span> est = new ArrayList<>();
+            for(Span e: es)
+                if(NEType.getCoarseType(e.type).getCode() == entitiyType)
+                    est.add(e);
+
+            Span[] fes = edu.stanford.muse.ie.Util.filterEntitiesByScore(est.toArray(new Span[est.size()]),cutoff);
+            //filter the entities to remove obvious junk
+            fes = edu.stanford.muse.ie.Util.filterEntities(fes);
+            // note that entities could have repetitions.
+            // so we create a *set* of entities, but after canonicalization.
+            // canonical to original just uses an arbitrary (first) occurrence of the entity
+            Set<String> canonicalEntities = new LinkedHashSet<String>();
+            for (Span esp: fes) {
+                String e = esp.getText();
+                String canonicalEntity = IndexUtils.canonicalizeEntity(e);
+                if (canonicalToOriginal.get(canonicalEntity) == null)
+                    canonicalToOriginal.put(canonicalEntity, e);
+                canonicalEntities.add(canonicalEntity);
+            }
+
+            for (String ce: canonicalEntities)
+            {
+                Integer I = counts.get(ce);
+                counts.put(ce, (I == null) ? 1 : I+1);
+            }
+        }
+    }
+
     public static void main(String[] args) {
         try {
+
             String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
-            Archive archive = SimpleSessions.readArchiveIfPresent(userDir);
+
+            StandardSupportedAlgorithms algorithm = StandardSupportedAlgorithms.MD5;
+BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),true);
+            File tmp = Util.createTempDirectory();
+            tmp.delete();
+            FileUtils.moveDirectory(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER).toFile(),tmp.toPath().toFile());
+            //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
+            File wheretocopy = Paths.get(userDir).toFile();
+            wheretocopy.delete();
+            FileUtils.moveDirectory(tmp.toPath().toFile(),wheretocopy);
+
+            //Files.move(,Paths.get(userDir),StandardCopyOption.REPLACE_EXISTING);
+
+            boolean includeHiddenFiles = true;
+            //BagCreator.
+            Bag bag = BagCreator.bagInPlace(Paths.get(userDir), Arrays.asList(algorithm), includeHiddenFiles);
+            //write bag to disc.. in place of userDir..
+//            Path outputDir = Paths.get(userDir+"/bag");
+//
+//            BagWriter.write(bag, outputDir); //where bag is a Bag object
+
+       /*     //   System.out.println(bag.getRootDir().toString());
+            Bag b = Archive.readArchiveBag(userDir);
+            BagWriter.write(b,Paths.get(userDir));
+//update it in place.
+//b.getPayLoadManifests().forEach(f->f.getFileToChecksumMap().pu);
+            b = Archive.readArchiveBag(userDir);
+            BagWriter.write(b,Paths.get(userDir));
+*/
+          //  System.out.println(b.getRootDir().toString());
+
+            Archive archive = ArchiveReaderWriter.readArchiveIfPresent(userDir);
+            //make some modification in the file labelcsv.
+            //update file.
+            archive.updateFileInBag((userDir+File.separatorChar+"data/sessions"+File.separatorChar+"collection-metadata.json"), userDir);
+            //then try to read it again..
+            archive = ArchiveReaderWriter.readArchiveIfPresent(userDir);
+
             List<Document> docs = archive.getAllDocs();
             int i=0;
             archive.assignThreadIds();

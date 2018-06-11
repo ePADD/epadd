@@ -23,6 +23,12 @@
 	
 	<style type="text/css">
       .js #people {display: none;}
+	   .modal-body {
+		   /* 100% = dialog height, 120px = header + footer */
+		   max-height: calc(100% - 120px);
+		   overflow-y: scroll;
+	   }
+
     </style>
 		
 	<script type="text/javascript" charset="utf-8">
@@ -35,14 +41,19 @@
 
 <%
 	AddressBook ab = archive.addressBook;
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "All Correspondents", "");
 %>
 
-<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
+<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:30px">
 	<button class="btn-default" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
 	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 		<button class="btn-default" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><i class="fa fa-pencil"></i> Edit correspondents</button>
+		&nbsp;
+    	<button class="btn-default" onclick="$('#correspondent-upload-modal').modal('show');"><i class="fa fa-pencil"></i> Import</button>
+		&nbsp;
+		<button class="btn-default" onclick="exportCorrespondentHandler()"><i class="fa fa-pencil"></i> Export</button>
+
 	<% } %>
 </div>
 <br/>
@@ -78,6 +89,60 @@
 		});
 	} );
 
+	var exportCorrespondentHandler=function(){
+        $.ajax({
+            type: 'POST',
+            url: "ajax/downloadData.jsp",
+            data: {archiveID: archiveID, data: "addressbook"},
+            dataType: 'json',
+            success: function (data) {
+                epadd.alert('Correspondent list will be downloaded in your download folder!', function () {
+                    window.location=data.downloadurl;
+                });
+            },
+            error: function (jq, textStatus, errorThrown) {
+                var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                epadd.log(message);
+                epadd.alert(message);
+            }
+        });
+    }
+
+    var uploadCorrespondentHandler=function() {
+        //collect archiveID,and addressbookfile field. If  empty return false;
+        var addressbookpath = $('#addressbookfile').val();
+        if (!addressbookpath) {
+            alert('Please provide the path of the address book');
+            return false;
+        }
+        var form = $('#uploadcorrespondentform')[0];
+
+        // Create an FormData object
+        var data = new FormData(form);
+        //hide the modal.
+        $('#correspondent-upload-modal').modal('hide');
+        //now send to the backend.. on it's success reload the same page. On failure display the error message.
+
+        $.ajax({
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            url: "ajax/upload-addressbook.jsp",
+            contentType: false,
+            cache: false,
+            data: data,
+            success: function (data) {
+                epadd.alert('Correspondent list uploaded successfully!', function () {
+                    window.location.reload();
+                });
+            },
+            error: function (jq, textStatus, errorThrown) {
+                var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                epadd.log(message);
+                epadd.alert(message);
+            }
+        });
+    }
 
 </script>
 
@@ -85,7 +150,40 @@
 </div>
 <p>
 <br/>
-<jsp:include page="footer.jsp"/>
+<div>
+	<div id="correspondent-upload-modal" class="modal fade" style="z-index:9999">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Specify the Addressbook file</h4>
+				</div>
+				<div class="modal-body">
+					<form id="uploadcorrespondentform" method="POST" enctype="multipart/form-data" >
+						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+						<div class="form-group **text-left**">
+							<label for="addressbookfile" class="col-sm-2 control-label **text-left**">File</label>
+							<div class="col-sm-10">
+								<input type="file" id="addressbookfile" name="addressbookfile" value=""/>
+							</div>
+						</div>
+						<%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
+
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadCorrespondentHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+
+
+					<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+					<%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</div>
+
+	<jsp:include page="footer.jsp"/>
 
 </body>
 </html>

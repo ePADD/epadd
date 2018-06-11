@@ -2,9 +2,10 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@include file="getArchive.jspf" %>
 <%
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 <!DOCTYPE HTML>
 <html>

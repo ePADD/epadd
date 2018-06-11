@@ -39,7 +39,7 @@ private static Log log = LogFactory.getLog(Blob.class);
 private final static long serialVersionUID = 1L;
 
 public long size = -1;
-public String filename;
+protected String filename;
 public String contentType;
 
 public boolean processedSuccessfully = false;
@@ -54,11 +54,11 @@ private byte[] contentHash;
 //private String content_hash_string;
 
 public Date modifiedDate;
-
+/*
 transient private static final Parser parser = new AutoDetectParser();
-transient private static final ParseContext context = new ParseContext();
+transient private static final ParseContext context = new ParseContext();*/
 
-public String getName() { return filename; }
+private String getName() { return filename; }
 public String getResourceURI() { return this.filename; }
 // public String getContentHash() { return this.content_hash_string; }
 public Date getModifiedDate() { return modifiedDate; }
@@ -112,70 +112,7 @@ public int hashCode()
 //		return this.filename.hashCode() ^ Long.toString(this.size).hashCode();
 //	}
 
-public boolean is_image()
-{
-    return Util.is_image_filename (filename);
-}
-
-public String getURI() { return null; }
-
-public Pair<String, String> getContent(BlobStore store)
-{
-	Metadata metadata = new Metadata();
-	StringBuilder metadataBuffer = new StringBuilder();
-	ContentHandler handler = new BodyContentHandler(-1); // no character limit
-	InputStream stream = null;
-	boolean failed = false;
-
-	try {
-		stream = store.getInputStream(this);
-
-		try {
-			// skip mp3 files, tika has trouble with it and hangs
-			if (!Util.nullOrEmpty(this.filename) && !this.filename.toLowerCase().endsWith(".mp3"))
-				parser.parse(stream, handler, metadata, context);
-	
-		    String[] names = metadata.names();
-		    //Arrays.sort(names);
-		    for (String name : names) {
-		    	// some metadata tags are problematic and result in large hex strings... ignore them. (caused memory problems with Henry's archive)
-		    	// https://github.com/openplanets/SPRUCE/blob/master/TikaFileIdentifier/python/config.py
-		    	// we've seen at least unknown tags: (0x8649) (0x935c) (0x02bc)... better to drop them all
-		    	String lname = name.toLowerCase();
-		        if (lname.startsWith("unknown tag") || lname.startsWith("intel color profile"))
-		        {
-		        	log.info ("Warning: dropping metadata tag: " + name + " for blob: " + this.getName());
-		        	continue;
-		        }
-		        metadataBuffer.append(": ");
-		        metadataBuffer.append(metadata.get(name));
-		        metadataBuffer.append("\n");
-		    }
-		} catch (Exception e) {
-			log.warn("Tika is unable to extract content of blob " + this + ":" + Util.stackTrace(e));
-			// often happens for psd files, known tika issue: 
-			// http://mail-archives.apache.org/mod_mbox/tika-dev/201210.mbox/%3Calpine.DEB.2.00.1210111525530.7309@urchin.earth.li%3E
-			failed = true;
-		} finally {
-			try { stream.close(); } catch (Exception e) { failed = true; }
-		}
-
-	} catch (IOException e) {
-		log.warn("Unable to access content of blob " + filename + ":" + Util.stackTrace(e));
-		failed = true;
-	}
-
-	if (failed){
-		processedSuccessfully = false;
-		return null;
-	}
-	else{
-		processedSuccessfully = true;
-		return new Pair<>(metadataBuffer.toString(), handler.toString());
-	}
-
-
-}
+//public String getURI() { return null; }
 
     public static class BlobStats {
         public long unique_data_size;

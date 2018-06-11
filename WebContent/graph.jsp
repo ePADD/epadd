@@ -93,7 +93,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		System.err.println ("Error: session has timed out, archive is null.");
 		return;
 	}
-	String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	
 	Collection<DatedDocument> allDocs = (Collection) archive.getAllDocs();
 
