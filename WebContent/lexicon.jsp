@@ -135,7 +135,7 @@
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(lexiconname) + "</div>");
 	} else {
 //		session.setAttribute("lexicon", lex);
-		Map<String, Integer> map = lex.getLexiconCounts(archive.indexer, false /*,!isRegex*/ /* originalContent only */, isRegex);
+		Map<String, Integer> map = lex.getLexiconCounts(archive, false /*,!isRegex*/ /* originalContent only */, isRegex);
 		Collection<String> lexiconNames = archive.getAvailableLexicons();
 		JSONArray jsonArray = new JSONArray(lexiconNames);
 		if (ModeConfig.isDeliveryMode()) {

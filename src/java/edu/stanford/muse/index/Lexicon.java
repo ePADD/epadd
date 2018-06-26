@@ -15,10 +15,13 @@
 */
 package edu.stanford.muse.index;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.print.Doc;
 import java.io.*;
 import java.util.*;
 
@@ -157,31 +160,69 @@ public class Lexicon implements Serializable {
 			log.info(captionToRawQuery.size() + " sentiment categories saved in " + filename);
 		}
 
-        public Map<String,Integer> getLexiconCounts (Indexer indexer, boolean originalContentOnly, boolean regexSearch) {
+        public Map<String,Integer> getLexiconCounts (Archive archive, boolean originalContentOnly, boolean regexSearch) {
             Map<String, Integer> map = new LinkedHashMap<>();
             String[] captions = captionToExpandedQuery.keySet().toArray(new String[captionToExpandedQuery.size()]);
-            for (String caption : captions) {
+//			Set<Document> result = (Set) lexicon.getDocsWithSentiments(new String[]{category}, inputSet.archive.indexer, inputSet.matchedDocs.keySet(), -1, false/* request.getParameter("originalContentOnly") != null */, category);
+
+			for (String caption : captions) {
                 String query = captionToExpandedQuery.get(caption);
-                if (query == null) {
-                    log.warn("Skipping unknown caption '" + caption + "'");
-                    continue;
-                }
-                Integer cnt = 0;
-                try {
-                    if (originalContentOnly) {
-                        cnt = indexer.getNumHits(query, false, Indexer.QueryType.ORIGINAL);
-                    } else if (regexSearch) {
-						cnt = indexer.getNumHits(query, false, Indexer.QueryType.REGEX);
-					} else
-						cnt = indexer.getNumHits(query, false, Indexer.QueryType.FULL);
-                } catch(Exception e){
-                    Util.print_exception("Exception while collecting lexicon counts", e, log);
-                }
-                map.put(caption, cnt);
+				String[] searchTerms = query.split("[|]");
+				Set<Document> result = new LinkedHashSet<>();
+				for (String term: searchTerms) {
+//		int nDocs = archive.indexer.getNumHits(term, false, Indexer.QueryType.FULL);
+					Multimap<String, String> params = LinkedHashMultimap.create();
+					params.put("termSubject", "on");
+					params.put("termBody", "on");
+					params.put("termAttachments", "on");
+					String searchTerm = term;
+					if (!(searchTerm.length() > 2 && searchTerm.startsWith("\"") && searchTerm.endsWith("\"")))
+						searchTerm = "\"" + searchTerm + "\"";
+					SearchResult inputSet = new SearchResult(archive, params);
+
+					SearchResult resultSet = SearchResult.searchForTerm(inputSet, searchTerm);
+					//int nDocs = resultSet.getDocumentSet().size();
+					//add to result set
+					result.addAll(resultSet.getDocumentSet());
+				}
+
+				Integer cnt = result.size();
+				map.put(caption, cnt);
             }
             return map;
         }
 
+		public Set<Document> getLexiconDocs (Archive archive, String category, boolean originalContentOnly, boolean regexSearch) {
+			Map<String, Integer> map = new LinkedHashMap<>();
+			String[] captions = captionToExpandedQuery.keySet().toArray(new String[captionToExpandedQuery.size()]);
+//			Set<Document> result = (Set) lexicon.getDocsWithSentiments(new String[]{category}, inputSet.archive.indexer, inputSet.matchedDocs.keySet(), -1, false/* request.getParameter("originalContentOnly") != null */, category);
+			Set<Document> result = new LinkedHashSet<>();
+
+			for (String caption : captions) {
+				if(!caption.equals(category))
+					continue;
+				String query = captionToExpandedQuery.get(caption);
+				String[] searchTerms = query.split("[|]");
+				for (String term: searchTerms) {
+//		int nDocs = archive.indexer.getNumHits(term, false, Indexer.QueryType.FULL);
+					Multimap<String, String> params = LinkedHashMultimap.create();
+					params.put("termSubject", "on");
+					params.put("termBody", "on");
+					params.put("termAttachments", "on");
+					String searchTerm = term;
+					if (!(searchTerm.length() > 2 && searchTerm.startsWith("\"") && searchTerm.endsWith("\"")))
+						searchTerm = "\"" + searchTerm + "\"";
+					SearchResult inputSet = new SearchResult(archive, params);
+
+					SearchResult resultSet = SearchResult.searchForTerm(inputSet, searchTerm);
+					//int nDocs = resultSet.getDocumentSet().size();
+					//add to result set
+					result.addAll(resultSet.getDocumentSet());
+				}
+
+			}
+			return result;
+		}
 		/** main entry point: returns a category -> docs map for each (non-zero) category in the current captionToQueryMap. 
 		 * @indexer must already have run 
 		 * @docs results are restrictes to these docs. assumes all docs if docs is null or empty.
@@ -348,15 +389,15 @@ public class Lexicon implements Serializable {
 
     //accumulates counts returned by lexicons in each language
     //TODO: It is possible to write a generic accumulator that accumulates sum over all the languages
-    public Map<String, Integer> getLexiconCounts (Indexer indexer, boolean originalContentOnly, boolean regexSearch){
-        List<Document> docs = indexer.docs;
+    public Map<String, Integer> getLexiconCounts (Archive archive, boolean originalContentOnly, boolean regexSearch){
+        List<Document> docs = archive.indexer.docs;
         Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
         Map<String, Integer> result = new LinkedHashMap<>();
         Set<Document> docs_set = Util.castOrCloneAsSet(docs);
         // aggregate results for each lang into result
         for (Lexicon1Lang lex: lexicons)
         {
-            Map<String, Integer> resultsForThisLang = lex.getLexiconCounts(indexer, originalContentOnly, regexSearch);
+            Map<String, Integer> resultsForThisLang = lex.getLexiconCounts(archive, originalContentOnly, regexSearch);
             if (resultsForThisLang == null)
                 continue;
 
@@ -369,7 +410,20 @@ public class Lexicon implements Serializable {
         }
         return result;
     }
-	
+
+	public Set<Document> getLexiconDocs (Archive archive, String category, boolean originalContentOnly, boolean regexSearch){
+		List<Document> docs = archive.indexer.docs;
+		Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
+		Set<Document> result = new LinkedHashSet<>();
+		Set<Document> docs_set = Util.castOrCloneAsSet(docs);
+		// aggregate results for each lang into result
+		for (Lexicon1Lang lex: lexicons)
+		{
+			Set<Document> resultset = lex.getLexiconDocs(archive, category, originalContentOnly, regexSearch);
+			result.addAll(resultset);
+		}
+		return result;
+	}
 	/** Core sentiment detection method. doNota = none of the above 
 	 * @param captions (null/none = all) */
 	public Map<String, Collection<Document>> getEmotions (Indexer indexer, Collection<Document> docs, boolean doNota, boolean originalContentOnly, String... captions)

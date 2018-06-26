@@ -705,14 +705,17 @@ public class SearchResult {
         if (Util.nullOrEmpty(lexiconName))
             return inputSet;
         lexicon = inputSet.archive.getLexicon(lexiconName);
+        boolean regexsearch=false;
+        if("regex".equals(lexiconName)){
+            regexsearch=true;
+        }
         if (lexicon == null)
             return inputSet;
 
         String category = JSPHelper.getParam(inputSet.queryParams, "lexiconCategory");
         if (Util.nullOrEmpty(category))
             return inputSet;
-
-        Set<Document> result = (Set) lexicon.getDocsWithSentiments(new String[]{category}, inputSet.archive.indexer, inputSet.matchedDocs.keySet(), -1, false/* request.getParameter("originalContentOnly") != null */, category);
+        Set<Document> result = (Set) lexicon.getLexiconDocs(inputSet.archive,category,false,regexsearch);
 
         //now keep only those docs in inputSet which are present in allDocs set.
         inputSet.matchedDocs.keySet().retainAll(result);
