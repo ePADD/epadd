@@ -31,10 +31,10 @@
         	archive = SimpleSessions.prepareAndLoadArchive(m, request);
 		}*/
 
-	    Archive archive = SimpleSessions.prepareAndLoadArchive(m, request);
+	    Archive archive = ArchiveReaderWriter.prepareAndLoadArchive(m, request);
 		// get archive id for this archive from archive mapper..
 
-        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
 		// step 1: fetch		
 		Collection<EmailDocument> emailDocs = null;
@@ -80,7 +80,7 @@
 			errorMessage = "You may not be running with enough memory. Please try again with more memory, or on a folder with fewer messages.";
 		} else {
 				resultPage = "browse-top?archiveID="+archiveID;
-				SimpleSessions.saveArchive(archive);
+				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
 			}
 			try {
 				String aStats = archive.getStats();

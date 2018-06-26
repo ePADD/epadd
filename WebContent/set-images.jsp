@@ -4,6 +4,7 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +25,7 @@
      Archive archive= JSPHelper.getArchive(request);
      String archiveID=null;
      if(archive!=null)
-         archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+         archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
      //INV: here collectionID=null && archiveID="" can not be true. Exactly one should be true.
      //This page can be invoked in two different context. One: from the colleciton-detail page with collection

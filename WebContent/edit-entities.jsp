@@ -13,7 +13,7 @@
 <%@include file="getArchive.jspf" %>
 <%
 	Collection<EmailDocument> allDocs =  (Collection) archive.getAllDocs();
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>

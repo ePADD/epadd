@@ -68,7 +68,7 @@
 
 </head>
 <%
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 <body>
 	<jsp:include page="header.jspf"/>

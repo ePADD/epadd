@@ -6,22 +6,21 @@
 <%@page language="java" import="org.apache.commons.fileupload.FileItem"%>
 <%@page language="java" import="org.apache.commons.fileupload.disk.DiskFileItemFactory"%>
 <%@page language="java" import="edu.stanford.muse.email.StaticStatusProvider"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
+<%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="edu.stanford.muse.index.SearchResult" %>
-<%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="au.com.bytecode.opencsv.CSVReader" %>
 <%@ page import="com.google.common.collect.LinkedListMultimap" %>
 <%@ page import="com.google.common.collect.LinkedHashMultimap" %>
-<%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
+<%@ page import="edu.stanford.muse.index.*" %>
+<%@ page import="java.util.Map" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 
 <%
@@ -31,67 +30,19 @@
     // Create a factory for disk-based file items
     // Configure a repository (to ensure a secure temp location is used)
     // Create a new file upload handler
-    DiskFileItemFactory factory = new DiskFileItemFactory();
-    File repository = new File(System.getProperty("java.io.tmpdir"));
-    factory.setRepository(repository);
-    ServletFileUpload upload = new ServletFileUpload(factory);
 
-    int filesUploaded = 0;
-    // Parse the request
     String error = null;
-    String archiveID=null;
-    InputStream istream = null;
-    String docsetID=null;
-    List<FileItem> items = upload.parseRequest(request);
-    for (FileItem item : items) {
-        if (item.isFormField()) {
-            if ("archiveID".equals(item.getFieldName()))
-                archiveID = item.getString();
-
-        }else {
-                String type = null;
-                if ("correspondentCSV".equals(item.getFieldName()))
-                    type = "correspondentCSV";
-
-                if (item.getSize() <= 0)
-                    continue; // if an input field is left empty, its size is 0
-
-                String contentType = item.getContentType();
-                String suffix = null;
-                /*
-                if ("image/jpeg".equals(contentType)) {
-                    suffix = "jpg";
-                }
-                if ("image/gif".equals(contentType)) {
-                    suffix = "gif";
-                }
-                */
-
-                if ("text/csv".equalsIgnoreCase(contentType))
-                    suffix = "csv";
-                else {
-                    error = "Sorry, only csv files are accepted. Content-type " + contentType + " for " + item.getFieldName();
-                    break;
-                }
-                istream = item.getInputStream();
-            }
-    }
-
-            Archive archive = null;
-            if ("null".equals(archiveID)) {
+    Map<String,String> params = JSPHelper.convertRequestToMapMultipartData(request);
+    String archiveID = params.get("archiveID");
+    Archive archive = null;
+    int filesUploaded = 0;
+    String docsetID = null;
+    if ("null".equals(archiveID)) {
                 error = "Sorry, no archive ID found";
-            } else if (istream == null) {
-                error = "No input stream found";
             } else {
-
-                archive = SimpleSessions.getArchiveForArchiveID(archiveID);
+                String filename = params.get("correspondentCSV");
+                archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
                 try {
-                    //String dir = archive.baseDir + File.separator + Archive.IMAGES_SUBDIR;
-                    String path = archive.baseDir + File.separator + Archive.TEMP_SUBDIR + File.separator;
-                    String filename = path + File.separator + "correspondents.csv";
-                    //create dir if not present
-                    new File(path).mkdir();
-                    Util.copy_stream_to_file(istream, filename);
                     filesUploaded++;
                     //Now get searchresult for all docs where correspondent is one of the name present in this
                     //csv file..put the result in a docset and invoke bulk-label with archiveID and docID
@@ -118,9 +69,9 @@
                     }
 
                     //creating an emptyh params map. No issue because filterForCorredpondents don't use it anyway.
-                    Multimap<String, String> params = LinkedHashMultimap.create();
+                    Multimap<String, String> sparams = LinkedHashMultimap.create();
 
-                    SearchResult inputSet = new SearchResult(archive, params);
+                    SearchResult inputSet = new SearchResult(archive, sparams);
                     SearchResult search_result = SearchResult.filterForCorrespondents(inputSet, correspondentStr.toString(), true, true, true, true);
                     //create a docsetid and store the resultset in it
                     docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";

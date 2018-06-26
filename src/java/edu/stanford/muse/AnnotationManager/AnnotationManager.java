@@ -119,4 +119,19 @@ public class AnnotationManager{
 
     }
 
+    //append same annotation for a set of ids
+    //the invariant is: if annotation is not empty then that info is in the map.. if annotation is empty
+    //then that info is not in the map (if and only if relation)
+    public void appendAnnotationToAll(Set<String> docids, String annotationText) {
+        if(Util.nullOrEmpty(annotationText)){
+            //appending empty annotation does not have any impact. Leave unchanged.
+
+        }else{
+            //get existing annotation if any, then concatenate the annotationText to it.
+            docids.forEach(docid->{
+                String existing = docToAnnotation.getOrDefault(docid,"");
+                docToAnnotation.put(docid,existing+annotationText);
+            });
+        }
+    }
 }

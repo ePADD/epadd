@@ -32,6 +32,10 @@ import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.SequenceModel;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.util.SloppyDates.DateRangeSpec;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -166,7 +170,7 @@ public class JSPHelper {
 //				return onlyleft;
 //			}
 		}
-		return SimpleSessions.getArchiveForArchiveID(archiveID);
+		return ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
 	}
 
 	/**
@@ -380,13 +384,13 @@ public class JSPHelper {
                 session.setAttribute("statusProvider", ner);
                 ner.recognizeArchive();
                 //Here, instead of getting the count of all entities (present in ner.stats object)
-				//get the count of only those entities which pass a given thersold.
+				//get the count of only those entities which pass a given threshold.
 				//This is to fix a bug where the count of person entities displayed on browse-top.jsp
-				//page was different than the count of entities actually displayed following a thersold.
+				//page was different than the count of entities actually displayed following a threshold.
 				// @TODO make it more modular
                 //archive.collectionMetadata.entityCounts = ner.stats.counts;
 				double theta = 0.001;
-				archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
+				archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(archive,theta);
                 log.info(ner.stats);
             }
            // archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
@@ -424,7 +428,7 @@ public class JSPHelper {
 	{
 		// always set up attachmentsStore even if we are not fetching attachments
 		// because the user may already have stuff isn it -- if so, we should make it available.
-		String attachmentsStoreDir = baseDir + File.separator + Archive.BLOBS_SUBDIR + File.separator;
+		String attachmentsStoreDir = baseDir + File.separatorChar +  Archive.BLOBS_SUBDIR + File.separator;
 		BlobStore attachmentsStore;
 		try {
 			File f =  new File(attachmentsStoreDir);
@@ -507,7 +511,7 @@ public class JSPHelper {
 
 		// careful about the ordering here.. first setup, then read indexer, then run it
 		Archive archive = Archive.createArchive();
-        BlobStore blobStore = JSPHelper.preparedBlobStore(baseDir);
+        BlobStore blobStore = JSPHelper.preparedBlobStore(baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER);
         archive.setup(baseDir, blobStore, s);
 		log.info("archive setup in " + baseDir);
 		return archive;
@@ -570,6 +574,37 @@ public class JSPHelper {
 		log.info("COMPLETED " + getRequestDescription(request, true));
 		String page = request.getServletPath();
 		Thread.currentThread().setName("done-" + page);
+	}
+
+	public static Map<String,String> convertRequestToMapMultipartData(HttpServletRequest request) throws FileUploadException, IOException {
+		Map<String, String> params = new LinkedHashMap<>();
+
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		File repository = new File(System.getProperty("java.io.tmpdir"));
+		factory.setRepository(repository);
+		ServletFileUpload upload = new ServletFileUpload(factory);
+
+		int filesUploaded = 0;
+		// Parse the request
+		String error = null;
+		String archiveID=null;
+		InputStream istream = null;
+		String docsetID=null;
+		List<FileItem> items = upload.parseRequest(request);
+		for (FileItem item : items) {
+			if (item.isFormField()) {
+				params.put(item.getFieldName(), item.getString());
+//				if ("archiveID".equals(item.getFieldName()))
+//					archiveID = item.getString();
+			} else {
+				//store the filecontent in a temp file and put the filename as second argument.
+				String tmp_file = Archive.TEMP_SUBDIR + File.separator + item.getFieldName();
+				Util.copy_stream_to_file(item.getInputStream(), tmp_file);
+				params.put(item.getFieldName(), tmp_file);
+			}
+		}
+
+		return params;
 	}
 
 	public static Multimap<String, String> convertRequestToMap(HttpServletRequest request) throws UnsupportedEncodingException {
@@ -696,7 +731,7 @@ public class JSPHelper {
 
 		// could check if user is authorized here... or get the userKey directly from session
 
-		String filePath = baseDir + File.separator + Archive.BLOBS_SUBDIR + File.separator + filename;
+		String filePath = baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.BLOBS_SUBDIR + File.separator + filename;
 		writeFileToResponse(session, response, filePath, true /* asAttachment */);
 	}
 
@@ -716,7 +751,7 @@ public class JSPHelper {
 
 		// could check if user is authorized here... or get the userKey directly from session
 
-		String filePath = baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
+		String filePath = baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
 		writeFileToResponse(session, response, filePath, true /* asAttachment */);
 	}
 
@@ -742,7 +777,7 @@ public class JSPHelper {
 
 		// could check if user is authorized here... or get the userKey directly from session
 
-		String filePath = baseDir + File.separator + Archive.TEMP_SUBDIR + File.separator + filename;
+		String filePath = Archive.TEMP_SUBDIR + File.separator + filename;
 		writeFileToResponse(session, response, filePath, true /* asAttachment */);
 	}
 

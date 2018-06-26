@@ -3,14 +3,12 @@
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="java.util.Set"%>
 
-<%@ page import="edu.stanford.muse.index.Document" %>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.datacache.Blob" %>
-<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="java.util.LinkedList" %>
+<%@ page import="edu.stanford.muse.index.*" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -72,7 +70,7 @@
 <%
 //    Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
 //    if (archive != null) {
-String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         AddressBook ab = archive.addressBook;
         writeProfileBlock(out, archive, "", "Export archive");
 //    }
@@ -97,9 +95,9 @@ Error: Export is only available in processing or appraisal modes!
         //get all attachments of edoc which satisfied the given filter.
         for(Blob b : resultSet.getAttachmentHighlightInformation(edoc)){
             allAttachments.add(b);
-            if (b.filename == null)
+            if (archive.getBlobStore().get_URL_Normalized(b)== null)
                 continue;
-            if (Util.is_image_filename(b.filename))
+            if (Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(b)))
                 allImageAttachments.add (b);
         }
     }

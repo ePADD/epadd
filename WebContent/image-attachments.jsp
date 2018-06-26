@@ -14,6 +14,8 @@
 <%@page language="java" import="java.net.*"%>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="java.util.stream.Collectors" %>
+<%@ page import="javafx.scene.shape.Arc" %>
+<%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -55,7 +57,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
     Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
     SearchResult inputSet = new SearchResult(archive,params);
@@ -82,14 +84,10 @@
         String extra_mesg = "";
 
         // attachmentsForDocs
-        String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
+        String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + "blobs" + File.separator;
         BlobStore store = null;
-        try {
-            store = new BlobStore(attachmentsStoreDir);
-        } catch (IOException ioe) {
-            JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
-            Util.print_exception(ioe, JSPHelper.log);
-        }
+        store = archive.getBlobStore();
+        //store.setNormalizationMap(archive.getBlobStore().getNormalizationMap());
 
 
         // create a dataset object to view
@@ -125,6 +123,11 @@
             <div class="panel">
                 <div class="panel-heading">Filter images</div>
 
+                <% Map<String,String> attatchmentOptions = Config.attachmentTypeToExtensions;
+                String imagetypes = attatchmentOptions.get("Graphics");
+                //now split on ; and put all of them on dropdown box.
+                    String[] options = imagetypes.split(";");
+                %>
                 <%--//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass--%>
                 <%--//archiveID in all those forms where POST was used to invoke the server page.--%>
                 <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
@@ -134,10 +137,9 @@
                         <label for="attachmentExtension">Extension</label>
                         <select name="attachmentExtension" id="attachmentExtension" class="form-control multi-select selectpicker" title="Select" multiple>
                             <option value="" selected disabled>Select</option>
-                            <option value="jpg">JPG</option>
-                            <option value="png">PNG</option>
-                            <option value="gif">GIF</option>
-                            <option value="bmp">BMP</option>
+                            <% for(String opt: options){%>
+                            <option value="<%=opt%>"><%=opt.toUpperCase()%></option>
+                            <% } %>
                         </select>
                     </div>
 

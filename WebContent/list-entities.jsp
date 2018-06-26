@@ -46,79 +46,13 @@ Browse page for entities based on fine types
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
-        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         for(NEType.Type t: NEType.Type.values())
             desc.put(t.getCode(), t.getDisplayName());
 
         Short type = Short.parseShort(request.getParameter("type"));
         out.println("<h1>Type: "+desc.get(type)+"</h1>");
-        Map<String,Entity> entities = new LinkedHashMap();
-        double theta = 0.001;
-        EntityBook entityBook = archive.getEntityBook();
-
-        for (Document doc: archive.getAllDocs()){
-//            Span[] es = archive.getEntitiesInDoc(doc,true);
-            Span[] es1 = archive.getEntitiesInDoc(doc,true);
-            Span[] es2 =  archive.getEntitiesInDoc(doc,false);
-            Set<Span> ss = Arrays.stream(es1).collect(Collectors.toSet());
-            Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
-            ss.addAll(ss1);
-            Set<String> seenInThisDoc = new LinkedHashSet<>();
-
-            for (Span span: ss) {
-                if (span.type != type || span.typeScore<theta)
-                    continue;
-
-                String name = span.getText();
-                String displayName = name;
-
-                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityBook != null)
-                    displayName = entityBook.getDisplayName(name, span.type);
-
-                displayName = displayName.trim();
-
-                if (seenInThisDoc.contains(displayName.toLowerCase()))
-                    continue; // count an entity in a doc only once
-
-                seenInThisDoc.add (displayName.toLowerCase());
-
-                //fixed: Here entities map was keeping the keys without lowercase conversion as a result
-                // two entities which are same but differ only in their display name case (lower/upper) were
-                // being identified as separate entities. As a result the count in listing page was shown differently from the
-                //count on the processing metadata page (by a difference of 30 or so). This fix was done after
-                //the fix to handle a large difference in person entities count. For that refer to JSPHelper.java
-                //file fetchAndIndex method.
-                if (!entities.containsKey(displayName.toLowerCase()))
-                    entities.put(displayName.toLowerCase(), new Entity(displayName, span.typeScore));
-                else
-                    entities.get(displayName.toLowerCase()).freq++;
-            }
-        }
-
-        Map<Entity, Double> vals = new LinkedHashMap<>();
-        for(Entity e: entities.values()) {
-            vals.put(e, e.score);
-            //System.err.println("Putting: "+e+", "+e.score);
-        }
-        List<Pair<Entity,Double>> lst = Util.sortMapByValue(vals);
-
-        JSONArray resultArray = new JSONArray();
-         int count = 0;
-	    for (Pair<Entity, Double> p: lst) {
-	        count++;
-            String entity = p.getFirst().entity;
-            JSONArray j = new JSONArray();
-
-            Set<String> altNamesSet = entityBook.getAltNamesForDisplayName(entity, type);
-            String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
-            j.put (0, Util.escapeHTML(entity));
-            j.put (1, (float)p.getFirst().score);
-            j.put (2, p.getFirst().freq);
-            j.put (3, altNames);
-
-            resultArray.put (count-1, j);
-        }
+        JSONArray resultArray = archive.getEntitiesInfoJSON(type);
     %>
 
 <table id="entities" style="display:none">
@@ -164,3 +98,6 @@ Browse page for entities based on fine types
     <br/>
     <jsp:include page="footer.jsp"/>
 </body>
+<%!
+
+%>

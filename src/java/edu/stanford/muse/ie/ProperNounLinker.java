@@ -13,7 +13,6 @@ import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 
 import edu.stanford.muse.util.Span;
-import edu.stanford.muse.webapp.SimpleSessions;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -666,7 +665,7 @@ public class ProperNounLinker {
         Random rand = new Random();
         try {
             String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
-            Archive archive = SimpleSessions.readArchiveIfPresent(userDir);
+            Archive archive = ArchiveReaderWriter.readArchiveIfPresent(userDir);
 //            findMerges(archive);
 //            SimpleSessions.saveArchive(archive.baseDir, "default", archive);
             List<Document> docs = archive.getAllDocs();

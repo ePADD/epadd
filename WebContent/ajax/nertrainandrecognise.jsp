@@ -15,6 +15,7 @@
 <%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <%
 session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
@@ -31,7 +32,7 @@ Archive archive = JSPHelper.getArchive(request);
 
 if(archive!=null){
     try {
-        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         String modelFile = SequenceModel.RULES_DIRNAME;
         SequenceModel nerModel = null;
 //        = (SequenceModel) session.getAttribute("ner");
@@ -52,11 +53,11 @@ if(archive!=null){
             //Here, instead of getting the count of all entities (present in ner.stats object)
             //get the count of only those entities which pass a given threshold.
             //This is to fix a bug where the count of person entities displayed on browse-top.jsp
-            //page was different than the count of entities actually displayed following a thersold.
+            //page was different than the count of entities actually displayed following a threshold.
             // @TODO make it more modular
             //archive.collectionMetadata.entityCounts = ner.stats.counts;
             double theta = 0.001;
-            archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
+            archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(archive,theta);
 
             JSPHelper.log.info(ner.stats);
         }

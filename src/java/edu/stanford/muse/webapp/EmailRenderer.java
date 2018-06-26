@@ -12,7 +12,6 @@ import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
-import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Pair;
@@ -150,6 +149,7 @@ public class EmailRenderer {
 	{
 		JSPHelper.log.debug("Generating HTML for document: " + d);
 		EmailDocument ed = null;
+		Archive archive = searchResult.getArchive();
 		String html = null;
 		boolean overflow = false;
 		if (d instanceof EmailDocument)
@@ -206,18 +206,18 @@ public class EmailRenderer {
 						page.append("<div class=\"" + css_class + "\">");
 
 						String thumbnailURL = null, attachmentURL = null;
-						boolean is_image = Util.is_image_filename(attachment.filename);
+						boolean is_image = Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(attachment));
                         BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
 						if (attachmentStore!= null)
 						{
-							String contentFileDataStoreURL = attachmentStore.get_URL(attachment);
+							String contentFileDataStoreURL = attachmentStore.get_URL_Normalized(attachment);
 							attachmentURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
 							String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
 							if (tnFileDataStoreURL != null)
 								thumbnailURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(tnFileDataStoreURL);
 							else
 							{
-								if (attachment.is_image())
+								if (archive.getBlobStore().is_image(attachment))
 									thumbnailURL = attachmentURL;
 								else
 									thumbnailURL = "images/sorry.png";
@@ -227,11 +227,11 @@ public class EmailRenderer {
 							JSPHelper.log.warn("attachments store is null!");
 
 						// toString the filename in any case,
-						String s = attachment.filename;
+						String url = archive.getBlobStore().full_filename_normalized(attachment);
 						// cap to a length of 25, otherwise the attachment name
 						// overflows the tn
-						String display = Util.ellipsize(s, 25);
-                        page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(s) + "\">"+ Util.escapeHTML(display) + "</span>&nbsp;");
+						String display = Util.ellipsize(url, 25);
+                        page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(url) + "\">"+ Util.escapeHTML(display) + "</span>&nbsp;");
 						page.append("<br/>");
 
 						css_class = "attachment-preview" + (is_image ? " img" : "");
@@ -243,7 +243,7 @@ public class EmailRenderer {
 						{
 							// d.hashCode() is just something to identify this
 							// page/message
-							page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(attachment.filename) + "\" href=\"" + attachmentURL + "\">");
+							page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(url) + "\" href=\"" + attachmentURL + "\">");
 							page.append(leader + "href=\"" + attachmentURL + "\" src=\"" + thumbnailURL + "\"></img>\n");
 							page.append("<a>\n");
 						}
@@ -261,6 +261,28 @@ public class EmailRenderer {
 							if (attachmentURL == null)
 								JSPHelper.log.info("No attachment URL for " + attachment);
 						}
+						BlobStore bstore = archive.getBlobStore();
+						//if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+						//origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+						//so the attributes are either only originalfilename or cleanedupfileURL or both.
+						String cleanedupname = bstore.full_filename_cleanedup(attachment);
+						String normalizedname=bstore.full_filename_normalized(attachment);
+						String cleanupurl = bstore.get_URL_Cleanedup(attachment);
+						boolean isNormalized = !cleanedupname.equals(normalizedname);
+						boolean isCleanedName = !cleanedupname.equals(bstore.full_filename_original(attachment));
+						if(isNormalized || isCleanedName){
+							String completeurl_cleanup ="serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(cleanupurl);
+
+							page.append("<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" ");
+							if(isNormalized){
+								page.append("data-originalurl="+"\""+completeurl_cleanup+"\" ");
+							}
+							if(isCleanedName){
+								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment)+"\"");
+							}
+							page.append("></span>");
+						}
+
 						page.append ("</div>");
 					}
 					page.append("\n</div>  <!-- .muse-doc-attachments -->\n"); // muse-doc-attachments
@@ -432,7 +454,7 @@ public class EmailRenderer {
 		AddressBook addressBook = searchResult.getArchive().addressBook;
         Set<String> contactNames = new LinkedHashSet<>();
         Set<String> contactAddresses = new LinkedHashSet<>();
-        String archiveID = SimpleSessions.getArchiveIDForArchive(searchResult.getArchive());
+        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(searchResult.getArchive());
         //get contact ids from searchResult object.
         Set<Integer> highlightContactIds = searchResult.getHLInfoContactIDs().stream().map(Integer::parseInt).collect(Collectors.toSet());
         if(highlightContactIds!=null)

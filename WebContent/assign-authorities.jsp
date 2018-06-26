@@ -6,6 +6,7 @@
 <%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
 <%@ page import="com.google.gson.Gson" %>
 <%@ page import="java.util.*" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <html>
 <head>
@@ -124,7 +125,7 @@
 <%@include file="div_status.jspf"%>
 
 <%
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     CorrespondentAuthorityMapper cAuthorityMapper = archive.getCorrespondentAuthorityMapper();
     AddressBook addressBook = archive.getAddressBook();
 

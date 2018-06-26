@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="java.util.Enumeration"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%>
+<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="java.util.Enumeration"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
@@ -21,7 +21,7 @@ if (Util.nullOrEmpty(baseDir))
 }
 
 // check if its really an archive
-if (!new File(baseDir + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix()).exists())
+if (!new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix()).exists())
 {
 	result.put ("status", 2);
 	result.put("error", "The specified folder does not appear to contain an ePADD archive.");
@@ -68,24 +68,24 @@ if (!collectionDir.equals(baseDir))
 		    FileUtils.copyDirectory(new File(baseDir), new File(collectionDir), true /* preserve file date */);
 	        //when should we add accession ID to all messages of this accession?
 	        //for that we should load this accession as well.
-	        collection = SimpleSessions.readArchiveIfPresent(collectionDir);
+	        collection = ArchiveReaderWriter.readArchiveIfPresent(collectionDir);
             collection.baseAccessionID=accessionID;//as it is the first accession we can avoid assigning
             //accession id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
 		    result.put ("message", "Import accession completed successfully.");
-	        result.put("archiveID",SimpleSessions.getArchiveIDForArchive(collection));
+	        result.put("archiveID",ArchiveReaderWriter.getArchiveIDForArchive(collection));
 	      }
 	        else{
             //read archives present in basedir and collection dir.
-            collection = SimpleSessions.readArchiveIfPresent(collectionDir);
-            Archive accession = SimpleSessions.readArchiveIfPresent(baseDir);
+            collection = ArchiveReaderWriter.readArchiveIfPresent(collectionDir);
+            Archive accession = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
             //call merge on these archives..
             Util.ASSERT(request.getParameter("accessionID")!=null);
             //Merge result will be stored in a field of collection archive object. It will be used
             //later to show mergeReport.[a transient field that will not be saved]
             collection.merge(accession,accessionID);
             //we don't want to keep any reference to accession directory in our map.
-            SimpleSessions.removeFromGlobalArchiveMap(baseDir,accession);
+            ArchiveReaderWriter.removeFromGlobalArchiveMap(baseDir,accession);
 
             Enumeration<String> enumeration = session.getAttributeNames();
             Set<String> remove = new LinkedHashSet<>();
@@ -98,7 +98,7 @@ if (!collectionDir.equals(baseDir))
 
             result.put("status", 1);
 		    result.put ("message", "Accession imported and merged with the collection successfully");
-	        result.put("archiveID",SimpleSessions.getArchiveIDForArchive(collection));
+	        result.put("archiveID",ArchiveReaderWriter.getArchiveIDForArchive(collection));
 	        }
 
 		JSPHelper.log.info ("Copy complete, creating new accession metadata object");
@@ -126,14 +126,16 @@ if (!collectionDir.equals(baseDir))
             // new archive objects will anyway not have PM objects embedded within them.
             // see SimpleSessions.readArchiveIfPresent()
             {
-                Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata (collectionDir);
+                Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata (collectionDir);
                 if (cm == null)
                     cm = new Archive.CollectionMetadata();
                 if (cm.accessionMetadatas == null)
                     cm.accessionMetadatas = new ArrayList<>();
                 cm.accessionMetadatas.add(am);
-                SimpleSessions.writeCollectionMetadata (cm, collectionDir);
+                //SimpleSessions.saveCollectionMetadata (cm, collectionDir);
                 collection.collectionMetadata = cm;//IMP otherwise in-memory archive processingmetadata and
+                //should it be an incremental update or a fresh one??
+                ArchiveReaderWriter.saveCollectionMetadata(collection,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
                 //the updated metadata on disc will be out of sync. It manifests when saving this archive which
                 //overwrites the latest on-disc PM data with stale in-memory data.
             }

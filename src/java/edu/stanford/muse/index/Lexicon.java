@@ -302,12 +302,12 @@ public class Lexicon implements Serializable {
 	}
 
 	// avoid file traversal vuln's, don't allow / or \ in lexicon names;
-	private static String sanitizeLexiconName(String lex)
+	public static String sanitizeLexiconName(String lex)
 	{
 		return lex.replaceAll("/", "__").replaceAll("\\\\", "__"); // the pattern itself needs 2 backslashes since \ is a regex escape char
 	}
 
-	static String lexiconNameFromFilename(String filename)
+	public static String lexiconNameFromFilename(String filename)
 	{
 		return filename.replaceAll("\\.[^\\.]+\\" + LEXICON_SUFFIX, "");
 	}
@@ -483,13 +483,15 @@ public class Lexicon implements Serializable {
 	
 	/** returns whether it succeeded 
 	 * @throws Exception */
-	public boolean save(String dir, String language) throws Exception
+	public boolean save(String dir, String language,Archive archive) throws Exception
 	{
 		language = language.toLowerCase();
 		Lexicon1Lang langLex = languageToLexicon.get(language);
 		if (langLex == null)
 			return false;
 		langLex.save(dir + File.separator + name + "." + language + LEXICON_SUFFIX); // LEXICON_SUFFIX already has a .
+		//update the bag metadata as well..
+		archive.updateFileInBag(dir,archive.baseDir);
 		return true;
 	}
 

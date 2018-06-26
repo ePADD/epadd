@@ -5,6 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.Config"%>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <html>
 <head>
@@ -75,12 +76,12 @@
                       continue;
 
                   String id = f.getName();
-                  String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
+                  String archiveFile = f.getAbsolutePath() + File.separator + Archive.BAG_DATA_FOLDER + File.separator +  Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
 
                   if (!new File(archiveFile).exists())
                       continue;
 
-                  Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(f.getAbsolutePath());
+                  Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   if (cm != null) {
                       String fileParam = id + "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
                       String url = "serveImage.jsp?file=" + fileParam;

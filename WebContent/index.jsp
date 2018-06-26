@@ -24,7 +24,7 @@ if (ModeConfig.isAppraisalMode())
 	// note: for redirecting, have to use responseRedirectURL, otherwise the session var set above is lost, and archive is loaded all over again.
 	// see http://stackoverflow.com/questions/4464641/java-session-attribute-is-only-in-next-operation
 	if (archive != null) {
-	    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 		RequestDispatcher rd = request.getRequestDispatcher("browse-top?archiveID="+archiveID);
 		rd.forward(request, response);
 		return;

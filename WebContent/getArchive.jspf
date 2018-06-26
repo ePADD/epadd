@@ -13,7 +13,7 @@ if (archive == null)
 	if (ModeConfig.isAppraisalMode()) {
 		// in appraisal mode only: try and load it from the default dir.
 		JSPHelper.log.info ("No archive in session, trying to load default archive");
-		archive = SimpleSessions.prepareAndLoadDefaultArchive(request); // if we don't have an archive and are running in desktop mode, try to load archive from given cachedir or from the default dir
+		archive = ArchiveReaderWriter.prepareAndLoadDefaultArchive(request); // if we don't have an archive and are running in desktop mode, try to load archive from given cachedir or from the default dir
 		JSPHelper.log.info ("Default archive = " + archive);
 	}
 

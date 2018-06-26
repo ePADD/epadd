@@ -12,6 +12,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -47,7 +48,7 @@
 	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
 	//not passed from the request) and used for rendering the header properly.
 	if(archive!=null && request.getParameter("archiveID")==null)
-		request.setAttribute("archiveID",SimpleSessions.getArchiveIDForArchive(archive));
+		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
 %>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
@@ -55,14 +56,14 @@
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
     AddressBook ab = archive.addressBook;
-    String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
 		archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
         //SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
-		SimpleSessions.saveAddressBook(archive);
-        SimpleSessions.saveCorrespondentAuthorityMapper(archive);
+		ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
     }
 
 	String entityMerges = request.getParameter("entityMerges");
@@ -73,7 +74,7 @@
 			type = Short.parseShort (request.getParameter ("entityType"));
 			entityBook.initialize (entityMerges,type);
 			//SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
-			SimpleSessions.saveEntityBook(archive);
+			ArchiveReaderWriter.saveEntityBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 		} catch (Exception e) {
 			Util.print_exception("Error in merging entities", e, JSPHelper.log);
 		}
@@ -90,6 +91,11 @@
 	int nNonPersonEntities = 0,outCount=0,inCount=0,nAttachments=0,nImageAttachments=0;
 	outCount = archive.collectionMetadata.nOutgoingMessages;
 	inCount = archive.collectionMetadata.nIncomingMessages;
+	//if normalization map is available in blobstore recalculate the attachments count.
+	if(archive.getBlobStore().isNormalized()){
+	    ArchiveReaderWriter.recalculateCollectionMetadata(archive);
+
+	}
 	nAttachments = archive.collectionMetadata.nBlobs;//EmailUtils.countAttachmentsInDocs(allDocs);
 	nImageAttachments = archive.collectionMetadata.nImageBlobs;//EmailUtils.countImageAttachmentsInDocs(allDocs);
 
@@ -155,7 +161,7 @@
 
 	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<div class="cta-box text-center margin30">
-				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&startDate=&endDate=">
+				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
 					<i class="icon-browsetoparrow"></i>
 					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
 					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>

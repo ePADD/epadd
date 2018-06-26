@@ -12,6 +12,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 
 <%
@@ -73,7 +74,7 @@
                 if(!"null".equals(collectionID))
                     dname = collectionID;
                 else if(!"null".equals(archiveID)) {
-                    Archive archive = SimpleSessions.getArchiveForArchiveID(archiveID);
+                    Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
                     dname = new File(archive.baseDir).getName();
                 }
                 if (type != null && suffix != null) {

@@ -16,7 +16,7 @@
 <%@include file="getArchive.jspf" %>
 <%
 	Collection<EmailDocument> allDocs =  (Collection) archive.getAllDocs();
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	Archive.MergeResult mResult = archive.getLastMergeResult();
 %>
 <html>

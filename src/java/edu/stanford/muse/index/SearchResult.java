@@ -981,7 +981,7 @@ public class SearchResult {
      */
     private static SearchResult filterForAttachments(SearchResult inputSet) {
 
-
+Archive archive = inputSet.archive;
         String neededFilesize = JSPHelper.getParam(inputSet.queryParams, "attachmentFilesize");
         String neededFilename = JSPHelper.getParam(inputSet.queryParams, "attachmentFilename");
         Collection<String> neededTypeStr = JSPHelper.getParams(inputSet.queryParams, "attachmentType"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
@@ -1036,16 +1036,17 @@ public class SearchResult {
                 // does it satisfy all 3 requirements? if we find any condition that it set and doesn't match, bail out of the loop to the next blob
                 // of course its kinda pointless to specify extension if filename is already specified
                 // 1. filename matches?
+                String url = archive.getBlobStore().get_URL_Normalized(b);
                 if (filenameRegexPattern == null) {
                     // non-regex check
-                    if (neededFilenames != null && (b.filename == null || !(neededFilename.contains(b.filename))))
+                    if (neededFilenames != null && (url == null || !(neededFilename.contains(url))))
                         continue;
                 } else {
                     // regex check
                     if (!Util.nullOrEmpty(neededFilename)) {
-                        if (b.filename == null)
+                        if ( url== null)
                             continue;
-                        if (!filenameRegexPattern.matcher(b.filename).find()) // use find rather than matches because we want partial match on the filename, doesn't have to be full match
+                        if (!filenameRegexPattern.matcher(url).find()) // use find rather than matches because we want partial match on the filename, doesn't have to be full match
                             continue;
                     }
                 }
@@ -1058,9 +1059,9 @@ public class SearchResult {
                 List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x -> Util.tokenize(x, ";")).flatMap(Collection::stream).collect(Collectors.toList());
 
                 if (neededExtensions != null) {
-                    if (b.filename == null)
+                    if (url == null)
                         continue; // just over-defensive, if no name, effectively doesn't match
-                    String extension = Util.getExtension(b.filename);
+                    String extension = Util.getExtension(url);
                     if (extension == null)
                         continue;
                     extension = extension.toLowerCase();
@@ -1113,6 +1114,7 @@ public class SearchResult {
     /** this map is used only by attachments page right now, not advanced search.
      * TODO: make adv. search page also use it */
     public static SearchResult selectBlobs (SearchResult inputSet) {
+        Archive archive = inputSet.archive;
         Collection<Document> docs = inputSet.archive.getAllDocs();
 
         String neededFilesize = JSPHelper.getParam(inputSet.queryParams,"attachmentFilesize");
@@ -1158,7 +1160,7 @@ public class SearchResult {
                     continue;
 
                 if (!(Util.nullOrEmpty(extensionsToMatch))) {
-                    Pair<String, String> pair = Util.splitIntoFileBaseAndExtension(b.getName());
+                    Pair<String, String> pair = Util.splitIntoFileBaseAndExtension(archive.getBlobStore().get_URL_Normalized(b));
                     String ext = pair.getSecond();
                     if (ext == null)
                         continue;

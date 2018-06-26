@@ -6,6 +6,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
 <html>
@@ -42,7 +43,7 @@
     String modeBaseDir = Config.REPO_DIR_PROCESSING + File.separator + id;
 
 	// read cm from archive file
-	Archive.CollectionMetadata cm = SimpleSessions.readCollectionMetadata(modeBaseDir);
+	Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(modeBaseDir);
 	if (cm == null) {
 	    out.println ("Unable to read processing metadata file for collection: " + id);
 	    return;

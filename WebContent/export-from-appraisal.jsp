@@ -34,7 +34,7 @@
 </script>
 
 <% try {
-    String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+    String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf();
 	writeProfileBlock(out, archive, "", "Export archive");

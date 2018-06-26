@@ -1,3 +1,4 @@
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page language="java" %>
 <head>
@@ -24,7 +25,7 @@
 <%@include file="div_status.jspf"%>
 <%@include file="getArchive.jspf" %>
 <%writeProfileBlock(out, archive, "", "Named entity extraction");
-String archiveID= SimpleSessions.getArchiveIDForArchive(archive);
+String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 <script>
 	function start(){

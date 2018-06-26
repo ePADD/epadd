@@ -13,7 +13,7 @@ import com.google.common.collect.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -188,7 +188,43 @@ public class CICTokenizer implements Tokenizer, Serializable {
                 }
             }
         }
+
+        ///Code added to dump the extracted CIC information in a file..
+        //dumpCICInformation(content,matches);
         return matches;
+    }
+
+    private void dumpCICInformation(String content, List<Triple<String,Integer,Integer>> ciclist){
+        //for the time being assume the filename as "CICInfo.txt"
+        //open file in append format (or create if not exists)
+        //dump content
+        //put separator (###)
+        //put each elemnt in the triple in comma separated format
+        // when done put separator (---)
+
+        File f = new File("/home/chinmay/CICWords.txt");
+        if(!f.exists())
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+
+            }
+        try(FileWriter fw = new FileWriter("/home/chinmay/CICWords.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw))
+        {
+            out.println(content);
+            out.println("########################################################");
+            //dump cic list in comma separated value.
+            ciclist.forEach(triple->{
+                out.println(triple.first+","+triple.second+","+triple.third);
+            });
+            out.println("--------------------------------------------------------");
+        } catch (IOException e) {
+           log.warn("Unable to dump the CIC information in CICWords.txt file");
+        }
+
+
     }
 
     /**

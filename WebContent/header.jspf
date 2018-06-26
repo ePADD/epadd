@@ -1,6 +1,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <header>
 	<div id="nav1">
 
@@ -32,7 +33,7 @@
 	//The following code means haveArchive is false when either archiveID was not passed to the jsp file
 	//or there is no archive in globaDirArchiveMap for the given archiveID (to avoid improper input handling)
 	if(request.getParameter("archiveID")!= null){
-	    if(SimpleSessions.getArchiveForArchiveID(request.getParameter("archiveID"))!=null)
+	    if(ArchiveReaderWriter.getArchiveForArchiveID(request.getParameter("archiveID"))!=null)
 		{
 		    archiveID = request.getParameter("archiveID");
 		    haveArchive=true;

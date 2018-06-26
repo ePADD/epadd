@@ -2,8 +2,8 @@ package edu.stanford.muse.ie;
 
 import com.google.gson.Gson;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.*;
-import edu.stanford.muse.webapp.SimpleSessions;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -11,7 +11,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.util.*;
@@ -323,7 +322,7 @@ public class Entity extends EntityFeature {
 
 	public static void main(String[] args) {
 		try {
-			Archive archive = SimpleSessions.readArchiveIfPresent(System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user-creeley");
+			Archive archive = ArchiveReaderWriter.readArchiveIfPresent(System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user-creeley");
 
 			//			Indexer li = archive.indexer;
 			//			String q = "\"Holly Tavel\"";

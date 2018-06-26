@@ -33,7 +33,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "Labels", "");
 
 %>
@@ -42,7 +42,13 @@
   if (!ModeConfig.isDiscoveryMode()) { %>
     <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
         <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> New label</button> <!-- no labelID param, so it's taken as a new label -->
+		&nbsp;&nbsp;
+		<button class="btn-default" id="import-label"><i class="fa fa-pencil-o"></i> Import Labels</button>
+		&nbsp;&nbsp;
+		<button class="btn-default" id="export-label" onclick="exportLabelHandler()"><i class="fa fa-pencil-o"></i> Export Labels</button>
+
     </div>
+
 <% } %>
 
 <br/>
@@ -68,6 +74,24 @@
 	%>
 	<script>
 	var labels = <%=resultArray.toString(5)%>;
+    var exportLabelHandler=function(){
+        $.ajax({
+            type: 'POST',
+            url: "ajax/downloadData.jsp",
+            data: {archiveID: archiveID, data: "labels"},
+            dataType: 'json',
+            success: function (data) {
+                epadd.alert('Label description file will be downloaded in your download folder!', function () {
+                    window.location=data.downloadurl;
+                });
+            },
+            error: function (jq, textStatus, errorThrown) {
+                var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                epadd.log(message);
+                epadd.alert(message);
+            }
+        });
+    }
 
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
@@ -90,10 +114,14 @@
             	return '<span class="remove-label" data-labelID="' + full[0] + '">Remove</span>';
 //			return '<a href="" data-attr = full[0] onclick="return removereq(full[0])">Remove</div>';
             }
-
+		$('#import-label').click(function(){
+		   //open modal box to get the json file path that contains label description.
+            $('#label-upload-modal').modal('show');
+        });
 		<% } %>
 
-		//function to actually remove the label (send ajax request etc.)
+
+        //function to actually remove the label (send ajax request etc.)
         var removeLabelFn= function(e) {
             labelID = $(e.target).attr ('data-labelID');
 
@@ -144,6 +172,68 @@
 
 <div style="clear:both"></div>
 </div>
+<%--modal for specifying the label description file namd and upload button.--%>
+<script>
+    var uploadLabelHandler=function(){
+        //collect archiveID and labeljson field. If labeljson is empty alert and return false;
+        var filename = $('#labeljson').val();
+        if(!filename)
+        {
+            alert('Please provide the path of the json file ');
+            return false;
+        }
+        var form = $('#uploadjsonform')[0];
+
+        // Create an FormData object
+        var data = new FormData(form);
+        //hide the modal.
+		$('#label-upload-modal').modal('hide');
+        //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+
+        $.ajax({
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            url: "ajax/upload-labels.jsp",
+            contentType: false,
+            cache: false,
+            data: data,
+            success: function(data) { epadd.alert('Labels uploaded successfully!', function() { window.location.reload(); });},
+            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
+        });
+
+    }
+</script>
+<div>
+	<div id="label-upload-modal" class="modal fade" style="z-index:9999">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Specify the json file containing label description</h4>
+				</div>
+				<div class="modal-body">
+					<form id="uploadjsonform" method="POST" enctype="multipart/form-data" >
+						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+						<input type="file" id="labeljson" name="labeljson" value=""/>
+						<%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
+
+				</form>
+				</div>
+				<div class="modal-footer">
+					<button id="upload-label-btn" class="btn btn-cta" onclick="uploadLabelHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+
+
+				<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+					<%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</div>
+
+
+
 <p>
 <br/>
 <jsp:include page="footer.jsp"/>

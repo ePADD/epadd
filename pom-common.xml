@@ -54,6 +54,13 @@
 		<!--<scope>provided</scope>-->
 		<!--</dependency>-->
 
+
+		<!-- https://mvnrepository.com/artifact/gov.loc/bagit -->
+		<dependency>
+			<groupId>gov.loc</groupId>
+			<artifactId>bagit</artifactId>
+			<version>5.1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jsp-api</artifactId>

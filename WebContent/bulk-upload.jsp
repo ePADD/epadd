@@ -1,3 +1,4 @@
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <html>
@@ -32,7 +33,7 @@
     <jsp:include page="div_filepicker.jspf"/>
 
 <% writeProfileBlock(out, archive, "Apply labels to multiple messages", "");
-String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 
 <br/>
@@ -41,7 +42,7 @@ String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
     <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
         <div class="panel">
             <div class="panel-heading">List of correspondents</div>
-            <form id="uploadCSVform" method="POST" action="upload-correspondents" enctype="multipart/form-data" >
+            <form id="uploadCSVform" method="POST" action="upload-correspondents-for-search" enctype="multipart/form-data" >
                 <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
                 <input type="file" id="correspondentCSV" name="correspondentCSV" value=""/>
 

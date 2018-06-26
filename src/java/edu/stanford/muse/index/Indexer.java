@@ -21,7 +21,6 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.StatusProvider;
 import edu.stanford.muse.lang.Languages;
 import edu.stanford.muse.util.*;
-import edu.stanford.muse.webapp.SimpleSessions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -301,11 +300,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			attachmentDocIdToBlob.put(id, b);
 
 			org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
-			Pair<String, String> content = b.getContent(blobStore);
+			Pair<String, String> content = blobStore.getContent(b);
 			if (content == null) {
 				// failed to process blob
 				result = false;
-				log.warn("Failed to fetch content from: "+b.filename+" content type: "+b.contentType+" size: "+b.getSize());
+				log.warn("Failed to fetch content from: "+ blobStore.get_URL_Normalized(b)+" content type: "+b.contentType+" size: "+b.getSize());
 				continue; // but try to continue the process
 			}
 
@@ -338,7 +337,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			// log.info ("blob metadata = " + content.first);
 			//meta data does not contain the fileName
 			doc.add(new Field("meta", content.first, full_ft));
-			doc.add(new Field("fileName", b.filename, full_ft));
+			doc.add(new Field("fileName", blobStore.get_URL_Normalized(b), full_ft));
 
 			doc.add(new Field("body", content.second, full_ft));
 
@@ -368,11 +367,14 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		return result;
 	}
 
+	//Note that baseDir is the path to the bag (that contains data folder. Data folder in turn contains indexes,lexicons,sessions,blobs folders)
 	static private Directory createDirectory(String baseDir, String name) throws IOException
 	{
 		//return new RAMDirectory();
+		File f = new File (baseDir);
+		f.mkdir();//just to make sure that the parent directory is created.
 		String index_dir = baseDir + File.separator + INDEX_BASE_DIR_NAME;
-		File f = new File (index_dir);
+		f = new File (index_dir);
 		boolean b = f.mkdir(); // will not create parent basedir if not already exist. ignore the return val
 		if (!f.exists() || !f.isDirectory()) {
 			log.warn ("Unable to create directory: " + index_dir);
@@ -635,11 +637,18 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
         // these are the 3 fields for stemming, everything else uses StandardAnalyzer
         Map<String, Analyzer> map = new LinkedHashMap<>();
-        map.put("body", snAnalyzer);
+     /*   map.put("body", snAnalyzer);
         map.put("title", snAnalyzer);
         map.put("body_original", stemmingAnalyzer);
+*/
+		KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
+		//do not remove any stop words.
+		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
 
-        KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
+		map.put("body", standardAnalyzer);
+		map.put("title", standardAnalyzer);
+		map.put("body_original", standardAnalyzer);
+
         // actually these do not need any real analyzer, they are just stored opaquely
         map.put("docId", keywordAnalyzer);
         map.put("names_offsets", keywordAnalyzer);
@@ -657,8 +666,6 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 //            });
 //        }
 
-        //do not remove any stop words.
-		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
 
 		return new PerFieldAnalyzerWrapper(standardAnalyzer, map);
 	}
@@ -1159,8 +1166,16 @@ is what we want.
 			r = DirectoryReader.open(directory);
 
 		Bits liveDocs = MultiFields.getLiveDocs(r);
-		String fieldsArray[] = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
-			"cc_names","bcc_names","languages","names","names_original","en_names_title"};
+//IMP: The fields of email index and attachment index are different. We need to extract appropriate field otherwis we will be missing some fields
+		//after exporting the archive index.
+
+		String fieldsArray[] = null;
+		if(attachmentType)
+			fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
+		else
+			fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+					"cc_names","bcc_names","languages","names","names_original","en_names_title"};
+
 		Set<String> fieldsToLoad = new HashSet<String>();
 
         for(String s: fieldsArray){
@@ -1341,7 +1356,7 @@ is what we want.
         return getNamesForLuceneDoc(docForThisId, qt);
     }
 
-    Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException{
+    public Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException{
         Pair<Collection<String>,Integer> p;
         if (!isAttachments)
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher, qt, 1);
@@ -1397,7 +1412,7 @@ is what we want.
 					newattachmentdoc.add(field);
 				}
 			});
-			String urlstring = srcBlobStore.get_URL(b);
+			String urlstring = srcBlobStore.get_URL_Normalized(b);
 			URL url = new URL(urlstring);
 			destBlobStore.add(b,url.openStream());
 			String newid = Integer.toString(destBlobStore.index(b));
@@ -1994,7 +2009,7 @@ is what we want.
 		//			e.printStackTrace();
 		//		}
         String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
-        Archive archive = SimpleSessions.readArchiveIfPresent(userDir);
+        Archive archive = ArchiveReaderWriter.readArchiveIfPresent(userDir);
         String queries[] = new String[]{"(teaching|learning|research|university|college|school|education|fellowship|professor|graduate)",
                                         "(book|chapter|article|draft|submission|review|festschrift|poetry|prose|writing)",
                                         "(award|prize|medal|fellowship|certificate)",

@@ -38,7 +38,7 @@
 <script>epadd.nav_mark_active('Export');</script>
 
 <%
-	String archiveID=SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 
 String type = request.getParameter("type");

@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -1239,12 +1240,15 @@ mergeResult.newContacts.put(C2,savedC2)
     /**
      * used primarily by correspondents.jsp
      * // dumps the contacts in docs, and sorts according to sent/recd/mentions
-     * // returns an array of (json array of 5 elements:[name, in, out, mentions, url])
+     * // returns an array of (json array of 7 elements:[name, in, out, mentions, url, start-date,end-date])
+     *---v6- Modified this method to return 2 more elements (startdate-enddate) so that this method can be used to export confirmed correspondent
+     * in a csv format.
      */
+
     public JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
         Contact ownContact = getContactForSelf();
         List<Contact> allContacts = sortedContacts((Collection) docs);
-        Map<Contact, Integer> contactInCount = new LinkedHashMap<>(), contactOutCount = new LinkedHashMap<>(), contactMentionCount = new LinkedHashMap<>();
+        Map<Contact, Set<EmailDocument>> contactInDocs = new LinkedHashMap<>(), contactOutDocs = new LinkedHashMap<>(), contactMentionDocs= new LinkedHashMap<>();
 
         // compute counts
         for (EmailDocument ed : docs) {
@@ -1260,8 +1264,11 @@ mergeResult.newContacts.put(C2,savedC2)
                 // one of them could be own contact also.
                 Collection<Contact> toContacts = ed.getToCCBCCContacts(this);
                 for (Contact c : toContacts) {
-                    Integer I = contactOutCount.get(c);
-                    contactOutCount.put(c, (I == null) ? 1 : I + 1);
+                    Set<EmailDocument> tmp = contactOutDocs.get(c);
+                    if(tmp==null)
+                        tmp=new LinkedHashSet<>();
+                    tmp.add(ed);
+                    contactOutDocs.put(c, tmp);
                 }
             }
 
@@ -1271,8 +1278,12 @@ mergeResult.newContacts.put(C2,savedC2)
             if (received) {
                 // sender gets a +1 in count (could be ownContact also)
                 // all others get a mention count.
-                Integer I = contactInCount.get(senderContact);
-                contactInCount.put(senderContact, (I == null) ? 1 : I + 1);
+                Set<EmailDocument> tmp = contactInDocs.get(senderContact);
+                if(tmp==null)
+                    tmp=new LinkedHashSet<>();
+                tmp.add(ed);
+                contactInDocs.put(senderContact, tmp);
+
             }
 
             if ((x & EmailDocument.SENT_MASK) == 0) {
@@ -1282,8 +1293,11 @@ mergeResult.newContacts.put(C2,savedC2)
                 for (Contact c : toContacts) {
                     if (c == ownContact)
                         continue; // doesn't seem to make sense to give a mention count for sender in addition to incount
-                    Integer I = contactMentionCount.get(c);
-                    contactMentionCount.put(c, (I == null) ? 1 : I + 1);
+                    Set<EmailDocument> tmp = contactMentionDocs.get(c);
+                    if(tmp==null)
+                        tmp=new LinkedHashSet<>();
+                    tmp.add(ed);
+                    contactMentionDocs.put(c, tmp);
                 }
             }
         }
@@ -1301,13 +1315,16 @@ mergeResult.newContacts.put(C2,savedC2)
             String bestNameForContact = c.pickBestName();
             String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
             String nameToPrint = Util.escapeHTML(Util.ellipsize(bestNameForContact, 50));
-            Integer inCount = contactInCount.get(c), outCount = contactOutCount.get(c), mentionCount = contactMentionCount.get(c);
-            if (inCount == null)
+            Integer inCount = contactInDocs.getOrDefault(c,new LinkedHashSet<>()).size(), outCount = contactOutDocs.getOrDefault(c,new LinkedHashSet<>()).size(), mentionCount = contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()).size();
+            /*if (inCount == null)
                 inCount = 0;
             if (outCount == null)
                 outCount = 0;
             if (mentionCount == null)
-                mentionCount = 0;
+                mentionCount = 0;*/
+            Set<EmailDocument> alldocs = Util.setUnion(contactInDocs.getOrDefault(c,new LinkedHashSet<>()),contactOutDocs.getOrDefault(c,new LinkedHashSet<>()));
+            alldocs=Util.setUnion(alldocs,contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()));
+            Pair<Date,Date> range = EmailUtils.getFirstLast(alldocs,true);
 
             JSONArray j = new JSONArray();
             j.put(0, Util.escapeHTML(nameToPrint));
@@ -1316,6 +1333,15 @@ mergeResult.newContacts.put(C2,savedC2)
             j.put(3, mentionCount);
             j.put(4, url);
             j.put(5, Util.escapeHTML(c.toTooltip()));
+            if(range.first!=null)
+                j.put(6,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
+            else
+                j.put(6,range.first);
+            if(range.second!=null)
+                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
+            else
+                j.put(7,range.second);
+
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
         }

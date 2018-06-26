@@ -442,7 +442,7 @@ public class EmailUtils {
 					mbox.println("--" + frontier);
 					mbox.println("Content-type: " + b.contentType);
 					mbox.println("Content-transfer-encoding: base64");
-					mbox.println("Content-Disposition: attachment;filename=\"" + b.filename + "\"\n");
+					mbox.println("Content-Disposition: attachment;filename=\"" + blobStore.get_URL_Normalized(b)+ "\"\n");
 
 					byte bytes[] = blobStore.getDataBytes(b);
 					byte encodedBytes[] = Base64.encodeBase64(bytes, true);
@@ -722,7 +722,7 @@ public class EmailUtils {
 		return count;
 	}
 
-	public static int countImageAttachmentsInDocs(Collection<EmailDocument> docs)
+	/*public static int countImageAttachmentsInDocs(Collection<EmailDocument> docs)
 	{
 		int count = 0;
 		if (docs == null)
@@ -730,12 +730,12 @@ public class EmailUtils {
 		for (EmailDocument ed : docs)
 			if (ed.attachments != null)
 				for (Blob b : ed.attachments)
-					if (Util.is_image_filename(b.filename)) // consider looking at b.contentType as well
+					if (Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(b);)) // consider looking at b.contentType as well
 						count++;
 		return count;
-	}
+	}*/
 
-	public static int countDocumentAttachmentsInDocs(Collection<EmailDocument> docs)
+	/*public static int countDocumentAttachmentsInDocs(Collection<EmailDocument> docs)
 	{
 		int count = 0;
 		if (docs == null)
@@ -743,10 +743,10 @@ public class EmailUtils {
 		for (EmailDocument ed : docs)
 			if (ed.attachments != null)
 				for (Blob b : ed.attachments)
-					if (Util.is_doc_filename(b.filename)) // consider looking at b.contentType as well
+					if (Util.is_doc_filename(archive.getBlobStore().get_URL_Normalized(b);)) // consider looking at b.contentType as well
 						count++;
 		return count;
-	}
+	}*/
 
 	public static int getMessageCount(List<Pair<String, Integer>> foldersAndCounts)
 	{

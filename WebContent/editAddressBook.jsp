@@ -2,11 +2,12 @@
 <%@page language="java" import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
 	AddressBook addressBook = archive.addressBook;
-	String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>
