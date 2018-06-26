@@ -62,7 +62,8 @@
 		JSPHelper.log.info ("updating lexicon for " + lexiconName + " in language " + language + " with " + newMap.size() + " entries");
 		// should we clear an existing lex first?
 		lex.update(language, newMap);
-		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language);
+		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language,archive);
+
 	}
 
 	result.put("status", 0);

@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -1332,8 +1333,15 @@ mergeResult.newContacts.put(C2,savedC2)
             j.put(3, mentionCount);
             j.put(4, url);
             j.put(5, Util.escapeHTML(c.toTooltip()));
-            j.put(6,range.first);
-            j.put(7,range.second);
+            if(range.first!=null)
+                j.put(6,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
+            else
+                j.put(6,range.first);
+            if(range.second!=null)
+                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
+            else
+                j.put(7,range.second);
+
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
         }

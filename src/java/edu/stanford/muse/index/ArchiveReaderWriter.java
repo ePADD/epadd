@@ -59,29 +59,6 @@ public class ArchiveReaderWriter{
     private static LinkedHashMap<String,Archive> globalArchiveIDToArchiveMap = new LinkedHashMap<>();
     private static LinkedHashMap<Archive,String> globalArchiveToArchiveIDMap = new LinkedHashMap<>();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //#############################################End: Weak reference cache for the archive object and archive#####################################
 
     //#############################################Start: Reading/loading an archive bag###########################################################
@@ -354,6 +331,10 @@ public class ArchiveReaderWriter{
                 //in a bag or not. That structure is 'archive.baseDir + "/data" folder'
                 File tmp = Util.createTempDirectory();
                 tmp.delete();
+
+                //It seems that if indexer kept the file handles open then move directory failed on windows because of the lock held on those file
+                //therefore call archive.close() before moving stuff around
+                archive.close();
                 FileUtils.moveDirectory(Paths.get(archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER).toFile(),tmp.toPath().toFile());
                 //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
                 File wheretocopy = Paths.get(archive.baseDir).toFile();
@@ -363,16 +344,18 @@ public class ArchiveReaderWriter{
 
                 Bag bag = BagCreator.bagInPlace(Paths.get(archive.baseDir), Arrays.asList(algorithm), includeHiddenFiles);
                 archive.setArchiveBag(bag);
+                archive.openForRead();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
 
+        }else {
+            archive.close();
+
+            // re-open for reading
+            archive.openForRead();
+
         }
-        archive.close();
-
-        // re-open for reading
-        archive.openForRead();
-
         return true;
     }
 
@@ -828,4 +811,23 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
     */
         return archive;
     }
+
+    public static void main(String args[]){
+        File tmp = null;
+        try {
+            FileUtils.moveDirectory(Paths.get("/home/chinmay/test").toFile(),Paths.get("/home/chinmay/test2").toFile());
+            //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
+            File wheretocopy = Paths.get("/home/chinmay/test2/test").toFile();
+            Util.deleteDir(wheretocopy.getPath(),log);
+
+            //FileUtils.moveDirectory(tmp.toPath().toFile(),wheretocopy);
+
+        } catch (IOException e) {
+
+        }
+        tmp.delete();
+
+
+    }
+
 }

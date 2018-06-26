@@ -384,13 +384,13 @@ public class JSPHelper {
                 session.setAttribute("statusProvider", ner);
                 ner.recognizeArchive();
                 //Here, instead of getting the count of all entities (present in ner.stats object)
-				//get the count of only those entities which pass a given thersold.
+				//get the count of only those entities which pass a given threshold.
 				//This is to fix a bug where the count of person entities displayed on browse-top.jsp
-				//page was different than the count of entities actually displayed following a thersold.
+				//page was different than the count of entities actually displayed following a threshold.
 				// @TODO make it more modular
                 //archive.collectionMetadata.entityCounts = ner.stats.counts;
 				double theta = 0.001;
-				archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(archive,theta);
+				archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(archive,theta);
                 log.info(ner.stats);
             }
            // archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();

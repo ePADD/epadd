@@ -138,6 +138,15 @@
 
             </textarea>
             <div class="modal-footer">
+                    <label class="radio-inline">
+                        <input type="radio" name="overwrite-append-options" value="overwrite" checked>
+                        <span class="text-radio">Overwrite</span>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="overwrite-append-options" value="append">
+                        <span class="text-radio">Append</span>
+                    </label>
+                <br><br>
                 <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
                 <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
             </div>

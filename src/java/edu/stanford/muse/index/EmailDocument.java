@@ -34,9 +34,7 @@ import org.json.JSONObject;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -218,6 +216,40 @@ public class EmailDocument extends DatedDocument implements Serializable
 		// but changing the code here now will affect existing archives.
 
 		return result;*/
+	}
+	/**Export this message to a file**/
+	public void exportToFile(String filename,Archive archive){
+		//open file..
+
+		try (BufferedWriter br = new BufferedWriter(new FileWriter(filename))){
+
+			//read lucene doc for this message to get the original body of the message.
+			org.apache.lucene.document.Document doc = archive.indexer.getLDoc(this.getUniqueId());
+			String messagebody=null;
+			if(doc!=null)
+				messagebody = doc.get("body_original");
+			else
+				messagebody = "Message body not found!!";
+			//write subject at the top with SUBJECT: Heading
+
+			br.write("HEADING: ");
+			br.append(this.getSubject());
+			br.append("\n");
+			//write message id at the top with MESSAGEID: Heading
+			br.append("MESSAGEID: ");
+			br.append(this.getUniqueId());
+			br.append("\n");
+			//write the original text of the message with MESSAGE:Heading
+			br.append("MESSAGE: ");
+			br.append(messagebody);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return;
+
+
+
 	}
 
 	/** get all addrs associated with the message -- from, to, cc, bcc */

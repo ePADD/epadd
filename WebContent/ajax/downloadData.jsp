@@ -1,11 +1,10 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page import="edu.stanford.muse.AddressBookManager.Contact"%>
-<%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.muse.index.Lexicon"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="java.io.PrintWriter"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="java.io.IOException"%><%@ page import="java.io.FileWriter"%><%@ page import="edu.stanford.muse.ner.model.NEType"%>
+<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%>
 <% 
 	String query = request.getParameter("data");
 	JSONObject result= new JSONObject();
@@ -27,16 +26,20 @@
 	 if(query.equals("lexicon")){
 	    String lexiconname=request.getParameter("lexicon").toLowerCase();
 	    String lexiconpath = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.LEXICONS_SUBDIR;
-	    File files[] = new File(lexiconpath).listFiles(new Util.MyFilenameFilter(lexiconname, Lexicon.LEXICON_SUFFIX));
+	    File files[] = new File(lexiconpath).listFiles(new Util.MyFilenameFilter(null, Lexicon.LEXICON_SUFFIX));
 		File fname=null;
-	    if (files != null)
+	    if (files != null && files.length!=0)
 		{
 			for (File f : files)
 			{
-				fname = f;
-				//Ideally one lexicon can match to more than one file (with different languages) but right now we are only supporting one
-				//language here. @TODO
-				break;
+			    if(Lexicon.lexiconNameFromFilename(f.getName()).toLowerCase().equals(lexiconname))
+				    {
+				        fname = f;
+				        //Ideally one lexicon can match to more than one file (with different languages) but right now we are only supporting one
+				        //language here. @TODO
+				        break;
+				    }
+
 			}
 		    //copy lexicon to temp and return a link to serveTemp with that file
 	    	String destdir = Archive.TEMP_SUBDIR + File.separator;
@@ -64,6 +67,8 @@
 	    }
 //////////////////////////////////////Download label-info.json file//////////////////////////////////////////////////////////////////////
 	}else if(query.equals("labels")){
+        //save the label manager first so that the file gets updated with any new change in the labels.
+        ArchiveReaderWriter.saveLabelManager(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 	    //copy label-info.json to temp and return a link to serveTemp with that file
 	  String labeinfopath= archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SESSIONS_SUBDIR + File.separator
 	  + Archive.LABELMAPDIR + File.separator + "label-info.json";
@@ -96,11 +101,133 @@
            error="Error exporting confirmed correspondents";///
         }
 
+    }if(query.equals("originaltextasfiles")){
+
+    String pathToDirectory = Archive.TEMP_SUBDIR + File.separator + "messages-as-text-files";
+    Util.deleteDir(pathToDirectory,JSPHelper.log);
+    new File(pathToDirectory).mkdir();//create the direcotry.
+    PrintWriter pw = null;
+        try {
+            List<Document> docs = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY);
+            Set<Document> docset = new LinkedHashSet<>(docs);//convert to set to remove possible duplicates.
+            int i=1;
+            for(Document doc: docset){
+                EmailDocument edoc = (EmailDocument)doc;
+                String filename = pathToDirectory+File.separator+"message-"+Integer.toString(i)+".txt";
+                edoc.exportToFile(filename,archive);
+                i++;
+            }
+            //now zip pathToDirectory directory and create a zip file in TMP only
+            String zipfile = Archive.TEMP_SUBDIR+ File.separator + "all-messages-as-text.zip";
+            Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"zip",JSPHelper.log);
+            FileOutputStream fos = new FileOutputStream(zipfile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            File[] files = new File(pathToDirectory).listFiles();
+
+			for(i=0; i < files.length ; i++)
+			    {
+			        FileInputStream fin = new FileInputStream(files[i]);
+
+					/*
+					 * To begin writing ZipEntry in the zip file, use
+					 *
+					 * void putNextEntry(ZipEntry entry)
+					 * method of ZipOutputStream class.
+					 *
+					 * This method begins writing a new Zip entry to
+					 * the zip file and positions the stream to the start
+					 * of the entry data.
+					 */
+
+					zos.putNextEntry(new ZipEntry(files[i].getName()));
+
+					/*
+					 * After creating entry in the zip file, actually
+					 * write the file.
+					 */
+					int length;
+
+					byte[] buffer=new byte[1024];
+					while((length = fin.read(buffer)) > 0)
+					{
+					   zos.write(buffer, 0, length);
+					}
+
+					/*
+					 * After writing the file to ZipOutputStream, use
+					 *
+					 * void closeEntry() method of ZipOutputStream class to
+					 * close the current entry and position the stream to
+					 * write the next entry.
+					 */
+
+					 zos.closeEntry();
+
+					 //close the InputStream
+					 fin.close();
+			    }
+			    zos.close();
+
+            //return it's URL to download
+            String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+"all-messages-as-text.zip" ;
+            downloadURL = appURL + "/" +  contentURL;
+        } catch(Exception e){
+            //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
+            e.printStackTrace();
+           error="Error exporting confirmed correspondents";///
+        }
+
+    }else if(query.equals("to-mbox")){
+
+        String type=request.getParameter("type");
+        Set<Document> docset = null;
+        String fnameprefix=null;
+        Archive.Export_Mode mode=null;
+        if(ModeConfig.isAppraisalMode())
+            mode = Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING;
+        else if(ModeConfig.isProcessingMode())
+            mode =Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY;//to discovery is also same so no difference.
+        if(type.equals("all")){
+            docset=archive.getAllDocsAsSet();
+            fnameprefix="all-messages";
+        }else if(type.equals("non-restricted")){
+            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY));
+            fnameprefix="non-restricted-messages";
+        }else if(type.equals("restricted")){
+            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY));
+            Set<Document> alldocs = new LinkedHashSet<>(archive.getAllDocsAsSet());
+            alldocs.removeAll(docset);//now alldocs contain those messages which are not exported,i.e. are restricted.
+            docset=alldocs;
+            fnameprefix="restricted-messages";
+        }
+
+
+    String pathToFile = Archive.TEMP_SUBDIR + File.separator + fnameprefix+".mbox";
+        Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"mbox",JSPHelper.log);
+    PrintWriter pw = null;
+    try {
+        pw = new PrintWriter(pathToFile, "UTF-8");
+        boolean stripQuoted = true;
+        for (Document ed: docset)
+            EmailUtils.printToMbox(archive, (EmailDocument) ed, pw,archive.getBlobStore(), stripQuoted);
+
+        pw.close();
+
+         //return it's URL to download
+        String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+fnameprefix+".mbox" ;
+        downloadURL = appURL + "/" +  contentURL;
+        } catch(Exception e){
+            //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
+           e.printStackTrace();
+           error="Error exporting confirmed correspondents";///
+        }
+
     }//////////////////////////////////////Download unconfirmed correspondent file//////////////////////////////////////////////////////////////////////
     else if(query.equals("unconfirmedcorrespondents")){
 	    JSONArray correspondents = archive.getAddressBook().getCountsAsJson((Collection)archive.getAllDocs(),true,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 	    //put all these data in a csv, copy to temp directory and return the url to download.
          String destfile = Archive.TEMP_SUBDIR + File.separator + "unconfirmedCorrespondents.csv";
+         Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"csv",JSPHelper.log);
          FileWriter fw = new FileWriter(destfile);
          List<String> line = new ArrayList<>();
          line.add ("Correspondent");
@@ -123,12 +250,13 @@
              //only choose 0,1,2,3,6,7
              int[] options = new int[]{0, 1, 2, 3, 6, 7};
              for(int j: options){
-                 if(!l.isNull(j))
-                    line.add(l.get(j).toString());
-                 else
+                 if (l.isNull(j))
                      line.add("unknown");
+                 else if(!l.isNull(j))
+                    line.add(l.get(j).toString());
+
                 }
-             JSPHelper.log.info(i);
+             //JSPHelper.log.info(i);
                  csvwriter.writeNext(line.toArray(new String[line.size()]));
              }
 
@@ -146,32 +274,45 @@
         {
             entitytypesOptions.put(t.getCode(),t.getDisplayName());
         }
-        //put all these data in a csv, copy to temp directory and return the url to download.
-         String destfile = Archive.TEMP_SUBDIR + File.separator + "entitiesInfo.csv";
+          String fnameprefix=null;
+         if(entitytype==Short.MAX_VALUE)//means all was set from the front end. - export page.
+            {
+                  fnameprefix="all";
+            }
+         else{
+                   fnameprefix=entitytypesOptions.get(entitytype);
+            }
+         String destfile = Archive.TEMP_SUBDIR + File.separator + fnameprefix+"_entitiesInfo.csv";
+         Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"csv",JSPHelper.log);
          FileWriter fw = new FileWriter(destfile);
+         CSVWriter csvwriter = new CSVWriter(fw, ',', '"',' ',"\n");
+        //write header info
+        //put all these data in a csv, copy to temp directory and return the url to download.
          List<String> line = new ArrayList<>();
-         line.add("Entity Type");
+
          line.add ("EntityName");
          line.add("Score");
          line.add ("Number of messages");
-
-         CSVWriter csvwriter = new CSVWriter(fw, ',', '"',' ',"\n");
-
+         line.add ("Start Date");
+         line.add ("End Date");
+          line.add("Entity Type");
          csvwriter.writeNext(line.toArray(new String[line.size()]));
-         Set<Short> entityTypesShort= new LinkedHashSet<>();
-         if(entitytype==Short.MAX_VALUE)//means all was set from the front end. - export page.
-            entityTypesShort=entitytypesOptions.keySet();
-         else
-             entityTypesShort.add(entitytype);
-         for(Short etype: entityTypesShort){
-             JSONArray entityinfo = archive.getEntitiesInfoJSON(etype);
+
+             JSONArray entityinfo = archive.getEntitiesInfoJSON(entitytype);
+//  j.put (0, Util.escapeHTML(entity));
+//            j.put (1, (float)p.getFirst().score);
+//            j.put (2, p.getFirst().freq);
+//            j.put (3, altNames);
+//            j.put (4, daterange.get(entity).first);
+//            j.put (5, daterange.get(entity).second);
+
                 for(int i=0;i<entityinfo.length();i++){
                     JSONArray l = entityinfo.getJSONArray(i);
                     // write the records
                     line = new ArrayList<>();
                     for(int j=0;j<l.length();j++){
-                        if(j==0)
-                            line.add(entitytypesOptions.get(etype));//add entity display name as first entry in the row.
+                        if(j==3)
+                            continue;
                         if(!l.isNull(j))
                             line.add(l.get(j).toString());
                         else
@@ -179,11 +320,10 @@
                         }
                     csvwriter.writeNext(line.toArray(new String[line.size()]));
                 }
-             }
 
          csvwriter.close();
          fw.close();
-         String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=entitiesInfo.csv" ;
+         String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+fnameprefix+"_entitiesInfo.csv" ;
          downloadURL = appURL + "/" +  contentURL;
 
     }
@@ -193,6 +333,8 @@
         } else {
             result.put ("status", 0);
             result.put ("downloadurl", downloadURL);
+            result.put("resultPage",downloadURL);
+            result.put("responseText","Preparing file for download!");
         }
 out.println (result.toString(4));
 

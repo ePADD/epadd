@@ -71,6 +71,7 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 
 import java.io.*;
+
 import java.nio.file.*;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -1019,6 +1020,8 @@ int errortype=0;
                         continue;
 */
                     //if time restriction has expired and it contains cleared for release label then export it.
+                    //if time restriction has expired but it does not contain cfr then don't export it.
+                    //if time restriction has not expired then don't export it.
                     if(!(isTimeRestrictionExpired(ed,timedRestriction) && getLabelIDs(ed).contains(LabelManager.LABELID_CFR)))
                         timefine=false;
                 }
@@ -1215,7 +1218,7 @@ after maskEmailDomain.
 
         //recompute entity count because some documents have been redacted
         double theta = 0.001;
-        this.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThersold(this,theta);
+        this.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(this,theta);
         // write out the archive file.. note that this is a fresh creation of archive in the exported folder
         ArchiveReaderWriter.saveArchive(out_dir, name, this,Save_Archive_Mode.FRESH_CREATION); // save .session file.
         log.info("Completed saving archive object");
@@ -1230,8 +1233,8 @@ after maskEmailDomain.
 
 
     //method to return the count map of entities provided that the score of the entity is greater than
-    //thersold.
-    public static Map<Short,Integer> getEntitiesCountMapModuloThersold(Archive archive, double thersold){
+    //threshold.
+    public static Map<Short,Integer> getEntitiesCountMapModuloThreshold(Archive archive, double threshold){
         Map<Short,Integer> entityTypeToCount = new LinkedHashMap<>();
         EntityBook entityBook = archive.getEntityBook();
         Set<String> seen = new LinkedHashSet<>();
@@ -1243,7 +1246,7 @@ after maskEmailDomain.
             Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
             ss.addAll(ss1);
             for (Span span : ss) {
-                if (span.typeScore < thersold)
+                if (span.typeScore < threshold)
                     continue;
                 String name = span.getText();
                 String displayName = name;
@@ -1267,11 +1270,17 @@ after maskEmailDomain.
         return entityTypeToCount;
     }
 
-    public JSONArray getEntitiesInfoJSON( Short type) {
-        Map<String,Entity> entities = new LinkedHashMap();
+    /*
+    Set requestedtype as Short.MAX_VALUE if you want to get information about all entities.
+     */
+    public JSONArray getEntitiesInfoJSON( Short requestedtype) {
+        Map<String,Pair<Entity,Short>> entities = new LinkedHashMap();
+        Map<String,Collection<EmailDocument>> entityToDocSet = new LinkedHashMap<>();
+        Map<Short, String> typeCodeToName = new LinkedHashMap<>();
+        for(NEType.Type t: NEType.Type.values())
+            typeCodeToName.put(t.getCode(), t.getDisplayName());
         double theta = 0.001;
         EntityBook entityBook = getEntityBook();
-
         for (Document doc: getAllDocs()){
 //            Span[] es = archive.getEntitiesInDoc(doc,true);
             Span[] es1 = getEntitiesInDoc(doc,true);
@@ -1282,9 +1291,11 @@ after maskEmailDomain.
             Set<String> seenInThisDoc = new LinkedHashSet<>();
 
             for (Span span: ss) {
-                if (span.type != type || span.typeScore<theta)
+                //if we have requested for all entity types (means the argument requestedtype was null) then act accordingly.
+                if ((requestedtype!=Short.MAX_VALUE && span.type != requestedtype) || span.typeScore<theta)
                     continue;
 
+                Short type = span.type;
                 String name = span.getText();
                 String displayName = name;
 
@@ -1306,33 +1317,54 @@ after maskEmailDomain.
                 //the fix to handle a large difference in person entities count. For that refer to JSPHelper.java
                 //file fetchAndIndex method.
                 if (!entities.containsKey(displayName.toLowerCase()))
-                    entities.put(displayName.toLowerCase(), new Entity(displayName, span.typeScore));
+                    entities.put(displayName.toLowerCase(), new Pair(new Entity(displayName, span.typeScore),type));
                 else
-                    entities.get(displayName.toLowerCase()).freq++;
+                    entities.get(displayName.toLowerCase()).first.freq++;
+                //add this document in the map denoting that this entity appears in all these documents. It will be used later to
+                //get the date range of an entity.
+                Collection<EmailDocument> docs = entityToDocSet.getOrDefault(displayName.toLowerCase(),new LinkedHashSet<>());
+                docs.add((EmailDocument)doc);
+                entityToDocSet.put(displayName.toLowerCase(),docs);
             }
         }
 
-        Map<Entity, Double> vals = new LinkedHashMap<>();
-        for(Entity e: entities.values()) {
-            vals.put(e, e.score);
+        Map<Entity, Pair<Double,Short>> vals = new LinkedHashMap<>();
+        Map<String,Pair<Date,Date>> daterange = new LinkedHashMap<>();
+        for(String e : entities.keySet()) {
+            vals.put(entities.get(e).first, new Pair(entities.get(e).first.score,entities.get(e).second));
             //System.err.println("Putting: "+e+", "+e.score);
+            daterange.put(entities.get(e).first.entity,EmailUtils.getFirstLast(entityToDocSet.get(e),true));
         }
-        List<Pair<Entity,Double>> lst = Util.sortMapByValue(vals);
+        List<Pair<Entity,Pair<Double,Short>>> lst = vals.keySet().stream().map(k->new Pair<Entity,Pair<Double,Short>>(k,vals.get(k))).collect(Collectors.toList());
+        lst.sort((elem1,elem2)->{
+            Double threshold1 = elem1.getSecond().getFirst();
+            Double threshold2=  elem2.getSecond().getFirst();
+            return threshold2.compareTo(threshold1);
+        });
 
         JSONArray resultArray = new JSONArray();
         int count = 0;
-        for (Pair<Entity, Double> p: lst) {
+        for (Pair<Entity, Pair<Double,Short>> p: lst) {
             count++;
             String entity = p.getFirst().entity;
             JSONArray j = new JSONArray();
-
-            Set<String> altNamesSet = entityBook.getAltNamesForDisplayName(entity, type);
+            Short etype = p.second.second;
+            Set<String> altNamesSet = entityBook.getAltNamesForDisplayName(entity, etype);
             String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
             j.put (0, Util.escapeHTML(entity));
             j.put (1, (float)p.getFirst().score);
             j.put (2, p.getFirst().freq);
             j.put (3, altNames);
-
+            if(daterange.get(entity).first!=null)
+                j.put (4, new SimpleDateFormat("MM/dd/yyyy").format(daterange.get(entity).first));
+            else
+                j.put(4,daterange.get(entity).first);
+            if(daterange.get(entity).second!=null)
+                j.put (5, new SimpleDateFormat("MM/dd/yyyy").format(daterange.get(entity).second));
+            else
+                j.put(5,daterange.get(entity).second);
+            //add entity type as well..
+            j.put(6,typeCodeToName.get(etype));
             resultArray.put (count-1, j);
         }
         return resultArray;
@@ -2085,7 +2117,7 @@ after maskEmailDomain.
         if (!Util.nullOrEmpty(errorMessage))
             return null;
 
-        BagVerifier bv = new BagVerifier();
+        /*BagVerifier bv = new BagVerifier();
         try {
             bv.isValid(bag, true);
         } catch (IOException e) {
@@ -2121,7 +2153,7 @@ after maskEmailDomain.
         } catch (InvalidBagitFileFormatException e) {
             e.printStackTrace();
             errorMessage = "Bag file format is invalid: " + e.getMessage();
-        }
+        }*/
         // If error in verification return null;
         if (!Util.nullOrEmpty(errorMessage))
             return null;

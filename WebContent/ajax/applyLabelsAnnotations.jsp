@@ -41,10 +41,22 @@ if (docs != null)
 {
     //annotation apply
     String annotationText = request.getParameter("annotation");
-    if(!Util.nullOrEmpty(annotationText)){
+    if(annotationText!=null){//We want to support setting annotation to empty as well.so this check isnot needed..or only do null checking
         Set<String> docids = docs.stream().map(doc->doc.getUniqueId()).collect(Collectors.toSet());
-        archive.getAnnotationManager().setAnnotationToAll(docids,annotationText);
-    	archive.clearAllAnnotationsCache();
+        String action = request.getParameter("action");
+        if("overwrite".equals(action)){
+            archive.getAnnotationManager().setAnnotationToAll(docids,annotationText);
+        	archive.clearAllAnnotationsCache();
+        }else if("append".equals(action)){
+            archive.getAnnotationManager().appendAnnotationToAll(docids,annotationText);
+        	archive.clearAllAnnotationsCache();
+        }else {
+            error = true;
+            errorMessage = "Action parameter is allowed to contain only one of the following two options: append and overwrite. Unknown action: " + action;
+            Util.softAssert(true, errorMessage,JSPHelper.log);
+        }
+
+
     }else{
         //labels apply
         Set<String> labelIds = Util.tokenize(request.getParameter("labelIDs"),",").stream().collect(Collectors.toSet());

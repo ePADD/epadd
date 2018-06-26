@@ -98,14 +98,49 @@ public class AuthorityMapper implements java.io.Serializable {
                 // note: the cname itself is not exported.
                 line = new ArrayList<>();
                 line.add(canonname);
-                line.add(auth.preferredLabel);
-                line.add(Long.toString(auth.fastId));
-                line.add(auth.viafId);
-                line.add(auth.wikipediaId);
-                line.add(auth.lcshId);
-                line.add(auth.lcnafId);
-                line.add(auth.localId);
-                line.add(auth.extent);
+
+                if(auth.preferredLabel.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.preferredLabel);
+
+                if(auth.fastId==0 || auth.fastId==-1)
+                    line.add("unknown");
+                else
+                    line.add(Long.toString(auth.fastId));
+
+
+                if(auth.viafId==null || auth.viafId.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.viafId);
+
+
+                if(auth.wikipediaId== null || auth.wikipediaId.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.wikipediaId);
+
+                if(auth.lcshId==null || auth.lcshId.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.lcshId);
+
+                if(auth.lcnafId==null || auth.lcnafId.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.lcnafId);
+
+                if(auth.localId==null || auth.localId.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.localId);
+
+                if(auth.extent==null || auth.extent.equals("?"))
+                    line.add("unknown");
+                else
+                    line.add(auth.extent);
+
                 line.add(auth.isManuallyAssigned ? "Y" : "N");
 
                 writer.writeNext(line.toArray(new String[line.size()]));

@@ -95,9 +95,9 @@ Error: Export is only available in processing or appraisal modes!
         //get all attachments of edoc which satisfied the given filter.
         for(Blob b : resultSet.getAttachmentHighlightInformation(edoc)){
             allAttachments.add(b);
-            if (archive.getBlobStore().get_URL_Normalized(b);== null)
+            if (archive.getBlobStore().get_URL_Normalized(b)== null)
                 continue;
-            if (Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(b);))
+            if (Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(b)))
                 allImageAttachments.add (b);
         }
     }

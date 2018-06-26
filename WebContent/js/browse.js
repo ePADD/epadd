@@ -183,9 +183,15 @@ var Annotations = function() {
 
         // things to do when user clicks on 'apply to this message'
         function annotation_modal_dismissed_apply_to_this_message () {
+            var overwrite_or_append = $('#annotation-modal input[type=radio]:checked').attr('value')
+
             Navigation.enableCursorKeys();
-            var annotation = $('#annotation-modal .modal-body').val(); // .val() gets the value of a text area. assume: no html in annotations
-            annotations[PAGE_ON_SCREEN] = annotation;
+            var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
+            if(overwrite_or_append=="overwrite") {
+                    annotations[PAGE_ON_SCREEN] = annotation;
+            }else if (overwrite_or_append=="append"){
+                    annotations[PAGE_ON_SCREEN] += annotation;
+            }
             // post to the backend, and when successful, refresh the labels on screen
             $.ajax({
                 url: 'ajax/applyLabelsAnnotations.jsp',
@@ -194,11 +200,15 @@ var Annotations = function() {
                     archiveID: archiveID,
                     docId: docIDs[PAGE_ON_SCREEN],
                     annotation: annotation,
-                    action: "override"
+                    action: overwrite_or_append
                 }, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
                 dataType: 'json',
                 success: function (response) {
-                    $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                    if(overwrite_or_append=="overwrite")
+                        $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                    else if(overwrite_or_append=="append")
+                        $('.annotation-area').text(annotation ? annotations[PAGE_ON_SCREEN]: 'No annotation');
+                    //$('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
                   //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                 },
                 error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
@@ -209,14 +219,29 @@ var Annotations = function() {
         // things to do when user clicks on 'apply to all messages'
         function annotation_modal_dismissed_apply_to_all_messages() {
             //ask user that 'all existing annotations on selected # of messages will be overwritten. Do you want to continue?'
-            var c = confirm ('Existing annotations on all '+numMessages+' messages will be overwritten. Do you want to continue?');
-            if (!c)
-                return;
+            var overwrite_or_append = $('#annotation-modal input[type=radio]:checked').attr('value')
+            if (!overwrite_or_append)
+            {
+                alert("Select an option to either ovewrite or append this annotation");
+            return false;
+            }
+            if(overwrite_or_append=="overwrite") {
+                var c = confirm('Existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?');
+                if (!c)
+                    return;
+            }
             //If user confirms then proceed.
             Navigation.enableCursorKeys();
-            var annotation = $('#annotation-modal .modal-body').val(); // .val() gets the value of a text area. assume: no html in annotations
-            for(var i =0; i< TOTAL_PAGES; i++)
-                annotations[i] = annotation;
+            var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
+            // if(annotation.trim().length==0)
+            //     annotation="";
+            if(overwrite_or_append=="overwrite") {
+                for (var i = 0; i < TOTAL_PAGES; i++)
+                    annotations[i] = annotation;
+            }else if (overwrite_or_append=="append"){
+                for (var i = 0; i < TOTAL_PAGES; i++)
+                    annotations[i] += annotation;
+            }
             // post to the backend, and when successful, refresh the labels on screen
             $.ajax({
                 url: 'ajax/applyLabelsAnnotations.jsp',
@@ -225,11 +250,14 @@ var Annotations = function() {
                     archiveID: archiveID,
                     docsetID: docsetID,
                     annotation: annotation,
-                    action: "override"
-                }, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+                    action: overwrite_or_append
+                },
                 dataType: 'json',
                 success: function (response) {
-                    $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                    if(overwrite_or_append=="overwrite")
+                        $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                    else if(overwrite_or_append=="append")
+                        $('.annotation-area').text(annotation ? annotations[PAGE_ON_SCREEN]: 'No annotation');
                     //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                 },
                 error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
@@ -246,6 +274,7 @@ var Annotations = function() {
         //$('#annotation-modal').on('shown.bs.modal', annotation_modal_shown).on('hidden.bs.modal', annotation_modal_dismissed);
         //set up handlers when different buttons are clicked on annotation modal. For 'Apply to this message' invoke different handler,
         //For 'Apply to all messages' invoke another handler. When modal is dismissed, by default the behaviour will be nothing.
+        $('#annotation-modal').on('shown.bs.modal', annotation_modal_shown);
         $('#annotation-modal').find('#ok-button').click(annotation_modal_dismissed_apply_to_this_message);
         $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
 

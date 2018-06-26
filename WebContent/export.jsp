@@ -35,7 +35,9 @@
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	<style>
+    <script type="text/javascript" src="js/statusUpdate.js"></script>
+
+    <style>
 		.mini-box { height: 105px; vertical-align:top; background-color: #f5f5f8; display: inline-block; width:200px; padding:20px; margin-right:22px;}
 
         .mini-box .review-messages  {  display: none; margin-top: 10px;}
@@ -62,6 +64,7 @@
     </style>
 </head>
 <body style="background-color:white;">
+<%@include file="div_status.jspf"%>
 <jsp:include page="header.jspf"/>
 <jsp:include page="div_filepicker.jspf"/>
 
@@ -168,11 +171,11 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 --%>
 	<section>
 		<div class="panel">
-			<div class="panel-heading">Export messages and attachments</div>
+			<div class="panel-heading">Export to next ePADD module</div>
 
             <div class="one-line" id="export-next">
                 <div class="form-group col-sm-8">
-                    <label for="export-next-file">Export to next ePADD module</label>
+                    <label for="export-next-file">Specify location</label>
                     <input id="export-next-file" class="dir form-control" type="text" name="name" value=""/>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
@@ -180,26 +183,11 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     <button id="export-next-do" style="margin-left: 10px;" class="go-button faded btn-default">Export</button>
                 </div>
             </div>
+        </div>
+        </section>
 
-            <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
-                <div class="one-line" id="export-mbox">
-                    <div class="form-group col-sm-8" >
-                        <%--<label for="export-mbox-do">Export to mbox</label>--%>
-                        <button id="export-mbox-do" style="margin-left: 10px; opacity: 1.0" class="go-button faded btn-default">Export to mbox</button>
-                    </div>
-                </div>
-
-                <script>
-                $('#export-mbox .go-button').click (function(e) {
-                    var $button = $(e.target);
-                    var baseUrl = 'export-mbox';
-                    window.location = baseUrl + '?archiveID=<%=archiveID%>';
-                });
-                </script>
-            <% } %>
-
-		</div>
-	</section>
+		<%--</div>--%>
+	<%--</section>--%>
 
     <section>
         <div class="panel">
@@ -329,6 +317,62 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
     </script>
     <% } %>
 
+        <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
+        <section>
+            <div class="panel" id="export-mbox">
+                <div class="panel-heading">Export messages in mbox</div>
+                <div class="one-line">
+                    <div class="form-group col-sm-8">
+                        <select id="export-mbox-options" name="export-mbox-options" class="form-control selectpicker">
+                            <option value="" selected disabled>Select</option>
+                            <option value = "all">All messages</option>
+                            <option value = "non-restricted">Non restricted messages</option>
+                            <option value = "restricted">Restricted messages</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <button id="export-mbox-do" class="go-button  btn-default">Export</button>
+                    </div>
+                </div>
+
+
+                <br/>
+            </div>
+        </section>
+
+
+        <script>
+            $('#export-mbox .go-button').click (function(e) {
+                var exportoptions= $('#export-mbox-options').val();
+                if(!exportoptions){
+                    alert("Please select at least one option!");
+                    return false;
+                }
+                var post_params={archiveID:archiveID, data:"to-mbox", type:exportoptions};
+                fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+
+                /*
+                 $.ajax({
+                 type: 'POST',
+                 url: "ajax/downloadData.jsp",
+                 data: {archiveID: archiveID, data: "to-mbox",type:exportoptions},
+                 dataType: 'json',
+                 success: function (data) {
+                 epadd.alert('An mbox file containing selected messages will be downloaded in your download folder!', function () {
+                 window.location=data.downloadurl;
+                 });
+                 },
+                 error: function (jq, textStatus, errorThrown) {
+                 var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                 epadd.log(message);
+                 epadd.alert(message);
+                 }
+                 });
+                 */
+
+            });
+        </script>
+        <% } %>
 
     <% if (ModeConfig.isProcessingMode()) {
         Map<Short, String> entitytypes= new LinkedHashMap<>();
@@ -371,7 +415,10 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 alert("Please select an entity type");
                 return false;
             }
-            $.ajax({
+            var post_params={archiveID:archiveID, data: "entities",type:entityType};
+            fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+
+            /*$.ajax({
                 type: 'POST',
                 url: "ajax/downloadData.jsp",
                 data: {archiveID: archiveID, data: "entities",type:entityType},
@@ -386,7 +433,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     epadd.log(message);
                     epadd.alert(message);
                 }
-            });
+            });*/
         });
         </script>
 
@@ -430,7 +477,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     data: {archiveID: archiveID, data: option},
                     dataType: 'json',
                     success: function (data) {
-                        epadd.alert('Label description file will be downloaded in your download folder!', function () {
+                        epadd.alert('Correspondents\' file will be downloaded in your download folder!', function () {
                             window.location=data.downloadurl;
                         });
                     },
@@ -440,6 +487,28 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                         epadd.alert(message);
                     }
                 });
+            });
+
+        </script>
+
+
+        <section>
+            <div class="panel" id="export-messages-text">
+                <div class="panel-heading">Original text of all non-restricted messages as individual TXT files</div>
+                <div class="one-line">
+                    <div class="form-group col-sm-8">
+                        <div class="form-group col-sm-4">
+                        <button id="export-messages-text-do"  class="go-button btn-default">Export</button>
+                    </div>
+                </div>
+           </div>
+            </div>
+        </section>
+
+        <script>
+            $('#export-messages-text .go-button').click (function(e) {
+                var post_params={archiveID:archiveID, data: "originaltextasfiles"};
+                fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
             });
 
         </script>
@@ -453,7 +522,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 	<script type="text/javascript">
 		$(document).ready(function() {
             new FilePicker($('#export-next'));
-            new FilePicker($('#export-mbox'));
+            //new FilePicker($('#export-mbox'));
             new FilePicker($('#export-attach'));
 //            new FilePicker($('#export-auth'));
             new FilePicker($('#export-headers'));

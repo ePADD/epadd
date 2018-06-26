@@ -4,12 +4,11 @@
 <%@page language="java" import="com.google.common.collect.Multimap"%>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
-<%@ page import="edu.stanford.muse.index.Document" %>
-<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="edu.stanford.muse.index.*" %>
 <%@include file="getArchive.jspf" %>
 
 <!-- Input: Field name
@@ -59,6 +58,7 @@
     JSONArray resultArray = new JSONArray();
     int count = 0;
     for (String term: searchTerms) {
+//		int nDocs = archive.indexer.getNumHits(term, false, Indexer.QueryType.FULL);
         Multimap<String, String> params = LinkedHashMultimap.create();
         params.put("termSubject", "on");
         params.put("termBody", "on");
