@@ -50,14 +50,31 @@ if (ModeConfig.isPublicMode()) {
 <body style="background-color:#f5f5f8; color: #333">
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Search');</script>
-
+<%
+    //This jsp is being used to handle free text entity extraction+search and one line per term based search. A distincation is made between these
+    //two cases by front end by either passing refText parameter or by passing refTextTerms parameter. Based on this, the heading of the page is either
+    //query generator result or term search result. This distinction is used by leadsAsJson.jsp to make a minor change in its functioning. If
+    //the request is coming for term search result then no entity recognition takes place. Otherwise the entity recognitioni takes place. After that
+    //the result is displayed in the same manner by establishing a hyperlink to actual messages containing those terms.
+    String req = request.getParameter("refText");
+    boolean one_line_per_term_search=false;
+    if(req==null){
+        req=request.getParameter("refTextTerms");//if querygenerator is being called for one line per term type of search.
+        one_line_per_term_search=true;
+    }
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+%>
 <div class="appraisal-bulk-search">
 
     <div class="container">
         <div class="row">
             <div class="col-md-9 col-md-offset-1 epadd-flex">
                 <div class="col-md-6">
-                    <h1>Query generator results</h1>
+                    <%if(one_line_per_term_search){%>
+                        <h1>Term search results</h1>
+                    <%}else{%>
+                        <h1>Query generator results</h1>
+                    <%}%>
                 </div>
                 <div class="col-md-6 text-right">
                     <label>
@@ -73,8 +90,7 @@ if (ModeConfig.isPublicMode()) {
         <div class="row">
             <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px; height: auto">
                 <%
-                    String req = request.getParameter("refText");
-                    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+
                     out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
                 %>
             </div>

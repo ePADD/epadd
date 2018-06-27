@@ -49,6 +49,8 @@
 	<div style="width:100%;margin-bottom:20px;">
 		<a id="simple-search-header"  class="underlined-header search-header" >Simple search</a>
 		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>
+		<a id="term-search-header" class="search-header" style="margin-left:40px;">Term Search</a>
+
 	</div>
 
 	<div id="simple-search" style="text-align:center">
@@ -74,6 +76,17 @@
 	</div>
 <p>
 
+	<div style="display:none" id="term-search">
+		<form method="post" action="query-generator" accept-charset="UTF-8">
+			<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
+			<textarea placeholder="Type or paste terms here (one line per term) to search the email archive for all matching terms. Following the search, select a highlighted entity to view related messages." name="refTextTerms" id="refTextTerms" cols="80" rows="10"></textarea>
+			<br/>
+			<div style="text-align:center">
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+			</div>
+		</form>
+	</div>
+
 	<div style="display:none" id="query-generator">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
@@ -95,15 +108,27 @@
 		$('#simple-search-header').click(function() {
 			$('#simple-search-header').addClass('underlined-header');
 			$('#query-generator-header').removeClass('underlined-header');
-			$('#simple-search').show();
+            $('#term-search-header').removeClass('underlined-header');
+            $('#simple-search').show();
 			$('#query-generator').hide();
+			$('#term-search').hide();
 		});
 		$('#query-generator-header').click(function() {
 			$('#query-generator-header').addClass('underlined-header');
 			$('#simple-search-header').removeClass('underlined-header');
-			$('#simple-search').hide();
+            $('#term-search-header').removeClass('underlined-header');
+            $('#simple-search').hide();
+			$('#term-search').hide();
 			$('#query-generator').show();
 		});
+        $('#term-search-header').click(function() {
+            $('#term-search-header').addClass('underlined-header');
+            $('#simple-search-header').removeClass('underlined-header');
+            $('#query-generator-header').removeClass('underlined-header');
+            $('#simple-search').hide();
+            $('#query-generator').hide();
+            $('#term-search').show();
+        });
 	});
 
 </script>
