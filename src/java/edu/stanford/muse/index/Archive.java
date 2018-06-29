@@ -2050,8 +2050,8 @@ after maskEmailDomain.
                 if (!Util.nullOrEmpty(d.attachments)) {
                     List<Blob> blobs = d.attachments;
                     for (Blob b : blobs) {
-                        if (!Util.nullOrEmpty(this.getBlobStore().get_URL_Normalized(b)))
-                            allBlobNames.add(this.getBlobStore().get_URL_Normalized(b));
+                        if (!Util.nullOrEmpty(this.getBlobStore().full_filename_normalized(b,false)))
+                            allBlobNames.add(this.getBlobStore().full_filename_normalized(b,false));
                     }
                 }
         }

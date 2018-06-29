@@ -64,7 +64,7 @@ try {
         for(String term: terms){
             if(Util.nullOrEmpty(term.trim()))
                 continue;
-            names.add(new Pair(term.trim(),1f));
+            names.add(new Pair("\""+term.trim()+"\"",1f));
         }
 	 }else{
 		Map<String, Float> termFreqMap = new LinkedHashMap<>();

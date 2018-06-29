@@ -227,7 +227,7 @@ public class EmailRenderer {
 							JSPHelper.log.warn("attachments store is null!");
 
 						// toString the filename in any case,
-						String url = archive.getBlobStore().full_filename_normalized(attachment);
+						String url = archive.getBlobStore().full_filename_normalized(attachment,false);
 						// cap to a length of 25, otherwise the attachment name
 						// overflows the tn
 						String display = Util.ellipsize(url, 25);
@@ -278,7 +278,7 @@ public class EmailRenderer {
 								page.append("data-originalurl="+"\""+completeurl_cleanup+"\" ");
 							}
 							if(isCleanedName){
-								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment)+"\"");
+								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment,false)+"\"");
 							}
 							page.append("></span>");
 						}

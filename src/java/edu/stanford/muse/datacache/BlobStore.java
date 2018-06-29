@@ -16,7 +16,6 @@
 package edu.stanford.muse.datacache;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
@@ -181,50 +180,84 @@ public class BlobStore implements Serializable {
      * full filename for data
      */
     public String full_filename_normalized(Blob b) {
-        return full_filename_normalized(b, b.filename);
+        return full_filename_normalized(b, true);
+    }
+
+    /**
+     * full filename for data
+     */
+    public String full_filename_normalized(Blob b, boolean useIndex) {
+        return full_filename_normalized(b, b.filename,useIndex);
     }
 
     /**
      * full filename for an arbitrary file associated with d
      */
-    private String full_filename_normalized(Blob b, String fname) {
+    private String full_filename_normalized(Blob b, String fname,boolean useIndex) {
         int idx = index(b);
         String actualname = (idx < 0)? fname: idx + "." + fname;
+        String modifiedname = null;
         //now check if normalizationinfo map has a mapping for this file or not. If it has then return the cleanedup/normalized name instead of the
         //actual name of the blob.
         if(normalizationMap==null || !normalizationMap.containsKey(actualname)){
-            return actualname;
+            modifiedname =  actualname;
         }else{
-            return normalizationMap.get(actualname).second;//
+            modifiedname = new String(normalizationMap.get(actualname).second);//
         }
+        //if idx>=0 and useIndex is false then remove idx from the file name and return it.
+        if(idx>=0 && !useIndex){
+            modifiedname = modifiedname.substring(Integer.toString(idx).length()+1);//remove the initial part equal to the length of idx + 1 character (for .)
+        }
+        return modifiedname;
+        //else simply return the modifiedname;
+
     }
 
     public String full_filename_cleanedup(Blob b) {
-        return full_filename_cleanedup(b, b.filename);
+        return full_filename_cleanedup(b, true);
+    }
+
+    public String full_filename_cleanedup(Blob b, boolean useIndex) {
+        return full_filename_cleanedup(b, b.filename,useIndex);
     }
     /**
-     * full filename for an arbitrary file associated with d
+     * full filename for an arbitrary file associated with b.
      */
-    private String full_filename_cleanedup(Blob b, String fname) {
+    private String full_filename_cleanedup(Blob b, String fname, boolean useIndex) {
+
         int idx = index(b);
         String actualname = (idx < 0)? fname: idx + "." + fname;
+        String modifiedname;
         //now check if normalizationinfo map has a mapping for this file or not. If it has then return the cleanedup/normalized name instead of the
         //actual name of the blob.
         if(normalizationMap==null || !normalizationMap.containsKey(actualname)){
-            return actualname;
+            modifiedname = actualname;
         }else{
-            return normalizationMap.get(actualname).first;//second denote if it was cleaned/normalized or both?
+            modifiedname = new String(normalizationMap.get(actualname).first);//second denote if it was cleaned/normalized or both?
         }
+        //if idx>=0 and useIndex is false then remove idx from the file name and return it.
+        if(idx>=0 && !useIndex){
+            modifiedname = modifiedname.substring(Integer.toString(idx).length()+1);//remove the initial part equal to the length of idx + 1 character (for .)
+        }
+        return modifiedname;
+        //else simply return the modifiedname;
     }
 
     public String full_filename_original(Blob b) {
-        return full_filename_original(b, b.filename);
+        return full_filename_original(b, true);
     }
 
-    private String full_filename_original(Blob b, String fname) {
-        int idx = index(b);
-        String actualname = (idx < 0)? fname: idx + "." + fname;
-        return actualname;
+    public String full_filename_original(Blob b, boolean useIndex) {
+        return full_filename_original(b, b.filename,useIndex );
+    }
+
+    private String full_filename_original(Blob b, String fname, boolean useIndex) {
+        if(useIndex) {
+            int idx = index(b);
+            String actualname = (idx < 0) ? fname : idx + "." + fname;
+            return actualname;
+        }else
+            return fname;
     }
 
     /**
@@ -409,7 +442,7 @@ public class BlobStore implements Serializable {
     private synchronized void addView(Blob primary_data, String filename, String view, InputStream is) throws IOException {
         // for file data store, the object stored for the View is the file name
         addView(primary_data, view, filename);
-        Util.copy_stream_to_file(is, dir + File.separatorChar + full_filename_normalized(primary_data, filename));
+        Util.copy_stream_to_file(is, dir + File.separatorChar + full_filename_normalized(primary_data));
     }
 
     public InputStream getInputStream(Blob b) throws IOException {
@@ -466,7 +499,7 @@ public class BlobStore implements Serializable {
         if (filename == null)
             return null;
         else
-            return get_cache_URL(full_filename_normalized(b, filename));
+            return get_cache_URL(full_filename_normalized(b));
     }
 
     public byte[] getDataBytes(Blob b) throws IOException {
@@ -481,7 +514,7 @@ public class BlobStore implements Serializable {
 
     public byte[] getViewData(Blob b, String key) throws IOException {
         String filename = (String) getView(b, key);
-        return Util.getBytesFromFile(dir + File.separatorChar +  full_filename_normalized(b, filename));
+        return Util.getBytesFromFile(dir + File.separatorChar +  full_filename_normalized(b));
     }
 
 

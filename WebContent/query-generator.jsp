@@ -78,10 +78,18 @@ if (ModeConfig.isPublicMode()) {
                 </div>
                 <div class="col-md-6 text-right">
                     <label>
+                        <%if(one_line_per_term_search){%>
+                        <span style="background-color: #e7df9a;">Matched terms</span>
+                        <%}else{%>
                         <span style="background-color: #e7df9a;">Matched entities</span>
+                        <%}%>
                     </label>
                     <label style="margin-left:10px">
+                        <%if(one_line_per_term_search){%>
+                        <span style="border-bottom: 1px red dotted;">Unmatched terms</span>
+                        <%}else{%>
                         <span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
+                        <%}%>
                     </label>
                 </div>
             </div>

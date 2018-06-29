@@ -1039,10 +1039,10 @@ Archive archive = inputSet.archive;
                 // does it satisfy all 3 requirements? if we find any condition that it set and doesn't match, bail out of the loop to the next blob
                 // of course its kinda pointless to specify extension if filename is already specified
                 // 1. filename matches?
-                String url = archive.getBlobStore().get_URL_Normalized(b);
+                String url = archive.getBlobStore().full_filename_normalized(b,false);
                 if (filenameRegexPattern == null) {
                     // non-regex check
-                    if (neededFilenames != null && (url == null || !(neededFilename.contains(url))))
+                    if (neededFilenames != null && (url == null || !(url.contains(neededFilename))))
                         continue;
                 } else {
                     // regex check

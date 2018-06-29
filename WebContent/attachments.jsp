@@ -213,7 +213,7 @@
                     String blobURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
                     String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
                     String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
-                    String displayFileName = archive.getBlobStore().full_filename_normalized(b);
+                    String displayFileName = archive.getBlobStore().full_filename_normalized(b,false);
 //if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
                     //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
                     //so the attributes are either only originalfilename or cleanedupfileURL or both.
@@ -241,7 +241,7 @@
                             msg="This file was converted during the preservation process. Click <a href="+completeurl_cleanup+">here </a> to download the original file";
                         }
                         else if(isCleanedName){
-                            msg="This file name was cleaned up during the preservation process. The original file name was "+blobStore.full_filename_original(b);
+                            msg="This file name was cleaned up during the preservation process. The original file name was "+blobStore.full_filename_original(b,false);
                         }
                         j.put(7,msg);
                         IsNormalized=true;
