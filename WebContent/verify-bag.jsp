@@ -15,7 +15,9 @@
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
-	<title>Export Complete</title>
+	<script src="js/epadd.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/statusUpdate.js"></script>
+	<title>Verify archive bag</title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
@@ -31,146 +33,54 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Export');</script>
+<%@include file="div_status.jspf"%>
+
+<%--<script>epadd.nav_mark_active('Export');</script>--%>
 <% 	AddressBook addressBook = archive.addressBook;
 String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
+boolean checkDone=false;
+boolean success=false;
+if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
+    checkDone=true;
+    if(request.getParameter("result").equals("success"))
+        success=true;
+    else
+        success=false;
+}
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive, "", "Verify checksum of this archive");
 %>
 <div style="margin-left:170px">
 
 <%
-	String rawDir = request.getParameter("dir");
-	String dir = new File(rawDir).getAbsolutePath();
-
-	File file = new File(dir);
-	if (!file.isDirectory() || !file.canWrite()) {
-		out.println ("<p>Sorry, the directory " + dir + " is not writable. Please <a href=\"export-processing?archiveID="+archiveID+"&type=doNotTransfer\">go back</a> and select a different directory.");
-		return;
+	if(!checkDone) {
+		out.println("<p> Starting from version 6,  ePADD archive follows Bag-it specification for preservation support. If you received this archive from " +
+				" an untrusted source then you should verify the checksum of archive bag's content. Please note that this might be a time consuming process " +
+				" depending upon the size of the archive. So be prepared before verifying the integrity of this archive!!</p>");
+	}else{
+	    if(success){
+	        out.println("<br><p> Checksum is verified. It implies that the content of this archive was not modified in between.</p>");
+		}else
+		{
+			out.println("<br><p> Checksum can not be verified. It implies that the content of this archive was modified from outside of ePADD.</p>");
+		}
 	}
-	%>
-	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
-	<% out.flush(); %>
-	<%
-	if (Util.nullOrEmpty(dir)) {
-		dir = System.getProperty("java.io.tmpdir");
-	}
-
-	JSPHelper.log.info("Saving archive in " + archive.baseDir);
-	out.println("Saving current archive...<br/>");
-	out.flush();
-	ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-
-	String folder = dir + File.separator + "ePADD archive of " + bestName + "-Delivery";
-	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
-	//same set of docs are exported from processing to delivery or discovery only difference being the
-		//content of these messages. In case of processing to discovery mode the redaction takes place.
-	List<Document> docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY);
-
-	/*
-	Before v5 we faced an issue where after exporting to delivery/discovery the document's content got
-	changed because we are not actually copying the document/index document before making any changes (redaction)
-	in their subject/body. One easy way to avoid this is to save the current archive in delivery/discovery mode,
-	load it again and then make changes to that (redaction etc) and then saving it again. However, note that
-	reading the archive from a directory will result in adding it's archive ID to global archiveID map which
-	we don't want now [because we are loading it only temporarily].
-	 *//*
-
-	//save current archive to delivery directory
-	// save baseDir temporarily and set it back after saving it in delivery/discovery folders.
-	String tmpbasedir = archive.baseDir;
-	archive.setBaseDir(folder);
-	SimpleSessions.saveArchive(archive);
-	//save current archive to discovery directory
-	archive.setBaseDir(folderPublic);
-	SimpleSessions.saveArchive(archive);
-	//set baseDir back for the current archive.
-	archive.setBaseDir(tmpbasedir);
-	//At this point, both folder and folderpublic contain the processing mode archive. We need to read these archives
-	//modify them according to the mode (delivery/discovery) and then save them back to their respective folders (folder/folderpublic)
-	Archive fordelivery = SimpleSessions.readArchiveIfPresent(folder);*/
-	//make sure to remove it from the global map once it's work is done
-	// archive.collectionMetadata.entityCounts = null;
-	archive.collectionMetadata.numPotentiallySensitiveMessages = -1;
-	out.println ("Exporting delivery mode archive...<br/>");
-	out.flush();
-	try {
-		archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default");
-//		//remove fordelivery archive from the global map
-//		SimpleSessions.removeFromGlobalArchiveMap(folder,fordelivery);
-	} catch (Exception e) {
-		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
-		out.println ("Sorry, error exporting archive: " + e + ". Please see the log file for more details.");
-	}
-
-	/* v6- Why were we exporting correspondent authority file separately??- removed now
-		*try {
-        String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
-        if (!Util.nullOrEmpty(csv)) {
-            String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
-            FileWriter fw = new FileWriter(new File(filename));
-            fw.write(csv);
-            fw.close();
-        } else {
-            JSPHelper.log.info ("No authorities information in this archive");
-        }
-	} catch(Exception e) {
-		out.println ("Warning: unable to write authorities CSV file into " + file);
-		JSPHelper.log.warn(e);
-	}*/
-
-	// NOW EXPORT FOR DISCOVERY
-	//Read archive from folderPublic directory and operate on that.
-	//Archive forDeliveryPublic = SimpleSessions.readArchiveIfPresent(folderPublic);
-	out.println ("Exporting discovery mode archive...<br/>");
-	out.flush();
-	JSPHelper.log.info("Exporting for discovery");
-	/*v6- why were we exporting correspondent authority file separately? Removed now.
-		try {
-        String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
-        if (!Util.nullOrEmpty(csv)) {
-            String filename = folder + File.separator + edu.stanford.muse.Config.AUTHORITIES_CSV_FILENAME;
-            FileWriter fw = new FileWriter(new File(filename));
-            fw.write(csv);
-            fw.close();
-        }
-	} catch(Exception e) {
-		out.println ("Warning: unable to write authorities CSV file into " + file);
-		JSPHelper.log.warn(e);
-	}
-	*/
-	archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default");
-
-
-		// Now remember to reload the archive from baseDir, because we've destroyed the archive in memory
-		//after export make sure to load the archive again. However, readArchiveIfPresent will not read from
-		//memroy if the archive and it's ID is already present in gloablArchiveMap (in SimpleSession).
-		//Hence first remove this from the map and then call readArchiveIfPresent method.
-		JSPHelper.log.info("Reading back archive...");
-		out.println ("Reloading saved archive...<br/>");
-		out.flush();
-		String baseDir = archive.baseDir;
-		ArchiveReaderWriter.removeFromGlobalArchiveMap(baseDir,archive);
-		archive = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
-	/*archive.setBaseDir(baseDir);
-	session.setAttribute("archive", archive);
-	session.setAttribute("userKey", "user");
-	session.setAttribute("cacheDir", archive.baseDir);
-*/
-//	archive.collectionMetadata.entityCounts = ec;
-
-//authority records are exported to authority.csv in delivery mode
-
 %>
-<script>$('#spinner-div').hide();</script>
-<p>
-		<p>
-		Full ePADD archive exported to: <%=Util.escapeHTML(folder)%><br/>
-		Please copy this folder under &lt;HOME&gt;/<%=Util.filePathTail(Config.REPO_DIR_DELIVERY)%> and start ePADD in delivery mode.<br/>
-		<p>
-		Public ePADD archive (containing only named entities) exported to: <%=Util.escapeHTML(folderPublic)%><br/>
-		Please copy this folder under &lt;HOME&gt;/<%=Util.filePathTail(Config.REPO_DIR_DISCOVERY)%> and start ePADD in discovery mode.
-	</div>
+	<%--<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>--%>
+	<% out.flush(); %>
+
+<%--<script>$('#spinner-div').hide();</script>--%>
+	<%if(!checkDone){%>
+	<button id="button-verify-checksum" class="btn-default ">Verify checksum</button>
+<script>
+    $('#button-verify-checksum').click (function(e) {
+        var enterparams = {archiveID: '<%=archiveID%>'};
+        fetch_page_with_progress ('ajax/verify-bag-checksum.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams); /* load_archive_and_call(function() { window.location = "browse-top"} */;
+    });
+    <%}%>
+
+</script>
+</div>
 <p>
 <br/>
 <br/>
