@@ -134,6 +134,34 @@ public class BlobStore implements Serializable {
         return fbs;
     }
 
+    /*
+    This method returns number of renamed files obtained after normalization (from archivmatica)
+     */
+    public int getCleanedFilesCount(){
+        int count=0;
+        for(String s: normalizationMap.keySet()){
+            if(!s.equals(normalizationMap.get(s).first))//if original name and cleanedup name not same then the file was renamed.
+                count++;
+        }
+        return count;
+    }
+
+    /*
+    This method returns number of normalized files obtained after normalization (from archivmatica)
+     */
+
+    public int getNormalizedFilesCount(){
+        int count=0;
+        for(String s: normalizationMap.keySet()){
+            if(!normalizationMap.get(s).first.equals(normalizationMap.get(s).second))//if cleanedup name and normalized name not same then the file was normalized.
+                count++;
+        }
+        return count;
+    }
+
+
+
+
     /**
      * directory where this store keeps it data
      */
@@ -594,12 +622,12 @@ public class BlobStore implements Serializable {
             return;
         }
 
-        String filename = "tn." + get_URL_Normalized(b);;
+        String filename = "tn." + full_filename_normalized(b,false);;
         String tmp_filename = TMP_DIR + File.separatorChar + filename;
         String tnFilename = null;
         boolean noThumb = false;
         String MOGRIFY = "/opt/local/bin/mogrify";
-        if (Util.is_image_filename(get_URL_Normalized(b)) && new File(MOGRIFY).exists()) {
+        if (Util.is_image_filename(full_filename_normalized(b,false)) && new File(MOGRIFY).exists()) {
             // mogrify will update tmp_filename in place, creating a thumbnail
             tnFilename = tmp_filename;
             createBlobCopy(b, tmp_filename);
@@ -609,7 +637,7 @@ public class BlobStore implements Serializable {
                 log.warn("mogrify failed: " + e.getMessage() + "\n" + Util.stackTrace(e));
                 noThumb = true;
             }
-        } else if (!NO_CONVERT_PDFS && Util.is_pdf_filename(get_URL_Normalized(b))) {
+        } else if (!NO_CONVERT_PDFS && Util.is_pdf_filename(full_filename_normalized(b,false))) {
 //    	tnFilename = tmp_filename + ".jpg";
 //    	// [0] converts only page 0
 //    	// only works on mac, after port install imagemagick

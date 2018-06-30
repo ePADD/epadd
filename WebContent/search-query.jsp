@@ -49,7 +49,7 @@
 	<div style="width:100%;margin-bottom:20px;">
 		<a id="simple-search-header"  class="underlined-header search-header" >Simple search</a>
 		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>
-		<a id="term-search-header" class="search-header" style="margin-left:40px;">Term Search</a>
+		<a id="term-search-header" class="search-header" style="margin-left:40px;">Multi-Term Search</a>
 
 	</div>
 
@@ -79,7 +79,7 @@
 	<div style="display:none" id="term-search">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
-			<textarea placeholder="Type or paste terms here (one line per term) to search the email archive for all matching terms. Following the search, select a highlighted entity to view related messages." name="refTextTerms" id="refTextTerms" cols="80" rows="10"></textarea>
+			<textarea placeholder="Type or paste terms here (one line per term) to search the email archive for all matching terms. Following the search, select a highlighted term to view related messages." name="refTextTerms" id="refTextTerms" cols="80" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
 				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>

@@ -439,6 +439,8 @@ int errortype=0;
         public int numPotentiallySensitiveMessages = -1;
         public Date firstDate, lastDate;
         public List<AccessionMetadata> accessionMetadatas;
+        public int renamedFiles=0;//to record number of files that were renamed /cleanedup as a result of Amatica integration
+        public int normalizedFiles=0;//to record number of files that were normalized (format change) as a result of Amatica integration.
 
         public String toJSON() {
             return new Gson().toJson(this);

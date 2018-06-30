@@ -70,6 +70,12 @@ if (!collectionDir.equals(baseDir))
 	        //for that we should load this accession as well.
 	        collection = ArchiveReaderWriter.readArchiveIfPresent(collectionDir);
             collection.baseAccessionID=accessionID;//as it is the first accession we can avoid assigning
+            //in case this colleciton was brought in from archivmatica we need to get number of cleanedup and number of normalized files.
+            //This information is present in blobstore so just get it from there.
+            collection.collectionMetadata.normalizedFiles=collection.getBlobStore().getNormalizedFilesCount();
+            collection.collectionMetadata.renamedFiles=collection.getBlobStore().getCleanedFilesCount();
+            //IMP to write collection metadata back..
+            ArchiveReaderWriter.saveCollectionMetadata(collection.collectionMetadata,collection.baseDir);
             //accession id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
 		    result.put ("message", "Import accession completed successfully.");

@@ -138,6 +138,10 @@
 
         if (ModeConfig.isProcessingMode()) { %>
         <p>
+            <% if(cm.renamedFiles!=0 || cm.normalizedFiles!=0){%>
+            Renamed files: <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
+            Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
+            <%}%>
             <button class="btn-default" id="edit-collection-metadata"><i class="fa fa-pencil"></i> Edit Metadata</button>
             <br/>
             <br/>
