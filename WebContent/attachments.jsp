@@ -238,7 +238,7 @@
                         String completeurl_cleanup ="serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(cleanupurl);
 
                         if(isNormalized){
-                            msg="This file was converted during the preservation process. Click <a href="+completeurl_cleanup+">here </a> to download the original file";
+                            msg="This file was converted during the preservation process. Its original name was "+blobStore.full_filename_original(b,false)+". Click <a href="+completeurl_cleanup+">here </a> to download the original file";
                         }
                         else if(isCleanedName){
                             msg="This file name was cleaned up during the preservation process. The original file name was "+blobStore.full_filename_original(b,false);

@@ -276,6 +276,7 @@ public class EmailRenderer {
 							page.append("<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" ");
 							if(isNormalized){
 								page.append("data-originalurl="+"\""+completeurl_cleanup+"\" ");
+								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment,false)+"\" ");
 							}
 							if(isCleanedName){
 								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment,false)+"\"");

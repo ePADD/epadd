@@ -62,7 +62,8 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
 	        out.println("<br><p> Checksum is verified. It implies that the content of this archive was not modified in between.</p>");
 		}else
 		{
-			out.println("<br><p> Checksum can not be verified. It implies that the content of this archive was modified from outside of ePADD.</p>");
+		    String msg  = request.getParameter("errmsg");
+			out.println("<br><p> The checksum does not match. This archive is corrupted.</p>");
 		}
 	}
 %>

@@ -166,7 +166,7 @@
         //prepare the message in html based on these two values.
         if(origianlURL){
             //if originalURL is not null - This file was converted during the preservation process. Click here to download the original file.
-            msg="This file was converted during the preservation process. Click <a href="+origianlURL+">here </a> to download the original file";
+            msg="This file was converted during the preservation process. Its original name was "+originalName+". Click <a href="+origianlURL+">here </a> to download the original file";
         }else {
             //if originalURL is null and original Name is not null- This file was renamed during the preservation process. The name of the original file was -
             msg="This file name was cleaned up during the preservation process. The original file name was "+originalName;

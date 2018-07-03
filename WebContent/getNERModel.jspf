@@ -11,7 +11,7 @@
     NERModel nerModel = (NERModel)JSPHelper.getSessionAttribute(session, "ner");
     if (nerModel == null)
     {
-        String modelFile = SequenceModel.modelFileName;
+        String modelFile = SequenceModel.MODEL_FILENAME;
         JSPHelper.log.info("Loading NER model from: "+modelFile);
         nerModel = SequenceModel.loadModel(modelFile);
         JSPHelper.log.info("Loaded ner model from "+modelFile);

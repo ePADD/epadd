@@ -139,6 +139,7 @@
         if (ModeConfig.isProcessingMode()) { %>
         <p>
             <% if(cm.renamedFiles!=0 || cm.normalizedFiles!=0){%>
+            Preservation Actions <br>
             Renamed files: <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
             Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
             <%}%>

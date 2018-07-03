@@ -139,6 +139,8 @@ public class BlobStore implements Serializable {
      */
     public int getCleanedFilesCount(){
         int count=0;
+        if(normalizationMap==null)
+            return count;
         for(String s: normalizationMap.keySet()){
             if(!s.equals(normalizationMap.get(s).first))//if original name and cleanedup name not same then the file was renamed.
                 count++;
@@ -152,6 +154,8 @@ public class BlobStore implements Serializable {
 
     public int getNormalizedFilesCount(){
         int count=0;
+        if(normalizationMap==null)
+            return count;
         for(String s: normalizationMap.keySet()){
             if(!normalizationMap.get(s).first.equals(normalizationMap.get(s).second))//if cleanedup name and normalized name not same then the file was normalized.
                 count++;

@@ -273,8 +273,8 @@ public class ArchiveReaderWriter{
      */
     public static boolean saveArchive(String baseDir, String name, Archive archive, Archive.Save_Archive_Mode mode) throws IOException
     {
-        log.info("Before saving the archive checking if it is still in good shape");
-        archive.Verify();
+        /*log.info("Before saving the archive checking if it is still in good shape");
+        archive.Verify();*/
         String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
         new File(dir).mkdirs(); // just to be safe
         String filename = dir + File.separatorChar + name + SESSION_SUFFIX;
@@ -674,8 +674,8 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
 // no need to read archive authorized authorities, they will be loaded on demand from the legacy authorities.ser file
                 addToGlobalArchiveMap(baseDir,a);
                 //check if the loaded archive satisfy the verification condtiions. Call verify method on archive.
-                JSPHelper.log.info("After reading the archive checking if it is in good shape");
-                a.Verify();
+               /* JSPHelper.log.info("After reading the archive checking if it is in good shape");
+                a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
                 return a;

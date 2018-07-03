@@ -79,7 +79,7 @@ try {
 
 	if (cm == null) {
 	    // not sure we want to init a new cm. we could simply bail out.
-	    JSPHelper.log.warn ("No existing collection metadata in " + archiveBaseDir);
+	    //JSPHelper.log.warn ("No existing collection metadata in " + archiveBaseDir);
 	    cm = new Archive.CollectionMetadata();
     }
 
