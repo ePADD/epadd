@@ -72,7 +72,7 @@ public class BlobStore implements Serializable {
     private final static long serialVersionUID = 1L;
 
     private String dir; // base dir where this data store keeps it files
-    private static final String META_DATA_FILENAME = ".MetaData"; // filename where meta data is kept
+    //private static final String META_DATA_FILENAME = ".MetaData"; // filename where meta data is kept-- NO Longer used because the data stored in this file is also stored in default.archive.v2 serialized file.
 
     private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 
@@ -92,11 +92,11 @@ public class BlobStore implements Serializable {
             dir_file.mkdirs();
         else {
             // could also lock the dir to make sure no other data store object uses this dir inadvertently
-            File f = new File(this.dir + File.separatorChar +  META_DATA_FILENAME);
+          /*  File f = new File(this.dir + File.separatorChar +  META_DATA_FILENAME);
             if (f.exists()) {
                 unpack();
                 log.info("File repository in " + dir + " has " + uniqueBlobs.size() + " entries");
-            }
+            }*/
         }
     }
 
@@ -130,7 +130,7 @@ public class BlobStore implements Serializable {
                 Util.print_exception(e, log);
             }
         }
-        fbs.pack();
+        //fbs.pack();
         return fbs;
     }
 
@@ -173,7 +173,7 @@ public class BlobStore implements Serializable {
         return dir;
     }
 
-    private synchronized void unpack() throws IOException {
+    /*private synchronized void unpack() throws IOException {
         String f = this.dir + File.separatorChar + META_DATA_FILENAME;
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
@@ -184,9 +184,9 @@ public class BlobStore implements Serializable {
             boolean b = new File(f).delete();
             log.warn("delete succeeded:" + b);
         }
-    }
+    }*/
 
-    public synchronized void pack() throws IOException {
+    /*public synchronized void pack() throws IOException {
         // write to a tmp file first, then rename -- we don't want to trash the if there is a disk full or disk error or something....
         String f = this.dir + File.separatorChar + META_DATA_FILENAME;
         String tmp = f + ".tmp";
@@ -206,7 +206,7 @@ public class BlobStore implements Serializable {
             log.warn("Metadata rename failed... packing may be incomplete!");
 
         log.info("packed datastore: " + this);
-    }
+    }*/
 
     /**
      * full filename for data
@@ -365,8 +365,8 @@ public class BlobStore implements Serializable {
         Util.ASSERT(this.contains(blob));
 
         // packing needs to be done more efficiently (batch mode or incremental)
-        if ((uniqueBlobs.size() % 100) == 0)
-            pack();
+      /*  if ((uniqueBlobs.size() % 100) == 0)
+            pack();*/
 
         return nBytes;
     }
@@ -383,7 +383,7 @@ public class BlobStore implements Serializable {
         }
     }
 
-    private synchronized void pack_to_stream(ObjectOutputStream oos) throws IOException
+    /*private synchronized void pack_to_stream(ObjectOutputStream oos) throws IOException
     {
         oos.writeObject(uniqueBlobs);
         oos.writeObject(id_map);
@@ -398,7 +398,7 @@ public class BlobStore implements Serializable {
         id_map = (Map<Blob, Integer>) ois.readObject();
         views = (Map<Blob, Map<String,Object>>) ois.readObject();
         next_data_id = ois.readInt();
-    }
+    }*/
 
     public String toString()
     {

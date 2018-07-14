@@ -134,7 +134,7 @@
             }
         }
     }
-    blobStore.pack();
+    //blobStore.pack();
 %>
 <%=nKeywordsExtracted%> images with keywords extracted.
 </body>
