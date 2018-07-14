@@ -418,20 +418,34 @@ epadd.saveArchive= function(archiveID,prompt) {
     if(prompt==undefined){
         prompt=true;
     }
-    return $.ajax({
-        type: 'POST',
-        url: "ajax/save-archive.jsp",
-        dataType: "json",
-        data: {
-            "archiveID": archiveID
-        },
-        success: function (data) {
-            if (prompt) {
-                epadd.alert('Archive saved successfully!')
-            }
-        },
-        error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
-    });
+	/*Saving is sometime expensive (especially when bag is updated) so display a progress bar to the client*/
+
+	var promptmethod = function(j){
+		epadd.alert("Archive saved successfully!");
+	}
+	var post_params = 'archiveID='+archiveID;
+	// need to check muse.mode here for page to redirect to actually!
+	var page = "ajax/save-archive.jsp";
+	if(prompt)
+		return fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params,promptmethod);
+	else
+		return fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+
+	/*
+        return $.ajax({
+            type: 'POST',
+            url: "ajax/save-archive.jsp",
+            dataType: "json",
+            data: {
+                "archiveID": archiveID
+            },
+            success: function (data) {
+                if (prompt) {
+                    epadd.alert('Archive saved successfully!')
+                }
+            },
+            error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+        });*/
 };
 
 /*
