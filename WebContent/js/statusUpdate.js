@@ -25,6 +25,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		this.status_text = null;
 		this.status_page = null;
 		this.currentTeaserId = null;
+		this.poltimer=null;
 	}
 	
 	//function to fetch page, polling spage to receive status.
@@ -36,112 +37,120 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	// need to clean up this onready stuff
 	// URL page is invoked with post_params
 	// if it returns successfully, has no error and is not cancelled, we'll set window.location to redirect_page if defined, else to <response>.resultPage
+	//IMP: Made changes in this function so that the result of this ajax call can be chained with other call. Especially in header.jspf when close is clicked then the save is performed followed by unloading the archive and then setting the current page as collection-detail page.
 	function kick_off_page_fetch(page, post_params, onready, redirect_page)
 	{
-		var page_xhr = currentOp.page_xhr;
+	var returnresult = function(resolve, reject){
+			var page_xhr = currentOp.page_xhr;
 		var status_div = currentOp.status_div;
 		if (post_params == undefined)
-			page_xhr.open ('GET', page, true);
+			page_xhr.open('GET', page, true);
 		else {
-			page_xhr.open ('POST', page, true);
+			page_xhr.open('POST', page, true);
 		}
-	
+
 		//	page_xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-			page_xhr.onreadystatechange = function() {
-				if (this.readyState != 4)
-					return false;
+		page_xhr.onreadystatechange = function () {
+			/*if (this.readyState != 4)
+				return false;*/
+disablePollStatus();
+			currentOp.done = true;
+			document.title = currentOp.orig_doc_title;
 
-				currentOp.done = true;
-				document.title = currentOp.orig_doc_title;
+			// we'll aggressively update currentOp.status_div_text.innerHTML as late as possible, but before each return
+			// so we don't see residue for the next op
 
-				// we'll aggressively update currentOp.status_div_text.innerHTML as late as possible, but before each return
-				// so we don't see residue for the next op
-
-				if (currentOp.cancelled) {
-					// if op was cancelled, return quietly without changing the page
-					$('.muse-overlay').hide();
-					return;
-				}
-				// make sure we set the status_div to hide
-				// otherwise the window.onbeforeunload
-				// will prompt the user for confirmation
-				$(currentOp.status_div).hide();
+			if (currentOp.cancelled) {
+				// if op was cancelled, return quietly without changing the page
 				$('.muse-overlay').hide();
+				return resolve(page_xhr.response);
+			}
+			// make sure we set the status_div to hide
+			// otherwise the window.onbeforeunload
+			// will prompt the user for confirmation
+			$(currentOp.status_div).hide();
+			$('.muse-overlay').hide();
 
-				currentOp.status_div_text.innerHTML = "<br/>&nbsp;<br/>"; // wipe out the status so we dont see residue for the next op
+			currentOp.status_div_text.innerHTML = "<br/>&nbsp;<br/>"; // wipe out the status so we dont see residue for the next op
 
-				// epadd.log ('op completed, status = ' + this.status);
+			// epadd.log ('op completed, status = ' + this.status);
 
-				// check for errors first
-				if (this.status != 200 && this.status != 0) {
-					window.location = "error";
-					epadd.log("Error: status " + this.status + " received from page: " + page);
-					return;
-				}
+			// check for errors first
+			if (this.status != 200 && this.status != 0) {
+				window.location = "error";
+				epadd.log("Error: status " + this.status + " received from page: " + page);
+				return reject(page_xhr.response);
+			}
 
-				// response is in json => key fields are status, error, cancelled, resultPage
-				var responseText = this.responseText;
-				responseText = muse.trim(responseText);
+			// response is in json => key fields are status, error, cancelled, resultPage
+			var responseText = this.responseText;
+			responseText = muse.trim(responseText);
 
-				var j;
-				try {eval("j = " + responseText + ";");}
-				catch (e) {epadd.log('error with status json response from page ' + page + ': ' + responseText);}
+			var j;
+			try {
+				eval("j = " + responseText + ";");
+			}
+			catch (e) {
+				epadd.log('error with status json response from page ' + page + ': ' + responseText);
+			}
 
-				epadd.log("Response text: "+responseText);
-				epadd.log("j:"+j);
-				if (!j) {
-					var err = "Sorry, there was an error, no JSON was returned! Please retry and if the error persists, report the problem to us.";
-					epadd.log(err);
-					epadd.alert(err);
-					return;
-				}
+			epadd.log("Response text: " + responseText);
+			epadd.log("j:" + j);
+			if (!j) {
+				var err = "Sorry, there was an error, no JSON was returned! Please retry and if the error persists, report the problem to us.";
+				epadd.log(err);
+				epadd.alert(err);
+				return;
+			}
 
-				// check if any errors
-				if (j.error) {
-					var err = "Error in operation:" + responseText;
-					epadd.log(err);
-					window.location = "error";
-					return;
-				}
+			// check if any errors
+			if (j.error) {
+				var err = "Error in operation:" + responseText;
+				epadd.log(err);
+				window.location = "error";
+				return;
+			}
 
-				// in case op is cancelled, we should get back cancelled = true
-				if (j.cancelled)
-					return;
+			// in case op is cancelled, we should get back cancelled = true
+			if (j.cancelled)
+				return;
 
-				// ok, so the op was successful, have we been told what ready function to call or page to to redirect on the client side by the caller?
-				if (onready) {
-					onready(j);
-					return;
-				}
+			// ok, so the op was successful, have we been told what ready function to call or page to to redirect on the client side by the caller?
+			if (onready) {
+				onready(j);
+				return;
+			}
 
-				if (redirect_page) {
-	 				window.location = redirect_page;
-					return;
-				}
+			if (redirect_page) {
+				window.location = redirect_page;
+				return;
+			}
 
-				// we haven't been told where to redirect by the client, so go by what the page says in its json
-				resultPage = j.resultPage;
-			
-				if (resultPage != null)
-				{
-					window.location = resultPage; // redirect to result page	
-				}
-			};
+			// we haven't been told where to redirect by the client, so go by what the page says in its json
+			resultPage = j.resultPage;
 
-	
+			if (resultPage != null) {
+				window.location = resultPage; // redirect to result page
+			}
+			return resolve(page_xhr.response);
+
+		};
+
 		if (post_params == undefined)
 			page_xhr.send(null);
-		else
-		{		
+		else {
 			page_xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			// browsers firebug complains that these params are unsafe...
 			//page_xhr.setRequestHeader("Content-length", post_params.length);
 			//page_xhr.setRequestHeader("Connection", "close");
 			// if post_params is an object, turn it into a URL string. we are introducing a dependency on jquery, that's ok.
 			if (typeof post_params == 'object')
-				post_params = $.param(post_params); 
+				post_params = $.param(post_params);
 			page_xhr.send(post_params);
 		}
+	}
+		return new Promise(returnresult);
+
 	}
 	
 	function new_xhr()
@@ -154,7 +163,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 			return new ActiveXObject("Microsoft.XMLHTTP");
 		}
 	}
-	
 	function poll_status()
 	{
 		var status_xhr = currentOp.status_xhr;
@@ -278,13 +286,17 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 					else // not json ?!?
 						currentOp.status_div_text.innerHTML = responseText;
 		
-					setTimeout(poll_status, POLL_MILLIS);
+					pol_timer = setTimeout(poll_status, POLL_MILLIS);
 				}
 				else // current op done or cancelled
 					currentOp.status_div_text.innerHTML = "";
 			}
 		};
 		status_xhr.send(null);
+	}
+
+	function disablePollStatus(){
+		clearTimeout(pol_timer)
 	}
 	
 	function getTeaserFn(teasers, index)
@@ -367,9 +379,9 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	sdiv.style.left = (window.innerWidth/2)- 320+"px"; // the total width is 640px
 	sdiv.style.top = (window.innerHeight/2) - 65+"px";
 
-	kick_off_page_fetch(page, post_params, onready, redirect_page);
+	var res = kick_off_page_fetch(page, post_params, onready, redirect_page);
 	poll_status();
-
+	return res;
 	// end of this function. the rest are private helper functions
 
 
