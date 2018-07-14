@@ -235,6 +235,10 @@ public class EmailDocument extends DatedDocument implements Serializable
 			br.write("HEADING: ");
 			br.append(this.getSubject());
 			br.append("\n");
+			//write the date of the message at the top with DATE: date
+			br.append("DATE: ");
+			br.append(this.getDate().toString());
+			br.append("\n");
 			//write message id at the top with MESSAGEID: Heading
 			br.append("MESSAGEID: ");
 			br.append(this.getUniqueId());

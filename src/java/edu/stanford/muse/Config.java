@@ -86,7 +86,9 @@ public class Config {
 
         // site-specific settings
         {
-            admin = props.getProperty("admin", "Peter Chan, pchan3@stanford.edu");
+            //admin = props.getProperty("admin", "Peter Chan, pchan3@stanford.edu");
+            admin = props.getProperty("admin", "epadd_project@stanford.edu");
+
         }
 
         // config for file/dir names, etc.

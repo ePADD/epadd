@@ -616,4 +616,14 @@ public class MuseEmailFetcher {
 		int nFetchers = Util.nullOrEmpty(fetchers) ? 0 : fetchers.size();
 		return "Muse email fetcher with " + nFetchers + " fetcher(s)";
 	}
+
+	/*public static void main(String args[]){
+		MuseEmailFetcher mf = new MuseEmailFetcher();
+		try {
+			mf.addEmailStore(new MboxEmailStore("","Koch-test","/Volumes/LaCie/ePADD Data/koch email"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mf.setupFetchers(1);
+	}*/
 }

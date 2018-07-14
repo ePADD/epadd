@@ -86,7 +86,7 @@ public class ArchiveReaderWriter{
         // keep reading till eof exception
         Map<String, Object> result = new LinkedHashMap<>();
         try {
-            ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(filename)));
+            ois = new ObjectInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(filename))));
 
             while (true)
             {
@@ -288,7 +288,7 @@ public class ArchiveReaderWriter{
 
 
 
-        try (ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(filename)))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(filename))))) {
             oos.writeObject("archive");
             oos.writeObject(archive);
         } catch (Exception e1) {
@@ -324,8 +324,11 @@ public class ArchiveReaderWriter{
 //if archivesave mode is freshcreation then create a bag around basedir and set bag as this one..
         if(mode== Archive.Save_Archive_Mode.FRESH_CREATION){
             StandardSupportedAlgorithms algorithm = StandardSupportedAlgorithms.MD5;
-            boolean includeHiddenFiles = true;
+            boolean includeHiddenFiles = false;
             try {
+                archive.close();
+                archive.openForRead();
+
                 //First copy the content of archive.baseDir + "/data" to archive.baseDir and then create an in place bag.
                 //Why so complicated? Because we wanted to have a uniform directory structure of archive irrespective of the fact whether it is
                 //in a bag or not. That structure is 'archive.baseDir + "/data" folder'
@@ -344,7 +347,6 @@ public class ArchiveReaderWriter{
 
                 Bag bag = BagCreator.bagInPlace(Paths.get(archive.baseDir), Arrays.asList(algorithm), includeHiddenFiles);
                 archive.setArchiveBag(bag);
-                archive.openForRead();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
@@ -357,6 +359,28 @@ public class ArchiveReaderWriter{
 
         }
         return true;
+    }
+
+
+    /*
+    From the save button on top nav-bar we should trigger only incremental save of mutable data like addressbook, labelmanager, etc.
+    A smarter way will be to save only those parts which changed. This will require some flag to track unchanged data.-- @TODO
+     */
+    public static void saveMutable_Incremental(Archive archive){
+        saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
+        saveEntityBook(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        ///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
+        saveCorrespondentAuthorityMapper(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        //////////////LabelManager Writing -- Serialized//////////////////////////////////
+        saveLabelManager(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+
+        //////////////AnnotationManager writing-- In human readable form/////////////////////////////////////
+        saveAnnotations(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        //should we recalculate collection metadata as well??
+        recalculateCollectionMetadata(archive);
+        saveCollectionMetadata(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+
     }
 
     public static void recalculateCollectionMetadata(Archive archive) {

@@ -50,10 +50,10 @@ import gov.loc.repository.bagit.writer.BagWriter;
 import org.apache.commons.collections4.BagUtils;
 import org.apache.commons.collections4.bag.HashBag;
 */
-import gov.loc.repository.bagit.creator.BagCreator;
+import gov.loc.repository.bagit.creator.*;
 import gov.loc.repository.bagit.creator.CreatePayloadManifestsVistor;
 import gov.loc.repository.bagit.creator.CreateTagManifestsVistor;
-import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.domain.*;
 import gov.loc.repository.bagit.domain.Manifest;
 import gov.loc.repository.bagit.exceptions.*;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
@@ -78,6 +78,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -549,12 +550,12 @@ int errortype=0;
         log.info("Closing archive");
         if (indexer != null)
             indexer.close();
-        try {
+        /*try {
             if (blobStore != null)
                 blobStore.pack(); // ideally, do this only if its dirty
         } catch (Exception e) {
             Util.print_exception(e, log);
-        }
+        }*/
 
         // clear all the caches, so they will be recomputed at next use
         allEntities = allBlobNames = allFolders = allEmailSources = allAnnotations = null;
@@ -1412,7 +1413,7 @@ after maskEmailDomain.
         getAllDocs();
         try {
 
-            s = Highlighter.getHTMLAnnotatedDocumentContents(s, (IA_links ? date : null), docId, regexToHighlight, highlightTerms, entitiesWithId, null /* summarizer.importantTermsCanonical */, false);
+            s = Highlighter.getHTMLAnnotatedDocumentContents(this,s, (IA_links ? date : null), docId, regexToHighlight, highlightTerms, entitiesWithId, null /* summarizer.importantTermsCanonical */, false);
 
             //indexer
             //	.getHTMLAnnotatedDocumentContents(s, (IA_links ? date : null), docId, searchTerms, isRegexSearch, highlightTermsStemmed, highlightTermsUnstemmed, entitiesWithId);
@@ -1777,12 +1778,12 @@ after maskEmailDomain.
         }
 
         //indexer.close();//to commit the changes to disc so that the next time indexer is read the updated stuff is read
-        //pack destbloblstore.
+        /*//pack destbloblstore.
         try {
             blobStore.pack();
         } catch (IOException e) {
             log.warn("Unable to pack blobstore: Serious error");
-        }
+        }*/
         result.nFinalMessages = getAllDocs().size();
         result.nFinalAttachments = blobStore.uniqueBlobs.size();
         ///////////////////////Address book merging////////////////////////////////////////////////
@@ -2074,14 +2075,14 @@ after maskEmailDomain.
         return Util.scrubNames(names);
     }
 
-    //maps locId (int) to docId (edu.stanford.muse.index.Document) using indexer storage structures
+   /* //maps locId (int) to docId (edu.stanford.muse.index.Document) using indexer storage structures
     public Integer getLDocIdForContentDocId(String docId){
         return indexer.contentDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(Map.Entry::getKey).orElse(0);
     }
 
     public String getDocIdForContentLDocId(Integer ldocId){
         return indexer.contentDocIds.get(ldocId);
-    }
+    }*/
 
     public Integer getLDocIdForBlobDocId(String docId){
         return indexer.blobDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(Map.Entry::getKey).orElse(0);
@@ -2118,8 +2119,7 @@ after maskEmailDomain.
         //If error in reading the bag return null;
         if (!Util.nullOrEmpty(errorMessage))
             return null;
-
-        /*BagVerifier bv = new BagVerifier();
+       /* BagVerifier bv = new BagVerifier(Executors.newSingleThreadExecutor());
         try {
             bv.isValid(bag, true);
         } catch (IOException e) {
@@ -2306,10 +2306,11 @@ after maskEmailDomain.
     public static void main(String[] args) {
         try {
 
-            String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
-
+           String userDir = "/Volumes/LaCie/ePADD5" + File.separator + "epadd-appraisal" + File.separator + "user";
+            // String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
+            Bag b = Archive.readArchiveBag(userDir);
             StandardSupportedAlgorithms algorithm = StandardSupportedAlgorithms.MD5;
-BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),true);
+BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
             File tmp = Util.createTempDirectory();
             tmp.delete();
             FileUtils.moveDirectory(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER).toFile(),tmp.toPath().toFile());
@@ -2320,7 +2321,7 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),true);
 
             //Files.move(,Paths.get(userDir),StandardCopyOption.REPLACE_EXISTING);
 
-            boolean includeHiddenFiles = true;
+            boolean includeHiddenFiles = false;
             //BagCreator.
             Bag bag = BagCreator.bagInPlace(Paths.get(userDir), Arrays.asList(algorithm), includeHiddenFiles);
             //write bag to disc.. in place of userDir..

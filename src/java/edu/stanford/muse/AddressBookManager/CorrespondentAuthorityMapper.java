@@ -243,6 +243,8 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
             record = csvreader.readNext();//skip the first line.
             while ((record = csvreader.readNext()) != null) {
 
+                if(record.length!=2)
+                    continue;
                 long fastid = 0;
                 try{
                     fastid = Long.parseLong(record[1].trim());

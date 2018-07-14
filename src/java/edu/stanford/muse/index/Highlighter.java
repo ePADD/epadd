@@ -196,7 +196,7 @@ class Highlighter {
      *       if need to be modified then clone and modify a local copy
      * */
     //TODO: can also get rid of termsToHyperlink
-    public static String getHTMLAnnotatedDocumentContents(String contents, Date d, String docId, String regexToHighlight,
+    public static String getHTMLAnnotatedDocumentContents(Archive archive, String contents, Date d, String docId, String regexToHighlight,
                                                           Set<String> termsToHighlight, Map<String, EmailRenderer.Entity> entitiesWithId,
                                                           Set<String> termsToHyperlink, boolean showDebugInfo) {
         Set<String> highlightTerms = new LinkedHashSet<>(), hyperlinkTerms = new LinkedHashSet<>();
@@ -360,7 +360,7 @@ class Highlighter {
         //Now do post-processing to add complex tags that depend on the text inside. title, link and cssclass
         org.jsoup.nodes.Document doc = Jsoup.parse(htmlResult.toString());
         Elements elts = doc.select("[data-process]");
-
+String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         for (int j = 0; j < elts.size(); j++) {
             Element elt = elts.get(j);
             Element par = elt.parent();
@@ -371,7 +371,7 @@ class Highlighter {
             String entity = elt.text();
             int span_j = j;
 
-            String link = "browse?adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term=\"" + Util.escapeHTML(entity) + "\"";
+            String link = "browse?archiveID="+archiveID+"&adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term=\"" + Util.escapeHTML(entity) + "\"";
             //note &quot here because the quotes have to survive
             //through the html page and reflect back in the URL
             link += "&initDocId=" + docId; // may need to URI escape docId?
@@ -553,7 +553,7 @@ class Highlighter {
 //                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.NER.EPER).forEach(e->ewid.put(e,new Archive.Entity(e,null,Arrays.asList("cp").stream().collect(Collectors.toSet()))));
 //                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.NER.ELOC).forEach(e->ewid.put(e,new Archive.Entity(e,null,Arrays.asList("cl").stream().collect(Collectors.toSet()))));
 //                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.NER.EORG).forEach(e->ewid.put(e,new Archive.Entity(e, null, Arrays.asList("co").stream().collect(Collectors.toSet()))));
-                String htmlcontent = getHTMLAnnotatedDocumentContents("<body>"+content+"</body>",ed.date,ed.getUniqueId(),null /* regex to highlight */,termsToHighlight,ewid,null,true);
+                String htmlcontent = getHTMLAnnotatedDocumentContents(archive,"<body>"+content+"</body>",ed.date,ed.getUniqueId(),null /* regex to highlight */,termsToHighlight,ewid,null,true);
                 System.out.println("Done highlighting.");
                 htmlcontent += "<br>------<br>"+content.replaceAll("\n","<br>\n");
                 htmlcontent = "<link href=\"epadd.css\" rel=\"stylesheet\" type=\"text/css\"/>\n"+htmlcontent;

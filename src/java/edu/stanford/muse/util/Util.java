@@ -36,6 +36,8 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -433,6 +435,35 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 				bos.close();
 		}
 		return nBytes;
+	}
+
+	public static void copy_directory(String source,String target) throws IOException {
+		final Path sourcename = new File(source).toPath();
+		final Path targetname = new File(target).toPath();
+
+		Files.walkFileTree(sourcename, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+				new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+							throws IOException
+					{
+						Path targetdir = targetname.resolve(sourcename.relativize(dir));
+						try {
+							Files.copy(dir, targetdir);
+						} catch (FileAlreadyExistsException e) {
+							if (!Files.isDirectory(targetdir))
+								throw e;
+						}
+						return FileVisitResult.CONTINUE;
+					}
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+							throws IOException
+					{
+						Files.copy(file, targetname.resolve(sourcename.relativize(file)));
+						return FileVisitResult.CONTINUE;
+					}
+				});
 	}
 
 	public static void copy_file(String from_filename, String to_filename) throws IOException

@@ -158,7 +158,7 @@ public class Lens {
 		
 		Indexer indexer = archive.indexer;
 		AddressBook ab = archive.addressBook;
-		
+		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 		if (indexer == null)
 			return list;
 		
@@ -194,7 +194,7 @@ public class Lens {
 			json.put ("nMessages", totalHits); // this is an over-estimate since the same message might match both in addressbook and in body. it is used only for scoring and should NEVER be shown to the user. getTermHitDetails will get the accurate count
 			log.info(term  + ": " +  hitsInAddressBook + " in address book, " + hitsInMessageContent + " in messages"); 
 			
-			String url = baseURL + "/browse?adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term=\"" + term + "\"";
+			String url = baseURL + "/browse?archiveID="+archiveID+"&adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term=\"" + term + "\"";
 			json.put ("url", url);
 		//	JSONArray messages = new JSONArray();
 		//	json.put("messages", messages); // empty messages

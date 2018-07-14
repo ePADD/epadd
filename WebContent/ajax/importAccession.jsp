@@ -65,8 +65,9 @@ if (!collectionDir.equals(baseDir))
     	    // delete the existing directory -- Q: should we give user a warning??
 	        JSPHelper.log.info ("Copying archive files from " + baseDir + " to " + collectionDir);
 		    FileUtils.deleteDirectory(new File(collectionDir));
-		    FileUtils.copyDirectory(new File(baseDir), new File(collectionDir), true /* preserve file date */);
-	        //when should we add accession ID to all messages of this accession?
+		    //FileUtils.copyDirectory(new File(baseDir), new File(collectionDir), true /* preserve file date */);
+                Util.copy_directory(baseDir,collectionDir);
+            //when should we add accession ID to all messages of this accession?
 	        //for that we should load this accession as well.
 	        collection = ArchiveReaderWriter.readArchiveIfPresent(collectionDir);
             collection.baseAccessionID=accessionID;//as it is the first accession we can avoid assigning

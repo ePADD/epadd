@@ -31,8 +31,20 @@ Sorry! ePADD error.
 <% if (ModeConfig.isDiscoveryMode()) { %>
     Please contact <%=edu.stanford.muse.Config.admin %>.
 <% } else { %>
-    Please see the <a href="debug">debug log</a>, and email it to <%=edu.stanford.muse.Config.admin %>
-    We'll get back to you as soon as possible.
+    Pleae provide the following details to <%=edu.stanford.muse.Config.admin %>:
+    <ul>
+        <li>Operating system & version</li>
+        <li>Version of JRE(Java Runtime)</li>
+        <li>version of ePADD</li>
+        <li>Total RAM in your system</li>
+        <li>RAM assigned to ePADD</li>
+        <li>Name of the screens you went through and the input boxes filled on those screens (or screen prints). state the steps to reproduce the problem.</li>
+        <li>If the problem was encountered while importing emails then please mention the source of mbox file and the software (if any) used to convert it to mbox format.</li>
+        <li>Number of email messages and the size (in GB) of the archive.</li>
+        <li>If necessary, can you share the email files with us to find out the issue?</li>
+        <li>Operating system & version</li>
+        <li>The debug log given below.</li>
+    </ul>
     <% out.println ("<br/>Error code:" + request.getAttribute("javax.servlet.error.status_code") + " type: " + request.getAttribute("javax.servlet.error.exception_type")); %>
 <% } %>
 

@@ -200,6 +200,7 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 			threads = allocateThreads(totalMessagesInFolder);
 			N_THREADS = threads.length;
 
+
 			int msgs_for_each_thread = (to-from)/N_THREADS;
 			if (totalMessagesInFolder % N_THREADS != 0)
 				msgs_for_each_thread++;

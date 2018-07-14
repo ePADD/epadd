@@ -394,4 +394,14 @@ public class LabelManager implements Serializable{
 
         return result;
     }
+
+    /*
+    Returns true if any label is applied to any message. False otherwise
+     */
+    public boolean isAnyLabel(){
+        if(docToLabelID.size()==0)
+            return false;
+        else
+            return  true;
+    }
 }

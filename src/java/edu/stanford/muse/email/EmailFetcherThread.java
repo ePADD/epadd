@@ -1308,8 +1308,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     currentStatus = JSONUtils.getStatusJSON("");
                     if (isCancelled)
                         return;
-
-                    if (messages.length > 0) {
+//Check here fore nullablity (??) of message..
+                    if (messages!=null && messages.length > 0) {
                         try {
                             if (fetchConfig.downloadMessages) {
                                 log.info(nMessages + " messages will be fetched for indexing");

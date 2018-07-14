@@ -50,7 +50,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		//while cache buffers option enables/disables the caching of the message content to optimise the message content retieval
 		//cache.disabled option controls what kind of CacheAdapter is used by Mstor; CacheAdapter (dummy) or EhCacheAdapter
 		mstorProps.put("mstor.mbox.cacheBuffers", "disabled");
-		mstorProps.put("mstor.cache.disabled", "true");
+		mstorProps.put("mstor.cache.disabled", "false");
 		// http://code.google.com/p/coucou/source/browse/src/main/resources/mstor.properties?spec=svn9e5ed7be0c8e39027c72a220f745d87b944be826&r=9e5ed7be0c8e39027c72a220f745d87b944be826
 		//relaxed parsing uses a relaxed pattern that is adapted to FoxMail export
 		//mstorProps.put("mstor.mbox.parsing.relaxed", "true");
@@ -81,6 +81,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 		// Get a Store object
 		Store store = session.getStore(new URLName("mstor:" + Util.devNullPath())); // although "store" is irrelevant with mbox, connect/close may still be attempted on it. thus, use /dev/null rather than leaving it at / or unspecified path (which may trigger file io error).
+
 		store.connect();
 		return store;
 	}
