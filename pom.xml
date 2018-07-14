@@ -52,11 +52,11 @@
       <version>1.5</version>
     </dependency>
     <!-- could have given commons-io 2.4 but using 2.0.1 because muse also has it, so we won't import twice. -->
-    <dependency>
+    <!-- <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.0.1</version>
-    </dependency>
+    </dependency>-->
     
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -236,6 +236,29 @@
                     </execution>
                 </executions>
             </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>2.5.2</version>
+            <executions>
+                <execution>
+                    <id>install-external</id>
+                    <phase>clean</phase>
+                    <configuration>
+                        <file>${basedir}/lib/bagit-5.0.0.jar</file>
+                        <repositoryLayout>default</repositoryLayout>
+                        <groupId>gov.loc</groupId>
+                        <artifactId>bagit</artifactId>
+                        <version>5.0.0</version>
+                        <packaging>jar</packaging>
+                        <generatePom>true</generatePom>
+                    </configuration>
+                    <goals>
+                        <goal>install-file</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 
       <plugin>
 	<artifactId>maven-war-plugin</artifactId>
