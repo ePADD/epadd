@@ -3,7 +3,7 @@
 <%@page language="java" import="org.json.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page import="edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper"%><%@ page import="gov.loc.repository.bagit.verify.BagVerifier"%><%@ page import="java.io.IOException"%><%@ page import="gov.loc.repository.bagit.domain.Bag"%><%@ page import="gov.loc.repository.bagit.exceptions.*"%><%@ page import="edu.stanford.muse.util.Util"%>
+<%@page import="edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper"%><%@ page import="gov.loc.repository.bagit.verify.BagVerifier"%><%@ page import="java.io.IOException"%><%@ page import="gov.loc.repository.bagit.domain.Bag"%><%@ page import="gov.loc.repository.bagit.exceptions.*"%><%@ page import="edu.stanford.muse.util.Util"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="java.util.concurrent.Executors"%><%@ page import="java.nio.file.Files"%><%@ page import="java.io.File"%>
 <%
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
 JSPHelper.setPageUncacheable(response);
@@ -20,8 +20,9 @@ if (archive == null) {
 }
 
 Bag bag = archive.getArchiveBag();
-BagVerifier bv = new BagVerifier();
+BagVerifier bv = new BagVerifier(Executors.newSingleThreadExecutor());
 String errorMessage="";
+        session.setAttribute("statusProvider", new StaticStatusProvider("Verifying the checksum of archive..."));
         try {
             bv.isValid(bag, true);
         } catch (IOException e) {
@@ -58,7 +59,7 @@ String errorMessage="";
             e.printStackTrace();
             errorMessage = "Bag file format is invalid: " + e.getMessage();
         }
-
+session.removeAttribute("statusProvider");
         if(Util.nullOrEmpty(errorMessage)){
             result.put("Status",0);
             result.put("resultPage","verify-bag.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&checkDone=true&result=success");
