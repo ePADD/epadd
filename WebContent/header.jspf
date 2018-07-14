@@ -2,6 +2,10 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+<script type="text/javascript" src="js/muse.js"></script>
+
+<script type="text/javascript" src="js/statusUpdate.js"></script>
+<%@include file="div_status.jspf"%>
 <header>
 	<div id="nav1">
 
