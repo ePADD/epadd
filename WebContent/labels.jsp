@@ -198,7 +198,7 @@
             contentType: false,
             cache: false,
             data: data,
-            success: function(data) { epadd.alert('Labels uploaded successfully!', function() { window.location.reload(); });},
+            success: function(data) { if(data.status==0){epadd.alert('Labels uploaded successfully!', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
             error: function(jq, textStatus, errorThrown) { var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
         });
 
@@ -210,7 +210,8 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Specify the json file containing label description</h4>
+					<h4>NOTE: Before uploading a new label description file, make sure that no message contains any label. Otherwise the label semantics will be inconsistent. </h4><br>
+                    <h4 class="modal-title">Specify the json file containing label description.</h4>
 				</div>
 				<div class="modal-body">
 					<form id="uploadjsonform" method="POST" enctype="multipart/form-data" >
