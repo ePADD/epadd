@@ -25,19 +25,33 @@
             } else {
                 String filename = params.get("labeljson");
                 archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+                /*Important precondition: If any message has any label assigned to it then return an error saying that "Some messages have labels assigned to them. Before importing a label description file, please remove them"*/
+                boolean isAnylabelApplied = archive.getLabelManager().isAnyLabel();
+                if(isAnylabelApplied){
+                error="ERROR:Some messages have labels assigned to them. Please remove them first before importing a new set of labels!!";
+                }else{
+
+
                     //Now copy the file 'filename' to LabMapper directory inside session
                     String labelmapdir = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SESSIONS_SUBDIR + File.separator + Archive.LABELMAPDIR + File.separator;
                     Util.copy_file(filename,labelmapdir+File.separator+"label-info.json");
                     //update bag metadata
                     archive.updateFileInBag(labelmapdir,archive.baseDir);
                     //read labelmapper again
-                    LabelManager lb = ArchiveReaderWriter.readLabelManager(labelmapdir);
+                    LabelManager lb = null;
+                   try {
+                        lb = LabelManager.readObjectFromStream(labelmapdir);
+                     } catch (Exception e) {
+                         Util.print_exception ("Exception in reading label manager from archive, assigning a new label manager", e, JSPHelper.log);
+
+                    }
                     if(lb==null){
-                        error="Invalid label description file added";
+                        error="ERROR: Invalid label description file provided!!";
                     }else{
                     //set as current archive's label mapper
                     archive.setLabelManager(lb);
                     }
+                }
 
             }
 
