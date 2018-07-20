@@ -25,7 +25,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		this.status_text = null;
 		this.status_page = null;
 		this.currentTeaserId = null;
-		this.poltimer=null;
+
 	}
 	
 	//function to fetch page, polling spage to receive status.
@@ -53,7 +53,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		page_xhr.onreadystatechange = function () {
 			/*if (this.readyState != 4)
 				return false;*/
-disablePollStatus();
 			currentOp.done = true;
 			document.title = currentOp.orig_doc_title;
 
@@ -286,7 +285,7 @@ disablePollStatus();
 					else // not json ?!?
 						currentOp.status_div_text.innerHTML = responseText;
 		
-					pol_timer = setTimeout(poll_status, POLL_MILLIS);
+					setTimeout(poll_status, POLL_MILLIS);
 				}
 				else // current op done or cancelled
 					currentOp.status_div_text.innerHTML = "";
@@ -295,9 +294,7 @@ disablePollStatus();
 		status_xhr.send(null);
 	}
 
-	function disablePollStatus(){
-		clearTimeout(pol_timer)
-	}
+
 	
 	function getTeaserFn(teasers, index)
 	{
@@ -379,9 +376,8 @@ disablePollStatus();
 	sdiv.style.left = (window.innerWidth/2)- 320+"px"; // the total width is 640px
 	sdiv.style.top = (window.innerHeight/2) - 65+"px";
 
-	var res = kick_off_page_fetch(page, post_params, onready, redirect_page);
+	kick_off_page_fetch(page, post_params, onready, redirect_page);
 	poll_status();
-	return res;
 	// end of this function. the rest are private helper functions
 
 

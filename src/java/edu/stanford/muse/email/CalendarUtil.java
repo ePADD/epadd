@@ -19,6 +19,7 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTimeComparator;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -149,8 +150,8 @@ public class CalendarUtil {
 			int count = 0;
 			List<Date> newDates = new ArrayList<>();
 			for (Date d : dates)
-				if (!EmailFetcherThread.INVALID_DATE.equals(d))
-					newDates.add(d);
+				if(DateTimeComparator.getDateOnlyInstance().compare(d,EmailFetcherThread.INVALID_DATE)!=0)
+					newDates.add(d);//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
 				else
 					count++;
 			dates = newDates;

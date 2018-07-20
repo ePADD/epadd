@@ -110,13 +110,19 @@
 	if (cancelled) {
 		result.put("status", 0);
 		result.put("cancelled", true);
+						result.put("responseText", "Operation cancelled by the user");
+
 	} else if (errorMessage == null) {
 		result.put("status", 0);
 		result.put("resultPage", resultPage);
+						result.put("responseText", "Indexed successfully");
+
 	} else {
 		result.put("status", 1);
 		result.put("resultPage", "error");
 		result.put("error", errorMessage);
+				result.put("responseText", errorMessage);
+
 	}
 	out.println(result);
 	// resultPage is set up to where we want to go next

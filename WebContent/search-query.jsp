@@ -48,7 +48,8 @@
 <div style="text-align:center; margin:auto; width:600px;">
 	<div style="width:100%;margin-bottom:20px;">
 		<a id="simple-search-header"  class="underlined-header search-header" >Simple search</a>
-		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>
+		<%--<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>--%>
+		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Multi-Entity Search</a>
 		<a id="term-search-header" class="search-header" style="margin-left:40px;">Multi-Term Search</a>
 
 	</div>

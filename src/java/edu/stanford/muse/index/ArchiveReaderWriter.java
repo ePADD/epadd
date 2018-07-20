@@ -327,7 +327,7 @@ public class ArchiveReaderWriter{
             boolean includeHiddenFiles = false;
             try {
                 archive.close();
-                archive.openForRead();
+
 
                 //First copy the content of archive.baseDir + "/data" to archive.baseDir and then create an in place bag.
                 //Why so complicated? Because we wanted to have a uniform directory structure of archive irrespective of the fact whether it is
@@ -337,7 +337,7 @@ public class ArchiveReaderWriter{
 
                 //It seems that if indexer kept the file handles open then move directory failed on windows because of the lock held on those file
                 //therefore call archive.close() before moving stuff around
-                archive.close();
+                //archive.close();
                 FileUtils.moveDirectory(Paths.get(archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER).toFile(),tmp.toPath().toFile());
                 //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
                 File wheretocopy = Paths.get(archive.baseDir).toFile();
@@ -346,6 +346,7 @@ public class ArchiveReaderWriter{
                 FileUtils.moveDirectory(tmp.toPath().toFile(),wheretocopy);
 
                 Bag bag = BagCreator.bagInPlace(Paths.get(archive.baseDir), Arrays.asList(algorithm), includeHiddenFiles);
+                archive.openForRead();
                 archive.setArchiveBag(bag);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();

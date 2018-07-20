@@ -23,11 +23,13 @@ import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
+import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTimeComparator;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -907,6 +909,8 @@ public class IndexUtils {
 		Date first = null, last = null;
 		for (DatedDocument dd : docs)
 		{
+			if(DateTimeComparator.getDateOnlyInstance().compare(dd.date,EmailFetcherThread.INVALID_DATE)==0)
+				continue;//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
 			if (dd.date == null)
 				continue; // should not happen
 			if (first == null)

@@ -437,6 +437,11 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return nBytes;
 	}
 
+	public static String removeMetaTag(String contents){
+		Pattern p = Pattern.compile("<meta[^>]*>(.*?)/>",
+				Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+		return p.matcher(contents).replaceAll("");
+	}
 	public static void copy_directory(String source,String target) throws IOException {
 		final Path sourcename = new File(source).toPath();
 		final Path targetname = new File(target).toPath();

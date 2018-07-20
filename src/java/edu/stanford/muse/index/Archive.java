@@ -1431,12 +1431,15 @@ after maskEmailDomain.
                 entitiesWithId, IA_links, showDebugInfo);
     }
 
+
     public Pair<StringBuilder, Boolean> getHTMLForContents(Document d, Date date, String docId, String regexToHighlight, Set<String> highlightTerms,
                                                             Map<String, Map<String, Short>> authorisedEntities, boolean IA_links, boolean inFull, boolean showDebugInfo) throws Exception {
         org.apache.lucene.document.Document ldoc = indexer.getDoc(d);
         Span[] names = getAllNamesInLuceneDoc(ldoc,true);
 
         String contents = indexer.getContents(d, false);
+        //remove meta tags from the body of the message. It was a serious issue #246.
+        contents = Util.removeMetaTag(contents);
         Set<String> acrs = Util.getAcronyms(contents);
 
         if (ldoc == null) {

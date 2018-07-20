@@ -33,6 +33,19 @@ var initialiseqtip = function(){
 				text: function(event, api) {
                     var docId = $(event.target).attr("data-docid");
                     var name = $(event.target).attr("data-text");
+					//if(typeof name==undefined){//@TODO expand-name is not working always till version 6. The reaso is that data-docid and data-text attributes are sometimes present in the parent tag of the span where underline happens. This needs to be fixed.
+					//	var closesttext = $(event.target).closest('.custom-org').attr('data-text');
+					//	var currenttext=$(event.target).text();
+					//	if(closesttext==currenttext){
+					//		docId=$(event.target).closest('.custom-org').attr('data-docid');
+					//		name=$(event.target).closest('.custom-org').attr('data-text');
+					//	}
+					//	//else
+					//	//return;
+                    //
+					//}
+					//else
+					 //return;
 
                     $.ajax({
 						url: 'ajax/expand-name-new.jsp', // Use data-url attribute for the URL

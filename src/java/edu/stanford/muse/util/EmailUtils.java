@@ -32,6 +32,7 @@ import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTimeComparator;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
@@ -660,8 +661,9 @@ public class EmailUtils {
 
 			// ignore invalid date if asked
 			if (ignoreInvalidDates)
-				if (EmailFetcherThread.INVALID_DATE.equals(d))
-					continue;
+				if(DateTimeComparator.getDateOnlyInstance().compare(d,EmailFetcherThread.INVALID_DATE)==0)
+					continue;//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
+
 
 			if (first == null || d.before(first))
 				first = d;

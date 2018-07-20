@@ -14,7 +14,10 @@ if (ModeConfig.isPublicMode()) {
 <!DOCTYPE html>
 <html>
 <head>
+<%--
 	<title>Query Generator Results</title>
+--%>
+    <title>Multi-Entity Search Results</title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -73,7 +76,8 @@ if (ModeConfig.isPublicMode()) {
                     <%if(one_line_per_term_search){%>
                         <h1>Term search results</h1>
                     <%}else{%>
-                        <h1>Query generator results</h1>
+                        <%--<h1>Query generator results</h1>--%>
+                    <h1>Term search results</h1>
                     <%}%>
                 </div>
                 <div class="col-md-6 text-right">

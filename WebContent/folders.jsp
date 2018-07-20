@@ -149,7 +149,7 @@
 							<p><%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.folders.date-range")%>
 							</div> </section>
 
-							<div style="float:right">
+							<div style="float:right"><!---Disable submit button so that folders are not submitted twice..var e = this; setTimeout(function(){e.disabled=true;},1);-->
 				<button  class="btn btn-cta" id="go-button" style="display:none" onclick="epadd.submitFolders();return false;">Continue <i class="icon-arrowbutton"></i> </button>
 				</div>
 				

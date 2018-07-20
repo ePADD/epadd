@@ -199,7 +199,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 <div class="checkbox-inline" style="padding:0px 0px 0px 15px">
                     <label>
                         <input type="checkbox" name="unprocessedOption" checked>
-                        <span class="label-text">Unprocessed only</span>
+                        <span class="label-text">Unrecognized by Apache Tika only</span>
                     </label>
                 </div>
             </div>
