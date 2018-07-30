@@ -30,8 +30,8 @@ epadd.log = function(mesg, log_on_server)
 		console.log(mesg);
 
 	// log on server only if log_on_server is undefined or true
-	if (typeof log_on_server == 'undefined' || log_on_server)
-		epadd.post_message(mesg); // post JS message to server
+	//if (typeof log_on_server == 'undefined' || log_on_server)
+	//	epadd.post_message(mesg); // post JS message to server
 
 };
 

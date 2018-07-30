@@ -1,5 +1,6 @@
 package edu.stanford.muse.ner.model;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
@@ -8,10 +9,13 @@ import edu.stanford.muse.ner.model.test.SequenceModelTest;
 import edu.stanford.muse.ner.tokenize.CICTokenizer;
 import edu.stanford.muse.ner.tokenize.Tokenizer;
 import edu.stanford.muse.util.*;
+import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
+import org.apache.commons.cli.*;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.search.BooleanQuery;
 
 import java.io.*;
 import java.util.*;
@@ -1018,6 +1022,64 @@ public class SequenceModel implements NERModel, Serializable {
         return pageLengths;
     }
 
+    public Span[] findEntitiesFromCICFile(String filename){
+        //get all triples from CIC file..
+        List<Triple<String,Integer,Integer>> ciclist = readCICFromFile(filename);
+        List<Span> spans = new ArrayList<>();
+        int sstart=0;//just added to keep the code in loop same as of find() method above. This was used to calculate the position of the span
+        //with respect to the whole message. In future we can add message id and line number in CIC info as well.
+        for (Triple<String, Integer, Integer> t : ciclist) {
+                //this should never happen
+                if(t==null || t.first == null)
+                    continue;
+
+                Map<String,Pair<Short,Double>> entities = seqLabel(t.getFirst());
+                for(String e: entities.keySet()){
+                    Pair<Short,Double> p = entities.get(e);
+                    //A new type is assigned to some words, which is of value -2
+                    if(p.first<0)
+                        continue;
+
+                    if(!p.first.equals(NEType.Type.OTHER.getCode()) && p.second>0) {
+                        Span chunk = new Span(e, sstart + t.second + t.first.indexOf(e), sstart + t.second + t.first.indexOf(e) + e.length());
+                        chunk.setType(p.first, new Float(p.second));
+                        spans.add(chunk);
+                    }
+                }
+            }
+
+        return spans.toArray(new Span[spans.size()]);
+    }
+
+    private  List<Triple<String, Integer, Integer>> readCICFromFile(String filename){
+
+        List<Triple<String,Integer,Integer>> result = new LinkedList<>();
+        //read line.. if contains '###########' then change state to reading..
+                      //else if contains '------------------' then change state to notreading
+                      //else if state is reading then put int the list of triples..
+                      //else if state is notreading then continue;
+        int state=0;//0 means not reading, 1 means reading.
+        String sampleLine=null;
+        try(BufferedReader sampleBuffer = new BufferedReader(new FileReader(filename))) {
+            while ((sampleLine = sampleBuffer.readLine()) != null) {
+                if(sampleLine.contains("############"))
+                    state=1;
+                else if(sampleLine.contains("----------------"))
+                    state=0;
+                else if (state==1) {//means it is a triple of the form Jeb Bush,33,41
+                    //split it on ',' and put them as triple
+                    String[] res = sampleLine.trim().split(",");
+                    //size of res should be 3..
+                    result.add(new Triple<>(res[0],Integer.parseInt(res[1].trim()),Integer.parseInt(res[2].trim())));
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     /**
      * Use this routine to read an external gazette list, the resource is expected to be a plain text file
      * the lines in the file should be two fields separated by ' ' (space), the first field should be the title and second: its type.
@@ -1170,6 +1232,88 @@ public class SequenceModel implements NERModel, Serializable {
     }
 
     public static void main(String[] args) {
-        loadAndTestNERModel();
+        Options options = new Options();
+
+        Option input = new Option("i", "input", true, "input file path");
+        input.setRequired(false);
+        options.addOption(input);
+
+        Option output = new Option("o", "output", true, "output file path");
+        output.setRequired(false);
+        options.addOption(output);
+
+//        Option test = new Option("t", "test", false, "run test");
+//        test.setRequired(false);
+//        options.addOption(test);
+
+        CommandLineParser parser = new BasicParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd=null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("utility-name", options);
+            System.exit(1);
+        }
+
+        String inputFilePath = cmd.getOptionValue("input");
+        boolean isTest = Boolean.parseBoolean(cmd.getOptionValue("test"));
+        if(isTest)
+            loadAndTestNERModel();
+        else
+        {
+            //output option must be given if the control reaches here.
+            String outputfilePath = cmd.getOptionValue("output");
+            if (fdw == null) {
+                try {
+                    fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            System.err.println("Loading model...");
+            SequenceModel nerModel;
+            //log.info(Util.getMemoryStats());
+            try {
+                nerModel = SequenceModel.loadModelFromRules("rules");
+                if (nerModel == null)
+                    nerModel = train();
+                Span[] entities = nerModel.findEntitiesFromCICFile(inputFilePath);
+                     //write entities in a csv file specified by the output path.. filename should be entities_seq_model.csv
+                    try{
+                        FileWriter fw = new FileWriter(outputfilePath);
+                        CSVWriter csvwriter = new CSVWriter(fw, ',', '"',' ',"\n");
+
+                        // write the header line: "DocID,annotation".
+                        List<String> line = new ArrayList<>();
+                        line.add ("String");
+                        line.add ("type");
+                        line.add ("Score");
+                        csvwriter.writeNext(line.toArray(new String[line.size()]));
+
+                        // write the records
+                        for(Span s: entities){
+                            String name = s.getText();
+                            String type = NEType.getTypeForCode(s.type).getDisplayName();
+                            float score = s.typeScore;
+                                line = new ArrayList<>();
+                                line.add(name);
+                                line.add(type);
+                                line.add(new Float(score).toString());
+                                csvwriter.writeNext(line.toArray(new String[line.size()]));
+                        }
+                        csvwriter.close();
+                        fw.close();
+                    } catch (IOException e) {
+                        JSPHelper.log.warn("Unable to write docid to annotation map in csv file");
+                        return;
+                    }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 }

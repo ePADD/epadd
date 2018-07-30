@@ -48,11 +48,12 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		else {
 			page_xhr.open('POST', page, true);
 		}
+        poll_status();
 
 		//	page_xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 		page_xhr.onreadystatechange = function () {
-			/*if (this.readyState != 4)
-				return false;*/
+			if (this.readyState != 4)
+				return false;
 			currentOp.done = true;
 			document.title = currentOp.orig_doc_title;
 
@@ -359,7 +360,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 
 	$(CANCEL_SELECTOR).click(cancelCurrentOp);
 	currentOp = new Operation();
-	currentOp.status_page = spage;
+	currentOp.status_page = spage;//"ajax/getStatus.jsp";//spage;
 	currentOp.status_div = sdiv;
 	currentOp.status_div_text = sdiv_text;
 	currentOp.orig_doc_title = document.title;
@@ -376,8 +377,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	sdiv.style.left = (window.innerWidth/2)- 320+"px"; // the total width is 640px
 	sdiv.style.top = (window.innerHeight/2) - 65+"px";
 
-	kick_off_page_fetch(page, post_params, onready, redirect_page);
-	poll_status();
+	return kick_off_page_fetch(page, post_params, onready, redirect_page);
 	// end of this function. the rest are private helper functions
 
 

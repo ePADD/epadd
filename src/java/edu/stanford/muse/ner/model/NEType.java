@@ -21,7 +21,7 @@ public class NEType {
      * If changed, then revert to the values in the commit of the previous release -- muse commit: 52aab037434ab6883759eaf108ca70fe0a259473
      * https://github.com/ePADD/muse/commits/master
      * */
-    public enum Type{
+    public enum     Type{
         PERSON(0, null, "Person"),
         PLACE(3, null, "Place"),
             BUILDING(2, PLACE, "Building"),RIVER(4, PLACE, "River"),ROAD(5, PLACE, "Road"),

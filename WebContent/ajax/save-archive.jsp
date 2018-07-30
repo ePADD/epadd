@@ -10,6 +10,8 @@
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.index.Archive"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%>
 <%
+session.setAttribute("statusProvider", new StaticStatusProvider("Saving Archive..."));
+
 JSONObject result = new JSONObject();
 Archive archive = JSPHelper.getArchive(request);
         if (archive == null)
@@ -21,18 +23,20 @@ Archive archive = JSPHelper.getArchive(request);
         }
 
 try{
-        session.setAttribute("statusProvider", new StaticStatusProvider("Saving Archive..."));
 
         ArchiveReaderWriter.saveMutable_Incremental(archive);
         JSPHelper.log.info ("session saved");
 	    result.put("status", 0);
-	    result.put("message", "Session saved");
-	    out.println (result.toString());
+	    result.put("responseText", "Session saved");
+	    out.println (result.toString(5));
 	    session.removeAttribute("statusProvider");
 
 	}catch (Exception e) {
 	    result.put ("status", 3);
+	    result.put("responseText", "Could not save archive: " + e.getMessage());
 	    result.put("error", "Could not save archive: " + e.getMessage());
 	    out.println (result.toString(4));
+	    session.removeAttribute("statusProvider");
+
 }
 %>
