@@ -19,11 +19,11 @@
 	    <layout>default</layout>
 	    <url>file:///${basedir}/lib</url>
 	  </repository>
-    <repository>
+    <!--<repository>
         <id>adobe-restlet</id>
         <name>Adobe repository</name>
         <url>https://repo.adobe.com/nexus/content/repositories/public</url>
-    </repository>
+    </repository>-->
 	</repositories>
 	
 	<pluginRepositories>
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
-			<version>5.0.0</version>
+			<version>5.0.0-modified</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/gov.loc/bagit -->
 	<!--	<dependency>
@@ -125,6 +125,13 @@
 		</dependency>
 
 <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
+<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
+	<!--	<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-imaging</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>-->
+
 <dependency>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-imaging</artifactId>
@@ -262,8 +269,8 @@
 		<dependency>
 		  <groupId>org.mnode.mstor</groupId>
 		  <artifactId>mstor</artifactId>
-		  <!--<version>1.0.0</version>-->
-			<version>0.9.14</version>
+		  <version>1.0.0</version>
+		<!--<version>0.9.14</version>-->
 		</dependency>
 
 		<dependency>

@@ -753,6 +753,7 @@
 					if (response && (response.status == 0)) {
 						var status = 'Success! ' + response.message;
 						var cats = response.categories;
+                        cats = cats.substring(1,cats.length-1).split(",");
 						for (var i = 0; i < cats.length; i++) {
 							$('#lexiconCategory').append('<option value="' + cats[i] + '">' + cats[i] + '</option>');
 						}

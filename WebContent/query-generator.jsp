@@ -77,7 +77,7 @@ if (ModeConfig.isPublicMode()) {
                         <h1>Term search results</h1>
                     <%}else{%>
                         <%--<h1>Query generator results</h1>--%>
-                    <h1>Term search results</h1>
+                    <h1>Entity search results</h1>
                     <%}%>
                 </div>
                 <div class="col-md-6 text-right">
