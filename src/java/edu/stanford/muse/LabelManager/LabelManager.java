@@ -282,6 +282,8 @@ public class LabelManager implements Serializable{
         }else{
             //only non-restricted labels are exported[even if of date type].. In labelDocMap keep only those docs which are being exported.
             tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->entry.getValue().getType()!=LabType.RESTRICTION).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+            //Following requirement #260 on github don't export system labels.
+            tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->!entry.getValue().isSysLabel()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
             tmp.docToLabelID.keySet().retainAll(docids);
         }
         return tmp;

@@ -108,6 +108,7 @@ try {
 	WeakReference<Archive> warchive= ArchiveReaderWriter.getArchiveFromGlobalArchiveMap(archiveBaseDir);
 	if(warchive!=null){
 	    warchive.get().collectionMetadata= cm;
+	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
 
 	}else{
 	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
