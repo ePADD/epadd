@@ -96,9 +96,9 @@
             data: {archiveID: archiveID, data: "addressbook"},
             dataType: 'json',
             success: function (data) {
-                epadd.alert('Correspondent list will be downloaded in your download folder!', function () {
-                    window.location=data.downloadurl;
-                });
+                epadd.alert('Correspondent list will be downloaded in your browser\'s download folder.', function () {
+                    window.location = data.downloadurl;
+                }, '' /* no Alert title */);
             },
             error: function (jq, textStatus, errorThrown) {
                 var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);

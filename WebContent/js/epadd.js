@@ -35,9 +35,17 @@ epadd.log = function(mesg, log_on_server)
 
 };
 
-// s is the message, f is the function to be called when the modal is dismissed
-epadd.alert = function(s, f) {
+// s is the message, f is the function to be called when the modal is dismissed, title is the heading (default Alert)
+epadd.alert = function(s, f, title) {
+	// use 'Alert' only if title is not given
+	if (typeof (title) === 'Undefined')
+		title = 'Alert';
+
 	$('#alert-modal .modal-body').html(s);
+    $('#alert-modal .modal-title').html(title);
+
+    // sgh: will this not get associated multiple times as modal is invoked?
+	// need to remove previous handlers if any?
 	if (f) {
 		$('#alert-modal').on('hidden.bs.modal', f);
 	}
