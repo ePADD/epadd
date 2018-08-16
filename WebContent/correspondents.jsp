@@ -48,18 +48,18 @@
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:30px">
 	<button class="btn-default" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
 	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-		<button class="btn-default" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><i class="fa fa-pencil"></i> Edit correspondents</button>
+		<button class="btn-default" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><i class="fa fa-pencil"></i> Edit</button>
 		&nbsp;
-    	<button class="btn-default" onclick="$('#correspondent-upload-modal').modal('show');"><i class="fa fa-pencil"></i> Import</button>
+    	<button class="btn-default" onclick="$('#correspondent-upload-modal').modal('show');"><i class="fa fa-upload"></i> Upload</button>
 		&nbsp;
-		<button class="btn-default" onclick="exportCorrespondentHandler()"><i class="fa fa-pencil"></i> Export</button>
+		<button class="btn-default" onclick="exportCorrespondentHandler()"><i class="fa fa-download"></i> Download</button>
 
 	<% } %>
 </div>
 <br/>
 <br/>
 
-<div style="margin:auto; width:900px">
+<div style="margin:auto; width:1100px">
 <table id="people" style="display:none">
 	<thead><tr><th>Name</th><th>Incoming messages</th><th>Outgoing messages</th><th>Mentions</th></tr></thead>
 	<tbody>

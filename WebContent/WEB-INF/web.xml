@@ -569,12 +569,12 @@
 
 
 	<servlet>
-		<servlet-name>epadd-settings</servlet-name>
-		<jsp-file>/epadd-settings.jsp</jsp-file>
+		<servlet-name>switch-module</servlet-name>
+		<jsp-file>/switch-module.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>epadd-settings</servlet-name>
-		<url-pattern>/epadd-settings</url-pattern>
+		<servlet-name>switch-module</servlet-name>
+		<url-pattern>/switch-module</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
