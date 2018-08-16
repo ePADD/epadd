@@ -34,8 +34,7 @@ public boolean equals(Blob b) { return (size == b.size) && filename.equals (b.ge
 public boolean equals(Object o) { return (o instanceof EmailAttachmentBlob) && equals((EmailAttachmentBlob) o); }
 public int hashCode() { return ((int) size) ^ filename.hashCode(); }
 
-public EmailAttachmentBlob (String name, long size, Date date) throws MessagingException
-{
+public EmailAttachmentBlob (String name, long size, Date date) {
 	this.filename = name;
 	this.size = size;
   //  sentDate = date;

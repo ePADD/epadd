@@ -29,10 +29,8 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeFactory;
-import org.apache.lucene.util.Version;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 
 final class StandardNumberTokenizer extends Tokenizer {

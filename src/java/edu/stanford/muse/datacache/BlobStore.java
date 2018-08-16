@@ -83,7 +83,7 @@ public class BlobStore implements Serializable {
     /**
      * @param dir directory where this store keeps its data
      */
-    public BlobStore(String dir) throws IOException {
+    public BlobStore(String dir) {
         log.info("Opening file repository in " + dir);
         this.dir = dir;
         File dir_file = new File(dir);

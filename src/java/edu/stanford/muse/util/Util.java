@@ -26,7 +26,6 @@
 // utils that are specific to other libs should go in their own utils file
 package edu.stanford.muse.util;
 
-import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
 
@@ -1818,8 +1817,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	}
 
 	/** cleans up files in directory with the given suffix */
-	public static void deleteAllFilesWithSuffix(String dir, String suffix, Log log) throws IOException, ClassNotFoundException
-	{
+	public static void deleteAllFilesWithSuffix(String dir, String suffix, Log log) {
 		if (dir == null)
 			return;
 		File cache = new File(dir);

@@ -18,13 +18,11 @@ package edu.stanford.muse.index;
 
 
 import edu.stanford.muse.datacache.Blob;
-import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.EmailUtils;
-import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
@@ -35,11 +33,8 @@ import org.json.JSONObject;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.util.*;
-
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
 
 /** EmailDocument is really like an email header - it stores metadata about a message.
  * use ed.date, ed.to/from/cc/bcc, and ed.getContents() gets its contents, ed.attachments gets its attachments */
@@ -667,8 +662,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	}
 
 	/** contentLimit = -1 => no content limit. = 0 => no content. */
-	public JSONObject toJSON(int contentLimit) throws JSONException, IOException, GeneralSecurityException
-	{
+	public JSONObject toJSON(int contentLimit) throws JSONException {
 		JSONObject o = new JSONObject();
 		o.put("date", CalendarUtil.formatDateForDisplay(date));	
 		o.put("from", JSPHelper.formatAddressesAsJSON(from));			

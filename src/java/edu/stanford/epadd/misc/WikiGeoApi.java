@@ -5,7 +5,6 @@ import java.util.*;
 import com.google.gson.Gson;
 
 import edu.stanford.muse.util.Pair;
-import edu.stanford.muse.util.Triple;
 
 /**
  * Descriptor class for data from Wikipedia Geo api.

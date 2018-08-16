@@ -12,10 +12,8 @@ import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.search.BooleanQuery;
 
 import java.io.*;
 import java.util.*;
@@ -925,7 +923,7 @@ public class SequenceModel implements NERModel, Serializable {
         oos.close();
     }
 
-    public static synchronized SequenceModel loadModelFromRules(String rulesDirName) throws IOException {
+    public static synchronized SequenceModel loadModelFromRules(String rulesDirName) {
         String rulesDir = Config.DEFAULT_SETTINGS_DIR+File.separator+rulesDirName;
         if (!new File(rulesDir).exists()) {
             log.fatal("The supplied directory: " + rulesDirName + " does not exist!\n" +
@@ -979,7 +977,7 @@ public class SequenceModel implements NERModel, Serializable {
         }
     }
 
-    public static synchronized SequenceModel loadModel(String modelPath) throws IOException{
+    public static synchronized SequenceModel loadModel(String modelPath) {
         ObjectInputStream ois;
         try {
             //the buffer size can be much higher than default 512 for GZIPInputStream
@@ -1217,7 +1215,7 @@ public class SequenceModel implements NERModel, Serializable {
         System.err.println("Loading model...");
         SequenceModel nerModel;
         log.info(Util.getMemoryStats());
-        try {
+        {
             nerModel = SequenceModel.loadModelFromRules("rules");
             if(nerModel==null)
                 nerModel = train();
@@ -1226,8 +1224,6 @@ public class SequenceModel implements NERModel, Serializable {
             SequenceModelTest.ParamsCONLL params = new SequenceModelTest.ParamsCONLL();
             SequenceModelTest.testCONLL(nerModel, false, params);
             log.info(Util.getMemoryStats());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -1276,7 +1272,7 @@ public class SequenceModel implements NERModel, Serializable {
             System.err.println("Loading model...");
             SequenceModel nerModel;
             //log.info(Util.getMemoryStats());
-            try {
+            {
                 nerModel = SequenceModel.loadModelFromRules("rules");
                 if (nerModel == null)
                     nerModel = train();
@@ -1310,10 +1306,7 @@ public class SequenceModel implements NERModel, Serializable {
                         JSPHelper.log.warn("Unable to write docid to annotation map in csv file");
                         return;
                     }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-
         }
     }
 }

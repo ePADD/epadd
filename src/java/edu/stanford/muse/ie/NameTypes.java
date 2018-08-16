@@ -24,8 +24,7 @@ public class NameTypes {
 	 * hitTitles key is canonicalized answer, the corr. NameInfo's title field
 	 * is the uncanonicalized version.
 	 */
-	public static void readTypes(Map<String, NameInfo> hitTitles) throws IOException
-	{
+	public static void readTypes(Map<String, NameInfo> hitTitles) {
 		// types.gz is of the form First_Last Subtype|Type
 		try {
 			Map<String, String> dbpedia = EmailUtils.readDBpedia();
@@ -67,8 +66,7 @@ public class NameTypes {
 	}
 
 	/** returns ctitle -> nameinfo */
-	public static Map<String, NameInfo> computeNameMap(Archive archive, Collection<EmailDocument> allDocs) throws IOException
-	{
+	public static Map<String, NameInfo> computeNameMap(Archive archive, Collection<EmailDocument> allDocs) {
 		if (allDocs == null)
 			allDocs = (List) archive.getAllDocs();
 

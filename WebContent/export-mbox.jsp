@@ -75,12 +75,8 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     String cacheDir = archive.baseDir;
     String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  "blobs" + File.separator;
     BlobStore bs = null;
-    try {
-        bs = new BlobStore(attachmentsStoreDir);
-        JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
-    } catch (IOException ioe) {
-        JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
-    }
+    bs = new BlobStore(attachmentsStoreDir);
+    JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
 
     /*
     String rootDir = JSPHelper.getRootDir(request);

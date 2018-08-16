@@ -44,7 +44,7 @@ class WPReader {
                 int pageLen = 0;
 
                 public void startElement(String uri, String localName, String qName,
-                                         Attributes attributes) throws SAXException {
+                                         Attributes attributes) {
 
                     if (qName.equalsIgnoreCase("title")) {
                         intitle = true;
@@ -60,7 +60,7 @@ class WPReader {
                     }
                 }
 
-                public void endElement(String uri, String localName, String qName) throws SAXException {
+                public void endElement(String uri, String localName, String qName) {
 
                     if (qName.equalsIgnoreCase("title")) {
                         intitle = false;
@@ -78,7 +78,7 @@ class WPReader {
                     }
                 }
 
-                public void characters(char ch[], int start, int length) throws SAXException {
+                public void characters(char ch[], int start, int length) {
 
                     if (intitle) {
                         title += new String(ch, start, length);

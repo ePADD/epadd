@@ -69,7 +69,7 @@ public class IndexUtils {
 
         // assemble all the allowed tokens (lower cased) from these 3 types of entities
         {
-            List<String> allEntities = Arrays.asList(Archive.getAllNamesInLuceneDoc(doc,true)).stream().map(Span::getText).collect(Collectors.toList());
+            List<String> allEntities = Arrays.stream(Archive.getAllNamesInLuceneDoc(doc,true)).map(Span::getText).collect(Collectors.toList());
 
             for (String e : allEntities)
                 allowedTokens.addAll(Util.tokenize(e.toLowerCase()));
@@ -233,8 +233,7 @@ public class IndexUtils {
 	}
 
 	// read all the headers
-	public static List<Document> findAllDocs(String prefix) throws ClassNotFoundException, IOException
-	{
+	public static List<Document> findAllDocs(String prefix) {
 		List<Document> allDocs = new ArrayList<>();
 
 		// weird: sometimes we get a double-slash or double-backslash which kills the matching...

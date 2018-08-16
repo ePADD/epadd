@@ -15,11 +15,6 @@
  */
 package edu.stanford.muse.index;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import edu.stanford.muse.datacache.Blob;
-import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.EmailRenderer;

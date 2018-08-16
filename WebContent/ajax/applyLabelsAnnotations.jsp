@@ -59,7 +59,7 @@ if (docs != null)
 
     }else{
         //labels apply
-        Set<String> labelIds = Util.tokenize(request.getParameter("labelIDs"),",").stream().collect(Collectors.toSet());
+        Set<String> labelIds = new HashSet<>(Util.tokenize(request.getParameter("labelIDs"), ","));
         // Util.softAssert(!Util.nullOrEmpty(labelIds),JSPHelper.log);
         String action = request.getParameter("action");
         if("set".equals(action)){

@@ -366,7 +366,7 @@ public class JSPHelper {
             NERModel nerModel=null;
             //=(SequenceModel) session.getAttribute("ner");
             session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
-            try {
+            {
                 if (System.getProperty("muse.dummy.ner") != null) {
                     log.info("Using dummy NER model, all CIC patterns will be treated as valid entities");
                     nerModel = new DummyNERModel();
@@ -374,8 +374,6 @@ public class JSPHelper {
                     log.info("Loading NER sequence model from: " + modelFile + " ...");
                     nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
                 }
-            } catch (IOException e) {
-                Util.print_exception("Could not load the sequence model from: " + modelFile, e, log);
             }
             if (nerModel == null) {
                 log.error("Could not load NER model from: " + modelFile);

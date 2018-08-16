@@ -17,7 +17,6 @@ package edu.stanford.muse.webapp;
 
 
 import edu.stanford.muse.email.MuseEmailFetcher;
-import edu.stanford.muse.exceptions.MboxFolderNotReadableException;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,11 +93,13 @@ public class Accounts {
 		String server = request.getParameter("server" + accountNum); 
 		String defaultFolder = request.getParameter("defaultFolder" + accountNum);
 
-		if (server != null)
-			server = server.trim();
+		if (server == null)
+			server = "";
+		if (loginName == null)
+			loginName = "";
 
-		if (loginName != null)
-			loginName = loginName.trim();
+		server = server.trim();
+		loginName = loginName.trim();
 
 		// for these ESPs, the user may have typed in the whole address or just his/her login name
 		if (accountType.equals("gmail") && !loginName.contains("@"))
@@ -226,23 +227,18 @@ public class Accounts {
 		}
 		else if (accountType.equals("mbox") || accountType.equals("tbirdLocalFolders"))
 		{
-			try {
-				String mboxDir = request.getParameter("mboxDir" + accountNum);
-				String emailSource = request.getParameter("emailSource" + accountNum);
-				// for non-std local folders dir, tbird prefs.js has a line like: user_pref("mail.server.server1.directory-rel", "[ProfD]../../../../../../tmp/tb");
-				log.info("adding mbox account: " + mboxDir);
-				errorMessage = m.addMboxAccount(emailSource, mboxDir, accountType.equals("tbirdLocalFolders"));
-				if (!Util.nullOrEmpty(errorMessage))
-				{
-					result.put("errorMessage", errorMessage);
-					result.put("status", 1);
-				}
-				else
-					result.put("status", 0);
-			} catch (MboxFolderNotReadableException e) { 
-				result.put("errorMessage", e.getMessage());
+			String mboxDir = request.getParameter("mboxDir" + accountNum);
+			String emailSource = request.getParameter("emailSource" + accountNum);
+			// for non-std local folders dir, tbird prefs.js has a line like: user_pref("mail.server.server1.directory-rel", "[ProfD]../../../../../../tmp/tb");
+			log.info("adding mbox account: " + mboxDir);
+			errorMessage = m.addMboxAccount(emailSource, mboxDir, accountType.equals("tbirdLocalFolders"));
+			if (!Util.nullOrEmpty(errorMessage))
+			{
+				result.put("errorMessage", errorMessage);
 				result.put("status", 1);
 			}
+			else
+				result.put("status", 0);
 		}
 		else
 		{

@@ -1345,7 +1345,7 @@ is what we want.
 		return result;
 	}
 
-    private Collection<String> luceneLookupAsDocIds (String q, int threshold, IndexSearcher searcher, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException{
+    private Collection<String> luceneLookupAsDocIds (String q, int threshold, IndexSearcher searcher, QueryType qt) throws IOException, ParseException {
         Pair<Collection<String>,Integer> p = luceneLookupAsDocIdsWithTotalHits(q, threshold, searcher, qt, Config.MAX_DOCS_PER_QUERY);
         return p.first;
     }
@@ -1356,7 +1356,7 @@ is what we want.
         return getNamesForLuceneDoc(docForThisId, qt);
     }
 
-    public Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException{
+    public Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
         Pair<Collection<String>,Integer> p;
         if (!isAttachments)
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher, qt, 1);
@@ -1969,8 +1969,7 @@ is what we want.
         }
     }
 
-	public static void main(String args[]) throws IOException, ClassNotFoundException, ParseException, GeneralSecurityException
-	{
+	public static void main(String args[]) throws IOException {
 		//		String content = "A FEDERAL JUDGE DECLINED on Monday to grant to the University of South Florida a declaratory judgment that the university's plan"
 		//				+ " to fire Sami Al-Arian, a tenured professor with alleged links to terrorism, did not violate his First Amendment right to free speech";
 		//		Set<String> pnames = getNamesFromPatterns(content, true);

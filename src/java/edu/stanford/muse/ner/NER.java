@@ -6,8 +6,6 @@ import edu.stanford.muse.ie.KillPhrases;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.Indexer;
-import edu.stanford.muse.ner.featuregen.FeatureUtils;
-import edu.stanford.muse.ner.model.DummyNERModel;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
@@ -171,7 +169,7 @@ public class NER implements StatusProvider {
 
         String[] plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
         // remove kill phrases here itself
-        List<Span> spans = Arrays.asList(plainSpans).stream().map(Span::parse).filter(s -> s != null && !KillPhrases.isKillPhrase(s.getText())).collect(Collectors.toList());
+        List<Span> spans = Arrays.stream(plainSpans).map(Span::parse).filter(s -> s != null && !KillPhrases.isKillPhrase(s.getText())).collect(Collectors.toList());
 
         return spans.toArray(new Span[spans.size()]);
     }
@@ -239,8 +237,8 @@ public class NER implements StatusProvider {
 
             Map<Short, Integer> counts = new LinkedHashMap<>();
             Map<Short, Integer> countsT = new LinkedHashMap<>();
-            Arrays.asList(names).stream().map(sp-> NEType.getCoarseType(sp.type).getCode()).forEach(s->counts.put(s,counts.getOrDefault(s,0)+1));
-            Arrays.asList(namesT).stream().map(sp-> NEType.getCoarseType(sp.type).getCode()).forEach(s->countsT.put(s,countsT.getOrDefault(s,0)+1));
+            Arrays.stream(names).map(sp-> NEType.getCoarseType(sp.type).getCode()).forEach(s->counts.put(s,counts.getOrDefault(s,0)+1));
+            Arrays.stream(namesT).map(sp-> NEType.getCoarseType(sp.type).getCode()).forEach(s->countsT.put(s,countsT.getOrDefault(s,0)+1));
             ps += counts.getOrDefault(NEType.Type.PERSON.getCode(), 0) + countsT.getOrDefault(NEType.Type.PERSON.getCode(), 0);
             ls += counts.getOrDefault(NEType.Type.PLACE.getCode(), 0) + countsT.getOrDefault(NEType.Type.PLACE.getCode(), 0);
             os += counts.getOrDefault(NEType.Type.ORGANISATION.getCode(), 0) + countsT.getOrDefault(NEType.Type.ORGANISATION.getCode(), 0);
@@ -256,12 +254,12 @@ public class NER implements StatusProvider {
             //ldoc.removeField(NAMES);ldoc.removeField(NAMES_TITLE);//may be NAMES_ORIGINAL was left to be deleted hence delete docs were added.
 
             ldoc.add(new StoredField(NAMES,
-                    Util.join(Arrays.asList(names).stream().map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));
+                    Util.join(Arrays.stream(names).map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));
             ldoc.add(new StoredField(NAMES_TITLE,
-                    Util.join(Arrays.asList(namesT).stream().map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));
+                    Util.join(Arrays.stream(namesT).map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));
 
             int ocs = originalContent.length();
-            List<String> namesOriginal = Arrays.asList(names).stream().filter(sp->sp.end<ocs).map(Span::parsablePrint).collect(Collectors.toList());
+            List<String> namesOriginal = Arrays.stream(names).filter(sp->sp.end<ocs).map(Span::parsablePrint).collect(Collectors.toList());
 
             ldoc.add(new StoredField(NAMES_ORIGINAL, Util.join(namesOriginal, Indexer.NAMES_FIELD_DELIMITER)));
             //log.info("Found: "+names.size()+" total names and "+names_original.size()+" in original");
@@ -357,7 +355,7 @@ public class NER implements StatusProvider {
     public static void main(String[] args){
         String val = "";
         String[] plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
-        List<Span> spans = Arrays.asList(plainSpans).stream().map(Span::parse).filter(Objects::nonNull).collect(Collectors.toList());
+        List<Span> spans = Arrays.stream(plainSpans).map(Span::parse).filter(Objects::nonNull).collect(Collectors.toList());
         System.out.println(spans);
     }
 }

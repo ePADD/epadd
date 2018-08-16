@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.Document;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;

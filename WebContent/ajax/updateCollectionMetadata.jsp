@@ -27,7 +27,7 @@ private String getFileName(final Part part)
 }
 
 /* saves the file type request param into the given filePath */
-private void saveFile(HttpServletRequest request, String param, String filePath) throws IOException, ServletException, MessagingException
+private void saveFile(HttpServletRequest request, String param, String filePath) throws IOException, ServletException
 {
     final Part filePart = request.getPart(param);
     final String fileName = getFileName(filePart);

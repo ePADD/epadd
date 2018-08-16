@@ -34,7 +34,7 @@
                     //update bag metadata
                     archive.updateFileInBag(lexicondir,archive.baseDir);
                     //read lexicons again and set in the archive.
-                    Map<String,Lexicon> map = archive.createLexiconMap(archive.baseDir+File.separator+Archive.BAG_DATA_FOLDER);
+                    Map<String,Lexicon> map = Archive.createLexiconMap(archive.baseDir+File.separator+Archive.BAG_DATA_FOLDER);
                     if(map.containsKey(lexiconname))
                         archive.setLexiconMap(map);
                     else

@@ -51,15 +51,11 @@ import org.apache.commons.collections4.BagUtils;
 import org.apache.commons.collections4.bag.HashBag;
 */
 import gov.loc.repository.bagit.creator.*;
-import gov.loc.repository.bagit.creator.CreatePayloadManifestsVistor;
-import gov.loc.repository.bagit.creator.CreateTagManifestsVistor;
 import gov.loc.repository.bagit.domain.*;
-import gov.loc.repository.bagit.domain.Manifest;
 import gov.loc.repository.bagit.exceptions.*;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
 import gov.loc.repository.bagit.reader.BagReader;
 import gov.loc.repository.bagit.util.PathUtils;
-import gov.loc.repository.bagit.verify.BagVerifier;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
 import org.apache.commons.io.FileUtils;
@@ -73,12 +69,10 @@ import org.json.JSONArray;
 import java.io.*;
 
 import java.nio.file.*;
-import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

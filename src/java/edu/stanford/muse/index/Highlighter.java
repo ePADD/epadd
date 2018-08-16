@@ -76,7 +76,7 @@ class Highlighter {
         return sb.toString();
     }
 
-    private static String highlight(String content, String term, String preTag, String postTag) throws IOException, ParseException, InvalidTokenOffsetsException{
+    private static String highlight(String content, String term, String preTag, String postTag) throws IOException, InvalidTokenOffsetsException{
         //The Lucene Highlighter is used in a hacky way here, it is intended to be used to retrieve fragments from a matching Lucene document.
         //The Lucene Highlighter introduces tags around every token that matched the query, hence it is required to merge these fragmented annotations into one inorder to fit our needs.
         //To truly differentiate contiguous fragments that match a term supplied we add a unique id to the pretag, hence the randum instance
@@ -125,7 +125,7 @@ class Highlighter {
         for(String term: terms){
             try {
                 content = highlight(content, term, preTag, posTag);
-            } catch(IOException|ParseException|InvalidTokenOffsetsException e){
+            } catch(IOException|InvalidTokenOffsetsException e){
                 Util.print_exception("Exception while highlighting for the term: "+content, e, log);
             }
         }
@@ -335,7 +335,7 @@ class Highlighter {
 
             try {
                 result = highlight(result, term, preTag, postTag);
-            } catch (IOException | InvalidTokenOffsetsException | ParseException e) {
+            } catch (IOException | InvalidTokenOffsetsException e) {
                 Util.print_exception("Exception while adding html annotation: " + ann.first, e, log);
                 e.printStackTrace();
             }

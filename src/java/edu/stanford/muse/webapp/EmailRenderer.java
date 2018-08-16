@@ -325,9 +325,7 @@ public class EmailRenderer {
 	 */
 	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> docs,SearchResult result,
 														  String datasetTitle,
-														  MultiDoc.ClusteringType coptions)
-			throws Exception
-	{
+														  MultiDoc.ClusteringType coptions) {
 		StringBuilder html = new StringBuilder();
 		int pageNum = 0;
 		List<String> pages = new ArrayList<>();
@@ -534,7 +532,7 @@ public class EmailRenderer {
         recMap.put(NEType.Type.PERSON.getCode(),"cp");
         recMap.put(NEType.Type.PLACE.getCode(),"cl");
         recMap.put(NEType.Type.ORGANISATION.getCode(),"co");
-        Arrays.asList(names).stream().filter(n -> recMap.keySet().contains(NEType.getCoarseType(n.type).getCode()))
+        Arrays.stream(names).filter(n -> recMap.keySet().contains(NEType.getCoarseType(n.type).getCode()))
                 .forEach(n -> {
                     Set<String> types = new HashSet<>();
                     types.add(recMap.get(NEType.getCoarseType(n.type).getCode()));
