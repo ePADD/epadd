@@ -9,7 +9,7 @@
 <header>
 	<div id="nav1">
 
-		<nav class="epadd-nav navbar navbar-default" role="navigation">
+		<nav class="epadd-nav navbar navbar-default navbar-fixed-top" role="navigation">
 
 			<div class="container-fluid" style="height:55px">
 

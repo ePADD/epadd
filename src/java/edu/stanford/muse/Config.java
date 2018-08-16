@@ -145,6 +145,7 @@ public class Config {
             attachmentTypeToExtensions.put("Document", "doc;docx;pages");
             attachmentTypeToExtensions.put("Presentation", "ppt;pptx;key");
             attachmentTypeToExtensions.put("Spreadsheet", "xls;xlsx;numbers");
+            attachmentTypeToExtensions.put("PDF", "pdf");
             attachmentTypeToExtensions.put("Internet file", "htm;html;css;js");
             attachmentTypeToExtensions.put("Compressed", "zip;7z;tar;tgz");
             attachmentTypeToExtensions.put("Video", "mp3;ogg");

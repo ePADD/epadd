@@ -434,7 +434,7 @@
 
 							<label for="labelIDs">Labels</label>
 							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
-								<option value="" selected disabled>Select a label</option>
+								<option value="" selected disabled>Select</option>
 								<optgroup label="Restriction Labels">
 								<%
 									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);

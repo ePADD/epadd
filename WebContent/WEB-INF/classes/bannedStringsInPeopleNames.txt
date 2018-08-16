@@ -1,5 +1,7 @@
 # if any of these strings are present (as a substring anywhere) in a person's "name" in the email header, that name will be ignored
 # need undisclosed here because undisclosed-recipients counts as a single word and won't match bannedWordsinPeopleNames
 # these strings are case-insensitive
+# we sometimes see me - gmail, me - yahoo, etc
 undisclosed
 recipient
+Me -

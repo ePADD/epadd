@@ -1,1 +1,1 @@
-ePADD version Release 5.1 (May 14, 2018)
+ePADD version Release 6.0 (July 31, 2018)
