@@ -4,17 +4,11 @@
 	request.setCharacterEncoding("UTF-8");
 %>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.datacache.*"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="java.io.*"%>
 <%@page language="java" import="java.lang.*"%>
-<%@page language="java" import="java.net.*"%>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="java.util.stream.Collectors" %>
-<%@ page import="javafx.scene.shape.Arc" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>

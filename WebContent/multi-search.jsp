@@ -2,12 +2,8 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="com.google.common.collect.LinkedHashMultimap"%>
 <%@page language="java" import="com.google.common.collect.Multimap"%>
-<%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="org.json.JSONArray" %>
-<%@ page import="java.util.Set" %>
 <%@ page import="edu.stanford.muse.index.*" %>
 <%@include file="getArchive.jspf" %>
 

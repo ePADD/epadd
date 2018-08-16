@@ -2,8 +2,6 @@
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 <!DOCTYPE html>

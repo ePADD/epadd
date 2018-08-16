@@ -4,7 +4,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
-<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>

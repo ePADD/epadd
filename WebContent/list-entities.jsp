@@ -1,16 +1,6 @@
-<%@ page import="edu.stanford.muse.index.Archive" %>
-<%@ page import="edu.stanford.muse.index.Document" %>
-<%@ page import="edu.stanford.muse.ner.Entity" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
-<%@ page import="edu.stanford.muse.util.Span" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray" %>
-<%@ page import="java.net.URLEncoder" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
-<%@ page import="java.util.stream.Collectors" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="getArchive.jspf" %>
 

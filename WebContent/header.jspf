@@ -1,6 +1,4 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <script type="text/javascript" src="js/muse.js"></script>
 
@@ -157,7 +155,7 @@
 					<% if (!ModeConfig.isDiscoveryMode()) { %>
 						<li><a href="debug"><i class="menu-icon fa fa-user fa-bug"></i>Report a problem</a></li>
 					<% } %>
-					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD mode</a></li>
+<!--					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD mode</a></li> -->
 					<li><a id="about" href="about"><i class="menu-icon fa fa-user fa-fw"></i>About ePADD</a></li>
 		 		</ul>
 	 		</li>

@@ -5,7 +5,6 @@
 <%@ page import="java.io.File" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <html>

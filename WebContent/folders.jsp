@@ -1,7 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@page language="java" import="edu.stanford.muse.email.MuseEmailFetcher"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.webapp.Accounts"%>
 <%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%
  	JSPHelper.checkContainer(request); // do this early on so we are set up
