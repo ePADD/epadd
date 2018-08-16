@@ -41,7 +41,7 @@ Browse page for entities based on fine types
             desc.put(t.getCode(), t.getDisplayName());
 
         Short type = Short.parseShort(request.getParameter("type"));
-        out.println("<h1>Type: "+desc.get(type)+"</h1>");
+        out.println("<h1>Entity Type: "+desc.get(type)+"</h1>");
         JSONArray resultArray = archive.getEntitiesInfoJSON(type);
     %>
 

@@ -42,7 +42,7 @@
     AddressBook ab = archive.addressBook;
 %>
 
-<%writeProfileBlock(out, archive, "", "Email folders");%>
+<%writeProfileBlock(out, archive, "", "Folders");%>
 
 <br/>
 <br/>

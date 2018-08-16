@@ -140,12 +140,12 @@
                 data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
                 dataType: 'json',
                 success: function (data) {
-                    epadd.alert('Lexicon file will be downloaded in your download folder!', function () {
+                    epadd.alert('Lexicon file will be downloaded in your download folder', function () {
                         window.location=data.downloadurl;
-                    });
+                    },'');
                 },
                 error: function (jq, textStatus, errorThrown) {
-                    var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                    var message = ("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
                     epadd.log(message);
                     epadd.alert(message);
                 }
@@ -195,7 +195,7 @@
 					data: post_params,
 					success: function (j) {
 						$('#save-button .fa').removeClass('fa-spin');
-						epadd.alert('Lexicon with ' + j.nCategories + ' categories saved.');
+						epadd.success('Lexicon with ' + j.nCategories + ' categories saved.');
 					},
 					error: function (j) {
 						$('#save-button .fa').removeClass('fa-spin');

@@ -29,7 +29,9 @@ import java.util.*;
 public class CalendarUtil {
     public static Log log = LogFactory.getLog(CalendarUtil.class);
 
-    private static String[] monthStrings = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    // we want to change the month to 3 char format everywhere in ePADD
+	private static String[] monthStrings = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+//    private static String[] monthStrings = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 	//private static String[] monthStrings = new DateFormatSymbols().getMonths();
 	private final static int nMonthPerYear = monthStrings.length;
 
@@ -38,6 +40,7 @@ public class CalendarUtil {
 		return monthStrings[month];
 	}
 
+	/* returns short, 3-char string for the month */
 	public static String getDisplayMonth(Calendar c)
 	{
 		// we don't want to be dependent on Calendar.getDisplayName() which is in java 1.6 only

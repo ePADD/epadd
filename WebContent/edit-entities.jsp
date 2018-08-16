@@ -33,7 +33,7 @@
 <body>
 <jsp:include page="header.jspf"/>
 
-<%writeProfileBlock(out, archive, "Edit address book", "");%>
+<%writeProfileBlock(out, archive, "Edit entities", "");%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">

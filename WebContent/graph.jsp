@@ -200,7 +200,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location='<%=tableURL%>'"><i class="fa fa-table"></i> Go to Table View</button>
+	<button class="btn-default" onclick="window.location='<%=tableURL%>'"><i class="fa fa-table"></i> Table View</button>
 </div>
 
 <div align="center">	

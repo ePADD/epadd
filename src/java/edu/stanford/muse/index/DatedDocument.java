@@ -115,13 +115,14 @@ public class DatedDocument extends Document {
 		return result;
 	}
 
+	// returns e.g. Mar 1, 1998
 	public String dateString()
 	{
 		if (date != null)
 		{
 			Calendar c = new GregorianCalendar();
 			c.setTime(date);
-			return c.get(Calendar.DATE) + " " + CalendarUtil.getDisplayMonth(c) + " " + c.get(Calendar.YEAR);
+			return CalendarUtil.getDisplayMonth(c) + " " + c.get(Calendar.DATE) + ", " + c.get(Calendar.YEAR);
 		}
 		else
 			return "????-??-??";

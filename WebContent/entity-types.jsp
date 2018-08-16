@@ -54,7 +54,7 @@
 <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <table id="entities">
-        <thead><th>Semantic Type</th><th># entities</th></thead>
+        <thead><th>Entity Type</th><th># entities</th></thead>
         <tbody>
         </tbody>
     </table>

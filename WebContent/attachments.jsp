@@ -9,10 +9,6 @@
 <%@ page import="java.util.*" %>
 <%@page language="java" import="edu.stanford.muse.datacache.BlobStore"%>
 <%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@page language="java" %>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" %>
-<%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="java.util.stream.Collectors" %>
@@ -94,7 +90,7 @@
             " (" + uniqueAttachments.size() + " unique)");
 %>
 
-<div id="all_fields" style="margin:auto;width:1000px; padding: 10px">
+<div id="all_fields" style="margin:auto;width:1100px; padding: 10px 0px">
 
     <%
         Map<String,String> attachmentTypeOptions= Config.attachmentTypeToExtensions;
@@ -252,7 +248,7 @@
 
             %>
             <br/>
-            <div style="margin:auto; width:1000px">
+            <div style="margin:auto; width:1100px">
             <table id="attachments">
             <% if(IsNormalized) {%>
                 <thead><tr><th>Subject</th><th>Date</th><th>Size</th><th>Attachment name</th><th>More Infomration</th></tr></thead>
