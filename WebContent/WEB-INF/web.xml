@@ -377,7 +377,7 @@
 
 	<servlet>
 		<servlet-name>edit-correspondents</servlet-name>
-		<jsp-file>/editAddressBook.jsp</jsp-file>
+		<jsp-file>/edit-correspondents.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>edit-correspondents</servlet-name>
