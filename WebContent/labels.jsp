@@ -198,8 +198,8 @@
             contentType: false,
             cache: false,
             data: data,
-            success: function(data) { if(data.status==0){epadd.alert('Labels uploaded successfully!', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
-            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
+            success: function(data) { if(data.status==0){epadd.success('Labels uploaded', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
+            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
         });
 
     }

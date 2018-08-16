@@ -96,9 +96,9 @@
             data: {archiveID: archiveID, data: "addressbook"},
             dataType: 'json',
             success: function (data) {
-                epadd.alert('Correspondent list will be downloaded in your browser\'s download folder.', function () {
+                epadd.info('Correspondent list will be downloaded in your browser\'s download folder.', function () {
                     window.location = data.downloadurl;
-                }, '' /* no Alert title */);
+                });
             },
             error: function (jq, textStatus, errorThrown) {
                 var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
@@ -132,7 +132,7 @@
             cache: false,
             data: data,
             success: function (data) {
-                epadd.alert('Correspondent list uploaded successfully!', function () {
+                epadd.success('Correspondent list uploaded and applied.', function () {
                     window.location.reload();
                 });
             },

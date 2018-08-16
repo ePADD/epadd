@@ -241,7 +241,7 @@
                 cache: false,
                 data: data,
                 success: function (data) {
-                    epadd.alert('Lexicon uploaded successfully!', function () {
+                    epadd.success('Lexicon uploaded successfully!', function () {
                         window.location.reload();
                     });
                 },
