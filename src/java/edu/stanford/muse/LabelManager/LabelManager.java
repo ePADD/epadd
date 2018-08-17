@@ -27,6 +27,7 @@ public class LabelManager implements Serializable{
     private static Log log = LogFactory.getLog(LabelManager.class);
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
+    public final static String LABELID_REVIEWED="1";
     public final static String LABELID_CFR="2";
 
     private static String JSONFILENAME="label-info.json";
@@ -83,7 +84,7 @@ public class LabelManager implements Serializable{
         labelInfoMap.put(gen.getLabelID(),gen);
 */
         //reviewed
-        Label reviewed = new Label("Reviewed",LabType.GENERAL,"1",
+        Label reviewed = new Label("Reviewed",LabType.GENERAL,LABELID_REVIEWED,
                 "This message was reviewed",false);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
 
@@ -285,6 +286,35 @@ public class LabelManager implements Serializable{
             //Following requirement #260 on github don't export system labels.
             tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->!entry.getValue().isSysLabel()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
             tmp.docToLabelID.keySet().retainAll(docids);
+            //alsow, following #260, label 'Reviewed' to be removed if exported to discovery module.
+            if(mode== Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY){
+                tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->!entry.getKey().equalsIgnoreCase(LABELID_REVIEWED)).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+            }
+            //also, following #260, retain only those labels from docidmap for which there is  info in labelInfoMap-- for example if reviewed is removed from labelinfomap
+            //then remove it from the doc map as well. Same for restriction types as well. Although there is a catch. When exporting from processing to delivery, don't remove
+            //reviewed label but remove this label from all documents (if applied).
+            Collection<String> labelidsleft = new LinkedHashSet<>(tmp.labelInfoMap.keySet());
+            //Contd.. To achieve this, remove LabelID-Reviewed from labelidsleft collection if mode is export_processing_to_delivery.
+            if(mode == Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY){
+                labelidsleft.remove(LABELID_REVIEWED);
+            }
+
+            //Now remove all those lables in docToLabelID map which don't appear in labelidsleft.
+
+            Multimap<String,String> tmpdocToLabelID = LinkedHashMultimap.create();
+            for(String docid: tmp.docToLabelID.keySet()){
+                    Collection<String> labids = new LinkedHashSet<>(tmp.docToLabelID.get(docid));
+                    //retain only those labids which are still left in labelinfomap
+                    labids.retainAll(labelidsleft);
+                    if(labids.size()>0)
+                    {
+                        //if there are non-zero such labels only then add this document's info in docToLabelIDMap.
+                        for(String labid: labids){
+                            tmpdocToLabelID.put(docid,labid);
+                        }
+                    }
+            }
+            tmp.docToLabelID = tmpdocToLabelID;
         }
         return tmp;
     }
