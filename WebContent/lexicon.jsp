@@ -93,16 +93,6 @@
 </nav>
 <!--/sidebar-->
 
-<div style="text-align:center">
-	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
-	&nbsp;&nbsp;
-	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit Lexicon </button>
-	&nbsp;&nbsp;
-	<button id="create-lexicon" class="btn-default"><i class="fa fa-plus"></i> Create new lexicon</button>
-	&nbsp;&nbsp;
-	<button id="import-lexicon" class="btn-default"><i class="fa fa-plus"></i> Import lexicon</button>
-</div>
-<br/>
 
 <%
 	Lexicon lex = null;
@@ -163,6 +153,17 @@
 	<% } %>
 			
 </h1>
+<div style="text-align:center">
+	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Graph View</button>
+	&nbsp;&nbsp;
+	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit</button>
+	&nbsp;&nbsp;
+	<button id="create-lexicon" class="btn-default"><i class="fa fa-plus"></i> Create</button>
+	&nbsp;&nbsp;
+	<button id="import-lexicon" class="btn-default"><i class="fa fa-upload"></i> Upload</button>
+</div>
+<br/>
+
 <div style="margin:auto; width:800px">
 	<table id="table">
 		<thead><th>Lexicon category</th><th>Messages</th></thead>

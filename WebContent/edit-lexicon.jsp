@@ -126,11 +126,11 @@
 		%>
 	</div> <!--  categories -->
 <br/>
-	<button id="add-category" class="btn-default" class="tools-pushbutton" ><i class="fa fa-plus"></i> Add a category</button>
+	<button id="add-category" class="btn-default" class="tools-pushbutton" ><i class="fa fa-plus"></i> Add category</button>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save Lexicon</button>
+	<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save</button>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<button class="btn-default" id="export-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" onclick="exportLexiconHandler();"><i class="fa fa-save"></i> Export Lexicon</button>
+	<button class="btn-default" id="export-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" onclick="exportLexiconHandler();"><i class="fa fa-download"></i> Download</button>
 
 	<script type="text/javascript">
         var exportLexiconHandler=function(){

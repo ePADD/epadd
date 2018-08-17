@@ -20,7 +20,6 @@ Browse page for entities based on fine types
     <script src="js/jquery.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
     <script src="js/muse.js"></script>
     <script src="js/epadd.js"></script>
     <style type="text/css">
@@ -28,11 +27,11 @@ Browse page for entities based on fine types
     </style>
 </head>
 <body>
-    <%@include file="div_status.jspf"%>
     <jsp:include page="header.jspf"/>
     <script>epadd.nav_mark_active('Browse');</script>
+    <%writeProfileBlock(out, archive, "List entities", "");%>
 
-<div style="margin:auto; width:900px">
+    <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();

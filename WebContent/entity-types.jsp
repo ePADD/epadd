@@ -32,6 +32,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
+<%writeProfileBlock(out, archive, "Entity types", "");%>
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
