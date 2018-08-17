@@ -47,16 +47,21 @@
 	<!--phrase-->
 	<div class="search-tips">
 		<p>
-			This screen allows the user to view and edit the email address(es) and name(s) associated with each correspondent
+			This screen allows the user to view and edit the email address(es) and name(s) associated with each correspondent.
+			For each correspondent, all the variants of their name are listed first, followed by all their email addresses.
+			Correspondents are separated with a single line containing "--" (2 hyphens).
 		<p>
 
 			The archive owner should always be the first individual listed.
 		<p>
-			The first name listed within each group of names or addresses is the name ePADD will display in all search and browsing results and visualizations. Manually change this display name by adding a new name at the top of this list
+			The first name listed within each group of names or addresses is the name ePADD will display in all search and browsing results and visualizations. Manually change this display name by adding a new name at the top of this list.
 
 		<p>
 			If names or addresses are incorrectly associated with the wrong individual, you can manually cut and paste them underneath a different entry
 
+		<p>
+			Large archives with a lot of correspondents may see a slow response time on this page.
+			If you encounter this, please go back to the correspondents page and download the list as a file. You can use a text editor to work on the file and upload it back when it is ready.
 		<p>
 			Mailing list addresses can be manually identified and added under the heading “-- [ML]” If this heading does not exist simply create it.
 
@@ -69,7 +74,6 @@
 <br/>
 <div style="text-align:center;margin-left:40%;width:20%;">
 	<div class="form-group">
-		<label for="sort-order">Sort order</label>
 		<select id="sort-order" name="sort-order" class="form-control selectpicker">
 			<option <%=!alphaSort ? "selected" : ""%> value="volume">Sort by email volume</option>
 			<option <%=alphaSort ? "selected" : ""%> value="alpha">Sort alphabetically</option>
