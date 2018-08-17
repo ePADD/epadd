@@ -1,44 +1,25 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
+<%@page language="java" import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
-
-<%@include file="profile-block.jspf"%>
-
 <%
-	javax.servlet.jsp.JspWriter out2 = out;
-// if archive not in session, nothing can be done
 Archive archive = JSPHelper.getArchive(request);
-if (archive == null)
-{
+if (archive == null) {
 	if (ModeConfig.isAppraisalMode()) {
 		// in appraisal mode only: try and load it from the default dir.
 		JSPHelper.log.info ("No archive in session, trying to load default archive");
 		archive = ArchiveReaderWriter.prepareAndLoadDefaultArchive(request); // if we don't have an archive and are running in desktop mode, try to load archive from given cachedir or from the default dir
 		JSPHelper.log.info ("Default archive = " + archive);
-	}
 
-	if (archive == null)
-	{
-		JSPHelper.log.info ("No default archive!"); %>
-		<html>
-		<head><title>No archive</title><link rel="icon" type="image/png" href="images/epadd-favicon.png">
-
-		<script src="js/jquery.js"></script>
-
-		<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-		<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-			</head>
-		<jsp:include page="css/css.jsp"/>
-		<body>
-		<jsp:include page="header.jspf"/>
-		<div style="margin-left:170px">
-		<% if (ModeConfig.isAppraisalMode()) { %>
-			There is no default archive in <%= edu.stanford.muse.webapp.SimpleSessions.getDefaultCacheDir() %>. Please use the <a href="email-sources">import</a> option to start an archive.
-		<% } else { %>
-			No archive in session. Please go to <a href="collections">Collections</a> and load an archive.
-		<% } %>
-		</div></body></html>
-		<%
-		return;
+		if (archive == null) {
+			response.sendRedirect("email-sources");
+			return;
+		}
+	} else {
+		if (archive == null) {
+			response.sendRedirect("collections");
+			return;
+		}
 	}
 }
+// if it comes here, archive is defined and not null
 %>
