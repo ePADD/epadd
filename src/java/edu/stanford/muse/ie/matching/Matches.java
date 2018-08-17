@@ -3,7 +3,6 @@ package edu.stanford.muse.ie.matching;
 import com.google.gson.Gson;
 import edu.stanford.muse.util.Util;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;

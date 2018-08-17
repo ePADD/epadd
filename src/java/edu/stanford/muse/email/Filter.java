@@ -152,8 +152,7 @@ public class Filter implements Serializable {
 		return true;
 	}
 
-	public boolean matches(Document d) throws ReadContentsException 
-	{
+	public boolean matches(Document d) {
 		// look for any reason to return false, if none of them fire, return true.
 
 		if (d instanceof DatedDocument)

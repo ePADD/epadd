@@ -4,17 +4,11 @@
 	request.setCharacterEncoding("UTF-8");
 %>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.datacache.*"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="java.io.*"%>
 <%@page language="java" import="java.lang.*"%>
-<%@page language="java" import="java.net.*"%>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="java.util.stream.Collectors" %>
-<%@ page import="javafx.scene.shape.Arc" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
@@ -147,7 +141,7 @@
                     <div class="form-group col-sm-6">
                         <label for="attachmentFilesize">File Size</label>
                         <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
-                            <option value="" selected disabled>Choose File Size</option>
+                            <option value="" selected disabled>Select</option>
                             <option value="1">&lt; 5KB</option>
                             <option value="2">5-20KB</option>
                             <option value="3">20-100KB</option>

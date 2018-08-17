@@ -1,7 +1,4 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
-<%@page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page import="edu.stanford.muse.AddressBookManager.Contact"%>
-<%@ page import="edu.stanford.muse.webapp.HTMLUtils" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%>

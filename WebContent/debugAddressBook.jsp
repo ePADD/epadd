@@ -7,7 +7,6 @@
 <%@ page import="javax.mail.Address" %>
 <%@ page import="javax.mail.internet.InternetAddress" %>
 <%@ page import="com.google.common.collect.*" %>
-<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%

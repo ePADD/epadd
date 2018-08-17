@@ -162,8 +162,7 @@ import java.util.zip.GZIPInputStream;
 	private static NameFinderME			pFinder, lFinder, oFinder;
 	private static SentenceDetectorME	sFinder;
 
-	public synchronized static void initialize() throws ClassCastException, IOException, ClassNotFoundException
-	{
+	public synchronized static void initialize() throws ClassCastException {
 		if (pFinder != null)
 			return;
 		long startTimeMillis = System.currentTimeMillis();
@@ -473,8 +472,7 @@ import java.util.zip.GZIPInputStream;
 	 * returns a list of <name, weighted #occurrences>.
 	 * positional_boost can be 0, in which case no weight bias based on position
 	 */
-	public static List<Pair<String, Float>> namesFromText(String text, boolean removeCommonNames, Map<String, Integer> tokenTypeWeights, boolean normalizeByLength, int max_positional_boost) throws ClassCastException, IOException, ClassNotFoundException
-	{
+	public static List<Pair<String, Float>> namesFromText(String text, boolean removeCommonNames, Map<String, Integer> tokenTypeWeights, boolean normalizeByLength, int max_positional_boost) throws ClassCastException {
 		NERTokenizer t = (NERTokenizer) NER.parse(text);
 		Map<String, Float> termFreqMap = new LinkedHashMap<>();
 		List<Pair<String, String>> tokenList = new ArrayList<>();
@@ -679,8 +677,7 @@ import java.util.zip.GZIPInputStream;
 
 	static int	count	= 0, hitCount = 0;
 
-	public static void printSentencesWithWords(String text, Set<String> wordsToSearch) throws IOException
-	{
+	public static void printSentencesWithWords(String text, Set<String> wordsToSearch) {
 		//		InputStream SentStream = Config.getResourceAsStream("models/en-sent.bin");
 		//		SentenceModel model = sFinder; // new SentenceModel(SentStream);
 		//		SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);

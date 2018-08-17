@@ -33,7 +33,7 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
     private final static long serialVersionUID = 1L;
 
     /* creates a mapper. first checks if it already exists in the archive dir. otherwise creates a new one, and initializes it for the archive (might take a while to generate candidates) */
-    public static CorrespondentAuthorityMapper createCorrespondentAuthorityMapper (Archive archive) throws IOException, ParseException, ClassNotFoundException {
+    public static CorrespondentAuthorityMapper createCorrespondentAuthorityMapper (Archive archive) throws IOException, ParseException {
 
         String filename = archive.baseDir + File.separator + Config.AUTHORITIES_FILENAME;
         File authMapperFile = new File (filename);
@@ -62,7 +62,7 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
     }
 
     /** this should be called during creation time, or any time the cnameToFastIdCandidates has to be recomputed */
-    public void setupCandidatesAndCounts(Archive archive) throws IOException, ParseException {
+    public void setupCandidatesAndCounts(Archive archive) {
         AddressBook ab = archive.getAddressBook();
 
         List<Contact> contacts = ab.allContacts();

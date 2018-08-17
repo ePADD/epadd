@@ -35,9 +35,25 @@ epadd.log = function(mesg, log_on_server)
 
 };
 
-// s is the message, f is the function to be called when the modal is dismissed
-epadd.alert = function(s, f) {
+epadd.success = function(s, f) {
+	epadd.alert (s, f, 'Success');
+}
+
+epadd.info = function(s, f) {
+    epadd.alert (s, f, '');
+}
+
+// s is the message, f is the function to be called when the modal is dismissed, title is the heading (default Alert)
+epadd.alert = function(s, f, title) {
+	// use 'Alert' only if title is not given
+	if (typeof (title) === 'Undefined')
+		title = 'Alert';
+
 	$('#alert-modal .modal-body').html(s);
+    $('#alert-modal .modal-title').html(title);
+
+    // sgh: will this not get associated multiple times as modal is invoked?
+	// need to remove previous handlers if any?
 	if (f) {
 		$('#alert-modal').on('hidden.bs.modal', f);
 	}
@@ -421,7 +437,7 @@ epadd.saveArchive= function(archiveID,prompt) {
 	/*Saving is sometime expensive (especially when bag is updated) so display a progress bar to the client*/
 
 	var promptmethod = function(j){
-		epadd.alert("Archive saved successfully!");
+		epadd.success("Archive saved.");
 	}
 	var post_params = 'archiveID='+archiveID;
 	// need to check muse.mode here for page to redirect to actually!

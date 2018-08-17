@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.mail.*;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.*;
 
 /** email store in mbox format. caches message counts in folders.
@@ -86,8 +85,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		return store;
 	}
 
-	private void collect_mbox_folders(List<FolderInfo> list, File f, Set<String> seenfolders) throws MessagingException
-	{
+	private void collect_mbox_folders(List<FolderInfo> list, File f, Set<String> seenfolders) {
 
 		if (!f.exists())
 			return;
@@ -246,8 +244,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		return (Util.nullOrEmpty(accountKey) ? "mbox" : accountKey); // always return mbox because the "folder" part of the cache file name will reflect the full path
 	}
 
-	public static void main (String args[]) throws MessagingException, IOException
-	{
+	public static void main (String args[]) throws MessagingException {
 	/*	LineNumberReader lnr = new LineNumberReader (new BufferedReader(new InputStreamReader(new FileInputStream("/Users/hangal/Local Folders/gmail-sent"))));
 		int count = 0;
 		while (true)

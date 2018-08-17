@@ -20,7 +20,6 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
@@ -153,7 +152,7 @@ public class AuthorityMapper implements java.io.Serializable {
 
 
     /** populates the other ids, given the fast Id */
-    public AuthorityRecord getAuthRecordForFASTId (long fastId) throws ParseException, IOException {
+    public AuthorityRecord getAuthRecordForFASTId (long fastId) throws IOException {
         AuthorityRecord result = new AuthorityRecord();
         String labelSeparator = " ; ";
         result.fastId = fastId;

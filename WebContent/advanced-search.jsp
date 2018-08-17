@@ -4,7 +4,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
-<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -358,7 +357,7 @@
 							<div class="form-group col-sm-6">
 								<label for="attachmentFilesize">File Size</label>
 								<select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
-									<option value="" selected disabled>Choose File Size</option>
+									<option value="" selected disabled>Select</option>
 									<option value="1">&lt; 5KB</option>
 									<option value="2">5-20KB</option>
 									<option value="3">20-100KB</option>
@@ -434,7 +433,7 @@
 
 							<label for="labelIDs">Labels</label>
 							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
-								<option value="" selected disabled>Select a label</option>
+								<option value="" selected disabled>Select</option>
 								<optgroup label="Restriction Labels">
 								<%
 									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);

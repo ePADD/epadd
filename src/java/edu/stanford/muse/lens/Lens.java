@@ -152,8 +152,7 @@ public class Lens {
 	}
 
 	/** looks up given names in address book + message content index and returns a json of scores. lensPrefs has the user's term preferences */
-	public static List<JSONObject> getHitsQuick(List<Pair<String, Float>> names, LensPrefs lensPrefs, Archive archive, String baseURL, Collection<EmailDocument> allDocs) throws JSONException, IOException, GeneralSecurityException
-	{
+	public static List<JSONObject> getHitsQuick(List<Pair<String, Float>> names, LensPrefs lensPrefs, Archive archive, String baseURL, Collection<EmailDocument> allDocs) throws JSONException, IOException {
 		List<JSONObject> list = new ArrayList<>();
 		
 		Indexer indexer = archive.indexer;

@@ -1,13 +1,10 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.index.Document"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>

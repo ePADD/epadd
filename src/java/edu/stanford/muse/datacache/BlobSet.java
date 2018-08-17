@@ -76,8 +76,7 @@ public Blob.BlobStats getStats(){
 }
 
 /** all_datas is a list of data objects, which may have duplicates. */
-public BlobSet(String root_dir, List<Blob> allBlobs, BlobStore store) throws IOException
-{
+public BlobSet(String root_dir, List<Blob> allBlobs, BlobStore store) {
 	
     this.rootDir = root_dir;
     this.allBlobs = allBlobs;
@@ -309,8 +308,7 @@ public int generate_top_level_page(String prefix, String extra_mesg) throws IOEx
 */
 
 	/** application URL is something like http://localhost:8080/epadd */
-public int generate_top_level_page(String prefix, String applicationURL, String extra_mesg, String archiveID) throws IOException
-{
+public int generate_top_level_page(String prefix, String applicationURL, String extra_mesg, String archiveID) {
     List<Pair<String, List<Blob>>> tmp = new ArrayList<>();
     for (Map.Entry<String, List<Blob>> entry: personToBlobMap.entrySet())
     		tmp.add (new Pair<>(entry.getKey(), entry.getValue()));

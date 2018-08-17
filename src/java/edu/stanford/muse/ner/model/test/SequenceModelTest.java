@@ -339,9 +339,9 @@ public class SequenceModelTest {
 
     //makes sure everything in target is in vals
     static boolean compareSpans(Span[] tgts, Span[] vals){
-        return !Stream.of(tgts).filter(t->
-            !Stream.of(vals).filter(v -> compareSpan(t, v)).findAny().isPresent()
-        ).findAny().isPresent();
+        return !Stream.of(tgts).anyMatch(t->
+            !Stream.of(vals).anyMatch(v -> compareSpan(t, v))
+        );
     }
 
     static String debugText(String content, Span[] found, Span[] expected){
@@ -423,7 +423,7 @@ public class SequenceModelTest {
                             new Span("Palo Alto", 209, 218, NEType.Type.PLACE.getCode()),
                     }));
 
-            test.stream().forEach(p -> {
+            test.forEach(p -> {
                 Span[] found = model.find(p.first);
                 assertTrue(debugText(p.first, found, p.getSecond()), compareSpans(p.getSecond(), found));
             });
@@ -433,7 +433,7 @@ public class SequenceModelTest {
     @Test
     public void test() {
         SequenceModel model;
-        try {
+        {
             model = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
             testCommon(model);
 
@@ -452,10 +452,7 @@ public class SequenceModelTest {
             assertTrue("Severe drop in F1 score with " + params + "!!!\n" + stats.toString(), 0.70 - stats.f1 < 0.05);
             assertTrue("Severe drop in precision with " + params + "!!!\n" + stats.toString(), 0.65 - stats.precision < 0);
             assertTrue("Severe drop in recall with " + params + "!!!\n" + stats.toString(), 0.65 - stats.recall < 0.05);
-        } catch (IOException e) {
-            log.error("Could not oad model from: " + SequenceModel.MODEL_FILENAME, e);
         }
-
     }
 
     static void testParams(){
@@ -618,7 +615,7 @@ public class SequenceModelTest {
                 freqs.put(type, 0);
             freqs.put(type, freqs.get(type)+1);
         }
-        List<Short> allTypes = confMat.keySet().stream().collect(Collectors.toList());
+        List<Short> allTypes = new ArrayList<>(confMat.keySet());
         Collections.sort(allTypes);
         allTypes.add((short)-1);
         System.err.println("Tested on "+ne+" entries");

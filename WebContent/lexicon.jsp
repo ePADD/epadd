@@ -3,7 +3,6 @@
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.LinkedHashSet"%>
 <%@ page import="java.util.Map" %>
-<%@ page import="java.util.Set" %>
 <%@ page import="edu.stanford.muse.index.*" %>
 <%@ page import="org.json.JSONArray" %>
 <%@include file="getArchive.jspf" %>
@@ -94,16 +93,6 @@
 </nav>
 <!--/sidebar-->
 
-<div style="text-align:center">
-	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
-	&nbsp;&nbsp;
-	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit Lexicon </button>
-	&nbsp;&nbsp;
-	<button id="create-lexicon" class="btn-default"><i class="fa fa-plus"></i> Create new lexicon</button>
-	&nbsp;&nbsp;
-	<button id="import-lexicon" class="btn-default"><i class="fa fa-plus"></i> Import lexicon</button>
-</div>
-<br/>
 
 <%
 	Lexicon lex = null;
@@ -164,6 +153,17 @@
 	<% } %>
 			
 </h1>
+<div style="text-align:center">
+	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Graph View</button>
+	&nbsp;&nbsp;
+	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit</button>
+	&nbsp;&nbsp;
+	<button id="create-lexicon" class="btn-default"><i class="fa fa-plus"></i> Create</button>
+	&nbsp;&nbsp;
+	<button id="import-lexicon" class="btn-default"><i class="fa fa-upload"></i> Upload</button>
+</div>
+<br/>
+
 <div style="margin:auto; width:800px">
 	<table id="table">
 		<thead><th>Lexicon category</th><th>Messages</th></thead>
@@ -210,48 +210,48 @@
                 return false;
             }
             var lexiconlang = $('#lexicon-lang').val();
-            if (!lexiconname) {
+            if (!lexiconlang) {
                 alert('Please provide the language of the lexicon');
                 return false;
-            }
-            var lexiconfilename = $('#lexiconfile').val();
-            if (!lexiconfilename) {
-                alert('Please provide the path of the lexicon file');
-                return false;
-            }
-            //if lexicon-name is already one of the lexicon then prompt a confirmation box
-            if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
-                var c = confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
-                if (!c)
-                    return;
-            }
-            var form = $('#uploadlexiconform')[0];
-
-            // Create an FormData object
-            var data = new FormData(form);
-            //hide the modal.
-            $('#lexicon-upload-modal').modal('hide');
-            //now send to the backend.. on it's success reload the labels page. On failure display the error message.
-
-            $.ajax({
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                url: "ajax/upload-lexicon.jsp",
-                contentType: false,
-                cache: false,
-                data: data,
-                success: function (data) {
-                    epadd.alert('Lexicon uploaded successfully!', function () {
-                        window.location.reload();
-                    });
-                },
-                error: function (jq, textStatus, errorThrown) {
-                    var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                    epadd.log(message);
-                    epadd.alert(message);
+                var lexiconfilename = $('#lexiconfile').val();
+                if (!lexiconfilename) {
+                    alert('Please provide the path of the lexicon file');
+                    return false;
                 }
-            });
+                //if lexicon-name is already one of the lexicon then prompt a confirmation box
+                if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
+                    var c = confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
+                    if (!c)
+                        return;
+                }
+                var form = $('#uploadlexiconform')[0];
+
+                // Create an FormData object
+                var data = new FormData(form);
+                //hide the modal.
+                $('#lexicon-upload-modal').modal('hide');
+                //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+
+                $.ajax({
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    url: "ajax/upload-lexicon.jsp",
+                    contentType: false,
+                    cache: false,
+                    data: data,
+                    success: function (data) {
+                        epadd.success('Lexicon uploaded successfully!', function () {
+                            window.location.reload();
+                        });
+                    },
+                    error: function (jq, textStatus, errorThrown) {
+                        var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                        epadd.log(message);
+                        epadd.alert(message);
+                    }
+                });
+            }
         }
 
 

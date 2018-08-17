@@ -1,8 +1,5 @@
 package edu.stanford.muse.ie;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
  * Created by vihari on 26/12/15.

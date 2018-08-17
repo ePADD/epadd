@@ -15,9 +15,7 @@
 */
 package edu.stanford.muse.util;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import edu.stanford.muse.index.Document;

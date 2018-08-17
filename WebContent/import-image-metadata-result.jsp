@@ -12,7 +12,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.LinkedHashMultimap" %>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@page language="java" %>
 <%@include file="getArchive.jspf" %>
 
 <!DOCTYPE HTML>

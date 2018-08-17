@@ -9,7 +9,6 @@
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="edu.stanford.muse.index.*" %>
-<%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
 <head>

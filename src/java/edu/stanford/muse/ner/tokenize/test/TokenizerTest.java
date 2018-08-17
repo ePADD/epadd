@@ -167,14 +167,14 @@ public class TokenizerTest {
             List<Triple<String,Integer,Integer>> cics = tokenizer.tokenize(content);
             List<String> cicTokens = cics.stream().map(t->t.first).collect(Collectors.toList());
 
-            boolean missing = ts.stream().filter(t->!cicTokens.contains(CICTokenizer.canonicalize(t))).findAny().isPresent();
-            boolean wrongOffsets = cics.stream().filter(t->{
+            boolean missing = ts.stream().anyMatch(t->!cicTokens.contains(CICTokenizer.canonicalize(t)));
+            boolean wrongOffsets = cics.stream().anyMatch(t->{
                 if(!ts.contains(content.substring(t.second,t.third))) {
                     System.out.println("Fail at: "+content.substring(t.second,t.third));
                     return true;
                 }
                 return false;
-            }).findAny().isPresent();
+            });
             String str = "------------\n" +
                     "Test failed!\n" +
                     "Content: " + content + "\n" +

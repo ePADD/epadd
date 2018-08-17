@@ -125,7 +125,7 @@ public class NLP {
 	    }
 	}
 */
-	  public static void main(String[] args) throws Exception {
+	  public static void main(String[] args) {
 		  /*
 		  String s = "I'll  send  you  something as  soon as I  have it done.";
 		    List<HasWord> sentence = Sentence.toWordList(s);

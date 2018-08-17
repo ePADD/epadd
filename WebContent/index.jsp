@@ -1,10 +1,8 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.epadd.Version"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@include file="getArchive.jspf" %>
 <%
 	JSPHelper.log.info ("epadd v" + Version.version + " is running");

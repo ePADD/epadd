@@ -1,22 +1,11 @@
 <%@ page import="java.io.*" %>
-<%@ page import="java.util.List" %>
 <%@page language="java" import="org.json.JSONObject"%>
-<%@ page import="org.apache.commons.fileupload.servlet.ServletFileUpload" %>
-<%@ page import="javax.mail.MessagingException" %>
-<%@page language="java" import="org.apache.commons.fileupload.FileItem"%>
-<%@page language="java" import="org.apache.commons.fileupload.disk.DiskFileItemFactory"%>
 <%@page language="java" import="edu.stanford.muse.email.StaticStatusProvider"%>
 <%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="java.util.Collection" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="au.com.bytecode.opencsv.CSVReader" %>
-<%@ page import="com.google.common.collect.LinkedListMultimap" %>
 <%@ page import="com.google.common.collect.LinkedHashMultimap" %>
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@ page import="edu.stanford.muse.index.*" %>

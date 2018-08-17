@@ -257,8 +257,7 @@ public class MuseEmailFetcher {
 	/** add mbox stores, given comma separated email directories. 
 	 * if localFolders, sets the display name of the store to "Local Folders" instead of the full path 
 	 * @throws MboxFolderNotReadableException */
-	public synchronized String addMboxAccount(String accountKey, String mailDirs, boolean localFolders) throws IOException, MboxFolderNotReadableException
-	{
+	public synchronized String addMboxAccount(String accountKey, String mailDirs, boolean localFolders) throws IOException {
 		if (Util.nullOrEmpty(mailDirs))
 			return null;
 		EmailStore emailStore = new MboxEmailStore(accountKey, localFolders ? "Local Folders" : mailDirs, mailDirs);
@@ -333,7 +332,7 @@ public class MuseEmailFetcher {
 	 * selectedFolders folders are in the <account name>^-^<folder name> format from folders.jsp
 	 * if using default folders, selectedFolders can be null
 	 */
-	private void setupFoldersForFetchers(List<MTEmailFetcher> fetchers, String[] selectedFolders, boolean useDefaultFolders) throws UnsupportedEncodingException, MessagingException, NoDefaultFolderException
+	private void setupFoldersForFetchers(List<MTEmailFetcher> fetchers, String[] selectedFolders, boolean useDefaultFolders) throws NoDefaultFolderException
 	{
 	    // now compute foldersForEachFetcher
 	    Map<String, Integer> accountNameToFetcherIdx = new LinkedHashMap<>();

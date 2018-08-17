@@ -245,7 +245,7 @@ public class WikiTitleIndexer {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         long st = System.currentTimeMillis();
 
         extractAllSingleWordTypes();

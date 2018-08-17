@@ -156,8 +156,9 @@
 
 <body > <!--  override margin because this page is framed. -->
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');
+<%--<script>epadd.nav_mark_active('Browse');--%>
 
+<script>
     $('body').on('click','#normalizationInfo',function(e){
         // get the attribute's values - originalURL and originalName.
         var origianlURL = $(e.target).data('originalurl');
@@ -246,7 +247,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 <div class="browsepage" style="min-width:1220px">
 
     <!-- 160px block on the left for facets -->
-    <div style="display:inline-block;vertical-align:top;width:160px;padding-left:5px">
+    <div style="display:inline-block;vertical-align:top;width:150px;padding-left:5px">
         <div class="facets" style="min-width:10em;text-align:left;margin-bottom:0px;">
             <%
                 if (!Util.nullOrEmpty(term)) {

@@ -381,7 +381,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * we try to get the attachment names cheaply, i.e. without having to
      * process the whole message
      */
-    private List<String> getAttachmentNames(MimeMessage m, Part p) throws MessagingException, IOException {
+    private List<String> getAttachmentNames(MimeMessage m, Part p) {
         List<String> result = new ArrayList<>();
         try {
             if (p.isMimeType("multipart/*") || p.isMimeType("message/rfc822")) {
@@ -964,7 +964,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      *               for proper assignment of unique id or doc Id
      */
     //private void fetchUncachedMessages(String sanitizedFName, Folder folder, DocCache cache, List<Integer> msgIdxs) throws MessagingException, FileNotFoundException, IOException, GeneralSecurityException {
-    private void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) throws MessagingException, IOException, GeneralSecurityException {
+    private void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) {
         //mark the processing of new batch
         if (offset == 0)
             fetchStartTime = System.currentTimeMillis();

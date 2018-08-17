@@ -1,6 +1,4 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.Contact"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="org.json.JSONArray"%>

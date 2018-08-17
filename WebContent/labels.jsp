@@ -41,11 +41,11 @@
 <% // new label not available in discovery mode.
   if (!ModeConfig.isDiscoveryMode()) { %>
     <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-        <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> New label</button> <!-- no labelID param, so it's taken as a new label -->
+        <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> Create</button> <!-- no labelID param, so it's taken as a new label -->
 		&nbsp;&nbsp;
-		<button class="btn-default" id="import-label"><i class="fa fa-pencil-o"></i> Import Labels</button>
+		<button class="btn-default" id="import-label"><i class="fa fa-pencil-o"></i> Upload</button>
 		&nbsp;&nbsp;
-		<button class="btn-default" id="export-label" onclick="exportLabelHandler()"><i class="fa fa-pencil-o"></i> Export Labels</button>
+		<button class="btn-default" id="export-label" onclick="exportLabelHandler()"><i class="fa fa-pencil-o"></i> Download</button>
 
     </div>
 
@@ -54,7 +54,7 @@
 <br/>
 <br/>
 
-<div style="margin:auto; width:900px">
+<div style="margin:auto; width:1100px">
 <table id="labels" style="display:none">
 	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% // this column not available in discovery mode
@@ -81,9 +81,9 @@
             data: {archiveID: archiveID, data: "labels"},
             dataType: 'json',
             success: function (data) {
-                epadd.alert('Label description file will be downloaded in your download folder!', function () {
+                epadd.alert('A label description file called label-info.json will be downloaded in your browser\'s download folder.', function () {
                     window.location=data.downloadurl;
-                });
+                }, '');
             },
             error: function (jq, textStatus, errorThrown) {
                 var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
@@ -198,8 +198,8 @@
             contentType: false,
             cache: false,
             data: data,
-            success: function(data) { if(data.status==0){epadd.alert('Labels uploaded successfully!', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
-            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
+            success: function(data) { if(data.status==0){epadd.success('Labels uploaded', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
+            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
         });
 
     }
@@ -210,10 +210,14 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4>NOTE: Before uploading a new label description file, make sure that no message contains any label. Otherwise the label semantics will be inconsistent. </h4><br>
-                    <h4 class="modal-title">Specify the json file containing label description.</h4>
+
 				</div>
 				<div class="modal-body">
+					<p>
+					NOTE: To import new labels, ensure that you have unapplied all current labels from messages. ePADD cannot import new labels if any current labels are applied.
+					<p>
+					Upload the JSON file containing the label descriptions.
+					<br/>
 					<form id="uploadjsonform" method="POST" enctype="multipart/form-data" >
 						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 						<input type="file" id="labeljson" name="labeljson" value=""/>

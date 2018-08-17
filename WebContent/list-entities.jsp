@@ -1,16 +1,6 @@
-<%@ page import="edu.stanford.muse.index.Archive" %>
-<%@ page import="edu.stanford.muse.index.Document" %>
-<%@ page import="edu.stanford.muse.ner.Entity" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
-<%@ page import="edu.stanford.muse.util.Span" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray" %>
-<%@ page import="java.net.URLEncoder" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.*" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
-<%@ page import="java.util.stream.Collectors" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="getArchive.jspf" %>
 
@@ -30,7 +20,6 @@ Browse page for entities based on fine types
     <script src="js/jquery.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
     <script src="js/muse.js"></script>
     <script src="js/epadd.js"></script>
     <style type="text/css">
@@ -38,11 +27,11 @@ Browse page for entities based on fine types
     </style>
 </head>
 <body>
-    <%@include file="div_status.jspf"%>
     <jsp:include page="header.jspf"/>
     <script>epadd.nav_mark_active('Browse');</script>
+    <%writeProfileBlock(out, archive, "List entities", "");%>
 
-<div style="margin:auto; width:900px">
+    <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
         Map<Short, String> desc = new LinkedHashMap<>();
@@ -51,7 +40,7 @@ Browse page for entities based on fine types
             desc.put(t.getCode(), t.getDisplayName());
 
         Short type = Short.parseShort(request.getParameter("type"));
-        out.println("<h1>Type: "+desc.get(type)+"</h1>");
+        out.println("<h1>Entity Type: "+desc.get(type)+"</h1>");
         JSONArray resultArray = archive.getEntitiesInfoJSON(type);
     %>
 

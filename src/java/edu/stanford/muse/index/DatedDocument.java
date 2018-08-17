@@ -25,7 +25,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -116,13 +115,14 @@ public class DatedDocument extends Document {
 		return result;
 	}
 
+	// returns e.g. Mar 1, 1998
 	public String dateString()
 	{
 		if (date != null)
 		{
 			Calendar c = new GregorianCalendar();
 			c.setTime(date);
-			return c.get(Calendar.DATE) + " " + CalendarUtil.getDisplayMonth(c) + " " + c.get(Calendar.YEAR);
+			return CalendarUtil.getDisplayMonth(c) + " " + c.get(Calendar.DATE) + ", " + c.get(Calendar.YEAR);
 		}
 		else
 			return "????-??-??";
@@ -153,8 +153,7 @@ public class DatedDocument extends Document {
 		return result;
 	}
 
-	public StringBuilder getHTMLForHeader() throws IOException
-	{
+	public StringBuilder getHTMLForHeader() {
 		StringBuilder result = new StringBuilder();
 		// header table
 		result.append ("<table class=\"docheader rounded\">\n");

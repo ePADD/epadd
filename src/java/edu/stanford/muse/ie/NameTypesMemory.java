@@ -19,8 +19,7 @@ class NameTypesMemory {
 	private final static long serialVersionUID = 1L;
 	private static String typesFile = "instance_types_en.nt1.gz";
 	
-	private static void readTypes(Map<String, NameInfoMemory> hitTitles) throws IOException
-	{
+	private static void readTypes(Map<String, NameInfoMemory> hitTitles) {
 		// types.gz is of the form First_Last Subtype|Type
 		try {
 			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new GZIPInputStream(NameTypes.class.getClassLoader().getResourceAsStream(typesFile)), "UTF-8"));

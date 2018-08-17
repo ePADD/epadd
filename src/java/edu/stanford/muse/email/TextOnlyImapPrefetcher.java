@@ -100,7 +100,7 @@ private String getPlainTextFromLines(String lines[], int startLine, int endLine)
 
 // see http://stackoverflow.com/questions/8322836/javamail-imap-over-ssl-quite-slow-bulk-fetching-multiple-messages
 @Override
-public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
+public Object doCommand(IMAPProtocol protocol) {
 	Argument args = new Argument();
 	String compactString = compactMessageSetString(messageNums); 
 	log.info ("BODY[1] " + compactString);

@@ -3,7 +3,6 @@ package edu.stanford.muse.ie.variants;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
-import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;

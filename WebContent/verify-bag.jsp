@@ -1,16 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.Config"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.Document"%>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
-<%@ page import="java.io.File" %>
-<%@ page import="java.io.FileWriter" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.List" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@include file="getArchive.jspf" %>
 <html>
@@ -54,16 +45,16 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
 
 <%
 	if(!checkDone) {
-		out.println("<p> Starting from version 6,  ePADD archive follows Bag-it specification for preservation support. If you received this archive from " +
-				" an untrusted source then you should verify the checksum of archive bag's content. Please note that this might be a time consuming process " +
-				" depending upon the size of the archive. So be prepared before verifying the integrity of this archive!!</p>");
+		out.println("<p> Starting from version 6, ePADD archive follows the Bag-it specification for preservation support. If you received this archive from " +
+				" an untrusted source, you should verify the archive bag's content. Please note that this process might take a while " +
+				" for large archives.</p>");
 	}else{
 	    if(success){
-	        out.println("<br><p> Checksum is verified. It implies that the content of this archive was not modified in between.</p>");
+	        out.println("<br><p> The bag is verified. The content of this archive was not modified.</p>");
 		}else
 		{
 		    String msg  = request.getParameter("errmsg");
-			out.println("<br><p> The checksum does not match. This archive is corrupted.</p>");
+			out.println("<br><p>Bag verification failed. This archive may have been corrupted!</p>");
 		}
 	}
 %>

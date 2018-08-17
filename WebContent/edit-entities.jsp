@@ -1,14 +1,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@ page import="edu.stanford.muse.ner.Entity" %>
 
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
-<%@ page import="java.util.stream.Stream" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
@@ -36,7 +33,7 @@
 <body>
 <jsp:include page="header.jspf"/>
 
-<%writeProfileBlock(out, archive, "Edit address book", "");%>
+<%writeProfileBlock(out, archive, "Edit entities", "");%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">

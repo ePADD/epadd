@@ -1219,8 +1219,7 @@ Archive archive = inputSet.archive;
      * but for docs that are in resultDocs, it should not include blobs that are not hitting.
      * these extra blobs will not be seen since we only use this info for highlighting blobs in resultDocs.
      */
-    public static Pair<Collection<Document>,SearchResult> selectDocsAndBlobs(SearchResult inputSet) throws UnsupportedEncodingException
-    {
+    public static Pair<Collection<Document>,SearchResult> selectDocsAndBlobs(SearchResult inputSet) {
         // below are all the controls for selecting docs
         SearchResult outResult=inputSet;
         String term = JSPHelper.getParam(inputSet.queryParams, "term");

@@ -2,7 +2,6 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="java.util.List"%>
 <%@page language="java" import="java.util.Set"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@page language="java" %>
@@ -18,7 +17,9 @@
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
-	<style>
+    <link rel="stylesheet" href="css/main.css">
+
+    <style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px; vertical-align: top;}
 		.input-field {width:350px;}
 		.input-field-label {font-size: 12px;}
@@ -48,6 +49,33 @@
 
 <%@include file="profile-block.jspf"%>
 
+<div class="nav-toggle1 sidebar-icon">
+    <img src="images/sidebar.png" alt="sidebar">
+</div>
+
+<!--sidebar content-->
+<nav class="menu1" role="navigation">
+    <h2>Import Help</h2>
+    <!--close button-->
+    <a class="nav-toggle1 show-nav1" href="#">
+        <img src="images/close.png" class="close" alt="close">
+    </a>
+
+    <!--phrase-->
+    <div class="search-tips">
+            On this page, you can import email from mbox files or a public or private email IMAP account into a fresh or existing ePADD archive.
+            You can specify multiple email sources at once. On the next screen, you will see folders available in these sources, and can select which folders to import email from.
+            <br/>
+            <br/>
+            Working with mbox files:
+            Please choose the top level folder under which mbox files reside. ePADD will examine all files under that folder's hierarchy and automatically identify the mbox files among them.
+            <br/>
+            <br/>
+            If you have email in non-mbox formats such as PST and Eudora, you can use programs like Emailchemy, Mailstore Home or Aid4Mail to convert them to mbox files.
+    </div>
+
+
+</nav>
 <%
 Archive archive =  JSPHelper.getArchive(request);
 String bestName = "";
@@ -200,11 +228,15 @@ if (archive != null) {
 				<div class="div-input-field">
 					<div class="input-field-label"><i class="fa fa-folder-o"></i> Folder or file location</div>
 					<br/>
-					<div class="input-field">
-						<input class="dir form-control" type="text" name="mboxDir2"/> <br/>
-						<button class="browse-button btn-default"><i class="fa fa-file"></i>
-							<span>Browse</span>
-						</button>
+					<div class="input-field" style="width:800px"> <!-- override default 350px width because we need a wider field and need browse button on side-->
+                        <div class="form-group col-sm-8">
+    						<input class="dir form-control" type="text" name="mboxDir2"/> <br/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <button style="height:37px" class="browse-button btn-default"><i class="fa fa-file"></i> <!-- special height for this button to make it align perfectly with input box. same height is used in export page as well -->
+                                <span>Browse</span>
+                            </button>
+                        </div>
 					</div>
 					<br/>
 				</div>
@@ -219,7 +251,7 @@ if (archive != null) {
 				<br/>
 			</div> <!--  end account -->
 			<br/>
-			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i> Add another folder</button>
+			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i> Add folder</button>
 			<br/>
 			<br/>
 		</div>

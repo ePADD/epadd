@@ -82,23 +82,23 @@
 
     <br/>
     <div class="details">
-        <div class="heading">Collection Details</div>
+        <div class="heading">Summary</div>
         <p></p>
         <p>
             Institution<br/>
-            <span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span>
+            <b><span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span></b>
         </p>
         <p>
             Repository<br/>
-            <span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span>
+            <b><span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span></b>
         </p>
         <p>
             Collection ID<br/>
-            <span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span>
+            <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span></b>
         </p>
     	<p>
             <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
-                <span><%= Util.pluralize (cm.accessionMetadatas.size(), "accession")%></span>
+                <b><span><%= Util.pluralize (cm.accessionMetadatas.size(), "accession")%></span></b>
             <% } %>
         </p>
         <p>
@@ -106,8 +106,7 @@
                 Date Range<br/>
                 <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
                 <% if (cm.nHackyDates > 0) { %>
-            <br/>
-                        <%=Util.pluralize(cm.nHackyDates, "message")%> undated
+                   <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> undated</b>
                     </p>
                 <% } %>
             <% } %>
@@ -116,16 +115,16 @@
             Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
             <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
-                Incoming: <span class="detail"><%=Util.commatize(cm.nIncomingMessages)%></span><br/>
-                Outgoing: <span class="detail"><%=Util.commatize(cm.nOutgoingMessages)%></span>
+                <b>Incoming: <span class="detail"><%=Util.commatize(cm.nIncomingMessages)%></span><br/>
+                Outgoing: <span class="detail"><%=Util.commatize(cm.nOutgoingMessages)%></span></b>
             <% } %>
         </p><p>
             Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                     <br/>
-                    Images: <span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/>
-                    Documents: <span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/>
-                    Others: <span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span>
+                    Images: <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>
+                    Documents: <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
+                    Others: <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
         </p>
 
@@ -149,8 +148,9 @@
             <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
             <br/>
             <br/>
-            <button class="btn-default" id="add-accession"><i class="fa fa-import"></i> Add accession</button>
+            <button class="btn-default" id="add-accession"><i class="fa fa-plus"></i> Add accession</button>
         </p>
+        <br/>
 
         <% } %>
     </div>
@@ -208,11 +208,11 @@
             <%
                 // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
                 if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
-                    <div class="heading"><a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a></div>
+                    <a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a>
+                    &nbsp;&nbsp;&nbsp;
                 <% } %>
-                <br/>
                 <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
-                    <div class="heading"><a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a></div>
+                    <a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a>
                     <br/>
                 <% } %>
 

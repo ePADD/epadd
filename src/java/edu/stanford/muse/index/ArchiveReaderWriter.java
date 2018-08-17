@@ -648,8 +648,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
      * It may NOT be fine if  multiple people are operating on their different copies of an archive loaded from the same place. Don't see a use-case for this right now.
      * if you don't like that, tough luck.
      * return the archive, or null if it doesn't exist. */
-    public static Archive readArchiveIfPresent(String baseDir) throws IOException
-    {
+    public static Archive readArchiveIfPresent(String baseDir) {
         //check if a valid bag in basedir.
         Bag archiveBag=Archive.readArchiveBag(baseDir);
         if(archiveBag==null)

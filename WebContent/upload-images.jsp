@@ -2,7 +2,6 @@
 <%@ page import="java.util.List" %>
 <%@page language="java" import="org.json.JSONObject"%>
 <%@ page import="org.apache.commons.fileupload.servlet.ServletFileUpload" %>
-<%@ page import="javax.mail.MessagingException" %>
 <%@page language="java" import="org.apache.commons.fileupload.FileItem"%>
 <%@page language="java" import="org.apache.commons.fileupload.disk.DiskFileItemFactory"%>
 <%@page language="java" import="edu.stanford.muse.email.StaticStatusProvider"%>
@@ -11,7 +10,6 @@
 <%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 

@@ -5,6 +5,9 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.Date" %>
+
+<%@include file="getArchive.jspf" %>
+
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -30,16 +33,11 @@
 <br/>
 If you have encountered a problem, please provide the following details to <%=edu.stanford.muse.Config.admin %> to help us fix the problem:<br/>
 	<ul>
-		<li>Operating system & version</li>
-		<li>Version of JRE(Java Runtime)</li>
-		<li>version of ePADD</li>
 		<li>Total RAM in your system</li>
-		<li>RAM assigned to ePADD</li>
 		<li>Name of the screens you went through and the input boxes filled on those screens (or screen prints). state the steps to reproduce the problem.</li>
 		<li>If the problem was encountered while importing emails then please mention the source of mbox file and the software (if any) used to convert it to mbox format.</li>
 		<li>Number of email messages and the size (in GB) of the archive.</li>
 		<li>If necessary, can you share the email files with us to find out the issue?</li>
-		<li>Operating system & version</li>
 		<li>The log given below.</li>
 	</ul>
 

@@ -21,7 +21,6 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.print.Doc;
 import java.io.*;
 import java.util.*;
 
@@ -552,8 +551,7 @@ public class Lexicon implements Serializable {
 	/** updates the map for a given language 
 	 * @throws IOException 
 	 * @throws FileNotFoundException */
-	public boolean update(String language, Map<String, String> map) throws IOException
-	{
+	public boolean update(String language, Map<String, String> map) {
 		language = language.toLowerCase();
         Lexicon1Lang langLex = languageToLexicon.computeIfAbsent(language, k -> new Lexicon1Lang());
         langLex.setRawQueryMap(map);

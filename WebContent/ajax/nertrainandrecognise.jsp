@@ -38,11 +38,8 @@ if(archive!=null){
 //        = (SequenceModel) session.getAttribute("ner");
         session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
-        try {
-            nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
-        } catch (IOException e) {
-            Util.print_exception("Could not load the sequence model from: " + modelFile, e, JSPHelper.log);
-        }
+        nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
+
         if (nerModel == null) {
             JSPHelper.log.error("Could not load NER model from: " + modelFile);
         } else {

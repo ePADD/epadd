@@ -21,8 +21,6 @@ public class StandaloneIngestion{
         MboxEmailStore me = null;
         try {
             mailFetcher.addMboxAccount(name,folderpath,false);
-        } catch (MboxFolderNotReadableException e) {
-            errorMessage="Error reading the mobx file: "+e.getMessage();
         } catch (IOException e) {
             errorMessage="File input output error : "+e.getMessage();
         }

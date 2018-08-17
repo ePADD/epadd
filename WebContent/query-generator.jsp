@@ -53,6 +53,7 @@ if (ModeConfig.isPublicMode()) {
 <body style="background-color:#f5f5f8; color: #333">
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Search');</script>
+
 <%
     //This jsp is being used to handle free text entity extraction+search and one line per term based search. A distincation is made between these
     //two cases by front end by either passing refText parameter or by passing refTextTerms parameter. Based on this, the heading of the page is either

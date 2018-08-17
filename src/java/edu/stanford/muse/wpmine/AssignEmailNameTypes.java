@@ -36,8 +36,7 @@ public class AssignEmailNameTypes {
 		}
 	}
 	
-	public static void readTypes() throws IOException
-	{
+	public static void readTypes() {
 		int count = 0;
 		try {
 			LineNumberReader lnr = new LineNumberReader(new FileReader(typesFile));

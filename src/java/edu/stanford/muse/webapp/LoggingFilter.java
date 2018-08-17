@@ -36,7 +36,7 @@ public class LoggingFilter implements Filter {
 	}
 
 	@Override
-	public void init(FilterConfig arg0) throws ServletException {
+	public void init(FilterConfig arg0) {
 		JSPHelper.log.info("Filter LoggingFilter initialized");
 		// TODO Auto-generated method stub		
 	}

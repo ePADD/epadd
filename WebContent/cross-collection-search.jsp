@@ -7,7 +7,6 @@
 <%@ page import="edu.stanford.muse.email.CalendarUtil" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="edu.stanford.muse.webapp.SimpleSessions" %>
 <%@ page import="java.io.File" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <!DOCTYPE HTML>

@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import edu.stanford.muse.index.*;
-import edu.stanford.muse.index.Document;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
 import edu.stanford.muse.ner.featuregen.FeatureUtils;
@@ -20,7 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -674,9 +672,9 @@ public class ProperNounLinker {
             for(int i=0;i<5;i++) {
                 Document doc = docs.get(rand.nextInt(docs.size()));
                 Span[] es = NER.getNames(doc, true, archive);
-                Arrays.asList(es).stream().filter(s -> !s.text.contains(" "))
+                Arrays.stream(es).filter(s -> !s.text.contains(" "))
                         .forEach(s -> System.out.println(s.text + "<->" + getNearestMatches(new EmailMention(s, doc, new EmailHierarchy()), 5, archive)));
-                numQ += Arrays.asList(es).stream().filter(s -> !s.text.contains(" ")).count();
+                numQ += Arrays.stream(es).filter(s -> !s.text.contains(" ")).count();
             }
             System.out.println("NumQ:"+numQ+"- Time: "+(System.currentTimeMillis()-st)+"ms"+"- AVG: "+((float)(System.currentTimeMillis()-st)/numQ)+"ms");
         }catch(Exception e){
