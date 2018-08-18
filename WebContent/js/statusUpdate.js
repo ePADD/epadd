@@ -77,6 +77,8 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 
 			// check for errors first
 			if (this.status != 200 && this.status != 0) {
+				// sgh: not sure why status = 0 is checked above.
+				// i think this is historical because earlier 0 might be returned for success. but i think it is not necessary now
 				window.location = "error";
 				epadd.log("Error: status " + this.status + " received from page: " + page);
 				return reject(page_xhr.response);
@@ -97,7 +99,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 			epadd.log("Response text: " + responseText);
 			epadd.log("j:" + j);
 			if (!j) {
-				var err = "Sorry, there was an error, no JSON was returned! Please retry and if the error persists, report the problem to us.";
+				var err = "Sorry, there was an error: no JSON was returned! Please retry and if the error persists, report the problem to us. HTTP status: " + this.status;
 				epadd.log(err);
 				epadd.alert(err);
 				return;

@@ -74,7 +74,7 @@ var initialiseqtip = function(){
 							api.set('content.text', str);
 						}, function(xhr, status, error) {
 							// Upon failure... set the tooltip content to the status and error value
-							api.set ('context.text', 'sorry there was an error contacting the epadd expander!');
+							api.set ('context.text', 'Sorry, there was an error contacting the epadd expander!');
 						});
 
 					return 'Loading possible matches...'; // Set some initial text

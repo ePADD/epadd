@@ -1287,7 +1287,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * In order to make indexing of large archives possible, fetch of NON-MBOXEmailstrore formats is penalised. It is possible to avoid this by handling MBox and IMAP/POP formats differently.
      */
     public void run() {
-        currentStatus = JSONUtils.getStatusJSON("Starting to process " + folder_name());
+        currentStatus = JSONUtils.getStatusJSON("Reading " + folder_name());
 
         isCancelled = false;
         Thread.currentThread().setName("EmailFetcher");
