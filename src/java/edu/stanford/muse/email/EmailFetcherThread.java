@@ -261,6 +261,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
     //public EmailDocument convertToEmailDocument(MimeMessage m, int num, String url) throws MessagingException, IOException
     private EmailDocument convertToEmailDocument(MimeMessage m, String id) throws MessagingException, IOException {
         // get the date.
+
+
         // prevDate is a hack for the cases where the message is lacking an explicit Date: header. e.g.
         //		From hangal Sun Jun 10 13:46:46 2001
         //		To: ewatkins@stanford.edu
@@ -270,22 +272,26 @@ public class EmailFetcherThread implements Runnable, Serializable {
         // update: having the exact same date causes the message to be considered a duplicate, so just increment
         // the timestamp it by 1 millisecond!
         // a better fix would be to improve the parsing in the provider
+        // note: the above logic was a cute hack but is being disabled for ePADD as we don't want any guessed dates.
 
         boolean hackyDate = false;
         Date d = m.getSentDate();
         if (d == null)
             d = m.getReceivedDate();
+//        if (d == null) {
+//            if (prevDate != null) {
+//                long newTime = prevDate.getTime() + 1L; // added +1 so that this email is not considered the same object as the prev. one if they are in the same thread
+//                d = new Date(newTime);
+//                dataErrors.add("No date for message id:" + id + ": " + EmailUtils.formatMessageHeader(m) + " assigned approximate date");
+//            } else {
+//                d = INVALID_DATE; // wrong, but what can we do... :-(
+//                dataErrors.add("No date for message id:" + id + ": " + EmailUtils.formatMessageHeader(m) + " assigned deliberately invalid date");
+//            }
+
         if (d == null) {
-            if (prevDate != null) {
-                long newTime = prevDate.getTime() + 1L; // added +1 so that this email is not considered the same object as the prev. one if they are in the same thread
-                d = new Date(newTime);
-                dataErrors.add("No date for message id:" + id + ": " + EmailUtils.formatMessageHeader(m) + " assigned approximate date");
-            } else {
-                d = INVALID_DATE; // wrong, but what can we do... :-(
-                dataErrors.add("No date for message id:" + id + ": " + EmailUtils.formatMessageHeader(m) + " assigned deliberately invalid date");
-            }
+            d = INVALID_DATE;
             hackyDate = true;
-        } else {
+    } else {
             Calendar c = new GregorianCalendar();
             c.setTime(d);
             int yy = c.get(Calendar.YEAR);
@@ -295,16 +301,18 @@ public class EmailFetcherThread implements Runnable, Serializable {
             }
         }
 
+        /*
         if (hackyDate && prevDate != null) {
             long newTime = prevDate.getTime() + 1L; // added +1 so that this email is not considered the same object as the prev. one if they are in the same thread
             d = new Date(newTime);
             Util.ASSERT(!d.equals(prevDate));
         }
+        */
 
         Calendar c = new GregorianCalendar();
-        c.setTime(d != null ? d : new Date());
+        c.setTime(d);
 
-        prevDate = d;
+       // prevDate = d;
 
         Address to[] = null, cc[] = null, bcc[] = null;
         Address[] from = null;

@@ -44,6 +44,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static edu.stanford.muse.email.EmailFetcherThread.INVALID_DATE;
+
 public class EmailUtils {
 	public static final Log					log				= LogFactory.getLog(EmailUtils.class);
 	private static org.apache.commons.collections4.map.CaseInsensitiveMap<String, String> dbpedia			= null;
@@ -637,7 +639,7 @@ public class EmailUtils {
 		return org;
 	}
 
-	public static Pair<Date, Date> getFirstLast(Collection<? extends DatedDocument> allDocs) { return getFirstLast(allDocs, false); }
+	public static Pair<Date, Date> getFirstLast(Collection<? extends DatedDocument> allDocs) { return getFirstLast(allDocs, true /* ignore invalid dates */); }
 
 	// compute the begin and end date of the corpus
 	public static Pair<Date, Date> getFirstLast(Collection<? extends DatedDocument> allDocs, boolean ignoreInvalidDates)
@@ -661,9 +663,8 @@ public class EmailUtils {
 
 			// ignore invalid date if asked
 			if (ignoreInvalidDates)
-				if(DateTimeComparator.getDateOnlyInstance().compare(d,EmailFetcherThread.INVALID_DATE)==0)
+				if(DateTimeComparator.getDateOnlyInstance().compare(d,INVALID_DATE)==0)
 					continue;//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
-
 
 			if (first == null || d.before(first))
 				first = d;
