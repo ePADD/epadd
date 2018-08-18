@@ -303,6 +303,7 @@ epadd.all_logins_complete = function(sent_folder_found) {
 
 epadd.submitFolders = function()
 {
+	var STORE_FOLDER_SEPARATOR = "^-^"; // this is just an arbitrary string that should not occur in the name of a store or folder
 	// throws an exception if at least one folder is not selected
 	function getSelectedFolderParams() {
 	    var checked = $('input.folder:checked');
@@ -316,7 +317,7 @@ epadd.submitFolders = function()
 	    for (var i=0; i < checked.length; i++)
 	    {
 	         var store = checked[i].getAttribute("STORE");
-	         urlParams += encodeURI("folder=" + store + '^-^' + checked[i].name + "&");
+	         urlParams += encodeURI("folder=" + store + STORE_FOLDER_SEPARATOR + checked[i].name + "&");
 	    }
 
 	    // convert from, to fields to dateRange field needed by doFetchAndIndex

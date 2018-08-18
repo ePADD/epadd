@@ -38,19 +38,14 @@ public class FolderInfo implements Serializable {
 	public String shortName;
 	public int messageCount;
 	public long timestamp; // millis since epoch when this folder was read. used only by mbox folder.
+	public long fileSize = -1L; // size in bytes (for mbox files only). If not available, (imap accounts, etc) it will be -1.
 
-//	public FolderInfo() { }
-
-//	public FolderInfo(String fullName, int count)
-//	{
-//		this.longName = fullName;
-//		this.messageCount = count;
-//		if (this.longName == null)
-//			log.warn ("Warning: folder's long name is null! " + Util.stackTrace());
-//	}
+	public FolderInfo(String accountKey, String fullName, String shortName, int count) {
+		this(accountKey, fullName, shortName, count, -1L);
+	}
 
 	// accountKey set to null for mbox folder
-	public FolderInfo(String accountKey, String fullName, String shortName, int count)
+	public FolderInfo(String accountKey, String fullName, String shortName, int count, long fileSize)
 	{
 		this.accountKey = accountKey;
 		this.longName = fullName;
@@ -62,6 +57,7 @@ public class FolderInfo implements Serializable {
 			log.warn ("Warning: folder's long name is null! " + Util.stackTrace());
 		lastSeenUID = -1L;
 		timestamp = new Date().getTime();
+		this.fileSize = fileSize;
 	}
 
 	public String toString()

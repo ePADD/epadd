@@ -55,7 +55,15 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 		var folderInfo = folderInfos[i];
 		// if the folder was already selected (checked[i], give it a selected-folder class so it'll be highlighted
 		var classStr = (checked[i]) ? 'folderEntry selected-folder' : 'folderEntry';
-	    html += '<td title="' + folderInfo.longName + '" class=\"' + classStr + '\">\n'; // .folderEntry does the same as min-width:225.
+		var hovertext = folderInfo.longName;
+		if (folderInfo.fileSize && folderInfo.fileSize > 0) {
+			if (folderInfo.fileSize > 1024)
+				hovertext += ' (Size: ' + Math.floor(folderInfo.fileSize/1024) + " KB)";
+			else
+                hovertext += ' (' + folderInfo.fileSize + " bytes)";
+		}
+
+	    html += '<td title="' + hovertext + '" class=\"' + classStr + '\">\n'; // .folderEntry does the same as min-width:225.
 
 	    var checkedStr = (checked[i]) ? 'CHECKED' : '';
 	    html += '<INPUT class="folder" onclick=\"updateFolderSelection(this)" TYPE=CHECKBOX STORE="' + accountName + '" NAME="' + folderInfo.longName + '"' + checkedStr + '/>';
