@@ -321,8 +321,10 @@ epadd.submitFolders = function()
 	    }
 
 	    // convert from, to fields to dateRange field needed by doFetchAndIndex
+		/*
 	    if ($('#from').val().length > 0 && $('#to').val().length > 0)
 	    	urlParams += '&dateRange=' + $('#from').val() + '-' + $('#to').val();
+	    */
 
 	    epadd.log ('urlparams = ' + urlParams);
 	    return urlParams;

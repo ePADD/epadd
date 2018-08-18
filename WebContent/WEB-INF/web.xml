@@ -607,17 +607,17 @@
 
 	<error-page>
   <exception-type>java.lang.Exception</exception-type>
-  <location>/error</location>
+  <location>/debug</location>
 </error-page>
 
 <error-page>
   <exception-type>java.lang.Error</exception-type>
-  <location>/error</location>
+  <location>/debug</location>
 </error-page>
 
 <error-page>
   <error-code>500</error-code>
-  <location>/error</location>
+  <location>/debug</location>
 </error-page>
 
 </web-app>
