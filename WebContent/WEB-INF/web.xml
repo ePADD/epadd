@@ -589,7 +589,7 @@
 
 	 <servlet>
 		<servlet-name>error</servlet-name>
-		<jsp-file>/error.jsp</jsp-file>
+		<jsp-file>/debug.jsp</jsp-file> <!-- sgh: both /error and /debug point to debug.jsp. there is no error page any more -->
   	</servlet>
   	<servlet-mapping>
 	  	<servlet-name>error</servlet-name>
@@ -607,17 +607,17 @@
 
 	<error-page>
   <exception-type>java.lang.Exception</exception-type>
-  <location>/error</location>
+  <location>/debug</location>
 </error-page>
 
 <error-page>
   <exception-type>java.lang.Error</exception-type>
-  <location>/error</location>
+  <location>/debug</location>
 </error-page>
 
 <error-page>
   <error-code>500</error-code>
-  <location>/error</location>
+  <location>/debug</location>
 </error-page>
 
 </web-app>

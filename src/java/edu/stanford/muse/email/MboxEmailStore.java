@@ -100,6 +100,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 			return;
 		}
 
+		long fileSize = f.length();
+
 		boolean noChildren = !f.isDirectory();
 		if (noChildren)
 		{
@@ -151,7 +153,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 						if (f1 != null)
 							f1.close(false);
 						// put the info in the cache
-						FolderInfo fi = new FolderInfo(null, folderBeingScanned, folderBeingScannedShortName, count);
+						FolderInfo fi = new FolderInfo(null, folderBeingScanned, folderBeingScannedShortName, count, fileSize);
 						folderCache.put(f.getPath(), fi);
 						if (validFolder)
 							list.add (fi);

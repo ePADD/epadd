@@ -25,20 +25,11 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 	if (!folderInfos) //  || !folderInfos.length)
 		return; // we're not ready yet, just return quietly
 
-	// store the status of checked folders in the existing doc, and check them again later
+	// store the status of checked folders in the existing doc, and initialize them again later
+    // we assume that new folderinfos only get added at the end, but the previous remain in the same position
 	var checked = [];
 	for (var i = 0; i < prev_folders.length; i++)
 		checked[i] = prev_folders[i].checked;
-
-	if (!accountStatus.doneReadingFolderCounts)
-		accountHeader.html('Scanning ' + accountName + '...' + folderInfos.length + " folder(s)");
-	else {
-		accountHeader.html(accountName + ' (' + folderInfos.length + ((folderInfos.length == 1) ? ' folder' : ' folders') + ')');
-		$('#go-button').fadeIn();
-		$('#date-range').fadeIn();
-		if (folderInfos.length > 1)
-			$('.select_all_folders').fadeIn();
-	}
 
 	// $('.nFolders', accountDiv).html(folderInfos.length);
 
@@ -47,6 +38,7 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 
 	var html = '';
 //	for (var i = nFoldersAlreadyShown; i < folderInfos.length; i++)
+	var totalMessages = 0, totalFileSize = 0;
 	for (var i = 0; i < folderInfos.length; i++)
 	{
 		if (i == 0)
@@ -55,7 +47,15 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 		var folderInfo = folderInfos[i];
 		// if the folder was already selected (checked[i], give it a selected-folder class so it'll be highlighted
 		var classStr = (checked[i]) ? 'folderEntry selected-folder' : 'folderEntry';
-	    html += '<td title="' + folderInfo.longName + '" class=\"' + classStr + '\">\n'; // .folderEntry does the same as min-width:225.
+		var hovertext = folderInfo.longName;
+		if (folderInfo.fileSize && folderInfo.fileSize > 0) {
+			if (folderInfo.fileSize > 1024)
+				hovertext += ' (Size: ' + Math.floor(folderInfo.fileSize/1024) + " KB)";
+			else
+                hovertext += ' (' + folderInfo.fileSize + " bytes)";
+		}
+
+	    html += '<td title="' + hovertext + '" class=\"' + classStr + '\">\n'; // .folderEntry does the same as min-width:225.
 
 	    var checkedStr = (checked[i]) ? 'CHECKED' : '';
 	    html += '<INPUT class="folder" onclick=\"updateFolderSelection(this)" TYPE=CHECKBOX STORE="' + accountName + '" NAME="' + folderInfo.longName + '"' + checkedStr + '/>';
@@ -70,6 +70,10 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 
 	    if ((i+1)%numFoldersPerRow === 0) // numFoldersPerRow defined in /folders
 		    html += '\n</tr>\n<tr>';
+
+	    totalMessages += folderInfo.messageCount;
+	    if (folderInfo.fileSize && folderInfo.fileSize > 0)
+		    totalFileSize += folderInfo.fileSize;
 	}
 
 	if ('' !== html)
@@ -78,6 +82,21 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 	//	$(accountBody).append(html);
 		accountBody.html(html);
 	}
+
+	var message = accountName + ' (' + folderInfos.length + " folder(s), " + totalMessages + " message(s)";
+	if (totalFileSize > 0) {
+		message += ", " + Math.floor (totalFileSize/1024) + " KB";
+	}
+	message += ')';
+    if (!accountStatus.doneReadingFolderCounts) {
+		accountHeader.html('Scanning... ' + message);
+    } else {
+        accountHeader.html(message);
+        $('#go-button').fadeIn();
+        $('#date-range').fadeIn();
+        if (folderInfos.length > 1)
+            $('.select_all_folders').fadeIn();
+    }
 }
 
 // displays folders and counts for the given account

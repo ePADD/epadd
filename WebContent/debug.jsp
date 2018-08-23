@@ -97,6 +97,10 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
     }
     %>
 	<br/>
+	<br/>
+	Last error code:<%=request.getAttribute("javax.servlet.error.status_code")%> type: <%=request.getAttribute("javax.servlet.error.exception_type")%>
+	<br/>
+	<br/>
 	<%
 		Log4JUtils.flushAllLogs(); // if we dont flush file is sometimes truncated
 		String debugFile = Log4JUtils.LOG_FILE;

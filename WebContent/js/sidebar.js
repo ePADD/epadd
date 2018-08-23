@@ -79,6 +79,7 @@ $(document).ready(function(){
 	});
 	// .removeClass("body-overlay-style");
 
+	window.toggleThatNav = toggleThatNav; // export this func so it can also be called from outside, e.g. if we want the sidebar open after page load
 
 	$(function() {
 		toggle.on("click", function(e) {

@@ -784,8 +784,8 @@ function showCurrentPage()
 		return;
 
     if (settings.show_count)
-	    $('#jog_text').html('&nbsp;' + (currentPage+1) + '/' + (selectedPageNum.length) + '&nbsp;');
-	$('#jog_status1').html('&nbsp;' + (currentPage+1) + '/' + (selectedPageNum.length) + '&nbsp;');
+	    $('#jog_text').html('&nbsp;' + (currentPage+1) + ' of ' + (selectedPageNum.length) + '&nbsp;');
+	$('#jog_status1').html('&nbsp;' + (currentPage+1) + ' of ' + (selectedPageNum.length) + '&nbsp;');
 
 	var docId = $($('.page').get(currentPage)).attr('docId');
 //	$('#jog_docId').html('<a href="browse?initDocId=' + docId + '">' + docId + '</a>');

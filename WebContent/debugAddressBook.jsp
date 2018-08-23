@@ -7,6 +7,9 @@
 <%@ page import="javax.mail.Address" %>
 <%@ page import="javax.mail.internet.InternetAddress" %>
 <%@ page import="com.google.common.collect.*" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.MailingList" %>
+<%@ page import="org.json.JSONArray" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
@@ -20,10 +23,13 @@
 	<title>Debug Correspondents</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
 
 	<script src="js/jquery.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
@@ -72,25 +78,79 @@
 	<h2><%=emailMap.size()%> email addresses</h2>
 	<%
 		List<String> emails = new ArrayList<>(emailMap.keySet());
-		emails.sort((e1, e2) -> Integer.compare(emailMap.get(e2).size(), emailMap.get(e1).size()));
+		emails.sort((e1, e2) -> Integer.compare(LinkedHashMultiset.create(emailMap.get(e2)).elementSet().size(), LinkedHashMultiset.create(emailMap.get(e1)).elementSet().size()));
+		AddressBook addressBook = archive.addressBook;
+
+		int count = 0;
+		JSONArray resultArray = new JSONArray();
 
 		for (String emailAddr: emails) {
-			out.println ("Email address: " + Util.escapeHTML(emailAddr) + ": #occurrences=" + emailMap.get(emailAddr).size() + " is associated with the following names:<br/>");
+			Contact c = addressBook.lookupByEmail(emailAddr);
+			boolean isMailingList = false;
+			if (c != null && c.mailingListState == MailingList.DEFINITE)
+			    isMailingList = true;
 
 			Multiset<String> namesSet = LinkedHashMultiset.create(emailMap.get (emailAddr));
+			int namesSetCount = 0;
+			if (namesSet != null)
+			    namesSetCount = namesSet.elementSet().size();
 
+			int messageCount =  emailMap.get(emailAddr).size();
+			// out.println (count + ". Email address: " + Util.escapeHTML(emailAddr) + (isMailingList ? " [ML]":"") + " (" + Util.pluralize (messageCount, "message") + ") is associated with " + Util.pluralize(namesSetCount, "name") + ":<br/>");
+
+			StringBuilder sb = new StringBuilder();
 			for (String name : namesSet.elementSet()) {
-                String link = "debugAddressBook-message.jsp?email=" + emailAddr + "&name=" + name;
-                String linkHTML = "<a target=\"_blank\" href=\"" + link + "\">Search</a>";
-				out.println("&nbsp;&nbsp;&nbsp;&nbsp;" + Util.escapeHTML (name) + ": " + namesSet.count(name) + " " + linkHTML + "<br/>\n");
+                String link = "debugAddressBook-message.jsp?email=" + emailAddr + "&archiveID=" + ArchiveReaderWriter.getArchiveIDForArchive(archive)+ "&name=" + name;
+                String linkText = Util.pluralize(namesSet.count(name), "message");
+                String linkHTML = "<a target=\"_blank\" href=\"" + link + "\">" + linkText + "</a>";
+				sb.append("&nbsp;&nbsp;&nbsp;&nbsp;" + Util.escapeHTML (name) + " (" + linkHTML + ")<br/>\n");
 			}
+
+			// out.println (sb.toString());
+
+			JSONArray j = new JSONArray();
+			j.put(0, Util.escapeHTML(emailAddr));
+			j.put(1, sb.toString());
+			j.put(2, namesSetCount);
+			j.put(3, messageCount);
+			j.put(4, isMailingList ? "[ML]" : "");
+			resultArray.put(count++, j);
 		}
 	%>
 	<hr/>
-	<h2><%=nameMap.size()%> names</h2>
-
 </div>
 <br/>
+
+<div style="margin:auto; width:1100px">
+	<table id="emailAddrs" style="display:none">
+		<thead><tr><th>Email address</th><th>Associated names</th><th># associated names</th><th>Messages</th><th>Mailing list</th></tr></thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+</div>
+<br/>
+<br/>
+
+<script>
+
+	$(document).ready(function() {
+	    var emailAddrs = <%=resultArray.toString(4)%>;
+
+	var clickable_message = function ( data, type, full, meta ) {
+		return '<a target="_blank" title="' + full[5] + '" href="' + full[4] + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+	};
+
+	$('#emailAddrs').dataTable({
+		data: emailAddrs,
+		pagingType: 'simple',
+		order:[[2, 'desc']], // col 12 (outgoing message count), descending
+		columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 2,3 ] },{width: "50%", targets: 0}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+		fnInitComplete: function() { $('#spinner-div').hide(); $('#emailAddrs').fadeIn(); }
+	});
+	} );
+</script>
+
 <jsp:include page="footer.jsp"/>
 </body>
 </html>

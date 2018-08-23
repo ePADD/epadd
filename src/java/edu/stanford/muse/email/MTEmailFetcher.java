@@ -253,7 +253,7 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 			stats = aggregateThread.stats;
 
 			log.info ("Fetch stats for folder " + fi.longName + ": " + stats);
-			log.info ("Aggregate size of archive so far: " + archive.getAllDocs().size() + " messages");
+			log.info ("Aggregate size of archive so far: " + archive.getAllDocs().size() + " messages\n------------------------------------------------------------------------------");
 			threads = null;
 		}
 

@@ -138,23 +138,25 @@
 				%>
 				<INPUT TYPE="hidden" ID="downloadAttachments" NAME="downloadAttachments" <%=checked%>/>
 				</div>
-							<section><div id="date-range" style="display:none"><h2><i class="fa fa-calendar"></i> Date Range</h2>
 
-							<p>
-								From: <input name="from" id="from" size="12"
-									placeholder="YYYYMMDD" /> To: <input name="to" id="to"
-									size="12" placeholder="YYYYMMDD" />
-							<p><%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.folders.date-range")%>
-							</div> </section>
+							<%-- removing the date filter --%>
+							<%--<section><div id="date-range" style="display:none"><h2><i class="fa fa-calendar"></i> Date Range</h2>--%>
+
+							<%--<p>--%>
+								<%--From: <input name="from" id="from" size="12"--%>
+									<%--placeholder="YYYYMMDD" /> To: <input name="to" id="to"--%>
+									<%--size="12" placeholder="YYYYMMDD" />--%>
+							<%--<p><%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.folders.date-range")%>--%>
+							<%--</div> </section>--%>
 
 							<div style="float:right"><!---Disable submit button so that folders are not submitted twice..var e = this; setTimeout(function(){e.disabled=true;},1);-->
-				<button  class="btn btn-cta" id="go-button" style="display:none" onclick="epadd.submitFolders();return false;">Continue <i class="icon-arrowbutton"></i> </button>
+				<button  class="btn btn-cta" id="go-button" style="display:none" onclick="epadd.submitFolders();return false;">Next <i class="icon-arrowbutton"></i> </button>
 				</div>
-				
-				<br/>				
-			</div> <!--  div_controls -->
 
-	<div>
+				<br/>
+			</div> <!--  div_controls -->
+		<div>
+
 	</div>
 	</div>
 </form>

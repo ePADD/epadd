@@ -10,14 +10,14 @@
 	<title>Correspondents</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	
 	<jsp:include page="css/css.jsp"/>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	

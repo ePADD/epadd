@@ -150,8 +150,8 @@
             <a href="by-folder?archiveID=<%=archiveID%>">
                 <i class="icon-browsetoparrow"></i>
 				<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>
-                <p class="cta-text-1">Folder view (<%=nFolders%>)</p>
-                <p class="cta-text-2">Folder view (<%=nFolders%>)</p>
+                <p class="cta-text-1">Folders (<%=nFolders%>)</p>
+                <p class="cta-text-2">Folders (<%=nFolders%>)</p>
             </a>
         </div>
     <% } %>

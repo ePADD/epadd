@@ -14,8 +14,8 @@
 			</div>
 
 			<div class="modal-footer" style="margin-top:0px"> <!-- explicitly override the 15px margin-top from bootstrap -->
-				<button type="button" class="btn btn-default confirm-button" data-dismiss="modal">Confirm</button>
 				<button type="button" class="btn btn-default cancel-button" data-dismiss="modal ">Cancel</button>
+				<button type="button" class="btn btn-default confirm-button" data-dismiss="modal">Confirm</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

@@ -352,19 +352,19 @@ public class MuseEmailFetcher {
 			// and http://java.sun.com/developer/technicalArticles/Intl/HTTPCharset/
 
 		    // tokenize the folder params to separate account name from folder name
-			String accountNameToFolderNameSeparator = "^-^";
+			final String STORE_FOLDER_SEPARATOR = "^-^";
 			for (String folder: selectedFolders)
 			{
 				// example: folder = GMail^-^MyFolder
 
-				int idx = folder.indexOf(accountNameToFolderNameSeparator);
+				int idx = folder.indexOf(STORE_FOLDER_SEPARATOR);
 				if (idx == -1)
 				{
 					log.error("Bad folder name received: " + folder);
 					continue;
 				}
 				String accountName = folder.substring (0, idx); // example: GMail
-				String folderName = folder.substring (idx + accountNameToFolderNameSeparator.length()); // example: MyFolder
+				String folderName = folder.substring (idx + STORE_FOLDER_SEPARATOR.length()); // example: MyFolder
 				Integer I = accountNameToFetcherIdx.get(accountName);
 				if (I == null)
 				{

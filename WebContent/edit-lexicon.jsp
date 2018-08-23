@@ -57,7 +57,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <% if (lex == null) { %>
-	Sorry, there is no lexicon named <%=lexiconName%>.
+	 Sorry, there is no lexicon named <%=lexiconName%>.
 <%
 	return;
 } %>
