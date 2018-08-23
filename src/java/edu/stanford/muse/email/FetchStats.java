@@ -22,6 +22,8 @@ public class FetchStats implements Serializable {
     private int spanInMonths;
     public int nMessagesInArchive;
     public Collection<String> dataErrors;
+    public long spaceSavingFromDupMessageDetection;
+    public long spaceSavingFromDupAttachmentDetection;
 
     public String toString() {
         // do not use html special chars here!
@@ -68,7 +70,15 @@ public class FetchStats implements Serializable {
         s += ((messageFilter == null) ? "No message filter" : ("message_filter: " + messageFilter)) + "<br/>\n";
         //	s += "Sent messages: " + nMessagesSent + " Received messages: " + nMessagesReceived + "<br/>\n";
         s += "Messages span: " + Util.formatDate(new Date(firstMessageDate)) + " to " + Util.formatDate(new Date(lastMessageDate)) + "<br/>\n";
+        //space saving
+        if(spaceSavingFromDupMessageDetection>0) {
+            s += "Space saved from detected duplicate messages: "+spaceSavingFromDupMessageDetection+"KB" + "<br/>\n";
 
+        }
+        if(spaceSavingFromDupAttachmentDetection>0){
+            s += "Space saved from detecting duplicate attachments: "+spaceSavingFromDupAttachmentDetection+"KB" + "<br/>\n";
+
+        }
         return s;
     }
 

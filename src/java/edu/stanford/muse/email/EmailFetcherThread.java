@@ -15,6 +15,8 @@
  */
 package edu.stanford.muse.email;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.sun.mail.imap.IMAPFolder;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.datacache.Blob;
@@ -23,6 +25,7 @@ import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.HTMLUtils;
+import groovy.lang.Tuple2;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -182,7 +185,6 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
     private transient Archive archive;
     Collection<String> dataErrors = new LinkedHashSet<>();    // log of input data errors
-
     private Date prevDate = null;
 
 	/*
@@ -925,8 +927,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
             try {
                 EmailDocument ed = convertToEmailDocument(mm, "dummy"); // id doesn't really matter here
                 if (archive.containsDoc(ed)) {
+                    //get more info about the already present message (duplicate)
+                    Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
+                    archive.getDupMessageInfo().put(alreadypresent,new Tuple2(ed.folderName,ed.messageID));
+
                     stats.nMessagesAlreadyPresent++;
-                    dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this exact string
+                    //dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this exact string
                     continue;
                 }
             } catch (Exception e) {
@@ -1062,7 +1068,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     // need to check this again, because there might be duplicates such within the set we are currently processing.
                     if (archive.containsDoc(ed)) {
                         stats.nMessagesAlreadyPresent++;
-                        dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this specific string
+                        //get more info about the already present message (duplicate)
+                        Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
+                        archive.getDupMessageInfo().put(alreadypresent,new Tuple2(ed.folderName,ed.messageID));
+
+
+                        //dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this specific string
                         continue;
                     }
 

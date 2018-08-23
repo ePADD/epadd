@@ -317,7 +317,7 @@ epadd.submitFolders = function()
 	    for (var i=0; i < checked.length; i++)
 	    {
 	         var store = checked[i].getAttribute("STORE");
-	         urlParams += encodeURI("folder=" + store + STORE_FOLDER_SEPARATOR + checked[i].name + "&");
+	         urlParams += "folder=" + encodeURIComponent(store) + '^-^' + encodeURIComponent(checked[i].name) + "&";
 	    }
 
 	    // convert from, to fields to dateRange field needed by doFetchAndIndex

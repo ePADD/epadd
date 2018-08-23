@@ -16,16 +16,21 @@
 package edu.stanford.muse.email;
 
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.MboxFolderNotReadableException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
+import groovy.lang.Tuple2;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -53,7 +58,7 @@ public class MuseEmailFetcher {
     public String name, archiveTitle, alternateEmailAddrs; // temp storage
     private transient List<MTEmailFetcher> fetchers;
 	public transient List<EmailStore> emailStores = new ArrayList<>();
-	
+
 	/////////////////////////// account setup stuff
 	
 	/** clear current emailstores */
@@ -361,6 +366,7 @@ public class MuseEmailFetcher {
 				if (idx == -1)
 				{
 					log.error("Bad folder name received: " + folder);
+					getDataErrors().add("Bad folder name: Content not parsed for "+folder);
 					continue;
 				}
 				String accountName = folder.substring (0, idx); // example: GMail
@@ -369,6 +375,7 @@ public class MuseEmailFetcher {
 				if (I == null)
 				{
 					log.error("Bad account name: " + accountName + " in folder name: " + folder);
+					getDataErrors().add("Bad account name: for account "+accountName);
 					continue;
 				}
 				foldersForEachFetcher.get(I).add(folderName);
@@ -606,6 +613,54 @@ public class MuseEmailFetcher {
 			stats.firstMessageDate = p.getFirst().getTime();
 			stats.lastMessageDate = p.getSecond().getTime();
 		}
+		//add stat for the duplicate messages that is stored in dupMessageInfo field of archive and is filled by MuseEmailFetcher while fetching messages..
+		//the errors of duplicates need to be properly formatted using the map dupmessageinfo
+		long sizeSavedFromDupMessages=0;
+		long sizeSavedFromDupAttachments=0;
+		Collection<String> dupMessages = new LinkedHashSet<>();
+		for(Document doc: archive.getDupMessageInfo().keySet()){
+			EmailDocument edoc = (EmailDocument)doc;
+			StringBuilder sb = new StringBuilder();
+			long sizesaved=0;
+			long totalsize=0;
+
+			int numofduplicates =  archive.getDupMessageInfo().get(doc).size();//number of duplicates found for this emaildocument
+			//get the size of attachments
+			sb.append("Duplicate message:"+" Following messages were found as duplicates of message id #"+edoc.getUniqueId()+"("+edoc.folderName+"):\n");
+			for(Blob b : edoc.attachments){
+				totalsize+=b.size;
+			}
+			sizesaved = (numofduplicates) * totalsize;
+			int count =1;
+			for (Tuple2 s :  archive.getDupMessageInfo().get(doc)) {
+				sb.append("   "+count+"."+"Message in "+s.getFirst()+"-"+s.getSecond()+"\n");
+				count++;
+			}
+			if (sizesaved != 0) {
+				sb.append("***** Saved "+sizesaved+" bytes by detecting these duplicates\n");
+				sizeSavedFromDupMessages+=sizesaved;
+			}
+
+			dupMessages.add(sb.toString());
+		}
+		stats.dataErrors.addAll(dupMessages);
+
+		//also add stat for blobstore
+		Collection<String> dupBlobMessages = new LinkedHashSet<>();
+		Map<Blob, Integer> dupblobs = archive.getBlobStore().getDupBlobCount();
+		if(dupblobs.size()>0) {
+
+			for (Blob b : dupblobs.keySet()) {
+				dupBlobMessages.add("Duplicate attachments:"+ dupblobs.get(b)+" duplicate attachments found of "+archive.getBlobStore().full_filename_normalized(b)+". Total space saved by not storing these duplicates is "+dupblobs.get(b)*b.size+" bytes\n");
+				sizeSavedFromDupAttachments+=dupblobs.get(b)*b.size;
+			}
+		}
+		stats.dataErrors.addAll(dupBlobMessages);
+		stats.spaceSavingFromDupMessageDetection=sizeSavedFromDupMessages/1000;
+		stats.spaceSavingFromDupAttachmentDetection=sizeSavedFromDupAttachments/1000;
+		//stats.dataErrors.add("Space saving from duplicate detection:" +sizeSavedFromDupMessages/1000 + "KB saved by detecting duplicate messages\n");
+		//stats.dataErrors.add("Space saving from duplicate detection:" +sizeSavedFromDupAttachments/1000 + "KB saved by detecting duplicate attachments\n");
+
 		archive.addStats(stats);
 		log.info("Fetcher stats: " + stats);
 	}

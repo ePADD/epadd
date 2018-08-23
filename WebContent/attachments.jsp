@@ -98,6 +98,9 @@
 
     <!-- filter form submits back to the same page -->
     <form action="attachments" method="get">
+        <!-- add archiveID as hidden argument -->
+        <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+
         <section>
             <div class="panel">
                 <div class="panel-heading">Filter attachments</div>

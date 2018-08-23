@@ -42,6 +42,7 @@ public class BlobStore implements Serializable {
 
     public Set<Blob> uniqueBlobs = new LinkedHashSet<>();
 
+    private transient Map<Blob,Integer> dupBlobCount = new LinkedHashMap<>();//map to maintain the count of duplicate blobs so that it can be reported in the data report
     // mapping of each data item to a data id
     private Map<Blob, Integer> id_map = new LinkedHashMap<>();
     private Map<Blob, URL> urlMap = new LinkedHashMap<>(); // -- seems this is not really used
@@ -340,6 +341,9 @@ public class BlobStore implements Serializable {
 
             if (uniqueBlobs.contains(blob)) {
                 tmpFile.delete();
+                //blob already exists.. record it in the data report.
+                int curcount = dupBlobCount.getOrDefault(blob,0);
+                dupBlobCount.put(blob,curcount+1);
                 return nBytes;
             }
 
@@ -744,6 +748,10 @@ public class BlobStore implements Serializable {
 
     public boolean isNormalized() {
         return normalizationMap!=null && normalizationMap.size()>0;
+    }
+
+    public Map<Blob, Integer> getDupBlobCount() {
+        return dupBlobCount;
     }
 
     /*public void writeNormalizationMap(String filename){

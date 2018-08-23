@@ -58,6 +58,9 @@
             {"Probably bad date", " messages with a probably bad date"},
             {"attachment filename is null", "attachments with no filename"},
             {"Duplicate message", "duplicate messages"},
+            {"Duplicate attachments", "duplicate attachments"},
+            {"Bad folder name", " Bad folder name"},
+            {"Bad account name", " Bad account name"},
             {"", "other errors"} // this is needed as a catch all, otherwise the remaining errors won't be reported.
     };
 

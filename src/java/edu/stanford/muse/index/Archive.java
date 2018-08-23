@@ -16,6 +16,7 @@
 package edu.stanford.muse.index;
 
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import edu.stanford.muse.Config;
@@ -58,6 +59,8 @@ import gov.loc.repository.bagit.reader.BagReader;
 import gov.loc.repository.bagit.util.PathUtils;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
+import groovy.lang.Tuple;
+import groovy.lang.Tuple2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,6 +111,11 @@ public class Archive implements Serializable {
     public static final String LABELMAPDIR= "LabelMapper";
     public static final String BLOBLNORMALIZATIONFILE_SUFFIX="NormalizationInfo.csv";
 
+    public Multimap<Document, Tuple2<String,String>> getDupMessageInfo() {
+        return dupMessageInfo;
+    }
+
+
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
     public enum Save_Archive_Mode {INCREMENTAL_UPDATE, FRESH_CREATION};
@@ -128,6 +136,10 @@ public class Archive implements Serializable {
     transient private Map<String, Lexicon> lexiconMap = null;
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
+    transient private Map<Document,Document> allUniqueDocsMap=null;
+    private transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
+
+
     private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
     public Set<String> ownerNames = new LinkedHashSet<>(), ownerEmailAddrs = new LinkedHashSet<>();
@@ -700,6 +712,23 @@ int errortype=0;
         return allDocsAsSet;
     }
 
+    public Map<Document,Document> getAllUniqueDocsMap(){
+        // allUniqueDocsMap is lazily computed
+        if (allUniqueDocsMap == null) {
+            synchronized (this) {
+                if (allUniqueDocsMap == null) {
+                    allUniqueDocsMap = new LinkedHashMap<>();
+                    for(Document doc: allDocsAsSet)
+                        allUniqueDocsMap.put(doc,doc);
+                    Util.softAssert(allUniqueDocsMap.size() == allDocsAsSet.size(),log);
+                }
+            }
+        }
+        return allUniqueDocsMap;
+
+    }
+
+
     public void Verify() {
         List<Document> docs = getAllDocs();
         for (Document doc : docs) {
@@ -792,6 +821,8 @@ int errortype=0;
 
         getAllDocsAsSet().add(doc);
         getAllDocs().add(doc);
+        getAllUniqueDocsMap().put(doc,doc);
+
 
         String subject = "", contents = "";
 
@@ -826,6 +857,8 @@ int errortype=0;
 
         getAllDocsAsSet().add(doc);
         getAllDocs().add(doc);
+        getAllUniqueDocsMap().put(doc,doc);
+
 
         String subject = doc.getSubjectWithoutTitle();
         subject = EmailUtils.cleanupSubjectLine(subject);
@@ -1946,6 +1979,7 @@ after maskEmailDomain.
             if (asErrors != null)
                 result.addAll(asErrors);
         }
+
         return result;
     }
 
@@ -2303,9 +2337,9 @@ after maskEmailDomain.
     public static void main(String[] args) {
         try {
 
-           String userDir = "/Volumes/LaCie/ePADD5" + File.separator + "epadd-appraisal" + File.separator + "user";
+           String userDir = "/Users/tech/" + File.separator + "epadd-appraisal" + File.separator + "user/data/data"+File.separator+"blobs";
             // String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
-            Bag b = Archive.readArchiveBag(userDir);
+            //Bag b = Archive.readArchiveBag(userDir);
             StandardSupportedAlgorithms algorithm = StandardSupportedAlgorithms.MD5;
 BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
             File tmp = Util.createTempDirectory();
