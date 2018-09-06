@@ -2216,13 +2216,11 @@ after maskEmailDomain.
     }
 */
 
-    public void updateFileInBag(String fileOrDirectoryName, String baseDir) {
+    //needed to make this method because sometime we want to update a bag without loading the whole archive.
+    public static void updateFileInBag(Bag archiveBag, String fileOrDirectoryName, String baseDir){
         Path filepathname = Paths.get(fileOrDirectoryName);
         Path baginfofile = Paths.get(baseDir+File.separatorChar+"bag-info.txt");
         Path manifestinfofile = Paths.get(baseDir +File.separatorChar+"manifest-md5.txt");
-        //get bag
-        Bag archiveBag = this.getArchiveBag();
-
         //updatePayloadManifests(bag, algorithms, includeHidden);
         MessageDigest messageDigest = null;
         Map<Manifest, MessageDigest> manifestToMessageDigest= new HashMap<>();
@@ -2263,7 +2261,7 @@ after maskEmailDomain.
             manifestToMessageDigest.clear();
             archiveBag.getTagManifests().forEach(manifest->manifestToMessageDigest.put(manifest, finalMessageDigest));
             final CreateTagManifestsVistor tagVistor = new CreateTagManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
-           //Files.walkFileTree(filepathname, tagVistor);
+            //Files.walkFileTree(filepathname, tagVistor);
             Files.walkFileTree(baginfofile,tagVistor);
             Files.walkFileTree(manifestinfofile,tagVistor);
             //update bag'stagemanifest
@@ -2274,6 +2272,13 @@ after maskEmailDomain.
             e.printStackTrace();
         }
 
+
+    }
+
+    public void updateFileInBag(String fileOrDirectoryName, String baseDir) {
+        //get bag
+        Bag archiveBag = this.getArchiveBag();
+        updateFileInBag(archiveBag,fileOrDirectoryName,baseDir);
 
     }
 
