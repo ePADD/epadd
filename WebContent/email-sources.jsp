@@ -4,6 +4,7 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.Set"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="org.jpl7.JPL" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -77,6 +78,10 @@
 
 </nav>
 <%
+	//Term t;
+	//initialization of JPL -- just for testing
+	//JPL.init();
+	//load model file..
 Archive archive =  JSPHelper.getArchive(request);
 String bestName = "";
 String bestEmail = "";

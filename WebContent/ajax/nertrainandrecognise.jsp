@@ -45,7 +45,7 @@ if(archive!=null){
         } else {
             NER ner = new NER(archive, nerModel);
             session.setAttribute("statusProvider", ner);
-            ner.recognizeArchive();
+            ner.recognizeArchiveVersion7();
             //ner.recognizeArchive(); [why was it called two times??]
             //Here, instead of getting the count of all entities (present in ner.stats object)
             //get the count of only those entities which pass a given threshold.

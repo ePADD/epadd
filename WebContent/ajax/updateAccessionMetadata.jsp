@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="org.json.JSONObject"%>
 <%@page language="java" import="javax.mail.MessagingException"%>
-<%@ page import="java.io.*"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.Config"%><%@ page import="java.lang.ref.WeakReference"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="java.io.*"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.Config"%><%@ page import="java.lang.ref.WeakReference"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="gov.loc.repository.bagit.domain.Bag"%>
 <%
 	JSONObject result = new JSONObject();
 	if (!ModeConfig.isProcessingMode()) {
@@ -62,6 +62,9 @@ try {
 	//ideally we should invalidate that and getCollectionMetaData's responsibility will be to read it again if invalidated.
 	//however for now we will just set it explicitly.
 	WeakReference<Archive> warchive= ArchiveReaderWriter.getArchiveFromGlobalArchiveMap(archiveBaseDir);
+	String dir = archiveBaseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
+	String processingFilename = dir + File.separatorChar + Config.COLLECTION_METADATA_FILE;
+
 	if(warchive!=null){
 	    warchive.get().collectionMetadata= cm;
 	    ArchiveReaderWriter.saveCollectionMetadata(warchive.get(),Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
@@ -69,7 +72,15 @@ try {
 	else{
 	    //we only need to write the collection metadata without loading the archive. so it's fresh creation.
     	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
+    	 //for updating the checksum we need to first read the bag from the basedir..
+        Bag archiveBag=Archive.readArchiveBag(archiveBaseDir);
+        if(archiveBag==null)
+            result.put("errorMessage","Metadata updated but not able to update the bagit checksum");
+	    else
+	      Archive.updateFileInBag(archiveBag,processingFilename,archiveBaseDir);
 	}
+
+
 	result.put ("status", 0);
 	out.println (result.toString(4));
 	return;

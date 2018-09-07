@@ -111,9 +111,7 @@ try {
 
 	if(warchive!=null){
 	    warchive.get().collectionMetadata= cm;
-	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
-	//update checksum after modfiying the collection metadata..
-	Archive.updateFileInBag(warchive.get().getArchiveBag(),processingFilename,archiveBaseDir);
+	ArchiveReaderWriter.saveCollectionMetadata(warchive.get(),Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 	}else{
 	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
     //for updating the checksum we need to first read the bag from the basedir..

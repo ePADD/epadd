@@ -59,6 +59,11 @@
 			<artifactId>bagit</artifactId>
 			<version>5.0.0-modified</version>
 		</dependency>
+		<dependency>
+			<groupId>org</groupId>
+			<artifactId>jpl</artifactId>
+			<version>7.4.0</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/gov.loc/bagit -->
 	<!--	<dependency>
 			<groupId>gov.loc</groupId>
