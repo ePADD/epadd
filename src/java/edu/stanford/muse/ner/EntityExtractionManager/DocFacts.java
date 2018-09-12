@@ -110,7 +110,7 @@ public class DocFacts {
                 cicFact.nEnd=thisitem.third;
                 cicFact.nNextCIC="";
                 cicFact.nMID=new String(messageID);
-                cicFact.nInBetween=line.substring(thisitem.third);//as there is no next CIC, everything in between this CIC and the
+                cicFact.nInBetween="";line.substring(thisitem.third);//as there is no next CIC, everything in between this CIC and the
                 //last character is put in this field.
             }else{
                 //get the next CIC, get the inbetween substring between these two and then dump the information of this one.
@@ -125,9 +125,9 @@ public class DocFacts {
                 else
                     inbetween = line.substring(thisitem.getThird(),nextstart);
                 //if inbetween contains " then remove them, somehow escaping didn't work with prolog
+                inbetween = inbetween.replace("\\","\\\\"); //INTERESTING: Here order is imp what if we put it after the second replacement? " becomes \" and \" becomes \\"
                 inbetween = inbetween.replace("\"","\\\"");
                 inbetween = inbetween.replace("'","\\'");
-                inbetween = inbetween.replace("\\","\\\\");
 
                 cicFact.nCIC=new String(thisitem.first);
                 cicFact.nStart=thisitem.second;
@@ -239,6 +239,7 @@ public class DocFacts {
      */
     public void dumpFacts(){
 
+        Set<String> alreadyDumpedSet = new LinkedHashSet<>();
         File f = new File(System.getProperty("user.home")+ File.separator+nCICFactsFileName);
         if(!f.exists())
             try {
@@ -255,10 +256,16 @@ public class DocFacts {
             //Step 1.1. Iterate over CIC's and dump all resolved CIC's separately as resolved predicate.
 
             nCICFacts.forEach(fact->{
-                if(fact.nType==null)
-                    out.println("cic(\""+fact.nCIC+"\","+ fact.nStart + "," + fact.nEnd + ",\""+ fact.nNextCIC + "\",\""+fact.nMID + "\",\""+fact.nInBetween+"\").");
-                else
+                if(fact.nType==null) {
+                 if(!alreadyDumpedSet.contains(fact.nCIC)) {
+                    alreadyDumpedSet.add(fact.nCIC);
+                     out.println("cic(\"" + fact.nCIC + "\"," + fact.nStart + "," + fact.nEnd + ",\"" + fact.nNextCIC + "\",\"" + fact.nMID + "\",\"" + fact.nInBetween + "\").");
+
+                 }
+                } else{
                     out.println("resolved(\""+fact.nCIC+"\","+ fact.nStart + "," + fact.nEnd + ",\""+ fact.nNextCIC + "\",\""+fact.nMID + "\",\""+fact.nInBetween+"\",\""+fact.nType.name()+"\").");
+
+                }
             });
         }catch(IOException e){
             e.printStackTrace();

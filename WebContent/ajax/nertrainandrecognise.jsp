@@ -40,7 +40,7 @@ if(archive!=null){
         JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
         nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
 
-        if (nerModel == null) {
+        if (nerModel==null) {
             JSPHelper.log.error("Could not load NER model from: " + modelFile);
         } else {
             NER ner = new NER(archive, nerModel);
