@@ -81,9 +81,9 @@ public class EntityBook implements Serializable {
                         for (String s : linesForEntity) {
                             if (Util.nullOrEmpty(me.getDisplayName())) {
                                 me.setDisplayName( s);
-                            } else {
-                                me.addAltNames(s);
                             }
+                                me.addAltNames(s);//alwasy add a name as altname.. Display name is added separately as display name..
+
                             nameToMappedEntity.put(canonicalize(s), me);
                         }
                     }
