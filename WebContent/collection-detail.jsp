@@ -7,6 +7,7 @@
 <%@page language="java" import="java.io.File"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+<%@ page import="javafx.scene.shape.Arc" %>
 
 <html>
 <head>
@@ -63,7 +64,7 @@
     if (cm == null)
         return;
 
-    String fileParam = f.getName() + "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
+    String fileParam = f.getName() + "/" + Archive.BAG_DATA_FOLDER+ File.separator + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
     String url = "serveImage.jsp?file=" + fileParam;
     String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
 %>

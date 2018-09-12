@@ -53,9 +53,9 @@
             <%
                 String file = null;
                 if(!Util.nullOrEmpty(collectionID))
-                    file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
+                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
                 else if(!Util.nullOrEmpty(archiveID))
-                    file = new File(archive.baseDir).getName() + File.separator + Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
             %>
 
                 <div class="profile-small-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
@@ -64,9 +64,9 @@
             Landing Page Photo: (Aspect ratio 4:3)<br/>
             <%
                 if(!Util.nullOrEmpty(collectionID))
-                    file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
                 else if(!Util.nullOrEmpty(archiveID))
-                    file = new File(archive.baseDir).getName() + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+  Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
             %>
             <div class="landing-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
             <br/>
@@ -76,9 +76,9 @@
 
             <%
                 if(!Util.nullOrEmpty(collectionID))
-                    file = collectionID + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+  Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
                 else if(!Util.nullOrEmpty(archiveID))
-                    file = new File(archive.baseDir).getName() + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
             %>
             Banner Image: (Aspect ratio 2.5:1)<br/>
             <div class="banner-img" style="background-image:url('serveImage.jsp?&file=<%=file%>')">

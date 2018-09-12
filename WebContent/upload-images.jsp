@@ -11,6 +11,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+<%@ page import="gov.loc.repository.bagit.domain.Bag" %>
 <%--<%@include file="getArchive.jspf" %>--%>
 
 <%
@@ -69,28 +70,46 @@
                 }
 
                 String dname=null;
+                Archive archive=null;
                 if(!"null".equals(collectionID))
                     dname = collectionID;
                 else if(!"null".equals(archiveID)) {
-                    Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+                    archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
                     dname = new File(archive.baseDir).getName();
                 }
+                String dir = null;
+                String basedir=null;
+                Bag bag=null;
                 if (type != null && suffix != null) {
                     //String dir = archive.baseDir + File.separator + Archive.IMAGES_SUBDIR;
-                    String dir = null;
-                    if (ModeConfig.isProcessingMode())
-                        dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + dname + File.separatorChar + Archive.IMAGES_SUBDIR;
-                    else if (ModeConfig.isDeliveryMode())
-                        dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + dname + File.separatorChar + Archive.IMAGES_SUBDIR;
-                    else if (ModeConfig.isDiscoveryMode())
-                        dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dname + File.separatorChar + Archive.IMAGES_SUBDIR;
-                    else if (ModeConfig.isAppraisalMode())
-                        dir = Config.REPO_DIR_APPRAISAL +File.separator +  dname + File.separator+ Archive.IMAGES_SUBDIR;
+
+                    if (ModeConfig.isProcessingMode()) {
+                        basedir=edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + dname;
+                        bag=Archive.readArchiveBag(basedir);
+                        dir = edu.stanford.muse.Config.REPO_DIR_PROCESSING + File.separator + dname + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + Archive.IMAGES_SUBDIR;
+                    }
+                    else if (ModeConfig.isDeliveryMode()) {
+                        basedir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + dname;
+                        bag = Archive.readArchiveBag(basedir);
+                        dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + dname + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + Archive.IMAGES_SUBDIR;
+                    }
+                    else if (ModeConfig.isDiscoveryMode()) {
+                        basedir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dname;
+                        bag=Archive.readArchiveBag(basedir);
+                        dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dname + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + Archive.IMAGES_SUBDIR;
+                    }
+                    else if (ModeConfig.isAppraisalMode()) {
+                        basedir = Config.REPO_DIR_APPRAISAL + File.separator + dname;
+                        bag=Archive.readArchiveBag(basedir);
+                        dir = Config.REPO_DIR_APPRAISAL + File.separator + dname + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.IMAGES_SUBDIR;
+                    }
                     new File(dir).mkdirs();
                     String filename = dir + File.separator + type + "." + suffix;
                     Util.copy_stream_to_file(item.getInputStream(), filename);
                     filesUploaded++;
                 }
+                //after uploading the images, update the bag metadata as well.
+                Archive.updateFileInBag(bag,dir,basedir);
             } catch (Exception e) {
                 Util.print_exception(e, JSPHelper.log);
                 error = "Sorry, there was an error uploading files.";
