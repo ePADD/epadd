@@ -107,8 +107,12 @@
 			// get alt names if any
 			Set<String> altNames = entityBook.getAltNamesForDisplayName(entityDisplayName, type);
 			if (altNames != null)
-				for (String altName : altNames)
-					textBoxVal.append(Util.escapeHTML(altName) + "\n");
+				for (String altName : altNames) {
+				//enter altName only if different from the entityDisplayName.
+					if(!entityDisplayName.equals(altName))
+						textBoxVal.append(Util.escapeHTML(altName) + "\n");
+
+				}
 		}
 	}
 %>

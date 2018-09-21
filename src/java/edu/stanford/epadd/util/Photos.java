@@ -56,7 +56,7 @@ public class Photos
 		Archive archive = JSPHelper.getArchive(request);
 		if(archive!=null){
 				baseDir = archive.baseDir;
-				filePath = baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + filename;
+				filePath = baseDir + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + filename;
 
 		}else if (ModeConfig.isProcessingMode())
 		{

@@ -54,6 +54,7 @@ public class MappedEntity implements Serializable {
          */
     public void writeObjectToStream(BufferedWriter out) throws IOException {
         out.append("###Names###");
+        out.newLine();
         for(String name: this.getAltNames()){
             if(name.compareTo(this.getDisplayName())==0)
                 out.append("*");
@@ -63,6 +64,7 @@ public class MappedEntity implements Serializable {
         out.append("###EntityType###");
         out.newLine();
         out.append(Integer.toString(this.getEntityType()));
+        out.newLine();
     }
 
 
@@ -92,8 +94,10 @@ public class MappedEntity implements Serializable {
                     //else set it as only altnames
                     tmp.getAltNames().add(inp.trim());
                 }
-            }else if (state==1)
+            }else if (state==1) {
                 tmp.setEntityType(Short.parseShort(inp.trim()));
+                break; //don't read the next line that is delimiter -------------------
+            }
                 //Util.softAssert(tmp.mailingListState,"Some serious issue in reading mailing list state from the contact object",log);
 
             inp = in.readLine();
