@@ -637,17 +637,21 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
         // these are the 3 fields for stemming, everything else uses StandardAnalyzer
         Map<String, Analyzer> map = new LinkedHashMap<>();
-     /*   map.put("body", snAnalyzer);
+        map.put("body", snAnalyzer);
         map.put("title", snAnalyzer);
         map.put("body_original", stemmingAnalyzer);
-*/
+
 		KeywordAnalyzer keywordAnalyzer = new KeywordAnalyzer();
-		//do not remove any stop words.
 		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
 
+		/////////// For supporting non-stemmed version-------/////
+		/*
+		//do not remove any stop words.
 		map.put("body", standardAnalyzer);
 		map.put("title", standardAnalyzer);
 		map.put("body_original", standardAnalyzer);
+		*/
+		////////////////////////////////////////////////////////////////
 
         // actually these do not need any real analyzer, they are just stored opaquely
         map.put("docId", keywordAnalyzer);
