@@ -1,7 +1,7 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <% 
 	String query = request.getParameter("data");
 	JSONObject result= new JSONObject();
@@ -221,7 +221,7 @@
 
     }//////////////////////////////////////Download unconfirmed correspondent file//////////////////////////////////////////////////////////////////////
     else if(query.equals("unconfirmedcorrespondents")){
-	    JSONArray correspondents = archive.getAddressBook().getCountsAsJson((Collection)archive.getAllDocs(),true,ArchiveReaderWriter.getArchiveIDForArchive(archive));
+	    JSONArray correspondents = AddressBook.getCountsAsJson((Collection)archive.getAllDocs(),true,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 	    //put all these data in a csv, copy to temp directory and return the url to download.
          String destfile = Archive.TEMP_SUBDIR + File.separator + "unconfirmedCorrespondents.csv";
          Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"csv",JSPHelper.log);

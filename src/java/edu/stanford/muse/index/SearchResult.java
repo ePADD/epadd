@@ -1,6 +1,7 @@
 package edu.stanford.muse.index;
 
 import au.com.bytecode.opencsv.CSVReader;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.Config;
@@ -698,7 +699,56 @@ public class SearchResult {
         return inputSet;
     }
 
-    private static SearchResult filterForLexicons(SearchResult inputSet) {
+
+//    public Set<Document> getLexiconDocs (Archive archive, String category, boolean originalContentOnly, boolean regexSearch){
+//        List<Document> docs = archive.indexer.docs;
+//        Collection<Lexicon.Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
+//        Set<Document> result = new LinkedHashSet<>();
+//        Set<Document> docs_set = Util.castOrCloneAsSet(docs);
+//        // aggregate results for each lang into result
+//        for (Lexicon.Lexicon1Lang lex: lexicons)
+//        {
+//            Collection<String> categories = lex.getRawMapFor("english").keySet();
+//
+//            Set<Document> resultset = lex.getLexiconDocs(archive, category, originalContentOnly, regexSearch);
+//            result.addAll(resultset);
+//        }
+//        return result;
+//    }
+//
+//    public Set<Document> getLexiconDocs (Archive archive, String category, boolean originalContentOnly, boolean regexSearch) {
+//        Map<String, Integer> map = new LinkedHashMap<>();
+//        String[] captions = captionToExpandedQuery.keySet().toArray(new String[captionToExpandedQuery.size()]);
+////			Set<Document> result = (Set) lexicon.getDocsWithSentiments(new String[]{category}, inputSet.archive.indexer, inputSet.matchedDocs.keySet(), -1, false/* request.getParameter("originalContentOnly") != null */, category);
+//        Set<Document> result = new LinkedHashSet<>();
+//
+//        for (String caption : captions) {
+//            if(!caption.equals(category))
+//                continue;
+//            String query = captionToExpandedQuery.get(caption);
+//            String[] searchTerms = query.split("[|]");
+//            for (String term: searchTerms) {
+////		int nDocs = archive.indexer.getNumHits(term, false, Indexer.QueryType.FULL);
+//                Multimap<String, String> params = LinkedHashMultimap.create();
+//                params.put("termSubject", "on");
+//                params.put("termBody", "on");
+//                params.put("termAttachments", "on");
+//                String searchTerm = term;
+//                if (!(searchTerm.length() > 2 && searchTerm.startsWith("\"") && searchTerm.endsWith("\"")))
+//                    searchTerm = "\"" + searchTerm + "\"";
+//                SearchResult inputSet = new SearchResult(archive, params);
+//
+//                SearchResult resultSet = SearchResult.searchForTerm(inputSet, searchTerm);
+//                //int nDocs = resultSet.getDocumentSet().size();
+//                //add to result set
+//                result.addAll(resultSet.getDocumentSet());
+//            }
+//
+//        }
+//        return result;
+//    }
+//
+    public static SearchResult filterForLexicons(SearchResult inputSet) {
         String lexiconName = JSPHelper.getParam(inputSet.queryParams, "lexiconName");
 
         Lexicon lexicon;
@@ -715,10 +765,19 @@ public class SearchResult {
         String category = JSPHelper.getParam(inputSet.queryParams, "lexiconCategory");
         if (Util.nullOrEmpty(category))
             return inputSet;
-        Set<Document> result = (Set) lexicon.getLexiconDocs(inputSet.archive,category,false,regexsearch);
 
-        //now keep only those docs in inputSet which are present in allDocs set.
-        inputSet.matchedDocs.keySet().retainAll(result);
+        //if parameter map contains termAttachments as "on" then remove it as right now we don't have support for searching attachments for lexicon..[Or is this constraints only
+        //for regex]
+        //inputSet.queryParams.remove("termAttachments","on");
+
+        Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage("english");
+        String query = lex.captionToExpandedQuery.get(category);
+
+        if(!regexsearch){
+            inputSet = searchForTerm(inputSet,query);
+        }else{
+            inputSet = searchForRegexTerm(inputSet,query);
+        }
 
         //Highlighting information that will be applied to all documents. This information is based on the
         //lexicon category option passed from the front end.

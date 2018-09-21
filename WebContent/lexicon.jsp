@@ -51,9 +51,9 @@
 			function do_lexicon_search(e) {
 			  var cat = $(e.target).text();
 			  if (window.is_regex)
-                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
+                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
 			  else
-                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val());
+                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + $('#lexiconName').val());
             }
             //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
 			var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
@@ -124,7 +124,7 @@
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(lexiconname) + "</div>");
 	} else {
 //		session.setAttribute("lexicon", lex);
-		Map<String, Integer> map = lex.getLexiconCounts(archive, false /*,!isRegex*/ /* originalContent only */, isRegex);
+		JSONArray map = lex.getCountsAsJSON(lexiconname,archive, false /*,!isRegex*/ /* originalContent only */, isRegex);
 		Collection<String> lexiconNames = archive.getAvailableLexicons();
 		JSONArray jsonArray = new JSONArray(lexiconNames);
 		if (ModeConfig.isDeliveryMode()) {
@@ -169,9 +169,9 @@
 		<thead><th>Lexicon category</th><th>Messages</th></thead>
 		<tbody>			
 			<%
-			for (String caption: map.keySet()) {
+			for (int j=0; j<map.length();j++) {
 				%>
-				<tr><td class="search"><%=caption %></td><td><%=map.get(caption)%></td></tr>
+				<tr><td class="search"><%=((JSONArray)map.get(j)).get(0) %></td><td><%=((JSONArray)map.get(j)).get(1)%></td></tr>
 				<%
 			}
 			%>

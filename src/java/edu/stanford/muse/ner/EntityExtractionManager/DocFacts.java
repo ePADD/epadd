@@ -11,12 +11,16 @@ import edu.stanford.muse.ner.tokenize.CICTokenizer;
 import edu.stanford.muse.ner.tokenize.Tokenizer;
 import edu.stanford.muse.util.NLPUtils;
 import edu.stanford.muse.util.Triple;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class DocFacts {
+    static Log log = LogFactory.getLog(DocFacts.class);
+
     final static String nCICFactsFileName="CICFacts.pl";
     final static String nCICMetaFactsFileName="CICMetaFacts.pl";
 
@@ -171,7 +175,7 @@ public class DocFacts {
     This method updates the type of the CIC stored in this object. If messageID is null then the type is applied to
     all CIC (present in any message of this set).
      */
-    public void updateResolvedType(String CIC, int start, int end, String nextCIC, String inBetween, NEType.Type type, String messageID){
+    public void updateResolvedType(String CIC, int start, int end, String nextCIC, String inBetween, NEType.Type type, String messageID, int entityID){
 
         //Step 1. Check if CIC and messageid is present in nCICFacts..
         CICFact cfact = new CICFact();
@@ -186,14 +190,34 @@ public class DocFacts {
             //If yes then just update the type -- assert that no type should have been assigned to it earlier. In case of conflict how to record that?
             nCICFacts.remove(cfact);
             cfact.nType = type;
+            cfact.nEntityID = entityID;
+
             nCICFacts.add(cfact);
+
         }else{
             //Step 2. If not then add the CIC with these information and set the type accordingly.
             cfact.nType = type;
+            cfact.nEntityID = entityID;
+
             nCICFacts.add(cfact);
         }
     }
 
+    /*
+    This method updates the type of the CIC stored in this object for which the name CIC matches with the passed argument.
+     */
+    public void updateResolvedType(String CIC, NEType.Type type, int entityID){
+
+        //iterate over all nCICFacts. for the entries whose name match with CIC set the type and id accordingly.
+        //in case of a conflict (where a type was already assigned) record the conflict.
+        for(CICFact fact: nCICFacts){
+            if(fact.nCIC.equals(CIC)) {
+                fact.nEntityID = entityID;
+                fact.nType = type;
+            }
+        }
+
+    }
     /*
     This method removes a given CIC. It is used when some CIC is explicitly merged with other CIC
      */
@@ -233,12 +257,26 @@ public class DocFacts {
         });
         return result;
     }
+/*
+     return all those CIC which have not be resolved.
+     */
 
+    public Set<CICFact> getUnResolvedCICs(){
+        Set<CICFact> result = new LinkedHashSet<>();
+        nCICFacts.forEach(fact->{
+            if(fact.nType==null) {
+                    result.add(fact);
+
+            }
+        });
+        return result;
+    }
     /*
     This method dumps the facts extracted (like CIC, correspondents, date, threadid etc) in different prolog files as facts.
      */
-    public void dumpFacts(){
+    public void dumpFacts(boolean uniqueCICs){
 
+        cleanUpDumpedFiles();
         Set<String> alreadyDumpedSet = new LinkedHashSet<>();
         File f = new File(System.getProperty("user.home")+ File.separator+nCICFactsFileName);
         if(!f.exists())
@@ -258,12 +296,13 @@ public class DocFacts {
             nCICFacts.forEach(fact->{
                 if(fact.nType==null) {
                  if(!alreadyDumpedSet.contains(fact.nCIC)) {
-                    alreadyDumpedSet.add(fact.nCIC);
+                     if(uniqueCICs)
+                        alreadyDumpedSet.add(fact.nCIC);
                      out.println("cic(\"" + fact.nCIC + "\"," + fact.nStart + "," + fact.nEnd + ",\"" + fact.nNextCIC + "\",\"" + fact.nMID + "\",\"" + fact.nInBetween + "\").");
 
                  }
                 } else{
-                    out.println("resolved(\""+fact.nCIC+"\","+ fact.nStart + "," + fact.nEnd + ",\""+ fact.nNextCIC + "\",\""+fact.nMID + "\",\""+fact.nInBetween+"\",\""+fact.nType.name()+"\").");
+                    out.println("resolvedType(\""+fact.nCIC+"\","+ fact.nStart + "," + fact.nEnd + ",\""+ fact.nNextCIC + "\",\""+fact.nMID + "\",\""+fact.nInBetween+"\",\""+fact.nType.getDisplayName()+"\"," + fact.nEntityID +").");
 
                 }
             });
@@ -320,4 +359,34 @@ public class DocFacts {
 
     }
 
+    //Remove facts dumped files (prolog facts)
+    public void cleanUpDumpedFiles(){
+        File f = new File(System.getProperty("user.home")+ File.separator+nCICFactsFileName);
+        if(f.exists())
+            f.delete();
+        f = new File(System.getProperty("user.home")+ File.separator+nCICMetaFactsFileName);
+        if(f.exists())
+            f.delete();
+    }
+
+    public Set<String> getFactsPLFileNames() {
+        Set<String> filenames = new LinkedHashSet<>();
+        String CICFactFile = System.getProperty("user.home")+ File.separator+nCICFactsFileName;
+        String CICMetaFactFile = System.getProperty("user.home")+ File.separator+nCICMetaFactsFileName;
+        filenames.add(CICFactFile);
+        filenames.add(CICMetaFactFile);
+        return filenames;
+    }
+
+    public void markAsResolved(Map<CICFact, NEType.Type> nResolvedCICs) {
+        nCICFacts.forEach(fact->{
+            NEType.Type type = nResolvedCICs.get(fact);
+            if(type!=null) {
+                log.info("Reusing the resolved CIC type: Makring the type of "+fact.nCIC+" as "+fact.nType);
+                fact.nType=type;
+            }
+        });
+
+
+    }
 }

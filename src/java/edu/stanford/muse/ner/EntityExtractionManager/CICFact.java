@@ -10,6 +10,7 @@ public class CICFact{
     String nNextCIC=null;
     String nInBetween=null;
     NEType.Type nType = null;
+    int nEntityID=-1;
     @Override
     public boolean equals(Object other){
         if (other == this) return true;
@@ -24,7 +25,7 @@ public class CICFact{
                 otherfact.nEnd == nEnd &&
                 otherfact.nMID.equals(nMID) &&
                 otherfact.nNextCIC.equals(nNextCIC) &&
-                otherfact.nInBetween.equals(nInBetween);//not considering type for equality right now.
+                otherfact.nInBetween.equals(nInBetween);//not considering type and typeid for equality right now.
     }
     @Override
     public int hashCode() {

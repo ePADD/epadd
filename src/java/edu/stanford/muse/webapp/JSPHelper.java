@@ -380,7 +380,7 @@ public class JSPHelper {
             } else {
                 NER ner = new NER(archive, nerModel);
                 session.setAttribute("statusProvider", ner);
-                ner.recognizeArchive();
+                ner.recognizeArchiveVersion7();
                 //Here, instead of getting the count of all entities (present in ner.stats object)
 				//get the count of only those entities which pass a given threshold.
 				//This is to fix a bug where the count of person entities displayed on browse-top.jsp

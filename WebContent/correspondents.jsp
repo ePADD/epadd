@@ -3,6 +3,7 @@
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="org.apache.commons.math3.analysis.function.Add" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -70,7 +71,7 @@
 	<%
 		out.flush(); // make sure spinner is seen
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-		JSONArray resultArray = ab.getCountsAsJson(docs, true /* except owner */,archiveID);
+		JSONArray resultArray = AddressBook.getCountsAsJson(docs, true /* except owner */,archiveID);
 	%>
 	<script>
 	var correspondents = <%=resultArray.toString(4)%>;

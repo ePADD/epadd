@@ -6,26 +6,28 @@ import org.apache.commons.logging.LogFactory;
 import org.jpl7.*;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
-public class PersonEntityExtractor extends EntityExtractor {
+public class OtherEntityExtractor extends EntityExtractor {
 
-    static Log log = LogFactory.getLog(PersonEntityExtractor.class);
+    static Log log = LogFactory.getLog(OtherEntityExtractor.class);
 
-    private static final String nPersonEntityExtractionRulesFile="PersonExtractionRules.pl";
 
+    private static final String nOtherEntityExtractionRulesFile="OtherEntitiesExtractionRules.pl";
+    private static final String nDBPediaFactFile = "modelFactsTruncated.pl";
     Set<String> getLogicRuleFiles(){
         Set<String> tmp = new LinkedHashSet<>();
-        tmp.add(System.getProperty("user.home")+File.separator+nPersonEntityExtractionRulesFile);
+        tmp.add(System.getProperty("user.home")+File.separator+nOtherEntityExtractionRulesFile);
+        tmp.add(System.getProperty("user.home")+File.separator+nDBPediaFactFile);
         return tmp;
     }
     /*This method takes a set of facts (with CIC encapsulated in them), and extract entities from them.
         IT then fills the type of CIC's back into the set of facts and return them.
      */
-    public DocFacts extractEntities(DocFacts input){
+    public DocFacts extractEntities(DocFacts input, NEType.Type type){
 
         //Step 1. Dump facts from input in some files
         input.dumpFacts(true);
@@ -38,27 +40,38 @@ public class PersonEntityExtractor extends EntityExtractor {
         Variable ENDP = new Variable("ENDP");
         Variable MID = new Variable("MID");
         Variable REASON = new Variable("REASON");
-        Variable CID = new Variable("CID");
-
-        Set<String> seenCIC = new LinkedHashSet<>();
+        Variable EID = new Variable("EID");
+        log.info("================================"+type.getDisplayName()+"================================");
+        Set<String> seenSet = new LinkedHashSet<>();
         {
-            Query tq = new Query("resolvedCIC", new Term[]{CIC, STRTP, ENDP, MID, new Atom("person"), REASON, CID});
-            tq.allSolutions();
-            while (tq.hasMoreElements()) {
-                HashMap binding = (HashMap) tq.nextElement();
-                Term cic = (Term) binding.get(CIC.name);
-                Term mid = (Term) binding.get(MID.name);
-                Term entityid = (Term) binding.get(CID.name);
-                if(!seenCIC.contains(cic.name())){
-                    log.info("Resolved the type of " + cic.toString() + " to PERSON, id = " + entityid.intValue()+" in message -"+mid.name());
-                    //Set the types of these CIC's (as inferred) in the input docfacts object.
-                    input.updateResolvedType(cic.name(), NEType.Type.PERSON, entityid.intValue());
-                    seenCIC.add(cic.name());
+            //get list of all unresolved CIC's from input docFacts.
+            Set<CICFact> unresolvedCICs= input.getUnResolvedCICs();
+
+            //Iterate over all and fire a query to check if X is of given type.
+            unresolvedCICs.forEach(cic->{
+                //NOTE: An atom string can not start from upper case character. This needs to be taken care in the prolog rules as well especially when our facts contain strings
+                //starting from capital letter.
+                if(!seenSet.contains(cic.nCIC)) {
+                    Query tq = new Query("resolvedCIC", new Term[]{new Atom(cic.nCIC.toLowerCase()), STRTP, ENDP, MID, new Atom(type.getDisplayName().toLowerCase()), REASON, EID});
+                    //If at least one solution is found then update the CIC type in docfacts object.
+                    Map<String, Term> solution = tq.oneSolution();
+                    if (solution != null) {
+                        Term entityid = solution.get(EID.name);
+                        Term mid = (Term) solution.get(MID.name);
+                        log.info("Resolved the type of " + cic.nCIC + " as " + type.getDisplayName() + " in message - " + mid.name());
+                        //Set the types of these CIC's (as inferred) in the input docfacts object.
+                        input.updateResolvedType(cic.nCIC, type, entityid.intValue());
+                        seenSet.add(cic.nCIC);
+
+                    }
+                    tq.close();
                 }
 
-            }
+            });
         }
-        seenCIC.clear();
+        seenSet.clear();
+        /***** Merging of entities together-- Update as and when more rules are found--------*/
+        /*
         //dump the docfacts again, this time setting uniquCICfacts as false.
         input.dumpFacts(false);
         //again load JPL after closing, load fact files and  rules..
@@ -79,15 +92,10 @@ public class PersonEntityExtractor extends EntityExtractor {
                 Term inbetw = (Term) binding.get(INBETW.name);
                 Term mid = (Term) binding.get(MID.name);
                 //remove all merged CICs
-                if(!seenCIC.contains(cic.name())){
-                    seenCIC.add(cic.name());
-                    log.info("CIC - Person names "+cic.name()+" and "+nextcic.name()+" were merged together (LastName, FirstName) in message - "+mid.name());
-                    input.removeCIC(cic.name(),start.intValue(),end.intValue(),nextcic.name(),inbetw.name(),mid.name());
-
-                }
+                input.removeCIC(cic.name(),start.intValue(),end.intValue(),nextcic.name(),inbetw.name(),mid.name());
             }
         }
-        seenCIC.clear();
+
         //get combinedCICs and add them to the list of CIC's along with their inferred type and id.
         {
             Query tq = new Query("combinedCIC", new Term[]{CIC, STRTP, ENDP, NXTCIC, MID,INBETW, CID});
@@ -102,18 +110,15 @@ public class PersonEntityExtractor extends EntityExtractor {
                 Term mid = (Term) binding.get(MID.name);
                 Term cid = (Term) binding.get(CID.name);
                 //remove all merged CICs
-                if(!seenCIC.contains(cic.name())) {
-                    seenCIC.add(cic.name());
-                    log.info("Combined CIC, Person,  added - "+cic.name()+" in message- "+mid.name());
-                    input.updateResolvedType(cic.name(),start.intValue(),end.intValue(),nextcic.name(),inbetw.name(),NEType.Type.PERSON,mid.name(),cid.intValue());
-                }
-                 //input.removeCIC(cic.toString(),start.intValue(),end.intValue(),nextcic.toString(),inbetw.toString(),mid.toString());
+                input.updateResolvedType(cic.name(),start.intValue(),end.intValue(),nextcic.name(),inbetw.name(),NEType.Type.PERSON,mid.name(),cid.intValue());
+                //input.removeCIC(cic.toString(),start.intValue(),end.intValue(),nextcic.toString(),inbetw.toString(),mid.toString());
             }
         }
-
-        //unload files from prolog.
+        */
+        //unload rule files
         unload_prolog_files(input);
         return input;
     }
+
 
 }

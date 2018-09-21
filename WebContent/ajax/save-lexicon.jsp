@@ -64,6 +64,9 @@
 		lex.update(language, newMap);
 		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language,archive);
 
+		//After lexicon is saved, invalidate the cache for the result of getCountsAsJson
+		//should we force recomputation here only??
+
 	}
 
 	result.put("status", 0);

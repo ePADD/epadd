@@ -18,6 +18,8 @@ package edu.stanford.muse.AddressBookManager;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
+import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.EmailUtils;
@@ -1244,24 +1246,26 @@ mergeResult.newContacts.put(C2,savedC2)
      * in a csv format.
      */
 
-    public JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
-        Contact ownContact = getContactForSelf();
-        List<Contact> allContacts = sortedContacts((Collection) docs);
+    public static JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
+        Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        AddressBook ab = archive.getAddressBook();
+        Contact ownContact = ab.getContactForSelf();
+        List<Contact> allContacts = ab.sortedContacts((Collection) docs);
         Map<Contact, Set<EmailDocument>> contactInDocs = new LinkedHashMap<>(), contactOutDocs = new LinkedHashMap<>(), contactMentionDocs= new LinkedHashMap<>();
 
         // compute counts
         for (EmailDocument ed : docs) {
             String senderEmail = ed.getFromEmailAddress();
-            Contact senderContact = this.lookupByEmail(senderEmail);
+            Contact senderContact = ab.lookupByEmail(senderEmail);
             if (senderContact == null)
                 senderContact = ownContact; // should never happen, we should always have a sender contact
 
-            int x = ed.sentOrReceived(this);
+            int x = ed.sentOrReceived(ab);
             // message could be both sent and received
             if ((x & EmailDocument.SENT_MASK) != 0) {
                 // this is a sent email, each to/cc/bcc gets +1 outcount.
                 // one of them could be own contact also.
-                Collection<Contact> toContacts = ed.getToCCBCCContacts(this);
+                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
                 for (Contact c : toContacts) {
                     Set<EmailDocument> tmp = contactOutDocs.get(c);
                     if(tmp==null)
@@ -1288,7 +1292,7 @@ mergeResult.newContacts.put(C2,savedC2)
             if ((x & EmailDocument.SENT_MASK) == 0) {
                 // this message is not sent, its received.
                 // add mentions for everyone who's not me, who's on the to/cc/bcc of this message.
-                Collection<Contact> toContacts = ed.getToCCBCCContacts(this);
+                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
                 for (Contact c : toContacts) {
                     if (c == ownContact)
                         continue; // doesn't seem to make sense to give a mention count for sender in addition to incount
@@ -1309,7 +1313,7 @@ mergeResult.newContacts.put(C2,savedC2)
                 continue;
 
             //	out.println("<tr><td class=\"search\" title=\"" + c.toTooltip().replaceAll("\"", "").replaceAll("'", "") + "\">");
-            int contactId = getContactId(c);
+            int contactId = ab.getContactId(c);
             //	out.println ("<a style=\"text-decoration:none;color:inherit;\" href=\"browse?contact=" + contactId + "\">");
             String bestNameForContact = c.pickBestName();
             String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
@@ -1395,7 +1399,8 @@ mergeResult.newContacts.put(C2,savedC2)
     delimiter (##################)
     Series of contact objects separated by delimiter(########################)
      */
-    public void writeObjectToStream(BufferedWriter out, boolean alphaSort) throws IOException {
+    public void
+    writeObjectToStream(BufferedWriter out, boolean alphaSort) throws IOException {
 
         // always toString first contact as self
         Contact self = this.getContactForSelf();

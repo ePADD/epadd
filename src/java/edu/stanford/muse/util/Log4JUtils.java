@@ -83,6 +83,7 @@ public class Log4JUtils {
 			} catch (Exception e) { Util.print_exception(e);}
 			*/
 			addLogFileAppender(LOG_FILE);
+			addLogFileAppender("edu.stanford.muse.ner.EntityExtractionManager",	System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "entityExtractor.log");
 
 			// write a line so we can distinguish a new run in the log file
 			String message = "________________________________________________________________________________________________ ";
@@ -124,6 +125,34 @@ public class Log4JUtils {
  	    }
  	}
 
+	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
+	public static void addLogFileAppender(String packagename, String filename)
+	{
+		try
+		{
+			Logger packageLogger = LogManager.getLoggerRepository().getLogger(packagename);
+			Logger rootLogger = LogManager.getRootLogger();
+			Enumeration allAppenders = rootLogger.getAllAppenders();
+			while(allAppenders.hasMoreElements())
+			{
+				Object next = allAppenders.nextElement();
+				if (next instanceof ConsoleAppender)
+				{
+					Layout layout = ((ConsoleAppender) next).getLayout();
+					RollingFileAppender rfa = new RollingFileAppender(layout, filename);
+					rfa.setMaxFileSize("10MB");
+					rfa.setMaxBackupIndex(10); // do we
+					rfa.setEncoding("UTF-8");
+					packageLogger.addAppender (rfa);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			log.error("Failed creating log appender in " + filename);
+			System.err.println("Failed creating log appender in " + filename);
+		}
+	}
  	public static void setLoggingLevel (Logger logger, String level)
  	{
  		if ("debug".equalsIgnoreCase(level))

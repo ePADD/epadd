@@ -12,6 +12,8 @@ import edu.stanford.muse.util.NLPUtils;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Triple;
 import edu.stanford.muse.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 import javax.print.Doc;
@@ -20,9 +22,10 @@ import java.util.*;
 
 public class EntityRecognizer {
 
+    static Log log = LogFactory.getLog(EntityRecognizer.class);
 
     Map<String,Set<CICFact>> nExtractedAndResolved = new LinkedHashMap<>();
-
+    Map<CICFact, NEType.Type> nResolvedCICs = new LinkedHashMap<>();
 
     /*
     Entry point to start extraction and recognition of all content (content and title) from all docs of archive.
@@ -35,7 +38,7 @@ public class EntityRecognizer {
 
         //Collection<Set<Document>> clusters = getClustersByThreadIDs(archive);
 
-        Collection<Set<Document>> clusters = getClustersChronologicallyFixedSize(archive,30);
+        Collection<Set<Document>> clusters = getClustersChronologicallyFixedSize(archive,500);
 
         //Step 2. Iterate over all chunks and for each chunk of documents
         clusters.forEach(cluster->{
@@ -51,6 +54,10 @@ public class EntityRecognizer {
                 dfacts.extractAndStoreMetaData(doc);
             });
 
+            //Use already resolved CICs (stored in map nExtractedAndResolved) to mark the CIC's in dfacts as resolved.
+            dfacts.markAsResolved(nResolvedCICs);
+
+
             //Now docFacts is ready with all the facts for the documents present in this cluster.
             //Step 4. Invoke Different extractors like PersonEntityExtractor, PlaceEntityExtractors etc. which in turn will
             //use different logic to return an updated docFacts. This docFacts will have resolved types added to CIC's wherever
@@ -58,9 +65,19 @@ public class EntityRecognizer {
             DocFacts processed = new PersonEntityExtractor().extractEntities(dfacts);
             //Step 5. If needed enhance the set of facts based on the return value and invoke the next Extractor
 
-            nExtractedAndResolved.putAll(processed.getResolvedCICs());
-            //Step 6. We can keep on repeating until the set of input facts [dumpResolvedSet] for each Extractor do not change.
+            ///Invoke other entity extractor with different types
+//            OtherEntityExtractor otherEntityExtractor = new OtherEntityExtractor();
+//            for(NEType.Type type : NEType.getAllTypes()){
+//                if(!type.getDisplayName().equals("Person")){//for now do it only for non person types types.
+//                    processed = otherEntityExtractor.extractEntities(processed,type);
+//                }
+//            }
+            //at the end add resolved CIC's in the map.
 
+            Map<String, Set<CICFact>> resolved  = processed.getResolvedCICs();
+            nExtractedAndResolved.putAll(resolved);
+            //add all resolved CIC's in the store
+            resolved.forEach((mid,setcic)->setcic.forEach(cic->nResolvedCICs.put(cic,cic.nType)));
         });
  }
 
