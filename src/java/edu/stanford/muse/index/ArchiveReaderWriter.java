@@ -150,6 +150,7 @@ public class ArchiveReaderWriter{
             /////////////////AddressBook////////////////////////////////////////////
            AddressBook ab = readAddressBook(addressBookPath);
             archive.addressBook = ab;
+
             ////////////////EntityBook/////////////////////////////////////
             EntityBook eb = readEntityBook(entityBookPath);
             archive.setEntityBook(eb);
@@ -479,6 +480,9 @@ public class ArchiveReaderWriter{
         if(mode== Archive.Save_Archive_Mode.INCREMENTAL_UPDATE)
             archive.updateFileInBag(addressBookPath,baseDir);
 
+        //update the summary of addressbook (counts etc used on correspondent listing page).
+        Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
+
     }
 
     public static void saveEntityBook(Archive archive, Archive.Save_Archive_Mode mode){
@@ -702,7 +706,10 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
+                //now intialize the cache.
+                Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(a));
                 return a;
+
             }
         } catch (Exception e) {
             Util.print_exception("Error reading archive from dir: " + archiveFile, e, log);

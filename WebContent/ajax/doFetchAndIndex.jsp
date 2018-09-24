@@ -81,6 +81,9 @@
 		} else {
 				resultPage = "browse-top?archiveID="+archiveID;
 				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+				//After archive is saved recreate the cache.. For addressbook the cache gets created inside saveAddressBook.
+				//Do it for Lexicon cache.
+				Archive.cacheManager.cacheLexiconListing(archiveID);
 			}
 			try {
 				String aStats = archive.getStats();

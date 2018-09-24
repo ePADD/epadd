@@ -1247,6 +1247,9 @@ mergeResult.newContacts.put(C2,savedC2)
      */
 
     public static JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
+        JSONArray cached = Archive.cacheManager.getCorrespondentListing(archiveID);
+        if(cached!=null)
+            return cached;
         Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
         AddressBook ab = archive.getAddressBook();
         Contact ownContact = ab.getContactForSelf();
@@ -1348,6 +1351,8 @@ mergeResult.newContacts.put(C2,savedC2)
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
         }
+        //store in cache manager.
+        Archive.cacheManager.cacheCorrespondentListing(archiveID,resultArray);
         return resultArray;
     }
 
@@ -1386,6 +1391,7 @@ mergeResult.newContacts.put(C2,savedC2)
                 emailToContact.put(email,c);
             }
         }
+
 
     }
 

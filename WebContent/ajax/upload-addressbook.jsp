@@ -37,6 +37,8 @@
                     }else{
                     //set as current archive's addressbook
                     archive.setAddressBook(ab);
+                    //now reinitialize the cache for correspondent summary
+                    Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
                     }
 
             }

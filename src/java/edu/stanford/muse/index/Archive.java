@@ -20,6 +20,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import edu.stanford.muse.Config;
+import edu.stanford.muse.ResultCacheManager.ResultCache;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
@@ -110,6 +111,7 @@ public class Archive implements Serializable {
     public static final String ANNOTATION_SUFFIX = "Annotations.csv";
     public static final String LABELMAPDIR= "LabelMapper";
     public static final String BLOBLNORMALIZATIONFILE_SUFFIX="NormalizationInfo.csv";
+    public transient  static ResultCache cacheManager = new ResultCache();//making it static so that it becomes visible for all archives.
 
     public Multimap<Document, Tuple2<String,String>> getDupMessageInfo() {
         return dupMessageInfo;
@@ -1260,6 +1262,7 @@ after maskEmailDomain.
 
         return out_dir;
     }
+
 
 
     //method to return the count map of entities provided that the score of the entity is greater than

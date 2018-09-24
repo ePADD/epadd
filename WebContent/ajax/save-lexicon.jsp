@@ -65,7 +65,8 @@
 		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language,archive);
 
 		//After lexicon is saved, invalidate the cache for the result of getCountsAsJson
-		//should we force recomputation here only??
+		//should we force recomputation here only??Yes
+		Archive.cacheManager.cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
 	}
 

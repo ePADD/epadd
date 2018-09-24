@@ -338,8 +338,14 @@ public class Lexicon implements Serializable {
 
     //accumulates counts returned by lexicons in each language
     //TODO: It is possible to write a generic accumulator that accumulates sum over all the languages
-    public static JSONArray getCountsAsJSON(String lexiconName, Archive archive, boolean originalContentOnly, boolean regexSearch){
+    public static JSONArray getCountsAsJSON(String lexiconName, Archive archive, boolean originalContentOnly){
 
+		JSONArray resultArray = null;
+		resultArray = Archive.cacheManager.getLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
+		if(resultArray!=null)
+			return resultArray;
+		else
+			resultArray = new JSONArray();
 		Lexicon lexicon = archive.getLexicon(lexiconName);
 		//call searchresult from here...
         List<Document> docs = archive.indexer.docs;
@@ -366,19 +372,20 @@ public class Lexicon implements Serializable {
 				result.put(category,output.getDocumentSet().size());
 			}
         }
-		JSONArray resultArray = new JSONArray();
-
+		JSONArray finalArray = new JSONArray();
 		AtomicInteger  count = new AtomicInteger(0);
 		result.forEach((category,cnt)-> {
 
 			JSONArray j = new JSONArray();
 			j.put(0, Util.escapeHTML(category));
 			j.put(1, cnt);
-			resultArray.put(count.getAndIncrement(), j);
+			finalArray.put(count.getAndIncrement(), j);
 		});
 
+		//store in cache
+		Archive.cacheManager.cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive),finalArray);
 			// could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
-		return resultArray;
+		return finalArray;
     }
 
 	/** Core sentiment detection method. doNota = none of the above 
@@ -503,6 +510,7 @@ public class Lexicon implements Serializable {
 		langLex.save(dir + File.separator + name + "." + language + LEXICON_SUFFIX); // LEXICON_SUFFIX already has a .
 		//update the bag metadata as well..
 		archive.updateFileInBag(dir,archive.baseDir);
+		//update the summary of lexicons here..
 		return true;
 	}
 

@@ -38,6 +38,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTimeComparator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -645,7 +646,7 @@ public class JSPHelper {
 	{
 		StringBuilder result = new StringBuilder();
 
-		if (date != null)
+		if (date != null && DateTimeComparator.getDateOnlyInstance().compare(date,EmailFetcherThread.INVALID_DATE)!=0) //display only if date is not INVALID (hacky)
 		{
 			Calendar c = new GregorianCalendar();
 			c.setTime(date);
@@ -668,7 +669,9 @@ public class JSPHelper {
 			}
 			result.append(" " + String.format("%d:%02d", hh, mm) + (pm ? "pm" : "am"));
 			result.append("\n</td></tr>\n");
-		}
+		}else
+			result.append("<tr><td width=\"10%\" align=\"right\" class=\"muted\">Date: </td><td>" + " " + "\n</td></tr>\n");
+
 		return result;
 	}
 
@@ -863,24 +866,7 @@ public class JSPHelper {
 		response.setDateHeader("Expires", 0); //prevent caching at the proxy server
 	}
 
-	public static Collection<DatedDocument> filterByDate(Collection<DatedDocument> docs, String dateSpec)
-	{
-		List<DatedDocument> selectedDocs = new ArrayList<>();
-		if (Util.nullOrEmpty(dateSpec))
-			return docs;
 
-		List<DateRangeSpec> rangeSpecs = SloppyDates.parseDateSpec(dateSpec);
-		for (DatedDocument d : docs)
-		{
-			for (DateRangeSpec spec : rangeSpecs)
-				if (spec.satisfies(d.date))
-				{
-					selectedDocs.add(d);
-					break;
-				}
-		}
-		return selectedDocs;
-	}
 
 	/** handles create/edit label request received from edit-label.jsp.
 	    returns JSON with {status: (0 = passed, non-0 = failed), errorMessage: error message that can be shown to a user}
