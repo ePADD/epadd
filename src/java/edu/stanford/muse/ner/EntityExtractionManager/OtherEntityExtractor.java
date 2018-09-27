@@ -1,15 +1,12 @@
 package edu.stanford.muse.ner.EntityExtractionManager;
 
+import alice.tuprolog.*;
 import edu.stanford.muse.ner.model.NEType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jpl7.*;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class OtherEntityExtractor extends EntityExtractor {
 
@@ -33,16 +30,13 @@ public class OtherEntityExtractor extends EntityExtractor {
         input.dumpFacts(true);
         //Step 2. Load the logic rule files for this extractor in swipl
         ////2.1 - Init JPL and load facts/rules
-        initPrologAndLoadRules_Facts(input);
+        Prolog engine = initPrologAndLoadRules_Facts(input);
         //Step 3. Get the set of resolved CIC's obtained by using the rules.
-        Variable CIC = new Variable("CIC");
-        Variable STRTP = new Variable("STARTP");
-        Variable ENDP = new Variable("ENDP");
-        Variable MID = new Variable("MID");
-        Variable REASON = new Variable("REASON");
-        Variable EID = new Variable("EID");
+
         log.info("================================"+type.getDisplayName()+"================================");
         Set<String> seenSet = new LinkedHashSet<>();
+        Set<String> seenCIC = new LinkedHashSet<>();
+
         {
             //get list of all unresolved CIC's from input docFacts.
             Set<CICFact> unresolvedCICs= input.getUnResolvedCICs();
@@ -52,19 +46,25 @@ public class OtherEntityExtractor extends EntityExtractor {
                 //NOTE: An atom string can not start from upper case character. This needs to be taken care in the prolog rules as well especially when our facts contain strings
                 //starting from capital letter.
                 if(!seenSet.contains(cic.nCIC)) {
-                    Query tq = new Query("resolvedCIC", new Term[]{new Atom(cic.nCIC.toLowerCase()), STRTP, ENDP, MID, new Atom(type.getDisplayName().toLowerCase()), REASON, EID});
-                    //If at least one solution is found then update the CIC type in docfacts object.
-                    Map<String, Term> solution = tq.oneSolution();
-                    if (solution != null) {
-                        Term entityid = solution.get(EID.name);
-                        Term mid = (Term) solution.get(MID.name);
-                        log.info("Resolved the type of " + cic.nCIC + " as " + type.getDisplayName() + " in message - " + mid.name());
-                        //Set the types of these CIC's (as inferred) in the input docfacts object.
-                        input.updateResolvedType(cic.nCIC, type, entityid.intValue());
-                        seenSet.add(cic.nCIC);
+                    try {
+                        SolveInfo result = engine.solve("resolvedCIC(CIC,STRTP,ENDP,MID,\""+type.getDisplayName().toLowerCase()+"\",REASON,EID).");
 
+                        while (result.isSuccess()) {
+                            List<Var> vars = result.getBindingVars();
+                            String cicn = result.getVarValue("CIC").toString();
+                            String entityid = result.getVarValue("EID").toString();
+                            if(!seenCIC.contains(cic)) {
+                                seenCIC.add(cicn);
+                                input.updateResolvedType(cicn, NEType.Type.PERSON, Integer.parseInt(entityid));
+                            }
+                            break;//get only one solution for now.
+
+                        }
+                    } catch (MalformedGoalException e) {
+                        e.printStackTrace();
+                    } catch (NoSolutionException e) {
+                        e.printStackTrace();
                     }
-                    tq.close();
                 }
 
             });
@@ -116,7 +116,7 @@ public class OtherEntityExtractor extends EntityExtractor {
         }
         */
         //unload rule files
-        unload_prolog_files(input);
+        unload_prolog_files(engine,input);
         return input;
     }
 
