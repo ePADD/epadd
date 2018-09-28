@@ -83,7 +83,7 @@
 
                   Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   if (cm != null) {
-                      String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ File.separator + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
+                      String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
                       String url = "serveImage.jsp?file=" + fileParam;
 
                       out.println("<div data-dir=\"" + id + "\" class=\"archive-card\">");

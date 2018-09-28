@@ -129,10 +129,19 @@ public class DocFacts {
                 else
                     inbetween = line.substring(thisitem.getThird(),nextstart);
                 //if inbetween contains " then remove them, somehow escaping didn't work with prolog
-                inbetween = inbetween.replace("\\","\\\\"); //INTERESTING: Here order is imp what if we put it after the second replacement? " becomes \" and \" becomes \\"
+             /*   inbetween = inbetween.replace("\\","\\\\"); //INTERESTING: Here order is imp what if we put it after the second replacement? " becomes \" and \" becomes \\"
                 inbetween = inbetween.replace("\"","\\\"");
                 inbetween = inbetween.replace("'","\\'");
+             */
+                inbetween = inbetween.replace("\\","\\\\"); //INTERESTING: Here order is imp what if we put it after the second replacement? " becomes \" and \" becomes \\"
+                inbetween = inbetween.replace("\"","\'\'");
+                inbetween = inbetween.replace("'","\'\'");
 
+                inbetween = inbetween.replaceAll("\\n"," ");
+                inbetween = inbetween.replaceAll("\\r"," ");
+
+                thisitem.first = thisitem.first.replace("'","''");
+                nextitem.first = nextitem.first.replace("'","''");
                 cicFact.nCIC=new String(thisitem.first);
                 cicFact.nStart=thisitem.second;
                 cicFact.nEnd=thisitem.third;

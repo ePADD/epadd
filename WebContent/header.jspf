@@ -153,7 +153,7 @@
 					<li><a target="_blank" href="https://epadd.nimeyo.com"><i class="menu-icon fa fa-user fa-question"></i>User forums</a></li>
 
 					<% if (!ModeConfig.isDiscoveryMode()) { %>
-						<li><a href="debug"><i class="menu-icon fa fa-user fa-bug"></i>Report a problem</a></li>
+						<li><a href="debug?archiveID=<%=archiveID%>"><i class="menu-icon fa fa-user fa-bug"></i>Report a problem</a></li>
 					<% } %>
 <!--					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD mode</a></li> -->
 					<li><a id="about" href="about"><i class="menu-icon fa fa-user fa-fw"></i>About ePADD</a></li>
