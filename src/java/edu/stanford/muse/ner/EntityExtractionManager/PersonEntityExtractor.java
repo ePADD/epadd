@@ -31,6 +31,11 @@ public class PersonEntityExtractor extends EntityExtractor {
         Prolog engine = initPrologAndLoadRules_Facts(input);
         //Step 3. Get the set of resolved CIC's obtained by using the rules.
 
+        try {
+            engine.loadLibrary("edu.stanford.muse.ner.EntityExtractionManager.PLLibrary.StringLibrary_PL");
+        } catch (InvalidLibraryException e) {
+            e.printStackTrace();
+        }
         Set<String> seenCIC = new LinkedHashSet<>();
         {
             try {
@@ -138,4 +143,14 @@ public class PersonEntityExtractor extends EntityExtractor {
         return input;
     }
 
+    public static void main(String args[]){
+
+        Prolog prolog = new Prolog();
+        try {
+            prolog.loadLibrary("edu.stanford.muse.ner.EntityExtractionManager.PLLibrary.StringLibrary_PL");
+        } catch (InvalidLibraryException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
