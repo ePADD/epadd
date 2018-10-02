@@ -55,7 +55,8 @@ import java.util.*;
 public class MuseEmailFetcher {
     private static Log log = LogFactory.getLog(MuseEmailFetcher.class);
 
-    public String name, archiveTitle, alternateEmailAddrs; // temp storage
+    public String name, archiveTitle, alternateEmailAddrs; // temp storage--- IMP: Primary email address on email-sources page is named as alternateEmailAddrs
+	public Set<String> emailSources; //temp
     private transient List<MTEmailFetcher> fetchers;
 	public transient List<EmailStore> emailStores = new ArrayList<>();
 
@@ -563,7 +564,12 @@ public class MuseEmailFetcher {
 
 	    // report stats
 		stats.lastUpdate = new Date().getTime();
-
+		//For issue #254.
+		stats.archiveOwnerInput = name;
+		stats.archiveTitleInput = archiveTitle;
+		stats.primaryEmailInput = alternateEmailAddrs;
+		stats.emailSourcesInput = emailSources;
+		//////
 		stats.userKey = "USER KEY UNUSED"; // (String) JSPHelper.getSessionAttribute(session, "userKey");
 		stats.fetchAndIndexTimeMillis = elapsedMillis;
 
