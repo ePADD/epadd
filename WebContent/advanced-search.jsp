@@ -483,9 +483,9 @@
                         			<span class="glyphicon glyphicon-calendar"></span>
                     				</span>
 								</div>--%>
-								<input type = "text"  id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
+								<input type = "text"  id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD" readonly="true" style="cursor: pointer;background:white;">
 								<label for="endDate">To</label>
-								<input type = "text"  id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
+								<input type = "text"  id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD" readonly="true" style="cursor:pointer;background:white;">
 							</div>
 						</div>
 
@@ -802,12 +802,18 @@
             $('#startDate').datepicker({
 
                 minDate: new Date(1960, 1 - 1, 1),
-                dateFormat: "yy-mm-dd"
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+				yearRange: "1930:2030"
 			});
             $('#endDate').datepicker({
 
                 minDate: new Date(1960, 1 - 1, 1),
-                dateFormat: "yy-mm-dd"
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "1930:2030"
             });
 
         });

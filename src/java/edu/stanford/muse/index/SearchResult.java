@@ -1340,6 +1340,9 @@ Archive archive = inputSet.archive;
                 else {
                     log.warn("Unknown sort by option: " + sortBy);
                 }
+            }else{
+                //if no sortby option is specified then default ordering is chronological.
+                sortBy = Indexer.SortBy.CHRONOLOGICAL_ORDER;
             }
         }
 
