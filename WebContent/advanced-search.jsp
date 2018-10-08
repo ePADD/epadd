@@ -231,6 +231,12 @@
 							<label for="entity">Entity</label>
 							<input id="entity" name="entity" type="text" class="form-control">
 						</div>
+						<div class="checkbox-inline">
+							<label>
+								<input type="checkbox" name="expanded" checked>
+								<span class="label-text">Expand to other entities of the same class</span>
+							</label>
+						</div>
 					</div>
 
 					<%--Disabling the Attachment entity following issue number #134 on github--%>

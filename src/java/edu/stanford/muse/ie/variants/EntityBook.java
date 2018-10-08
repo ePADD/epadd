@@ -9,6 +9,7 @@ import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import sun.awt.image.ImageWatched;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -55,8 +56,15 @@ public class EntityBook implements Serializable {
          * initialize this mapper from the given text
          */
         public void initialize(String text, short type) {
-            nameToMappedEntity.clear();
-
+            //Dont' remove everything just remove the entries for type. Bug #307
+            //nameToMappedEntity.clear();
+Set<MappedEntity> toRemove = new LinkedHashSet<>();
+nameToMappedEntity.values().forEach(me->{
+    if(me.getEntityType()==type)
+        toRemove.add(me);
+});
+//now remove from nameToMappedEntity.
+            nameToMappedEntity.values().removeAll(toRemove);
             List<String> lines = Util.tokenize(text, "\r\n");
             List<String> linesForEntity = new ArrayList<>();
 

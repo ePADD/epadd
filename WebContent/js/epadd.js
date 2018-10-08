@@ -79,10 +79,22 @@ epadd.do_search = function(e,archiveID) {
 	}
 	// otherwise let term be as is.
 
-	window.open ('browse?archiveID='+archiveID+'&adv-search=1&term=' + term + '&termBody=on&termSubject=on'); // since this function is used from entities page, we don't want to match attachments (?)
+	window.open ('browse?archiveID='+archiveID+'&adv-search=1&term=' + term + '&termBody=on&termSubject=on');
 //	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
+epadd.do_entity_search = function(e,archiveID) {
+    var term = $(e.target).text();
+    // if term is not already quoted, quote it now
+    term = term.trim();
+    if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
+        // not in quotes. encode URI
+        term =   encodeURIComponent(term) ; // remember to encodeURIComponent, otherwise it fails on names with &. Also don't use encodeURI because it doesn't escape &
+    }
+    // otherwise let term be as is.
 
+    window.open ('browse?archiveID='+archiveID+'&adv-search=1&entity=' + term + '&expanded=on'); // Since this function is being used from entity search page we want to expand grouped entities together)
+//	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
+};
 // do a search on the text of the element that was clicked
 epadd.do_search_incl_attachments = function(e,archiveID) {
     var term = $(e.target).text();
