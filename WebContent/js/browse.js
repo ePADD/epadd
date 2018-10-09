@@ -141,8 +141,12 @@ var Labels = function() {
     };
 
     var setup = function () {
+        // for (var i = 0; i < TOTAL_PAGES; i++) {
+        //     labelsOnPage[i] = $pages[i].getAttribute('labels').split(",");
+        // }
+
         for (var i = 0; i < TOTAL_PAGES; i++) {
-            labelsOnPage[i] = $pages[i].getAttribute('labels').split(",");
+            labelsOnPage[i] = messageMetadata[i].labels;
         }
 
         // set up label handling
@@ -265,10 +269,16 @@ var Annotations = function() {
         }
 
         for (var i = 0; i < TOTAL_PAGES; i++) {
-            annotations[i] = $pages[i].getAttribute('comment');
+            annotations[i] = messageMetadata[i].annotation;
             if (annotations[i] === null) // protect against null, otherwise the word null uglily (q: is that a word? probably fine. its a better word than bigly.) appears on screen.
                 annotations[i] = '';
         }
+
+        // for (var i = 0; i < TOTAL_PAGES; i++) {
+        //     annotations[i] = $pages[i].getAttribute('comment');
+        //     if (annotations[i] === null) // protect against null, otherwise the word null uglily (q: is that a word? probably fine. its a better word than bigly.) appears on screen.
+        //         annotations[i] = '';
+        // }
 
         // set up handlers for when annotation modal is shown/dismissed
         //$('#annotation-modal').on('shown.bs.modal', annotation_modal_shown).on('hidden.bs.modal', annotation_modal_dismissed);
@@ -308,12 +318,12 @@ $(document).ready(function() {
 
     // global vars setup
     {
-        $pages = $('.page'); // all page frames for the entire dataset are pre-loaded in the page (although the HTML inside them is paged in lazily)
+        // $pages = $('.page'); // all page frames for the entire dataset are pre-loaded in the page (although the HTML inside them is paged in lazily)
         PAGE_ON_SCREEN = 0;
-        TOTAL_PAGES = $pages.length;
-        for (var i = 0; i < TOTAL_PAGES; i++) {
-            docIDs[i] = $pages[i].getAttribute('docID');
-        }
+        // TOTAL_PAGES = $pages.length;
+        // for (var i = 0; i < TOTAL_PAGES; i++) {
+        //     docIDs[i] = $pages[i].getAttribute('docID');
+        // }
     }
 
     Labels.setup();

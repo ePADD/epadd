@@ -16,11 +16,14 @@
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
 <%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@ page import="org.json.JSONArray" %>
 
 <%@include file="getArchive.jspf" %>
 
 <%
     String term = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
+
+    // compute the title of the page
     String title = request.getParameter("title");
     //<editor-fold desc="Derive title if the original title is not set" input="request" output="title"
     // name="search-title-derivation">
@@ -199,8 +202,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         outputSet = search_result.second;
     }
     //</editor-fold>
-
-
+    %>
+<script>
+    TOTAL_PAGES = <%=docs.size()%>;
+</script>
+<%
     Map<String, Collection<DetailedFacetItem>> facets;
     //<editor-fold desc="Create facets(categories) based on the search data" input="docs;archive"
     // output="facets" name="search-create-facets">
@@ -226,9 +232,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         // remove all the either's because they are not needed, and could mask a real facet selection coming in below
         origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
-//        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
-//        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
-//        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
         origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
         origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
@@ -494,7 +497,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //and the documents were taken from the SearchResult class. Note that the order of documents
         //in searchResult class is different from the ordering obtained by 'sortBy' parameters. Hence
         //we need to pass that ordered set to getHTML* method below. This fixed the issue.
-        Pair<DataSet, String> pair = null;
+        Pair<DataSet, JSONArray> pair = null;
         try {
             String sortBy = request.getParameter("sortBy");
 
@@ -512,8 +515,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         }
 
         DataSet browseSet = pair.getFirst();
-        String html = pair.getSecond();
-
+        JSONArray jsonObjectsForMessages = pair.getSecond(); // this has message labels
+        %>
+        <script>
+            window.messageMetadata = '<%=jsonObjectsForMessages.toString()%>';
+        </script>
+        <%
         // entryPct says how far (what percentage) into the selected pages we want to enter
         int entryPage = IndexUtils.getDocIdxWithClosestDate((Collection) docs,
                 HTMLUtils.getIntParam(request, "startMonth", -1), HTMLUtils.getIntParam(request, "startYear", -1));
@@ -532,12 +539,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             else
                 entryPage = 0;
         }
+
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
         String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
         out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+browseSet.size()+";</script>\n");
         session.setAttribute (docsetID, browseSet);
-        //session.setAttribute ("docs-" + docsetID, new ArrayList<>(docs));
-        out.println (html);
+
         JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + docsetID);
 
     %>

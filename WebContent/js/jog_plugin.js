@@ -480,8 +480,12 @@ Jog.prototype.disableCursorKeys = function() { this.cursorKeysDisabled = true;}
 		totalPages = $(settings.page_selector).length;
 		if (totalPages == 0)
 		{
-			$(settings.jog_content_frame_selector).html('Zero documents.');
-			return;
+			if (TOTAL_PAGES)
+				totalPages = TOTAL_PAGES;
+			else {
+                $(settings.jog_content_frame_selector).html('Zero documents.');
+                return;
+            }
 		}
 		LOG (totalPages + ' pages found');
 		

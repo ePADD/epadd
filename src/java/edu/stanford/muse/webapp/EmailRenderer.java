@@ -17,39 +17,19 @@ import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /** This class has util methods to display an email message in an html page */
 
 public class EmailRenderer {
 
-	private static final int	TEXT_WRAP_WIDTH	= 80;	// used to be 80, but that wraps
-												// around too soon. 120 is too
-												// much with courier font.
+	private static final int TEXT_WRAP_WIDTH = 80;
 
-    /*public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
-                                                          Set<String> highlightTerms)
-            throws Exception{
-        return pagesForDocuments(ds, archive, datasetTitle, null, highlightTerms, null, MultiDoc.ClusteringType.MONTHLY);
-    }
-
-    public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
-                                                          Set<String> highlightTerms, Collection<Blob> highlightAttachments)
-            throws Exception{
-        return pagesForDocuments(ds, archive, datasetTitle, null, highlightTerms, highlightAttachments,
-                MultiDoc.ClusteringType.MONTHLY);
-    }
-
-    public static Pair<DataSet, String> pagesForDocuments(Collection<Document> ds, Archive archive, String datasetTitle,
-														  Set<Integer> highlightContactIds, Set<String> highlightTerms)
-			throws Exception{
-		return pagesForDocuments(ds, archive, datasetTitle, highlightContactIds, highlightTerms, null, MultiDoc.ClusteringType.MONTHLY);
+	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
+															 String datasetTitle) throws Exception {
+		return pagesForDocuments(docs, result, datasetTitle, MultiDoc.ClusteringType.MONTHLY);
 	}
-*/
-	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> docs,SearchResult result,
-                                                          String datasetTitle)
-            throws Exception{
-        return pagesForDocuments(docs,result,datasetTitle,MultiDoc.ClusteringType.MONTHLY);
-    }
 
 	/**
 	 * format given addresses as comma separated html, linewrap after given
@@ -57,73 +37,67 @@ public class EmailRenderer {
 	 *
 	 * @param addressBook
 	 */
-	private static String formatAddressesAsHTML(String archiveID,Address addrs[], AddressBook addressBook, int lineWrap, Set<String> highlightUnstemmed, Set<String> highlightNames, Set<String> highlightAddresses)
-	{
+	private static String formatAddressesAsHTML(String archiveID, Address addrs[], AddressBook addressBook, int lineWrap, Set<String> highlightUnstemmed, Set<String> highlightNames, Set<String> highlightAddresses) {
 		StringBuilder sb = new StringBuilder();
 		int outputLineLength = 0;
-		for (int i = 0; i < addrs.length; i++)
-		{
+		for (int i = 0; i < addrs.length; i++) {
 			String thisAddrStr;
 
 			Address a = addrs[i];
-			if (a instanceof InternetAddress)
-			{
+			if (a instanceof InternetAddress) {
 				InternetAddress ia = (InternetAddress) a;
-				Pair<String, String> p = JSPHelper.getNameAndURL(archiveID,(InternetAddress) a, addressBook);
+				Pair<String, String> p = JSPHelper.getNameAndURL(archiveID, (InternetAddress) a, addressBook);
 				String url = p.getSecond();
 				String str = ia.toString();
-                String addr = ia.getAddress();
-                boolean match = false;
-                if(str!=null) {
-                    //The goal here is to explain why a doc is selected and hence we should replicate Lucene doc selection and Lucene is case insensitive most of the times
-                    String lc = str.toLowerCase();
-                    if (highlightUnstemmed != null)
-                        for (String hs : highlightUnstemmed) {
-                            String hlc = hs.toLowerCase().replaceAll("^\\W+|\\W+$","");
-                            if (lc.contains(hlc)) {
-                                match = true;
-                                break;
-                            }
-                        }
-                    if (!match && highlightNames != null)
-                        for (String hn : highlightNames) {
-                            String hlc = hn.toLowerCase().replaceAll("^\\W+|\\W+$","");
-                            if (lc.contains(hlc)) {
-                                match = true;
-                                break;
-                            }
-                        }
-                }
-                if(addr!=null){
-                    if (!match && highlightAddresses != null)
-                        for (String ha : highlightAddresses)
-                            if (addr.contains(ha)) {
-                                match = true;
-                                break;
-                            }
-                }
+				String addr = ia.getAddress();
+				boolean match = false;
+				if (str != null) {
+					//The goal here is to explain why a doc is selected and hence we should replicate Lucene doc selection and Lucene is case insensitive most of the times
+					String lc = str.toLowerCase();
+					if (highlightUnstemmed != null)
+						for (String hs : highlightUnstemmed) {
+							String hlc = hs.toLowerCase().replaceAll("^\\W+|\\W+$", "");
+							if (lc.contains(hlc)) {
+								match = true;
+								break;
+							}
+						}
+					if (!match && highlightNames != null)
+						for (String hn : highlightNames) {
+							String hlc = hn.toLowerCase().replaceAll("^\\W+|\\W+$", "");
+							if (lc.contains(hlc)) {
+								match = true;
+								break;
+							}
+						}
+				}
+				if (addr != null) {
+					if (!match && highlightAddresses != null)
+						for (String ha : highlightAddresses)
+							if (addr.contains(ha)) {
+								match = true;
+								break;
+							}
+				}
 
-                if(match)
-                    thisAddrStr = ("<a href=\"" + url + "\"><span class=\"hilitedTerm rounded\">" + Util.escapeHTML(str) + "</span></a>");
-                else
-                    thisAddrStr = ("<a href=\"" + url + "\">" + Util.escapeHTML(str) + "</a>");
+				if (match)
+					thisAddrStr = ("<a href=\"" + url + "\"><span class=\"hilitedTerm rounded\">" + Util.escapeHTML(str) + "</span></a>");
+				else
+					thisAddrStr = ("<a href=\"" + url + "\">" + Util.escapeHTML(str) + "</a>");
 
 				if (str != null)
-	                outputLineLength += str.length();
-			}
-			else
-			{
+					outputLineLength += str.length();
+			} else {
 				String str = a.toString();
 				thisAddrStr = str;
 				outputLineLength += str.length();
-                JSPHelper.log.warn("Address is not an instance of InternetAddress - is of instance: "+a.getClass().getName() + ", highlighting won't work.");
+				JSPHelper.log.warn("Address is not an instance of InternetAddress - is of instance: " + a.getClass().getName() + ", highlighting won't work.");
 			}
 
 			if (i + 1 < addrs.length)
 				outputLineLength += 2; // +2 for the comma that will follow...
 
-			if (outputLineLength + 2 > lineWrap)
-			{
+			if (outputLineLength + 2 > lineWrap) {
 				sb.append("<br/>\n");
 				outputLineLength = 0;
 			}
@@ -141,22 +115,20 @@ public class EmailRenderer {
 	 * @param
 	 * @throws Exception
 	 */
-    //TODO: inFull, debug params can be removed
-    //TODO: Consider a HighlighterOptions class
+	//TODO: inFull, debug params can be removed
+	//TODO: Consider a HighlighterOptions class
 	public static Pair<String, Boolean> htmlForDocument(Document d, SearchResult searchResult, String datasetTitle,
-                                                        Map<String, Map<String, Short>> authorisedEntities,
-			                                            boolean IA_links, boolean inFull, boolean debug,String archiveID) throws Exception
-	{
+														Map<String, Map<String, Short>> authorisedEntities,
+														boolean IA_links, boolean inFull, boolean debug, String archiveID) throws Exception {
 		JSPHelper.log.debug("Generating HTML for document: " + d);
 		EmailDocument ed = null;
 		Archive archive = searchResult.getArchive();
 		String html = null;
 		boolean overflow = false;
-		if (d instanceof EmailDocument)
-		{
+		if (d instanceof EmailDocument) {
 			// for email docs, 1 doc = 1 page
 			ed = (EmailDocument) d;
-            List<Blob> highlightAttachments = searchResult.getAttachmentHighlightInformation(d);
+			List<Blob> highlightAttachments = searchResult.getAttachmentHighlightInformation(d);
 			StringBuilder page = new StringBuilder();
 			page.append("<div class=\"muse-doc\">\n");
 
@@ -172,12 +144,12 @@ public class EmailRenderer {
 			 * page.append (word + " "); page.append ("<br/>\n");
 			 * page.append("<br/>\n"); }
 			 */
-            //get highlight terms from searchResult object for this document.
-            Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);
+			//get highlight terms from searchResult object for this document.
+			Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);
 
-            page.append("\n<div class=\"muse-doc-body\">\n");
+			page.append("\n<div class=\"muse-doc-body\">\n");
 			Pair<StringBuilder, Boolean> contentsHtml = searchResult.getArchive().getHTMLForContents(d, ((EmailDocument) d).getDate(),
-                    d.getUniqueId(), searchResult.getRegexToHighlight(), highlightTerms,
+					d.getUniqueId(), searchResult.getRegexToHighlight(), highlightTerms,
 					authorisedEntities, IA_links, inFull, true);
 
 			StringBuilder htmlMessageBody = contentsHtml.first;
@@ -189,8 +161,7 @@ public class EmailRenderer {
 
 			// page.append("\n<hr class=\"end-of-browse-contents-line\"/>\n");
 			List<Blob> attachments = ed.attachments;
-			if (attachments != null && attachments.size() > 0)
-			{
+			if (attachments != null && attachments.size() > 0) {
 				// show thumbnails of all the attachments
 
 				if (ModeConfig.isPublicMode()) {
@@ -198,40 +169,36 @@ public class EmailRenderer {
 				} else {
 					page.append("<hr/>\n<div class=\"attachments\">\n");
 					int i = 0;
-					for (; i < attachments.size(); i++)
-					{
+					for (; i < attachments.size(); i++) {
 						Blob attachment = attachments.get(i);
 						boolean highlight = highlightAttachments != null && highlightAttachments.contains(attachment);
-						String css_class = "attachment" + (highlight ? " highlight":"");
+						String css_class = "attachment" + (highlight ? " highlight" : "");
 						page.append("<div class=\"" + css_class + "\">");
 
 						String thumbnailURL = null, attachmentURL = null;
 						boolean is_image = Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(attachment));
-                        BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
-						if (attachmentStore!= null)
-						{
+						BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
+						if (attachmentStore != null) {
 							String contentFileDataStoreURL = attachmentStore.get_URL_Normalized(attachment);
-							attachmentURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(contentFileDataStoreURL);
+							attachmentURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(contentFileDataStoreURL);
 							String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
 							if (tnFileDataStoreURL != null)
-								thumbnailURL = "serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(tnFileDataStoreURL);
-							else
-							{
+								thumbnailURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(tnFileDataStoreURL);
+							else {
 								if (archive.getBlobStore().is_image(attachment))
 									thumbnailURL = attachmentURL;
 								else
 									thumbnailURL = "images/sorry.png";
 							}
-						}
-						else
+						} else
 							JSPHelper.log.warn("attachments store is null!");
 
 						// toString the filename in any case,
-						String url = archive.getBlobStore().full_filename_normalized(attachment,false);
+						String url = archive.getBlobStore().full_filename_normalized(attachment, false);
 						// cap to a length of 25, otherwise the attachment name
 						// overflows the tn
 						String display = Util.ellipsize(url, 25);
-                        page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(url) + "\">"+ Util.escapeHTML(display) + "</span>&nbsp;");
+						page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(url) + "\">" + Util.escapeHTML(display) + "</span>&nbsp;");
 						page.append("<br/>");
 
 						css_class = "attachment-preview" + (is_image ? " img" : "");
@@ -239,16 +206,13 @@ public class EmailRenderer {
 
 						// punt on the thumbnail if the attachment tn or content
 						// URL is not found
-						if (thumbnailURL != null && attachmentURL != null)
-						{
+						if (thumbnailURL != null && attachmentURL != null) {
 							// d.hashCode() is just something to identify this
 							// page/message
 							page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(url) + "\" href=\"" + attachmentURL + "\">");
 							page.append(leader + "href=\"" + attachmentURL + "\" src=\"" + thumbnailURL + "\"></img>\n");
 							page.append("<a>\n");
-						}
-						else
-						{
+						} else {
 							// page.append
 							// ("&nbsp;<br/>&nbsp;<br/>Not fetched<br/>&nbsp;<br/>&nbsp;&nbsp;&nbsp;");
 							// page.append("<a title=\"" + attachment.filename +
@@ -266,25 +230,25 @@ public class EmailRenderer {
 						//origina.notequals(normalized) then only name cleanup happened.(originalfilename)
 						//so the attributes are either only originalfilename or cleanedupfileURL or both.
 						String cleanedupname = bstore.full_filename_cleanedup(attachment);
-						String normalizedname=bstore.full_filename_normalized(attachment);
+						String normalizedname = bstore.full_filename_normalized(attachment);
 						String cleanupurl = bstore.get_URL_Cleanedup(attachment);
 						boolean isNormalized = !cleanedupname.equals(normalizedname);
 						boolean isCleanedName = !cleanedupname.equals(bstore.full_filename_original(attachment));
-						if(isNormalized || isCleanedName){
-							String completeurl_cleanup ="serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(cleanupurl);
+						if (isNormalized || isCleanedName) {
+							String completeurl_cleanup = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(cleanupurl);
 
 							page.append("<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" ");
-							if(isNormalized){
-								page.append("data-originalurl="+"\""+completeurl_cleanup+"\" ");
-								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment,false)+"\" ");
+							if (isNormalized) {
+								page.append("data-originalurl=" + "\"" + completeurl_cleanup + "\" ");
+								page.append("data-originalname=" + "\"" + bstore.full_filename_original(attachment, false) + "\" ");
 							}
-							if(isCleanedName){
-								page.append("data-originalname="+"\""+bstore.full_filename_original(attachment,false)+"\"");
+							if (isCleanedName) {
+								page.append("data-originalname=" + "\"" + bstore.full_filename_original(attachment, false) + "\"");
 							}
 							page.append("></span>");
 						}
 
-						page.append ("</div>");
+						page.append("</div>");
 					}
 					page.append("\n</div>  <!-- .muse-doc-attachments -->\n"); // muse-doc-attachments
 				}
@@ -292,9 +256,7 @@ public class EmailRenderer {
 			}
 			page.append("\n</div>  <!-- .muse-doc -->\n"); // .muse-doc
 			html = page.toString();
-		}
-		else if (d instanceof DatedDocument)
-		{
+		} else if (d instanceof DatedDocument) {
 			/*
 			 * DatedDocument dd = (DatedDocument) d; StringBuilder page = new
 			 * StringBuilder();
@@ -305,9 +267,7 @@ public class EmailRenderer {
 			 * page.append ("\n</div>"); // doc-contents return page.toString();
 			 */
 			html = "To be implemented";
-		}
-		else
-		{
+		} else {
 			JSPHelper.log.warn("Unsupported Document: " + d.getClass().getName());
 			html = "";
 		}
@@ -316,19 +276,16 @@ public class EmailRenderer {
 	}
 
 	/*
-	 * returns pages and html for a collection of docs, which can be put into a
-	 * jog frame. indexer clusters are used to
+	 * returns pages and a json object for a collection of docs, which can be put into a
+	 * jog frame.
 	 *
 	 * Changed the first arg type from: Collection<? extends EmailDocument> to Collection<Document>, as we get C
 	 * ollection<Document> in browse page or from docsforquery, its a hassle to make them all return EmailDocument
 	 * especially when no other document type is used anywhere
 	 */
-	public static Pair<DataSet, String> pagesForDocuments(Collection<Document> docs,SearchResult result,
-														  String datasetTitle,
-														  MultiDoc.ClusteringType coptions) {
-		StringBuilder html = new StringBuilder();
-		int pageNum = 0;
-		List<String> pages = new ArrayList<>();
+	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
+															 String datasetTitle,
+															 MultiDoc.ClusteringType coptions) {
 
 		// need clusters which map to sections in the browsing interface
 		List<MultiDoc> clusters;
@@ -348,98 +305,50 @@ public class EmailRenderer {
 		 * ds), true); else // must be category docs clusters =
 		 * CategoryDocument.clustersDocsByCategoryName((Collection) ds); }
 		 */
+		JSONArray resultObj = new JSONArray();
+		int resultCount = 0;
 
 		List<Document> datasetDocs = new ArrayList<>();
 		AnnotationManager annotationManager = result.getArchive().getAnnotationManager();
 		// we build up a hierarchy of <section, document, page>
-		for (MultiDoc md : clusters)
-		{
+		for (MultiDoc md : clusters) {
 			if (md.docs.size() == 0)
 				continue;
 
-			String description = md.description;
-			description = description.replace("\"", "\\\""); // escape a double
-			// quote if any
-			// in the
-			// description
-			html.append("<div class=\"section\" name=\"" + description + "\">\n");
-
 			List<List<String>> clusterResult = new ArrayList<>();
 
-
-			for (Document d : md.docs)
-			{
+			for (Document d : md.docs) {
 				String pdfAttrib = "";
-				/*
-				 * if (d instanceof PDFDocument) pdfAttrib = "pdfLink=\"" +
-				 * ((PDFDocument) d).relativeURLForPDF + "\"";
-				 */
-				html.append("<div class=\"document\" " + pdfAttrib + ">\n");
-
 				datasetDocs.add(d);
-				pages.add(null);
 				clusterResult.add(null);
 				// clusterResult.add(docPageList);
 				// for (String s: docPageList)
 				{
+					JSONObject jsonObj = new JSONObject();
+
 					String comment = Util.escapeHTML(annotationManager.getAnnotation(d.getUniqueId()));
-					html.append("<div class=\"page\"");
 					if (!Util.nullOrEmpty(comment))
-						html.append(" comment=\"" + comment + "\"");
-
-					if (!Util.nullOrEmpty(comment) && (d instanceof EmailDocument))
-					{
-						String messageId = d.getUniqueId();
-						html.append(" messageID=\"" + messageId + "\"");
-					}
-					if (d.isLiked())
-						html.append(" liked=\"true\"");
-					/*
-					if (d instanceof EmailDocument && ((EmailDocument) d).doNotTransfer)
-						html.append(" doNotTransfer=\"true\"");
-					if (d instanceof EmailDocument && ((EmailDocument) d).transferWithRestrictions)
-						html.append(" transferWithRestrictions=\"true\"");
-					if (d instanceof EmailDocument && ((EmailDocument) d).reviewed)
-						html.append(" reviewed=\"true\"");
-					*/
-					//getting labels for this document
-					//also make sure that browse.jsp (the jsp calling this function) should have a map of LabelID to Label Name, Label type in javascript
-					if(d instanceof EmailDocument) {
-						Set<String> labels = result.getArchive().getLabelIDs((EmailDocument) d);
-						if (!Util.nullOrEmpty(labels)) {
-							String val = labels.stream().collect(Collectors.joining(","));
-							html.append(" labels=\"" + val +"\"");
-						}else
-							html.append(" labels=\"\"");
+						jsonObj.put("annotation", comment);
+					Set<String> labels = result.getArchive().getLabelIDs((EmailDocument) d);
+					if (!Util.nullOrEmpty(labels)) {
+						JSONArray labs = new JSONArray();
+						int i = 0;
+						for (String l : labels) {
+							labs.put(i++, l);
+						}
+						jsonObj.put("labels", labs);
 					}
 
-					//set if this document has a hacky date or not..based on this the UI will
-					//allow/disallow to set a time duration based restriction label (git issue #165)
-					/*boolean hackydate = false;
-					if(EmailFetcherThread.INVALID_DATE.equals(ed.getDate()))
-						hackydate = true;
-
-					html.append(" hackyDate=\""+hackydate+"\"");
-*/
-					/*//set if this message has a timerestriction label that has expired.
-					if(result.getArchive().isCandidateForReleaseLabel(d))
-						html.append(" candidateForClearance=\"true\"");
-					else
-						html.append(" candidateForClearance=\"false\"");
-					*/
-					//////////////////////////////////////////DONE reading labels///////////////////////////////////////////////////////////////////////////
-					if (d instanceof EmailDocument)
-						html.append(" pageId='" + pageNum++ + "' " + " signature='" + Util.hash (((EmailDocument) d).getSignature()) + "' docId='" + d.getUniqueId() + "'></div>\n");
+					if (d instanceof EmailDocument) {
+						jsonObj.put("id", ((EmailDocument) d).getUniqueId());
+					}
+					resultObj.put(resultCount++, jsonObj);
 				}
-
-				html.append("</div>"); // document
 			}
-			html.append("</div>\n"); // section
 		}
 
 		DataSet dataset = new DataSet(datasetDocs, result, datasetTitle);
-
-		return new Pair<>(dataset, html.toString());
+		return new Pair<>(dataset, resultObj);
 	}
 
 	/**
