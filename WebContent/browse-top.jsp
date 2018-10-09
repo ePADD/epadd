@@ -112,7 +112,6 @@
 %>
 
 <% writeProfileBlock(out, archive, "Date Range: ", IndexUtils.getDateRangeAsString(allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
-<br/>
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box text-center margin30">

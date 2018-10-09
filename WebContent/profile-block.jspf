@@ -12,20 +12,26 @@
       AddressBook ab = archive.addressBook;
       String bestName = ab.getBestNameForSelf();
       String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-      String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
-      out1.println("<div style=\"display:inline-block;text-align:left\">"
-              + "<div class=\"profile-info\">"
-              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto.png\')\"></div>"
-              + "<div class=\"profile-text\">"
-              + Util.escapeHTML(title) + "<br/>");
 
+      String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
+      out1.println("<div class=\"header-block\">"
+              + "<div class=\"breadcrumbs\">Appraisal &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;Browse</div><br/>"
+              + "<div class=\"profile-info\">"
+              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto.png\')\">"
+              + "<div class=\"profile-plus\">+</div>"
+              + "</div>"
+              + "<div class=\"profile-text\">"
+              + Util.escapeHTML(title));
+
+      /*
       for (int i = 0; i < fields.length; i+=2)
       {
         if (i + 1 >= fields.length)
           break;
         out1.println("<span class=\"field-name\">" + fields[i] + "</span>" + "<span class=\"field-value\">" + fields[i + 1] + "</span><br/>");
       }
-      out1.println("</div></div></div>");
+      */
+      out1.println("</div></div></div><br/>");
     } catch (IOException ioe) { Util.print_exception(ioe, JSPHelper.log);}
   }
 %>
