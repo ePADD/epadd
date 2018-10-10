@@ -605,7 +605,7 @@ public class AddressBook implements Serializable {
         if (ed.date == null) {
             markDataError("No date for: " + ed);
             dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_NODATE);
-
+            ed.hackyDate=true;
         }
         boolean b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
         if (!b && !noToCCBCC) {// if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.

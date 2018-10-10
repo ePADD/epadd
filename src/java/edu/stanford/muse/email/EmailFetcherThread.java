@@ -379,11 +379,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
             Set<String> lab = new LinkedHashSet<>();
             lab.add(LabelManager.LABELID_NODATE);
             getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
+            ed.hackyDate=true;
         }
         if(probablyWrongDate){
             Set<String> lab = new LinkedHashSet<>();
             lab.add(LabelManager.LABELID_POSS_BADDATE);
             getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
+            ed.hackyDate=true;
         }
 
         // check if the message has attachments.

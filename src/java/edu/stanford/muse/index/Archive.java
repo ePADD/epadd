@@ -903,7 +903,7 @@ int errortype=0;
             if (io.filter == null || (io.filter != null && io.filter.matches(d)))
                 newAllDocs.add(d);
 
-        EmailUtils.cleanDates(newAllDocs);
+        //EmailUtils.cleanDates(newAllDocs);
 
         log.info(newAllDocs.size() + " documents after filtering");
 

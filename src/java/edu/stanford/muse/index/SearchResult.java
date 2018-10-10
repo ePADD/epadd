@@ -789,7 +789,7 @@ public class SearchResult {
         String category = JSPHelper.getParam(inputSet.queryParams, "lexiconCategory");
         if (Util.nullOrEmpty(category))
             return inputSet;
-
+        category = category.trim();//sometime an empty space comes from the front end.
         //if parameter map contains termAttachments as "on" then remove it as right now we don't have support for searching attachments for lexicon..[Or is this constraints only
         //for regex]
         //inputSet.queryParams.remove("termAttachments","on");

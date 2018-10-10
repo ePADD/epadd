@@ -908,7 +908,7 @@ public class IndexUtils {
 		Date first = null, last = null;
 		for (DatedDocument dd : docs)
 		{
-			if(DateTimeComparator.getDateOnlyInstance().compare(dd.date,EmailFetcherThread.INVALID_DATE)==0)
+			if(DateTimeComparator.getDateOnlyInstance().compare(dd.date,EmailFetcherThread.INVALID_DATE)==0 || dd.hackyDate)
 				continue;//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
 			if (dd.date == null)
 				continue; // should not happen

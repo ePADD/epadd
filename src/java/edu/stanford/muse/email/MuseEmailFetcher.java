@@ -547,7 +547,7 @@ public class MuseEmailFetcher {
 		if (allEmailDocs.size() == 0)
 			log.warn ("0 messages from email fetcher");
 
-		EmailUtils.cleanDates(allEmailDocs);
+		//EmailUtils.cleanDates(allEmailDocs);
 
 		// create a new address book	
 		if (session != null)
