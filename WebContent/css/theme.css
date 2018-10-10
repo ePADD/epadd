@@ -928,17 +928,13 @@ pre code {
 	border-radius:2px;
 }
 
-.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 4px;}
-.system-label.restriction-label { background: #e00000; color: white; }
-.restriction-label { background: #E27D00; color: white; }
-.general-label { background: #006FC0; color: white;}
-
 .btn-icon >li>a:hover, .btn-icon >li>span:hover, .btn-icon >li>a:focus, .btn-icon >li>span:focus {
 	color: #818da7;
 	background-color: #f5f5f8;
 	border: 1px solid #98a2b7;
 	border-radius:0px;
 }
+
 .btn-icon >.active>a, .btn-icon >.active>span, .btn-icon >.active>a:hover, .btn-icon >.active>span:hover, .btn-icon >.active>a:focus, .btn-icon >.active>span:focus {
 	z-index: 2;
 	color: #fff;
@@ -1448,7 +1444,7 @@ body {
 	vertical-align: middle;
 }
 
-.profile-info {
+.profile-block {
 	padding: 10px 20px;
 	background-color: #f5f5f8;
 }
@@ -1472,6 +1468,21 @@ body {
 	color: #0075bb;
 	border: solid 1px gray;
 }
+
+
+.profile-more-info {
+	position: relative;
+	text-align:right;
+	font-size: 16px;
+	vertical-align: middle;
+	display: table-cell;
+	width:400px;
+	cursor: pointer;
+}
+
+.nav-arrow { text-align: center; border-radius: 50%; height:30px; width: 30px; border: solid 1px black; display: inline-block; cursor: pointer; position: relative; top:4px;}
+
+.nav-arrow:hover { background-color: white; border-color: black; transition: .3s; }
 
 .breadcrumbs {
 	font-size: 16px;

@@ -281,7 +281,9 @@ public class EmailRenderer {
 	 *
 	 * Changed the first arg type from: Collection<? extends EmailDocument> to Collection<Document>, as we get C
 	 * ollection<Document> in browse page or from docsforquery, its a hassle to make them all return EmailDocument
-	 * especially when no other document type is used anywhere
+	 * especially when no other document type is used anywhere.
+	 * The second result is a json array of objects, one for each message. each message's object has metadata for it such as
+	 * id, labels and annotations.
 	 */
 	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
 															 String datasetTitle,

@@ -4,13 +4,13 @@
     JSPHelper.checkContainer(request); // do this early on so we are set up
     request.setCharacterEncoding("UTF-8");
 %>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.DetailedFacetItem"%>
-<%@page language="java" import="edu.stanford.muse.util.EmailUtils"%>
-<%@page language="java" import="edu.stanford.muse.util.Pair"%>
-<%@page language="java" import="edu.stanford.muse.webapp.EmailRenderer"%>
-<%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
-<%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@page import="edu.stanford.muse.index.*"%>
+<%@page import="edu.stanford.muse.util.DetailedFacetItem"%>
+<%@page import="edu.stanford.muse.util.EmailUtils"%>
+<%@page import="edu.stanford.muse.util.Pair"%>
+<%@page import="edu.stanford.muse.webapp.EmailRenderer"%>
+<%@page import="edu.stanford.muse.webapp.HTMLUtils"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig"%>
 
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
@@ -391,35 +391,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             </div>
         <% } %>
 
-        <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
-            <%
-                // bulk controls not available in discovery mode
-               if (!ModeConfig.isDiscoveryMode()) { %>
-                <div class="bulk-controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);padding-top:5px;">
-                    <div style="float:right;position:relative;">
-                        <div>
-                            <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
-                                <span style="margin-right:5px;cursor:pointer;" class="bulk-export">
-                                    <ul class="pagination">
-                                        <li><a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages as mbox"><i style="display:inline" class="fa fa-download"></i></a></li>
-                                    </ul>
-                                </span>
-                                <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
-                                    <ul class="pagination">
-                                        <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
-                                    </ul>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="clear:both"></div>
-                </div>
-            <% } %>
-
+        <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
             <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);">
-                <div style="float:left;position:relative;top:7px">
-                    <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
-
+                <div style="float:left;padding:5px">
+                    <div class="form-group label-picker" style="display:inline-block">
 
                         <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
@@ -441,11 +416,17 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
                                 <%}%>
                             </optgroup>
-
                         </select>
+
                     </div>
-                    <div style="display:inline" class="labels-area">
-                        <!-- will be filled in by render_labels() in JS -->
+
+                    <!-- these may have to be disabled in discovery mode. TODO: check with Peter -->
+                    <div style="display:inline">
+                        <button class="btn btn-default" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">Label all</button>
+                    </div>
+
+                    <div style="display:inline">
+                        <button class="btn btn-default" title="Export these messages as mbox" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">Download</button>
                     </div>
 
                     <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
@@ -454,28 +435,23 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     </span>
                 </div>
 
-                <div style="float:right;position:relative;top:8px">
-                    <div style="display:inline;vertical-align:top;font-size:20px; position:relative;" >
-
-                        <div style="display:inline; position:relative; top:-8px;" id="pageNumbering"></div>
-                        <ul class="pagination">
-                            <li class="button">
-                                <a id="page_back" style="border-right:0" href="#" class="icon-peginationarrow"></a>
-                                <a id="page_forward" href="#" class="icon-circlearrow"></a>
-                            </li>
-                        </ul>
+                <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
+                    <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> &lang; </span></div>
+                        <div style="position: relative; top:8px; display:inline-block; padding: 0px 5px">
+                            <div style="display:inline; position:relative; " id="pageNumbering"></div> of
+                            <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
+                        </div>
+                        <div id="page_forward" class="nav-arrow"><span style="position: relative; top:3px"> &rang; </span></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
-
             </div> <!-- controls -->
 
-            <!--  to fix: these image margins and paddings are held together with ducttape cos the orig. images are not a consistent size -->
-            <!-- <span id="jog_status1" class="showMessageFilter rounded" style="float:left;opacity:0.5;margin-left:30px;margin-top:10px;">&nbsp;0/0&nbsp;</span>  -->
-            <div style="font-size:12pt;opacity:0.5;margin-left:30px;margin-right:30px;margin-top:10px;">
-                <!--	Unique Identifier: <span id="jog_docId" title="Unique ID for this message"></span> -->
+            <div class="labels-area">
+                <!-- will be filled in by render_labels() in JS -->
             </div>
-            <div style="clear:both"></div>
+
             <div id="jog_contents" style="position:relative" class="<%=jog_contents_class%>">
                 <div style="text-align:center"><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
             </div>
@@ -518,7 +494,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         JSONArray jsonObjectsForMessages = pair.getSecond(); // this has message labels
         %>
         <script>
-            window.messageMetadata = '<%=jsonObjectsForMessages.toString()%>';
+            window.messageMetadata = <%=jsonObjectsForMessages.toString()%>;
         </script>
         <%
         // entryPct says how far (what percentage) into the selected pages we want to enter
