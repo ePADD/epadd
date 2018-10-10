@@ -18,6 +18,7 @@ package edu.stanford.muse.AddressBookManager;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.index.EmailDocument;
@@ -28,6 +29,7 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
+import sun.awt.image.ImageWatched;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
@@ -74,6 +76,7 @@ public class AddressBook implements Serializable {
 
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
+    private transient Multimap<String,String> dataErrosMap = LinkedHashMultimap.create();
     //needed to keep track of mailingList information
     public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<>();
     private List<Contact> contactListForIds = new ArrayList<>();
@@ -147,6 +150,7 @@ public class AddressBook implements Serializable {
             this.contactListForIds = ab.contactListForIds;
             this.mailingListMap = ab.mailingListMap;
             this.dataErrors = ab.dataErrors;
+            this.dataErrosMap = ab.dataErrosMap;
             this.emailMaskingMap = ab.emailMaskingMap;
         } catch (IOException e) {
             e.printStackTrace();
@@ -590,14 +594,25 @@ public class AddressBook implements Serializable {
         if (toCCBCC == null || toCCBCC.size() == 0) {
             noToCCBCC = true;
             markDataError("No to/cc/bcc addresses for: " + ed);
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
+
         }
-        if (ed.from == null || ed.from.length == 0)
+        if (ed.from == null || ed.from.length == 0) {
             markDataError("No from address for: " + ed);
-        if (ed.date == null)
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
+
+        }
+        if (ed.date == null) {
             markDataError("No date for: " + ed);
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_NODATE);
+
+        }
         boolean b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
-        if (!b && !noToCCBCC) // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
+        if (!b && !noToCCBCC) {// if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
             markDataError("Owner not sender, and no to addr for: " + ed);
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
+
+        }
     }
 
     private void markDataError(String s) {
@@ -662,7 +677,12 @@ public class AddressBook implements Serializable {
         return Collections.unmodifiableCollection(dataErrors);
     }
 
-    /* merges self addrs with other's, returns the self contact */
+    public synchronized Multimap<String, String> getDataErrorsMap() {
+        if (dataErrosMap == null)
+            dataErrosMap = LinkedHashMultimap.create();
+        return dataErrosMap;
+    }
+    /* merges self addrs with other's, returns the self contact -- No need to merge dataErrorsMap here*/
     private Contact mergeSelfAddrs(AddressBook other) {
         // merge CIs for the 2 sets of own addrs
         Contact selfContact = getContactForSelf();
