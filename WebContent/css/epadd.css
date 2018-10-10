@@ -65,6 +65,9 @@ div.controls { border-bottom:solid 1px rgba(160,160,160,0.3); height: 55px;}
 div.labels-area { border-bottom:solid 1px rgba(160,160,160,0.3); height: 55px; padding-top: 15px;}
 div.controls button { background-color: white; margin-left: 23px; }
 
+div.message-menu { position: absolute; left: 900px; top: 200px;}
+div.message-menu img { height: 25px;}
+
 .message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 20px;}
 .system-label.restriction-label { background: rgb(223,0,0); color: white; }
 .restriction-label { background: #E27D00; color: white; }

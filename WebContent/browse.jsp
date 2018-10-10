@@ -437,12 +437,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
-                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> &lang; </span></div>
-                        <div style="position: relative; top:8px; display:inline-block; padding: 0px 5px">
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img src="images/prev.svg"/></div>
+                        <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">
                             <div style="display:inline; position:relative; " id="pageNumbering"></div> of
                             <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
                         </div>
-                        <div id="page_forward" class="nav-arrow"><span style="position: relative; top:3px"> &rang; </span></div>
+                        <div id="page_forward" class="nav-arrow"> <img src="images/next.svg"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
@@ -452,9 +452,18 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <!-- will be filled in by render_labels() in JS -->
             </div>
 
-            <div id="jog_contents" style="position:relative" class="<%=jog_contents_class%>">
-                <div style="text-align:center"><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+            <div id="position:relative">
+                <div class="message-menu">
+                    <a target="_blank" href="#" class="id-link" style="cursor: pointer"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
+                    <a target="_blank" href="#" class="thread-link" style="cursor: pointer"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <span class="attach"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></span>
+                </div>
+
+                <div id="jog_contents" style="position:relative" class="<%=jog_contents_class%>">
+                    <div style="text-align:center"><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                </div>
             </div>
+
         </div>
     </div>
     <%

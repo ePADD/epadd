@@ -16,6 +16,11 @@ var Navigation = function(){
         $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : currentPage+1));
         Labels.refreshLabels();
         Annotations.refreshAnnotation();
+
+        // update the links
+        $('.message-menu a.id-link').attr('href', 'browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
+        $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadId=' + window.messageMetadata[PAGE_ON_SCREEN].threadId);
+        $('.message-menu .attach span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
     };
 
     var setupEvents = function() {

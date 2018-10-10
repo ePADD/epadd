@@ -342,7 +342,10 @@ public class EmailRenderer {
 					}
 
 					if (d instanceof EmailDocument) {
-						jsonObj.put("id", ((EmailDocument) d).getUniqueId());
+					    EmailDocument ed = (EmailDocument) d;
+						jsonObj.put("id", ed.getUniqueId());
+                        jsonObj.put ("threadID", ed.threadID);
+						jsonObj.put ("nAttachments", ed.attachments != null ? ed.attachments.size(): 0);
 					}
 					resultObj.put(resultCount++, jsonObj);
 				}
@@ -455,9 +458,9 @@ public class EmailRenderer {
 		result.append(x);
 		result.append("</b>\n");
 		result.append("\n</td></tr>\n");
-		String messageId = Util.hash (ed.getSignature());
-		String messageLink = "(<a href=\"browse?archiveID="+archiveID+"&adv-search=1&uniqueId=" + messageId + "\">Link</a>)";
-		result.append ("\n" + style + "ID: " + "</td><td>" + messageId + " " + messageLink + "</td></tr>");
+		// String messageId = Util.hash (ed.getSignature());
+		// String messageLink = "(<a href=\"browse?archiveID="+archiveID+"&adv-search=1&uniqueId=" + messageId + "\">Link</a>)";
+		// result.append ("\n" + style + "ID: " + "</td><td>" + messageId + " " + messageLink + "</td></tr>");
 		result.append("</table>\n"); // end docheader table
 
 		if (ModeConfig.isPublicMode())
