@@ -106,8 +106,6 @@
 <%writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Image attachments") +
 " (" + uniqueAttachments.size() + " unique)");%>
 <%--<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>--%>
-<br/>
-<br/>
 
 <div id="all_fields" style="margin:auto; width:900px; padding: 10px">
 
