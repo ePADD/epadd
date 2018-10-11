@@ -104,8 +104,8 @@
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.qtip.min.css">
     <jsp:include page="css/css.jsp"/>
-    <link href="css/main.css" rel="stylesheet" type="text/css"/>
-
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/main.css">
 
     <script src="js/stacktrace.js" type="text/javascript"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
@@ -113,6 +113,8 @@
     <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/selectpicker.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/sidebar.js"></script>
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
@@ -164,6 +166,162 @@
 <body > <!--  override margin because this page is framed. -->
 <jsp:include page="header.jspf"/>
 <%--<script>epadd.nav_mark_active('Browse');--%>
+
+<div class="nav-toggle1 sidebar-icon">
+<img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+    <h2>Browsing Messages</h2>
+    <!--close button-->
+    <a class="nav-toggle1 show-nav1" href="#">
+        <img src="images/close.png" class="close" alt="close">
+    </a>
+
+    <div class="search-tips" style="display:block">
+
+        <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
+            <br/>
+            <br/>
+
+            Use the search facets on the left of the message pane to further refine your search results.
+            <br/>
+            <br/>
+
+            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
+            <br/>
+            <br/>
+
+            Create annotations to add description to a single message or set of messages. All annotations you add are searchable via Advanced Search. Annotations will export between the Appraisal, Processing, and Delivery modules. Annotations will not export outside of ePADD, including from the Delivery module.
+            <br/>
+            <br/>
+
+            If you do not want annotations to export between modules, you must clear them by first navigating to the set of messages with that annotation using Advanced Search, then selecting the annotation, then overwriting that annotation with a blank annotation, then selecting “Apply to all messages.”
+            <br/>
+            <br/>
+
+            Use general labels (created via the Labels option on the dashboard) to add a brief description to a set of messages, or to mark messages as already reviewed.
+            <br/>
+            <br/>
+
+            General labels will export between the Appraisal, Processing, and Delivery modules. If you do not want general labels to export between these modules, you must clear them by first navigating to the set of messages with that label from the Labels screen, selecting “Label All,” then selecting “Unset for All” for the given label.
+            <br/>
+            <br/>
+
+            Use restriction labels (created via the Labels option on the dashboard) to flag messages for restriction, including for a certain period from the current date, or from the date of creation.
+            <br/>
+            <br/>
+
+            Restricted messages (and associated restriction labels), except for messages assigned the “Do not Transfer” restriction label, will export from the Appraisal module to the Processing module. Restricted messages will not export to the Discovery or Delivery modules, unless they are also assigned the “Cleared for release” label within the Appraisal or Processing modules.
+            <br/>
+            <br/>
+
+            All labels are searchable via Advanced Search.
+            <br/>
+            <br/>
+
+            Default labels applied to all messages can be set from the Dashboard, under the More option.
+            <br/>
+            <br/>
+
+            [Icon 1] - Download all messages in a set of results.
+            <br/>
+            <br/>
+
+
+            [Icon 2] - Annotate this message.
+            <br/>
+            <br/>
+
+            [Icon 3] - Show thread view.
+            <br/>
+            <br/>
+
+            [Icon 4] - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID into your web browser’s address bar. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+            [Icon 5] - Show message attachments.
+            <br/>
+            <br/>
+
+        <% } else if (ModeConfig.isDiscoveryMode()) { %>
+
+            Messages in this view are redacted to protect privacy and copyright. To request access to the full text of any messages, please contact the host institution.
+            <br/>
+            <br/>
+
+            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
+            <br/>
+            <br/>
+
+            Use the search facets on the left of the message pane to further refine your search results.
+            <br/>
+            <br/>
+
+            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
+            <br/>
+            <br/>
+
+            The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+        <% } else if (ModeConfig.isDeliveryMode()) { %>
+            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
+            <br/>
+            <br/>
+
+            Use the search facets on the left of the message pane to further refine your search results.
+            <br/>
+            <br/>
+
+            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
+            <br/>
+            <br/>
+
+            Create annotations to add description to a single message or set of messages. All annotations you add are searchable via Advanced Search. If exported messages have been annotated, the annotations will not export.
+            <br/>
+            <br/>
+
+            Use labels (created via the Labels option on the dashboard) to add a brief description to a set of messages, or mark messages as already reviewed.
+            <br/>
+            <br/>
+
+            Labels will not export.
+            <br/>
+            <br/>
+
+            All labels are searchable via Advanced Search.
+            <br/>
+            <br/>
+
+            Set default labels for all messages from the Dashboard, under the More option.
+            <br/>
+            <br/>
+
+            [Icon 1] - Download all messages in a set of results.
+            <br/>
+            <br/>
+
+            [Icon 2] - Annotate this message.
+            <br/>
+            <br/>
+
+            [Icon 3] - Show thread view.
+            <br/>
+            <br/>
+
+            [Icon 4] - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+            [Icon 5] - Show message attachments.
+            <br/>
+            <br/>
+        <% } %>
+    </div>
+</nav>
 
 <script>
     $('body').on('click','#normalizationInfo',function(e){

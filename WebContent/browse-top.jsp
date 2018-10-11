@@ -20,9 +20,15 @@
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+	<link rel="stylesheet" href="css/main.css">
 
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+
 	<script src="js/epadd.js"></script>
 
 	<style>
@@ -49,6 +55,103 @@
 %>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
+
+<!--sidebar content-->
+
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+	<h2><b>Using the Dashboard</b></h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<div class="search-tips" style="display:block">
+
+		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+			Use the dashboard to browse and interact with an email archive.
+			Browse correspondents and extracted entities (including persons, organizations, events, and more),
+			create labels that can be assigned to messages, review attachments, create and view results of thematic lexicon searches, and learn more about both the archive and the import into ePADD through reports.
+			<br/>
+			<br/>
+
+			[Icon 1] Browse, graph, and edit correspondents and associated messages.
+			<br/>
+			<br/>
+
+			[Icon 2] Browse and edit recognized entities and associated messages.
+			<br/>
+			<br/>
+
+			[Icon 3] View, add, and edit general and restriction (machine-actionable) labels, and view associated messages.
+			<br/>
+			<br/>
+
+			[Icon 4] Browse image attachments and associated messages.
+			<br/>
+			<br/>
+
+
+			[Icon 5] View other attachments and associated messages.
+			<br/>
+			<br/>
+
+			[Icon 6] View original message folders or sources and associated messages.
+			<br/>
+			<br/>
+
+			[Icon 7] Browse, create, and modify lexicon searches.
+			<br/>
+			<br/>
+
+			[Icon 8] View any import and merge reports.
+			<br/>
+			<br/>
+
+			[Icon 9] Access additional options, including verifying the bag checksum, adding images associated with the creator, and setting default labels.
+			<br/>
+			<br/>
+
+			Select Search from the menu bar to view additional options for searching across the archive.
+			<br/>
+			<br/>
+			<b>Screening Email for Sensitive Information</b>
+			Regular expression lexicon searches, sensitive lexicon searches, and the disease entity category are particularly helpful to locate potentially sensitive information, including personally identifiable information (PII).
+			<br/>
+			<br/>
+			Use the Advanced Search option, under Search, to further refine criteria to identify potentially sensitive information.
+			<br/>
+			<br/>
+			To restrict a message or set of messages, create a restriction label via the Labels menu option, then apply that label from the message browse screen.
+			<br/>
+			<br/>
+
+		<% } else if (ModeConfig.isDiscoveryMode()) { %>
+			Use the dashboard to browse and interact with an email archive.
+			<br/>
+			<br/>
+
+			[Icon 1] Browse and graph correspondents and associated messages.
+			<br/>
+			<br/>
+			[Icon 2] Browse recognized entities and associated messages.
+			<br/>
+			<br/>
+
+			Select Search from the menu bar to view additional options for searching across the archive.
+		<% } else if (ModeConfig.isDeliveryMode()) { %>
+			Use the dashboard to browse and interact with an email archive.
+			Browse correspondents and extracted entities (including persons, organizations, events, and more), create labels that can be assigned to messages, review attachments, create and view results of thematic lexicon searches.
+			<br/>
+			<br/>
+
+			Select Search from the menu bar to view additional options for searching across the archive.
+
+		<% } %>
+	</div>
+</nav>
 
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params

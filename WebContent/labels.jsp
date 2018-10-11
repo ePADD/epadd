@@ -9,14 +9,20 @@
 	<title>Labels</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
+
 	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+	<link rel="stylesheet" href="css/main.css">
+
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
@@ -32,6 +38,37 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+	<h2><b>Using labels</b></h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<div class="search-tips" style="display:block">
+
+		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+			<p>[icon 1]  Create a new label.
+			<p>[icon 2]  Download a .json label description file.
+			<p>[icon 3]  Import a .json label description file.
+			<p>General labels can be used to describe to a set of messages, to mark a set of messages as reviewed, or for any other purpose. General labels are not machine-actionable.
+			<p>General labels will export from the Appraisal module to the Processing module, but will not export to the Discovery module or to/from the Delivery module.
+			<p>Restriction labels can be used to restrict messages, including for a certain period from the current date, or from the date of creation.
+			<p>Restricted messages (and associated restriction labels) will export from the Appraisal module to the Processing module, but will not export to the Discovery or Delivery modules unless they are also assigned the “Cleared for release” label within the Appraisal or Processing modules.
+			<p>All labels are searchable via Advanced Search.
+			<p>Set default labels for all messages from the Dashboard, under the More option.
+		<% } else if (ModeConfig.isDeliveryMode()) { %>
+			<p>[icon 1]  Create a new label.
+			<p>[icon 2]  Download a .json label description file.
+			<p>[icon 3]  Import a .json label description file.
+			<p>Labels can be used to describe a set of messages or to mark a set of messages as reviewed.
+			<p>Labels will not export.
+		<% } %>
+	</div>
+</nav>
 <%
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "Labels", "");
@@ -40,7 +77,7 @@
 
 <% // new label not available in discovery mode.
   if (!ModeConfig.isDiscoveryMode()) { %>
-    <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
+    <div style="text-align:center;display:inline-block;vertical-align:top;margin:auto; width:100%;">
         <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> Create</button> <!-- no labelID param, so it's taken as a new label -->
 		&nbsp;&nbsp;
 		<button class="btn-default" id="import-label"><i class="fa fa-pencil-o"></i> Upload</button>
