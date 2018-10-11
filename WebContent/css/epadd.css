@@ -55,17 +55,20 @@ div.progress_bar {
 }
 
 div.facets {
-    font-size: 12px;
+    font-size: 13px;
 	padding-left:5px;
 	border:solid 1px rgba(160,160,160,0.3);
+	line-height: 2.2;
 }
+
+div.facets .facetTitle { font-size: 16px; width: 100%; padding-left: 5px; border-style: solid; border-width: 1px 0px; border-color: #d4d4d4; margin-top: 20px;}
 
 div.facets, div.controls, div.labels-area { background-color: #f5f5f8;  }
 div.controls { border-bottom:solid 1px rgba(160,160,160,0.3); height: 55px;}
-div.labels-area { border-bottom:solid 1px rgba(160,160,160,0.3); height: 55px; padding-top: 15px;}
+div.labels-area { border: 1px solid #D4D4D4; height: 55px; padding-top: 15px;}
 div.controls button { background-color: white; margin-left: 23px; }
 
-div.message-menu { position: absolute; left: 900px; top: 200px;}
+div.message-menu { z-index: 10000; position: absolute; left: 900px; top: 220px;}
 div.message-menu img { height: 25px;}
 
 .message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 20px;}
@@ -79,6 +82,8 @@ div.message-menu img { height: 25px;}
 	padding: 4px;
 }
 
+.clickableLink { color: #0175bc; }
+
 .facet, .search { /* these are links */
 		cursor: pointer;
 }
@@ -91,8 +96,9 @@ div.message-menu img { height: 25px;}
 .browse_message_area {
   /*  background-image: url("../images/parchment-light.png"); */
     background-color: white; /* #f8f8ff; */
-	border:1px solid #D4D4D4;
 	margin-bottom: 10px;
+	margin-left: 20px;
+	margin-top: 20px;
 }
 
 .docheader { /* padding:8px 10px; */

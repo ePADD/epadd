@@ -19,7 +19,7 @@ var Navigation = function(){
 
         // update the links
         $('.message-menu a.id-link').attr('href', 'browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
-        $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadId=' + window.messageMetadata[PAGE_ON_SCREEN].threadId);
+        $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadId=' + window.messageMetadata[PAGE_ON_SCREEN].threadID);
         $('.message-menu .attach span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
     };
 

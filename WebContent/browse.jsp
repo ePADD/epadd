@@ -127,6 +127,7 @@
         .archive-heading .institution-name, .archive-heading .collection-name, .archive-heading .repository-name { width: 25%; text-align:center; }
         .archive-heading .collection-id { width: 10%;}
         .archive-heading { border: solid 1px #ccc; }
+        .navbar { margin-bottom: 0; } /* overriding bootstrap */
     </style>
 
 </head>
@@ -250,7 +251,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 <div class="browsepage" style="min-width:1220px">
 
     <!-- 160px block on the left for facets -->
-    <div style="display:inline-block;vertical-align:top;width:150px;padding-left:5px">
+    <div style="display:inline-block;vertical-align:top;width:150px;">
         <div class="facets" style="min-width:10em;text-align:left;margin-bottom:0px;">
             <%
                 if (!Util.nullOrEmpty(term)) {
@@ -285,7 +286,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         facetTitle = "correspondents";
 
                     facetTitle = Util.capitalizeFirstLetter(facetTitle);
-                    out.println("<b>" + facetTitle + "</b><br/>\n");
+                    out.println("<div class=\"facetTitle\">" + facetTitle + "</div>\n");
                     Collections.sort(items);
 
                     // generate html for each facet. selected and unselected facets separately
@@ -353,9 +354,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     if (count > N_INITIAL_FACETS)
                     {
                         out.println("</div>");
-                        out.println("<div class=\"clickableLink\" style=\"text-align:right;padding-right:10px;font-size:80%; cursor:pointer;\" onclick=\"muse.reveal(this)\">More</div>\n");
+                        out.println("<div class=\"clickableLink\" style=\"text-align:left;cursor:pointer;\" onclick=\"muse.reveal(this)\">More</div>\n");
                     }
-                    out.println ("<br/>");
                     out.flush();
                 } // String facet
                 //</editor-fold>
@@ -392,7 +392,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         <% } %>
 
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
-            <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);">
+            <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
                     <div class="form-group label-picker" style="display:inline-block">
 
@@ -452,14 +452,16 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <!-- will be filled in by render_labels() in JS -->
             </div>
 
+            <br/>
+
             <div id="position:relative">
                 <div class="message-menu">
-                    <a target="_blank" href="#" class="id-link" style="cursor: pointer"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
-                    <a target="_blank" href="#" class="thread-link" style="cursor: pointer"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <a target="_blank" href="google.com" class="id-link" style="cursor: pointer" title="Open message"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
+                    <a target="_blank" href="#" class="thread-link" style="cursor: pointer" title="Open thread"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
                     <span class="attach"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></span>
                 </div>
 
-                <div id="jog_contents" style="position:relative" class="<%=jog_contents_class%>">
+                <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;" class="<%=jog_contents_class%>">
                     <div style="text-align:center"><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
                 </div>
             </div>
