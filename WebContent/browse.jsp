@@ -128,6 +128,9 @@
         .archive-heading .collection-id { width: 10%;}
         .archive-heading { border: solid 1px #ccc; }
         .navbar { margin-bottom: 0; } /* overriding bootstrap */
+        .dropdown-header { font-weight: 600;color: black; font-size: 15px;}
+         a.opt { color: black;  padding-left: 1.25em; }
+        ul.dropdown-menu.inner li, .multi-select .dropdown-menu ul li { border-bottom: none; }
     </style>
 
 </head>
@@ -136,7 +139,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Annotation</h4>
+                <h4 class="modal-title">Edit Annotation</h4>
             </div>
             <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
 
@@ -425,24 +428,26 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <button class="btn btn-default" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">Label all</button>
                     </div>
 
-                    <div style="display:inline">
-                        <button class="btn btn-default" title="Export these messages as mbox" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">Download</button>
-                    </div>
 
-                    <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
-                    <span class="annotation-area" title="Click to edit annotation" style="position:relative;top:2px;display:none; cursor:pointer;margin-left: 50px; padding: 10px; border: solid 1px #0075bb; border-radius:3px; box-shadow: 2px 2px 2px rgba(0,0,0,0.15);background-color: white; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
-                        <!-- will be filled in by JS -->
-                    </span>
                 </div>
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
-                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img src="images/prev.svg"/></div>
+
+                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <img title="Show annotation" id="annotation-icon" src="images/add_annotation.svg">
+                        </div>
+
+                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <img title="Download messages as mbox" src="images/download.svg" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">
+                        </div>
+
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
                         <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">
                             <div style="display:inline; position:relative; " id="pageNumbering"></div> of
                             <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
                         </div>
-                        <div id="page_forward" class="nav-arrow"> <img src="images/next.svg"/></div>
+                        <div id="page_forward" class="nav-arrow"> <img title="Next message"  src="images/next.svg"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
@@ -458,11 +463,40 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div class="message-menu">
                     <a target="_blank" href="google.com" class="id-link" style="cursor: pointer" title="Open message"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
                     <a target="_blank" href="#" class="thread-link" style="cursor: pointer" title="Open thread"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
-                    <span class="attach"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></span>
+                    <span title="Scroll down to attachments" class="attach" style="cursor:pointer"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></span>
                 </div>
 
-                <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;" class="<%=jog_contents_class%>">
-                    <div style="text-align:center"><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
+                <div class="annotation" title="Click to edit annotation">
+                    <div class="annotation-header">
+                        <span>Annotation</span>
+                        <img title="Edit annotation" id="edit-annotation-icon" style="margin-left: 78px; cursor:pointer" src="images/edit_annotation.svg"/>
+                        <img title="Close annotation" id="close-annotation-icon" style="margin-left: 25px; cursor: pointer" src="images/close.svg"/></div>
+                    <div class="annotation-area">
+                        <!-- will be filled in by JS -->
+                    </div>
+
+                    <script>
+                        // https://stackoverflow.com/questions/6677035/jquery-scroll-to-element
+                        $("span.attach").click(function() {
+                            $([document.documentElement, document.body]).animate({
+                                scrollTop: $(".attachments").offset().top
+                            }, 1000);
+                        });
+                        $("#edit-annotation-icon").click(function() {
+                            $('#annotation-modal').modal();
+                            $('.annotation-area').css('filter','blur(2px)')
+                        });
+                        $("#close-annotation-icon").click(function() {
+                            $('.annotation').hide();
+                        });
+
+                    </script>
+
+                </div>
+
+                <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
+                    <div style="text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
                 </div>
             </div>
 

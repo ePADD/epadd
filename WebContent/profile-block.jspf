@@ -15,7 +15,7 @@
 
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
       out1.println("<div class=\"header-block\">"
-              + "<div class=\"breadcrumbs\">Appraisal &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;Browse</div><br/>"
+            //  + "<div class=\"breadcrumbs\">Appraisal &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;Browse</div><br/>"
               + "<div class=\"profile-block\">"
               + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto.png\')\">"
               +   "<div class=\"profile-plus\">+</div>"

@@ -186,6 +186,9 @@ var Annotations = function() {
             }else if (overwrite_or_append=="append"){
                     annotations[PAGE_ON_SCREEN] += annotation;
             }
+
+            Annotations.refreshAnnotation();
+
             // post to the backend, and when successful, refresh the labels on screen
             $.ajax({
                 url: 'ajax/applyLabelsAnnotations.jsp',
@@ -236,6 +239,9 @@ var Annotations = function() {
                 for (var i = 0; i < TOTAL_PAGES; i++)
                     annotations[i] += annotation;
             }
+
+            Annotations.refreshAnnotation();
+
             // post to the backend, and when successful, refresh the labels on screen
             $.ajax({
                 url: 'ajax/applyLabelsAnnotations.jsp',
@@ -264,38 +270,37 @@ var Annotations = function() {
                 annotations[i] = '';
         }
 
-        // for (var i = 0; i < TOTAL_PAGES; i++) {
-        //     annotations[i] = $pages[i].getAttribute('comment');
-        //     if (annotations[i] === null) // protect against null, otherwise the word null uglily (q: is that a word? probably fine. its a better word than bigly.) appears on screen.
-        //         annotations[i] = '';
-        // }
-
         // set up handlers for when annotation modal is shown/dismissed
         //$('#annotation-modal').on('shown.bs.modal', annotation_modal_shown).on('hidden.bs.modal', annotation_modal_dismissed);
         //set up handlers when different buttons are clicked on annotation modal. For 'Apply to this message' invoke different handler,
         //For 'Apply to all messages' invoke another handler. When modal is dismissed, by default the behaviour will be nothing.
         $('#annotation-modal').on('shown.bs.modal', annotation_modal_shown);
+        $('#annotation-modal').on('hidden.bs.modal', function() { $('.annotation-area').css('filter', ''); /* clear the blur effect */});
+
         $('#annotation-modal').find('#ok-button').click(annotation_modal_dismissed_apply_to_this_message);
         $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
 
         // when annotation is clicked, invoke modal
-        $('.annotation-area').click(function () {
+        $('#annotation-icon').click(function () {
             // show the modal
-            $('#annotation-modal').modal();
+            $('div.annotation').show();
         });
     }
 
     // copies annotation from .annotation-area on screen to the current page's
     function refreshAnnotation() {
-        var $annotation = $('.annotation-area');
-        $annotation.show(); // this is needed because annotation area is initially kept at display:none during page load to avoid FOUC
-        $annotation.show();
-        if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0)
-            $annotation.text(annotations[PAGE_ON_SCREEN]);
-        else
-            $annotation.text('No annotation');
-    }
+        var $annotation = $('div.annotation');
+        var $annotationarea = $('.annotation-area', $annotation);
+        $('.annotation-area').css('filter','');
 
+        if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0) {
+            $annotationarea.text(annotations[PAGE_ON_SCREEN]);
+            $annotation.show();
+        } else {
+            $annotationarea.text('No annotation');
+            $annotation.hide();
+        }
+    }
 
     return {
         setup: setup,

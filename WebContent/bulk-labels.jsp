@@ -35,7 +35,6 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
 
 <%
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);

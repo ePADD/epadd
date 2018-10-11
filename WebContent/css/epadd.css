@@ -64,11 +64,15 @@ div.facets {
 div.facets .facetTitle { font-size: 16px; width: 100%; padding-left: 5px; border-style: solid; border-width: 1px 0px; border-color: #d4d4d4; margin-top: 20px;}
 
 div.facets, div.controls, div.labels-area { background-color: #f5f5f8;  }
-div.controls { border-bottom:solid 1px rgba(160,160,160,0.3); height: 55px;}
-div.labels-area { border: 1px solid #D4D4D4; height: 55px; padding-top: 15px;}
+div.controls { border-bottom:solid 1px #d4d4d4; height: 55px;}
+div.labels-area { border-style: solid; border-width: 0px 1px 1px 1px; border-color: #D4D4D4; height: 55px; padding-top: 15px;}
 div.controls button { background-color: white; margin-left: 23px; }
 
-div.message-menu { z-index: 100; position: absolute; left: 900px; top: 220px;} /* z-index keeps it above the jog area, but below the modals */
+div.annotation { display: none; z-index: 200; position: absolute; right: 0px; top:300px; background-color: rgb(255,255,195); height: 300px; width: 300px; padding: 20px; border: solid 1px #ccc;}
+div.annotation-header { font-weight: 600; font-size: 19px; padding-bottom: 10px; border-bottom: solid 1px #d4d4d4; margin-bottom: 10px;}
+div.annotation-area { overflow: scroll; height:200px;}
+
+div.message-menu { z-index: 100; position: absolute; left: 950px; top: 220px;} /* z-index keeps it above the jog area, but below the modals */
 div.message-menu img { height: 25px;}
 
 .message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 20px;}
