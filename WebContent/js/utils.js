@@ -68,7 +68,7 @@ var initialiseqtip = function(){
 							var str = '';
 							for (var i = 0; i < matches.length; i++) {
 							    // todo, maybe: insert href to a search for the matched string or contact
-                                str += (i + 1) + '. ' + '<span style="cursor:pointer" title=\"' + matches[i].matchDescription + '">' + escapeHTML(matches[i].match) + '</span><br/>';
+                                str += '<div class="name-expansion" title=\"' + matches[i].matchDescription + '">' + escapeHTML(matches[i].match) + '</div><br/>';
                             }
 
 							api.set('content.text', str);

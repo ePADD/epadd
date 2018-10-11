@@ -208,22 +208,22 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 
 .custom-people{
 	color: black;
-	border-bottom: 2px solid #000;
-	border-bottom-color: red;
+	border-bottom: 2px dotted #000;
+	border-bottom-color: grey;
 	cursor: pointer;
 }
 
 .custom-org{
 	color: black;
-	border-bottom: 2px solid #000;
-	border-bottom-color: blue;
+	border-bottom: 2px dotted #000;
+	border-bottom-color: grey;
 	cursor: pointer;
 }
 
 .custom-loc{
 	color: black;
-	border-bottom: 2px solid #000;
- 	border-bottom-color: green;
+	border-bottom: 2px dotted #000;
+ 	border-bottom-color: grey;
 	cursor: pointer;
 }
 
@@ -297,4 +297,5 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 .panel { background-color: #f5f5f8;  border: 1px solid #eaeaea;  padding:25px 30px;  border-radius: 4px;  margin-bottom: 25px; } /* taken from search-wraper in adv. search.scss */
 .panel-heading { font-size: 16px; font-weight: 400; /* weight 400 is equal to open sans regular */ margin-bottom:20px; color: #404040;} /* taken from h4/search-wrapper in adv. search.scss */
 
-.qtip-epadd { background-color: #f5f5f8; border-color: #0b559b; line-height: 1.6em; font-size: 12px;}
+.qtip-epadd { background-color: #f5f5f8; border-color: #0b559b; font-size: 14px; }
+.name-expansion { margin: 0px; padding: 10px 0px; border-bottom: solid 1px #ccc;}
