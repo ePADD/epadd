@@ -155,6 +155,7 @@
 
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
+	JSPHelper.log.warn ("this is a warning");
     AddressBook ab = archive.addressBook;
     String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String addressBookUpdate = request.getParameter("addressBookUpdate");

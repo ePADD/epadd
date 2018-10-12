@@ -28,8 +28,10 @@ import java.util.Set;
 public class Log4JUtils {
     private static Log log = LogFactory.getLog(Log4JUtils.class);
     private static boolean initialized = false;
+	private static final String BACKUP_FILE_SIZE = "100MB";
+	private static final int N_BACKUP_FILES = 30;
 
-	public static String LOG_FILE; // = System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "muse.log";
+	public static String LOG_FILE, WARNINGS_LOG_FILE; // = System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "muse.log";
 
 	// NOTE: EpaddInitializer should already have run before this method is called
 	public static synchronized void initialize()
@@ -68,66 +70,77 @@ public class Log4JUtils {
     		return;
     	}
 
+        // now rename, truncate or create the actual log file
+        try {
+            WARNINGS_LOG_FILE = LOG_FILE + ".warnings"; // this includes error/fatal also
+            addLogFileAppender(LOG_FILE, WARNINGS_LOG_FILE);
+
+            // write a line so we can distinguish a new run in the log file
+            String line = "__________________________________________________________________________________________________________________________________________________________________________ ";
+            String message = line + "\n" + " Fresh deployment of ePADD started\n" + line;
+            System.out.println(message);
+            log.info (message);
+            log.warn (message);
+
+            message = "Log messages will be recorded in " + LOG_FILE;
+            System.out.println(message);
+
+            message = "Warning messages will also be recorded in " + WARNINGS_LOG_FILE;
+            System.out.println(message);
+            log.info (message);
+            log.warn ("Warnings being logged to " + LOG_FILE);
+        } catch (Exception e) { Util.print_exception(e);}
+
     	// now rename, truncate or create the actual log file
 		try {
-			/*
-			try {
-				File f = new File(LOG_FILE);
-				if (f.exists())
-				{
-					// save the previous log file if it exists (shouldn't the rolling file appender take care of this??)
-					RandomAccessFile raf = new RandomAccessFile(f, "rwd");
-					raf.setLength(0);
-					raf.close();
-				}
-			} catch (Exception e) { Util.print_exception(e);}
-			*/
-			addLogFileAppender(LOG_FILE);
-			addLogFileAppender("edu.stanford.muse.ner.EntityExtractionManager",	System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "entityExtractor.log");
+			String ENTITY_LOG_FILE = LOG_FILE + ".entityExtractor.log";
+			addLogFileAppenderForPackage("edu.stanford.muse.ner.EntityExtractionManager",	ENTITY_LOG_FILE);
 
 			// write a line so we can distinguish a new run in the log file
-			String message = "________________________________________________________________________________________________ ";
-			System.out.println(message);
-			log.info (message);
-            
-			message = "Log messages will be recorded in " + LOG_FILE;
+			String message = "Entity log messages will be recorded in " + ENTITY_LOG_FILE;
 			System.out.println(message);
 			log.info (message);
 		} catch (Exception e) { Util.print_exception(e);}
+
 		initialized = true;
 	}
 
 	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
- 	private static void addLogFileAppender(String filename)
- 	{
- 	    try
- 	    {
-            Logger rootLogger = LogManager.getLoggerRepository().getRootLogger();
-            Enumeration allAppenders = rootLogger.getAllAppenders();
-            while(allAppenders.hasMoreElements())
-            {
-                Object next = allAppenders.nextElement();
-                if (next instanceof ConsoleAppender)
-                {
-                	Layout layout = ((ConsoleAppender) next).getLayout();
-                	RollingFileAppender rfa = new RollingFileAppender(layout, filename);
-                	rfa.setMaxFileSize("10MB");
-                	rfa.setMaxBackupIndex(10); // do we
-                	rfa.setEncoding("UTF-8");
-                	rootLogger.addAppender (rfa);
-                }
-            }
- 	    }
- 	    catch(Exception e)
- 	    {
- 	        log.error("Failed creating log appender in " + filename);
- 	        System.err.println("Failed creating log appender in " + filename);
- 	    }
- 	}
+	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout.
+	 * also puts warnings and errors into a separate warningsFilename which allows operator to look at warnings/errors/fatal separately */
+	private static void addLogFileAppender(String filename, String warningsFilename)
+	{
+		try {
+			Logger rootLogger = LogManager.getLoggerRepository().getRootLogger();
+			Enumeration allAppenders = rootLogger.getAllAppenders();
+
+			while(allAppenders.hasMoreElements()) {
+				Object next = allAppenders.nextElement();
+				if (next instanceof ConsoleAppender) {
+					Layout layout = ((ConsoleAppender) next).getLayout();
+					RollingFileAppender rfa = new RollingFileAppender(layout, filename);
+					rfa.setMaxFileSize(BACKUP_FILE_SIZE);
+					rfa.setMaxBackupIndex(N_BACKUP_FILES);
+					rfa.setEncoding("UTF-8");
+					rootLogger.addAppender (rfa);
+
+					// add another appender specially for warnings
+					RollingFileAppender rfa1 = new RollingFileAppender(layout, warningsFilename);
+					rfa1.setThreshold(Level.WARN);
+					rfa1.setMaxFileSize(BACKUP_FILE_SIZE);
+					rfa1.setMaxBackupIndex(N_BACKUP_FILES);
+					rfa1.setEncoding("UTF-8");
+					rootLogger.addAppender (rfa1);
+				}
+			}
+		} catch(Exception e) {
+			log.error("Failed creating log appender in " + filename);
+			System.err.println("Failed creating log appender in " + filename);
+		}
+	}
 
 	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
-	public static void addLogFileAppender(String packagename, String filename)
-	{
+	public static void addLogFileAppenderForPackage(String packagename, String filename) {
 		try
 		{
 			Logger packageLogger = LogManager.getLoggerRepository().getLogger(packagename);
@@ -198,10 +211,6 @@ public class Log4JUtils {
  	                            fileAppender.setImmediateFlush(true);
  	                            currentLogger.info("Flushing appender: " + fileAppender.getName() + "\n" + fileAppender);
  	                            fileAppender.setImmediateFlush(false);
- 	                        }
- 	                        else
- 	                        {
- 	                            //log.info("fileAppender"+fileAppender.getName()+" is doing immediateFlush");
  	                        }
  	                    }
  	                }
