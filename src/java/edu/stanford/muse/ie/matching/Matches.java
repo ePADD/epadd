@@ -57,8 +57,11 @@ public class Matches {
         String cs = canonicalize(s);
         String ccandidate = canonicalize(candidate);
 
+        if (ccandidate.equals(cs)) // if it's exactly the same, return without offering candidate as a candodate
+            return null;
+
         // check if s is a substring of candidate
-        if (ccandidate.contains(cs) && !ccandidate.equals(cs))
+        if (ccandidate.contains(cs))
             return StringMatchType.CONTAINED;
 
         List<String> candidateTokensLower = Util.tokenize(ccandidate);

@@ -14,14 +14,20 @@
 <head>
     <title>Entities</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
-    <script src="js/jquery.js"></script>
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
-    <script src="js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+
     <!-- Optional theme -->
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/sidebar.js"></script>
 
-    <jsp:include page="css/css.jsp"/>
     <script src="js/epadd.js"></script>
     <style type="text/css">
         .js #entities {display: none;}
@@ -31,6 +37,30 @@
 <body>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
+
+
+<div class="nav-toggle1 sidebar-icon">
+    <img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+    <h2><b>Browsing Entity Types</b></h2>
+    <!--close button-->
+    <a class="nav-toggle1 show-nav1" href="#">
+        <img src="images/close.png" class="close" alt="close">
+    </a>
+
+    <div class="search-tips" style="display:block">
+        ePADD recognizes fine-grained entities within the text message subjects and bodies.
+        <br/><br/>
+
+        This screen lists a selection of entity types bootstrapped from DBpedia, along with the number of entities associated with each type.
+        <br/><br/>
+
+        Select an entity type to view a list of all associated entities.
+        <br/><br/>
+
+    </div>
+</nav>
 
 <%writeProfileBlock(out, archive, "Entity types", "");%>
 

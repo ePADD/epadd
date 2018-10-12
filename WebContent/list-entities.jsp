@@ -15,11 +15,15 @@ Browse page for entities based on fine types
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/main.css">
     <link href="css/epadd.css" rel="stylesheet" type="text/css"/>
 
     <script src="js/jquery.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/sidebar.js"></script>
     <script src="js/muse.js"></script>
     <script src="js/epadd.js"></script>
     <style type="text/css">
@@ -30,6 +34,37 @@ Browse page for entities based on fine types
     <jsp:include page="header.jspf"/>
     <script>epadd.nav_mark_active('Browse');</script>
     <%writeProfileBlock(out, archive, "List entities", "");%>
+
+
+    <div class="nav-toggle1 sidebar-icon">
+        <img src="images/sidebar.png" alt="sidebar">
+    </div>
+    <nav class="menu1" role="navigation">
+        <h2><b>Browsing Entities</b></h2>
+        <!--close button-->
+        <a class="nav-toggle1 show-nav1" href="#">
+            <img src="images/close.png" class="close" alt="close">
+        </a>
+
+        <div class="search-tips" style="display:block">
+            This screen lists all entities that ePADD has recognized and associated with a particular entity type bootstrapped from DBpedia, along with the number of messages containing that entity.
+            <br/>
+            <br/>
+
+            Entities with a score of 1 have an exact match in DBpedia.
+            <br/>
+            <br/>
+
+            Entities with a score of less than 1 do not have an exact match in DBPedia. ePADD learns from the entities associated with the entity type and guesses that these entities may also be associated with that type.
+            <br/>
+            <br/>
+
+            Select an entity to view the set of all messages containing that entity.
+            <br/>
+            <br/>
+
+        </div>
+    </nav>
 
     <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>

@@ -1,10 +1,9 @@
 
 // global vars, used by every module below
 
-var docIDs = [];
+var docIDs = []; // this is required for posting the docid of the message to which the label/annotation change should be applied.
 var PAGE_ON_SCREEN = -1; // current page displayed on screen
 var TOTAL_PAGES = 0;
-var $pages;
 
 // interacts with #page_forward, #page_back, and #pageNumbering on screen
 var Navigation = function(){
@@ -14,9 +13,14 @@ var Navigation = function(){
     var page_change_callback = function(oldPage, currentPage) {
 
         PAGE_ON_SCREEN = currentPage;
-        $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : currentPage+1) + '/' + TOTAL_PAGES);
+        $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : currentPage+1));
         Labels.refreshLabels();
         Annotations.refreshAnnotation();
+
+        // update the links
+        $('.message-menu a.id-link').attr('href', 'browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
+        $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadId=' + window.messageMetadata[PAGE_ON_SCREEN].threadID);
+        $('.message-menu .attach span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
     };
 
     var setupEvents = function() {
@@ -60,20 +64,47 @@ var Navigation = function(){
 // label-selectpicker and .labels-area on screen
 var Labels = function() {
     var labelsOnPage = []; // private to this module
-    var clearedFor
     var currentPageOldLabels;
 
-    /** renders labels on screen for the current message (but does not change any state in the backend) */
-    function refresh_labels_on_screen(labelIds) {
+    /** private method labelIds is an array of label ids (e.g. [1,2,5]) which are to be applied to the current message */
+    function apply_labels(labelIds) {
+        //
+        // if(labelIds.length===0){
+        //     return;
+        // }
+
+        // post to the backend, and when successful, refresh the labels on screen
+        $.ajax({
+            url: 'ajax/applyLabelsAnnotations.jsp',
+            type: 'POST',
+            data: {archiveID: archiveID, docId: docIDs[PAGE_ON_SCREEN], labelIDs: labelIds.join(), action: "override"}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+            dataType: 'json',
+            success: function (response) {
+                if(response.status===1) {
+                    epadd.alert(response.errorMessage);
+                    labelsOnPage[PAGE_ON_SCREEN] = currentPageOldLabels;
+                }
+                refreshLabels();//otherwise the selected checkboxes and onscreen labels are not getting reset to the old labels [old means the labels before the erroneous labels were set]
+            },
+            error: function () {
+                epadd.alert('There was an error in saving the annotations! Please try again.');
+            }
+        });
+    }
+
+    // redraws labels for PAGE_ON_SCREEN
+    var refreshLabels = function () {
+
+        var labelIds = labelsOnPage[PAGE_ON_SCREEN];
+
+        // set the dropdown according to the labels onthis message
+        $('.label-selectpicker').selectpicker ('val', labelIds ? labelIds : ""); // e.g. setting val, [0, 1, 3] will set the selectpicker state to these 3
+
+        $('.labels-area').html(''); // wipe out existing labels
+
         if (!labelIds)
             return;
 
-        // we have to set up the select picker so it will show the right things in the dropdown
-        //$('.label-selectpicker').selectpicker('deselectAll');
-        $('.label-selectpicker').selectpicker ('val', labelIds); // e.g. setting val, [0, 1, 3] will set the selectpicker state to these 3
-
-        // refresh the labels area
-        $('.labels-area').html(''); // wipe out existing labels
         for (var i = 0; i < labelIds.length; i++) {
             var label_id = labelIds[i];
             var label = allLabels[label_id];
@@ -102,47 +133,14 @@ var Labels = function() {
                 + escapeHTML(label.labName)
                 + '</div>');
         }
-    }
-
-    /** private method labelIds is an array of label ids (e.g. [1,2,5]) which are to be applied to the current message */
-    function apply_labels(labelIds) {
-        //
-        // if(labelIds.length===0){
-        //     return;
-        // }
-
-        // post to the backend, and when successful, refresh the labels on screen
-        $.ajax({
-            url: 'ajax/applyLabelsAnnotations.jsp',
-            type: 'POST',
-            data: {archiveID: archiveID, docId: docIDs[PAGE_ON_SCREEN], labelIDs: labelIds.join(), action: "override"}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
-            dataType: 'json',
-            success: function (response) {
-                if(response.status===1){
-                    epadd.alert(response.errorMessage);
-                    labelsOnPage[PAGE_ON_SCREEN]=currentPageOldLabels;
-                    refreshLabels();//otherwise the selected checkboxes and onscreen labels are not getting reset to the old labels [old means the labels before the erroneous labels were set]
-                }else
-                    refresh_labels_on_screen(labelIds);
-            },
-            error: function () {
-                epadd.alert('There was an error in saving the annotations! Please try again.');
-            }
-        });
-    }
-
-    var refreshLabels = function () {
-        var labelIds = labelsOnPage[PAGE_ON_SCREEN];
-        if (labelIds)
-            refresh_labels_on_screen(labelIds);
-        // else //this is important otherwise if the last item was unselected from the picker the labelIDs returned null and the label area was not being refreshed/cleaned.
-        //     $('.labels-area').html(''); // wipe out existing labels
-
     };
 
     var setup = function () {
+
+        // set up docIDs and labelsOnPage
         for (var i = 0; i < TOTAL_PAGES; i++) {
-            labelsOnPage[i] = $pages[i].getAttribute('labels').split(",");
+            labelsOnPage[i] = messageMetadata[i].labels;
+            docIDs[i] = messageMetadata[i].id;
         }
 
         // set up label handling
@@ -153,10 +151,6 @@ var Labels = function() {
                 labelsOnPage[PAGE_ON_SCREEN] = labelIds;
                 apply_labels(labelIds);
             }
-            // else { //this is important otherwise if the last item was unselected from the picker the labelIDs returned null and the label area was not being refreshed/cleaned.
-            //         labelsOnPage[PAGE_ON_SCREEN] = [];
-            //         $('.labels-area').html(''); // wipe out existing labels
-            // }
         });
     };
 
@@ -192,6 +186,9 @@ var Annotations = function() {
             }else if (overwrite_or_append=="append"){
                     annotations[PAGE_ON_SCREEN] += annotation;
             }
+
+            Annotations.refreshAnnotation();
+
             // post to the backend, and when successful, refresh the labels on screen
             $.ajax({
                 url: 'ajax/applyLabelsAnnotations.jsp',
@@ -242,6 +239,9 @@ var Annotations = function() {
                 for (var i = 0; i < TOTAL_PAGES; i++)
                     annotations[i] += annotation;
             }
+
+            Annotations.refreshAnnotation();
+
             // post to the backend, and when successful, refresh the labels on screen
             $.ajax({
                 url: 'ajax/applyLabelsAnnotations.jsp',
@@ -265,7 +265,7 @@ var Annotations = function() {
         }
 
         for (var i = 0; i < TOTAL_PAGES; i++) {
-            annotations[i] = $pages[i].getAttribute('comment');
+            annotations[i] = messageMetadata[i].annotation;
             if (annotations[i] === null) // protect against null, otherwise the word null uglily (q: is that a word? probably fine. its a better word than bigly.) appears on screen.
                 annotations[i] = '';
         }
@@ -275,27 +275,32 @@ var Annotations = function() {
         //set up handlers when different buttons are clicked on annotation modal. For 'Apply to this message' invoke different handler,
         //For 'Apply to all messages' invoke another handler. When modal is dismissed, by default the behaviour will be nothing.
         $('#annotation-modal').on('shown.bs.modal', annotation_modal_shown);
+        $('#annotation-modal').on('hidden.bs.modal', function() { $('.annotation-area').css('filter', ''); /* clear the blur effect */});
+
         $('#annotation-modal').find('#ok-button').click(annotation_modal_dismissed_apply_to_this_message);
         $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
 
         // when annotation is clicked, invoke modal
-        $('.annotation-area').click(function () {
+        $('#annotation-icon').click(function () {
             // show the modal
-            $('#annotation-modal').modal();
+            $('div.annotation').show();
         });
     }
 
     // copies annotation from .annotation-area on screen to the current page's
     function refreshAnnotation() {
-        var $annotation = $('.annotation-area');
-        $annotation.show(); // this is needed because annotation area is initially kept at display:none during page load to avoid FOUC
-        $annotation.show();
-        if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0)
-            $annotation.text(annotations[PAGE_ON_SCREEN]);
-        else
-            $annotation.text('No annotation');
-    }
+        var $annotation = $('div.annotation');
+        var $annotationarea = $('.annotation-area', $annotation);
+        $('.annotation-area').css('filter','');
 
+        if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0) {
+            $annotationarea.text(annotations[PAGE_ON_SCREEN]);
+            $annotation.show();
+        } else {
+            $annotationarea.text('No annotation');
+            $annotation.hide();
+        }
+    }
 
     return {
         setup: setup,
@@ -306,22 +311,10 @@ var Annotations = function() {
 
 $(document).ready(function() {
 
-    // global vars setup
-    {
-        $pages = $('.page'); // all page frames for the entire dataset are pre-loaded in the page (although the HTML inside them is paged in lazily)
-        PAGE_ON_SCREEN = 0;
-        TOTAL_PAGES = $pages.length;
-        for (var i = 0; i < TOTAL_PAGES; i++) {
-            docIDs[i] = $pages[i].getAttribute('docID');
-        }
-    }
-
+    PAGE_ON_SCREEN = 0;
     Labels.setup();
     Annotations.setup();
     Navigation.setupEvents(); // important -- this has to be after labels and annotations setup to render the first page correctly
-
-
-
 
     // on page unload, release dataset to free memory
     $(window).unload(function () {

@@ -12,14 +12,19 @@
 	<title>Search</title>
 	
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+	<link rel="stylesheet" href="css/main.css">
 
 	<script src="js/jquery.js"></script>
 	
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
-	<jsp:include page="css/css.jsp"/>
+
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	<style>
@@ -38,6 +43,47 @@
 <body>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Search');</script>
+
+
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+	<h2><b>Searching email</b></h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
+
+	<div class="search-tips" style="display:block">
+
+		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
+
+			Simple search: Search for keywords or phrases. Supports Boolean searching.
+			<br/><br/>
+
+			Multi-entity search: Type or paste a text block then click search to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			<br/><br/>
+
+
+			Multi-term search: Type or past a list of terms (one term per line) then click search to search the email archive for all matching terms. Highlighted terms also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			<br/><br/>
+
+			Advanced search: Search using a range of advanced parameters, specifying terms, entities, correspondents, attachments, annotations, labels, and more.
+			<br/><br/>
+
+		<% } else if (ModeConfig.isDiscoveryMode()) { %>
+			Simple search: Search for correspondents or entities. Supports Boolean searching.
+			<br/><br/>
+
+			Multi-entity search: Type or paste a text block then click search to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			<br/><br/>
+
+			Advanced search: Search using a range of advanced parameters, specifying entities, correspondents, and more.
+			<br/><br/>
+		<% } %>
+	</div>
+</nav>
 
 <%writeProfileBlock(out, archive, "", "Search");%>
 <br/>

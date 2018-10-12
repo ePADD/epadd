@@ -38,7 +38,7 @@
 </div>
 
 <nav class="menu1" role="navigation">
-	<h2>Edit Correspondents</h2>
+	<h2>Editing Correspondents</h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
@@ -46,26 +46,26 @@
 
 	<!--phrase-->
 	<div class="search-tips">
-		<p>
-			This screen allows the user to view and edit the email address(es) and name(s) associated with each correspondent.
-			For each correspondent, all the variants of their name are listed first, followed by all their email addresses.
-			Correspondents are separated with a single line containing "--" (2 hyphens).
-		<p>
+		This screen lists all names and email addresses associated with each correspondent. Under a given correspondent’s name, all the variants of their name are listed first, followed by all their email addresses.
+		<br/><br/>
 
-			The archive owner should always be the first individual listed.
-		<p>
-			The first name listed within each group of names or addresses is the name ePADD will display in all search and browsing results and visualizations. Manually change this display name by adding a new name at the top of this list.
+		The archive owner is always listed first, but you can sort the rest of the correspondents alphabetically or by volume.
+		<br/><br/>
 
-		<p>
-			If names or addresses are incorrectly associated with the wrong individual, you can manually cut and paste them underneath a different entry
+		The top listed name for each entry will be the name displayed in all ePADD search and browsing results, and visualizations. Change the displayed name by moving a name to the top of the list. You can also add a new name that does not appear in the archive.
+		<br/><br/>
 
-		<p>
-			Large archives with a lot of correspondents may see a slow response time on this page.
-			If you encounter this, please go back to the correspondents page and download the list as a file. You can use a text editor to work on the file and upload it back when it is ready.
-		<p>
-			Mailing list addresses can be manually identified and added under the heading “-- [ML]” If this heading does not exist simply create it.
+		Correspondents are separated with a single line containing "--" (2 hyphens).
+		<br/><br/>
 
-		</p>
+		Merge correspondents by grouping them together using find, cut, and paste commands.
+		<br/><br/>
+
+		Unmerge correspondents by separating them using find, cut, and paste commands. To add names and email addresses under a new correspondent that ePADD has not yet identified, add a new correspondent name and paste the names and email addresses under the new name.
+		<br/><br/>
+
+		ePADD enables you to view or ignore messages originating from a mailing list using Advanced Search criteria, which may be helpful for certain searches such as screening for sensitive information. You can designate messages as originating from a mailing list by typing -- ML after the correspondent name.
+		<br/><br/>
 	</div>
 </nav>
 <!--/sidebar-->
