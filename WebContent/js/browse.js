@@ -39,7 +39,11 @@ var Navigation = function(){
             page_change_callback: page_change_callback,
             logger: epadd.log,
             width: 180,
-            disabled: 'true',
+            /* enable this to enable jog dial
+            disabled: false,
+            dynamic: true
+            */
+            disabled: true,
             dynamic: false
         });
 
