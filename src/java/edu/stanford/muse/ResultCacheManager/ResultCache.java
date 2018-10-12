@@ -94,4 +94,10 @@ public class ResultCache {
         return tmp.get(lexicon);
     }
 
+    public void cacheEntitiesListing(String archiveID) {
+        //for now just do computation of entityTypeToDocMap used in Advanced search. Later we will use this to get information about entity listing as well.
+        Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        archive.computeEntityTypeToDocMap();
+
+    }
 }

@@ -114,6 +114,8 @@ public class Archive implements Serializable {
     public transient  static ResultCache cacheManager = new ResultCache();//making it static so that it becomes visible for all archives.
 
     public Multimap<Document, Tuple2<String,String>> getDupMessageInfo() {
+        if(dupMessageInfo==null)
+            return LinkedHashMultimap.create();
         return dupMessageInfo;
     }
 
@@ -1627,7 +1629,7 @@ after maskEmailDomain.
     }
 
     transient private Multimap<Short, Document> entityTypeToDocs = LinkedHashMultimap.create(); // entity type code -> docs containing it
-    private synchronized void computeEntityTypeToDocMap() {
+    public synchronized void computeEntityTypeToDocMap() {
         if (entityTypeToDocs != null)
             return;
         entityTypeToDocs = LinkedHashMultimap.create();

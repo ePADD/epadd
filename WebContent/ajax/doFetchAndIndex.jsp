@@ -70,6 +70,8 @@
         JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
 		archive.postProcess();
 
+//assign threadids'
+            archive.assignThreadIds();
 
 		emailDocs = (List) archive.getAllDocs();
 		AddressBook addressBook = archive.getAddressBook();
@@ -92,6 +94,8 @@
 				//After archive is saved recreate the cache.. For addressbook the cache gets created inside saveAddressBook.
 				//Do it for Lexicon cache.
 				Archive.cacheManager.cacheLexiconListing(archiveID);
+				//and for entityDoc map as well.
+                Archive.cacheManager.cacheEntitiesListing(archiveID);
 			}
 			try {
 				String aStats = archive.getStats();

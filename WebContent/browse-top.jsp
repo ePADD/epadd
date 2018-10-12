@@ -57,10 +57,10 @@
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
-		archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
+		//archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
         //SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
 		ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-        ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        //ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 
         //after this invalidate the cache for removing the result of AddressBook.getCountsAsJSON result.. Or should we recalculate the result here only.
     }
