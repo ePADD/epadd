@@ -24,28 +24,79 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Collections');</script>
 
-<div style="padding-left:170px;padding-right:50px;">
+<div style="width:100%; margin:auto">
   <%
     // this is the landing page for discovery, so a special message.
     if (ModeConfig.isDiscoveryMode()) { %>
-        <h1>Welcome to ePADD.</h1>
+        <h1 style="font-size:32px; color:#0175bc">Welcome to ePADD.</h1>
         <p>
+            <!--
         ePADD is a platform that allows researchers to browse and search historical email archives.
         <p>
         Messages have been redacted to ensure the privacy of donors and other correspondents.
         Please contact the host repository if you would like to request access to full messages, including any attachments.
-  <% } else if (ModeConfig.isDeliveryMode()) { %>
-        <h1>Welcome to the ePADD delivery module.</h1>
-  <% } %>
+        -->
+
+
+            <div style="text-align:center; margin:auto; width:600px;">
+
+                <div id="cross-collection-search" style="text-align:center">
+                    <form method="get" action="cross-collection-search">
+
+                        <input id="xcoll-search" name="term" size="80" placeholder="Cross-collection entity search"/>
+
+                        <button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+
+                    </form>
+                </div>
+    <p>
 </div>
 
-<%
-  if (ModeConfig.isAppraisalMode())
-  {
-    out.println("<div style=\"text-align:center\">Sorry, this page is not available in appraisal mode.</div>");
-    return;
-  }
-%>
+<script>
+    $(document).ready(function() {
+        var autocomplete_params = {
+            serviceUrl: 'ajax/xcollSearchAutoComplete.jsp',
+            onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
+            preventBadQueries: false,
+            showNoSuggestionNotice: true,
+            preserveInput: true,
+            ajaxSettings: {
+                "timeout":5000, /* 5000 instead of 3000 because xcoll search is likely to be slow */
+                dataType: "json"
+            },
+            dataType: "text",
+            //100ms
+            deferRequestsBy: 100,
+            onSelect: function(suggestion) {
+                var existingvalue = $(this).val();
+                var idx = existingvalue.lastIndexOf(';');
+                if (idx <= 0)
+                    $(this).val(suggestion.name);
+                else
+                    $(this).val (existingvalue.substring (0, idx+1) + ' ' + suggestion.name); // take everything up to the last ";" and replace after that
+            },
+            onHint: function (hint) {
+                $('#autocomplete-ajax-x').val(hint);
+            },
+            onInvalidateSelection: function() {
+                epadd.log('You selected: none');
+            }
+        };
+        $('#xcoll-search').autocomplete(autocomplete_params);
+    });
+
+</script>
+  <% } else if (ModeConfig.isDeliveryMode()) { %>
+        <h1>Welcome to the ePADD delivery module.</h1>
+  <% } else if (ModeConfig.isAppraisalMode()) { %>
+        <div style=\"text-align:center\">Sorry, this page is not available in appraisal mode.</div>
+        <% return;
+    }
+  %>
+</div>
+
+
+
 
   <div style="margin:auto;text-align:center">
   <div style="width:100%;text-align:left;">

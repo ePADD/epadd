@@ -779,9 +779,13 @@ public class EmailDocument extends DatedDocument implements Serializable
 		//		log.info("Own addresses: " + EmailUtils.emailAddrsToString(ownAddrs));
 		EmailFetcherThread.log.debug ("First pass processing contacts for " + docs.size() + " messages");
 
+		Set<String> trustedAddrs = new LinkedHashSet<>();
+		for (String a: ownAddrsArray)
+			trustedAddrs.add(a.toLowerCase());
+
 		// 2 passes here: first pass just to unify and find all own email addrs
 		for (EmailDocument ed: docs)
-			addressBook.processContactsFromMessage (ed);
+			addressBook.processContactsFromMessage (ed, trustedAddrs);
 		addressBook.organizeContacts();
 		//		ownAddrs = addressBook.computeAllAddrsFor(ownAddrs);
 
@@ -795,7 +799,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		//		AddressBook newCS = addressBook.deepClone();
 		addressBook.resetCounts();
 		for (EmailDocument ed: docs)
-			addressBook.processContactsFromMessage(ed);
+			addressBook.processContactsFromMessage(ed, trustedAddrs);
 		addressBook.organizeContacts();
 		return addressBook;
 	}

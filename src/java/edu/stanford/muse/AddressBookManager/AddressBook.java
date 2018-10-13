@@ -584,7 +584,7 @@ public class AddressBook implements Serializable {
     /**
      * this method should be called with every email doc in the archive
      */
-    public synchronized void processContactsFromMessage(EmailDocument ed) {
+    public synchronized void processContactsFromMessage(EmailDocument ed, Collection<String> trustedAddrs) {
         List<Address> toCCBCC = ed.getToCCBCC();
         boolean noToCCBCC = false;
         if (toCCBCC == null || toCCBCC.size() == 0) {
@@ -595,7 +595,28 @@ public class AddressBook implements Serializable {
             markDataError("No from address for: " + ed);
         if (ed.date == null)
             markDataError("No date for: " + ed);
-        boolean b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
+
+        boolean fromTrustedAddr = false;
+        {
+            Address[] addrs = ed.from;
+            if (ed.from != null) {
+                for (Address a : addrs) {
+                    InternetAddress ia = (InternetAddress) a;
+                    if (trustedAddrs.contains(ia.getAddress().toLowerCase())) {
+                        fromTrustedAddr = true;
+                        break;
+                    }
+                }
+            }
+        }
+        boolean b = false;
+
+        if (fromTrustedAddr) {
+            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
+            log.info ("Processing trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+        } else
+            log.warn ("Dropping processing of contacts from non-trusted addr" + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+
         if (!b && !noToCCBCC) // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
             markDataError("Owner not sender, and no to addr for: " + ed);
     }
@@ -1478,9 +1499,7 @@ mergeResult.newContacts.put(C2,savedC2)
 
     }
 
-
-
-        public static void main(String args[]) {
+    public static void main(String args[]) {
         List<String> list = EmailUtils.parsePossibleNamesFromEmailAddress("mickey.mouse@disney.com");
         System.out.println(Util.join(list, " "));
         list = EmailUtils.parsePossibleNamesFromEmailAddress("donald_duck@disney.com");
@@ -1501,7 +1520,7 @@ mergeResult.newContacts.put(C2,savedC2)
             } catch (Exception e) {
                 Util.print_exception(e, log);
             }
-            ab.processContactsFromMessage(ed);
+            ab.processContactsFromMessage(ed, new LinkedHashSet<>());
             Util.ASSERT(ab.size() == 5); // 4 addresses should be added + owner
         }
 
@@ -1515,8 +1534,8 @@ mergeResult.newContacts.put(C2,savedC2)
                 ed2.to = new Address[]{new InternetAddress("Merge X Name", "mergeemail1@example.com")};
                 ed2.from = new Address[]{new InternetAddress("Merge X Name", "mergeemail2@example.com")};
             } catch (Exception e) {
-                ab.processContactsFromMessage(ed1);
-                ab.processContactsFromMessage(ed2);
+                ab.processContactsFromMessage(ed1, new LinkedHashSet<>());
+                ab.processContactsFromMessage(ed2, new LinkedHashSet<>());
                 Util.ASSERT(ab.size() == 3);
             }
 

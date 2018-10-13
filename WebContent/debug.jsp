@@ -104,6 +104,12 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 	<br/>
 	<br/>
 	Last error code:<%=request.getAttribute("javax.servlet.error.status_code")%> type: <%=request.getAttribute("javax.servlet.error.exception_type")%>
+        <% Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
+            if (throwable != null) {
+                Util.print_exception(throwable, JSPHelper.log);
+            }
+        %>
+
 	<br/>
 	<br/>
 	<%
