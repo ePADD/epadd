@@ -23,7 +23,7 @@
               + "<div class=\"profile-text\">"
               +   Util.escapeHTML(title)
               + "</div>"
-              + "<div class=\"profile-more-info\"><img src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>");
+              + "<div class=\"profile-more-info\"><img title=\"More information about this collection\" src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>");
 
       /*
       for (int i = 0; i < fields.length; i+=2)

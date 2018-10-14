@@ -133,7 +133,9 @@
         .dropdown-header { font-weight: 600;color: black; font-size: 15px;}
          a.opt { color: black;  padding-left: 1.25em; }
         ul.dropdown-menu.inner li, .multi-select .dropdown-menu ul li { border-bottom: none; }
+        svg { fill: blue; color: red; stroke: green; }
     </style>
+
 
 </head>
 <div id="annotation-modal" class="modal fade" style="z-index:9999">
@@ -417,7 +419,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <%
                 if (!Util.nullOrEmpty(term)) {
                     out.println("<b>Search</b><br/>\n");
-                    String displayTerm = Util.ellipsize(term, 15);
+                    String displayTerm = Util.ellipsize(term, 16);
 
                     out.println("<span title=\"" + Util.escapeHTML(term) + "\" class=\"facet nojog selected-facet rounded\" style=\"padding-left:2px;padding-right:2px\">" + Util.escapeHTML(displayTerm));
                     out.println (" <span class=\"facet-count\">(" + docs.size() + ")</span>");
@@ -467,7 +469,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             JSPHelper.log.info ("Warning; empty title!"); /* happened once */
                             continue;
                         }
-                        String name = Util.ellipsize(f.name, 15);
+                        String name = Util.ellipsize(f.name, 16);
                         String url = request.getRequestURI();
                         // f.url is the part that is to be added to the current url
                         if (!Util.nullOrEmpty(origQueryString))
@@ -515,7 +517,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     if (count > N_INITIAL_FACETS)
                     {
                         out.println("</div>");
-                        out.println("<div class=\"clickableLink\" style=\"text-align:left;cursor:pointer;\" onclick=\"muse.reveal(this)\">More</div>\n");
+                        out.println("<div class=\"clickableLink\" style=\"text-align:left;cursor:pointer;\" onclick=\"muse.reveal(this)\">More...</div>\n");
                     }
                     out.flush();
                 } // String facet
@@ -593,10 +595,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <img title="Show annotation" id="annotation-icon" src="images/add_annotation.svg">
-                        </div>
-
-                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <img title="Download messages as mbox" src="images/download.svg" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">
                         </div>
 
@@ -619,12 +617,55 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
             <div id="position:relative">
                 <div class="message-menu">
-                    <a target="_blank" href="google.com" class="id-link" style="cursor: pointer" title="Open message"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
-                    <a target="_blank" href="#" class="thread-link" style="cursor: pointer" title="Open thread"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
-                    <span title="Scroll down to attachments" class="attach" style="cursor:pointer"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></span>
+                    <a href="#" class="annotation-link" title="Message annotation"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
+                    <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
+                    <a href="#" class="thread-link" target="_blank" title="Open thread"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <a href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></a>
                 </div>
 
-                <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
+                <script>
+                    // handlers for message-menu icons
+                    $('a.id-link').click(function() {
+                        // open the id-modal modal if id link is clicked
+                        $id_modal = $('#id-modal');
+                        // jam the link from the data-href attribute of the a link (which has been set in page_change_callback) into the .message-link-textarea
+                        $('.modal-body .message-link-textarea', $id_modal).val($(this).attr('data-href'));
+                        $id_modal.modal();
+                        return false;
+                    });
+                    // add ok and cancel handlers here
+
+                    $(document).on('click', '#copy-message-link-button', function (event) {
+
+                        /* copies embed code to paste buffer */
+                        function copy_handler() {
+                            // should be called only when ID modal is shown
+                            // right now, we copy the entire modal-body as the only thing it contains is the link.
+                            var copyArea = $('#id-modal textarea.message-link-textarea')[0];
+                            copyArea.select();
+                            try {
+                                var successful = document.execCommand('copy');
+                                // alert ("Copy success = " + successful);
+                            } catch (err) {
+                                alert ('Sorry, unable to copy the link. Error: ' + err);
+                            }
+                        }
+
+                        event.preventDefault();
+                        copy_handler();
+                    });
+
+
+                    $("a.attach-link").click(function() {
+                        // scroll down to attachments area of message if attach-link is clicked
+                        // https://stackoverflow.com/questions/6677035/jquery-scroll-to-element
+                        $([document.documentElement, document.body]).animate({
+                            scrollTop: $(".attachments").offset().top
+                        }, 1000);
+                        return false;
+                    });
+                </script>
+
                 <div class="annotation" title="Click to edit annotation">
                     <div class="annotation-header">
                         <span>Annotation</span>
@@ -633,15 +674,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <div class="annotation-area">
                         <!-- will be filled in by JS -->
                     </div>
+                </div>
 
-                    <script>
-                        // https://stackoverflow.com/questions/6677035/jquery-scroll-to-element
-                        $("span.attach").click(function() {
-                            $([document.documentElement, document.body]).animate({
-                                scrollTop: $(".attachments").offset().top
-                            }, 1000);
-                        });
-                        $("#edit-annotation-icon").click(function() {
+                <script>
+                    $("#edit-annotation-icon").click(function() {
                             $('#annotation-modal').modal();
                             $('.annotation-area').css('filter','blur(2px)')
                         });
@@ -649,9 +685,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             $('.annotation').hide();
                         });
 
-                    </script>
+                </script>
 
-                </div>
 
                 <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
                     <div style="text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
@@ -747,6 +782,24 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>
                     <button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>
                     <button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="id-modal" class="modal fade" style="z-index:9999">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Link to this message</h4>
+                </div>
+                <div class="modal-body" style="overflow-wrap:break-word"> <!-- overflow-wrap needed because ID URL could be very long -->
+                    <textarea style="width:100%; height:120px;" class="message-link-textarea">No link</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id='copy-message-link-button' type="button" class="btn btn-default" data-dismiss="modal">Copy</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

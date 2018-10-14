@@ -56,7 +56,7 @@ muse.reveal = function(elem, show_less)
 { 
 	if (typeof(show_less) == 'undefined')
 		show_less = 'true'; // true by default
-	if ($(elem).text() == 'More')
+	if ($(elem).text() == 'More' || $(elem).text() == 'More...')
 	{
 		// sometimes we want to only do the "more" without an option for "less"
 		if (show_less)
@@ -67,7 +67,7 @@ muse.reveal = function(elem, show_less)
 	}
 	else
 	{
-		$(elem).text('More'); 
+		$(elem).text('More...');
 		$(elem).prev().hide();
 	}
 	return false; //  usually we don't want the click to ripple through
