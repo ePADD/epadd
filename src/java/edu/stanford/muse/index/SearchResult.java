@@ -484,6 +484,24 @@ public class SearchResult {
         //return modified inputSet
         return(inputSet);
     }
+    /** returns only the docs matching a threadid.
+     * Note that the parameter threadID will only be a single threadID.. not separated by ; as happens with messageID.
+     *  */
+    private static SearchResult filterForThreadID(SearchResult inputSet) {
+        String threadID = JSPHelper.getParam(inputSet.queryParams, "threadID");
+        long tid=threadID==null?-1:Long.parseLong(threadID);
+        if(tid==-1)
+            return inputSet;
+        inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
+            EmailDocument ed = (EmailDocument)k.getKey();
+            if(ed.threadID==tid)
+                return true;
+            else
+                return false;
+        }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+
+        return inputSet;
+    }
 
     /** returns only the docs matching per params[mailingListState].
      * If this value is either, no filtering is done.
@@ -1318,6 +1336,7 @@ Archive archive = inputSet.archive;
         outResult = filterForAttachments(outResult);
         //function name changed from updateForAttachment to filterForAttachments
         //Pair<Set<EmailDocument>, Set<Blob>> p = updateForAttachments((Set) resultDocs, params);
+        outResult = filterForThreadID(outResult);
         outResult = filterForAttachmentNames(outResult);
         outResult = filterForAttachmentEntities(outResult);
         outResult = filterForCorrespondents(outResult);
