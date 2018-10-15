@@ -101,7 +101,7 @@
 <%
 	AddressBook ab = archive.addressBook;
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "All Correspondents", "");
+	writeProfileBlock(out, archive, "Correspondents");
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin: auto; width: 100%">

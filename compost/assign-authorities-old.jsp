@@ -352,7 +352,7 @@
 		e.printStackTrace();
 	}
 
-	writeProfileBlock(out, archive, "", "Assign authority records");
+	writeProfileBlock(out, archive, "Assign authority records");
 	out.println ("<br/>");
 
 	Integer numEntities = null;

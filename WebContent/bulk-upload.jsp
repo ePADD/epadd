@@ -32,7 +32,7 @@
     <jsp:include page="header.jspf"/>
     <jsp:include page="div_filepicker.jspf"/>
 
-<% writeProfileBlock(out, archive, "Apply labels to multiple messages", "");
+<% writeProfileBlock(out, archive, "Apply labels to multiple messages");
 String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 

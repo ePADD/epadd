@@ -1455,7 +1455,7 @@ body {
 	width:864px;
 }
 
-.profile-plus {
+.profile-pic-edit {
 	border-radius: 50%;
 	position: relative;
 	top:20px;
@@ -1464,11 +1464,10 @@ body {
 	background-color: white;
 	left: 38px;
 	text-align:center;
-	font-size: 16px;
 	color: #0075bb;
 	border: solid 1px gray;
+	cursor: pointer;
 }
-
 
 .profile-more-info {
 	position: relative;

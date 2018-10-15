@@ -71,7 +71,7 @@
 </nav>
 <%
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "Labels", "");
+	writeProfileBlock(out, archive, "Labels");
 
 %>
 

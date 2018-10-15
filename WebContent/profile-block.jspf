@@ -3,30 +3,40 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%!
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %><%!
   // this profile block will go onto pretty much every page after the archive is loaded
 
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields) {
-      writeProfileBlock (out1, false, archive);
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String pageTitle) {
+      writeProfileBlock (out1, false, archive, pageTitle);
   }
 
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive)
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive, String pageTitle)
   {
     try
     {
       AddressBook ab = archive.addressBook;
       String bestName = ab.getBestNameForSelf();
       String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+      String mode="";
+      if(ModeConfig.isAppraisalMode())
+          mode="Appraisal";
+      else if(ModeConfig.isProcessingMode())
+          mode="Processing";
+      else if(ModeConfig.isDeliveryMode())
+          mode="Delivery";
+      else if(ModeConfig.isDiscoveryMode())
+          mode="Discovery";
 
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
       String output = "<div class=\"header-block\">"
-            //  + "<div class=\"breadcrumbs\">Appraisal &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;Browse</div><br/>"
+              +  "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
               + "<div class=\"profile-block\">"
               + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
 
       // don't allow the option to edit profile photo in discovery or delivery mode
       if (offerEditProfilePhotoOption && !ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode())
-        output += "<div title=\"upload a picture\" class=\"profile-plus\">+</div>";
+        output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
 
       output += "</div>"
               + "<div class=\"profile-text\">"
@@ -38,4 +48,5 @@
       out1.println (output);
     } catch (IOException ioe) { Util.print_exception(ioe, JSPHelper.log);}
   }
+
 %>

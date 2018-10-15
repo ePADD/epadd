@@ -39,7 +39,7 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
         success=false;
 }
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Verify checksum of this archive");
+	writeProfileBlock(out, archive, "Verify checksum of this archive");
 %>
 <div style="margin-left:170px">
 

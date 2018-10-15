@@ -24,7 +24,7 @@
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
 <%@include file="getArchive.jspf" %>
-<%writeProfileBlock(out, archive, "", "Named entity extraction");
+<%writeProfileBlock(out, archive,"Named entity extraction");
 String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 <script>

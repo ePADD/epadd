@@ -140,7 +140,7 @@
                       out.println("<div data-dir=\"" + id + "\" class=\"archive-card\">");
                       out.println("<div class=\"landing-img\" style=\"background-image:url('" + url + "')\"></div>");
                       out.println("<div class=\"landing-img-text\">");
-                      out.println(Util.nullOrEmpty(cm.ownerName) ? "No name assigned" : cm.ownerName);
+                      out.println(Util.nullOrEmpty(cm.collectionTitle) ? "No name assigned" : cm.collectionTitle);
                       out.println("<br><span class=\"detail\">" + Util.commatize(cm.nDocs) + " messages</span>");
                       out.println("<br><span class=\"detail\">" + Util.commatize(cm.nBlobs) + " attachments</span>");
                       out.println("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID) + " </span>");

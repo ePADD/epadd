@@ -122,7 +122,7 @@ if (archive != null) {
 	Set<String> addrs = ab.getOwnAddrs();
 	if (addrs.size() > 0)
 		bestEmail = addrs.iterator().next();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive, "Export archive");
 }
 
 if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {

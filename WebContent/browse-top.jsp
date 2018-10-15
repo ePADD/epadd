@@ -216,9 +216,7 @@
 	int nContacts = ab.allContacts().size();
 %>
 
-<% /* writeProfileBlock(out, archive, "Date Range: ", IndexUtils.getDateRangeAsString(allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing."); */
-    writeProfileBlock(out, true /* offerEditProfilePhotoOption */, archive);
-%>
+<% writeProfileBlock(out, true, archive, "Dashboard");%>
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box text-center margin30">
@@ -384,7 +382,7 @@
         });
     }
 
-    $('div.profile-plus').click (function() {
+    $('div.profile-pic-edit').click (function() {
         $('#profilePhoto-upload-modal').modal();
     });
 

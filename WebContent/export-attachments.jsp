@@ -38,7 +38,7 @@
     String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
     AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive,"Export archive");
 	//get the options that were displayed for attachment types. This will be used to select attachment extensions if the option 'other'
     //was selected by the user in the drop down box of export.jsp.
     List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x->Util.tokenize(x,";")).flatMap(col->col.stream()).collect(Collectors.toList());
@@ -134,6 +134,8 @@
                         continue nextBlob;
                 }
 
+                //remove ':' from the blobname if present otherwise it creates issue on windows which doesn't allow filename to contain ':'.
+                blobName = blobName.replaceAll(":","_");
                 String targetPath = dir + File.separator + blobName;
 
                 if (new File(targetPath).exists()) {
@@ -141,6 +143,8 @@
                     int i = 1;
                     do {
                         String targetFile = base + " (" + (i++) + ")" + (Util.nullOrEmpty(ext) ? "" : "." + ext);
+                        //remove ':' from the targetfile if present.
+                        targetFile =targetFile.replaceAll(":","_");
                         targetPath = dir + File.separator + targetFile;
                     } while (new File(targetPath).exists());
                 }

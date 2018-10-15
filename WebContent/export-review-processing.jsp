@@ -71,7 +71,7 @@ for (EmailDocument ed: docs)
 */
 
 docs = newDocs;
-writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
+writeProfileBlock(out, archive,  Util.pluralize(docs.size(), "message") + description);%>
 <div id="nav3" style="display:inline-block;margin-left:170px;">
 	<nav>
 		<a href="export-review-processing?type=doNotDeliver">Do not deliver</a> <br/>

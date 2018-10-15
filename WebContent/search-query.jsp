@@ -85,7 +85,7 @@
 	</div>
 </nav>
 
-<%writeProfileBlock(out, archive, "", "Search");%>
+<%writeProfileBlock(out, archive, "Search");%>
 <br/>
 <br/>
 

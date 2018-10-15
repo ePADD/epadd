@@ -37,7 +37,7 @@
 
 <%
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "", "");
+	writeProfileBlock(out, archive,"Multi-Search");
 %>
 
 <br/>
