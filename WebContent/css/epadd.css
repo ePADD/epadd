@@ -307,3 +307,15 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 
 footer { text-align: center; background-color: #616161;height:40px;width:100%; color: #ababab; }
 footer a { color: #ababab; text-decoration: underline;}
+
+body {
+           min-height: calc(100vh);
+}
+
+footer {
+    clear: both;
+    position: relative;
+    z-index: 10;
+    height: 40px;
+    margin-top: -40px;
+}

@@ -7,9 +7,20 @@
 <!--
 Browse page for entities based on fine types
 -->
+<%
+    Map<Short, String> desc = new LinkedHashMap<>();
+    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+    for(NEType.Type t: NEType.Type.values())
+        desc.put(t.getCode(), t.getDisplayName());
+
+    Short type = Short.parseShort(request.getParameter("type"));
+    String entityType = desc.get(type);
+
+%>
+
 <html>
 <head>
-    <title>Entities</title>
+    <title><%=entityType%> entities</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -69,13 +80,7 @@ Browse page for entities based on fine types
     <div style="margin:auto; width:900px">
     <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
     <%
-        Map<Short, String> desc = new LinkedHashMap<>();
-        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-        for(NEType.Type t: NEType.Type.values())
-            desc.put(t.getCode(), t.getDisplayName());
-
-        Short type = Short.parseShort(request.getParameter("type"));
-        out.println("<h1>Entity Type: "+desc.get(type)+"</h1>");
+        out.println("<h1>Entity Type: " + entityType + "</h1>");
         JSONArray resultArray = archive.getEntitiesInfoJSON(type);
     %>
 
@@ -120,8 +125,7 @@ Browse page for entities based on fine types
     <br/>
     <br/>
     <br/>
+    </div>
     <jsp:include page="footer.jsp"/>
 </body>
-<%!
-
-%>
+</html>
