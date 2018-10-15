@@ -18,8 +18,11 @@ var Navigation = function(){
         Annotations.refreshAnnotation();
 
         // update the links
-        $('.message-menu a.id-link').attr('href', 'browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
-        $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadId=' + window.messageMetadata[PAGE_ON_SCREEN].threadID);
+        // $('.message-menu a.id-link').attr('href', 'browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
+        // we need a full link here since this has to be a persistent URL
+        // window.location.origin gives us something like http://localhost:9099
+        $('.message-menu a.id-link').attr('data-href', window.location.origin + '/epadd/browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
+        $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadID=' + window.messageMetadata[PAGE_ON_SCREEN].threadID);
         $('.message-menu .attach span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
     };
 
@@ -39,7 +42,11 @@ var Navigation = function(){
             page_change_callback: page_change_callback,
             logger: epadd.log,
             width: 180,
-            disabled: 'true',
+            /* enable this to enable jog dial
+            disabled: false,
+            dynamic: true
+            */
+            disabled: true,
             dynamic: false
         });
 
@@ -281,9 +288,12 @@ var Annotations = function() {
         $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
 
         // when annotation is clicked, invoke modal
-        $('#annotation-icon').click(function () {
+        $('a.annotation-link').click(function () {
             // show the modal
             $('div.annotation').show();
+            $('#annotation-modal').modal();
+            $('.annotation-area').css('filter','blur(2px)')
+            return false;
         });
     }
 
@@ -310,6 +320,9 @@ var Annotations = function() {
 }();
 
 $(document).ready(function() {
+
+    // allow facets panel to run the full height of the screen on the left
+    $('div.facets').css('min-height', window.innerHeight - 50);
 
     PAGE_ON_SCREEN = 0;
     Labels.setup();

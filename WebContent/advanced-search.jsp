@@ -72,6 +72,7 @@
 <body>
 	<jsp:include page="header.jspf"/>
 	<script>epadd.nav_mark_active('Search');</script>
+	<% writeProfileBlock(out, archive);%>
 
 	<!--Advanced Search-->
 	<div class="advanced-search">

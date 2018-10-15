@@ -160,7 +160,7 @@
         <div class="banner-img-text-block">
 
             <div class="banner-img-text-large">
-                About <%=ownerName%>
+                About this collection
             </div>
 
             <br/>

@@ -61,11 +61,11 @@ div.facets {
 	line-height: 2.2;
 }
 
-div.facets .facetTitle { font-size: 16px; width: 100%; padding-left: 5px; border-style: solid; border-width: 1px 0px; border-color: #d4d4d4; margin-top: 20px;}
+div.facets .facetTitle { font-size: 15px; font-weight: 600; width: 100%; padding-left: 5px; border-style: solid; border-width: 1px 0px; border-color: #d4d4d4; margin-top: 20px;}
 
 div.facets, div.controls, div.labels-area { background-color: #f5f5f8;  }
 div.controls { border-bottom:solid 1px #d4d4d4; height: 55px;}
-div.controls img { height: 25px;}
+div.controls img { height: 32px;}
 
 div.labels-area { border-style: solid; border-width: 0px 1px 1px 1px; border-color: #D4D4D4; height: 55px; padding-top: 15px;}
 div.controls button { background-color: white; margin-left: 23px; }
@@ -74,10 +74,10 @@ div.annotation { display: none; z-index: 200; position: absolute; right: 0px; to
 div.annotation-header { font-weight: 600; font-size: 19px; padding-bottom: 10px; border-bottom: solid 1px #d4d4d4; margin-bottom: 10px;}
 div.annotation-area { overflow: scroll; height:200px;}
 
-div.message-menu { z-index: 100; position: absolute; left: 950px; top: 220px;} /* z-index keeps it above the jog area, but below the modals */
-div.message-menu img { height: 25px;}
+div.message-menu { z-index: 100; position: absolute; left: 845px; top: 220px;} /* z-index keeps it above the jog area, but below the modals */
+div.message-menu img { height: 32px;}
 
-.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 20px;}
+.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px 20px; border-radius: 20px;}
 .system-label.restriction-label { background: rgb(223,0,0); color: white; }
 .restriction-label { background: #E27D00; color: white; }
 .general-label { background: #006FC0; color: white;}
@@ -127,8 +127,7 @@ div.muse-doc {
         margin-right: 20px;
         /* font-family: Courier, Arial, sans-serif; */
         font-family: 'Open Sans', sans-serif; /* Courier, "Myriad Pro", Arial, sans-serif; */
-/*        font-family: Courier, "Myriad Pro", Arial, sans-serif; */
-        font-size: 14px;
+        font-size: 16px;
         line-height: 1.6em;
 /*      min-height: 1200px; */
 
@@ -210,21 +209,21 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 
 .custom-people{
 	color: black;
-	border-bottom: 2px dotted #000;
+	border-bottom: 1px solid #000;
 	border-bottom-color: grey;
 	cursor: pointer;
 }
 
 .custom-org{
 	color: black;
-	border-bottom: 2px dotted #000;
+	border-bottom: 1px solid #000;
 	border-bottom-color: grey;
 	cursor: pointer;
 }
 
 .custom-loc{
 	color: black;
-	border-bottom: 2px dotted #000;
+	border-bottom: 1px solid #000;
  	border-bottom-color: grey;
 	cursor: pointer;
 }
@@ -302,3 +301,9 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 .qtip-epadd { background-color: #f5f5f8; border-color: #0b559b; font-size: 14px; }
 .name-expansion { margin: 0px; padding: 5px 0px; }
 .name-expansion-header { color: black; font-weight: 700; margin-bottom: 10px; padding: 10px 0px; border-bottom: solid 1px #ccc;}
+
+.navbar-default a { border-bottom: solid 4px inherit ; }
+.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus { box-sizing: border-box; background-color: inherit; border-bottom: solid 4px white ; padding-bottom:10px;}
+
+footer { text-align: center; background-color: #616161;height:40px;width:100%; color: #ababab; }
+footer a { color: #ababab; text-decoration: underline;}

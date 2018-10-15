@@ -55,25 +55,6 @@
 		  return s;
 	  };
 
-	  var settings = {
-		      page_selector: '.page',
-		      document_selector: '.document',
-		      section_selector: '.section',
-            // sound_selector
-		      jog_content_frame_selector: '#jog_contents',
-		      reel_prefix  : 'images/sleekknob',
-		      dynamic	   : false,
-		      width		   : 250,
-		      page_change_callback: null,
-		      page_load_callback: null,
-		      paging_info: null,
-		      logger: null,
-		      text_css: 'background-color: black; color: white; font-size: 20pt;border-radius:5px',
-		      show_count: true,
-		      disabled: false /* sometimes its just disabled */
-		    };
-      $.extend(settings, options);
-
 	function LOG(s, p) {
 		if (settings.logger) {
 			if (typeof p == 'undefined')
@@ -84,7 +65,26 @@
 	// LOG ('jog settings = ' + dump_obj(settings));
 
       // inject jog_div
-        var jog_div = '<div id="jog_div" style="position:fixed;display:none;top:0px;left:0px;opacity:0.9;z-index:1000000000">' 
+      var settings = {
+          page_selector: '.page',
+          document_selector: '.document',
+          section_selector: '.section',
+          // sound_selector
+          jog_content_frame_selector: '#jog_contents',
+          reel_prefix  : 'images/sleekknob',
+          dynamic	   : false,
+          width		   : 250,
+          page_change_callback: null,
+          page_load_callback: null,
+          paging_info: null,
+          logger: null,
+          text_css: 'background-color: black; color: white; font-size: 20pt;border-radius:5px',
+          show_count: true,
+          disabled: false /* sometimes its just disabled */
+      };
+      $.extend(settings, options);
+
+      var jog_div = '<div id="jog_div" style="position:fixed;display:none;top:0px;left:0px;opacity:0.9;z-index:1000000000">'
     			+ '<table style="background-color:transparent;border:0px;"><tr><td>	<img id="jog_img" src="' + settings.reel_prefix + '0.png' + '" width="' + settings.width + '"></img>	</td>';
         if (settings.show_count)
             jog_div += '<td valign="middle">&nbsp;&nbsp 	<span id="jog_text" style="' + settings.text_css + '">&nbsp;</span><br/>	</td>';
@@ -93,7 +93,6 @@
 
 
 	LOG ('done appending div');
-        
 
 ////////////////////jog stuff //////////////////////
 
@@ -109,7 +108,7 @@ function Jog(settings, height, width, trackWidth, forward_handler, backward_hand
 	this.cursorKeysDisabled = false;
 
 	if (!settings.disabled) {
-//		var x = this.createMouseDownHandler();
+		// var x = this.createMouseDownHandler();
  //       $('#jog_img').mousedown(x); // same click handler on jog itself needed also to dismiss
 
         var y = this.createClickHandler();
@@ -127,7 +126,8 @@ function Jog(settings, height, width, trackWidth, forward_handler, backward_hand
 	else
 		LOG ('jog dial disabled!!');
 }
-	  Jog.prototype.showJog = function (mouseX, mouseY, x, y)  // mouseX/Y is the actual mouse pos, for computing current compartment. x,y is jog center
+
+Jog.prototype.showJog = function (mouseX, mouseY, x, y)  // mouseX/Y is the actual mouse pos, for computing current compartment. x,y is jog center
 {
 	if (settings.disabled) {
 		LOG ('jog dial is disabled!');
@@ -181,77 +181,77 @@ Jog.prototype.hideJog = function ()
 Jog.prototype.createMouseMoveHandler = function () {
 	var myJog = this;
 	return function(event) {
-	// jogInactivityTimer.reset();
-	if (settings.dynamic)
-		moveJogDynamic();
-			
-	var currentX, currentY;
-    if (event.type === 'mousemove') {
-        currentX = event.clientX; currentY = event.clientY; // clientX/Y are offset w.r.t. client window. http://www.gtalbot.org/DHTMLSection/PositioningEventOffsetXY.html
-    }
-    else {
-    	// must be a touchmove
-        currentX = event.originalEvent.targetTouches[0].pageX;
-        currentY = event.originalEvent.targetTouches[0].pageY;
-        LOG ('event.type = ' + event.type + ' mousemove handler called with current X ' + currentX + ' current Y = ' + currentY);
-    }
+        // this code tries to track the jog to the cursor location
+        function moveJogDynamic()
+        {
+            function initEpoch(x, y, timeStamp) {
+                var epoch = myJog.epoch;
+                if (epoch == null)
+                    myJog.epoch = epoch = {};
+                epoch.timeStamp = timeStamp;
+                epoch.startX = event.lastX = x;
+                epoch.startY = event.lastY = y;
+                epoch.distanceFromStart = epoch.distanceTravelled = 0;
+                epoch.minX = epoch.minY = 10000;
+                epoch.maxX = epoch.maxY = -1;
 
-	// this code tries to track the jog to the cursor location
-	function moveJogDynamic()
-	{
-	    function initEpoch(x, y, timeStamp) {
-	    	var epoch = myJog.epoch;
-	    	if (epoch == null)
-	    		myJog.epoch = epoch = {};
-	    	epoch.timeStamp = timeStamp;
-	    	epoch.startX = event.lastX = x;
-	    	epoch.startY = event.lastY = y;
-	    	epoch.distanceFromStart = epoch.distanceTravelled = 0;
-	    	epoch.minX = epoch.minY = 10000;
-	    	epoch.maxX = epoch.maxY = -1;
-	    	
-	    }
+            }
 
-    	var epoch = myJog.epoch;
-	    if (typeof epoch == 'undefined' || (event.timeStamp - epoch.timeStamp > 1000))
-	    {
-	    	initEpoch(event);
-	    } else {
-	    	// LOG ('timestamp delta = ' + (event.timeStamp - epoch.timeStamp));
-		    var deltaX = Math.abs(currentX - epoch.startX);
-		    var deltaY = Math.abs(currentY - epoch.startY);
-		    epoch.distanceFromStart = Math.sqrt (deltaX * deltaX + deltaY * deltaY);
+            var epoch = myJog.epoch;
+            if (typeof epoch == 'undefined' || (event.timeStamp - epoch.timeStamp > 1000))
+            {
+                initEpoch(event);
+            } else {
+                // LOG ('timestamp delta = ' + (event.timeStamp - epoch.timeStamp));
+                var deltaX = Math.abs(currentX - epoch.startX);
+                var deltaY = Math.abs(currentY - epoch.startY);
+                epoch.distanceFromStart = Math.sqrt (deltaX * deltaX + deltaY * deltaY);
 
-		    var deltaX = Math.abs(currentX - epoch.lastX);
-		    var deltaY = Math.abs(currentY - epoch.lastY);
-		    var distanceTravelled = Math.sqrt (deltaX * deltaX + deltaY * deltaY);
-		    epoch.distanceTravelled += distanceTravelled;
+                var deltaX = Math.abs(currentX - epoch.lastX);
+                var deltaY = Math.abs(currentY - epoch.lastY);
+                var distanceTravelled = Math.sqrt (deltaX * deltaX + deltaY * deltaY);
+                epoch.distanceTravelled += distanceTravelled;
 
-		    if (epoch.minX > currentX)
-		    	epoch.minX = currentX;
-		    if (epoch.minY > currentY)
-		    	epoch.minY = currentY;
-		    if (epoch.maxX < currentX)
-		    	epoch.maxX = currentX;
-		    if (epoch.maxY < currentY)
-		    	epoch.maxY = currentY;
-		    epoch.lastX = currentX;
-		    epoch.lastY = currentY;
-		    if (epoch.distanceFromStart < 40 && epoch.distanceTravelled > 100 && epoch.distanceTravelled > 5 * epoch.distanceFromStart)
-		    {
-		    	// need to readjust
-		    	newCenterX = (epoch.maxX + epoch.minX)/2;
-		    	newCenterY = (epoch.maxY + epoch.minY)/2;
-		    	LOG ("OK... RECENTERING! + " + newCenterX + "," + newCenterY);
-		    	initEpoch(currentX, currentY, event.timeStamp);
-		    	$('#jog_div').animate({'top': newCenterY-(myJog.height/2)}, {duration:100}); // -50 to make the mouse start at the ready-to-go point on the jog
-		    	$('#jog_div').animate({'left': newCenterX-(myJog.width/2)}, {duration:100});
+                if (epoch.minX > currentX)
+                    epoch.minX = currentX;
+                if (epoch.minY > currentY)
+                    epoch.minY = currentY;
+                if (epoch.maxX < currentX)
+                    epoch.maxX = currentX;
+                if (epoch.maxY < currentY)
+                    epoch.maxY = currentY;
+                epoch.lastX = currentX;
+                epoch.lastY = currentY;
+                if (epoch.distanceFromStart < 40 && epoch.distanceTravelled > 100 && epoch.distanceTravelled > 5 * epoch.distanceFromStart)
+                {
+                    // need to readjust
+                    newCenterX = (epoch.maxX + epoch.minX)/2;
+                    newCenterY = (epoch.maxY + epoch.minY)/2;
+                    LOG ("OK... RECENTERING! + " + newCenterX + "," + newCenterY);
+                    initEpoch(currentX, currentY, event.timeStamp);
+                    $('#jog_div').animate({'top': newCenterY-(myJog.height/2)}, {duration:100}); // -50 to make the mouse start at the ready-to-go point on the jog
+                    $('#jog_div').animate({'left': newCenterX-(myJog.width/2)}, {duration:100});
 
-		    	// alert ('adjusting center to ' + newCenterX + ", " + newCenterY);
-		    }
-	    }
-	}
-	
+                    // alert ('adjusting center to ' + newCenterX + ", " + newCenterY);
+                }
+            }
+        }
+
+		// jogInactivityTimer.reset();
+		if (settings.dynamic)
+			moveJogDynamic();
+
+		var currentX, currentY;
+		if (event.type === 'mousemove') {
+			currentX = event.clientX; currentY = event.clientY; // clientX/Y are offset w.r.t. client window. http://www.gtalbot.org/DHTMLSection/PositioningEventOffsetXY.html
+		}
+		else {
+			// must be a touchmove
+			currentX = event.originalEvent.targetTouches[0].pageX;
+			currentY = event.originalEvent.targetTouches[0].pageY;
+			LOG ('event.type = ' + event.type + ' mousemove handler called with current X ' + currentX + ' current Y = ' + currentY);
+		}
+
 	    myJog.currentCompartment = myJog.getCompartment(currentX, currentY);
 		var img = settings.reel_prefix + ((myJog.currentCompartment+7)%8) + '.png';
 		$('#jog_img').attr('src', img);
@@ -282,10 +282,10 @@ Jog.prototype.createMouseMoveHandler = function () {
 //	    LOG('ok, going to move');
 	    if (myJog.currentCompartment == ((myJog.prevCompartment+1) % 8)) {
 	    	LOG ('moving forward: compartment ' + myJog.prevCompartment + ' -> ' + myJog.currentCompartment);
-	    	myJog.forward_handler();
+	    	doPageForward(); // myJog.forward_handler();
 	    } else if (myJog.currentCompartment == ((myJog.prevCompartment+7) % 8) ) {
 	    	LOG ('moving backward: compartment ' + myJog.prevCompartment + ' -> ' + myJog.currentCompartment);
-	    	myJog.backward_handler();
+	    	doPageBackward(); // myJog.backward_handler();
 		}
 	    myJog.prevCompartment = myJog.currentCompartment;	
         event.preventDefault();
@@ -471,91 +471,42 @@ Jog.prototype.createClickHandler = function() {
 Jog.prototype.enableCursorKeys = function() { this.cursorKeysDisabled = false; }
 Jog.prototype.disableCursorKeys = function() { this.cursorKeysDisabled = true;}
 
-
-////////////////////////// actual Jog function starts here
-	var currentPage = -1, currentCompartment = -1;
-
-    if (typeof settings.pages == 'undefined') {
-		LOG ('starting jog with settings.page_selector ' + settings.page_selector + " jog_contents_selector "+ settings.jog_content_frame_selector + ' settings.paging_info ' + settings.paging_info);
-		totalPages = $(settings.page_selector).length;
-		if (totalPages == 0)
-		{
-			if (TOTAL_PAGES)
-				totalPages = TOTAL_PAGES;
-			else {
-                $(settings.jog_content_frame_selector).html('Zero documents.');
+	function keypress_handle(event) {
+        function scrollSection(increment)
+        {
+            LOG ('scroll section by ' + increment);
+            if (sectionEndPages == null || sectionEndPages.length == 0)
+            {
+                // we don't have sections. just scroll to first or last page.
+                if (increment < 0)
+                    setCurrentPage(0);
+                else
+                    setCurrentPage(pages.length-1);
+                showCurrentPage();
                 return;
             }
-		}
-		LOG (totalPages + ' pages found');
-		
-		pages = [];
-		pageImagesFetched = [];
-		for (var i = 0; i < totalPages; i++)
-		{
-			pages[i] = null;
-			pageImagesFetched[i] = false;
-		}
-	
-		// populate any pages that already exist
-		var pageReadyCount = 0;
-		$(settings.page_selector).each(function() { 
-			var id = $(this).attr('pageId'); 
-    		var html = $(this).html();
-    		if (html && html.length > 0)
-    		{
-    			LOG ('we already have page ' + id + ' ' + html.length + ' chars'); 
-    			pageReadyCount++;
-    			pages[id] = html; 
-    		}
-	    });
-    	LOG(pageReadyCount + ' pages already present');
-	    setupSections();
-	    setupDocuments();
-    } else {
-        pages = settings.pages;
-        LOG ('using pre-provided pages: '  + pages.length);
-        totalPages = pages.length;
-        if (typeof settings.sectionEndPages != 'undefined') {
-            sectionEndPages = settings.sectionEndPages;
-        } else {
-            sectionEndPages = [];
-            // create sectionEndPages ourselves at intervals of 10
-            var last_pushed = -1;
-            for (var x = 10; x < pages.length; x+=10) {
-                sectionEndPages.push(x);
-                last_pushed = x;
+
+            var section = whichRange(currentPage, sectionEndPages);
+            var nextSection = section + increment;
+            if (nextSection >= 0 && nextSection < nSections) {
+                LOG ('scrolling to section ' + nextSection);
+                if (nextSection == 0)
+                    setCurrentPage(0);
+                else
+                    setCurrentPage(sectionEndPages[nextSection-1]+1); // first page of this section is last page of prev. section + 1
+            } else {
+                if (nextSection < 0)
+                    setCurrentPage(0); // just go back to page 0
+                else if (nextSection >= nSections)
+                    setCurrentPage(pages.length-1); // just go to the last page.
+                else
+                    LOG ('not possible to scroll to section ' + nextSection);
             }
-            if (last_pushed != pages.length) {
-                sectionEndPages.push(pages.length);
-            }
+
+            showCurrentPage();
         }
-        nSections = sectionEndPages.length;
-    }
 
-	selectedPageNum = []; // array of indices of selected pages into main page array
-	for (var i = 0; i < totalPages; i++)
-		selectedPageNum[i] = i;
-
-	LOG (pages.length + ' pages set up');
-
-	$(document).ajaxError(handle_ajax_error);
-	setup_paging();
-	LOG ('jog disabled = ' + settings.disabled);
-	jog = new Jog(settings, settings.width, settings.width, 20, doPageForward, doPageBackward);
-	$(document).keydown(keypress_handle);
-//	$(settings.jog_content_frame_selector).keydown(keypress_handle);
-	// TOFIX: entryPage is a global
-	if (typeof(entryPage) != 'undefined')
-		setCurrentPage(entryPage);
-	else
-		setCurrentPage(0);
-
-	showCurrentPage();
-	// end of this function... the rest are private helper functions
-
-	function keypress_handle(event) {
-		var code;
+        var code;
 		var handled = false;
 		if (event.keyCode)
 		  code = event.keyCode; // keyCode is apparently IE specific
@@ -711,39 +662,6 @@ function setupDocuments()
 	LOG (nDocs + ' documents found with a total of ' + pagesSoFar + ' pages');
 }
 
-function scrollSection(increment)
-{
-	LOG ('scroll section by ' + increment);
-	if (sectionEndPages == null || sectionEndPages.length == 0)
-    {
-        // we don't have sections. just scroll to first or last page.
-        if (increment < 0)
-			setCurrentPage(0);
-        else
-			setCurrentPage(pages.length-1);
-	    showCurrentPage();
-		return;
-    }
-
-	var section = whichRange(currentPage, sectionEndPages);
-	var nextSection = section + increment;
-	if (nextSection >= 0 && nextSection < nSections) {
-		LOG ('scrolling to section ' + nextSection);
-		if (nextSection == 0)
-			setCurrentPage(0);
-		else
-			setCurrentPage(sectionEndPages[nextSection-1]+1); // first page of this section is last page of prev. section + 1
-	} else { 
-        if (nextSection < 0)
-            setCurrentPage(0); // just go back to page 0
-		else if (nextSection >= nSections)
-            setCurrentPage(pages.length-1); // just go to the last page.
-        else
-            LOG ('not possible to scroll to section ' + nextSection);
-    }
-
-	showCurrentPage();
-}
 
 /*
 function scrollDocument(increment)
@@ -1041,7 +959,88 @@ function update_page_window() {
 	currentWindow.end = newWindow.end;
 }
 
-return jog;
+////////////////////////// actual Jog function starts here
+      var currentPage = -1, currentCompartment = -1;
+
+      if (typeof settings.pages == 'undefined') {
+          LOG ('starting jog with settings.page_selector ' + settings.page_selector + " jog_contents_selector "+ settings.jog_content_frame_selector + ' settings.paging_info ' + settings.paging_info);
+          totalPages = $(settings.page_selector).length;
+          if (totalPages == 0)
+          {
+              if (TOTAL_PAGES)
+                  totalPages = TOTAL_PAGES;
+              else {
+                  $(settings.jog_content_frame_selector).html('Zero documents.');
+                  return;
+              }
+          }
+          LOG (totalPages + ' pages found');
+
+          pages = [];
+          pageImagesFetched = [];
+          for (var i = 0; i < totalPages; i++)
+          {
+              pages[i] = null;
+              pageImagesFetched[i] = false;
+          }
+
+          // populate any pages that already exist
+          var pageReadyCount = 0;
+          $(settings.page_selector).each(function() {
+              var id = $(this).attr('pageId');
+              var html = $(this).html();
+              if (html && html.length > 0)
+              {
+                  LOG ('we already have page ' + id + ' ' + html.length + ' chars');
+                  pageReadyCount++;
+                  pages[id] = html;
+              }
+          });
+          LOG(pageReadyCount + ' pages already present');
+          setupSections();
+          setupDocuments();
+      } else {
+          pages = settings.pages;
+          LOG ('using pre-provided pages: '  + pages.length);
+          totalPages = pages.length;
+          if (typeof settings.sectionEndPages != 'undefined') {
+              sectionEndPages = settings.sectionEndPages;
+          } else {
+              sectionEndPages = [];
+              // create sectionEndPages ourselves at intervals of 10
+              var last_pushed = -1;
+              for (var x = 10; x < pages.length; x+=10) {
+                  sectionEndPages.push(x);
+                  last_pushed = x;
+              }
+              if (last_pushed != pages.length) {
+                  sectionEndPages.push(pages.length);
+              }
+          }
+          nSections = sectionEndPages.length;
+      }
+
+      selectedPageNum = []; // array of indices of selected pages into main page array
+      for (var i = 0; i < totalPages; i++)
+          selectedPageNum[i] = i;
+
+      LOG (pages.length + ' pages set up');
+
+      $(document).ajaxError(handle_ajax_error);
+      setup_paging();
+      LOG ('jog disabled = ' + settings.disabled);
+      jog = new Jog(settings, settings.width, settings.width, 20, doPageForward, doPageBackward);
+      $(document).keydown(keypress_handle);
+//	$(settings.jog_content_frame_selector).keydown(keypress_handle);
+      // TOFIX: entryPage is a global
+      if (typeof(entryPage) != 'undefined')
+          setCurrentPage(entryPage);
+      else
+          setCurrentPage(0);
+
+      showCurrentPage();
+
+	return jog;
 
 	};
 })( jQuery );

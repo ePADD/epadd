@@ -44,6 +44,8 @@
 
 <div style="min-height:300px;margin: 10px 50px 10px 50px" class="panel rounded">
 
+    Jump to <a href="#errors">Errors</a>
+    <br/>
 <%
     // warning: somewhat fragile. depends on the error string! Not desirable, but...
     // also note: we'd prefer to keep backward compatibility with existing archives
@@ -101,6 +103,7 @@
         }
     }
     %>
+    <a name="errors"></a>
     <p>Summary of error types:
     <p>
     <%

@@ -1494,11 +1494,11 @@ body {
 	vertical-align: middle;
 	padding-left:20px;
 	max-width:400px;
+	width: 400px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-
 
 .archive-card {
 	display: inline-block;

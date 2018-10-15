@@ -772,6 +772,7 @@ int errortype=0;
         return indexer.getContents(ldoc, originalContentOnly);
     }
 
+    /*
     private void setupAddressBook(List<Document> docs) {
         // in this case, we don't care whether email addrs are incoming or
         // outgoing,
@@ -785,13 +786,16 @@ int errortype=0;
 
         addressBook.organizeContacts();
     }
+    */
 
+    /*
     public List<LinkInfo> extractLinks(Collection<Document> docs) throws Exception {
         prepareAllDocs(docs, indexOptions);
         indexer.clear();
         indexer.extractLinks(docs);
         return EmailUtils.getLinksForDocs(docs);
     }
+    */
 
     public Collection<DatedDocument> docsInDateRange(Date start, Date end) {
         List<DatedDocument> result = new ArrayList<>();
@@ -881,6 +885,7 @@ int errortype=0;
      *
      * @throws Exception
      */
+    /*
     private void prepareAllDocs(Collection<Document> docs, IndexOptions io) throws Exception {
         allDocs = new ArrayList<>();
         allDocs.addAll(docs);
@@ -913,6 +918,7 @@ int errortype=0;
         Collections.sort(allDocs); // may not be essential
         allDocsAsSet = null;
     }
+    */
 
     private String getFolderInfosMapKey(String accountKey, String longName) {
         return accountKey + "..." + longName;

@@ -155,6 +155,7 @@
 
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
+	JSPHelper.log.warn ("this is a warning");
     AddressBook ab = archive.addressBook;
     String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
@@ -189,7 +190,8 @@
 	boolean statsAvailable = false;
 	if(archive.collectionMetadata.entityCounts != null)
 		statsAvailable = true;
-	String nPersonEntities ="", nSensitiveMessages ="";
+	int nPersonEntities = 0;
+	String nSensitiveMessages ="";
 	int nNonPersonEntities = 0,outCount=0,inCount=0,nAttachments=0,nImageAttachments=0;
 	outCount = archive.collectionMetadata.nOutgoingMessages;
 	inCount = archive.collectionMetadata.nIncomingMessages;
@@ -202,7 +204,7 @@
 	nImageAttachments = archive.collectionMetadata.nImageBlobs;//EmailUtils.countImageAttachmentsInDocs(allDocs);
 
 	if(statsAvailable){
-		nPersonEntities = Integer.toString(archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PERSON.getCode(),0));
+		nPersonEntities = archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PERSON.getCode(), 0);
 		for (short fineType: archive.collectionMetadata.entityCounts.keySet()) {
 			if (NEType.getTypeForCode (fineType) != NEType.Type.PERSON)
 				nNonPersonEntities += archive.collectionMetadata.entityCounts.getOrDefault(fineType,0);
@@ -225,71 +227,16 @@
 			<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>
 		</a>
 	</div>
-	
-	<div class="cta-box text-center margin30">
-			<a href="list-entities.jsp?type=0&archiveID=<%=archiveID%>">
-			<i class="icon-browsetoparrow"></i>
-			<i class="fa fa-user-o" style="color:#e60707" aria-hidden="true"></i>
-			<p class="cta-text-1">Person entities (<%=nPersonEntities%>)</p>
-			<p class="cta-text-2">Person entities (<%=nPersonEntities%>)</p>
-			</a>
-	</div>
-
-	<% if (ModeConfig.isDiscoveryMode()) { %>
-		<br/>
-	<% } %>
 
 	<div class="cta-box text-center margin30">
 		<a href="entity-types?archiveID=<%=archiveID%>">
 			<i class="icon-browsetoparrow"></i>
 			<i class="fa fa-thumb-tack" style="color:#31a354" aria-hidden="true"></i>
-			<p class="cta-text-1">Other entities (<%=nNonPersonEntities%>)</p>
-			<p class="cta-text-2">Other entities (<%=nNonPersonEntities%>)</p>
+			<p class="cta-text-1">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>
+			<p class="cta-text-2">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>
 		</a>
 	</div>
 
-	<% if (!ModeConfig.isDiscoveryMode()) { %>
-		<br/>
-        <div class="cta-box text-center margin30">
-            <a href="by-folder?archiveID=<%=archiveID%>">
-                <i class="icon-browsetoparrow"></i>
-				<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>
-                <p class="cta-text-1">Folders (<%=nFolders%>)</p>
-                <p class="cta-text-2">Folders (<%=nFolders%>)</p>
-            </a>
-        </div>
-    <% } %>
-
-	<% if (!ModeConfig.isDiscoveryMode()) { %>
-		<div class="cta-box text-center margin30">
-				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
-					<i class="icon-browsetoparrow"></i>
-					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
-					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
-					<p class="cta-text-2">Image attachments (<%=nImageAttachments%>)</p>
-				</a>
-		</div>
-
-
-	<div class="cta-box text-center margin30">
-		<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
-			<i class="icon-browsetoparrow"></i>
-			<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>
-			<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
-			<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments)%>)</p>
-		</a>
-	</div>
-	<br/>
-
-		<div class="cta-box text-center margin30">
-			<a href="lexicon?archiveID=<%=archiveID%>">
-				<i class="icon-browsetoparrow"></i>
-				<img src="images/lexicon.png"/>
-				<p class="cta-text-1">Lexicon search</p>
-				<p class="cta-text-2">Lexicon search</p>
-			</a>
-		</div>
-	<% } %>
 
 	<div class="cta-box text-center margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
@@ -300,16 +247,68 @@
 		</a>
 	</div>
 
-	<% if (ModeConfig.isAppraisalMode()|| ModeConfig.isProcessingMode()) { %>
+	<% if (!ModeConfig.isDiscoveryMode()) { %>
+		<br/>
+
+		<div class="cta-box text-center margin30">
+				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
+					<i class="icon-browsetoparrow"></i>
+					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
+					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
+					<p class="cta-text-2">Image attachments (<%=nImageAttachments%>)</p>
+				</a>
+		</div>
+
+
+		<div class="cta-box text-center margin30">
+			<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
+				<i class="icon-browsetoparrow"></i>
+				<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>
+				<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
+				<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments)%>)</p>
+			</a>
+		</div>
+
+		<div class="cta-box text-center margin30">
+			<a href="by-folder?archiveID=<%=archiveID%>">
+				<i class="icon-browsetoparrow"></i>
+				<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>
+				<p class="cta-text-1">Folders (<%=nFolders%>)</p>
+				<p class="cta-text-2">Folders (<%=nFolders%>)</p>
+			</a>
+		</div>
+
+		<br/>
+
+		<div class="cta-box text-center margin30">
+			<a href="lexicon?archiveID=<%=archiveID%>">
+				<i class="icon-browsetoparrow"></i>
+				<img src="images/lexicon.png"/>
+				<p class="cta-text-1">Lexicon search</p>
+				<p class="cta-text-2">Lexicon search</p>
+			</a>
+		</div>
+
+		<% if (!ModeConfig.isDeliveryMode()) { %>
 			<div class="cta-box text-center margin30">
 				<a href="report?archiveID=<%=archiveID%>">
 					<i class="icon-browsetoparrow"></i>
 					<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>
-					<p class="cta-text-1">Data report</p>
-					<p class="cta-text-2">Data report</p>
+					<p class="cta-text-1">Reports</p>
+					<p class="cta-text-2">Reports</p>
 				</a>
 			</div>
 		<% } %>
+
+		<div class="cta-box text-center margin30">
+			<a href="settings?archiveID=<%=archiveID%>">
+				<i class="icon-browsetoparrow"></i>
+				<i class="fa fa-cog" style="color:#d41298" aria-hidden="true"></i>
+				<p class="cta-text-1">More</p>
+				<p class="cta-text-2">More</p>
+			</a>
+		</div>
+	<% } %>
 
 </div> <!--  allCards -->
 <jsp:include page="footer.jsp"/>

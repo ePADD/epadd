@@ -35,7 +35,7 @@
 %>
 <p>
 <br/>
-<div style="margin-left:170px">
+<div style="width:864px;margin:auto" class="panel">
 
 <%
 
@@ -52,7 +52,7 @@
 		return;
 	}
 	%>
-	<div id="spinner-div" style="text-align:center;display:none"><i class="fa fa-spin fa-spinner"></i></div>
+	<div id="spinner-div" style="text-align:center;"><i class="fa fa-spin fa-spinner"></i></div>
 	<% out.flush(); %>
 	<%
 	if (Util.nullOrEmpty(dir)) {

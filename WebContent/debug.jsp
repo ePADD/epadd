@@ -41,6 +41,9 @@ If you have encountered a problem, please provide the following details to <%=ed
 		<li>The log given below.</li>
 	</ul>
 
+
+    Jump to: <a href="#configuration">Configuration</a> &bull; <a href="#session">Session</a> &bull;  <a href="#warnings">Warnings</a> &bull; <a href="#debug">Log</a>
+    <br/>
 <hr style="color:rgba(0,0,0,0.2)"/>
 <b>ePADD version <%=edu.stanford.epadd.Version.version%></b>
 <br/>
@@ -48,7 +51,7 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 
 <p> </p>
 
-<% if (ModeConfig.isDiscoveryMode()) { return; } %>
+<% if (ModeConfig.isDiscoveryMode() || ModeConfig.isServerMode()) { return; } %>
 
 	<p>
 
@@ -61,7 +64,7 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
     <%=Util.getMemoryStats()%><br/>
 
 	<br/><br/>
-
+    <a name="configuration"></a>
 	<b>System properties</b><br/>
 
 	<%
@@ -73,7 +76,9 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 		}
 	%>
 	<br/>
-    <b>Session attributes</b><p>
+        <a name="session"></a>
+
+        <b>Session attributes</b><p>
     <% long created = session.getCreationTime();
        long accessed = session.getLastAccessedTime();
        long activeTimeSecs = (accessed - created)/1000;
@@ -99,16 +104,50 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 	<br/>
 	<br/>
 	Last error code:<%=request.getAttribute("javax.servlet.error.status_code")%> type: <%=request.getAttribute("javax.servlet.error.exception_type")%>
+        <% Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
+            if (throwable != null) {
+                Util.print_exception(throwable, JSPHelper.log);
+            }
+        %>
+
 	<br/>
 	<br/>
 	<%
 		Log4JUtils.flushAllLogs(); // if we dont flush file is sometimes truncated
+
+	// dump the warnings file first
+	{
+		String debugFile = Log4JUtils.WARNINGS_LOG_FILE;
+		File f = new File(debugFile);
+		if (f.exists() && f.canRead()) {
+			%>
+        <a name="warnings"></a>
+
+        <b>Warnings log</b> (from <%=debugFile%>)
+			<hr style="color:rgba(0,0,0,0.2)"/>
+			<div id="testdiv">
+			<%
+			String s = Util.getFileContents(debugFile);
+			s = Util.escapeHTML(s);
+			s = s.replace("\n", "<br/>\n");
+			out.println(s);
+			%>
+		</div>
+		<hr style="color:rgba(0,0,0,0.2)"/>
+		<%
+		} else
+			out.println("No warnings log in " + debugFile + "<br/>");
+	}
+
+	// now dump the log file. only the latest (current) version of the log file is dumped. if logs have been rolled over, they will not be dumped.
+	{
 		String debugFile = Log4JUtils.LOG_FILE;
 		File f = new File(debugFile);
-		if (f.exists() && f.canRead())
-		{
-	%>
-			<b>Debug log</b> (from <%=debugFile%>)
+		if (f.exists() && f.canRead()) {
+		%>
+    <a name="debug"></a>
+
+    <b>Debug log</b> (from <%=debugFile%>)
 			<hr style="color:rgba(0,0,0,0.2)"/>
 			<div id="testdiv">
 			<%
@@ -118,10 +157,12 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 				out.println (s);
 			%>
 			</div>
-	<%
+			<hr style="color:rgba(0,0,0,0.2)"/>
+		<%
 		}
 		else
-			out.println ("No debug log in " + debugFile);
+			out.println ("No debug log in " + debugFile + "<br/>");
+	}
 	%>
 	<br/>
     <p> </p>
