@@ -10,6 +10,8 @@
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
+	boolean aliasCountSort = ("aliasCount".equals(sort));
+
 %>
 <html>
 <head>
@@ -75,8 +77,9 @@
 <div style="text-align:center;margin-left:40%;width:20%;">
 	<div class="form-group">
 		<select id="sort-order" name="sort-order" class="form-control selectpicker">
-			<option <%=!alphaSort ? "selected" : ""%> value="volume">Sort by email volume</option>
+			<option <%=!alphaSort && !aliasCountSort ? "selected" : ""%> value="volume">Sort by email volume</option>
 			<option <%=alphaSort ? "selected" : ""%> value="alpha">Sort alphabetically</option>
+			<option <%=aliasCountSort ? "selected" : ""%> value="aliasCount">Sort by number of aliases</option>
 		</select>
 	</div>
 
@@ -87,6 +90,8 @@
 		$('#sort-order').change(function () {
 			if ('alpha' === this.value)
 				window.location = 'edit-correspondents?archiveID=<%=archiveID%>&sort=alphabetical';
+            else if ('aliasCount' === this.value)
+                window.location = 'edit-correspondents?archiveID=<%=archiveID%>&sort=aliasCount';
 			else
 				window.location = 'edit-correspondents?archiveID=<%=archiveID%>';
 		});
@@ -100,16 +105,16 @@
 	//archiveID in all those forms where POST was used to invoke the server page. -->
 	<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
 
-    <!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
-<textarea title="Address book update" name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-	<%
-	StringWriter sw = new StringWriter();
+		<!--http://stackoverflow.com/questions/254712/disable-spell-checking-on-html-textfields-->
+	<textarea title="Address book update" name="addressBookUpdate" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+		<%
+		StringWriter sw = new StringWriter();
 		BufferedWriter bwriter = new BufferedWriter(sw);
-	addressBook.writeObjectToStream(bwriter,alphaSort);
-	bwriter.flush();
-	out.print(sw.toString());
-	%>
-</textarea>
+		addressBook.writeObjectToStream (bwriter, alphaSort, aliasCountSort);
+		bwriter.flush();
+		out.print(sw.toString());
+		%>
+	</textarea>
 <br/>
 
 <button class="btn btn-cta" type="submit">Save <i class="icon-arrowbutton"></i> </button>

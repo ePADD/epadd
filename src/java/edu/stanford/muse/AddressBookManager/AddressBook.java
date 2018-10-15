@@ -1426,27 +1426,18 @@ mergeResult.newContacts.put(C2,savedC2)
     delimiter (##################)
     Series of contact objects separated by delimiter(########################)
      */
-    public void
-    writeObjectToStream(BufferedWriter out, boolean alphaSort) throws IOException {
+    public void writeObjectToStream(BufferedWriter out, boolean alphaSort, boolean aliasCountSort) throws IOException {
 
         // always toString first contact as self
         Contact self = this.getContactForSelf();
         if (self != null)
             self.writeObjectToStream(out,"Archive owner");
 
-        if (!alphaSort)
-        {
-            List<Contact> contacts = this.contactListForIds;
-            for (Contact c: contacts)
-                if (c != self) {
-                    c.writeObjectToStream(out, "");
-                    //out.write(PERSON_DELIMITER);
-            }
-        }
-        else
+        List<Contact> allContacts = this.contactListForIds;
+
+        if (alphaSort)
         {
             // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
-            List<Contact> allContacts = this.contactListForIds;
             Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<>();
             for (Contact c: allContacts)
             {
@@ -1469,6 +1460,36 @@ mergeResult.newContacts.put(C2,savedC2)
                     c.writeObjectToStream(out, "");
                     //out.print(dumpForContact(c, c.pickBestName()));
 
+                }
+            }
+        } else if (aliasCountSort) {
+            // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
+            Map<Contact, Integer> contactToAliasCount = new LinkedHashMap<>();
+            for (Contact c: allContacts) {
+                int namesCount = Util.nullOrEmpty(c.getNames()) ? 0 : c.getNames().size();
+                int emailsCount = Util.nullOrEmpty(c.getEmails()) ? 0 : c.getEmails().size();
+                contactToAliasCount.put(c, namesCount + emailsCount);
+            }
+
+            List<Pair<Contact, Integer>> pairs = Util.mapToListOfPairs(contactToAliasCount);
+            Util.sortPairsBySecondElement(pairs);
+
+            for (Pair<Contact, Integer> p: pairs)
+            {
+                Contact c = p.getFirst();
+                if (c != self) {
+                    //c.writeObjectToStream(out, c.pickBestName());
+                    c.writeObjectToStream(out, "");
+                    //out.print(dumpForContact(c, c.pickBestName()));
+
+                }
+            }
+        } else {
+            // contactListForIds is sorted by email volume (?)
+            for (Contact c: allContacts) {
+                if (c != self) {
+                    c.writeObjectToStream(out, "");
+                    //out.write(PERSON_DELIMITER);
                 }
             }
         }

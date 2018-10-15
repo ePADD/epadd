@@ -469,9 +469,8 @@ public class ArchiveReaderWriter{
         log.info("Saving addressBook to file " + addressBookPath);
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(addressBookPath));
-            archive.addressBook.writeObjectToStream(bw,false);
+            archive.addressBook.writeObjectToStream (bw, false, false);
             bw.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
