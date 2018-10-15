@@ -216,7 +216,9 @@
 	int nContacts = ab.allContacts().size();
 %>
 
-<% writeProfileBlock(out, archive, "Date Range: ", IndexUtils.getDateRangeAsString(allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing.");%>
+<% /* writeProfileBlock(out, archive, "Date Range: ", IndexUtils.getDateRangeAsString(allDocs), "Messages: ", inCount + " incoming, " + outCount + " outgoing."); */
+    writeProfileBlock(out, true /* offerEditProfilePhotoOption */, archive);
+%>
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box text-center margin30">
@@ -311,6 +313,82 @@
 	<% } %>
 
 </div> <!--  allCards -->
+
+<div>
+    <div id="profilePhoto-upload-modal" class="modal fade" style="z-index:9999">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Upload a profile photo (1:1 aspect ratio)</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadProfilePhotoForm" method="POST" enctype="multipart/form-data" >
+                        <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
+                        <div class="form-group **text-left**">
+                            <label for="profilePhoto" class="col-sm-2 control-label **text-left**">File</label>
+                            <div class="col-sm-10">
+                                <input type="file" id="profilePhoto" name="profilePhoto" value=""/>
+                            </div>
+                        </div>
+                        <%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadProfilePhotoHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+
+
+                    <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+                    <%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<script>
+    var uploadProfilePhotoHandler=function() {
+        //collect archiveID,and addressbookfile field. If  empty return false;
+        var filePath = $('#profilePhoto').val();
+        if (!filePath) {
+            alert('Please provide the path of the profile photo');
+            return false;
+        }
+
+        var form = $('#uploadProfilePhotoForm')[0];
+
+        // Create an FormData object
+        var data = new FormData(form);
+        //hide the modal.
+        $('#profilePhoto-upload-modal').modal('hide');
+        //now send to the backend.. on it's success reload the same page. On failure display the error message.
+
+        $.ajax({
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            url: "ajax/upload-images.jsp",
+            contentType: false,
+            cache: false,
+            data: data,
+            success: function (data) {
+                epadd.success('Profile photo uploaded and applied.', function () {
+                    window.location.reload();
+                });
+            },
+            error: function (jq, textStatus, errorThrown) {
+                var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                epadd.log(message);
+                epadd.alert(message);
+            }
+        });
+    }
+
+    $('div.profile-plus').click (function() {
+        $('#profilePhoto-upload-modal').modal();
+    });
+
+</script>
 <jsp:include page="footer.jsp"/>
 <script>
 	$('.cta-box').click(function(e) { var href = $('a', $(e.target)).attr('href'); if (href) { window.location = href;}}); // clicking anywhere in the cta-box should dispatch to the href of the only link inside it

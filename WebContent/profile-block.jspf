@@ -5,7 +5,12 @@
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%!
   // this profile block will go onto pretty much every page after the archive is loaded
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields)
+
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields) {
+      writeProfileBlock (out1, false, archive);
+  }
+
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive)
   {
     try
     {
@@ -14,26 +19,23 @@
       String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
-      out1.println("<div class=\"header-block\">"
+      String output = "<div class=\"header-block\">"
             //  + "<div class=\"breadcrumbs\">Appraisal &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;Browse</div><br/>"
               + "<div class=\"profile-block\">"
-              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">"
-              +   "<div class=\"profile-plus\">+</div>"
-              + "</div>"
+              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
+
+      // don't allow the option to edit profile photo in discovery or delivery mode
+      if (offerEditProfilePhotoOption && !ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode())
+        output += "<div title=\"upload a picture\" class=\"profile-plus\">+</div>";
+
+      output += "</div>"
               + "<div class=\"profile-text\">"
               +   Util.escapeHTML(title)
               + "</div>"
-              + "<div class=\"profile-more-info\"><img title=\"More information about this collection\" src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>");
+              + "<div class=\"profile-more-info\"><img title=\"More information about this collection\" src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>"
+              + "</div></div><br/>";
 
-      /*
-      for (int i = 0; i < fields.length; i+=2)
-      {
-        if (i + 1 >= fields.length)
-          break;
-        out1.println("<span class=\"field-name\">" + fields[i] + "</span>" + "<span class=\"field-value\">" + fields[i + 1] + "</span><br/>");
-      }
-      */
-      out1.println("</div></div><br/>");
+      out1.println (output);
     } catch (IOException ioe) { Util.print_exception(ioe, JSPHelper.log);}
   }
 %>
