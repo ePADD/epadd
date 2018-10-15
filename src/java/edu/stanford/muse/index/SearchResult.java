@@ -11,6 +11,7 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.AddressBookManager.MailingList;
+import edu.stanford.muse.ie.Entity;
 import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.ie.variants.MappedEntity;
 import edu.stanford.muse.util.EmailUtils;
@@ -604,7 +605,7 @@ public class SearchResult {
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
                     try {
-                        entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getAllNamesInDoc(ed, true)).map(n->n.text.toLowerCase()).collect(Collectors.toSet()));
+                        entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getAllNamesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
                     } catch (IOException ioe) {
                         Util.print_exception("Error in reading entities", ioe, log);
                         return false;

@@ -798,7 +798,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <textarea style="width:100%; height:120px;" class="message-link-textarea">No link</textarea>
                 </div>
                 <div class="modal-footer">
-                    <button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id='cancel-button-cl' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button id='copy-message-link-button' type="button" class="btn btn-default" data-dismiss="modal">Copy</button>
                 </div>
             </div><!-- /.modal-content -->
