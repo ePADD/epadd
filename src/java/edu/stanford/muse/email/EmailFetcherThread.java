@@ -15,8 +15,6 @@
  */
 package edu.stanford.muse.email;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.sun.mail.imap.IMAPFolder;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.LabelManager.LabelManager;
@@ -41,7 +39,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
-import java.security.GeneralSecurityException;
 import java.util.*;
 
 class EmailFetcherStats implements Cloneable, Serializable {
@@ -277,7 +274,6 @@ public class EmailFetcherThread implements Runnable, Serializable {
         // a better fix would be to improve the parsing in the provider
         // note: the above logic was a cute hack but is being disabled for ePADD as we don't want any guessed dates.
 
-        boolean hackyDate = false;
         boolean noDate = false;
         boolean probablyWrongDate = false;
         Date d = m.getSentDate();
@@ -295,15 +291,14 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         if (d == null) {
             d = INVALID_DATE;
-            hackyDate = true;
             noDate = true;
+            dataErrors.add("No date for message id:" + id + ": " + EmailUtils.formatMessageHeader(m) );
     } else {
             Calendar c = new GregorianCalendar();
             c.setTime(d);
             int yy = c.get(Calendar.YEAR);
             if (yy < 1960 || yy > 2020) {
                 dataErrors.add("Probably bad date: " + Util.formatDate(c) + " message: " + EmailUtils.formatMessageHeader(m));
-                hackyDate = true;
                 probablyWrongDate = true;
 
 
@@ -384,11 +379,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
             Set<String> lab = new LinkedHashSet<>();
             lab.add(LabelManager.LABELID_NODATE);
             getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
+            ed.hackyDate=true;
         }
         if(probablyWrongDate){
             Set<String> lab = new LinkedHashSet<>();
             lab.add(LabelManager.LABELID_POSS_BADDATE);
             getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
+            ed.hackyDate=true;
         }
 
         // check if the message has attachments.
@@ -455,6 +452,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
         List<String> list = new ArrayList<>(); // return list
         if (p == null) {
             dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
+            Set<String> label = new LinkedHashSet<>();
+            label.add(LabelManager.LABELID_PARSING_ERRS);
+            archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             return list;
         }
 
@@ -503,6 +503,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
             }
             if (dirty) {
                 dataErrors.add("Dirty message part, has conflicting message part headers."  + folder_name() + " Message# " + messageNum);
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_PARSING_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
                 return list;
             }
 
@@ -518,6 +521,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     content = (String) p.getContent();
             } catch (UnsupportedEncodingException uee) {
                 dataErrors.add("Unsupported encoding: " + folder_name() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_PARSING_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
                 // a particularly nasty issue:javamail can't handle utf-7 encoding which is common with hotmail and exchange servers.
                 // we're using the workaround suggested on this page: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4304013
                 // though it may be better to consider official support for utf-7 or other encodings.
@@ -584,8 +590,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 }
             } else if (o instanceof Part)
                 list.addAll(processMessagePart(ed,messageNum, m, (Part) o, attachmentsList));
-            else
+            else {
                 dataErrors.add("Unhandled part content, " + folder_name() + " Message #" + messageNum + "Java type: " + o.getClass() + " Content-Type: " + p.getContentType());
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_PARSING_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+            }
         } else {
             try {
                 // do attachments only if downloadAttachments is set.
@@ -595,6 +605,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     handleAttachments(ed,messageNum, m, p, list, attachmentsList);
             } catch (Exception e) {
                 dataErrors.add("Ignoring attachment for " + folder_name() + " Message #" + messageNum + ": " + Util.stackTrace(e));
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_ATTCH_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             }
         }
 
@@ -625,6 +638,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
             // javax.mail.internet.ParseException: Expected ';', got "Message"
 
             dataErrors.add("Unable to read attachment name: " + folder_name() + " Message# " + idx);
+            Set<String> label = new LinkedHashSet<>();
+            label.add(LabelManager.LABELID_ATTCH_ERRS);
+            archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             return;
         }
 
@@ -634,7 +650,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             dataErrors.add("attachment filename is null for " + sanitizedFName + " Message#" + idx + " assigning it the name: " + tempFname);
             //assign a special label to this message to denote that there was some problem in parsing.
             Set<String> lab = new LinkedHashSet<>();
-            lab.add(LabelManager.LABELID_ATTCH_NO_NAME);
+            lab.add(LabelManager.LABELID_ATTCH_ERRS);
             getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
             if (p.isMimeType("text/html")) {
                 try {
@@ -1169,11 +1185,20 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     String contentStr = sb.toString();
                     if (!messageLooksOk(contentStr)) {
                         dataErrors.add("Skipping message as it seems to have very long words: " + ed);
-                        continue;
+                        Set<String> label = new LinkedHashSet<>();
+                        label.add(LabelManager.LABELID_PARSING_ERRS);
+                        archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                        // but we continue, don't skip the message entirely. See issue #214
+                        //but just truncate the message..
+                        contentStr="<MESSAGE TOO LONG: POSSIBLE PARSING ISSUE- Truncated>" + contentStr.substring(0,100);
+
                     }
 
                     if (contentStr.length() > Config.MAX_TEXT_SIZE_TO_ANNOTATE) {
                         dataErrors.add("Skipping message as it seems to be very long: " + contentStr.length() + " chars, while the max size message that will be annotated for display is " + Config.MAX_TEXT_SIZE_TO_ANNOTATE + " chars. Message = " + ed);
+                        Set<String> label = new LinkedHashSet<>();
+                        label.add(LabelManager.LABELID_PARSING_ERRS);
+                        archive.getLabelManager().setLabels(ed.getUniqueId(),label);
                         // but we continue, don't skip the message entirely. See issue #111
                     }
 

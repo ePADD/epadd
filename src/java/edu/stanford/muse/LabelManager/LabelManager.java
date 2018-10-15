@@ -30,8 +30,9 @@ public class LabelManager implements Serializable{
     public final static String LABELID_CFR="2";
     public final static String LABELID_NODATE="3";
     public final static String LABELID_POSS_BADDATE="4";
-    public final static String LABELID_ATTCH_NO_NAME="5";
+    public final static String LABELID_ATTCH_ERRS ="5";
     public final static String LABELID_PARSING_ERRS="6";
+    public final static String LABELID_MISSING_CORRESPONDENT="7";
 
     private static String JSONFILENAME="label-info.json";
     private static String CSVFILENAME="docidmap.csv";
@@ -104,14 +105,16 @@ public class LabelManager implements Serializable{
                 "Date on this message is possibly corrupted",true);
         labelInfoMap.put(possiblybaddate.getLabelID(),possiblybaddate);
         //label for messages with attachments without filename
-        Label attachmentNoName = new Label("Attachments without file name",LabType.GENERAL,LABELID_ATTCH_NO_NAME,
-                "This message has attachment(s) without file name",true);
+        Label attachmentNoName = new Label("Errors in attachments",LabType.GENERAL, LABELID_ATTCH_ERRS,
+                "Either this message has attachment(s) without file name or the parser is not able to fetch it.",true);
         labelInfoMap.put(attachmentNoName.getLabelID(),attachmentNoName);
         //label for othe errors -parsing the messages.
         Label otherparsingErrors = new Label("Other errors while parsing",LabType.GENERAL,LABELID_PARSING_ERRS,
                 "This message had errors while parsing the body",true);
         labelInfoMap.put(otherparsingErrors.getLabelID(),otherparsingErrors);
-
+        Label missingCorrespondentErrors = new Label("Errors in correspondents",LabType.GENERAL,LABELID_MISSING_CORRESPONDENT,
+                "This message has missing correspondents",true);
+        labelInfoMap.put(missingCorrespondentErrors.getLabelID(),missingCorrespondentErrors);
     }
 
     //set label for an email document

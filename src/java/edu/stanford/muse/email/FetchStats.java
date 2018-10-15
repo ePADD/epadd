@@ -24,6 +24,10 @@ public class FetchStats implements Serializable {
     public Collection<String> dataErrors;
     public long spaceSavingFromDupMessageDetection;
     public long spaceSavingFromDupAttachmentDetection;
+    public String archiveOwnerInput;
+    public String primaryEmailInput;
+    public String archiveTitleInput;
+    public Set<String> emailSourcesInput;
 
     public String toString() {
         // do not use html special chars here!
@@ -59,6 +63,14 @@ public class FetchStats implements Serializable {
         c.setTime(new Date(lastUpdate));
         String s = "Import Date: " + Util.formatDateLong(c) + " " + c.getTimeZone().getDisplayName() + "<br/>\n";
         s += "Fetch and index time: " + Util.pluralize((int) fetchAndIndexTimeMillis / 1000, "second") + "<br/>\n";
+        //Add information as specified in issue #254
+        s += "Archive Owner: "+ archiveOwnerInput +"<br/>\n";
+        s += "Primary Email Address: "+primaryEmailInput+"<br/>\n";
+        s += "Archive Title: "+archiveTitleInput +"<br/>\n";
+         if(!Util.nullOrEmpty(emailSourcesInput))
+            s += "Email Sources: "+String.join(",",emailSourcesInput)+"<br/>\n";
+
+
         if (selectedFolders == null)
             s += "Selected folders: unavailable";
         else {

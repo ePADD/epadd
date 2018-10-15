@@ -705,8 +705,10 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
-                //now intialize the cache.
+                //now intialize the cache.1- correspondent, labels and entities
                 Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(a));
+                Archive.cacheManager.cacheLexiconListing(getArchiveIDForArchive(a));
+                Archive.cacheManager.cacheEntitiesListing(getArchiveIDForArchive(a));
                 return a;
 
             }

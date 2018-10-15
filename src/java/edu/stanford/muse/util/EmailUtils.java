@@ -663,7 +663,7 @@ public class EmailUtils {
 
 			// ignore invalid date if asked
 			if (ignoreInvalidDates)
-				if(DateTimeComparator.getDateOnlyInstance().compare(d,INVALID_DATE)==0)
+				if(DateTimeComparator.getDateOnlyInstance().compare(d,INVALID_DATE)==0 || ed.hackyDate)
 					continue;//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
 
 			if (first == null || d.before(first))
@@ -763,8 +763,12 @@ public class EmailUtils {
 	public static List<Date> datesForDocs(Collection<? extends DatedDocument> c)
 	{
 		List<Date> result = new ArrayList<>();
-		for (DatedDocument d : c)
-			result.add(d.date);
+		for (DatedDocument d : c) {
+		//Do not add hacky dates..
+			if(!d.hackyDate)
+				result.add(d.date);
+
+		}
 		return result;
 	}
 

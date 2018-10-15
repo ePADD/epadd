@@ -153,7 +153,7 @@ public class CalendarUtil {
 			int count = 0;
 			List<Date> newDates = new ArrayList<>();
 			for (Date d : dates)
-				if(DateTimeComparator.getDateOnlyInstance().compare(d,EmailFetcherThread.INVALID_DATE)!=0)
+				if(DateTimeComparator.getDateOnlyInstance().compare(d,EmailFetcherThread.INVALID_DATE)!=0) //hacky dates have already been taken care of when passing list of dates to this method.
 					newDates.add(d);//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
 				else
 					count++;

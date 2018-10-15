@@ -30,6 +30,8 @@ public class ResultCache {
     public void cacheCorrespondentListing(String archiveID){
         //get archive
         Archive archive =ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        //remove already stored if any..
+        correspondentCount.remove(archiveID);
         correspondentCount.put(archiveID, AddressBook.getCountsAsJson((Collection)archive.getAllDocs(),false,archiveID));
     }
     /*
@@ -66,6 +68,8 @@ public class ResultCache {
             tmp = new LinkedHashMap<>();
 
         }
+        //remove  already stored info from tmp if any.
+        tmp.remove(lexicon);
         tmp.put(lexicon, Lexicon.getCountsAsJSON(lexicon,archive,false));
         lexiconCount.put(archiveID,tmp);
     }
@@ -90,4 +94,10 @@ public class ResultCache {
         return tmp.get(lexicon);
     }
 
+    public void cacheEntitiesListing(String archiveID) {
+        //for now just do computation of entityTypeToDocMap used in Advanced search. Later we will use this to get information about entity listing as well.
+        Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        archive.computeEntityTypeToDocMap();
+
+    }
 }
