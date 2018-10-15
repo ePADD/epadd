@@ -51,24 +51,6 @@
                 if (item.getSize() <= 0)
                     continue; // if an input field is left empty, its size is 0
 
-                String contentType = item.getContentType();
-                String suffix = null;
-                /*
-                if ("image/jpeg".equals(contentType)) {
-                    suffix = "jpg";
-                }
-                if ("image/gif".equals(contentType)) {
-                    suffix = "gif";
-                }
-                */
-
-                if ("image/png".equalsIgnoreCase(contentType))
-                    suffix = "png";
-                else {
-                    error = "Sorry, only PNG files are accepted. Content-type " + contentType + " for " + item.getFieldName();
-                    break;
-                }
-
                 String dname=null;
                 Archive archive=null;
                 if(!"null".equals(collectionID))
@@ -80,7 +62,10 @@
                 String dir = null;
                 String basedir=null;
                 Bag bag=null;
-                if (type != null && suffix != null) {
+
+                // sgh: disabling check, will allow any file type
+                // if (type != null && suffix != null)
+                {
                     //String dir = archive.baseDir + File.separator + Archive.IMAGES_SUBDIR;
 
                     if (ModeConfig.isProcessingMode()) {
@@ -104,7 +89,10 @@
                         dir = Config.REPO_DIR_APPRAISAL + File.separator + dname + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.IMAGES_SUBDIR;
                     }
                     new File(dir).mkdirs();
-                    String filename = dir + File.separator + type + "." + suffix;
+
+                    // we copy the file without the .jpg/.png/.gif suffix, but simply as profilePhoto, bannerImage or landingPhoto without an ext.
+                    // the browser will figure out the correct file type while rendering.
+                    String filename = dir + File.separator + type; // no suffix needed now + "." + suffix;
                     Util.copy_stream_to_file(item.getInputStream(), filename);
                     filesUploaded++;
                 }
