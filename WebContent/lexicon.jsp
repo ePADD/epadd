@@ -69,7 +69,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%writeProfileBlock(out, archive, "", "Lexicon Hits");%>
+<%writeProfileBlock(out, archive, "Lexicon Hits");%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">

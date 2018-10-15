@@ -62,7 +62,7 @@
 	return;
 } %>
 
-<%writeProfileBlock(out, archive, "", "Lexicon: " + lexiconName);%>
+<%writeProfileBlock(out, archive, "Lexicon: " + lexiconName);%>
 <br/>
 
 <!--sidebar content-->

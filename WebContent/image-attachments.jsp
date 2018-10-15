@@ -103,7 +103,7 @@
     }
 %>
 
-<%writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Image attachments") +
+<%writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "Image attachments") +
 " (" + uniqueAttachments.size() + " unique)");%>
 <%--<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>--%>
 

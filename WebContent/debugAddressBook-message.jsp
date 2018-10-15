@@ -33,7 +33,7 @@
 <body>
 <jsp:include page="header.jspf"/>
 
-<%writeProfileBlock(out, archive, "Debugging address book", "");%>
+<%writeProfileBlock(out, archive, "Debugging address book");%>
 
 <div style="margin-left:170px">
 

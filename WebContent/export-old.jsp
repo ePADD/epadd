@@ -24,7 +24,7 @@
     <script>epadd.nav_mark_active('Export');</script>
 
     <%
-        writeProfileBlock(out, archive, "", "Select folder for export");
+        writeProfileBlock(out, archive, "Select folder for export");
     %>
 
     <p>

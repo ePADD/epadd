@@ -31,7 +31,7 @@
 <% 	AddressBook addressBook = archive.addressBook;
 String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive, "Export archive");
 %>
 <div style="margin-left:170px">
 

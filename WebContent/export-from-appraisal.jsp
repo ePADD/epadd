@@ -31,7 +31,7 @@
     String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive, "Export archive");
 %>
 <p>
 <br/>

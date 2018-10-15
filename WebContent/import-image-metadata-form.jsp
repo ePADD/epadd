@@ -71,7 +71,7 @@
 //    if (archive != null) {
 String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         AddressBook ab = archive.addressBook;
-        writeProfileBlock(out, archive, "", "Export archive");
+        writeProfileBlock(out, archive, "Export archive");
 //    }
 
     if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {

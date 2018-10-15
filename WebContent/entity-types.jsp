@@ -62,7 +62,7 @@
     </div>
 </nav>
 
-<%writeProfileBlock(out, archive, "Entity types", "");%>
+<%writeProfileBlock(out, archive, "Entity types");%>
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();

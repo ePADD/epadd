@@ -598,7 +598,7 @@ public class SearchResult {
                     for(String name: me.getAltNames())
                         entityToSearch.add(EntityBook.canonicalize(name));
         }else
-            entityToSearch.addAll(entities);
+            entityToSearch.addAll(entities.stream().map(entity->EntityBook.canonicalize(entity)).collect(Collectors.toSet()));
 
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
                     EmailDocument ed = (EmailDocument)k.getKey();

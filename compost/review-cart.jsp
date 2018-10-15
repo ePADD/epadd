@@ -51,7 +51,7 @@ for (EmailDocument ed: docs)
 }
 
 docs = newDocs;
-writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + " in cart");
+writeProfileBlock(out, archive, Util.pluralize(docs.size(), "message") + " in cart");
 %>
 
 <br/>

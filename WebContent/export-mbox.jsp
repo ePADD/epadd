@@ -29,7 +29,7 @@
 <% 	AddressBook addressBook = archive.addressBook;
 String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive,  "Export archive");
 %>
 <div style="margin-left:170px">
 <div id="spinner-div" style="display:none;text-align:center"><i class="fa fa-spin fa-spinner"></i></div>

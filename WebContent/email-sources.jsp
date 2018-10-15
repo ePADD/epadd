@@ -95,7 +95,7 @@ if (archive != null) {
 	Set<String> addrs = ab.getOwnAddrs();
 	if (addrs.size() > 0)
 		bestEmail = addrs.iterator().next();
-	writeProfileBlock(out, archive, "", "Import email into this archive");
+	writeProfileBlock(out, archive, "Import email into this archive");
 }
 %>
 <%--

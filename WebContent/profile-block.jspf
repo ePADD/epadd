@@ -3,19 +3,28 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%!
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %><%!
   // this profile block will go onto pretty much every page after the archive is loaded
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields)
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String category)//String... fields)
   {
     try
     {
       AddressBook ab = archive.addressBook;
       String bestName = ab.getBestNameForSelf();
       String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-
+      String mode="";
+      if(ModeConfig.isAppraisalMode())
+          mode="Appraisal";
+      else if(ModeConfig.isProcessingMode())
+          mode="Processing";
+      else if(ModeConfig.isDeliveryMode())
+          mode="Delivery";
+      else if(ModeConfig.isDiscoveryMode())
+          mode="Discovery";
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
       out1.println("<div class=\"header-block\">"
-            //  + "<div class=\"breadcrumbs\">Appraisal &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;Browse</div><br/>"
+              + "<div class=\"breadcrumbs\">"+mode+" &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;"+category+"</div><br/>"
               + "<div class=\"profile-block\">"
               + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">"
               +   "<div class=\"profile-plus\">+</div>"
@@ -36,4 +45,5 @@
       out1.println("</div></div><br/>");
     } catch (IOException ioe) { Util.print_exception(ioe, JSPHelper.log);}
   }
+
 %>

@@ -81,7 +81,7 @@
 
 %>
 <%
-    writeProfileBlock(out, archive, "", "Import image metadata");
+    writeProfileBlock(out, archive,  "Import image metadata");
     %> <br/><br/><%
     BlobStore blobStore = archive.blobStore;
     Map<String, Blob> fullNameToBlob = new LinkedHashMap<>();

@@ -38,7 +38,7 @@
 <body>
 <jsp:include page="header.jspf"/>
 
-<%writeProfileBlock(out, archive, "Merge Report", "");%>
+<%writeProfileBlock(out, archive, "Merge Report");%>
 
 
 <br/>

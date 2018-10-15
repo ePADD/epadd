@@ -53,7 +53,7 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
     <%
-	writeProfileBlock(out, archive, et + " entities", "");
+	writeProfileBlock(out, archive, et + " entities");
 			%>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">

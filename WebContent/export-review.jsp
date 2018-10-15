@@ -76,7 +76,7 @@ for (EmailDocument ed: docs)
 
 docs = newDocs;
 //session.setAttribute("action-docs", docs);
-writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
+writeProfileBlock(out, archive, Util.pluralize(docs.size(), "message") + description);%>
 
 
 <br/>

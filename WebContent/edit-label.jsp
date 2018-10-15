@@ -68,7 +68,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<% writeProfileBlock(out, archive, "", (Util.nullOrEmpty(labelID) ? "New label" : "Edit Label: " + labelName)); %>
+<% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "New label" : "Edit Label: " + labelName)); %>
 <br/>
 <br/>
 <br/>

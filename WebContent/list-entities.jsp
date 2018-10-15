@@ -44,7 +44,7 @@ Browse page for entities based on fine types
 <body>
     <jsp:include page="header.jspf"/>
     <script>epadd.nav_mark_active('Browse');</script>
-    <%writeProfileBlock(out, archive, "List entities", "");%>
+    <%writeProfileBlock(out, archive, "List entities");%>
 
 
     <div class="nav-toggle1 sidebar-icon">

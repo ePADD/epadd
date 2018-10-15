@@ -28,7 +28,7 @@
     <jsp:include page="../WebContent/div_filepicker.jspf"/>
 
     <%
-        writeProfileBlock(out, archive, "", "Select archive folder to import actions from");
+        writeProfileBlock(out, archive, "Select archive folder to import actions from");
     %>
 
     <p>
