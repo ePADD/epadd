@@ -213,6 +213,7 @@
             if (!lexiconlang) {
                 alert('Please provide the language of the lexicon');
                 return false;
+            }
                 var lexiconfilename = $('#lexiconfile').val();
                 if (!lexiconfilename) {
                     alert('Please provide the path of the lexicon file');
@@ -252,7 +253,7 @@
                     }
                 });
             }
-        }
+
 
 
 	</script>
