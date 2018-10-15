@@ -261,6 +261,8 @@ public class AddressBook implements Serializable {
             log.warn("Confused: email is null or empty:\n" + Util.stackTrace());
             return null;
         }
+        email = email.trim().toLowerCase();
+        Contact cEmail = lookupByEmail(email);
 
         if (name != null && name.length() == 0)
             name = null; // map empty name to null -- we don't want to have contacts for empty names
@@ -268,28 +270,15 @@ public class AddressBook implements Serializable {
         if (name != null && name.equals(email)) // if the name is exactly the same as the email, it has no content.
             name = null;
 
-        email = email.trim().toLowerCase();
-
         // get existing contacts for email/name
-
-
-           //two cases appear; 1. Found a contact by name but not by email   --- INV: There should be only one contact with that name..Add email to that contact
-
-           //2. Found a contact by email but not by name -- add name to the contact that was found by name
-        
-           //3. No contact found either by email or by name               
+       //two cases appear; 1. Found a contact by name but not by email   --- INV: There should be only one contact with that name..Add email to that contact
+       //2. Found a contact by email but not by name -- add name to the contact that was found by name
+       //3. No contact found either by email or by name
 
            //Case 3- create a new contact
 
-        Contact cEmail = lookupByEmail(email);
-        Collection<Contact> cNames;
-
-
-
-
-
         if (name != null) {
-            cNames = lookupByName(name);
+            Collection<Contact> cNames = lookupByName(name);
             if(cNames!=null) {
                 if(cNames.size()>1){
                     StringBuilder s = new StringBuilder("INFO:::When building the addressbook, name " + name + " mapped to the following contacts\n");
@@ -481,6 +470,10 @@ public class AddressBook implements Serializable {
         // get email and name and normalize. email cannot be null, but name can be.
         String email = a.getAddress();
         email = EmailUtils.cleanEmailAddress(email);
+        if (Util.nullOrEmpty(email)) {
+            return null; // we see this happening in the scamletters dataset -- email addr itself is empty!
+        }
+
         String name = a.getPersonal();
         name = Util.unescapeHTML(name);
         name = EmailUtils.cleanPersonName(name);
@@ -499,12 +492,6 @@ public class AddressBook implements Serializable {
                 name = ""; // usually something like info@paypal.com or info@evite.com or invitations-noreply@linkedin.com -- we need to ignore the name part of such an email address, so it doesn't get merged with anything else.
                 break;
             }
-        }
-
-        List nameTokens = Util.tokenize(name);
-
-        if (Util.nullOrEmpty(email)) {
-            return null; // we see this happening in the scamletters dataset -- email addr itself is empty!
         }
 
         Contact c = unifyContact(email, name);
@@ -532,6 +519,7 @@ public class AddressBook implements Serializable {
         }
         if (namesFromEmailAddress != null)
             for (String possibleName : namesFromEmailAddress) {
+                List nameTokens = Util.tokenize(possibleName);
                 if (nameTokens.size() >= 2)
                     unifyContact(email, possibleName);
             }
