@@ -21,11 +21,14 @@
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
-    <style> body { background-color: white; } </style>
+    <style>
+        body { background-color: white; }
+        hr { margin-top: 10px; margin-bottom: 10px; } /* to override bootstrap */
+    </style>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Collections');</script>
+
 
 <!-- need status window on this page because archive might take some time to load -->
 <script type="text/javascript" src="js/statusUpdate.js"></script>
@@ -66,60 +69,48 @@
 
     String fileParam = f.getName() + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
     String url = "serveImage.jsp?file=" + fileParam;
-    String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
 %>
 
 <div class="collection-detail">
-    <div class="heading">
-        <% if (!Util.nullOrEmpty(cm.collectionTitle)) { %>
-            <%=cm.collectionTitle%>
-        <% } else { %>
-             <%=ownerName%>, Email Series
-        <% } %>
-    </div>
+    <div class="breadcrumbs"> <%=ModeConfig.getModeForDisplay()%> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; About this collection </div>
+
     <p>
     <div class="banner-img" style="background-image:url('<%=url%>')"> <!-- escape needed? -->
     </div>
 
     <br/>
     <div class="details">
-        <div class="heading">Summary</div>
-        <p></p>
-        <p>
+        <div class="heading">Summary <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a></div>
+        <hr/>
             Institution<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span></b>
-        </p>
-        <p>
+            <hr/>
             Repository<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span></b>
-        </p>
-        <p>
+            <hr/>
             Collection ID<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span></b>
-        </p>
-    	<p>
+            <hr/>
             <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
                 <b><span><%= Util.pluralize (cm.accessionMetadatas.size(), "accession")%></span></b>
-            <% } %>
-        </p>
-        <p>
+                <hr/>
+        <% } %>
             <% if (cm.firstDate != null && cm.lastDate != null) { %>
                 Date Range<br/>
                 <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
                 <% if (cm.nHackyDates > 0) { %>
                    <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> undated</b>
-                    </p>
+            <hr/>
+
                 <% } %>
             <% } %>
-        <p>
-        <p>
             Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
             <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
-                <b>Incoming: <span class="detail"><%=Util.commatize(cm.nIncomingMessages)%></span><br/>
-                Outgoing: <span class="detail"><%=Util.commatize(cm.nOutgoingMessages)%></span></b>
+                Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
+            Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
             <% } %>
-        </p><p>
+        <hr/>
             Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                     <br/>
@@ -127,6 +118,8 @@
                     Documents: <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
                     Others: <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
+        <hr/>
+
         </p>
 
         <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
@@ -143,9 +136,6 @@
             Renamed files: <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
             Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
             <%}%>
-            <button class="btn-default" id="edit-collection-metadata"><i class="fa fa-pencil"></i> Edit Metadata</button>
-            <br/>
-            <br/>
             <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
             <br/>
             <br/>
@@ -160,8 +150,12 @@
         <div class="banner-img-text-block">
 
             <div class="banner-img-text-large">
-                About this collection
-            </div>
+                <div style="display:inline-block;overflow:hidden;width:745px"/>
+                <%=cm.collectionTitle%>
+                </div>
+                <button id="enter" class="btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
+                <hr/>
+        </div>
 
             <br/>
             <%=Util.nullOrEmpty(cm.about) ? "Unassigned" : Util.escapeHTML(cm.about)%>
@@ -190,7 +184,9 @@
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <hr/>
                     <div>
-                        <b>Accession ID</b>: <%=formatMetadataField(am.id)%><br/>
+                        <div class="accession-heading">Accession ID: <%=formatMetadataField(am.id)%>
+                            <a style="margin-left: 30px" class="edit-accession-metadata"  data-accessionID="<%=am.id%>" href="#"><img style="height:25px" src="images/edit_summary.svg"/></a>
+                        </div>
                         <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
                         <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
 
@@ -198,7 +194,6 @@
                         <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
                         <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
                         <br/><br/>
-                        <button class="btn-default" id="edit-accession-metadata" data-accessionid="<%=am.id%>"><i class="fa fa-pencil"></i> Edit Metadata</button>
                     </div>
                 <% } %>
                 <hr/>
@@ -234,12 +229,12 @@
     <br/>
 
     <script>
-        $('#edit-collection-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
         $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
         $('#edit-photos').click (function() { window.location = 'set-images?collection=<%=id%>'; });
-        $('#edit-accession-metadata').click (function(e) {
-            var accessionID=$(e.target).attr('data-accessionID');
+        $('.edit-accession-metadata').click (function(e) {
+            var accessionID=$(e.target).closest('a').attr('data-accessionID'); // e.target is the edit-icon, so we look up to find the closest a
             window.location = 'edit-accession-metadata?collection=<%=id%>&accessionID='+accessionID;
+            return false;
         });
 
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence

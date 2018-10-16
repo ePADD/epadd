@@ -35,7 +35,7 @@
 %>
 <p>
 <br/>
-<div style="width:864px;margin:auto" class="panel">
+<div style="width:1100px;margin:auto" class="panel">
 
 <%
 

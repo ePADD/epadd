@@ -125,10 +125,6 @@
 
     <style>
         div.facets hr { width: 90%; }
-        .archive-heading div { font-style: italic; display:inline-block; overflow: hidden; margin: 2px 10px;}
-        .archive-heading .institution-name, .archive-heading .collection-name, .archive-heading .repository-name { width: 25%; text-align:center; }
-        .archive-heading .collection-id { width: 10%;}
-        .archive-heading { border: solid 1px #ccc; }
         .navbar { margin-bottom: 0; } /* overriding bootstrap */
         .dropdown-header { font-weight: 600;color: black; font-size: 15px;}
          a.opt { color: black;  padding-left: 1.25em; }
@@ -544,20 +540,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             allLabels = JSON.parse('<%=json%>');
         </script>
     <div style="display:inline-block;vertical-align:top;">
-        <% if (!ModeConfig.isAppraisalMode()) { %>
-            <div class="archive-heading" style="">
-                <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
-                <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
-                <div title="<%=repositoryName%>" class="repository-name"><%=repositoryName%></div>
-                <div title="<%=institutionName%>" class="institution-name"><%=institutionName%></div>
-            </div>
-        <% } %>
-
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
-                    <div class="form-group label-picker" style="display:inline-block">
 
+                    <div class="form-group label-picker" style="display:inline-block">
                         <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
 
@@ -579,19 +566,26 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 <%}%>
                             </optgroup>
                         </select>
-
                     </div>
+                    <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
 
-                    <!-- these may have to be disabled in discovery mode. TODO: check with Peter -->
-                    <div style="display:inline">
-                        <button class="btn btn-default" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">Label all</button>
+                        <select data-selected-text-format="static" name="labelIDs" id="sortBy" class="label-selectpicker form-control selectpicker" title="Sort by">
+                        <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
+                            <option value="" selected disabled>Sort by</option>
+                            <option value="" selected disabled>(Not yet implemented)</option>
+                            <option value="relevance">Most relevant</option>
+                            <option value="recent">Newest first</option>
+                            <option value="chronological">Oldest first</option>
+                        </select>
                     </div>
-
-
                 </div>
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
+
+                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <img title="Download messages as mbox" src="images/labels.svg" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">
+                        </div>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <img title="Download messages as mbox" src="images/download.svg" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">

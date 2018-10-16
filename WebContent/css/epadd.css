@@ -321,3 +321,17 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 
 footer { text-align: center; background-color: #616161;height:40px;width:100%; color: #ababab; }
 footer a { color: #ababab; text-decoration: underline;}
+
+.profile-block .collection-metadata {
+    padding-right: 20px;
+    display: table-cell;
+    vertical-align: middle;
+    padding-left:20px;
+    max-width:320px;
+    width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accession-heading { padding: 20px 8px; margin-bottom: 25px; background-color: #f5f5f8; font-weight: 600;}

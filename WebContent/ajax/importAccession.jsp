@@ -38,7 +38,7 @@ if(Util.nullOrEmpty(collectionID)){
     if(fl.exists())
         {
     	result.put ("status", 2);
-	    result.put("error", "A collection with name " + archiveName + "already exists in the processing directory");
+	    result.put("error", "A collection with name " + archiveName + " already exists in the processing directory");
     	out.println (result.toString(4));
 	    return;
         }

@@ -120,6 +120,7 @@
 
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Authorities');</script>
+<% writeProfileBlock(out, archive, "Assign Authorities");%>
 
 <script type="text/javascript" src="js/statusUpdate.js"></script>
 <%@include file="div_status.jspf"%>
