@@ -339,6 +339,16 @@
 		<url-pattern>/lexicon</url-pattern>
 	</servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>lexicon-top</servlet-name>
+		<jsp-file>/lexicon-top.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>lexicon-top</servlet-name>
+		<url-pattern>/lexicon-top</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>edit-lexicon</servlet-name>
 		<jsp-file>/edit-lexicon.jsp</jsp-file>

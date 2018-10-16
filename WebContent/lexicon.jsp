@@ -42,6 +42,7 @@
 
 	<%
 		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+		String lexiconname = request.getParameter("lexicon");
 
 	%>
 	<script type="text/javascript" charset="utf-8">
@@ -50,10 +51,11 @@
 		$(document).ready(function() {
 			function do_lexicon_search(e) {
 			  var cat = $(e.target).text();
+			  var lexname = '<%=lexiconname%>';
 			  if (window.is_regex)
-                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
+                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + lexname); // sensitive=true is what enables regex highlighting
 			  else
-                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + $('#lexiconName').val());
+                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + lexname);
             }
             //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
 			var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
@@ -69,7 +71,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%writeProfileBlock(out, false, archive, "Lexicon Hits", 900);%>
+<%writeProfileBlock(out, false, archive, "Lexicon Hits: "+lexiconname, 900);%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
@@ -97,7 +99,6 @@
 <%
 	Lexicon lex = null;
 	// first look for url param for lexicon name if specified
-	String lexiconname = request.getParameter("lexicon");
 	if (!Util.nullOrEmpty(lexiconname))
 		lex = archive.getLexicon(lexiconname);
 	else
@@ -137,7 +138,7 @@
 		if (!onlyOneLexicon) { %>
 			<script>function changeLexicon() {	window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	$('#lexiconName').val(); }</script>
 
-			<div style="text-align:center">
+			<%--<div style="text-align:center">
 
 					<div class="form-group" style="width:20%; margin-left:40%">
 						<label for="lexiconName">Choose Lexicon</label>
@@ -148,22 +149,17 @@
 						</select>
 					</div>
 
-			</div>
+			</div>--%>
 			<br/>
 	<% } %>
-			
-<div style="text-align:center">
-	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Graph View</button>
-	&nbsp;&nbsp;
-	<button id="edit-lexicon" class="btn-default"><i class="fa fa-edit"></i> View/Edit</button>
-	&nbsp;&nbsp;
-	<button id="create-lexicon" class="btn-default"><i class="fa fa-plus"></i> Create</button>
-	&nbsp;&nbsp;
-	<button id="import-lexicon" class="btn-default"><i class="fa fa-upload"></i> Upload</button>
-</div>
+
 <br/>
 
 <div style="margin:auto; width:900px">
+	<div class="button_bar_on_datatable">
+		<div title="Go to graph view" class="buttons_on_datatable" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><img style="height:25px" src="images/graph.svg"></div>
+		<div title="Edit lexicon" class="buttons_on_datatable" id="edit-lexicon"><img style="height:25px" src="images/edit_lexicon.svg"></div>
+	</div>
 	<table id="table">
 		<thead><th>Lexicon category</th><th>Messages</th></thead>
 		<tbody>			
@@ -184,130 +180,19 @@
             window.is_regex = <%=isRegex%>;
 			$('#lexiconName').change (changeLexicon);
 			$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';});
-			$('#create-lexicon').click (function() {
-				var lexiconName = prompt ('Enter the name of the new lexicon:');
-				if (!lexiconName)
-					return;
-				window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;
-			});
 
-            $('#import-lexicon').click(function(){
-                //open modal box to get the lexicon file and upload
-                $('#lexicon-upload-modal').modal('show');
-            });
+
 
 
         });
 
 
-        var uploadLexiconHandler=function() {
-            //collect archiveID,lexicon-name and lexiconfile field. If either of them is empty return false;
-            var lexiconname = $('#lexicon-name').val();
-            var existinlexiconnames = <%=jsonArray.toString(5)%>;
-            if (!lexiconname) {
-                alert('Please provide the name of the lexicon');
-                return false;
-            }
-            var lexiconlang = $('#lexicon-lang').val();
-            if (!lexiconlang) {
-                alert('Please provide the language of the lexicon');
-                return false;
-            }
-                var lexiconfilename = $('#lexiconfile').val();
-                if (!lexiconfilename) {
-                    alert('Please provide the path of the lexicon file');
-                    return false;
-                }
-                //if lexicon-name is already one of the lexicon then prompt a confirmation box
-                if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
-                    var c = epadd.confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
-                    if (!c)
-                        return;
-                }
-                var form = $('#uploadlexiconform')[0];
-
-                // Create an FormData object
-                var data = new FormData(form);
-                //hide the modal.
-                $('#lexicon-upload-modal').modal('hide');
-                //now send to the backend.. on it's success reload the labels page. On failure display the error message.
-
-                $.ajax({
-                    type: 'POST',
-                    enctype: 'multipart/form-data',
-                    processData: false,
-                    url: "ajax/upload-lexicon.jsp",
-                    contentType: false,
-                    cache: false,
-                    data: data,
-                    success: function (data) {
-                        epadd.success('Lexicon uploaded successfully!', function () {
-                            window.location.reload();
-                        });
-                    },
-                    error: function (jq, textStatus, errorThrown) {
-                        var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                        epadd.log(message);
-                        epadd.alert(message);
-                    }
-                });
-            }
 
 
 
 	</script>
 
 <% } // lex != null %>
-<div>
-	<div id="lexicon-upload-modal" class="modal fade" style="z-index:9999">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Upload a lexicon file</h4>
-				</div>
-				<div class="modal-body">
-					<form id="uploadlexiconform" method="POST" enctype="multipart/form-data" >
-						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
-						<div class="form-group **text-left**">
-							<label for="lexicon-name" class="col-sm-2 control-label **text-left**">Name</label>
-							<div class="col-sm-10">
-								<input id="lexicon-name" class="dir form-control" type="text"  value="" name="lexicon-name"/>
-							</div>
-						</div>
-						&nbsp;&nbsp;
-						<!--
-						<div class="form-group **text-left**">
-							<!-- <label for="lexicon-lang" class="col-sm-2 control-label **text-left**">Language</label>
-							<div class="col-sm-10">
-								<input type="hidden" id="lexicon-lang" class="dir form-control" value="english" name="lexicon-lang"/>
-							</div>
-						</div>
-						&nbsp;&nbsp;
-						-->
-					<input type="hidden" id="lexicon-lang" class="dir form-control" value="english" name="lexicon-lang"/>
-
-					<div class="form-group">
-							<label for="lexiconfile" class="col-sm-2 control-label **text-left**">File</label>
-							<div class="col-sm-10">
-								<input type="file" id="lexiconfile" name="lexiconfile" value=""/>
-							</div>
-						</div>
-						<%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
-
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadLexiconHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
-
-
-					<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
-					<%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
-				</div>
-			</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
-</div>
 
 
 <jsp:include page="footer.jsp"/>
