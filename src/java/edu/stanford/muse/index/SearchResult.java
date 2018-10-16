@@ -612,7 +612,7 @@ public class SearchResult {
         //get the option that says if we should select other variants of this entity or not.
         boolean checkVariant = "on".equals(JSPHelper.getParam(inputSet.queryParams,"expanded"));
         if(checkVariant){
-            entityToSearch.addAll(entities);
+            entityToSearch.addAll(entities.stream().map(entity->EntityBook.canonicalize(entity)).collect(Collectors.toSet()));
             for(String entity: entities)
                 for(MappedEntity me: inputSet.archive.getEntityBook().getEntitiesForName(entity))
                     for(String name: me.getAltNames())
@@ -624,12 +624,7 @@ public class SearchResult {
                     EmailDocument ed = (EmailDocument)k.getKey();
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
-                    try {
-                        entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getAllNamesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
-                    } catch (IOException ioe) {
-                        Util.print_exception("Error in reading entities", ioe, log);
-                        return false;
-                    }
+                    entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntitiesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
                     entitiesInThisDoc.retainAll(entityToSearch);
                     if (entitiesInThisDoc.size() > 0) {
                         //before returning true also add this information in the document body specific highlighting

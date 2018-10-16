@@ -54,6 +54,20 @@ div.progress_bar {
 /*        background-color: navy; /* hotpink; #40f040; */ 
 }
 
+div.button_bar_on_datatable{
+	position:absolute;
+	z-index: 10000; /*to make sure that the buttons don't hide behind the table*/
+}
+div.buttons_on_datatable{
+	display: inline-block;
+	border-right: 1px solid grey;
+	margin-top: -30px;
+	padding: 8px;
+	cursor:pointer;
+}
+
+.dataTables_length{ float:right;}
+
 div.facets {
     font-size: 13px;
 	padding-left:5px;
