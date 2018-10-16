@@ -24,6 +24,9 @@
     <style>
         body { background-color: white; }
         hr { margin-top: 10px; margin-bottom: 10px; } /* to override bootstrap */
+        div.accession { margin-bottom: 10px;}
+        div.accession-heading { border: solid 1px #ccc; padding: 20px 20px; background-color: #f5f5f8; font-weight: 600;}
+        div.accession-content { border-bottom: solid 1px #ccc; border-left: solid 1px #ccc; border-right: solid 1px #ccc;padding: 15px 20px;  }
     </style>
 </head>
 <body>
@@ -137,9 +140,6 @@
             Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
             <%}%>
             <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
-            <br/>
-            <br/>
-            <button class="btn-default" id="add-accession"><i class="fa fa-plus"></i> Add accession</button>
         </p>
         <br/>
 
@@ -153,7 +153,7 @@
                 <div style="display:inline-block;overflow:hidden;width:745px"/>
                 <%=cm.collectionTitle%>
                 </div>
-                <button id="enter" class="btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
+                <button class="enter btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
                 <hr/>
         </div>
 
@@ -178,27 +178,34 @@
                 <%= Util.escapeHTML(cm.notes)%>
             <% } %>
 
-            <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) {
+        <hr style="margin: 20px 0px"/>
+
+        <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) {
                 Util.pluralize(cm.accessionMetadatas.size(), "accession");
 
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
-                    <hr/>
-                    <div>
+                    <div class="accession">
                         <div class="accession-heading">Accession ID: <%=formatMetadataField(am.id)%>
                             <a style="margin-left: 30px" class="edit-accession-metadata"  data-accessionID="<%=am.id%>" href="#"><img style="height:25px" src="images/edit_summary.svg"/></a>
                         </div>
-                        <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
-                        <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
+                        <div class="accession-content">
+                            <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
+                            <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
 
-                        <p><b>Scope and contents</b><br/> <%=formatMetadataField(am.scope)%>
-                        <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
-                        <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
-                        <br/><br/>
+                            <p><b>Scope and contents</b><br/> <%=formatMetadataField(am.scope)%>
+                            <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
+                            <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
+                        </div>
                     </div>
                 <% } %>
-                <hr/>
 
                 <% } %>
+
+        <div class="accession">
+            <div class="accession-heading">
+                <a href="add-accession?collection=<%=id%>">Add accession</a>
+            </div>
+        </div>
 
             <p></p>
             <%
@@ -213,8 +220,8 @@
                 <% } %>
 
         </div>
-        <div style="text-align:center;margin-top: 20px">
-            <button id="enter" class="btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
+        <div style="margin-left: 745px">
+            <button class="enter btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
         </div>
 
         <div id="stats"></div>
@@ -240,7 +247,7 @@
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.
         var enterparams = {dir: '<%=id%>'};
-        $('#enter').click(function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); /* load_archive_and_call(function() { window.location = "browse-top"} */});
+        $('.enter').click(function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); /* load_archive_and_call(function() { window.location = "browse-top"} */});
 
     </script>
 
