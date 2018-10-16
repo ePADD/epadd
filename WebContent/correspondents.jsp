@@ -37,7 +37,7 @@
 		   overflow-y: scroll;
 	   }
 
-    </style>
+	</style>
 		
 	<script type="text/javascript" charset="utf-8">
 
@@ -104,6 +104,7 @@
 	writeProfileBlock(out, archive, "Correspondents");
 %>
 
+<%--
 <div style="text-align:center;display:inline-block;vertical-align:top;margin: auto; width: 100%">
 	<button class="btn-default" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><i class="fa fa-bar-chart-o"></i> Go To Graph View</button>
 	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
@@ -115,10 +116,17 @@
 
 	<% } %>
 </div>
+--%>
 <br/>
 <br/>
 
 <div style="margin:auto; width:1100px">
+	<div class="button_bar_on_datatable">
+	<div title="Go to graph view" class="buttons_on_datatable" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><img style="height:25px" src="images/Correspodents/graph.svg"></div>
+	<div title="Edit correspondents" class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img style="height:25px" src="images/Correspodents/edit_correspondent.svg"></div>
+		<div title="Upload correspondents" class="buttons_on_datatable" onclick="$('#correspondent-upload-modal').modal('show');"><img style="height:25px" src="images/Correspodents/upload.svg"></div>
+		<div title="Download correspondents" class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img style="height:25px" src="images/Correspodents/download.svg"></div>
+	</div>
 <table id="people" style="display:none">
 	<thead><tr><th>Name</th><th>Incoming messages</th><th>Outgoing messages</th><th>Mentions</th></tr></thead>
 	<tbody>
