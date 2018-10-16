@@ -21,7 +21,7 @@
 <%@include file="getArchive.jspf" %>
 
 <%
-    String term = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
+    String searchTerm = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
 
     // compute the title of the page
     String title = request.getParameter("title");
@@ -49,8 +49,8 @@
                         sentimentSummary += " & ";
                 }
 
-            if (term != null)
-                title = "Search: " + term;
+            if (searchTerm != null)
+                title = "Search: " + searchTerm;
             else if (cluster != -1)
                 title = "Cluster " + cluster;
             else if (!Util.nullOrEmpty(sentimentSummary))
@@ -417,14 +417,13 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     <div style="display:inline-block;vertical-align:top;width:150px;">
         <div class="facets" style="min-width:10em;text-align:left;margin-bottom:0px;">
             <%
-                if (!Util.nullOrEmpty(term)) {
-                    out.println("<b>Search</b><br/>\n");
-                    String displayTerm = Util.ellipsize(term, 16);
+                if (!Util.nullOrEmpty(searchTerm)) {
+                    out.println("<div class=\"facetTitle\">Search</div>\n");
+                    String displayTerm = Util.ellipsize(searchTerm, 16);
 
-                    out.println("<span title=\"" + Util.escapeHTML(term) + "\" class=\"facet nojog selected-facet rounded\" style=\"padding-left:2px;padding-right:2px\">" + Util.escapeHTML(displayTerm));
+                    out.println("<span title=\"" + Util.escapeHTML(searchTerm) + "\" class=\"facet nojog selected-facet rounded\" style=\"padding-left:2px;padding-right:2px\">" + Util.escapeHTML(displayTerm));
                     out.println (" <span class=\"facet-count\">(" + docs.size() + ")</span>");
                     out.println ("</span><br/>\n");
-                    out.println("<br/>\n");
                 }
                 //<editor-fold desc="Facet-rendering" input="facets" output="html:out">
                 for (String facet: facets.keySet())
@@ -702,7 +701,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //commonHLInfo object of outputset by calling appropriate API.
         /*NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
         if (filter != null && filter.isRegexSearch()) {
-            outputSet.addCommonHLInfoTerm(filter.get("term"));
+            outputSet.addCommonHLInfoTerm(filter.get("searchTerm"));
         }
         */
         //IMP: github issue #171. Actual sorting of the result is being done by SearchResult class in

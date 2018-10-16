@@ -416,6 +416,26 @@ public class SearchResult {
         return filterForCorrespondents(inputSet, correspondentsStr, checkToField, checkFromField, checkCcField, checkBccField);
     }
 
+    /** version of filterForCorrespondents which reads settings from params. correspondent name can have the OR separator */
+    private static SearchResult filterForCorrespondentList(SearchResult inputSet) {
+
+        String correspondentsListStr = JSPHelper.getParam(inputSet.queryParams, "correspondentList");
+        if (Util.nullOrEmpty(correspondentsListStr))
+            return new SearchResult(inputSet);
+
+        // convert newline separated strings into semi-colon separated strings
+        String[] strs = correspondentsListStr.split("\n");
+        String correspondentsStr = "";
+        for (String s: strs) {
+            s = s.trim();
+            if (Util.nullOrEmpty(s))
+                continue;
+            correspondentsStr += s + ";";
+        }
+
+        return filterForCorrespondents(inputSet, correspondentsStr, true, true, true, true); // to/cc/bcc etc are all true for correspondentlist
+    }
+
     /** returns only the docs where the name or email address in the given field matches correspondentsStr in the given field(s).
      * correspondentsStr can be or-delimited and specify multiple strings. */
     public static SearchResult filterForCorrespondents(SearchResult inputSet,  String correspondentsStr, boolean checkToField, boolean checkFromField, boolean checkCcField, boolean checkBccField) {
@@ -1340,7 +1360,9 @@ Archive archive = inputSet.archive;
         outResult = filterForThreadID(outResult);
         outResult = filterForAttachmentNames(outResult);
         outResult = filterForAttachmentEntities(outResult);
+
         outResult = filterForCorrespondents(outResult);
+        outResult = filterForCorrespondentList(outResult); // this is for bulk upload of correspondents; it is not expected to be combined with any other search criteria
 
         // contactIds are used for facets and from correspondents page etc.
         Collection<String> contactIds = inputSet.queryParams.get("contact");
