@@ -265,7 +265,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Specify the lexicon description</h4>
+					<h4 class="modal-title">Upload a lexicon file</h4>
 				</div>
 				<div class="modal-body">
 					<form id="uploadlexiconform" method="POST" enctype="multipart/form-data" >
@@ -277,14 +277,18 @@
 							</div>
 						</div>
 						&nbsp;&nbsp;
+						<!--
 						<div class="form-group **text-left**">
-							<label for="lexicon-lang" class="col-sm-2 control-label **text-left**">Language</label>
+							<!-- <label for="lexicon-lang" class="col-sm-2 control-label **text-left**">Language</label>
 							<div class="col-sm-10">
-								<input id="lexicon-lang" class="dir form-control" type="text"  value="english" name="lexicon-lang"/>
+								<input type="hidden" id="lexicon-lang" class="dir form-control" value="english" name="lexicon-lang"/>
 							</div>
 						</div>
 						&nbsp;&nbsp;
-						<div class="form-group **text-left**">
+						-->
+					<input type="hidden" id="lexicon-lang" class="dir form-control" value="english" name="lexicon-lang"/>
+
+					<div class="form-group">
 							<label for="lexiconfile" class="col-sm-2 control-label **text-left**">File</label>
 							<div class="col-sm-10">
 								<input type="file" id="lexiconfile" name="lexiconfile" value=""/>
