@@ -40,7 +40,7 @@
               + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
               +   Util.escapeHTML(title)
               + "</div>"
-              + "<div class=\"collection-metadata\">" + collectionInfo + "</div"
+              + "<div class=\"collection-metadata\">" + collectionInfo + "</div>"
               + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection (To be implemented)\" src=\"images/information.svg\"/> </div>"
               + "</div></div><br/>";
 

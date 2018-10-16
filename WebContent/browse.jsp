@@ -569,7 +569,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     </div>
                     <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
 
-                        <select data-selected-text-format="static" name="labelIDs" id="sortBy" class="label-selectpicker form-control selectpicker" title="Sort by">
+                        <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="Sort by">
                         <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
                             <option value="" selected disabled>Sort by</option>
                             <option value="" selected disabled>(Not yet implemented)</option>
