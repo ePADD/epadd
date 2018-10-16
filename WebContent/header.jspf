@@ -30,6 +30,8 @@
 	if (ModeConfig.isDeliveryMode())
 		logo = "images/logo-delivery.png";
 
+	logo = "images/epadd_header_logo.svg";
+
 	boolean haveArchive=false;
 	String archiveID = null;
 	//The following code means haveArchive is false when either archiveID was not passed to the jsp file

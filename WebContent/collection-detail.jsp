@@ -22,6 +22,16 @@
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
     <style>
+
+        .collection-detail { text-align: left; margin:auto; width: 1100px; position: relative;}
+        .collection-detail .heading { font-size: 20px;}
+
+        .collection-detail .banner-img-text-block { top: 80px; left: 30px; font-size: 16px; text-align: left;}
+        .collection-detail .banner-img-text-large { font-size: 20px; text-align:left;}
+        .collection-detail .details { border-right: dotted 1px rgba(127,127,127,0.5);display: inline-block; width: 220px; overflow: hidden;}
+        .collection-detail .collection-info { vertical-align: top; display: inline-block; margin-left: 30px; width: 840px;}
+        .collection-detail .detail { font-weight: bold; }
+
         body { background-color: white; }
         hr { margin-top: 10px; margin-bottom: 10px; } /* to override bootstrap */
         div.accession { margin-bottom: 10px;}
