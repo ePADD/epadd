@@ -1,21 +1,21 @@
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
-<%@include file="getArchive.jspf" %>
+<%@include file="../WebContent/getArchive.jspf" %>
 <html>
 <head>
     <title>Bulk Upload</title>
-    <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
 
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
-    <jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
+    <link href="../WebContent/jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
+    <jsp:include page="../WebContent/css/css.jsp"/>
 
-    <script src="js/jquery.js"></script>
-    <script src="jqueryFileTree/jqueryFileTree.js"></script>
-    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="js/filepicker.js" type="text/javascript"></script>
+    <script src="../WebContent/js/jquery.js"></script>
+    <script src="../WebContent/jqueryFileTree/jqueryFileTree.js"></script>
+    <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../WebContent/js/filepicker.js" type="text/javascript"></script>
 
-    <script src="js/epadd.js"></script>
+    <script src="../WebContent/js/epadd.js"></script>
 
     <style type="text/css">
         .go-button, .go-button:hover { background-color: #0075bb; color: #fff; }  /* saumya wants this always filled in, not just on hover */
@@ -29,17 +29,17 @@
     </style>
 </head>
 <body>
-    <jsp:include page="header.jspf"/>
-    <jsp:include page="div_filepicker.jspf"/>
+    <jsp:include page="../WebContent/header.jspf"/>
+    <jsp:include page="../WebContent/div_filepicker.jspf"/>
 
-<% writeProfileBlock(out, archive, "Apply labels to multiple messages");
+<% writeProfileBlock(out, false, archive, "Upload correspondent list", 900);
 String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 
 <br/>
 <br/>
 
-    <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
+    <div id="all_fields" style="width:900px; margin:auto">
         <div class="panel">
             <div class="panel-heading">List of correspondents</div>
             <form id="uploadCSVform" method="POST" action="upload-correspondents-for-search" enctype="multipart/form-data" >

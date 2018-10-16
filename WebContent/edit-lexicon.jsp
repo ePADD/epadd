@@ -111,7 +111,7 @@
 						(<a target="_blank" class="test-lexicon" href="#">Test</a>)
 					<% } %>
                     <br/>
-					<textarea style="padding:5px" cols="120" rows="<%=nRows+1%>" name="<%=sentiment%>" ><%=query%></textarea>
+					<textarea style="width:1100px;height:<%=(nRows+1)*20%>" name="<%=sentiment%>" ><%=query%></textarea>
 				</div>
 				<%
 			}

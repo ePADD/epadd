@@ -55,7 +55,7 @@
 <br/>
 <br/>
 
-<div style="margin:auto; width:900px">
+<div style="margin:auto; width:1100px">
 <table id="labels" style="display:none">
 	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% if (!ModeConfig.isDiscoveryMode()) { %>
@@ -131,7 +131,7 @@
             if (relativeTimedRestrictions.indexOf(labelID) > -1)//means labelID is a relative timed restriction label.
                 msg = "This label will be set for only those messages where a valid date is present. Note that ePADD puts a dummy date 1 Jan 1960 for the messages with corrupt date field.";
         }
-*/		var c = confirm (msg+' Do you want to ' + action + ' this label for these messages?');
+*/		var c = epadd.confirm (msg+' Do you want to ' + action + ' this label for these messages?');
         if (!c)
             return;
 

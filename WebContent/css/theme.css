@@ -280,17 +280,16 @@ pre code {
 	overflow-y: scroll
 }
 .container {
-	padding-right: 15px;
-	padding-left: 15px;
+/*	padding-right: 15px;
+	padding-left: 15px; */
 	margin-right: auto;
 	margin-left: auto
 }
 
-@media (min-width:1200px) {
 .container {
-	width: 1170px
+	width: 1100px;
 }
-}
+
 .container-fluid {
 	padding-right: 15px;
 	padding-left: 15px;
@@ -1452,7 +1451,6 @@ body {
 .header-block {
 	text-align:left;
 	margin:auto;
-	width:864px;
 }
 
 .profile-pic-edit {
@@ -1475,7 +1473,6 @@ body {
 	font-size: 16px;
 	vertical-align: middle;
 	display: table-cell;
-	width:400px;
 	cursor: pointer;
 }
 

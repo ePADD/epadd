@@ -216,7 +216,7 @@
 	int nContacts = ab.allContacts().size();
 %>
 
-<% writeProfileBlock(out, true, archive, "Dashboard");%>
+<% writeProfileBlock(out, true, archive, "Dashboard", 864);%>
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box text-center margin30">

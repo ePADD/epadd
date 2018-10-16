@@ -71,7 +71,7 @@
 </nav>
 <%
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "Labels");
+	writeProfileBlock(out, archive, "Manage labels");
 
 %>
 
@@ -103,6 +103,11 @@
 	</tbody>
 </table>
 <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+
+	<div style="clear:both"></div>
+	<br/>
+	<a href="bulk-labels?archiveID=<%=archiveID%>&allDocs=1">Set labels for all messages</a>
+</div>
 
 	<%
 		out.flush(); // make sure spinner is seen
@@ -162,7 +167,7 @@
         var removeLabelFn= function(e) {
             labelID = $(e.target).attr ('data-labelID');
 
-            var c = confirm ('Delete the label? This action cannot be undone!');
+            var c = epadd.confirm ('Delete the label? This action cannot be undone.');
             if (!c)
                 return;
 
@@ -205,12 +210,6 @@
 		});
 	} );
 
-</script>
-
-<div style="clear:both"></div>
-</div>
-<%--modal for specifying the label description file namd and upload button.--%>
-<script>
     var uploadLabelHandler=function(){
         //collect archiveID and labeljson field. If labeljson is empty alert and return false;
         var filename = $('#labeljson').val();
@@ -224,7 +223,7 @@
         // Create an FormData object
         var data = new FormData(form);
         //hide the modal.
-		$('#label-upload-modal').modal('hide');
+        $('#label-upload-modal').modal('hide');
         //now send to the backend.. on it's success reload the labels page. On failure display the error message.
 
         $.ajax({
@@ -241,6 +240,9 @@
 
     }
 </script>
+
+
+<%--modal for specifying the label description and upload button.--%>
 <div>
 	<div id="label-upload-modal" class="modal fade" style="z-index:9999">
 		<div class="modal-dialog">
@@ -251,9 +253,9 @@
 				</div>
 				<div class="modal-body">
 					<p>
-					NOTE: To import new labels, ensure that you have unapplied all current labels from messages. ePADD cannot import new labels if any current labels are applied.
+					To import new labels, ensure that you currently have no labels applied to messages. If you do, ePADD cannot import new labels.
 					<p>
-					Upload the JSON file containing the label descriptions.
+					Upload a JSON file containing label descriptions.
 					<br/>
 					<form id="uploadjsonform" method="POST" enctype="multipart/form-data" >
 						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
@@ -273,8 +275,6 @@
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 </div>
-
-
 
 <p>
 <br/>

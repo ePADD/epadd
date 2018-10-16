@@ -44,6 +44,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Search');</script>
 
+<%writeProfileBlock(out, false, archive, "Search", 900);%>
 
 <div class="nav-toggle1 sidebar-icon">
 	<img src="images/sidebar.png" alt="sidebar">
@@ -85,16 +86,15 @@
 	</div>
 </nav>
 
-<%writeProfileBlock(out, archive, "Search");%>
 <br/>
 <br/>
 
-<div style="text-align:center; margin:auto; width:600px;">
+<div style="text-align:center; margin:auto; width:900px;">
 	<div style="width:100%;margin-bottom:20px;">
-		<a id="simple-search-header"  class="underlined-header search-header" >Simple search</a>
-		<%--<a id="query-generator-header" class="search-header" style="margin-left:40px;">Query Generator</a>--%>
+		<a id="simple-search-header"  class="search-header" >Simple search</a>
 		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Multi-Entity Search</a>
 		<a id="term-search-header" class="search-header" style="margin-left:40px;">Multi-Term Search</a>
+		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;">Correspondent list search</a>
 
 	</div>
 
@@ -103,8 +103,8 @@
 	<%--		hidden input field to pass archiveID to the server. This is a common pattern used to pass
 			//archiveID in all those forms where POST was used to invoke the server page.
 	--%>
-		<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
-			<input name="term" size="80" placeholder="search query"/>
+		<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
+			<input style="width:900px" name="term" placeholder="search query"/>
 			<div style="display:none">
 				<input type="hidden" name="adv-search"/>
 				<input type="checkbox" name="termBody" checked>
@@ -123,8 +123,8 @@
 
 	<div style="display:none" id="term-search">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
-			<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
-			<textarea placeholder="Type or paste terms here (one line per term) to search the email archive for all matching terms. Following the search, select a highlighted term to view related messages." name="refTextTerms" id="refTextTerms" cols="80" rows="10"></textarea>
+			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
+			<textarea placeholder="Type or paste terms here (one line per term) to search the email archive for all matching terms. Following the search, select a highlighted term to view related messages." name="refTextTerms" id="refTextTerms"  style="width:900px"  rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
 				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
@@ -134,8 +134,19 @@
 
 	<div style="display:none" id="query-generator">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
-			<input type="hidden" value="<%=archiveID%>" class="form-control" type="text" name="archiveID"/>
-			<textarea placeholder="Type or paste text here to search the email archive for all matching entities. Following the search, select a highlighted entity to view related messages." name="refText" id="refText" cols="80" rows="10"></textarea>
+			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
+			<textarea placeholder="Type or paste text here to search the email archive for all matching entities. Following the search, select a highlighted entity to view related messages." name="refText" id="refText" style="width:900px"  rows="10"></textarea>
+			<br/>
+			<div style="text-align:center">
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+			</div>
+		</form>
+	</div>
+
+	<div style="display:none" id="correspondent-list-search">
+		<form method="post" action="browse" accept-charset="UTF-8">
+			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
+			<textarea placeholder="Type or paste email addresses here (one on each line)." name="correspondentList" id="correspondentList" style="width:900px" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
 				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
@@ -151,28 +162,41 @@
 	$(document).ready(function() {
 		$('#simple-search-header').addClass('underlined-header');
 		$('#simple-search-header').click(function() {
+            $('.search-header').removeClass('underlined-header');
 			$('#simple-search-header').addClass('underlined-header');
-			$('#query-generator-header').removeClass('underlined-header');
-            $('#term-search-header').removeClass('underlined-header');
+
             $('#simple-search').show();
 			$('#query-generator').hide();
 			$('#term-search').hide();
-		});
+            $('#correspondent-list-search').hide();
+        });
 		$('#query-generator-header').click(function() {
-			$('#query-generator-header').addClass('underlined-header');
-			$('#simple-search-header').removeClass('underlined-header');
-            $('#term-search-header').removeClass('underlined-header');
+            $('.search-header').removeClass('underlined-header');
+            $('#query-generator-header').addClass('underlined-header');
+
             $('#simple-search').hide();
 			$('#term-search').hide();
 			$('#query-generator').show();
-		});
+            $('#correspondent-list-search').hide();
+        });
         $('#term-search-header').click(function() {
+            $('.search-header').removeClass('underlined-header');
             $('#term-search-header').addClass('underlined-header');
-            $('#simple-search-header').removeClass('underlined-header');
-            $('#query-generator-header').removeClass('underlined-header');
+
             $('#simple-search').hide();
-            $('#query-generator').hide();
             $('#term-search').show();
+            $('#query-generator').hide();
+            $('#correspondent-list-search').hide();
+        });
+
+        $('#correspondent-list-search-header').click(function() {
+            $('.search-header').removeClass('underlined-header');
+            $('#correspondent-list-search-header').addClass('underlined-header');
+
+            $('#simple-search').hide();
+            $('#term-search').hide();
+            $('#query-generator').hide();
+            $('#correspondent-list-search').show();
         });
 	});
 

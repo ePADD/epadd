@@ -41,8 +41,10 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
+<%writeProfileBlock(out, archive, "Reports");%>
 
-<div style="min-height:300px;margin: 10px 50px 10px 50px" class="panel rounded">
+
+<div style="width: 1100px; margin:auto;min-height:300px;" class="panel rounded">
 
     Jump to <a href="#errors">Errors</a>
     <br/>

@@ -8,10 +8,10 @@
   // this profile block will go onto pretty much every page after the archive is loaded
 
   static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String pageTitle) {
-      writeProfileBlock (out1, false, archive, pageTitle);
+      writeProfileBlock (out1, false, archive, pageTitle, 1100); // 1100 px is the default width
   }
 
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive, String pageTitle)
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive, String pageTitle, int pixelWidth)
   {
     try
     {
@@ -29,7 +29,7 @@
           mode="Discovery";
 
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
-      String output = "<div class=\"header-block\">"
+      String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
               +  "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
               + "<div class=\"profile-block\">"
               + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
@@ -39,10 +39,10 @@
         output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
 
       output += "</div>"
-              + "<div class=\"profile-text\">"
+              + "<div class=\"profile-text\" style=\"width:" + 400 + "\">"
               +   Util.escapeHTML(title)
               + "</div>"
-              + "<div class=\"profile-more-info\"><img title=\"More information about this collection\" src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>"
+              + "<div class=\"profile-more-info\" style=\"width:" + (pixelWidth - 500) + "px\"><img title=\"More information about this collection\" src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>"
               + "</div></div><br/>";
 
       out1.println (output);
