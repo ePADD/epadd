@@ -21,7 +21,10 @@
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
-    <style> body { background-color: white; } </style>
+    <style>
+        body { background-color: white; }
+        hr { margin-top: 10px; margin-bottom: 10px; } /* to override bootstrap */
+    </style>
 </head>
 <body>
 <jsp:include page="header.jspf"/>
@@ -83,43 +86,37 @@
 
     <br/>
     <div class="details">
-        <div class="heading">Summary</div>
-        <p></p>
-        <p>
+        <div class="heading">Summary <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a></div>
+        <hr/>
             Institution<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span></b>
-        </p>
-        <p>
+            <hr/>
             Repository<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span></b>
-        </p>
-        <p>
+            <hr/>
             Collection ID<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span></b>
-        </p>
-    	<p>
+            <hr/>
             <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
                 <b><span><%= Util.pluralize (cm.accessionMetadatas.size(), "accession")%></span></b>
-            <% } %>
-        </p>
-        <p>
+                <hr/>
+        <% } %>
             <% if (cm.firstDate != null && cm.lastDate != null) { %>
                 Date Range<br/>
                 <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
                 <% if (cm.nHackyDates > 0) { %>
                    <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> undated</b>
-                    </p>
+            <hr/>
+
                 <% } %>
             <% } %>
-        <p>
-        <p>
             Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
             <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
                 <b>Incoming: <span class="detail"><%=Util.commatize(cm.nIncomingMessages)%></span><br/>
                 Outgoing: <span class="detail"><%=Util.commatize(cm.nOutgoingMessages)%></span></b>
             <% } %>
-        </p><p>
+        <hr/>
             Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                     <br/>
@@ -127,6 +124,8 @@
                     Documents: <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
                     Others: <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
+        <hr/>
+
         </p>
 
         <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
@@ -143,9 +142,6 @@
             Renamed files: <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
             Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
             <%}%>
-            <button class="btn-default" id="edit-collection-metadata"><i class="fa fa-pencil"></i> Edit Metadata</button>
-            <br/>
-            <br/>
             <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
             <br/>
             <br/>
@@ -234,7 +230,6 @@
     <br/>
 
     <script>
-        $('#edit-collection-metadata').click (function() { window.location = 'edit-collection-metadata?collection=<%=id%>'; });
         $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
         $('#edit-photos').click (function() { window.location = 'set-images?collection=<%=id%>'; });
         $('#edit-accession-metadata').click (function(e) {
