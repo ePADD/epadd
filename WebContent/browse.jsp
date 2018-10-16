@@ -125,10 +125,6 @@
 
     <style>
         div.facets hr { width: 90%; }
-        .archive-heading div { font-style: italic; display:inline-block; overflow: hidden; margin: 2px 10px;}
-        .archive-heading .institution-name, .archive-heading .collection-name, .archive-heading .repository-name { width: 25%; text-align:center; }
-        .archive-heading .collection-id { width: 10%;}
-        .archive-heading { border: solid 1px #ccc; }
         .navbar { margin-bottom: 0; } /* overriding bootstrap */
         .dropdown-header { font-weight: 600;color: black; font-size: 15px;}
          a.opt { color: black;  padding-left: 1.25em; }
@@ -544,15 +540,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             allLabels = JSON.parse('<%=json%>');
         </script>
     <div style="display:inline-block;vertical-align:top;">
-        <% if (!ModeConfig.isAppraisalMode()) { %>
-            <div class="archive-heading" style="">
-                <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
-                <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
-                <div title="<%=repositoryName%>" class="repository-name"><%=repositoryName%></div>
-                <div title="<%=institutionName%>" class="institution-name"><%=institutionName%></div>
-            </div>
-        <% } %>
-
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
