@@ -689,7 +689,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 
                 <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
-                    <div style="text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                    <div style="margin-top:150px;text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
                 </div>
             </div>
 
