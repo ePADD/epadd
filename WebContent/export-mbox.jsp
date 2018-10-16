@@ -73,10 +73,11 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 // either we do tags (+ or -) from selectedTags
     // or we do all docs from allDocs
     String cacheDir = archive.baseDir;
-    String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  "blobs" + File.separator;
+//    String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  "blobs" + File.separator;
     BlobStore bs = null;
-    bs = new BlobStore(attachmentsStoreDir);
-    JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
+    bs = archive.getBlobStore();
+//    bs = new BlobStore(attachmentsStoreDir);
+//    JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
 
     /*
     String rootDir = JSPHelper.getRootDir(request);

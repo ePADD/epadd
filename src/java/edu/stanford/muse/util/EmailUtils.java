@@ -424,20 +424,25 @@ public class EmailUtils {
 
 			mbox.println("--" + frontier);
 			mbox.println("Content-Type: text/plain; charset=\"UTF-8\"");
-			mbox.println("Content-Encoding: quoted-printable\n"); // need blank line after this
-			try {
-				byte encodedBytes[] = QuotedPrintableCodec.decodeQuotedPrintable(contents.getBytes());
-				for (byte by : encodedBytes)
-					mbox.print((char) by);
-				mbox.println();
-			} catch (DecoderException de) {
-				log.warn("Exception trying to toString contents!" + de);
-				mbox.println(contents);
-				mbox.println();
-			}
-//			mbox.println("--" + frontier + "--");
+            if(isI18N){
+                //if content is I18N (means large character range) then encode it using base64 [like hindi typed character]
+                mbox.println("Content-Encoding: quoted-printable\n"); // need blank line after this
+                byte encodedBytes[] = QuotedPrintableCodec.encodeQuotedPrintable(null,contents.getBytes());
+                for (byte by : encodedBytes)
+                    mbox.print((char) by);
+                mbox.println();
+                //			mbox.println("--" + frontier + "--");
+                // probably need to fix: other types of charset, encodings
 
-			// probably need to fix: other types of charset, encodings
+            }else{
+                //else if content is not I18N (means only ascii and hence human readable) then encode it using quoted printable encoding
+                mbox.println("Content-Encoding: base64\n"); // need blank line after this
+                byte encodedBytes[] = Base64.encodeBase64(contents.getBytes(), true);
+                for (byte by : encodedBytes)
+                    mbox.print((char) by);
+                mbox.println();
+            }
+
 			if (blobStore != null && attachments != null)
 			{
 				for (Blob b : attachments)
