@@ -334,7 +334,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadProfilePhotoHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+                    <button id="upload-btn" class="btn btn-cta" onclick="uploadProfilePhotoHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
 
 
                     <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>

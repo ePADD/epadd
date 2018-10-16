@@ -35,7 +35,7 @@
     List<FileItem> items = upload.parseRequest(request);
     for (FileItem item : items) {
         if (item.isFormField()) {
-            if ("collection".equals(item.getFieldName()))
+            if ("collectionID".equals(item.getFieldName()))
                 collectionID = item.getString();
             if("archiveID".equals(item.getFieldName()))
                 archiveID=item.getString();
