@@ -22,9 +22,8 @@
 
       String collectionInfo = "";
       if (!ModeConfig.isAppraisalMode()) {
-          collectionInfo = "<div class=\"collection-metadata\">Institution: " + (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
+          collectionInfo = "Institution: " + (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
           collectionInfo += "<br/>" + "Collection ID: " + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
-          collectionInfo += "</div>";
       }
 
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
@@ -41,7 +40,7 @@
               + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
               +   Util.escapeHTML(title)
               + "</div>"
-              + collectionInfo
+              + "<div class=\"collection-metadata\">" + collectionInfo + "</div"
               + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection (To be implemented)\" src=\"images/information.svg\"/> </div>"
               + "</div></div><br/>";
 
