@@ -281,7 +281,7 @@
 		<br/>
 
 		<div class="cta-box text-center margin30">
-			<a href="lexicon?archiveID=<%=archiveID%>">
+			<a href="lexicon-top?archiveID=<%=archiveID%>">
 				<i class="icon-browsetoparrow"></i>
 				<img src="images/lexicon.png"/>
 				<p class="cta-text-1">Lexicon search</p>

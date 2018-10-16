@@ -1924,6 +1924,33 @@ after maskEmailDomain.
         return Collections.unmodifiableSet(lexiconMap.keySet());
     }
 
+    public JSONArray getAvailableLexiconsWithCategories(boolean isDelivery) {
+        // lexicon map could be stale, re-read it
+        JSONArray resultArray = new JSONArray();
+        try {
+            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+        } catch (Exception e) {
+            Util.print_exception("Error trying to read list of lexicons", e, log);
+        }
+        if (lexiconMap == null)
+            return resultArray;
+        if(isDelivery){
+            //remove sensitive lexicon.
+            lexiconMap.remove(Lexicon.SENSITIVE_LEXICON_NAME);
+        }
+        int count = 0;
+        for (String lexiconname: lexiconMap.keySet()) {
+            Lexicon lexicon = lexiconMap.get(lexiconname);
+            JSONArray result = new JSONArray();
+            Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage("english");
+            int numcategories = lex.captionToExpandedQuery.keySet().size();
+
+            result.put (0, lexiconname);
+            result.put (1, numcategories);
+            resultArray.put (count++, result);
+        }
+        return resultArray;
+    }
     /** returns an array (sorted by doc count for set labels.
      *  each element of the array is itself an array corresponding to the details for one label.
      *  important: labels with 0 count should not be returned. */
