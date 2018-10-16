@@ -117,56 +117,10 @@
             //now zip pathToDirectory directory and create a zip file in TMP only
             String zipfile = Archive.TEMP_SUBDIR+ File.separator + "all-messages-as-text.zip";
             Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"zip",JSPHelper.log);
-            FileOutputStream fos = new FileOutputStream(zipfile);
-            ZipOutputStream zos = new ZipOutputStream(fos);
-            File[] files = new File(pathToDirectory).listFiles();
-
-			for(i=0; i < files.length ; i++)
-			    {
-			        FileInputStream fin = new FileInputStream(files[i]);
-
-					/*
-					 * To begin writing ZipEntry in the zip file, use
-					 *
-					 * void putNextEntry(ZipEntry entry)
-					 * method of ZipOutputStream class.
-					 *
-					 * This method begins writing a new Zip entry to
-					 * the zip file and positions the stream to the start
-					 * of the entry data.
-					 */
-
-					zos.putNextEntry(new ZipEntry(files[i].getName()));
-
-					/*
-					 * After creating entry in the zip file, actually
-					 * write the file.
-					 */
-					int length;
-
-					byte[] buffer=new byte[1024];
-					while((length = fin.read(buffer)) > 0)
-					{
-					   zos.write(buffer, 0, length);
-					}
-
-					/*
-					 * After writing the file to ZipOutputStream, use
-					 *
-					 * void closeEntry() method of ZipOutputStream class to
-					 * close the current entry and position the stream to
-					 * write the next entry.
-					 */
-
-					 zos.closeEntry();
-
-					 //close the InputStream
-					 fin.close();
-			    }
-			    zos.close();
+            Util.zipDirectory(pathToDirectory, zipfile);
 
             //return it's URL to download
-            String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+"all-messages-as-text.zip" ;
+            String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+zipfile ;
             downloadURL = appURL + "/" +  contentURL;
         } catch(Exception e){
             //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);

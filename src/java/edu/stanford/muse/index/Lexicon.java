@@ -314,7 +314,20 @@ public class Lexicon implements Serializable {
 			languageToLexicon.put(language, lex);
 		}
 	}
-	
+
+	public void removeLexicon(Archive archive,String dir){
+		String name = this.name ;
+		Set<String> languages = Util.filesWithPrefixAndSuffix(dir, name + ".", LEXICON_SUFFIX);
+		//remove all languages for the given lexicon??
+		for (String language: languages)
+		{
+			String filepath = dir + File.separator + name + "." + language + LEXICON_SUFFIX;  // LEXICON_SUFFIX already has a .
+			new File(filepath).delete();
+		}
+		//update the bag metadata as well..
+		archive.updateFileInBag(dir,archive.baseDir);
+
+	}
 	public Set<String> getAvailableLanguages()	{ return Collections.unmodifiableSet(languageToLexicon.keySet()); }
 	
 	// identify all the langs in the docs, and the corresponding lexicons

@@ -74,6 +74,19 @@ public class ResultCache {
         lexiconCount.put(archiveID,tmp);
     }
     /*
+    Called when a lexicon is removed
+     */
+    public void removeCacheLexiconListing(String lexicon, String archiveID){
+        //get archive
+        Archive archive =ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        Map<String,JSONArray> tmp = lexiconCount.get(archiveID);
+        if(tmp!=null){
+            tmp.remove(lexicon);
+
+        }
+
+    }
+    /*
     Called inside Lexicon::getCountsAsJSON method. The result is already created so no need to recalculate it. Therefore a different API.
      */
     public void cacheLexiconListing(String lexicon, String archiveID,JSONArray result){
