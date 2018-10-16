@@ -1532,11 +1532,12 @@ body {
 .collection-detail .heading { font-size: 20px;}
 
 .banner-img { box-shadow: 3px 3px 11px 0px rgba(0, 0, 0, 0.75); background-color: #0175bc; background-repeat: no-repeat; background-size: cover; width: 1100px; height: 440px; position: relative; text-align:center;}
-.collection-detail .banner-img-text-block { top: 80px; left: 30px; padding: 20px; font-size: 16px; text-align: left; background-color: #f5f5f8;}
-.collection-detail .banner-img-text-large { font-size: 25px; text-align:left;}
-.collection-detail .details { border-right: dotted 1px rgba(127,127,127,0.5);display: inline-block; width: 250px; overflow: hidden;}
-.collection-detail .related-links { vertical-align: top; display: inline-block; margin-left: 30px; width: 815px;}
+.collection-detail .banner-img-text-block { top: 80px; left: 30px; font-size: 16px; text-align: left;}
+.collection-detail .banner-img-text-large { font-size: 20px; text-align:left;}
+.collection-detail .details { border-right: dotted 1px rgba(127,127,127,0.5);display: inline-block; width: 220px; overflow: hidden;}
+.collection-detail .related-links { vertical-align: top; display: inline-block; margin-left: 30px; width: 840px;}
 .collection-detail .detail { font-weight: bold; }
+
 .panel {background-color: #f5f5f8;}
 .previous, .next { cursor: pointer}
 

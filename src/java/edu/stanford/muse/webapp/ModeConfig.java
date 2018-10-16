@@ -57,4 +57,17 @@ public class ModeConfig
 	{
 		return isPublicMode() || isServerMode();
 	}
+
+	public static String getModeForDisplay() {
+		String mode="";
+		if(ModeConfig.isAppraisalMode())
+			mode="Appraisal";
+		else if(ModeConfig.isProcessingMode())
+			mode="Processing";
+		else if(ModeConfig.isDeliveryMode())
+			mode="Delivery";
+		else if(ModeConfig.isDiscoveryMode())
+			mode="Discovery";
+		return mode;
+	}
 }

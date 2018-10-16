@@ -572,11 +572,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <select data-selected-text-format="static" name="labelIDs" id="sortBy" class="label-selectpicker form-control selectpicker" title="Sort by">
                         <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
                             <option value="" selected disabled>Sort by</option>
+                            <option value="" selected disabled>(Not yet implemented)</option>
                             <option value="relevance">Most relevant</option>
                             <option value="recent">Newest first</option>
                             <option value="chronological">Oldest first</option>
                         </select>
-
                     </div>
                 </div>
 

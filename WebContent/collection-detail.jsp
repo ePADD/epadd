@@ -28,7 +28,7 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Collections');</script>
+
 
 <!-- need status window on this page because archive might take some time to load -->
 <script type="text/javascript" src="js/statusUpdate.js"></script>
@@ -69,17 +69,11 @@
 
     String fileParam = f.getName() + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage.png"; // always forward slashes please
     String url = "serveImage.jsp?file=" + fileParam;
-    String ownerName = Util.nullOrEmpty(cm.ownerName) ? "(unassigned name)" : cm.ownerName;
 %>
 
 <div class="collection-detail">
-    <div class="heading">
-        <% if (!Util.nullOrEmpty(cm.collectionTitle)) { %>
-            <%=cm.collectionTitle%>
-        <% } else { %>
-             <%=ownerName%>, Email Series
-        <% } %>
-    </div>
+    <div class="breadcrumbs"> <%=ModeConfig.getModeForDisplay()%> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; About this collection </div>
+
     <p>
     <div class="banner-img" style="background-image:url('<%=url%>')"> <!-- escape needed? -->
     </div>
@@ -113,8 +107,8 @@
             Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
             <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
-                <b>Incoming: <span class="detail"><%=Util.commatize(cm.nIncomingMessages)%></span><br/>
-                Outgoing: <span class="detail"><%=Util.commatize(cm.nOutgoingMessages)%></span></b>
+                Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
+            Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
             <% } %>
         <hr/>
             Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
@@ -156,8 +150,12 @@
         <div class="banner-img-text-block">
 
             <div class="banner-img-text-large">
-                About this collection
-            </div>
+                <div style="display:inline-block;overflow:hidden;width:745px"/>
+                <%=cm.collectionTitle%>
+                </div>
+                <button id="enter" class="btn btn-cta">Enter <i class="icon-arrowbutton"></i> </button>
+                <hr/>
+        </div>
 
             <br/>
             <%=Util.nullOrEmpty(cm.about) ? "Unassigned" : Util.escapeHTML(cm.about)%>
@@ -186,7 +184,9 @@
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <hr/>
                     <div>
-                        <b>Accession ID</b>: <%=formatMetadataField(am.id)%><br/>
+                        <div class="accession-heading">Accession ID: <%=formatMetadataField(am.id)%>
+                            <a style="margin-left: 30px" class="edit-accession-metadata"  data-accessionID="<%=am.id%>" href="#"><img style="height:25px" src="images/edit_summary.svg"/></a>
+                        </div>
                         <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
                         <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
 
@@ -194,7 +194,6 @@
                         <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
                         <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
                         <br/><br/>
-                        <button class="btn-default" id="edit-accession-metadata" data-accessionid="<%=am.id%>"><i class="fa fa-pencil"></i> Edit Metadata</button>
                     </div>
                 <% } %>
                 <hr/>
@@ -232,9 +231,10 @@
     <script>
         $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
         $('#edit-photos').click (function() { window.location = 'set-images?collection=<%=id%>'; });
-        $('#edit-accession-metadata').click (function(e) {
-            var accessionID=$(e.target).attr('data-accessionID');
+        $('.edit-accession-metadata').click (function(e) {
+            var accessionID=$(e.target).closest('a').attr('data-accessionID'); // e.target is the edit-icon, so we look up to find the closest a
             window.location = 'edit-accession-metadata?collection=<%=id%>&accessionID='+accessionID;
+            return false;
         });
 
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
