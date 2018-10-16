@@ -150,7 +150,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
 <p>
 
-<div id="all_fields" style="margin:auto; width:900px; padding: 10px">
+<div id="all_fields" style="margin:auto; width:1100px; padding: 10px">
 	<%--<b>Review messages</b>
     <br/>
 	<br/>
@@ -360,7 +360,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
         <section>
             <div class="panel" id="export-mbox">
-                <div class="panel-heading">Export messages in mbox</div>
+                <div class="panel-heading">Export messages in mbox format</div>
                 <div class="one-line">
                     <div class="form-group col-sm-8">
                         <select id="export-mbox-options" name="export-mbox-options" class="form-control selectpicker">

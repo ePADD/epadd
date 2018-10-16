@@ -103,11 +103,11 @@
     }
 %>
 
-<%writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "Image attachments") +
+<%writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "Image attachment") +
 " (" + uniqueAttachments.size() + " unique)");%>
 <%--<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>--%>
 
-<div id="all_fields" style="margin:auto; width:900px; padding: 10px">
+<div id="all_fields" style="margin:auto; width:1100px;>
 
     <!-- filter form submits back to the same page -->
     <form action="image-attachments" method="get">
@@ -211,12 +211,12 @@
 
 <div style="text-align: center">
 <% if (nEntriesForPiclens > 0) { %>
-	<object id="o" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="1200" height="720">
+	<object id="o" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="1100" height="720">
 		<param name="movie" value="cooliris/cooliris.swf" />
 		<param name="flashvars" value="feed=<%= piclensRSSFilename %>" />
 		<param name="allowFullScreen" value="true" />
 		<param name="allowScriptAccess" value="n" />
-	<embed type="application/x-shockwave-flash" src="cooliris/cooliris.swf" width="1200" height="720" flashvars="feed=<%= piclensRSSFilename %>" allowFullScreen="true" allowfullscreen="true" allowScriptAccess="never" allowscriptaccess="never"></embed>
+	<embed type="application/x-shockwave-flash" src="cooliris/cooliris.swf" width="1100" height="720" flashvars="feed=<%= piclensRSSFilename %>" allowFullScreen="true" allowfullscreen="true" allowScriptAccess="never" allowscriptaccess="never"></embed>
 	</object>
 	<br/>
 </div>

@@ -86,7 +86,7 @@
 
     Set<Blob> uniqueAttachments = new LinkedHashSet<>(allAttachments);
 
-    writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "Non-image attachment") +
+    writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "non-image attachment") +
             " (" + uniqueAttachments.size() + " unique)");
 %>
 

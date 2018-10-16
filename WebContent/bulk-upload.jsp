@@ -32,14 +32,14 @@
     <jsp:include page="header.jspf"/>
     <jsp:include page="div_filepicker.jspf"/>
 
-<% writeProfileBlock(out, archive, "Apply labels to multiple messages");
+<% writeProfileBlock(out, false, archive, "Upload correspondent list", 900);
 String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 
 <br/>
 <br/>
 
-    <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
+    <div id="all_fields" style="width:900px; margin:auto">
         <div class="panel">
             <div class="panel-heading">List of correspondents</div>
             <form id="uploadCSVform" method="POST" action="upload-correspondents-for-search" enctype="multipart/form-data" >

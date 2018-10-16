@@ -47,7 +47,7 @@
 <br/>
 <br/>
 
-<div style="margin:auto; width:900px">
+<div style="margin:auto; width:1100px">
     <table id="folders" style="display:none">
         <thead><tr><th>Source</th><th>Folder</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></tr></thead>
         <tbody>

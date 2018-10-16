@@ -66,9 +66,8 @@
 </head>
 <body>
 <jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
 
-<% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "New label" : "Edit Label: " + labelName)); %>
+<% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label: " + labelName)); %>
 <br/>
 <br/>
 <br/>
@@ -84,7 +83,7 @@
             <input name="archiveID" type="hidden" value="<%=archiveID%>" class="form-control"/>
 
         <div class="row">
-            <h4><%=(Util.nullOrEmpty(labelID) ? "New label" : "Edit Label")%></h4>
+            <h4><%=(Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label")%></h4>
             <br/>
             <br/>
             <!--File Name-->

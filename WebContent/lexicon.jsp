@@ -69,7 +69,7 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%writeProfileBlock(out, archive, "Lexicon Hits");%>
+<%writeProfileBlock(out, false, archive, "Lexicon Hits", 900);%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
@@ -152,7 +152,6 @@
 			<br/>
 	<% } %>
 			
-</h1>
 <div style="text-align:center">
 	<button class="btn-default" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><i class="fa fa-bar-chart-o"></i> Graph View</button>
 	&nbsp;&nbsp;
@@ -164,7 +163,7 @@
 </div>
 <br/>
 
-<div style="margin:auto; width:800px">
+<div style="margin:auto; width:900px">
 	<table id="table">
 		<thead><th>Lexicon category</th><th>Messages</th></thead>
 		<tbody>			
@@ -221,7 +220,7 @@
                 }
                 //if lexicon-name is already one of the lexicon then prompt a confirmation box
                 if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
-                    var c = confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
+                    var c = epadd.confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
                     if (!c)
                         return;
                 }

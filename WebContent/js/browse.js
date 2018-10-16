@@ -230,7 +230,7 @@ var Annotations = function() {
             return false;
             }
             if(overwrite_or_append=="overwrite") {
-                var c = confirm('Existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?');
+                var c = epadd.confirm('Existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?');
                 if (!c)
                     return;
             }

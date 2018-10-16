@@ -491,9 +491,13 @@ epadd.saveAndCloseArchive= function() {
 };
 */
 
+epadd.confirm = function(s) {
+	$('.confirm-modal').modal();
+	return confirm (s);
+}
 
 epadd.deleteArchive = function(archiveID) {
-	var c = confirm ('Delete the archive? This action cannot be undone!');
+	var c = epadd.confirm ('Delete the archive? This action cannot be undone!');
 	if (!c)
 		return;
 	/*var $spinner = $('.spinner', $(e.target));

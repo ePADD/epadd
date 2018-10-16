@@ -144,7 +144,7 @@
 	</div>
 
 	<br/>
-	Need more search options? Try <a href="advanced-search?archiveID=<%=archiveID%>">Advanced Search</a>.
+	Need more search options? Try <a href="advanced-search?archiveID=<%=archiveID%>">Advanced Search</a>, or <a href="bulk-upload?archiveID=<%=archiveID%>">Upload</a> a list of correspondents.
 </div>
 
 <script>

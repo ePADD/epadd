@@ -48,6 +48,8 @@
             transition:0.3s ease;
         }
         .btn-cta:hover i{ opacity:1;}
+
+		.container { width: 1100px; margin: auto; padding: 0px;}
     </style>
     <!--scripts-->
 
