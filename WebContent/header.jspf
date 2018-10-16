@@ -20,15 +20,7 @@
                     <span class="icon-bar"></span>
                 </button>
              -->
-				<%	String logo = "";
-	if (ModeConfig.isAppraisalMode())
-		logo = "images/logo-appraisal.png";
-	if (ModeConfig.isProcessingMode())
-		logo = "images/logo-processing.png";
-	if (ModeConfig.isDiscoveryMode())
-		logo = "images/logo-discovery.png";
-	if (ModeConfig.isDeliveryMode())
-		logo = "images/logo-delivery.png";
+				<%	String logo = "images/epadd_header_logo.svg";
 
 	boolean haveArchive=false;
 	String archiveID = null;
@@ -52,7 +44,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#"><img src="<%=logo%>"/></a>
+      <a class="navbar-brand" href="#"><img style="height: 55px; width: 149px; padding: 6px 0px;" src="<%=logo%>"/></a>
     </div>
 	<div id="bs-example-navbar-collapse" class="collapse navbar-collapse bs-navbar-collapse">
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav">

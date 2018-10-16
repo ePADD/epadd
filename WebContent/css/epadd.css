@@ -145,7 +145,7 @@ div.muse-doc {
         margin-right: 20px;
         /* font-family: Courier, Arial, sans-serif; */
         font-family: 'Open Sans', sans-serif; /* Courier, "Myriad Pro", Arial, sans-serif; */
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.6em;
 /*      min-height: 1200px; */
 
@@ -338,4 +338,3 @@ footer a { color: #ababab; text-decoration: underline;}
     text-overflow: ellipsis;
 }
 
-.accession-heading { padding: 20px 8px; margin-bottom: 25px; background-color: #f5f5f8; font-weight: 600;}

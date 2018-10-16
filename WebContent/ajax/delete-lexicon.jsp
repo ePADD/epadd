@@ -13,6 +13,7 @@
 
 	// which lexicon? first check if url param is present, then check if url param is specified
 	JSONObject result = new JSONObject();
+	String errormsg="";
     Archive archive = JSPHelper.getArchive(request);
     if (archive == null) {
         JSONObject obj = new JSONObject();
@@ -28,50 +29,24 @@
 	Lexicon lex = null;
 	if (!Util.nullOrEmpty(lexiconName))
 		lex = archive.getLexicon(lexiconName);
+	else{
+	    JSONObject obj = new JSONObject();
+        obj.put("status", 1);
+        obj.put("error", "No lexicon exists named "+lexiconName);
+        out.println (obj);
+        JSPHelper.log.info(obj);
+        return;
+	    }
+	//get the filename for this lexicon
+	lex.removeLexicon(archive,archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR);
 
-	boolean freshLexicon = false;
-	if (lex == null)
-	{
-		// it doesn't already exist, we have to create a brand new one
-		lex = new Lexicon(archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR, lexiconName);
-		JSPHelper.log.info ("Creating new lexicon: " + lexiconName);
-	}
-	else
-		JSPHelper.log.info("Updating existing lexicon: " + lexiconName);
 
-	JSPHelper.log.info ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
-
-	// now lexiconName and lex are both set correctly.
-	String language = "english";
-	Map<String, String[]> map = new LinkedHashMap<String, String[]>(request.getParameterMap());
-	// everything but for the following params is a lexicon category. note: these are not allowed as category names.
-	map.remove("lexicon");
-	map.remove("language");
-    map.remove("archiveID");
-	if (map.size() > 0)
-	{
-		// convert string->string[] to string -> string
-		Map<String, String> newMap = new LinkedHashMap<String, String>();
-		for (String key: map.keySet())
-		{
-			String val = map.get(key)[0];
-			if (Util.nullOrEmpty(val))
-				continue;
-			newMap.put(key, val);
-		}
-		JSPHelper.log.info ("updating lexicon for " + lexiconName + " in language " + language + " with " + newMap.size() + " entries");
-		// should we clear an existing lex first?
-		lex.update(language, newMap);
-		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language,archive);
-
-		//After lexicon is saved, invalidate the cache for the result of getCountsAsJson
-		//should we force recomputation here only??Yes
-		Archive.cacheManager.cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
-
-	}
+	//After lexicon is removed, invalidate the cache for the result of getCountsAsJson
+	Archive.cacheManager.removeCacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
 	result.put("status", 0);
-	result.put ("nCategories", map.size());
+	result.put("archiveID",archiveID);//because on success we would like to redirect to some other page.
 	out.println (result.toString(4));
+	JSPHelper.log.info(result);
 	return;
 %>
