@@ -584,11 +584,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <img title="Download messages as mbox" src="images/labels.svg" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">
+                            <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Label all these messages" src="images/labels.svg"></a>
                         </div>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <img title="Download messages as mbox" src="images/download.svg" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">
+                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download messages as mbox" src="images/download.svg"></a>
                         </div>
 
                         <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
