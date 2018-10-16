@@ -556,8 +556,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
-                    <div class="form-group label-picker" style="display:inline-block">
 
+                    <div class="form-group label-picker" style="display:inline-block">
                         <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
 
@@ -579,19 +579,26 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 <%}%>
                             </optgroup>
                         </select>
+                    </div>
+                    <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
+
+                        <select data-selected-text-format="static" name="labelIDs" id="sortBy" class="label-selectpicker form-control selectpicker" title="Sort by">
+                        <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
+                            <option value="" selected disabled>Sort by</option>
+                            <option value="relevance">Most relevant</option>
+                            <option value="recent">Newest first</option>
+                            <option value="chronological">Oldest first</option>
+                        </select>
 
                     </div>
-
-                    <!-- these may have to be disabled in discovery mode. TODO: check with Peter -->
-                    <div style="display:inline">
-                        <button class="btn btn-default" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">Label all</button>
-                    </div>
-
-
                 </div>
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
+
+                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <img title="Download messages as mbox" src="images/labels.svg" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">
+                        </div>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <img title="Download messages as mbox" src="images/download.svg" onclick="window.location='export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>';">

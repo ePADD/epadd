@@ -28,6 +28,13 @@
       else if(ModeConfig.isDiscoveryMode())
           mode="Discovery";
 
+      String collectionInfo = "";
+      if (!ModeConfig.isAppraisalMode()) {
+          collectionInfo = "<div class=\"collection-metadata\">Institution: " + (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
+          collectionInfo += "<br/>" + "Collection ID: " + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
+          collectionInfo += "</div>";
+      }
+
       String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
       String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
               +  "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
@@ -39,10 +46,11 @@
         output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
 
       output += "</div>"
-              + "<div class=\"profile-text\" style=\"width:" + 400 + "\">"
+              + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
               +   Util.escapeHTML(title)
               + "</div>"
-              + "<div class=\"profile-more-info\" style=\"width:" + (pixelWidth - 500) + "px\"><img title=\"More information about this collection\" src=\"images/information.svg\" style=\"width:30px;height:30px\"/> </div>"
+              + collectionInfo
+              + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection\" src=\"images/information.svg\"/> </div>"
               + "</div></div><br/>";
 
       out1.println (output);
