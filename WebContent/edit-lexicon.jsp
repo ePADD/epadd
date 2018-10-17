@@ -100,8 +100,8 @@
 <div align="center">
 <div class="button_bar_on_lexicon">
 	<div title="Add Category" class="buttons_on_datatable" id="add-category"><img class="button_image_on_datatable" src="images/add_lexicon.svg"></div>
-	<div title="Download Lexicon" class="buttons_on_datatable" onclick="exportLexiconHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
-	<div title="Delete Lexicon" class="buttons_on_datatable" onclick="deleteLexiconHandler()"><img class="button_image_on_datatable" src="images/delete.svg"></div>
+	<div title="Download Lexicon" class="buttons_on_datatable" onclick="exportLexiconHandler();return false;"><img class="button_image_on_datatable" src="images/download.svg"></div>
+	<div title="Delete Lexicon" class="buttons_on_datatable" onclick="deleteLexiconHandler();return false;"><img class="button_image_on_datatable" src="images/delete.svg"></div>
 </div>
 </div>
 <!--/sidebar-->
@@ -124,8 +124,8 @@
 				<div class="lexiconCategory">
 					<b class="lexiconName"><%=sentiment%></b>
 					<% if (!isRegex) { %>
-	<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:25px" src="images/test.svg"></div>
-	<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:25px" src="images/delete.svg"></div>
+	<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:20px" src="images/test.svg"></div>
+	<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:20px" src="images/delete.svg"></div>
 					<% } %>
                     <br/>
 					<textarea style="width:1100px;height:<%=(nRows+1)*20%>" name="<%=sentiment%>" ><%=query%></textarea>
@@ -148,15 +148,18 @@
 
 	<script type="text/javascript">
         var exportLexiconHandler=function(){
+            var x='<%=lexiconName%>'
             $.ajax({
                 type: 'POST',
                 url: "ajax/downloadData.jsp",
                 data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
                 dataType: 'json',
                 success: function (data) {
-                    epadd.alert('Lexicon file will be downloaded in your download folder', function () {
+                    window.location=data.downloadurl;
+
+                   /* epadd.alert('Lexicon file will be downloaded in your download folder', function () {
                         window.location=data.downloadurl;
-                    },'');
+                    },'');*/
                 },
                 error: function (jq, textStatus, errorThrown) {
                     var message = ("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
@@ -226,8 +229,8 @@
 				var placeholder;
 
                 <% if (!isRegex) { %>
-	    			html += '<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:25px" src="images/test.svg"></div>';
-                	html += '<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:25px" src="images/delete.svg"></div>';
+	    			html += '<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:20px" src="images/test.svg"></div>';
+                	html += '<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:20px" src="images/delete.svg"></div>';
 
                 placeholder = 'Enter some words or phrases, separated by |';
     	    	<% } else { %>

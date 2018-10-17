@@ -26,12 +26,7 @@
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
-	<style>
-		.remove-label {
-			cursor: pointer;
-			border-bottom: 1px dotted #000;
-		}
-	</style>
+
 
 </head>
 <body>
