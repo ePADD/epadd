@@ -230,7 +230,7 @@ var Annotations = function() {
             return false;
             }
             if(overwrite_or_append=="overwrite") {
-                var c = epadd.warn_confirm_continue('Existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?', function() {
+                var c = epadd.warn_confirm_continue('The existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?', function() {
                     //If user confirms then proceed.
                     Navigation.enableCursorKeys();
                     var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations

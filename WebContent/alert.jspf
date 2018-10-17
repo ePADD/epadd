@@ -4,7 +4,7 @@ Pages which need specific versions of these modals (e.g. with custom buttons, ha
 - they should give the modal some other id other than the ones used here.
 -->
 
-<div id="alert-modal" class="alert modal fade" style="z-index:9999">
+<div id="alert-modal" class="alert modal fade" style="z-index:99999">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -21,23 +21,7 @@ Pages which need specific versions of these modals (e.g. with custom buttons, ha
 </div><!-- /.modal -->
 
 
-<div id="error-modal" class="error-modal modal fade" style="z-index:9999">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Error</h4>
-			</div>
-			<div class="modal-body">
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div id="success-modal" class="success-modal alert modal fade" style="z-index:9999">
+<div id="success-modal" class="success-modal alert modal fade" style="z-index:99999">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -53,57 +37,8 @@ Pages which need specific versions of these modals (e.g. with custom buttons, ha
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="warning-modal" class="warning-modal alert modal fade" style="z-index:9999">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Warning</h4>
-			</div>
-			<div class="modal-body">
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
-
-<div id="warning-confirm-modal" class="warning-modal alert modal fade" style="z-index:9999">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Warning</h4>
-			</div>
-			<div class="modal-body">
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
-<div id="info-confirm-modal" class="info-modal alert modal fade" style="z-index:9999">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Warning</h4>
-			</div>
-			<div class="modal-body">
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div id="info-modal" class="info-modal alert modal fade" style="z-index:9999">
+<div id="info-modal" class="info-modal alert modal fade" style="z-index:99999">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -119,8 +54,75 @@ Pages which need specific versions of these modals (e.g. with custom buttons, ha
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div id="warning-modal" class="warning-modal alert modal fade" style="z-index:99999">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Warning</h4>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div id="error-modal" class="error-modal modal fade" style="z-index:99999">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Error</h4>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="warning-confirm-modal" class="warning-modal alert modal fade" style="z-index:99999">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Warning</h4>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="cancel-button btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="info-confirm-modal" class="info-modal alert modal fade" style="z-index:99999">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Warning</h4>
+			</div>
+			<div class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="cancel-button btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="ok-button btn btn-default" data-dismiss="modal">OK</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <%--Modal for showing some text and offering a copy-to-clipboard option--%>
-<div id="copy-modal" class="info-modal modal fade" style="z-index:9999">
+<div id="copy-modal" class="info-modal modal fade" style="z-index:99999">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">

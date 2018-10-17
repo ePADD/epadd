@@ -155,7 +155,7 @@
                 data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
                 dataType: 'json',
                 success: function (data) {
-                    epadd.info_confirm_continue('The lexicon file for ' + <%=lexiconName%> + ' will be downloaded in your download folder', function () {
+                    epadd.info_confirm_continue('The lexicon file for ' + x + ' will be downloaded in your browser\'s download folder.', function () {
                         window.location=data.downloadurl;
                     });
                 },
@@ -176,7 +176,7 @@
                     dataType: 'json',
                     data: post_params,
                     success: function (j) {
-                        epadd.success('Lexicon \'' + post_params.lexicon + '\' removed successfully.', function () {
+                        epadd.success('Lexicon \'' + post_params.lexicon + '\' deleted successfully.', function () {
                                 window.location = 'lexicon-top?archiveID=' + post_params.archiveID;
                         });
                     },

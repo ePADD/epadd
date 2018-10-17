@@ -112,7 +112,7 @@
             data: {archiveID: archiveID, data: "labels"},
             dataType: 'json',
             success: function (data) {
-                epadd.info_confirm_continue('A label description file called label-info.json will be downloaded in your download folder.', function () {
+                epadd.info_confirm_continue('A label description file called label-info.json will be downloaded in your browser\'s download folder.', function () {
                     window.location=data.downloadurl;
                 });
             },
@@ -173,11 +173,11 @@
                         if(response.status===0)
                         	window.location.reload();
 	                    else {
-    	                    epadd.error('Sorry, there was an error in saving labels.' + response.error);
+    	                    epadd.error('Sorry, there was an error in deleting the label.' + response.error);
         	            }
                     },
                     error: function(response) {
-                        epadd.error('Sorry, there was an error in saving labels.');
+                        epadd.error('Sorry, there was an error in deleting the label.');
                     }
                 });
             });

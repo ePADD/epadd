@@ -163,7 +163,7 @@
             data: {archiveID: archiveID, data: "addressbook"},
             dataType: 'json',
             success: function (data) {
-                epadd.info('Correspondent list will be downloaded in your browser\'s download folder.', function () {
+                epadd.info('A file called AddressBook.txt in the edit correspondents format will be downloaded in your browser\'s download folder.', function () {
                     window.location = data.downloadurl;
                 });
             },
