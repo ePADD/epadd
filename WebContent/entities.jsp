@@ -11,7 +11,6 @@
 -->
 <%
 	String type=request.getParameter("type");
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String et = "";
 	Short ct = NEType.Type.PERSON.getCode();
 	if("en_person".equals(type)||"person".equals(type)) {

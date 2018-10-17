@@ -70,27 +70,9 @@
             title = Util.escapeHTML(title);
         }
     }
-    //</editor-fold>
 
-    //<editor-fold desc="Setup (load archive/prepare session) for public mode- if present" input="request"
-    // output="">
-    /*if (ModeConfig.isPublicMode()) {
-        // this browse page is also used by Public mode where the following set up may be requried.
-        String archiveId = request.getParameter("aId");
-        Sessions.loadSharedArchiveAndPrepareSession(session, archiveId);
-    }*/
-    //</editor-fold>
 
-    String docsetID;
-    //<editor-fold desc="generate a random id for this dataset (the terms docset and dataset are used interchangeably)"
-    // input="" output="String:datasetID">
-    {
-        docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
-    }
-    //</editor-fold>
-
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-
+    String docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 %>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -118,10 +100,6 @@
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
-    <script>
-        var archiveID = '<%=archiveID%>';
-        var docsetID = '<%=docsetID%>';
-    </script> <!-- make the dataset name available to browse.js -->
     <script src="js/browse.js" type="text/javascript"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
 
@@ -139,6 +117,11 @@
 
 <body > <!--  override margin because this page is framed. -->
 <%@include file="header.jspf"%>
+<script>
+    var archiveID = '<%=archiveID%>';
+    var docsetID = '<%=docsetID%>';
+</script> <!-- make the dataset name available to browse.js -->
+
 <%--<script>epadd.nav_mark_active('Browse');--%>
 
 <div class="nav-toggle1 sidebar-icon">

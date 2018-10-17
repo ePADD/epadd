@@ -9,7 +9,6 @@ Browse page for entities based on fine types
 -->
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     for(NEType.Type t: NEType.Type.values())
         desc.put(t.getCode(), t.getDisplayName());
 

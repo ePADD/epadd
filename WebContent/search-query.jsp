@@ -2,9 +2,6 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@include file="getArchive.jspf" %>
-<%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-%>
 <!DOCTYPE HTML>
 <html>
 <head>

@@ -39,7 +39,6 @@
 	</style>
 
 	<%
-		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 		boolean isDelivery = ModeConfig.isDeliveryMode()?true:false;
 		JSONArray lexiconsWithCategories = archive.getAvailableLexiconsWithCategories(isDelivery);
 		JSONArray lexiconnames = new JSONArray();
@@ -47,97 +46,7 @@
 		    lexiconnames.put(i,lexiconsWithCategories.getJSONArray(i).get(0));
 
 	%>
-	<script type="text/javascript" charset="utf-8">
-		// we're using a simple datatables data source here, because this will be a small table
-		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
-		$(document).ready(function() {
-			/*function do_lexicon_search(e) {
-			  var cat = $(e.target).text();
-			  if (window.is_regex)
-                  window.open('browse?adv-search=1&archiveID=&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
-			  else
-                  window.open('browse?adv-search=1&archiveID=&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + $('#lexiconName').val());
-            }
-            //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
-			var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
-			oTable.fnSort( [ [1,'desc'] ] );
-			$('#table').show();
-*/
-        function changeLexicon(e) {
-        	var lexname = $(e.target).text();
-            window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	lexname;
-        }
-            var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
-            oTable.fnSort( [ [1,'desc'] ] );
-            $('#table').show();
-			// attach the click handlers
-			$('.search').click(changeLexicon);
 
-
-            $('#create-lexicon').click (function() {
-                var lexiconName = prompt ('Enter the name of the new lexicon:');
-                if (!lexiconName)
-                    return;
-                window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;
-            });
-
-            $('#import-lexicon').click(function(){
-                //open modal box to get the lexicon file and upload
-                $('#lexicon-upload-modal').modal('show');
-            });
-
-		} );
-        var uploadLexiconHandler=function() {
-            //collect archiveID,lexicon-name and lexiconfile field. If either of them is empty return false;
-            var lexiconname = $('#lexicon-name').val();
-            var existinlexiconnames = <%=lexiconnames.toString(5)%>;
-            if (!lexiconname) {
-                alert('Please provide the name of the lexicon');
-                return false;
-            }
-            var lexiconlang = $('#lexicon-lang').val();
-            if (!lexiconlang) {
-                alert('Please provide the language of the lexicon');
-                return false;
-            }
-            var lexiconfilename = $('#lexiconfile').val();
-            if (!lexiconfilename) {
-                alert('Please provide the path of the lexicon file');
-                return false;
-            }
-            //if lexicon-name is already one of the lexicon then prompt a confirmation box
-            if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
-
-                epadd.warn_confirm_continue('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?', function () {
-                    var form = $('#uploadlexiconform')[0];
-
-                    // Create an FormData object
-                    var data = new FormData(form);
-                    //hide the modal.
-                    $('#lexicon-upload-modal').modal('hide');
-                    //now send to the backend.. on it's success reload the labels page. On failure display the error message.
-
-                    $.ajax({
-                        type: 'POST',
-                        enctype: 'multipart/form-data',
-                        processData: false,
-                        url: "ajax/upload-lexicon.jsp",
-                        contentType: false,
-                        cache: false,
-                        data: data,
-                        success: function (data) {
-                            epadd.success('Lexicon uploaded successfully.', function () {window.location.reload();});
-                        },
-                        error: function (jq, textStatus, errorThrown) {
-                            var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                            epadd.error(message);
-                        }
-                    });
-                });
-            }
-        }
-
-	</script>
 </head>
 <body>
 <%@include file="header.jspf"%>
@@ -251,7 +160,97 @@
 	</div><!-- /.modal -->
 </div>
 
+<script type="text/javascript" charset="utf-8">
+    // we're using a simple datatables data source here, because this will be a small table
+    $('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
+    $(document).ready(function() {
+        /*function do_lexicon_search(e) {
+          var cat = $(e.target).text();
+          if (window.is_regex)
+              window.open('browse?adv-search=1&archiveID=&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + $('#lexiconName').val()); // sensitive=true is what enables regex highlighting
+          else
+              window.open('browse?adv-search=1&archiveID=&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + $('#lexiconName').val());
+        }
+        //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
+        var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+        oTable.fnSort( [ [1,'desc'] ] );
+        $('#table').show();
+*/
+        function changeLexicon(e) {
+            var lexname = $(e.target).text();
+            window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	lexname;
+        }
+        var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+        oTable.fnSort( [ [1,'desc'] ] );
+        $('#table').show();
+        // attach the click handlers
+        $('.search').click(changeLexicon);
 
+
+        $('#create-lexicon').click (function() {
+            var lexiconName = prompt ('Enter the name of the new lexicon:');
+            if (!lexiconName)
+                return;
+            window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;
+        });
+
+        $('#import-lexicon').click(function(){
+            //open modal box to get the lexicon file and upload
+            $('#lexicon-upload-modal').modal('show');
+        });
+
+    } );
+    var uploadLexiconHandler=function() {
+        //collect archiveID,lexicon-name and lexiconfile field. If either of them is empty return false;
+        var lexiconname = $('#lexicon-name').val();
+        var existinlexiconnames = <%=lexiconnames.toString(5)%>;
+        if (!lexiconname) {
+            alert('Please provide the name of the lexicon');
+            return false;
+        }
+        var lexiconlang = $('#lexicon-lang').val();
+        if (!lexiconlang) {
+            alert('Please provide the language of the lexicon');
+            return false;
+        }
+        var lexiconfilename = $('#lexiconfile').val();
+        if (!lexiconfilename) {
+            alert('Please provide the path of the lexicon file');
+            return false;
+        }
+        //if lexicon-name is already one of the lexicon then prompt a confirmation box
+        if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
+
+            epadd.warn_confirm_continue('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?', function () {
+                var form = $('#uploadlexiconform')[0];
+
+                // Create an FormData object
+                var data = new FormData(form);
+                //hide the modal.
+                $('#lexicon-upload-modal').modal('hide');
+                //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+
+                $.ajax({
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    url: "ajax/upload-lexicon.jsp",
+                    contentType: false,
+                    cache: false,
+                    data: data,
+                    success: function (data) {
+                        epadd.success('Lexicon uploaded successfully.', function () {window.location.reload();});
+                    },
+                    error: function (jq, textStatus, errorThrown) {
+                        var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                        epadd.error(message);
+                    }
+                });
+            });
+        }
+    }
+
+</script>
 <jsp:include page="footer.jsp"/>
 </body>
 </html>

@@ -65,9 +65,7 @@
 	</div>
 </nav>
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	writeProfileBlock(out, archive, "Manage labels");
-
 %>
 
 <% // new label not available in discovery mode.

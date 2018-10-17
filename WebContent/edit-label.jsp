@@ -10,7 +10,6 @@
 <%
     // labelId = null or empty => tis is a new label
 
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String labelID = request.getParameter("labelID");
 	String labelName = "", labelDescription = "", labelType = "";

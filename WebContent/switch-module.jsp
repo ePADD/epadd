@@ -1,5 +1,4 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
 <%--<%@include file="getArchive.jspf" %>--%>
 
@@ -74,7 +73,6 @@
 	<br/>
 	<%
 
-		//String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	 if (true) { %>
 		<div id="advanced_options">
 <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
