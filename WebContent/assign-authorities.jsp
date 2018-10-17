@@ -122,11 +122,7 @@
 <script>epadd.nav_mark_active('Authorities');</script>
 <% writeProfileBlock(out, archive, "Assign Authorities");%>
 
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
-
 <%
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     CorrespondentAuthorityMapper cAuthorityMapper = archive.getCorrespondentAuthorityMapper();
     AddressBook addressBook = archive.getAddressBook();
 

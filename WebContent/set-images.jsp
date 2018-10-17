@@ -21,9 +21,6 @@
  <%
      String collectionID = request.getParameter("collection");
      Archive archive= JSPHelper.getArchive(request);
-     String archiveID=null;
-     if(archive!=null)
-         archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
      //INV: here collectionID=null && archiveID="" can not be true. Exactly one should be true.
      //This page can be invoked in two different context. One: from the colleciton-detail page with collection

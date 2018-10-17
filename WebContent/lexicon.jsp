@@ -40,31 +40,9 @@
 	</style>
 
 	<%
-		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 		String lexiconname = request.getParameter("lexicon");
-
 	%>
-	<script type="text/javascript" charset="utf-8">
-		// we're using a simple datatables data source here, because this will be a small table
-		$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
-		$(document).ready(function() {
-			function do_lexicon_search(e) {
-			  var cat = $(e.target).text();
-			  var lexname = '<%=lexiconname%>';
-			  if (window.is_regex)
-                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + lexname); // sensitive=true is what enables regex highlighting
-			  else
-                  window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + lexname);
-            }
-            //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
-			var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
-			oTable.fnSort( [ [1,'desc'] ] );
-			$('#table').show();
 
-			// attach the click handlers
-			$('.search').click(do_lexicon_search);
-		} );
-	</script>
 </head>
 <body>
 <%@include file="header.jspf"%>
@@ -175,22 +153,32 @@
 <p>
 <br/>
 	<script>
+        $('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
 		$(document).ready (function() {
             window.is_regex = <%=isRegex%>;
 			$('#lexiconName').change (changeLexicon);
 			$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';});
-
-
-
-
         });
 
+        // we're using a simple datatables data source here, because this will be a small table
+        $(document).ready(function() {
+            function do_lexicon_search(e) {
+                var cat = $(e.target).text();
+                var lexname = '<%=lexiconname%>';
+                if (window.is_regex)
+                    window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + lexname); // sensitive=true is what enables regex highlighting
+                else
+                    window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + lexname);
+            }
+            //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
+            var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+            oTable.fnSort( [ [1,'desc'] ] );
+            $('#table').show();
 
-
-
-
+            // attach the click handlers
+            $('.search').click(do_lexicon_search);
+        } );
 	</script>
-
 <% } // lex != null %>
 
 

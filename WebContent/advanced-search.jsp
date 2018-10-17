@@ -68,9 +68,6 @@
 	<script src="js/epadd.js"></script>
 
 </head>
-<%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-%>
 <body>
 	<%@include file="header.jspf"%>
 	<script>epadd.nav_mark_active('Search');</script>

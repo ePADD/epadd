@@ -1,23 +1,12 @@
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="getArchive.jspf" %>
-<%
-/*
-if (ModeConfig.isPublicMode()) {
-	// this browse page is also used by Public mode where the following set up may be requried. 
-	String archiveId = request.getParameter("aId");
-	Sessions.loadSharedArchiveAndPrepareSession(session, archiveId);
-	// TODO: should also pass "aId" downstream to leadsAsJson.jsp also. but it still relies on emailDocs and maybe other session attributes, whose dependence should also be eliminated in public mode for being RESTful.
-}
-*/
-%>
 <!DOCTYPE html>
 <html>
 <head>
 <%--
 	<title>Query Generator Results</title>
 --%>
-    <title>Multi-Entity Search Results</title>
+    <title>Multi-search results</title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">

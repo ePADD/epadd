@@ -70,7 +70,6 @@
     for(NEType.Type t: NEType.Type.values())
         desc.put(t.getCode(), t.getDisplayName());
 
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     JSONArray resultArray = new JSONArray();
     int count = 0;
     for(Short type: desc.keySet()){

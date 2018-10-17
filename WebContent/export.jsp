@@ -36,7 +36,6 @@
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
 
     <style>
 		.mini-box { height: 105px; vertical-align:top; background-color: #f5f5f8; display: inline-block; width:200px; padding:20px; margin-right:22px;}
@@ -65,7 +64,6 @@
     </style>
 </head>
 <body style="background-color:white;">
-<%@include file="div_status.jspf"%>
 <%@include file="header.jspf"%>
 <jsp:include page="div_filepicker.jspf"/>
 
@@ -109,8 +107,6 @@
         <% } %>
     </div>
 </nav>
-
-<%@include file="profile-block.jspf"%>
 
 <%
 Archive archive = JSPHelper.getArchive(request);

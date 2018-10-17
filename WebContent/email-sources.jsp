@@ -47,8 +47,6 @@
 	<script>epadd.nav_mark_active('New');</script>
 <% } %>
 
-<%@include file="profile-block.jspf"%>
-
 <div class="nav-toggle1 sidebar-icon">
     <img src="images/sidebar.png" alt="sidebar">
 </div>

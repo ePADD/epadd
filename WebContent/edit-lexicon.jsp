@@ -1,18 +1,11 @@
-<%@page language="java" contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page import="java.util.*"%>
 <%@page import="edu.stanford.muse.index.*"%>
-<%@page import="edu.stanford.muse.util.*"%>
 <%@page import="java.io.File" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
-<% 
-// params:
-// lexicon=<lexicon name>. if no lexicon name, use "default"
-
-	boolean freshLexicon = false; // track whether this is a newly created lexicon -- we suppress the "create new lexicon" option if so.
-
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+<%
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String lexiconName = request.getParameter("lexicon");
 

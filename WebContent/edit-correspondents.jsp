@@ -7,7 +7,6 @@
 <%@include file="getArchive.jspf" %>
 <%
 	AddressBook addressBook = archive.addressBook;
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 	boolean aliasCountSort = ("aliasCount".equals(sort));

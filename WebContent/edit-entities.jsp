@@ -9,7 +9,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>

@@ -81,72 +81,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 }
 
 %>
-<%
 
-	if (archive == null)
-	{
-		if (!session.isNew())
-			session.invalidate();
-	%>
-	    <script type="text/javascript">window.location="index.jsp";</script>
-	<%
-		System.err.println ("Error: session has timed out, archive is null.");
-		return;
-	}
-	String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	
-	Collection<DatedDocument> allDocs = (Collection) archive.getAllDocs();
-
-	AddressBook addressBook = archive.addressBook;
-
-	Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
-	Date globalStart = p.getFirst();
-	Date globalEnd = p.getSecond();
-	List<Date> intervals = null;
-	int nIntervals = 0;
-	if (globalStart != null && globalEnd != null) {
-		intervals = CalendarUtil.divideIntoMonthlyIntervals(globalStart, globalEnd);
-		nIntervals = intervals.size() - 1;
-	}
-	boolean doSentiments = false, doPeople = false, doEntities = false;
-	String view = request.getParameter("view");
-	String type = request.getParameter("type");
-    short ct = NEType.Type.PERSON.getCode();
-
-    if("en_loc".equals(type))
-        ct = NEType.Type.PLACE.getCode();
-    else
-        ct = NEType.Type.ORGANISATION.getCode();
-
-		Lexicon lex=null;
-		String name = request.getParameter("lexicon");
-
-		String heading = "", tableURL = "";
-	if ("sentiments".equals(view)) {
-		doSentiments = true;
-		// resolve lexicon based on name in request and existing lex in session.
-		// name overrides lex
-		if (!Util.nullOrEmpty(name)) {
-				lex = archive.getLexicon(name);
-			// else do nothing, the right lex is already loaded
-		} else {
-				// no request param... probably shouldn't happen, get default lexicon
-				name = Config.DEFAULT_LEXICON;
-				lex = archive.getLexicon(name);
-		}
-		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
-		heading = "Lexicon Graph";
-		tableURL = "lexicon?archiveID="+archiveID;
-	} else if ("people".equals(view)) {
-		heading = "Top correspondents graph";
-		doPeople = true;
-		tableURL = "correspondents?archiveID="+archiveID;
-	} else if ("entities".equals(view)) {
-		doEntities = true;
-		heading = "Top entities graph (type: " + Util.capitalizeFirstLetter(type) + ")";
-		tableURL = "entities?archiveID="+archiveID+"&type=" + type;
-	}
-	%>
 <html>
 <head>
 	<title>Graph</title>	
@@ -178,6 +113,71 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 <body style="margin:0% 2%"> <!--  override the default of 1% 5% because we need more width on this page -->
 <%@include file="header.jspf"%>
 
+<%
+
+    if (archive == null)
+    {
+        if (!session.isNew())
+            session.invalidate();
+%>
+<script type="text/javascript">window.location="index.jsp";</script>
+<%
+        System.err.println ("Error: session has timed out, archive is null.");
+        return;
+    }
+
+    Collection<DatedDocument> allDocs = (Collection) archive.getAllDocs();
+
+    AddressBook addressBook = archive.addressBook;
+
+    Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
+    Date globalStart = p.getFirst();
+    Date globalEnd = p.getSecond();
+    List<Date> intervals = null;
+    int nIntervals = 0;
+    if (globalStart != null && globalEnd != null) {
+        intervals = CalendarUtil.divideIntoMonthlyIntervals(globalStart, globalEnd);
+        nIntervals = intervals.size() - 1;
+    }
+    boolean doSentiments = false, doPeople = false, doEntities = false;
+    String view = request.getParameter("view");
+    String type = request.getParameter("type");
+    short ct = NEType.Type.PERSON.getCode();
+
+    if("en_loc".equals(type))
+        ct = NEType.Type.PLACE.getCode();
+    else
+        ct = NEType.Type.ORGANISATION.getCode();
+
+    Lexicon lex=null;
+    String name = request.getParameter("lexicon");
+
+    String heading = "", tableURL = "";
+    if ("sentiments".equals(view)) {
+        doSentiments = true;
+        // resolve lexicon based on name in request and existing lex in session.
+        // name overrides lex
+        if (!Util.nullOrEmpty(name)) {
+            lex = archive.getLexicon(name);
+            // else do nothing, the right lex is already loaded
+        } else {
+            // no request param... probably shouldn't happen, get default lexicon
+            name = Config.DEFAULT_LEXICON;
+            lex = archive.getLexicon(name);
+        }
+        JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
+        heading = "Lexicon Graph";
+        tableURL = "lexicon?archiveID="+archiveID;
+    } else if ("people".equals(view)) {
+        heading = "Top correspondents graph";
+        doPeople = true;
+        tableURL = "correspondents?archiveID="+archiveID;
+    } else if ("entities".equals(view)) {
+        doEntities = true;
+        heading = "Top entities graph (type: " + Util.capitalizeFirstLetter(type) + ")";
+        tableURL = "entities?archiveID="+archiveID+"&type=" + type;
+    }
+%>
 <%
 	String sentiment = request.getParameter("sentiment");
 	if (sentiment == null)
