@@ -47,6 +47,60 @@
 
 	%>
 
+		} );
+        var uploadLexiconHandler=function() {
+            //collect archiveID,lexicon-name and lexiconfile field. If either of them is empty return false;
+            var lexiconname = $('#lexicon-name').val();
+            var existinlexiconnames = <%=lexiconnames.toString(5)%>;
+            if (!lexiconname) {
+                alert('Please provide the name of the lexicon');
+                return false;
+            }
+            var lexiconlang = $('#lexicon-lang').val();
+            if (!lexiconlang) {
+                alert('Please provide the language of the lexicon');
+                return false;
+            }
+            var lexiconfilename = $('#lexiconfile').val();
+            if (!lexiconfilename) {
+                alert('Please provide the path of the lexicon file');
+                return false;
+            }
+            //if lexicon-name is already one of the lexicon then prompt a confirmation box
+            if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
+
+                epadd.warn_confirm_continue('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?', function () {
+                    var form = $('#uploadlexiconform')[0];
+
+                    // Create an FormData object
+                    var data = new FormData(form);
+                    //hide the modal.
+                    $('#lexicon-upload-modal').modal('hide');
+                    //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+
+                    $.ajax({
+                        type: 'POST',
+                        enctype: 'multipart/form-data',
+                        processData: false,
+                        url: "ajax/upload-lexicon.jsp",
+                        contentType: false,
+                        cache: false,
+                        data: data,
+                        success: function (data) {
+                            epadd.success('Lexicon uploaded successfully.', function () {window.location.reload();});
+                        },
+                        error: function (jq, textStatus, errorThrown) {
+                            var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                            epadd.error(message);
+                        }
+                    });
+                });
+            }else{
+                ////
+			}
+        }
+
+	</script>
 </head>
 <body>
 <%@include file="header.jspf"%>
