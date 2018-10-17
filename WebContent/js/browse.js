@@ -23,7 +23,7 @@ var Navigation = function(){
         // window.location.origin gives us something like http://localhost:9099
         $('.message-menu a.id-link').attr('data-href', window.location.origin + '/epadd/browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
         $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadID=' + window.messageMetadata[PAGE_ON_SCREEN].threadID);
-        $('.message-menu .attach span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
+        $('.message-menu .attach-link span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
     };
 
     var setupEvents = function() {
