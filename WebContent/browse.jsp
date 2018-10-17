@@ -687,7 +687,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <!-- a couple of confirm modals that can be invoked when necessary -->
 <div>
-    <div id="annotation-modal" class="modal fade" style="z-index:99999">
+    <div id="annotation-modal" class="info-modal modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -716,7 +716,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
     <%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
     <div>
-        <div id="normalization-info-modal" class="modal fade" style="z-index:99999">
+        <div id="normalization-info-modal" class="info-modal modal fade" style="z-index:99999">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">

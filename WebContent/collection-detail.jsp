@@ -45,10 +45,6 @@
 <body>
 <%@include file="header.jspf"%>
 
-
-<!-- need status window on this page because archive might take some time to load -->
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
 <%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
 <%
@@ -274,7 +270,7 @@
     <br/>
     <br/>
 
-<div id="bannerImage-upload-modal" class="modal fade" style="z-index:9999">
+<div id="bannerImage-upload-modal" class="info-modal modal fade" style="z-index:9999">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

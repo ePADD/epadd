@@ -328,7 +328,7 @@ $(document).ready(function() {
 });
 </script>
 <div>
-    <div id="normalization-info-modal" class="modal fade" style="z-index:99999">
+    <div id="normalization-info-modal" class="info-modal modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

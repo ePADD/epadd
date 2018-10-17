@@ -33,10 +33,6 @@
 
     <script>epadd.nav_mark_active('Collections');</script>
 
-    <!-- need status window on this page because upload might take some time, also to alert to errors -->
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
-    <%@include file="div_status.jspf"%>
-
     <div style="margin-left:170px">
         You can upload images that represent the collection here. Only PNG format files are supported.
         <p></p>

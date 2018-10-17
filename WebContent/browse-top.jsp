@@ -313,7 +313,7 @@
 </div> <!--  allCards -->
 
 <div>
-    <div id="profilePhoto-upload-modal" class="modal fade" style="z-index:9999">
+    <div id="profilePhoto-upload-modal" class="info-modal modal fade" style="z-index:9999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
