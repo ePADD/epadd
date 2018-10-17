@@ -90,7 +90,7 @@ if (ModeConfig.isPublicMode()) {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 style="font-size: 125%" class="modal-title">Messages matching <span id="search-term"></span></h4>
+                    <h4 style="font-size: 125%" class="modal-title">Preview of messages matching <span id="search-term"></span></h4>
                 </div>
                 <div class="modal-body">
                 </div>
