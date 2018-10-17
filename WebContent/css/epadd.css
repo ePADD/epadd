@@ -64,12 +64,16 @@ div.button_bar_on_lexicon{
 }
 div.buttons_on_datatable{
 	display: inline-block;
-	border-right: 1px solid grey;
 	margin-top: -30px;
 	padding: 8px;
 	cursor:pointer;
 }
 
+.button_image_on_datatable{
+	height:25px;
+	border-right: 1px solid black;
+	padding-right: 10px;
+}
 .dataTables_length{ float:right;}
 
 div.facets {
