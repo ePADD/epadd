@@ -31,26 +31,11 @@ if (ModeConfig.isPublicMode()) {
 	<script src="js/epadd.js"></script>
 
     <style>
-        .search-clear-btns { text-align: center; padding: 35px 0; }
-        .search-btn {
-            background: #0175bc;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #fff;
-            padding: 15px 25px;
-            border-radius: 4px;
-            display: inline-flex;
-            justify-content: center;
-            margin-right: 25px;
-            box-shadow: 0px 2px 7px 1px rgba(153, 177, 200, 0.38);
-        }
         img { margin: 3px 0 0 10px;}
         h5 { margin: 0px; color: white; }
     </style>
 </head>
-<body style="background-color:#f5f5f8; color: #333">
+<body>
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Search');</script>
 
@@ -67,41 +52,31 @@ if (ModeConfig.isPublicMode()) {
         one_line_per_term_search=true;
     }
     String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+    writeProfileBlock(out, archive, one_line_per_term_search ? "Multi-term search results" : "Multi-entity search results");
+
 %>
 <div class="appraisal-bulk-search">
 
     <div class="container">
-        <div class="row">
-            <div class="col-md-9 col-md-offset-1 epadd-flex">
-                <div class="col-md-6">
-                    <%if(one_line_per_term_search){%>
-                        <h1>Term search results</h1>
-                    <%}else{%>
-                        <%--<h1>Query generator results</h1>--%>
-                    <h1>Entity search results</h1>
-                    <%}%>
-                </div>
-                <div class="col-md-6 text-right">
-                    <label>
-                        <%if(one_line_per_term_search){%>
-                        <span style="background-color: #e7df9a;">Matched terms</span>
-                        <%}else{%>
-                        <span style="background-color: #e7df9a;">Matched entities</span>
-                        <%}%>
-                    </label>
-                    <label style="margin-left:10px">
-                        <%if(one_line_per_term_search){%>
-                        <span style="border-bottom: 1px red dotted;">Unmatched terms</span>
-                        <%}else{%>
-                        <span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
-                        <%}%>
-                    </label>
-                </div>
-            </div>
+        <div style="text-align:right">
+            <label>
+                <%if(one_line_per_term_search){%>
+                <span style="background-color: #e7df9a;">Matched terms</span>
+                <%}else{%>
+                <span style="background-color: #e7df9a;">Matched entities</span>
+                <%}%>
+            </label>
+            <label style="margin-left:10px">
+                <%if(one_line_per_term_search){%>
+                <span style="border-bottom: 1px red dotted;">Unmatched terms</span>
+                <%}else{%>
+                <span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
+                <%}%>
+            </label>
         </div>
 
         <div class="row">
-            <div class="col-md-9 col-md-offset-1 bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	padding: 35px; line-height: 25px; height: auto">
+            <div class="bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	line-height: 25px; height: auto; padding: 10px;">
                 <%
 
                     out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
