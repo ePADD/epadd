@@ -16,7 +16,7 @@
 <%
 // note: this is ajax/upload-images.jsp (not just upload-images.jsp, which will be removed)
 
-    String collectionID = request.getParameter("collection");
+    String collectionID = request.getParameter("collectionID");
    session.setAttribute("statusProvider", new StaticStatusProvider("Uploading files"));
    JSONObject result = new JSONObject();
 

@@ -25,79 +25,20 @@
 <%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Collections');</script>
 
-<div style="width:100%; margin:auto">
-  <%
-    // this is the landing page for discovery, so a special message.
-    if (ModeConfig.isDiscoveryMode()) { %>
-        <h1 style="font-size:32px; color:#0175bc">Welcome to ePADD.</h1>
-        <p>
-            <!--
-        ePADD is a platform that allows researchers to browse and search historical email archives.
-        <p>
-        Messages have been redacted to ensure the privacy of donors and other correspondents.
-        Please contact the host repository if you would like to request access to full messages, including any attachments.
-        -->
-
-
-            <div style="text-align:center; margin:auto; width:600px;">
-
-                <div id="cross-collection-search" style="text-align:center">
-                    <form method="get" action="cross-collection-search">
-
-                        <input id="xcoll-search" name="term" size="80" placeholder="Cross-collection entity search"/>
-
-                        <button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
-
-                    </form>
-                </div>
-    <p>
-</div>
-
-<script>
-    $(document).ready(function() {
-        var autocomplete_params = {
-            serviceUrl: 'ajax/xcollSearchAutoComplete.jsp',
-            onSearchError: function (query, jqXHR, textStatus, errorThrown) {epadd.log(textStatus+" error: "+errorThrown);},
-            preventBadQueries: false,
-            showNoSuggestionNotice: true,
-            preserveInput: true,
-            ajaxSettings: {
-                "timeout":5000, /* 5000 instead of 3000 because xcoll search is likely to be slow */
-                dataType: "json"
-            },
-            dataType: "text",
-            //100ms
-            deferRequestsBy: 100,
-            onSelect: function(suggestion) {
-                var existingvalue = $(this).val();
-                var idx = existingvalue.lastIndexOf(';');
-                if (idx <= 0)
-                    $(this).val(suggestion.name);
-                else
-                    $(this).val (existingvalue.substring (0, idx+1) + ' ' + suggestion.name); // take everything up to the last ";" and replace after that
-            },
-            onHint: function (hint) {
-                $('#autocomplete-ajax-x').val(hint);
-            },
-            onInvalidateSelection: function() {
-                epadd.log('You selected: none');
-            }
-        };
-        $('#xcoll-search').autocomplete(autocomplete_params);
-    });
-
-</script>
+<div style="width:1100px; margin:auto">
+    <% if (ModeConfig.isProcessingMode()) { %>
+        <h1>Welcome to the ePADD processing module.</h1>
   <% } else if (ModeConfig.isDeliveryMode()) { %>
         <h1>Welcome to the ePADD delivery module.</h1>
-  <% } else if (ModeConfig.isAppraisalMode()) { %>
+    <% } else if (ModeConfig.isDiscoveryMode()) { %>
+        <h1>Discover historical email from around the world</h1>
+
+    <% } else if (ModeConfig.isAppraisalMode()) { %>
         <div style="text-align:center">Sorry, this page is not available in appraisal mode.</div>
         <% return;
     }
   %>
 </div>
-
-
-
 
   <div style="margin:auto;text-align:center">
   <div style="width:100%;text-align:left;">
@@ -135,11 +76,22 @@
 
                   Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   if (cm != null) {
-                      String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto.png"; // always forward slashes please
+                      String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto"; // always forward slashes please
                       String url = "serveImage.jsp?file=" + fileParam;
 
                       out.println("<div data-dir=\"" + id + "\" class=\"archive-card\">");
-                      out.println("<div class=\"landing-img\" style=\"background-image:url('" + url + "')\"></div>");
+                      %>
+
+                      <%--warning: url might be fragile w.r.t. brackets or quotes--%>
+                      <div class="landing-img" style="background-size: contain; background-repeat:no-repeat; background-position: center center; background-image:url('<%=url%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
+                      <% if(ModeConfig.isProcessingMode()){%>
+                          <div class="landing-photo-edit" style="text-align: right; top: 10px; right: 10px; position: relative;">
+                              <img src="images/edit_summary.svg"/>
+                          </div>
+                      <% } %>
+                      </div>
+
+                      <%
                       out.println("<div class=\"landing-img-text\">");
                       out.println(Util.nullOrEmpty(cm.collectionTitle) ? "No name assigned" : cm.collectionTitle);
                       out.println("<br><span class=\"detail\">" + Util.commatize(cm.nDocs) + " messages</span>");
@@ -161,10 +113,89 @@
         var dir = $(e.target).closest('.archive-card').attr('data-dir');
         window.location = 'collection-detail?collection=' + escape(dir); // worried about single quotes in dir
       });
+
+      <% if (ModeConfig.isProcessingMode()) { %>
+        $('.upload-btn').click(function(e) {
+            //collect archiveID,and addressbookfile field. If  empty return false;
+            var filePath = $('#landingPhoto').val();
+            if (!filePath) {
+                alert('Please provide the path of the landing page image');
+                return false;
+            }
+
+            var form = $('#uploadLandingPhotoForm')[0];
+
+            // Create an FormData object
+            var data = new FormData(form);
+
+            //hide the modal.
+            $('#landingPhoto-upload-modal').modal('hide');
+            //now send to the backend.. on it's success reload the same page. On failure display the error message.
+
+            $.ajax({
+                type: 'POST',
+                enctype: 'multipart/form-data',
+                processData: false,
+                url: "ajax/upload-images.jsp",
+                contentType: false,
+                cache: false,
+                data: data,
+                success: function (data) {
+                    if (data && data.status === 0) {
+                        window.location.reload();
+                    } else {
+                        epadd.error('There was an error uploading the landing page image. (' + data.error + ')');
+                    }
+                },
+                error: function (jq, textStatus, errorThrown) {
+                    epadd.error("There was an error uploading the landing page image. (status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + ')');
+                }
+            });
+        });
+
+        $('.landing-photo-edit').click (function(e) {
+            var collectionID = $(e.target).closest('.archive-card').attr('data-dir');
+            $('input[name="collectionID"]').val(collectionID);
+            $('#landingPhoto-upload-modal').modal();
+            return false;
+        });
+    <% } %>
     });
   </script>
 
   <br/>
+
+  <div id="landingPhoto-upload-modal" class="info-modal modal fade" style="z-index:99999">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Upload a landing page image (4:3 aspect ratio)</h4>
+              </div>
+              <div class="modal-body">
+                  <form id="uploadLandingPhotoForm" method="POST" enctype="multipart/form-data" >
+                      <div class="form-group">
+                          <input class="collectionID" name="collectionID" type="hidden" value="foobar"/>
+                          <label for="landingPhoto" class="col-sm-2 control-label">File</label>
+                          <div class="col-sm-10">
+                              <input type="file" id="landingPhoto" name="landingPhoto" value=""/>
+                          </div>
+                      </div>
+                      <%--<input type="file" name="correspondentCSV" id="correspondentCSV" /> <br/><br/>--%>
+
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button class="upload-btn btn btn-cta">Upload <i class="icon-arrowbutton"></i></button>
+
+
+                  <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
+                  <%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+              </div>
+          </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
   <jsp:include page="footer.jsp"/>
 </body>
 </html>
