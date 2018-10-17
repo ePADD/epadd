@@ -56,6 +56,15 @@
 <jsp:include page="header.jspf"/>
 <script>epadd.nav_mark_active('Browse');</script>
 
+<style type="text/css">
+	.lexiconCategory {width:fit-content}
+	.lexiconName {float:left}
+	.test-category {cursor:pointer;
+		float:right; margin-right: 10px}
+	.delete-category {cursor:pointer;
+		float:right; margin-right: 10px}
+</style>
+
 <% if (lex == null) { %>
 	 Sorry, there is no lexicon named <%=lexiconName%>.
 <%
@@ -88,6 +97,13 @@
 		<p>Select Test for a given category to view the number of hits for each keyword in that category. <!-- test not available if in regex -->
 	<% } %>
 </nav>
+<div align="center">
+<div class="button_bar_on_lexicon">
+	<div title="Add Category" class="buttons_on_datatable" id="add-category"><img style="height:25px" src="images/add_lexicon.svg"></div>
+	<div title="Download Lexicon" class="buttons_on_datatable" onclick="exportLexiconHandler()"><img style="height:25px" src="images/download.svg"></div>
+	<div title="Delete Lexicon" class="buttons_on_datatable" onclick="deleteLexiconHandler()"><img style="height:25px" src="images/delete.svg"></div>
+</div>
+</div>
 <!--/sidebar-->
 <div align="center">
 	<p>
@@ -106,9 +122,10 @@
 				%>
 				<p>
 				<div class="lexiconCategory">
-					<b><%=sentiment%></b>
+					<b class="lexiconName"><%=sentiment%></b>
 					<% if (!isRegex) { %>
-						(<a target="_blank" class="test-lexicon" href="#">Test</a>)
+	<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:25px" src="images/test.svg"></div>
+	<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:25px" src="images/delete.svg"></div>
 					<% } %>
                     <br/>
 					<textarea style="width:1100px;height:<%=(nRows+1)*20%>" name="<%=sentiment%>" ><%=query%></textarea>
@@ -126,11 +143,8 @@
 		%>
 	</div> <!--  categories -->
 <br/>
-	<button id="add-category" class="btn-default" class="tools-pushbutton" ><i class="fa fa-plus"></i> Add category</button>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save</button>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<button class="btn-default" id="export-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" onclick="exportLexiconHandler();"><i class="fa fa-download"></i> Download</button>
+
+<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save</button>
 
 	<script type="text/javascript">
         var exportLexiconHandler=function(){
@@ -151,6 +165,55 @@
                 }
             });
         }
+        var deleteLexiconHandler = function() {
+            var c = epadd.confirm ('Delete this lexicon? This action cannot be undone!');
+            if (!c)
+                return;
+            var post_params = {};
+            post_params.archiveID = '<%=archiveID%>';
+            post_params.lexicon = '<%=lexiconName%>';
+            $.ajax({
+                url: 'ajax/delete-lexicon.jsp',
+                type: 'POST',
+                dataType: 'json',
+                data: post_params,
+                success: function (j) {
+                    epadd.success('Lexicon \'' + post_params.lexicon + '\' removed successfully.', function (archiveID) {
+                       return function(){ window.location = 'lexicon-top?archiveID=' + archiveID;}
+                    }(j.archiveID));
+                },
+                error: function (j) {
+//                        $('#save-button .fa').removeClass('fa-spin');
+                    epadd.alert('Sorry! There was an error removing the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+                }
+            });
+        }
+        var test_category = function(e) {
+            //$(e.target).closest('.lexiconCategory').children().first().text()
+            var $lexicon = $(e.target).closest('.lexiconCategory');
+            var lexiconTerms = $('textarea', $lexicon).val();
+            if (!lexiconTerms)
+                return;
+            var lexiconTermsArr = lexiconTerms.split('|');
+
+            var url = 'multi-search?archiveID=<%=archiveID%>&';
+            for (var i = 0; i < lexiconTermsArr.length; i++) {
+                url += 'term=' + lexiconTermsArr[i] + '&'; // there will be a trailing &, that's ok
+            }
+            window.location=url;
+            //$(e.target).attr('href', url);
+            return false;
+        };
+        var delete_category = function(e) {
+            var c = epadd.confirm ('Delete this category? This action cannot be undone!');
+            if (!c)
+                return;
+            //$(e.target).closest('.lexiconCategory').children().first().text()
+            var $lexicon = $(e.target).closest('.lexiconCategory');
+            $($lexicon).attr('onclick',"");//remove event handler otherwise the other one is getting called
+            $($lexicon).remove();
+            return false;
+        };
 
         $(document).ready(function() {
 			function addCategory() {
@@ -159,17 +222,18 @@
 					return;
 
 				// target = _blank is important here, otherwise the user will navigate off the page, and may not have saved the new category!
-				var html = '<br/><div class="lexiconCategory"> <b>' + name + '</b>';
+				var html = '<br/><div class="lexiconCategory" > <b class="lexiconName">' + name + '</b>';
 				var placeholder;
 
                 <% if (!isRegex) { %>
-	    			html += '(<a target="_blank" class="test-lexicon" href="#">Test</a>)';
-                    placeholder = 'Enter some words or phrases, separated by |';
+	    			html += '<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:25px" src="images/test.svg"></div>';
+                	html += '<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:25px" src="images/delete.svg"></div>';
+
+                placeholder = 'Enter some words or phrases, separated by |';
     	    	<% } else { %>
 				    placeholder = 'Enter a regular expression';
     	    	<% } %>
-
-                html += '<br/><textarea cols="120" rows="2" name="' + name + '" placeholder="' + placeholder + '"/></div>';
+                html += '<br/><textarea style="width:1100px;" cols="120" rows="2" name="' + name + '" placeholder="' + placeholder + '"/></div>';
 
 				$('#categories').append(html);
 				$('#save-button').fadeIn(); // always show, otherwise it may be hidden if we started with 0 categories
@@ -204,21 +268,8 @@
 				});
 			});
 
-			var test_lexicon = function(e) {
-				var $lexicon = $(e.target).closest('.lexiconCategory');
-				var lexiconTerms = $('textarea', $lexicon).val();
-				if (!lexiconTerms)
-					return;
-				var lexiconTermsArr = lexiconTerms.split('|');
 
-				var url = 'multi-search?archiveID=<%=archiveID%>&';
-				for (var i = 0; i < lexiconTermsArr.length; i++) {
-					url += 'term=' + lexiconTermsArr[i] + '&'; // there will be a trailing &, that's ok
-				}
-				$(e.target).attr('href', url);
-				return true;
-			};
-			$('.test-lexicon').live('click', test_lexicon); // .live is important because we want it to work with new categories added on the page
+			$('.test-lexicon').live('click', test_category); // .live is important because we want it to work with new categories added on the page
 		});
 	</script>
 </div>

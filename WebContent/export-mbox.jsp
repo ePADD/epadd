@@ -46,6 +46,8 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
     String docsetID=request.getParameter("docsetID");
     String fname = Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+    String attachmentdirname = f.getAbsolutePath() + File.separator + (Util.nullOrEmpty(docsetID)? "epadd-all-attachments" : "epadd-all-attachments-"+docsetID);
+    new File(attachmentdirname).mkdir();
 
     String pathToFile = f.getAbsolutePath() + File.separator + fname;
     PrintWriter pw = null;
@@ -103,6 +105,18 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;
     String linkURL = appURL + "/" +  contentURL;
 
+    /* Code to export attachments for the given set of documents as zip file*/
+    Map<Blob, String> blobToErrorMessage = new LinkedHashMap<>();
+    //Copy all attachment to a temporary directory and then zip it and allow transfer to the client
+    int nBlobsExported = Archive.getnBlobsExported(selectedDocs, archive.getBlobStore(),null, attachmentdirname, false, null, false, blobToErrorMessage);
+    //now zip the attachmentdir and create a zip file in TMP
+    String zipfile = Archive.TEMP_SUBDIR+ File.separator + "all-attachments.zip";
+    Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"zip",JSPHelper.log);
+    Util.zipDirectory(attachmentdirname, zipfile);
+    //return it's URL to download
+    String attachmentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=all-attachments.zip" ;
+    String attachmentDownloadURL = appURL + "/" +  attachmentURL;
+
 %>
 
     <br/>
@@ -117,6 +131,11 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         This mbox file may also have extra headers like X-ePADD-Folder, X-ePADD-Labels and X-ePADD-Annotation.
     </p>
     <br/>
+    <a href =<%=attachmentDownloadURL%>>Download attachments in a zip file</a>
+    <p></p>
+    This file is in zip format, and contains all attachments in the selected messages.<br/>
+    <br/>
+
 </div>
 <jsp:include page="footer.jsp"/>
 </body>

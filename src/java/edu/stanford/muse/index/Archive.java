@@ -2312,7 +2312,78 @@ after maskEmailDomain.
 
 
     }
+    public static int getnBlobsExported(Collection<Document> docs, BlobStore blobStore, List<String> attachmentTypeOptions, String dir, boolean unprocessedonly, Set<String> extensionsNeeded, boolean isOtherSelected, Map<Blob, String> blobToErrorMessage) {
+        int nBlobsExported = 0;
 
+        for (Document d: docs) {
+            EmailDocument ed = (EmailDocument) d;
+            List<Blob> blobs = ed.attachments;
+            if (Util.nullOrEmpty(blobs))
+                continue;
+
+            nextBlob:
+            for (Blob blob: blobs) {
+
+                //check if this blob need to be exported or not depending upon the option
+                //unprocessedonly and the state of this blob.
+                if(unprocessedonly && blob.processedSuccessfully){
+                    continue nextBlob;
+                }
+                try {
+                    String blobName = blobStore.get_URL_Normalized(blob);;
+                    // get rid of any file separators first... don't want them to cause any confusion
+                    if (blobName == null)
+                        blobName = "";
+
+
+                    blobName = blobName.replaceAll("/", "_");
+                    blobName = blobName.replaceAll("\\\\", "_");
+                    String base, ext;
+                    Pair<String, String> pair = Util.splitIntoFileBaseAndExtension(blobName);
+                    base = pair.getFirst();
+                    ext = pair.getSecond();
+                    Util.ASSERT(Util.nullOrEmpty(ext) ? blobName.equals(base) : blobName.equals(base + "." + ext));
+
+                    if (!Util.nullOrEmpty(extensionsNeeded)) {
+                        if (Util.nullOrEmpty(ext))
+                            continue nextBlob;
+                        //Proceed to add this attachment only if either
+                        //1. other is selected and this extension is not present in the list attachmentOptionType, or
+                        //2. this extension is present in the variable extensionNeeded
+                        //Q. [What if there is a file with .others extension?]
+                        boolean firstcondition = isOtherSelected && !attachmentTypeOptions.contains(ext.toLowerCase());
+                        boolean secondcondition = extensionsNeeded.contains(ext.toLowerCase());
+                        if (!firstcondition && !secondcondition)
+                            continue nextBlob;
+                    }
+
+                    //remove ':' from the blobname if present otherwise it creates issue on windows which doesn't allow filename to contain ':'.
+                    blobName = blobName.replaceAll(":","_");
+                    String targetPath = dir + File.separator + blobName;
+
+                    if (new File(targetPath).exists()) {
+                        // try adding (1), (2) etc to the base part of the blob name... keep the extension unchanged
+                        int i = 1;
+                        do {
+                            String targetFile = base + " (" + (i++) + ")" + (Util.nullOrEmpty(ext) ? "" : "." + ext);
+                            //remove ':' from the targetfile if present.
+                            targetFile =targetFile.replaceAll(":","_");
+                            targetPath = dir + File.separator + targetFile;
+                        } while (new File(targetPath).exists());
+                    }
+                    blobStore.createBlobCopy(blob, targetPath);
+                    nBlobsExported++;
+
+                } catch (Exception e) {
+                    Util.print_exception ("Error exporting blob", e, log);
+                    blobToErrorMessage.put (blob, "Error exporting blob: " + e.getMessage());
+                }
+                // blob has the right extensions
+
+            }
+        }
+        return nBlobsExported;
+    }
     public void updateFileInBag(String fileOrDirectoryName, String baseDir) {
         //get bag
         Bag archiveBag = this.getArchiveBag();

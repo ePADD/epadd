@@ -58,6 +58,10 @@ div.button_bar_on_datatable{
 	position:absolute;
 	z-index: 10000; /*to make sure that the buttons don't hide behind the table*/
 }
+div.button_bar_on_lexicon{
+	position:relative;
+	z-index: 10000; /*to make sure that the buttons don't hide behind the table*/
+}
 div.buttons_on_datatable{
 	display: inline-block;
 	border-right: 1px solid grey;
