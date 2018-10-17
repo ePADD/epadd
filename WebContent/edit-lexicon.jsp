@@ -99,9 +99,9 @@
 </nav>
 <div align="center">
 <div class="button_bar_on_lexicon">
-	<div title="Add Category" class="buttons_on_datatable" id="add-category"><img style="height:25px" src="images/add_lexicon.svg"></div>
-	<div title="Download Lexicon" class="buttons_on_datatable" onclick="exportLexiconHandler()"><img style="height:25px" src="images/download.svg"></div>
-	<div title="Delete Lexicon" class="buttons_on_datatable" onclick="deleteLexiconHandler()"><img style="height:25px" src="images/delete.svg"></div>
+	<div title="Add Category" class="buttons_on_datatable" id="add-category"><img class="button_image_on_datatable" src="images/add_lexicon.svg"></div>
+	<div title="Download Lexicon" class="buttons_on_datatable" onclick="exportLexiconHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+	<div title="Delete Lexicon" class="buttons_on_datatable" onclick="deleteLexiconHandler()"><img class="button_image_on_datatable" src="images/delete.svg"></div>
 </div>
 </div>
 <!--/sidebar-->

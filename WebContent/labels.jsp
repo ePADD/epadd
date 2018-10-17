@@ -77,26 +77,20 @@
 
 <% // new label not available in discovery mode.
   if (!ModeConfig.isDiscoveryMode()) { %>
-    <div style="text-align:center;display:inline-block;vertical-align:top;margin:auto; width:100%;">
-        <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> Create</button> <!-- no labelID param, so it's taken as a new label -->
-		&nbsp;&nbsp;
-		<button class="btn-default" id="import-label"><i class="fa fa-pencil-o"></i> Upload</button>
-		&nbsp;&nbsp;
-		<button class="btn-default" id="export-label" onclick="exportLabelHandler()"><i class="fa fa-pencil-o"></i> Download</button>
-
-    </div>
-
-<% } %>
-
-<br/>
-<br/>
-
 <div style="margin:auto; width:1100px">
-<table id="labels" style="display:none">
+		<div class="button_bar_on_datatable">
+			<div title="Create label" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
+			<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
+			<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
+		</div>
+<% }else{ %>
+<div style="margin:auto; width:1100px">
+<%} %>
+<table id="labels" style="display:none;">
 	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% // this column not available in discovery mode
             if (!ModeConfig.isDiscoveryMode()) { %>
-            <th></th><th></th>
+            <th>Actions</th>
         <% } %>
     </tr></thead>
 	<tbody>
@@ -143,17 +137,26 @@
 
 		var dt_right_targets = [1, 2]; // only 2 in discovery mode, convert to [1, 2, 3] in other modes
         <% if (!ModeConfig.isDiscoveryMode()) { %>
-		    dt_right_targets = [1, 2, 3,4];
-			var edit_label_link = function ( data, type, full, meta ) {
+		    dt_right_targets = [1, 2, 3];
+			var edit_remove_label_link = function ( data, type, full, meta ) {
+			    var returnedhtml='';
 				if (full[4])  // system label
-					return '<span title="System labels are not editable">Not editable</span>'; // not editable
-				return '<a href="edit-label?labelID=' + full[0] + '&archiveID=<%=archiveID%>">Edit</a>';
-			};
+                    returnedhtml+='<div title="System labels are not editable" class="buttons_on_datatable_row"><img class="button_image_on_datatable_row disabledDiv" src="images/add_label.svg"></div>'; // not removable
+				else
+				    returnedhtml+= '<div title="Edit label info" class="buttons_on_datatable_row" onclick="window.location=\'edit-label?labelID='+full[0]+'&archiveID=<%=archiveID%>\'"><img class="button_image_on_datatable_row" src="images/add_label.svg"></div>';
+                if (full[4])  // system label
+                    returnedhtml+= '<div title="System label can not be removed" class="buttons_on_datatable_row" ><img class="button_image_on_datatable_row disabledDiv" src="images/delete.svg"></div>'; // not removable
+                else
+                    returnedhtml+= '<div title="Remove label" class="buttons_on_datatable_row remove-label" data-labelID="'+full[0]+'"><img class="button_image_on_datatable_row" src="images/delete.svg"></div>';
+				return returnedhtml;
+            };
 
         var remove_label_link = function ( data, type, full, meta){
                 if (full[4])  // system label
-                    return '<span title="System labels can not be removed">Not removable</span>'; // not removable
-            	return '<span class="remove-label" data-labelID="' + full[0] + '">Remove</span>';
+                    return '<div title="System label can not be removed" class="buttons_on_datatable_row" ><img class="button_image_on_datatable_row disabledDiv" src="images/delete.svg"></div>'; // not removable
+	            return '<div title="Remove label" class="buttons_on_datatable_row remove-label" data-labelID="'+full[0]+'"><img class="button_image_on_datatable_row" src="images/delete.svg"></div>';
+            //          return '<span title="System labels can not be removed">Not removable</span>'; // not removable
+            //	return '<span class="remove-label" data-labelID="' + full[0] + '">Remove</span>';
 //			return '<a href="" data-attr = full[0] onclick="return removereq(full[0])">Remove</div>';
             }
 		$('#import-label').click(function(){
@@ -195,13 +198,13 @@
 			pagingType: 'simple',
 			order:[[1, 'desc']], // (message count), descending
 			columnDefs: [
-                { className: "dt-right", "targets": dt_right_targets },
+                { className: "dt-center", "targets": dt_right_targets },
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
                 <% if (!ModeConfig.isDiscoveryMode()) { %>
-                    {targets: 3, render:edit_label_link},
-	                {targets: 4, render:remove_label_link},
+                    {targets: 3, render:edit_remove_label_link}
+	               // {targets: 4, render:remove_label_link},
                 <% } %>
 
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */

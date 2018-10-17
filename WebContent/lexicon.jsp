@@ -157,8 +157,8 @@
 
 <div style="margin:auto; width:900px">
 	<div class="button_bar_on_datatable">
-		<div title="Go to graph view" class="buttons_on_datatable" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><img style="height:25px" src="images/graph.svg"></div>
-		<div title="Edit lexicon" class="buttons_on_datatable" id="edit-lexicon"><img style="height:25px" src="images/edit_lexicon.svg"></div>
+		<div title="Go to graph view" class="buttons_on_datatable" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><img class="button_image_on_datatable" src="images/graph.svg"></div>
+		<div title="Edit lexicon" class="buttons_on_datatable" id="edit-lexicon"><img class="button_image_on_datatable" src="images/edit_lexicon.svg"></div>
 	</div>
 	<table id="table">
 		<thead><th>Lexicon category</th><th>Messages</th></thead>

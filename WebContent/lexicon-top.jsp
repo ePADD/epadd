@@ -186,8 +186,8 @@
 
 <div style="margin:auto; width:900px">
 	<div class="button_bar_on_datatable">
-		<div title="Create lexicon" class="buttons_on_datatable" id="create-lexicon"><img style="height:25px" src="images/add_lexicon.svg"></div>
-		<div title="Upload lexicon" class="buttons_on_datatable" id="import-lexicon" ><img style="height:25px" src="images/upload.svg"></div>
+		<div title="Create lexicon" class="buttons_on_datatable" id="create-lexicon"><img class="button_image_on_datatable" src="images/add_lexicon.svg"></div>
+		<div title="Upload lexicon" class="buttons_on_datatable" id="import-lexicon" ><img class="button_image_on_datatable" src="images/upload.svg"></div>
 	</div>
 	<table id="table">
 		<thead><th>Lexicon</th><th>Number of Categories</th></thead>

@@ -62,7 +62,7 @@
     </div>
 </nav>
 
-<%writeProfileBlock(out, false, archive, "Entity types", 900);%>
+<%writeProfileBlock(out, archive, "Entity types");%>
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
@@ -77,20 +77,25 @@
 //        if(NEType.Type.OTHER.getCode() == type || NEType.Type.PERSON.getCode() == type || desc.get(type)==null)
         if(NEType.Type.OTHER.getCode() == type || desc.get(type)==null)
             continue;
-        j.put(0, "<a href='list-entities?type="+type+"&archiveID="+archiveID+"' target='_blank'>"+desc.get(type)+"</a>");
+        j.put(0, "<a href='list-entities?type="+type+"&archiveID="+archiveID+"' target='_blank'>"+Util.escapeHTML(desc.get(type))+"</a>");
         j.put(1, archive.collectionMetadata.entityCounts.getOrDefault(type,0));
         resultArray.put(count++, j);
     }
 
 %>
-<div style="margin:auto; width:900px">
-    <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
-    <table id="entities">
+<div style="margin:auto; width:1100px;">
+    <div class="button_bar_on_datatable">
+        <div title="Download all entities as csv" class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <div title="Download all entities as csv" class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+    </div>
+    <table id="entities" style="display:none;">
         <thead><th>Entity Type</th><th># entities</th></thead>
         <tbody>
         </tbody>
     </table>
 </div>
+<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -98,9 +103,9 @@
         var entities = <%=resultArray.toString(4)%>;
         $('#entities').dataTable({
             data: entities,
-            //pagingType: 'simple',
-            paging: false,
-            columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "600px", targets: 0},{targets: 0}],
+            pagingType: 'simple',
+            //paging: true,
+            columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "400px", targets: 0},{targets: 0}],
             order:[[1, 'desc']], // col 1 (entity message count), descending
             fnInitComplete: function() { $('#spinner-div').hide(); $('#entities').fadeIn(); }
         });
