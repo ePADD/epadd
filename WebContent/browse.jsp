@@ -118,8 +118,10 @@
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
-    <script>var archiveID = '<%=archiveID%>';</script> <!-- make the archiveID available to browse.js -->
-    <script>var docsetID = '<%=docsetID%>';</script> <!-- make the dataset name available to browse.js -->
+    <script>
+        var archiveID = '<%=archiveID%>';
+        var docsetID = '<%=docsetID%>';
+    </script> <!-- make the dataset name available to browse.js -->
     <script src="js/browse.js" type="text/javascript"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
 
