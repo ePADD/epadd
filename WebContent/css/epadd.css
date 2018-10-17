@@ -53,7 +53,9 @@ div.progress_bar {
 	padding:0;width:0;height:12px;
 /*        background-color: navy; /* hotpink; #40f040; */ 
 }
-
+th{
+	text-align: left;
+}
 div.button_bar_on_datatable{
 	position:absolute;
 	z-index: 10000; /*to make sure that the buttons don't hide behind the table*/
@@ -66,16 +68,42 @@ div.buttons_on_datatable{
 	display: inline-block;
 	margin-top: -30px;
 	padding: 8px;
+}
+
+div.buttons_on_datatable_row{
+	display: inline-block;
+	margin-top: -30px;
+	height: 15px;
+	padding: 8px;
+}
+.button_image_on_datatable{
+	height:20px;
+	border-right: 1px solid black;
+	padding-right: 10px;
 	cursor:pointer;
 }
 
-.button_image_on_datatable{
-	height:25px;
-	border-right: 1px solid black;
+.button_image_on_datatable_row{
+	height:15px;
 	padding-right: 10px;
+	cursor:pointer;
 }
-.dataTables_length{ float:right;}
-
+.disabledDiv {
+	/*pointer-events: none;*/
+	pointer-events: none;
+	opacity: 0.4;
+}
+.dataTables_length{ float:right;
+	font-size: 12px;
+	margin-top: 5px;
+	margin-right:30px;
+}
+.dataTables_filter {
+	float: right;
+	text-align: right;
+	font-size: 12px;
+	margin-right:20px;
+}
 div.facets {
     font-size: 13px;
 	padding-left:5px;
