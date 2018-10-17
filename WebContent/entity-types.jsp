@@ -10,7 +10,8 @@
   Date: 12/12/15
   Time: 22:20
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE HTML>
+<html>
 <head>
     <title>Entities</title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
@@ -28,9 +29,10 @@
     <script src="js/modernizr.min.js"></script>
     <script src="js/sidebar.js"></script>
 
+    <script src="js/muse.js"></script>
     <script src="js/epadd.js"></script>
     <style type="text/css">
-        .js #entities {display: none;}
+        /*.js #entities {display: none;}*/
     </style>
 
 </head>
@@ -85,8 +87,10 @@
 %>
 <div style="margin:auto; width:1100px;">
     <div class="button_bar_on_datatable">
-        <div title="Download all entities as csv" class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
-        <div title="Download all entities as csv" class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <div title="Download all entities in a csv file" class="buttons_on_datatable" onclick="exportAllEntitiesHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+       <%--This second div added just for formatting purposes.. Therefore made it hidden. If we remove this div then the alignment of download buttons goes missing.
+       This is because of the way in which class buttons_on_datatable has been defined. It requires at least two divs to be formatted nicely. Fix is later.--%>
+        <div title="Download all entities as csv" class="buttons_on_datatable" style="display:none" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
     </div>
     <table id="entities" style="display:none;">
         <thead><th>Entity Type</th><th># entities</th></thead>
@@ -98,6 +102,31 @@
 
 
 <script type="text/javascript">
+    var exportAllEntitiesHandler=function() {
+        var entityType=<%=Short.MAX_VALUE%>; //Look the 'entites' section of downloadData.jsp to check that 'all' entity type is denoted by passing this value from the front end.
+        var option;
+        var msg;
+
+        var post_params={archiveID:archiveID, data: "entities",type:entityType};
+        fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+
+        /*$.ajax({
+            type: 'POST',
+            url: "ajax/downloadData.jsp",
+            data: {archiveID: archiveID, data: "entities",type:entityType},
+            dataType: 'json',
+            success: function (data) {
+                epadd.alert('List of selected entities will be downloaded in your download folder!', function () {
+                    window.location=data.downloadurl;
+                });
+            },
+            error: function (jq, textStatus, errorThrown) {
+                var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                epadd.log(message);
+                epadd.alert(message);
+            }
+        });*/
+    };
     $(document).ready(function() {
 
         var entities = <%=resultArray.toString(4)%>;
@@ -105,7 +134,7 @@
             data: entities,
             pagingType: 'simple',
             //paging: true,
-            columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "400px", targets: 0},{targets: 0}],
+            columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "400px", targets: 0}],
             order:[[1, 'desc']], // col 1 (entity message count), descending
             fnInitComplete: function() { $('#spinner-div').hide(); $('#entities').fadeIn(); }
         });

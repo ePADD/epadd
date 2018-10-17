@@ -6,13 +6,6 @@
 <%@ page import="edu.stanford.muse.index.*" %>
 <%@ page import="org.json.JSONArray" %>
 <%@include file="getArchive.jspf" %>
-<style>
-	.modal-body {
-		/* 100% = dialog height, 120px = header + footer */
-		max-height: calc(100% - 120px);
-		overflow-y: scroll;
-	}
-</style>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -36,9 +29,16 @@
 	<script src="js/epadd.js"></script>
 	
 	<style type="text/css">
-     .js #table  {display: none;}
+     /*.js #table  {display: none;}*/
       .search {cursor:pointer;}
     </style>
+	<style>
+		.modal-body {
+			/* 100% = dialog height, 120px = header + footer */
+			max-height: calc(100% - 120px);
+			overflow-y: scroll;
+		}
+	</style>
 
 	<%
 		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);

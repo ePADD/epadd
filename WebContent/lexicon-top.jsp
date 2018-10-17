@@ -1,4 +1,3 @@
-<%@page contentType="text/html; charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.LinkedHashSet"%>
@@ -6,39 +5,38 @@
 <%@ page import="edu.stanford.muse.index.*" %>
 <%@ page import="org.json.JSONArray" %>
 <%@include file="getArchive.jspf" %>
-<style>
-	.modal-body {
-		/* 100% = dialog height, 120px = header + footer */
-		max-height: calc(100% - 120px);
-		overflow-y: scroll;
-	}
-</style>
 <!DOCTYPE HTML>
 <html>
 <head>
 	<title>Lexicon</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
-
+	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
-	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="css/sidebar.css">
+	<link rel="stylesheet" href="css/main.css">
 
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
+	<script src="js/muse.js"></script>
 
-	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
 	<script src="js/epadd.js"></script>
 	
 	<style type="text/css">
-     .js #table  {display: none;}
+     /*.js #table  {display: none;}*/
       .search {cursor:pointer;}
     </style>
+	<style>
+		.modal-body {
+			/* 100% = dialog height, 120px = header + footer */
+			max-height: calc(100% - 120px);
+			overflow-y: scroll;
+		}
+	</style>
 
 	<%
 		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
