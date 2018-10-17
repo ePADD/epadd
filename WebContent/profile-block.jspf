@@ -4,7 +4,8 @@
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %><%!
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%!
   // this profile block will go onto pretty much every page after the archive is loaded
   // Warning: do not include jsp/html stuff in this file. It should only have Java methods.
   // this is because profile-block.jspf is included from getArchive.jspf, which is included before the opening <html> for the page
@@ -13,41 +14,40 @@
       writeProfileBlock (out1, false, archive, pageTitle, 1100); // 1100 px is the default width
   }
 
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive, String pageTitle, int pixelWidth)
-  {
-    try
-    {
-      AddressBook ab = archive.addressBook;
-      String bestName = ab.getBestNameForSelf();
-      String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-      String mode= ModeConfig.getModeForDisplay();
+    static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive, String pageTitle, int pixelWidth) {
+        try {
+            AddressBook ab = archive.addressBook;
+            String bestName = ab.getBestNameForSelf();
+            String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+            String mode = ModeConfig.getModeForDisplay();
 
-      String collectionInfo = "";
-      if (!ModeConfig.isAppraisalMode()) {
-          collectionInfo = "Institution: " + (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
-          collectionInfo += "<br/>" + "Collection ID: " + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
-      }
+            String collectionInfo = "";
+            if (!ModeConfig.isAppraisalMode()) {
+                collectionInfo = "Institution: " + (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
+                collectionInfo += "<br/>" + "Collection ID: " + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
+            }
 
-      String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
-      String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
-              +  "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
-              + "<div class=\"profile-block\">"
-              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
+            String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
+            String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
+                    + "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
+                    + "<div class=\"profile-block\">"
+                    + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
 
-      // don't allow the option to edit profile photo in discovery or delivery mode
-      if (offerEditProfilePhotoOption && !ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode())
-        output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
+            // don't allow the option to edit profile photo in discovery or delivery mode
+            if (offerEditProfilePhotoOption && !ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode())
+                output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
 
-      output += "</div>"
-              + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
-              +   Util.escapeHTML(title)
-              + "</div>"
-              + "<div class=\"collection-metadata\">" + collectionInfo + "</div>"
-              + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection (To be implemented)\" src=\"images/information.svg\"/> </div>"
-              + "</div></div><br/>";
+            output += "</div>"
+                    + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
+                    + Util.escapeHTML(title)
+                    + "</div>"
+                    + "<div class=\"collection-metadata\">" + collectionInfo + "</div>"
+                    + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection (To be implemented)\" src=\"images/information.svg\"/> </div>"
+                    + "</div></div><br/>";
 
-      out1.println (output);
-    } catch (IOException ioe) { Util.print_exception(ioe, JSPHelper.log);}
-  }
-
+            out1.println(output);
+        } catch (IOException ioe) {
+            Util.print_exception(ioe, JSPHelper.log);
+        }
+    }
 %>

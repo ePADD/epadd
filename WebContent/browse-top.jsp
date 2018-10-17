@@ -53,7 +53,8 @@
 	if(archive!=null && request.getParameter("archiveID")==null)
 		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
 %>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
+
 <script>epadd.nav_mark_active('Browse');</script>
 
 <!--sidebar content-->
@@ -157,7 +158,6 @@
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
 	JSPHelper.log.warn ("this is a warning");
     AddressBook ab = archive.addressBook;
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {
         archive.addressBook.initialize(addressBookUpdate);
@@ -389,5 +389,7 @@
 <script>
 	$('.cta-box').click(function(e) { var href = $('a', $(e.target)).attr('href'); if (href) { window.location = href;}}); // clicking anywhere in the cta-box should dispatch to the href of the only link inside it
 </script>
+
+
 </body>
 </html>

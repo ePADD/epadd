@@ -107,9 +107,9 @@
     <br/>
     <div class="details">
         <div class="heading">Summary
-            <% if(ModeConfig.isProcessingMode()){%>
-            <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
-            <%}%>
+            <% if (ModeConfig.isProcessingMode()) { %>
+                <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
+            <% } %>
         </div>
         <hr/>
             Institution<br/>
