@@ -724,7 +724,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <span class="text-radio">Append</span>
                     </label>
                     <br><br>
-                    <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
+                    <button id='ok-button-annotations' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
                     <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
                 </div>
             </div><!-- /.modal-content -->
