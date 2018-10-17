@@ -297,6 +297,7 @@ int errortype=0;
                 //don't set the label, log the error message and the count of messages which got this error.
                 countfail=countfail+1;
                 //set the labels to the old labels..
+                errortype=1;
                 labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
             }else if(Util.setIntersection(allLabels,timeRestrictedLabels).size()!=0 && isHacky){
                 //related timed restriction can not be applied on hacky dates.

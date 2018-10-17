@@ -130,7 +130,7 @@ Browse page for entities based on fine types
                 // Note, we have to insert onclick into the rendered HTML,
                 // we were earlier trying $('.search').click(epadd.do_search) - this does not work because only the few rows initially rendered to html match the $('.search') selector, not the others
 //                return '<span title="' + full[3] + '" style="cursor:pointer" onclick="epadd.do_entity_search(event,archiveID)">' + data + '</span>';
-                return '<a target="_blank" title="' + escapeHTML(full[3]) + '" href=\"#\" onclick=\"epadd.do_entity_search(event,archiveID)\"">' + escapeHTML(data) + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+                return '<a target="_blank" title="' + escapeHTML(full[3]) + '"  onclick=\"epadd.do_entity_search(event,archiveID)\"">' + escapeHTML(data) + '</a>'; // full[4] has the URL, full[5] has the title tooltip
             };
 
             var entities = <%=resultArray.toString(4)%>;
