@@ -16,6 +16,8 @@
     <jsp:include page="css/css.jsp"/>
 
     <script src="js/jquery.js"></script>
+    <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
 </head>

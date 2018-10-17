@@ -26,6 +26,7 @@
 // utils that are specific to other libs should go in their own utils file
 package edu.stanford.muse.util;
 
+import edu.stanford.muse.Config;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
 
@@ -573,7 +574,10 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static List<String> getLinesFromFile(String filename, boolean ignoreCommentLines) throws IOException
 	{
-		return getLinesFromInputStream(new FileInputStream(filename), ignoreCommentLines);
+		InputStream is = new FileInputStream(filename);
+		List<String> lines = getLinesFromInputStream(is, ignoreCommentLines);
+		is.close();
+		return lines;
 	}
 
 	public static List<String> getLinesFromInputStream(InputStream in, boolean ignoreCommentLines) throws IOException

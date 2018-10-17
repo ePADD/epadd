@@ -120,7 +120,7 @@
             Util.zipDirectory(pathToDirectory, zipfile);
 
             //return it's URL to download
-            String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+zipfile ;
+            String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=all-messages-as-text.zip" ;
             downloadURL = appURL + "/" +  contentURL;
         } catch(Exception e){
             //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);

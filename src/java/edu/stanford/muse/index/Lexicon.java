@@ -19,6 +19,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.Config;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
@@ -76,7 +77,9 @@ public class Lexicon implements Serializable {
 		{
 			captionToRawQuery = new LinkedHashMap<>();
 			captionToExpandedQuery = new LinkedHashMap<>();
-			List<String> lines = Util.getLinesFromInputStream(new FileInputStream(filename), false /* ignore comment lines = false, we'll strip comments here */);
+            InputStream is = new FileInputStream(filename);
+			List<String> lines = Util.getLinesFromInputStream(is, false /* ignore comment lines = false, we'll strip comments here */);
+			is.close();
 			for (String line:lines)
 			{
 				int idx = line.indexOf('#'); // strip everything after the comment char
