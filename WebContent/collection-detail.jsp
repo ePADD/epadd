@@ -104,7 +104,11 @@
 
     <br/>
     <div class="details">
-        <div class="heading">Summary <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a></div>
+        <div class="heading">Summary
+            <% if (ModeConfig.isProcessingMode()) { %>
+                <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
+            <% } %>
+        </div>
         <hr/>
             Institution<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span></b>

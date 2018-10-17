@@ -1,7 +1,10 @@
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.index.ArchiveReaderWriter"%>
-<%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
-<%@include file="profile-block.jspf"%>
+<%@page import="edu.stanford.muse.index.Archive"%>
+<%@page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@page import="edu.stanford.muse.webapp.JSPHelper" %>
+<%@page import="edu.stanford.muse.index.Archive" %>
+<%@page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%
 Archive archive = JSPHelper.getArchive(request);
 if (archive == null) {
