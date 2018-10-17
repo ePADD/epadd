@@ -241,11 +241,13 @@
 
                 <% } %>
 
+        <% if(ModeConfig.isProcessingMode()){%>
         <div class="accession">
             <div class="accession-heading">
                 <a href="add-accession?collection=<%=id%>">Add accession</a>
             </div>
         </div>
+        <%}%>
 
             <p></p>
             <%

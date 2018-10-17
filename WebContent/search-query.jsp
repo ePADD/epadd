@@ -93,9 +93,10 @@
 	<div style="width:100%;margin-bottom:20px;">
 		<a id="simple-search-header"  class="search-header" >Simple search</a>
 		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Multi-Entity Search</a>
+		<% if(!ModeConfig.isPublicMode()){%>
 		<a id="term-search-header" class="search-header" style="margin-left:40px;">Multi-Term Search</a>
 		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;">Correspondent list search</a>
-
+		<%}%>
 	</div>
 
 	<div id="simple-search" style="text-align:center">

@@ -283,7 +283,7 @@ var Annotations = function() {
         $('#annotation-modal').on('shown.bs.modal', annotation_modal_shown);
         $('#annotation-modal').on('hidden.bs.modal', function() { $('.annotation-area').css('filter', ''); /* clear the blur effect */});
 
-        $('#annotation-modal').find('#ok-button').click(annotation_modal_dismissed_apply_to_this_message);
+        $('#annotation-modal').find('#ok-button-annotations').click(annotation_modal_dismissed_apply_to_this_message);
         $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
 
         // when annotation is clicked, invoke modal
