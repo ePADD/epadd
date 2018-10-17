@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -322,7 +323,12 @@ public class Lexicon implements Serializable {
 		for (String language: languages)
 		{
 			String filepath = dir + File.separator + name + "." + language + LEXICON_SUFFIX;  // LEXICON_SUFFIX already has a .
-			new File(filepath).delete();
+			try {
+				Files.deleteIfExists(new File(filepath).toPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.debug(e.getMessage());
+			}
 		}
 		//update the bag metadata as well..
 		archive.updateFileInBag(dir,archive.baseDir);

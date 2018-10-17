@@ -55,9 +55,9 @@
 	    if(new File(addressbookpath).exists()){
 	        String destdir = Archive.TEMP_SUBDIR + File.separator;
 
-	        Util.copy_file(addressbookpath,destdir+File.separator+Archive.ADDRESSBOOK_SUFFIX);
+	        Util.copy_file(addressbookpath,destdir+File.separator+Archive.ADDRESSBOOK_SUFFIX+".txt");
 			//prepare a URL with this file
-    	    String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=" + Archive.ADDRESSBOOK_SUFFIX ;
+    	    String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=" + Archive.ADDRESSBOOK_SUFFIX+".txt" ;
             downloadURL = appURL + "/" +  contentURL;
 	    }else{
 	        error="Addressbook not found";

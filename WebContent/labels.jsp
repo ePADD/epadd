@@ -161,7 +161,7 @@
 
         //function to actually remove the label (send ajax request etc.)
         var removeLabelFn= function(e) {
-            labelID = $(e.target).attr ('data-labelID');
+            labelID = $(e.target).closest('.buttons_on_datatable_row').attr ('data-labelID');
 
             epadd.warn_confirm_continue('Delete the label? This action cannot be undone.', function() {
                 $.ajax({

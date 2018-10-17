@@ -103,11 +103,11 @@
 
         <section>
             <div class="panel">
-                <div class="panel-heading">Filter attachments</div>
+                <%--<div class="panel-heading">Filter attachments</div>--%>
 
                 <div class="one-line">
-                    <div class="form-group col-sm-6">
-                        <label for="attachmentType">Type</label>
+                    <div class="form-group col-sm-5">
+                        <%--<label for="attachmentType">Type</label>--%>
                         <select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
                             <option value="" selected disabled>Select</option>
                             <%
@@ -124,10 +124,10 @@
                     </div>
 
                     <!--File Size-->
-                    <div class="form-group col-sm-6">
-                        <label for="attachmentFilesize">File Size</label>
-                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
-                            <option value="" selected disabled>Select</option>
+                    <div class="form-group col-sm-2">
+                        <%--<label for="attachmentFilesize">File Size</label>--%>
+                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker empty">
+                            <option value="" selected disabled>File Size</option>
                             <option value="1">&lt; 5KB</option>
                             <option value="2">5-20KB</option>
                             <option value="3">20-100KB</option>
@@ -136,21 +136,18 @@
                             <option value="6">Any</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="one-line">
-                    <!--Time Range-->
-                    <div class="form-group col-sm-6">
-                        <label for="time-range">Time Range</label>
+                     <!--Time Range-->
+                    <div class="form-group col-sm-4">
+                        <%--<label for="time-range">Time Range</label>--%>
                         <div id="time-range" class="date-input-group">
-                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
-                            <label for="endDate">To</label>
-                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
+                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="From">
+                            <%--<label for="endDate"></label>--%>
+                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="To">
                         </div>
                     </div>
 
-                    <div class="form-group col-sm-6">
-                        <button type="submit" class="btn-default filter-button">Filter</button>
+                    <div class="form-group col-sm-1">
+                        <button type="submit" class="btn-default">Filter</button>
                     </div>
                 </div>
             </div>

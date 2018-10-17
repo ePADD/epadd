@@ -589,7 +589,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <a href="#" class="annotation-link" title="Message annotation"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
                     <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
                     <a href="#" class="thread-link" target="_blank" title="Open thread"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
-                    <a href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;">0</span><img src="images/attachments.svg"/></a>
+                    <a href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
                 </div>
 
                 <script>
