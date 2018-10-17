@@ -131,24 +131,25 @@
             if (relativeTimedRestrictions.indexOf(labelID) > -1)//means labelID is a relative timed restriction label.
                 msg = "This label will be set for only those messages where a valid date is present. Note that ePADD puts a dummy date 1 Jan 1960 for the messages with corrupt date field.";
         }
-*/		var c = epadd.confirm (msg+' Do you want to ' + action + ' this label for these messages?');
-        if (!c)
-            return;
+*/		var c = epadd.warn_confirm_continue (msg+' Do you want to ' + action + ' this label for these messages?', function() {
 
-        //$('#alert-modal').on('hidden.bs.modal', window.location.reload());
-        $.ajax({
-            url:'ajax/applyLabelsAnnotations.jsp',
-            type: 'POST',
-            data: {archiveID: archiveID, labelIDs: labelID, docsetID: '<%=docsetID%>', action:action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
-            dataType: 'json',
-            success: function(response) { if(response.status===1) {
-				alert(response.errorMessage);
-				window.location.reload();
-            }else
-                window.location.reload();
-            },
-            error: function() { epadd.alert('There was an error in saving labels, sorry!');
-            }
+            //$('#alert-modal').on('hidden.bs.modal', window.location.reload());
+            $.ajax({
+                url: 'ajax/applyLabelsAnnotations.jsp',
+                type: 'POST',
+                data: {archiveID: archiveID, labelIDs: labelID, docsetID: '<%=docsetID%>', action: action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 1) {
+                        alert(response.errorMessage);
+                        window.location.reload();
+                    } else
+                        window.location.reload();
+                },
+                error: function () {
+                    epadd.error('Sorry, there was an error in saving labels.');
+                }
+            });
         });
     }
 

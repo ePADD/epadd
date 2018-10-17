@@ -370,3 +370,11 @@ footer a { color: #ababab; text-decoration: underline;}
     text-overflow: ellipsis;
 }
 
+/* modals */
+.warning-modal .modal-header { color: white; background-color: #EA8A1C;}
+.success-modal .modal-header { color: white; background-color: #009253;}
+.info-modal .modal-header { color: white; background-color: #0175BC;}
+/* .confirm-modal .modal-header { color: white; background-color: #0175BC;} */
+.error-modal .modal-header { color: white; background-color: #df0000}
+.modal-header .close { color: white; }
+.modal-header h4 { color: white; }

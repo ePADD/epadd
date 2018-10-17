@@ -6,6 +6,8 @@
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %><%!
   // this profile block will go onto pretty much every page after the archive is loaded
+  // Warning: do not include jsp/html stuff in this file. It should only have Java methods.
+  // this is because profile-block.jspf is included from getArchive.jspf, which is included before the opening <html> for the page
 
   static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String pageTitle) {
       writeProfileBlock (out1, false, archive, pageTitle, 1100); // 1100 px is the default width

@@ -205,17 +205,20 @@
                 dataType    : 'json', // what type of data do we expect back from the server
                 success: function(response) {
                     if (!response || response.status !== 0) {
-                        epadd.alert("Error: " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
+                        epadd.error("Error saving label. " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
                     } else {
-                        epadd.alert('Label updated.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
+                        epadd.success('Label saved.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
                     }
                 },
-                error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+                error: function(jq, textStatus, errorThrown) {
+                    epadd.error("Error saving label. (Details: status = \" + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + \"\\n\" + printStackTrace() + \")\"");
+                }
             });
 
             // stop the form from submitting the normal way and refreshing the page
             event.preventDefault();
         }
+
         $('#labelType').on ('change', label_type_refresh);
         $('#restrictionType').on ('change', restriction_type_refresh);
 

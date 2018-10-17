@@ -152,7 +152,7 @@
                 data: {mode:val},
                 dataType: 'json',
                 success: function() { if (val == 'appraisal') { window.location="./browse-top"; } else { window.location = './collections';}},
-                error: function() { epadd.alert('Unable to change mode, sorry!'); }
+                error: function() { epadd.error('Sorry, unable to change mode.'); }
             });
         });
     </script>

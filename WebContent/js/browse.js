@@ -88,13 +88,13 @@ var Labels = function() {
             dataType: 'json',
             success: function (response) {
                 if(response.status===1) {
-                    epadd.alert(response.errorMessage);
+                    epadd.error(response.errorMessage);
                     labelsOnPage[PAGE_ON_SCREEN] = currentPageOldLabels;
                 }
                 refreshLabels();//otherwise the selected checkboxes and onscreen labels are not getting reset to the old labels [old means the labels before the erroneous labels were set]
             },
             error: function () {
-                epadd.alert('There was an error in saving the annotations! Please try again.');
+                epadd.error('Sorry, there was an error while saving annotations. Please try again.');
             }
         });
     }
@@ -215,7 +215,7 @@ var Annotations = function() {
                     //$('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
                   //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                 },
-                error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
+                error: function () { epadd.error('There was an error in saving the annotation! Please try again.');}
             });
         }
 
@@ -230,45 +230,44 @@ var Annotations = function() {
             return false;
             }
             if(overwrite_or_append=="overwrite") {
-                var c = epadd.confirm('Existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?');
-                if (!c)
-                    return;
-            }
-            //If user confirms then proceed.
-            Navigation.enableCursorKeys();
-            var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
-            // if(annotation.trim().length==0)
-            //     annotation="";
-            if(overwrite_or_append=="overwrite") {
-                for (var i = 0; i < TOTAL_PAGES; i++)
-                    annotations[i] = annotation;
-            }else if (overwrite_or_append=="append"){
-                for (var i = 0; i < TOTAL_PAGES; i++)
-                    annotations[i] += annotation;
-            }
+                var c = epadd.warn_confirm_continue('Existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?', function() {
+                    //If user confirms then proceed.
+                    Navigation.enableCursorKeys();
+                    var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
+                    // if(annotation.trim().length==0)
+                    //     annotation="";
+                    if(overwrite_or_append=="overwrite") {
+                        for (var i = 0; i < TOTAL_PAGES; i++)
+                            annotations[i] = annotation;
+                    }else if (overwrite_or_append=="append"){
+                        for (var i = 0; i < TOTAL_PAGES; i++)
+                            annotations[i] += annotation;
+                    }
 
-            Annotations.refreshAnnotation();
+                    Annotations.refreshAnnotation();
 
-            // post to the backend, and when successful, refresh the labels on screen
-            $.ajax({
-                url: 'ajax/applyLabelsAnnotations.jsp',
-                type: 'POST',
-                data: {
-                    archiveID: archiveID,
-                    docsetID: docsetID,
-                    annotation: annotation,
-                    action: overwrite_or_append
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if(overwrite_or_append=="overwrite")
-                        $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
-                    else if(overwrite_or_append=="append")
-                        $('.annotation-area').text(annotation ? annotations[PAGE_ON_SCREEN]: 'No annotation');
-                    //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
-                },
-                error: function () { epadd.alert('There was an error in saving the annotation! Please try again.');}
-            });
+                    // post to the backend, and when successful, refresh the labels on screen
+                    $.ajax({
+                        url: 'ajax/applyLabelsAnnotations.jsp',
+                        type: 'POST',
+                        data: {
+                            archiveID: archiveID,
+                            docsetID: docsetID,
+                            annotation: annotation,
+                            action: overwrite_or_append
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            if(overwrite_or_append=="overwrite")
+                                $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
+                            else if(overwrite_or_append=="append")
+                                $('.annotation-area').text(annotation ? annotations[PAGE_ON_SCREEN]: 'No annotation');
+                            //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
+                        },
+                        error: function () { epadd.error('There was an error in saving the annotation! Please try again.');}
+                    });
+                });
+            }
         }
 
         for (var i = 0; i < TOTAL_PAGES; i++) {

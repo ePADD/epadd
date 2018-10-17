@@ -769,13 +769,13 @@
 					}
 					else {
 						if (response)
-							alert('Error! Code ' + response.status + ', Message ' + response.error);
+							epadd.error('Error getting lexicon categories. Code ' + response.status + ', Message ' + response.error);
 						else
-							alert ('Error! No response from ePADD.');
+                            epadd.error ('Error getting lexicon categories. No response from ePADD.');
 					}
 				},
 				error: function() {
-					epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu.");
+					epadd.error ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu.");
 				}});
 
 		});

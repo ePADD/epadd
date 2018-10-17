@@ -161,10 +161,10 @@
                 if (response && response.status === 0)
                     window.location = 'collection-detail?collection=<%=collectionid%>';
                 else
-                    epadd.alert ("Sorry, something went wrong while updating accession metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+                    epadd.error ("Sorry, something went wrong while updating accession metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
             },
             error: function (jqxhr, status, ex) {
-                epadd.alert("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
+                epadd.error("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
             }
         });
         return false;

@@ -324,7 +324,7 @@
                 },
                 error: function () {
                     $spinner.removeClass('fa-spin');
-                    epadd.alert('Unable to save fast ID, sorry!');
+                    epadd.error('Sorry, unable to save confirmed authority.');
                 }
             });
         });
@@ -350,15 +350,12 @@
                 },
                 error: function () {
                    // $spinner.removeClass('fa-spin');
-                    epadd.alert('Unable to save authority, sorry!');
+                    epadd.error('Sorry, unable to save confirmed authority.');
                     $('#manual-assign-modal').modal('hide');
                 }
             });
         });
-
-
     } );
-
 
 </script>
 

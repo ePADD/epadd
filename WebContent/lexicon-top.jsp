@@ -109,37 +109,34 @@
             }
             //if lexicon-name is already one of the lexicon then prompt a confirmation box
             if (existinlexiconnames.indexOf(lexiconname.toLowerCase()) > -1) {
-                var c = epadd.confirm('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?');
-                if (!c)
-                    return;
-            }
-            var form = $('#uploadlexiconform')[0];
 
-            // Create an FormData object
-            var data = new FormData(form);
-            //hide the modal.
-            $('#lexicon-upload-modal').modal('hide');
-            //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+                epadd.warn_confirm_continue('A lexicon with the same name already exists. This import will overwrite the existing lexicon. Do you want to continue?', function () {
+                    var form = $('#uploadlexiconform')[0];
 
-            $.ajax({
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                url: "ajax/upload-lexicon.jsp",
-                contentType: false,
-                cache: false,
-                data: data,
-                success: function (data) {
-                    epadd.success('Lexicon uploaded successfully!', function () {
-                        window.location.reload();
+                    // Create an FormData object
+                    var data = new FormData(form);
+                    //hide the modal.
+                    $('#lexicon-upload-modal').modal('hide');
+                    //now send to the backend.. on it's success reload the labels page. On failure display the error message.
+
+                    $.ajax({
+                        type: 'POST',
+                        enctype: 'multipart/form-data',
+                        processData: false,
+                        url: "ajax/upload-lexicon.jsp",
+                        contentType: false,
+                        cache: false,
+                        data: data,
+                        success: function (data) {
+                            epadd.success('Lexicon uploaded successfully.', function () {window.location.reload();});
+                        },
+                        error: function (jq, textStatus, errorThrown) {
+                            var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+                            epadd.error(message);
+                        }
                     });
-                },
-                error: function (jq, textStatus, errorThrown) {
-                    var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                    epadd.log(message);
-                    epadd.alert(message);
-                }
-            });
+                });
+            }
         }
 
 	</script>

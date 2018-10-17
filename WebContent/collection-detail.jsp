@@ -338,17 +338,13 @@
                 data: data,
                 success: function (data) {
                     if (data && data.status == 0) {
-                        epadd.success('Banner image uploaded and applied.', function () {
-                            window.location.reload();
-                        });
+                        window.location.reload();
                     } else {
-                        epadd.success('There was an error uploading the banner image: ' + data.error);
+                        epadd.error('There was an error uploading the banner image. (' + data.error + ')');
                     };
                 },
                 error: function (jq, textStatus, errorThrown) {
-                    var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                    epadd.log(message);
-                    epadd.alert(message);
+                    epadd.error("There was an error uploading the banner image. (status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + ')');
                 }
             });
         }

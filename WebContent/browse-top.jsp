@@ -370,14 +370,12 @@
             cache: false,
             data: data,
             success: function (data) {
-                epadd.success('Profile photo uploaded and applied.', function () {
+                //epadd.success('Profile photo uploaded and applied.', function () {
                     window.location.reload();
-                });
+                //});
             },
             error: function (jq, textStatus, errorThrown) {
-                var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                epadd.log(message);
-                epadd.alert(message);
+                epadd.error("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
             }
         });
     }

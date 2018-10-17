@@ -123,10 +123,10 @@
                     if (accid && accid.length > 0)
                         epadd.import_accession(e, muse.collect_input_fields());
                     else
-                        epadd.alert("Please provide an accession ID for this accession");
+                        epadd.error("Please provide an accession ID for this accession");
                 }
                 else
-                    epadd.alert("Please provide an accession folder for this accession");
+                    epadd.error("Please provide an accession folder for this accession");
             // should not reach here, because load_archive redirect, but just in case...
             return false;
         });

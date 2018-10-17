@@ -117,14 +117,12 @@
             data: {archiveID: archiveID, data: "labels"},
             dataType: 'json',
             success: function (data) {
-                epadd.alert('A label description file called label-info.json will be downloaded in your browser\'s download folder.', function () {
+                epadd.info_confirm_continue('A label description file called label-info.json will be downloaded in your download folder.', function () {
                     window.location=data.downloadurl;
-                }, '');
+                });
             },
             error: function (jq, textStatus, errorThrown) {
-                var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                epadd.log(message);
-                epadd.alert(message);
+                epadd.error("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
             }
         });
     }
@@ -170,23 +168,23 @@
         var removeLabelFn= function(e) {
             labelID = $(e.target).attr ('data-labelID');
 
-            var c = epadd.confirm ('Delete the label? This action cannot be undone.');
-            if (!c)
-                return;
-
-            $.ajax({
-                url:'ajax/removeLabels.jsp',
-                type: 'POST',
-                data: {archiveID: archiveID, labelID: labelID},
-                dataType: 'json',
-                success: function(response) { if(response.status===0)
-                    window.location.reload();
-                else{
-                    epadd.alert(response.error);
-                }
-                },
-                error: function(response) { epadd.alert('There was an error in saving labels, sorry!');
-                }
+            epadd.warn_confirm_continue('Delete the label? This action cannot be undone.', function() {
+                $.ajax({
+                    url:'ajax/removeLabels.jsp',
+                    type: 'POST',
+                    data: {archiveID: archiveID, labelID: labelID},
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.status===0)
+                        	window.location.reload();
+	                    else {
+    	                    epadd.error('Sorry, there was an error in saving labels.' + response.error);
+        	            }
+                    },
+                    error: function(response) {
+                        epadd.error('Sorry, there was an error in saving labels.');
+                    }
+                });
             });
         }
 
@@ -237,8 +235,14 @@
             contentType: false,
             cache: false,
             data: data,
-            success: function(data) { if(data.status==0){epadd.success('Labels uploaded', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
-            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
+            success: function(data) {
+                if (data.status==0){
+                    epadd.success('Labels uploaded', function() { window.location.reload(); });
+                } else {
+					epadd.error('Error uploading labels' + data.error);
+				}
+            },
+            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.error(message); }
         });
 
     }

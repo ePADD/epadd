@@ -136,32 +136,6 @@
 
 
 </head>
-<div id="annotation-modal" class="modal fade" style="z-index:9999">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Edit Annotation</h4>
-            </div>
-            <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
-
-            </textarea>
-            <div class="modal-footer">
-                    <label class="radio-inline">
-                        <input type="radio" name="overwrite-append-options" value="overwrite" checked>
-                        <span class="text-radio">Overwrite</span>
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="overwrite-append-options" value="append">
-                        <span class="text-radio">Append</span>
-                    </label>
-                <br><br>
-                <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
-                <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 <body > <!--  override margin because this page is framed. -->
 <jsp:include page="header.jspf"/>
@@ -620,36 +594,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                 <script>
                     // handlers for message-menu icons
-                    $('a.id-link').click(function() {
-                        // open the id-modal modal if id link is clicked
-                        $id_modal = $('#id-modal');
-                        // jam the link from the data-href attribute of the a link (which has been set in page_change_callback) into the .message-link-textarea
-                        $('.modal-body .message-link-textarea', $id_modal).val($(this).attr('data-href'));
-                        $id_modal.modal();
-                        return false;
-                    });
-                    // add ok and cancel handlers here
-
-                    $(document).on('click', '#copy-message-link-button', function (event) {
-
-                        /* copies embed code to paste buffer */
-                        function copy_handler() {
-                            // should be called only when ID modal is shown
-                            // right now, we copy the entire modal-body as the only thing it contains is the link.
-                            var copyArea = $('#id-modal textarea.message-link-textarea')[0];
-                            copyArea.select();
-                            try {
-                                var successful = document.execCommand('copy');
-                                // alert ("Copy success = " + successful);
-                            } catch (err) {
-                                alert ('Sorry, unable to copy the link. Error: ' + err);
-                            }
-                        }
-
-                        event.preventDefault();
-                        copy_handler();
-                    });
-
+                    $('a.id-link').click(function() { epadd.show_copy_modal ('Link to this message', $(this).attr('data-href')); });
 
                     $("a.attach-link").click(function() {
                         // scroll down to attachments area of message if attach-link is clicked
@@ -764,86 +709,53 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <!-- a couple of confirm modals that can be invoked when necessary -->
 <div>
-    <div id="info-modal" class="modal fade" style="z-index:9999">
+    <div id="annotation-modal" class="modal fade" style="z-index:9999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Confirm</h4>
+                    <h4 class="modal-title">Edit Annotation</h4>
                 </div>
-                <div class="modal-body">
-                </div>
+                <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
+
+            </textarea>
                 <div class="modal-footer">
-                    <button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>
-                    <button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>
-                    <button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <label class="radio-inline">
+                        <input type="radio" name="overwrite-append-options" value="overwrite" checked>
+                        <span class="text-radio">Overwrite</span>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="overwrite-append-options" value="append">
+                        <span class="text-radio">Append</span>
+                    </label>
+                    <br><br>
+                    <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
+                    <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div id="id-modal" class="modal fade" style="z-index:9999">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Link to this message</h4>
-                </div>
-                <div class="modal-body" style="overflow-wrap:break-word"> <!-- overflow-wrap needed because ID URL could be very long -->
-                    <textarea style="width:100%; height:120px;" class="message-link-textarea">No link</textarea>
-                </div>
-                <div class="modal-footer">
-                    <button id='cancel-button-cl' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id='copy-message-link-button' type="button" class="btn btn-default" data-dismiss="modal">Copy</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <div id="info-modal1" class="modal fade" style="z-index:9999">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Confirm</h4>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button id='no-button' type="button" class="btn btn-default" data-dismiss="modal">Leave flags unchanged</button>
-                    <button id='yes-button' type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    <%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
+    <div>
+        <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>--%>
+                        <%--<h4 class="modal-title">Confirm</h4>--%>
+                    </div>
+                    <div class="modal-body">
+                        <span id="normalization-description"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
 </div>
-<%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
-<div>
-    <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>--%>
-                    <%--<h4 class="modal-title">Confirm</h4>--%>
-                </div>
-                <div class="modal-body">
-                    <span id="normalization-description"></span>
-                </div>
-                <div class="modal-footer">
-                    <%--<button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>--%>
-                    <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
-                    <%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-</div>
-<script>
-
-
-//    });
-
-</script>
 
 <div style="clear:both"></div>
 <jsp:include page="footer.jsp"/>

@@ -517,14 +517,12 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     data: {archiveID: archiveID, data: option},
                     dataType: 'json',
                     success: function (data) {
-                        epadd.alert('Correspondents\' file will be downloaded in your download folder!', function () {
+                        epadd.info_confirm_continue('The correspondents file will be downloaded in your download folder!', function () {
                             window.location=data.downloadurl;
                         });
                     },
                     error: function (jq, textStatus, errorThrown) {
-                        var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                        epadd.log(message);
-                        epadd.alert(message);
+                        epadd.error("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
                     }
                 });
             });

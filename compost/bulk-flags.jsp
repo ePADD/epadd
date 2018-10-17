@@ -143,9 +143,7 @@
                     },
                     error: function (jq, textStatus, errorThrown) {
                         fade_spinner_with_delay($spinner);
-                        var message = ("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
-                        epadd.log(message);
-                        epadd.alert(message);
+                        epadd.error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
                     }
                 });
             }

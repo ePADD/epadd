@@ -154,40 +154,39 @@
                 data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
                 dataType: 'json',
                 success: function (data) {
-                    epadd.alert('Lexicon file will be downloaded in your download folder', function () {
+                    epadd.info_confirm_continue('The lexicon file for ' + <%=lexiconName%> + ' will be downloaded in your download folder', function () {
                         window.location=data.downloadurl;
-                    },'');
+                    });
                 },
                 error: function (jq, textStatus, errorThrown) {
-                    var message = ("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                    epadd.log(message);
-                    epadd.alert(message);
+                    epadd.error("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
                 }
             });
         }
+
         var deleteLexiconHandler = function() {
-            var c = epadd.confirm ('Delete this lexicon? This action cannot be undone!');
-            if (!c)
-                return;
             var post_params = {};
             post_params.archiveID = '<%=archiveID%>';
             post_params.lexicon = '<%=lexiconName%>';
-            $.ajax({
-                url: 'ajax/delete-lexicon.jsp',
-                type: 'POST',
-                dataType: 'json',
-                data: post_params,
-                success: function (j) {
-                    epadd.success('Lexicon \'' + post_params.lexicon + '\' removed successfully.', function (archiveID) {
-                       return function(){ window.location = 'lexicon-top?archiveID=' + archiveID;}
-                    }(j.archiveID));
-                },
-                error: function (j) {
+            epadd.warn_confirm_continue('Delete lexicon ' + post_params.lexicon + '? This action cannot be undone.', function() {
+                $.ajax({
+                    url: 'ajax/delete-lexicon.jsp',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: post_params,
+                    success: function (j) {
+                        epadd.success('Lexicon \'' + post_params.lexicon + '\' removed successfully.', function () {
+                                window.location = 'lexicon-top?archiveID=' + post_params.archiveID;
+                        });
+                    },
+                    error: function (j) {
 //                        $('#save-button .fa').removeClass('fa-spin');
-                    epadd.alert('Sorry! There was an error removing the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
-                }
+                        epadd.error('Sorry, there was an error removing the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+                    }
+                });
             });
         }
+
         var test_category = function(e) {
             //$(e.target).closest('.lexiconCategory').children().first().text()
             var $lexicon = $(e.target).closest('.lexiconCategory');
@@ -204,14 +203,13 @@
             //$(e.target).attr('href', url);
             return false;
         };
+
         var delete_category = function(e) {
-            var c = epadd.confirm ('Delete this category? This action cannot be undone!');
-            if (!c)
-                return;
-            //$(e.target).closest('.lexiconCategory').children().first().text()
-            var $lexicon = $(e.target).closest('.lexiconCategory');
-            $($lexicon).attr('onclick',"");//remove event handler otherwise the other one is getting called
-            $($lexicon).remove();
+            epadd.warn_confirm_continue('Delete this category? This action cannot be undone', function() {
+                var $lexicon = $(e.target).closest('.lexiconCategory');
+                $($lexicon).attr('onclick', "");//remove event handler otherwise the other one is getting called
+                $($lexicon).remove();
+            });
             return false;
         };
 
@@ -263,7 +261,7 @@
 					},
 					error: function (j) {
 						$('#save-button .fa').removeClass('fa-spin');
-						epadd.alert('Sorry! There was an error saving the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+						epadd.error('Sorry, there was an error saving the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
 					}
 				});
 			});

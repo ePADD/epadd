@@ -1426,7 +1426,7 @@ body {
 .profile-small-img {
 	height: 60px;
 	width: 60px;
-	background-color: #666;
+	background-color: #e0e4e6; /* consistent with background-color for banner image. */
 	/*background-image: url('../serveImage.jsp?file=profilePhoto.png');*/
 	border-radius: 50%;
 	display: table-cell;

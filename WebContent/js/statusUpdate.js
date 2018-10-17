@@ -99,16 +99,13 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 			epadd.log("Response text: " + responseText);
 			epadd.log("j:" + j);
 			if (!j) {
-				var err = "Sorry, there was an error: no JSON was returned! Please retry and if the error persists, report the problem to us. HTTP status: " + this.status;
-				epadd.log(err);
-				epadd.alert(err);
+				epadd.error("Sorry, there was an error: (no JSON was returned). Please retry and if the error persists, report the problem to us. HTTP status: " + this.status);
 				return;
 			}
 
 			// check if any errors
 			if (j.error) {
-				var err = "Error in operation:" + responseText;
-				epadd.log(err);
+				epadd.log("Error in getting status:" + responseText);
 				window.location = "error";
 				return;
 			}
@@ -184,8 +181,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 						// this mostly happens if the server crashed.
 						// give an alert, because most likely window.location = error.jsp is not going to work either.
 						var err = ("Sorry, looks like we can't get a response from the server. Please try restarting ePADD.");
-						epadd.log (err);
-						epadd.alert (err);
+						epadd.error (err);
 						$('.muse-overlay').hide();
 						window.location = "error.jsp";
 						return;
