@@ -55,7 +55,11 @@
 <script>epadd.nav_mark_active('Browse');</script>
 
 <style type="text/css">
-	.lexiconCategory {width:fit-content}
+	.lexiconCategory {
+		width:fit-content;/*for chrome */
+		width: -moz-max-content; /*for firefox*/
+		/*width: intrinsic;           !* Safari/WebKit uses a non-standard name *!*/
+	}
 	.lexiconName {float:left}
 	.test-category {cursor:pointer;
 		float:right; margin-right: 10px}
