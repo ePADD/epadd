@@ -1,13 +1,12 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.Config"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
-<%@page language="java" import="java.io.File"%>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
-<%@ page import="javafx.scene.shape.Arc" %>
+<%@page import="edu.stanford.muse.Config"%>
+<%@page import="edu.stanford.muse.index.Archive"%>
+<%@page import="edu.stanford.muse.util.Util"%>
+<%@page import="edu.stanford.muse.webapp.SimpleSessions"%>
+<%@page import="java.io.File"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <html>
 <head>
@@ -44,7 +43,7 @@
     </style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 
 <!-- need status window on this page because archive might take some time to load -->
@@ -149,8 +148,6 @@
                     Others: <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
         <hr/>
-
-        </p>
 
         <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
             <p>
@@ -345,17 +342,17 @@
                 cache: false,
                 data: data,
                 success: function (data) {
-                    if (data && data.status == 0) {
+                    if (data && data.status === 0) {
                         window.location.reload();
                     } else {
                         epadd.error('There was an error uploading the banner image. (' + data.error + ')');
-                    };
+                    }
                 },
                 error: function (jq, textStatus, errorThrown) {
                     epadd.error("There was an error uploading the banner image. (status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + ')');
                 }
             });
-        }
+        };
 
         $('.banner-img-edit').click (function() { $('#bannerImage-upload-modal').modal(); });
     </script>

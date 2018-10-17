@@ -30,7 +30,7 @@
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <div class="nav-toggle1 sidebar-icon">

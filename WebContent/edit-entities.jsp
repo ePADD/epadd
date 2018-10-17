@@ -1,15 +1,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@page import="java.util.*"%>
 
-<%@ page import="edu.stanford.muse.ner.model.NEType" %>
-<%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@page import="edu.stanford.muse.ner.model.NEType" %>
+<%@page import="java.util.stream.Collectors" %>
+<%@page import="edu.stanford.muse.ie.variants.EntityBook" %>
+<%@page import="edu.stanford.muse.util.Pair" %>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	Collection<EmailDocument> allDocs =  (Collection) archive.getAllDocs();
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
@@ -31,7 +30,7 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <%writeProfileBlock(out, archive, "Edit entities");%>
 
@@ -57,7 +56,7 @@
 <!--/sidebar-->
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:40%; width: 20%; margin-bottom: 20px;">
-	<select id="sort-order" class="form-control selectpicker">
+	<select title="Sort order" id="sort-order" class="form-control selectpicker">
 		<option <%=!alphaSort?"selected":""%> value="volume">Sort by frequency</option>
 		<option <%=alphaSort?"selected":""%> value="alpha">Sort alphabetically</option>
 	</select>
@@ -66,7 +65,7 @@
 <script>
 
 	$(document).ready(function() {
-		$('#sort-order').change(function (e) {
+		$('#sort-order').change(function () {
 			var url = 'edit-entities?archiveID=<%=archiveID%>&type=<%=request.getParameter ("type")%>';
 			if ('alpha' == this.value)
 				window.location = url += '&sort=alphabetical';
@@ -93,7 +92,7 @@
 		entityDisplayNames = new ArrayList<> (displayNameToFreq.keySet());
 		Collections.sort (entityDisplayNames);
 	} else {
-		entityDisplayNames = Util.sortMapByValue(displayNameToFreq).stream().map(p -> p.getFirst()).collect (Collectors.toList());
+		entityDisplayNames = Util.sortMapByValue(displayNameToFreq).stream().map(Pair::getFirst).collect (Collectors.toList());
 	}
 
 	// start building the string that goes into the text box

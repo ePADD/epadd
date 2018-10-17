@@ -36,7 +36,7 @@ if (ModeConfig.isPublicMode()) {
     </style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Search');</script>
 
 <%
@@ -51,7 +51,6 @@ if (ModeConfig.isPublicMode()) {
         req=request.getParameter("refTextTerms");//if querygenerator is being called for one line per term type of search.
         one_line_per_term_search=true;
     }
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     writeProfileBlock(out, archive, one_line_per_term_search ? "Multi-term search results" : "Multi-entity search results");
 
 %>

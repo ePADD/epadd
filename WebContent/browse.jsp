@@ -138,7 +138,7 @@
 </head>
 
 <body > <!--  override margin because this page is framed. -->
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%--<script>epadd.nav_mark_active('Browse');--%>
 
 <div class="nav-toggle1 sidebar-icon">
@@ -501,13 +501,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     <%
         //parameterizing the class name so that any future modification is easier
         String jog_contents_class = "message";
-        String collectionName = "", repositoryName = "", institutionName = "", collectionID = "";
         if (!ModeConfig.isAppraisalMode()) {
             Archive.CollectionMetadata cm = archive.collectionMetadata;
-            collectionName = Util.escapeHTML(cm.collectionTitle != null ? cm.collectionTitle : "");
-            repositoryName = Util.escapeHTML(cm.repository != null ? cm.repository : "");
-            institutionName = Util.escapeHTML(cm.institution != null ? cm.institution : "");
-            collectionID = Util.escapeHTML(cm.collectionID != null ? cm.collectionID : "");
         }
 
         String json = archive.getLabelManager().getLabelInfoMapAsJSONString();
@@ -709,7 +704,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <!-- a couple of confirm modals that can be invoked when necessary -->
 <div>
-    <div id="annotation-modal" class="modal fade" style="z-index:9999">
+    <div id="annotation-modal" class="modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -738,7 +733,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
     <%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
     <div>
-        <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
+        <div id="normalization-info-modal" class="modal fade" style="z-index:99999">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">

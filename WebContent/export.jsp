@@ -66,7 +66,7 @@
 </head>
 <body style="background-color:white;">
 <%@include file="div_status.jspf"%>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <jsp:include page="div_filepicker.jspf"/>
 
 <script>epadd.nav_mark_active('Export');</script>
@@ -114,7 +114,6 @@
 
 <%
 Archive archive = JSPHelper.getArchive(request);
-String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 String bestName = "";
 String bestEmail = "";
 if (archive != null) {

@@ -118,7 +118,7 @@
 <body>
 <%@include file="getArchive.jspf" %>
 
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Authorities');</script>
 <% writeProfileBlock(out, archive, "Assign Authorities");%>
 

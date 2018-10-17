@@ -12,19 +12,19 @@
 <html>
 <head>
   <title>Attachment content</title>
-  <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+  <link rel="icon" type="image/png" href="../WebContent/images/epadd-favicon.png">
 
-  <script src="js/jquery.js"></script>
+  <script src="../WebContent/js/jquery.js"></script>
 
-  <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-  <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
+  <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
 
-  <jsp:include page="css/css.jsp"/>
-  <script src="js/muse.js"></script>
-  <script src="js/epadd.js"></script>
+  <jsp:include page="../WebContent/css/css.jsp"/>
+  <script src="../WebContent/js/muse.js"></script>
+  <script src="../WebContent/js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="../WebContent/header.jspf"%>
 <%
   Archive archive = (Archive)session.getAttribute("archive");
   if(archive == null) {

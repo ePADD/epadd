@@ -40,7 +40,7 @@ Browse page for entities based on fine types
     </style>
 </head>
 <body>
-    <jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
     <script>epadd.nav_mark_active('Browse');</script>
     <%writeProfileBlock(out, archive, "List "+entityType+" entities");%>
 

@@ -19,13 +19,13 @@
   </head>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
   <div style="margin-left:160px;margin-right:160px">
       <p>
-    <span>ePADD version <%= edu.stanford.epadd.Version.version%>  © Stanford University
+        ePADD version <%= edu.stanford.epadd.Version.version%>  © Stanford University
         <p>Build information:
-        ePADD <%= edu.stanford.epadd.Version.buildInfo%> </span><br/>
+        ePADD <%= edu.stanford.epadd.Version.buildInfo%> <br/>
 
           © Stanford University
       <p>
@@ -106,7 +106,7 @@ For a full list of credits, please <a href="https://library.stanford.edu/project
       <a href="https://code.google.com/p/google-gson/">Google Gson</a> © Google<br/>
       <a href="http://opencsv.sourceforge.net">OpenCSV</a> © Glen Smith and others <br/>
       <p>
-      <a href="java.oracle.com">Java SE Platform Products</a> © Oracle - <a href="http://www.oracle.com/technetwork/java/javase/terms/license/index.html">Oracle BCL</a><br/>
+      <a href="http://java.oracle.com">Java SE Platform Products</a> © Oracle - <a href="http://www.oracle.com/technetwork/java/javase/terms/license/index.html">Oracle BCL</a><br/>
       <a href="http://launch4j.sourceforge.net/">Launch4j</a> © Grzegorz Kowal <a href="http://opensource.org/licenses/BSD-3-Clause">BSD 3-clause license and <a href="http://opensource.org/licenses/mit-license.html">MIT license</a> <br/>
       <a href="http://fontawesome.io">Font Awesome</a> © Dave Gandy <a href="http://opensource.org/licenses/mit-license.html">MIT license</a>, <a href="http://scripts.sil.org/OFL">SIL OFL 1.1</a><br/>
       <a href="http://fontawesome.io">Bootstrap</a> © Twitter <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE">MIT license</a><br/>

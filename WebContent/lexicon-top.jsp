@@ -140,7 +140,7 @@
 	</script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%writeProfileBlock(out, false, archive, "Lexicons", 900);%>

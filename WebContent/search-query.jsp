@@ -41,7 +41,7 @@
 	</style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Search');</script>
 
 <%writeProfileBlock(out, false, archive, "Search", 900);%>

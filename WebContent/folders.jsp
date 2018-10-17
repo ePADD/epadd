@@ -70,7 +70,7 @@
 </head>
 <body style="background-color:white">
 
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%@include file="div_status.jspf"%>
 <script>epadd.nav_mark_active('Import');</script>
 

@@ -128,7 +128,7 @@
         <script src="js/epadd.js" type="text/javascript"></script>
     </head>
    <body>
-       <jsp:include page="header.jspf"/>
+       <%@include file="header.jspf"%>
        <script>epadd.nav_mark_active('Collections');</script>
         <div style="margin-left:170px">
        <br/>

@@ -1,10 +1,9 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.io.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.Config"%>
+<%@page import="java.io.*"%>
+<%@page import="edu.stanford.muse.webapp.*"%>
+<%@page import="edu.stanford.muse.index.Archive"%>
+<%@page import="edu.stanford.muse.Config"%>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <html>
@@ -23,7 +22,7 @@
 </head>
 
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Collections');</script>
 
 <div style="width:100%; margin:auto">
@@ -91,7 +90,7 @@
   <% } else if (ModeConfig.isDeliveryMode()) { %>
         <h1>Welcome to the ePADD delivery module.</h1>
   <% } else if (ModeConfig.isAppraisalMode()) { %>
-        <div style=\"text-align:center\">Sorry, this page is not available in appraisal mode.</div>
+        <div style="text-align:center">Sorry, this page is not available in appraisal mode.</div>
         <% return;
     }
   %>

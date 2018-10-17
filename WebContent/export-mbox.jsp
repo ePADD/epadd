@@ -4,7 +4,6 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
-<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -24,11 +23,9 @@
     <script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
-<% 	AddressBook addressBook = archive.addressBook;
-String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	String bestName = addressBook.getBestNameForSelf().trim();
+<%
 	writeProfileBlock(out, archive,  "Export archive");
 %>
 <div style="margin-left:170px">
@@ -67,33 +64,15 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         DataSet docset = (DataSet) session.getAttribute(docsetID);
         selectedDocs = docset.getDocs();
     }else {
-        selectedDocs = archive.getAllDocs().stream().collect(Collectors.toSet());
+        selectedDocs = new LinkedHashSet<>(archive.getAllDocs());
     }
     JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
 
 // either we do tags (+ or -) from selectedTags
     // or we do all docs from allDocs
-    String cacheDir = archive.baseDir;
-//    String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  "blobs" + File.separator;
     BlobStore bs = null;
     bs = archive.getBlobStore();
-//    bs = new BlobStore(attachmentsStoreDir);
-//    JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
-
-    /*
-    String rootDir = JSPHelper.getRootDir(request);
-    new File(rootDir).mkdirs();
-    String userKey = JSPHelper.getUserKey(session);
-
-    String name = request.getParameter("name");
-    if (Util.nullOrEmpty(name))
-        name = String.format("%08x", EmailUtils.rng.nextInt());
-    String filename = name + ".mbox.txt";
-
-    String path = rootDir + File.separator + filename;
-    PrintWriter pw = new PrintWriter (path);
-    */
 
     String noAttach = request.getParameter("noattach");
     boolean noAttachments = "on".equals(noAttach);

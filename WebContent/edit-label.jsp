@@ -1,10 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@ page import="edu.stanford.muse.LabelManager.Label" %>
-<%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
-<%@ page import="java.util.GregorianCalendar" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.util.Calendar" %>
+<%@page import="edu.stanford.muse.LabelManager.Label" %>
+<%@page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@page import="java.util.GregorianCalendar" %>
+<%@page import="java.util.Date" %>
+<%@page import="java.util.Calendar" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
 <%
@@ -65,7 +65,7 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label: " + labelName)); %>
 <br/>

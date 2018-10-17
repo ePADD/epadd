@@ -1,22 +1,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%@page language="java" import="java.io.*"%>
+<%@page import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@ page import="javax.mail.Address" %>
-<%@ page import="javax.mail.internet.InternetAddress" %>
-<%@ page import="com.google.common.collect.*" %>
-<%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
-<%@ page import="edu.stanford.muse.AddressBookManager.MailingList" %>
-<%@ page import="org.json.JSONArray" %>
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@page import="java.util.*"%>
+<%@page import="edu.stanford.muse.util.*"%>
+<%@page import="edu.stanford.muse.index.*"%>
+<%@page import="javax.mail.Address" %>
+<%@page import="javax.mail.internet.InternetAddress" %>
+<%@page import="com.google.common.collect.*" %>
+<%@page import="edu.stanford.muse.AddressBookManager.Contact" %>
+<%@page import="edu.stanford.muse.AddressBookManager.MailingList" %>
+<%@page import="org.json.JSONArray" %>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
 	Collection<EmailDocument> allDocs = (Collection<EmailDocument>) JSPHelper.getSessionAttribute(session, "emailDocs");
 	if (allDocs == null)
 		allDocs = (Collection) archive.getAllDocs();
-	String sort = request.getParameter("sort");
 %>
 <html>
 <head>
@@ -38,16 +37,14 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <%writeProfileBlock(out, archive, "Debugging address book");%>
 <div style="margin-left:170px">
 
 <%
-
 	Multimap<String, String> nameMap = ArrayListMultimap.create();
 	Multimap<String, String> emailMap = ArrayListMultimap.create();
-    int n = 0;
 
 	for (Document doc: archive.getAllDocs()) {
 		EmailDocument ed = (EmailDocument) doc;
@@ -57,8 +54,7 @@
 		if (list != null)
 			allAddrs.addAll (list);
 		if (ed.from != null)
-			for (Address a: ed.from)
-				allAddrs.add (a);
+			allAddrs.addAll(Arrays.asList(ed.from));
 
 		for (Address a: allAddrs) {
 			InternetAddress ia = (InternetAddress) a;
@@ -70,7 +66,6 @@
 				continue;
 			emailMap.put (email, name);
 			nameMap.put (name, email);
-            n++;
 		}
 	}
     %>
@@ -91,9 +86,7 @@
 			    isMailingList = true;
 
 			Multiset<String> namesSet = LinkedHashMultiset.create(emailMap.get (emailAddr));
-			int namesSetCount = 0;
-			if (namesSet != null)
-			    namesSetCount = namesSet.elementSet().size();
+			int namesSetCount = namesSet.elementSet().size();
 
 			int messageCount =  emailMap.get(emailAddr).size();
 			// out.println (count + ". Email address: " + Util.escapeHTML(emailAddr) + (isMailingList ? " [ML]":"") + " (" + Util.pluralize (messageCount, "message") + ") is associated with " + Util.pluralize(namesSetCount, "name") + ":<br/>");

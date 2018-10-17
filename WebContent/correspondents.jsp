@@ -1,9 +1,8 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
-<%@ page import="org.json.JSONArray" %>
-<%@ page import="java.util.Collection" %>
-<%@ page import="org.apache.commons.math3.analysis.function.Add" %>
+<%@page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page import="edu.stanford.muse.index.EmailDocument"%>
+<%@page import="org.json.JSONArray" %>
+<%@page import="java.util.Collection" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -44,7 +43,8 @@
 	</script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+
+<%@include file="header.jspf"%>
 
 <div class="nav-toggle1 sidebar-icon">
 	<img src="images/sidebar.png" alt="sidebar">
@@ -98,11 +98,7 @@
 	</div>
 </nav>
 
-<%
-	AddressBook ab = archive.addressBook;
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "Correspondents");
-%>
+<% writeProfileBlock(out, archive, "Correspondents"); %>
 
 <%--
 <div style="text-align:center;display:inline-block;vertical-align:top;margin: auto; width: 100%">
@@ -171,7 +167,7 @@
                 epadd.error("Error downloading data file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
             }
         });
-    }
+    };
 
     var uploadCorrespondentHandler=function() {
         //collect archiveID,and addressbookfile field. If  empty return false;
@@ -196,7 +192,7 @@
             contentType: false,
             cache: false,
             data: data,
-            success: function (data) {
+            success: function () {
                 epadd.success('Correspondent list uploaded and applied.', function () {
                     window.location.reload();
                 });

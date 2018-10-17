@@ -30,7 +30,7 @@
 	</style>
 </head>
 <body style="background-color: white">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <!-- this is going to be really quick... -->
 <script type="text/javascript" src="js/statusUpdate.js"></script>

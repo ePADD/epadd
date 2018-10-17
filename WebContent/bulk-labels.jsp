@@ -1,5 +1,4 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
@@ -34,10 +33,9 @@
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
     String docsetID = request.getParameter("docsetID");
     if (docsetID == null)
@@ -123,15 +121,7 @@
 	    //if this label is of type time restrction with relative time then inform the user that this label will not be set for messages with unidentified dates
 		//if this label is of type 'cleared for release' then inform the user that this label will only be set of messages with general restriction labels or with restriction labels where time has expired.
 		var msg="";
-		/*if(action=="set") {
-            if (labelID === "<%=archive.getLabelManager().LABELID_CFR%>")
-                msg = "This label will be set for only those messages where time restriction has expired or which contain only general restriction labels. All the messages with \"Cleared for release\" label will " +
-                    "be exported to the next module. Be careful!";
-
-            if (relativeTimedRestrictions.indexOf(labelID) > -1)//means labelID is a relative timed restriction label.
-                msg = "This label will be set for only those messages where a valid date is present. Note that ePADD puts a dummy date 1 Jan 1960 for the messages with corrupt date field.";
-        }
-*/		var c = epadd.warn_confirm_continue (msg+' Do you want to ' + action + ' this label for these messages?', function() {
+		epadd.warn_confirm_continue (msg+' Do you want to ' + action + ' this label for these messages?', function() {
 
             //$('#alert-modal').on('hidden.bs.modal', window.location.reload());
             $.ajax({
@@ -155,11 +145,11 @@
 
 	$(document).ready(function() {
 		$('.set-all').click (function(e) {
-		    labelID = $(e.target).attr ('data-labelID');
+		    var labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'set');
         });
         $('.unset-all').click (function(e) {
-            labelID = $(e.target).attr ('data-labelID');
+            var labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'unset');
         });
 	});

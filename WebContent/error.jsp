@@ -19,7 +19,7 @@
 <script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%
 	if (exception != null) {
 		Util.print_exception("Error page reached! ", exception, JSPHelper.log);

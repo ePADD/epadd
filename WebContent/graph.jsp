@@ -17,7 +17,7 @@
 <%@include file="getArchive.jspf" %>
 <%!
 
-public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> intervals, Collection<EmailDocument> docs, int[] allMessagesHistogram, int w, int h)
+private String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> intervals, Collection<EmailDocument> docs, int[] allMessagesHistogram, int w, int h)
 {
 	Collections.sort(dfis);
 	JSONArray j = new JSONArray();
@@ -53,17 +53,17 @@ public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> inte
 	+ "</script>\n";
 }
 
-public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, List<Date> intervals, int[] allMessagesHistogram, int w, int h, int normalizer, HttpSession session)
+private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, List<Date> intervals, int[] allMessagesHistogram, int w, int h, int normalizer, HttpSession session)
 {
 	String totalMessageVolume = JSONUtils.arrayToJson(allMessagesHistogram);
 
 	// normalizer is the max # of documents in a single intervals
 
-	List<Set<DatedDocument>> sentimentDocs = new ArrayList<Set<DatedDocument>>();
+	List<Set<DatedDocument>> sentimentDocs = new ArrayList<>();
 	StringBuilder json = new StringBuilder("[");
 	for (String caption: map.keySet())
 	{
-		Set<DatedDocument> docs = new LinkedHashSet<DatedDocument>((Collection) map.get(caption)); // map.get returns a list, we have to cast it to set
+		Set<DatedDocument> docs = new LinkedHashSet<>((Collection) map.get(caption)); // map.get returns a list, we have to cast it to set
 		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(docs), intervals, true /* ignore invalid dates */);
 		String sentimentVolume = JSONUtils.arrayToJson(hist);
 		if (json.length() > 2)
@@ -111,13 +111,12 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 	boolean doSentiments = false, doPeople = false, doEntities = false;
 	String view = request.getParameter("view");
 	String type = request.getParameter("type");
-    Short ct = NEType.Type.PERSON.getCode();
+    short ct = NEType.Type.PERSON.getCode();
 
-    if("en_person".equals(type))
-        ct = NEType.Type.PERSON.getCode();
-    else if("en_loc".equals(type))
+    if("en_loc".equals(type))
         ct = NEType.Type.PLACE.getCode();
-    else ct = NEType.Type.ORGANISATION.getCode();
+    else
+        ct = NEType.Type.ORGANISATION.getCode();
 
 		Lexicon lex=null;
 		String name = request.getParameter("lexicon");
@@ -177,7 +176,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 </head>
 
 <body style="margin:0% 2%"> <!--  override the default of 1% 5% because we need more width on this page -->
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <%
 	String sentiment = request.getParameter("sentiment");
@@ -216,12 +215,11 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 			 lexiconNames.remove("sensitive");
 		 }
 
-	 boolean onlyOneLexicon = (lexiconNames.size() == 1);
 			if (lexiconNames.size() > 1)
 			{
 	%>
 		<script>function changeLexicon() {	window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments&lexicon=' +	$('#lexiconName').val(); }</script>
-		Lexicon <select id="lexiconName" onchange="changeLexicon()">
+		Lexicon <select title="change lexicon" id="lexiconName" onchange="changeLexicon()">
 		<%
 			// common case, only one lexicon, don't show load lexicon
 			for (String n: lexiconNames)
@@ -286,7 +284,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		int normalizer = ProtovisUtil.normalizingMax(allDocs, addressBook, intervals);
 		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 		Map<Contact, DetailedFacetItem> folders = IndexUtils.partitionDocsByPerson((Collection) allDocs, addressBook);
-		List<DetailedFacetItem> list = new ArrayList<DetailedFacetItem>(folders.values());
+		List<DetailedFacetItem> list = new ArrayList<>(folders.values());
 		graph_script = scriptForFacetsGraph(list, intervals, (Collection) allDocs, allMessagesHistogram, 1000, 450);
 	}
 	else if (doEntities)
@@ -295,8 +293,8 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-		Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
-		Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
+		Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
+		Map<String, Integer> counts = new LinkedHashMap<>();
 		for (EmailDocument ed: docs) {
             Set<String> set = new LinkedHashSet<>();
             Span[] es = archive.getEntitiesInDoc(ed, true);
@@ -307,8 +305,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
 			for (String e: set) {
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
-				if (canonicalToOriginal.get(canonicalEntity) == null)
-					canonicalToOriginal.put(canonicalEntity, e);
+                canonicalToOriginal.putIfAbsent(canonicalEntity, e);
 				Integer I = counts.get(canonicalEntity);
 				counts.put(canonicalEntity, (I == null) ? 1 : I+1);
 			}
@@ -317,14 +314,14 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
 		int n = HTMLUtils.getIntParam(request, "n", 10);
 		int count = 0;
-		List<String> topEntities = new ArrayList<String>();
+		List<String> topEntities = new ArrayList<>();
 		for (Pair<String, Integer> pair: pairs) {
 			topEntities.add(pair.getFirst());
 			if (++count > n)
 				break;
 		}
 		
-		Map<String, Set<Document>> map = new LinkedHashMap<String, Set<Document>>();
+		Map<String, Set<Document>> map = new LinkedHashMap<>();
 		/*
 		for (String e: topEntities)
 		{
@@ -355,19 +352,14 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
 				if (!topEntities.contains(canonicalEntity))
 					continue;
-				
-				Set<Document> docSet = map.get(canonicalEntity);
-				if (docSet == null)
-				{
-					docSet = new LinkedHashSet<Document>();
-					map.put(canonicalEntity, docSet);
-				}
-				docSet.add(ed);
+
+                Set<Document> docSet = map.computeIfAbsent(canonicalEntity, k -> new LinkedHashSet<>());
+                docSet.add(ed);
 			}
 		}
 
 		// now uncanonicalize the top terms in the map to form newmap
-		Map<String, Collection<Document>> newMap = new LinkedHashMap<String, Collection<Document>>();
+		Map<String, Collection<Document>> newMap = new LinkedHashMap<>();
 		for (String entity: topEntities)
 		{
 			String originalEntity = canonicalToOriginal.get(entity);

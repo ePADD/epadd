@@ -1,20 +1,20 @@
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%!
     private boolean IsNormalized=false;
 %><%
 	JSPHelper.checkContainer(request); // do this early on so we are set up
 	request.setCharacterEncoding("UTF-8");
 %>
-<%@page language="java" import="org.json.JSONArray"%>
-<%@ page import="java.util.*" %>
-<%@page language="java" import="edu.stanford.muse.datacache.BlobStore"%>
-<%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="edu.stanford.muse.index.*" %>
+<%@page import="org.json.JSONArray"%>
+<%@page import="java.util.*" %>
+<%@page import="edu.stanford.muse.datacache.BlobStore"%>
+<%@page import="edu.stanford.muse.datacache.Blob"%>
+<%@page import="edu.stanford.muse.util.Util"%>
+<%@page import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page import="java.util.stream.Collectors" %>
+<%@page import="edu.stanford.muse.Config" %>
+<%@page import="com.google.common.collect.Multimap" %>
+<%@page import="edu.stanford.muse.index.*" %>
 <%@include file="getArchive.jspf" %>
 
 <!DOCTYPE HTML>
@@ -61,11 +61,10 @@
     </style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	JSONArray resultArray = new JSONArray();
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
@@ -126,7 +125,7 @@
                     <!--File Size-->
                     <div class="form-group col-sm-2">
                         <%--<label for="attachmentFilesize">File Size</label>--%>
-                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker empty">
+                        <select title="Attachment file size" id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker empty">
                             <option value="" selected disabled>File Size</option>
                             <option value="1">&lt; 5KB</option>
                             <option value="2">5-20KB</option>
@@ -297,7 +296,7 @@ $(document).ready(function() {
             return "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" data-normalization-info=\""+full[7]+"\"</span>";
         }else
             return '';
-    }
+    };
     var sortable_size = function(data, type, full, meta) {
         return Math.floor(full[2]/1024) + " KB";
     };
@@ -329,7 +328,7 @@ $(document).ready(function() {
 });
 </script>
 <div>
-    <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
+    <div id="normalization-info-modal" class="modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

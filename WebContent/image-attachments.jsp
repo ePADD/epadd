@@ -47,11 +47,10 @@
     </style>
 </head>  
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
     Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
     SearchResult inputSet = new SearchResult(archive,params);

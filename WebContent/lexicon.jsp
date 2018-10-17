@@ -2,7 +2,6 @@
 <%@ page import="edu.stanford.muse.Config" %>
 <%@page language="java" import="java.util.Collection"%>
 <%@page language="java" import="java.util.LinkedHashSet"%>
-<%@ page import="java.util.Map" %>
 <%@ page import="edu.stanford.muse.index.*" %>
 <%@ page import="org.json.JSONArray" %>
 <%@include file="getArchive.jspf" %>
@@ -68,7 +67,7 @@
 	</script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%writeProfileBlock(out, false, archive, "Lexicon Hits: "+lexiconname, 900);%>

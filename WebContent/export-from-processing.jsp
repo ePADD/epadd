@@ -26,10 +26,9 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
 <% 	AddressBook addressBook = archive.addressBook;
-String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive, "Export archive");
 %>
@@ -147,7 +146,6 @@ String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 		out.flush();
 		String baseDir = archive.baseDir;
 		ArchiveReaderWriter.removeFromGlobalArchiveMap(baseDir,archive);
-		archive = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
 	/*archive.setBaseDir(baseDir);
 	session.setAttribute("archive", archive);
 	session.setAttribute("userKey", "user");

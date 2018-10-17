@@ -1,10 +1,10 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.util.Log4JUtils"%>
-<%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="java.io.File" %>
-<%@ page import="java.util.Date" %>
+<%@page import="java.io.File" %>
+<%@page import="java.util.Date" %>
+<%@page import="edu.stanford.muse.util.Log4JUtils"%>
+<%@page import="edu.stanford.muse.util.Util"%>
+<%@page import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig" %>
 
 <%@include file="getArchive.jspf" %>
 
@@ -25,7 +25,7 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body class="color:gray;background-color:white;">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <br/>
 
 <div id="main" style="margin:1% 5%">

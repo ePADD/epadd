@@ -40,7 +40,7 @@
 	<script type="text/javascript" src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%writeProfileBlock(out, archive, "Reports");%>
 
 
@@ -93,7 +93,7 @@
     // gather the errors by type
     List<String>[] errorsByType = new ArrayList[errorTypes.length];
     for (int t = 0; t < errorsByType.length; t++)
-        errorsByType[t] = new ArrayList<String>();
+        errorsByType[t] = new ArrayList<>();
 
     for (String s: allErrors) {
         for (int t = 0; t < errorTypes.length; t++) {

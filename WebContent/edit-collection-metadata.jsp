@@ -28,7 +28,7 @@
 	</style>
 </head>
 <body style="background-color: white">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Collections');</script>
 
 <p>
@@ -121,7 +121,7 @@
 			<div class="input-field-label">About</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=cm == null ? "" : formatMetadataField( cm.about)%>
+				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=formatMetadataField(cm.about)%>
 				</textarea>
 			</div>
 		</div>
@@ -129,7 +129,7 @@
 			<div class="input-field-label">Rights and Conditions</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=cm == null ? "" : formatMetadataField( cm.rights)%>
+				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=formatMetadataField( cm.rights)%>
 				</textarea>
 			</div>
 		</div>
@@ -137,7 +137,7 @@
 			<div class="input-field-label">Notes</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=cm == null ? "" : formatMetadataField( cm.notes)%>
+				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=formatMetadataField( cm.notes)%>
 				</textarea>
 			</div>
 		</div>
@@ -146,7 +146,7 @@
 			<div class="input-field-label">Scope and Content</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=cm == null ? "" : formatMetadataField( cm.scopeAndContent)%>
+				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=formatMetadataField( cm.scopeAndContent)%>
 				</textarea>
 			</div>
 		</div>

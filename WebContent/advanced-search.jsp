@@ -72,7 +72,7 @@
 	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 %>
 <body>
-	<jsp:include page="header.jspf"/>
+	<%@include file="header.jspf"%>
 	<script>epadd.nav_mark_active('Search');</script>
 	<% writeProfileBlock(out, archive,"Search");%>
 

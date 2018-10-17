@@ -23,12 +23,11 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%@include file="div_status.jspf"%>
 
 <%--<script>epadd.nav_mark_active('Export');</script>--%>
 <% 	AddressBook addressBook = archive.addressBook;
-String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 boolean checkDone=false;
 boolean success=false;
 if(!Util.nullOrEmpty(request.getParameter("checkDone"))){

@@ -64,7 +64,7 @@
     </style>
 </head>
 <body style="background-color:white;">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <jsp:include page="div_filepicker.jspf"/>
 
 <script>epadd.nav_mark_active('TODO');</script>

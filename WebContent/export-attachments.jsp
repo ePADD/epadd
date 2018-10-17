@@ -2,19 +2,14 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
 <%@ page import="edu.stanford.muse.datacache.Blob" %>ex
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="java.util.stream.Stream" %>
-<%@ page import="java.util.stream.Collector" %>
-<%@ page import="edu.stanford.muse.datacache.BlobStore" %>
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
@@ -33,10 +28,9 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
 <%
-    String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
     AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf().trim();
 	writeProfileBlock(out, archive,"Export archive");

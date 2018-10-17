@@ -1,9 +1,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%@page language="java" import="java.io.*"%>
+<%@page import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
+<%@page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
 	AddressBook addressBook = archive.addressBook;
@@ -30,7 +30,7 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <%writeProfileBlock(out, archive, "Edit address book");%>
 
@@ -76,7 +76,7 @@
 <br/>
 <div style="text-align:center;margin-left:40%;width:20%;">
 	<div class="form-group">
-		<select id="sort-order" name="sort-order" class="form-control selectpicker">
+		<select title="Sort order" id="sort-order" name="sort-order" class="form-control selectpicker">
 			<option <%=!alphaSort && !aliasCountSort ? "selected" : ""%> value="volume">Sort by email volume</option>
 			<option <%=alphaSort ? "selected" : ""%> value="alpha">Sort alphabetically</option>
 			<option <%=aliasCountSort ? "selected" : ""%> value="aliasCount">Sort by number of aliases</option>

@@ -1,11 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@ page import="java.io.File" %>
+<%@page import="java.util.*"%>
+<%@page import="edu.stanford.muse.index.*"%>
+<%@page import="edu.stanford.muse.util.*"%>
+<%@page import="java.io.File" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
 <% 
@@ -53,7 +51,7 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <style type="text/css">

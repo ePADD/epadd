@@ -32,7 +32,7 @@
      //as the name of the base directory.
 
  %>
-    <jsp:include page="header.jspf"/>
+ <%@include file="header.jspf"%>
 
     <script>epadd.nav_mark_active('Collections');</script>
 

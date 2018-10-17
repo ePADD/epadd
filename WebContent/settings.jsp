@@ -27,7 +27,7 @@
 	</style>
 </head>
 <body style="color:gray;">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%writeProfileBlock(out, archive, "Settings");%>
 
 <jsp:include page="alert.jspf"/>
@@ -36,8 +36,6 @@
 
     <div style="width:1100px; margin:auto">
 	<%
-
-        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         if (archive != null) { %>
             <div id="advanced_options">
 
