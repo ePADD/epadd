@@ -97,14 +97,20 @@
 
     <p>
     <div class="banner-img" style="background-size: contain; background-repeat:no-repeat; background-position: center center; background-image:url('<%=url%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
+    <% if(ModeConfig.isProcessingMode()){%>
         <div class="banner-img-edit">
             <img src="images/edit_summary.svg"/>
         </div>
+    <% } %>
     </div>
 
     <br/>
     <div class="details">
-        <div class="heading">Summary <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a></div>
+        <div class="heading">Summary
+            <% if(ModeConfig.isProcessingMode()){%>
+            <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
+            <%}%>
+        </div>
         <hr/>
             Institution<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span></b>
@@ -212,7 +218,9 @@
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <div class="accession">
                         <div class="accession-heading">Accession ID: <%=formatMetadataField(am.id)%>
+                            <% if(ModeConfig.isProcessingMode()){%>
                             <a style="margin-left: 30px" class="edit-accession-metadata"  data-accessionID="<%=am.id%>" href="#"><img style="height:25px" src="images/edit_summary.svg"/></a>
+                            <%}%>
                         </div>
                         <div class="accession-content">
                             <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
