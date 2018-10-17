@@ -107,7 +107,7 @@
 " (" + uniqueAttachments.size() + " unique)");%>
 <%--<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>--%>
 
-<div id="all_fields" style="margin:auto; width:1100px;>
+<div id="all_fields" style="margin:auto; width:1100px;">
 
     <!-- filter form submits back to the same page -->
     <form action="image-attachments" method="get">
