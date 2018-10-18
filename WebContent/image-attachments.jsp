@@ -151,9 +151,9 @@
                     <div class="form-group col-sm-4">
                         <%--<label for="time-range">Time Range</label>--%>
                         <div id="time-range" class="date-input-group">
-                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="From">
+                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="From" readonly="true" style="cursor: pointer;background:white;">
                             <%--<label for="endDate"> </label>--%>
-                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="To">
+                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="To" readonly="true" style="cursor: pointer;background:white;">
                         </div>
                     </div>
 
@@ -225,11 +225,17 @@
         //setting min date as 1 jan 1960. The format is year,month,date. Month is 0 based and all other are 1 based
         $('#startDate').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1930:2030"
         });
         $('#endDate').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1930:2030"
         });
 
     });

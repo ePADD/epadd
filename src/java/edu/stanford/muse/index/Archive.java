@@ -2280,7 +2280,19 @@ after maskEmailDomain.
         try {
             messageDigest = MessageDigest.getInstance(StandardSupportedAlgorithms.MD5.name());
             MessageDigest finalMessageDigest = messageDigest;
-            archiveBag.getPayLoadManifests().forEach(manifest->manifestToMessageDigest.put(manifest, finalMessageDigest));
+            /*A very subtle bug was introduced. The case is as following; a file gets deleted from the directory but the manifest has entry for the deleted file as well.
+            When the manifest construction algorithm is iterated over the directory tree then it recomputes the hash for all files present but it does not remove the hash for deleted files. As a result,
+            although the file is deleted, its entry remains in the tag manifest file resulting in the failure of checksum. For fix; we remove entry for all those files
+            which are present in the folder that needs to be updated.
+             */
+            archiveBag.getPayLoadManifests().forEach(manifest->{
+                //from manifest remove all the files whose parent path is fileOrDirectoryName
+                Map<Path,String> mm = manifest.getFileToChecksumMap().entrySet().stream().filter(entry->
+                    !entry.getKey().startsWith(new File(fileOrDirectoryName).toPath())
+                        ).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+                manifest.setFileToChecksumMap(mm);
+                manifestToMessageDigest.put(manifest, finalMessageDigest);
+            });
             CreatePayloadManifestsVistor sut = new CreatePayloadManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
             Files.walkFileTree(filepathname, sut);
             //Files.walkFileTree(baginfofile,sut);
