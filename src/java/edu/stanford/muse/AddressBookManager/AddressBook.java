@@ -610,15 +610,16 @@ public class AddressBook implements Serializable {
 
         if (fromTrustedAddr) {
             b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
-            log.info ("Processing trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+            log.info("Processing trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
         } else
-            log.warn ("Dropping processing of contacts from non-trusted addr" + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+            log.warn("Dropping processing of contacts from non-trusted addr" + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
 
-        if (!b && !noToCCBCC) // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
+        if (!b && !noToCCBCC) { // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
             markDataError("Owner not sender, and no to addr for: " + ed);
             dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
 
         }
+    }
 
 
     private void markDataError(String s) {
