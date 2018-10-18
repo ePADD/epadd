@@ -87,9 +87,11 @@ try {
 	cm.institution = request.getParameter("institution");
 	cm.repository = request.getParameter("repository");
 	cm.collectionTitle = request.getParameter("collectionTitle");
+	cm.shortTitle = request.getParameter("shortTitle");
 	cm.collectionID = request.getParameter("collectionID");
     cm.contactEmail = request.getParameter("contactEmail");
     cm.rights = request.getParameter("rights");
+    cm.shortDescription = request.getParameter("shortDescription");
     cm.notes = request.getParameter("notes");
     cm.scopeAndContent = request.getParameter("scopeAndContent");
 

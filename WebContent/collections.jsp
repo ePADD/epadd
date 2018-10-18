@@ -91,14 +91,13 @@
                       <% } %>
                       </div>
 
-                      <%
-                      out.println("<div class=\"landing-img-text\">");
-                      out.println(Util.nullOrEmpty(cm.collectionTitle) ? "No name assigned" : cm.collectionTitle);
-                      out.println("<br><span class=\"detail\">" + Util.commatize(cm.nDocs) + " messages</span>");
-                      out.println("<br><span class=\"detail\">" + Util.commatize(cm.nBlobs) + " attachments</span>");
-                      out.println("<br><span class=\"detail\">Collection ID: " + (Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID) + " </span>");
-                      out.println("</div>");
-                      out.println("</div>");
+                      <div class="landing-img-text">
+                          <span style="font-size:20px;font-weight:600;color:#0175BC"><%=Util.nullOrEmpty(cm.shortTitle) ? "(No title)" : Util.escapeHTML(cm.shortTitle)%></span>
+                          <div class="epadd-separator"></div>
+                          <%=Util.nullOrEmpty(cm.shortDescription) ? "(No description)" : Util.escapeHTML(cm.shortDescription)%>
+                      </div>
+                      </div>
+      <%
                   }
               }
           }

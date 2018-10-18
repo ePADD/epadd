@@ -39,7 +39,6 @@
 
         .banner-img { box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.75); background-color: #e0e4e6; background-repeat: no-repeat; background-size: cover; width: 1100px; height: 300px; position: relative; text-align:center;}
         .banner-img-edit { text-align: right;position: relative;top: 20px; right: 20px; cursor:pointer;}
-        div.epadd-separator { height: 3px; width: 25px; border: solid 1px #0175bc; background-color: #0175bc; margin: 20px 0px; }
     </style>
 </head>
 <body>
@@ -302,8 +301,6 @@
 </div><!-- /.modal -->
 
     <script>
-        $('#add-accession').click (function() { window.location = 'add-accession?collection=<%=id%>'});
-        $('#edit-photos').click (function() { window.location = 'set-images?collection=<%=id%>'; });
         $('.edit-accession-metadata').click (function(e) {
             var accessionID=$(e.target).closest('a').attr('data-accessionID'); // e.target is the edit-icon, so we look up to find the closest a
             window.location = 'edit-accession-metadata?collection=<%=id%>&accessionID='+accessionID;

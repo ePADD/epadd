@@ -84,6 +84,14 @@
 		</div>
 
 		<div class="div-input-field">
+			<div class="input-field-label">Short Title</div>
+			<br/>
+			<div class="input-field">
+				<input title="Short title" value="<%=formatMetadataField( cm.shortTitle)%>" class="form-control" type="text" name="shortTitle"/>
+			</div>
+		</div>
+
+		<div class="div-input-field">
 			<div class="input-field-label">Collection ID</div>
 			<br/>
 			<div class="input-field">
@@ -116,6 +124,14 @@
 		</div>
 
 		<br/>
+
+		<div class="div-input-field">
+			<div class="input-field-label">Short Description</div>
+			<br/>
+			<div class="input-field">
+				<input title="Short description" value="<%=formatMetadataField( cm.shortDescription)%>" class="form-control" type="text" name="shortDescription"/>
+			</div>
+		</div>
 
 		<div class="div-input-field">
 			<div class="input-field-label">About</div>

@@ -440,7 +440,7 @@ int errortype=0;
     // these fields are used in the library setting
     static public class CollectionMetadata implements java.io.Serializable {
         private final static long serialVersionUID = 6304656466358754945L; // compatibility
-        public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes, scopeAndContent;
+        public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes, scopeAndContent, shortTitle, shortDescription;
         public long timestamp;
         public String tz;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.

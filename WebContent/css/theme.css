@@ -1495,7 +1495,8 @@ body {
 	margin: 20px;
 	cursor: hand;
 	background-color: white;
-	box-shadow: 3px 3px 11px 0px rgba(0,0,0,0.75);
+	box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.75);
+	box-sizing: border-box;
 }
 
 .landing-img {
@@ -1510,18 +1511,16 @@ body {
 .archive-card .landing-img-text {
 	font-size: 14px;
 	text-align:left;
-	margin-left: 20px;
+	padding-left: 20px;
+	padding-left: 20px;
+	height: 150px;
+	padding-top:20px;
 }
 
-.archive-card .landing-img-text .detail {
-	font-size: 12px;
-	color: #9a9a9a;
-}
 
-.archive-card .landing-img-text {
-	font-size: 14px;
-	text-align:left;
-	margin-left: 20px;
+.landing-img-text:hover {
+	border-bottom: solid 3px #0175BC;
+	box-sizing: border-box;
 }
 
 .navbar-nav li.nav-active {  color: white; border-bottom: solid 4px white;}
