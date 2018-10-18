@@ -592,6 +592,7 @@ public class AddressBook implements Serializable {
         }
         if (ed.date == null) {
             markDataError("No date for: " + ed);
+        }
         boolean fromTrustedAddr = false;
         {
             Address[] addrs = ed.from;
@@ -618,7 +619,7 @@ public class AddressBook implements Serializable {
             dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
 
         }
-    }
+
 
     private void markDataError(String s) {
         log.debug(s);
