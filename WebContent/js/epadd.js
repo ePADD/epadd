@@ -11,28 +11,31 @@ var escapeHTML = function(s) {
     return s;
 };
 
-epadd.post_message = function(mesg)
+epadd.post_message = function(mesg, warn)
 {
-	$.ajax({
+	var data = {'message': mesg.toString()};
+	if (warn)
+		data.warn = true;
+
+    $.ajax({
 		url: 'ajax/muselog.jsp',
 		type: 'POST',
-		data: {'message': mesg.toString()},
+		data: data,
 		retryLimit: 3,
 		async: true
 	});
 	//$.post('/ajax/muselog.jsp', {'message': mesg.toString()});
 };
 
-epadd.log = function(mesg, log_on_server)
+epadd.log = function(mesg, warn)
 {
 //	alert ('logging ' + mesg);
-	if (typeof console != 'undefined' && epadd.log)
-		console.log(mesg);
+	if (typeof console != 'undefined') {
+		if (warn)
+			console[warn ? 'warn' : 'info'](mesg);
+    }
 
-	// log on server only if log_on_server is undefined or true
-	//if (typeof log_on_server == 'undefined' || log_on_server)
-	//	epadd.post_message(mesg); // post JS message to server
-
+	epadd.post_message(mesg, warn);
 };
 
 epadd.pluralize = function(count, description)
@@ -455,7 +458,7 @@ epadd.info = function(text, continuation) {
 
 // pop up a warning modal with the given text (user can only close). call continuation if provided on close
 epadd.warn = function(text, continuation) {
-    epadd.log ("showing warning modal: " + text);
+    epadd.log ("showing warning modal: " + text, true /* log as warning */);
     $('#warning-modal .modal-body').text(text);
     $('#warning-modal .ok-button').off('click'); // unset all previous handlers to be safe
     if (continuation)
@@ -466,7 +469,7 @@ epadd.warn = function(text, continuation) {
 
 // pop up an error modal with the given text (user can only close). call continuation if provided on close
 epadd.error = function(text, continuation) {
-    epadd.log ("showing error modal: " + text);
+    epadd.log ("showing error modal: " + text, true /* log as warning */);
     $('#error-modal .modal-body').text(text);
     $('#error-modal .ok-button').off('click'); // unset all previous handlers to be safe
     if (continuation)
