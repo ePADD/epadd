@@ -334,7 +334,7 @@ public class Lexicon implements Serializable {
 			}
 		}
 		//update the bag metadata as well..
-		archive.updateFileInBag(dir,archive.baseDir);
+		archive.updateFileInBag(dir+File.separator,archive.baseDir);
 
 	}
 	public Set<String> getAvailableLanguages()	{ return Collections.unmodifiableSet(languageToLexicon.keySet()); }
