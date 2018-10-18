@@ -144,7 +144,7 @@
             <div class="form-group">
                 <div style="display:none" class="div-restrictedUntil form-group col-sm-6">
                     <label for="restrictedUntil"><i class="fa fa-calendar"></i> Restricted until (yyyy-mm-dd)</label>
-                    <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>">
+                    <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>" readonly="true" style="cursor: pointer;background:white;">
                 </div>
                 <div style="display:none" class="div-restrictedForYears form-group col-sm-6">
                     <label for="restrictedForYears">Restricted for (years)</label>
@@ -236,7 +236,10 @@
 
         $('#restrictedUntil').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2000:2100"
         });
 
         $('#save-label-form').submit(do_save);
