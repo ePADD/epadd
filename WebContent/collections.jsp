@@ -83,7 +83,7 @@
                       %>
 
                       <%--warning: url might be fragile w.r.t. brackets or quotes--%>
-                      <div class="landing-img" style="background-size: contain; background-repeat:no-repeat; background-position: center center; background-image:url('<%=url%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
+                      <div class="landing-img" style="    background-color: #e0e4e6; background-size: contain; background-repeat:no-repeat; background-position: center center; background-image:url('<%=url%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
                       <% if(ModeConfig.isProcessingMode()){%>
                           <div class="landing-photo-edit" style="text-align: right; top: 10px; right: 10px; position: relative;">
                               <img src="images/edit_summary.svg"/>

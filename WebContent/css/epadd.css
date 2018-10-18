@@ -370,11 +370,24 @@ footer a { color: #ababab; text-decoration: underline;}
     text-overflow: ellipsis;
 }
 
-/* modals */
+/**** modals --------------------------------  */
 .warning-modal .modal-header { color: white; background-color: #EA8A1C;}
 .success-modal .modal-header { color: white; background-color: #009253;}
 .info-modal .modal-header { color: white; background-color: #0175BC;}
-/* .confirm-modal .modal-header { color: white; background-color: #0175BC;} */
 .error-modal .modal-header { color: white; background-color: #df0000}
-.modal-header .close { color: white; opacity: 0.9;}
+.modal-header .close { color: white; opacity: 0.9; font-weight: 100; font-size: 27px;}
 .modal-header h4 { color: white; }
+
+.modal-header .modal-title {
+	line-height: 1.6em; /* needed, otherwise, the icon gets clipped at the bottom */
+	padding-left: 32px; /* move the content right to allow for the icon */
+	background-repeat: no-repeat;
+	background-size: 25px 25px;
+}
+
+.info-modal .modal-header .modal-title { background-image:url('../images/information.svg'); }
+.error-modal .modal-header .modal-title { background-image:url('../images/warning.svg'); }
+.warning-modal .modal-header .modal-title { background-image:url('../images/warning.svg'); }
+.success .modal-header .modal-title { background-image:url('../images/success.svg'); }
+
+/**** end modals --------------------------------  */

@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <div id="myModal" class="info-modal modal fade" style="z-index:9999">
+    <div id="myModal" class="info-modal modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
