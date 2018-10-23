@@ -1,11 +1,7 @@
 package edu.stanford.muse.ner.tokenize;
 
-import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
-import edu.stanford.muse.util.DictUtils;
-import edu.stanford.muse.util.NLPUtils;
-import edu.stanford.muse.util.Pair;
-import edu.stanford.muse.util.Triple;
+import edu.stanford.muse.util.*;
 import opennlp.tools.util.Span;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 
@@ -65,18 +61,22 @@ public class CICTokenizer implements Tokenizer, Serializable {
     private static final long serialVersionUID = 1L;
 
     static {
-        initPattern();
+        try {
+            initPattern();
+        } catch (Exception e) {
+            Util.print_exception("Exception in init pattern", e, log);
+        }
     }
 
     private static void initPattern() {
         //This def. of a word that can appear in person or non-person names
-        String nameP = "[A-Z][A-Za-z0-9'\\-\\.]*";
+        String nameP = "[A-Z][A-Za-z0-9'\\-.]*";
         //these are the chars that are allowed to appear between words in the chunk
         //comma is a terrible character to allow, it sometimes crawls in the full list an entity is part of.
         String allowedCharsOther = "\\s&'";
         //allowedCharsPerson = "\\s";
 
-        StringBuilder sp = new StringBuilder("");
+        StringBuilder sp = new StringBuilder();
         int i = 0;
         for (String stopWord : stopWords) {
             sp.append(stopWord);
@@ -89,13 +89,13 @@ public class CICTokenizer implements Tokenizer, Serializable {
         String recur = "{1,3}";
         //the person name pattern or entity pattern can match more than one consecutive stop word or multiple appearances of [-.'] which is undesired
         //Hence we do another level of tokenisation with the pattern below
-        multipleStopWordPattern = Pattern.compile("(\\s|^)("+stopWordsPattern+"["+allowedCharsOther+"]"+recur+"){2,}|(['-\\.]{2,})|'s(\\s|$)");
+        multipleStopWordPattern = Pattern.compile("(\\s|^)("+stopWordsPattern+"["+allowedCharsOther+"]"+recur+"){2,}|(['-.]{2,})|'s(\\s|$)");
 
         //[\"'_:\\s]*
         //number of times special chars between words can recur
         String nps = "(" + nameP + "([" + allowedCharsOther + "]" + recur + "(" + nameP + "[" + allowedCharsOther + "]" + recur + "|(" + stopWordsPattern + "[" + allowedCharsOther + "]" + recur + "))*" + nameP + ")?)";
         entityPattern = Pattern.compile(nps);
-        NER.log.info("EP: " + nps);
+        log.info("EP: " + nps);
         //allow comma only once after the first word
         //nps = "(" + nameP + "([" + allowedCharsPerson + ",]" + recur + "(" + nameP + "[" + allowedCharsPerson + "]" + recur + ")*" + nameP + ")?)";
         //personNamePattern = Pattern.compile(nps);
@@ -216,9 +216,7 @@ public class CICTokenizer implements Tokenizer, Serializable {
             out.println(content);
             out.println("########################################################");
             //dump cic list in comma separated value.
-            ciclist.forEach(triple->{
-                out.println(triple.first+","+triple.second+","+triple.third);
-            });
+            ciclist.forEach(triple-> out.println(triple.first+","+triple.second+","+triple.third));
             out.println("--------------------------------------------------------");
         } catch (IOException e) {
            log.warn("Unable to dump the CIC information in CICWords.txt file");
@@ -261,7 +259,7 @@ public class CICTokenizer implements Tokenizer, Serializable {
             end = m.end();
         }
         if(end!=phrase.length())
-            tokenL.add(phrase.substring(end, phrase.length()));
+            tokenL.add(phrase.substring(end));
         //we have all the split tokens, will have to filter now
         List<String> nts = new ArrayList<>();
         for (String t : tokenL) {
@@ -343,6 +341,6 @@ public class CICTokenizer implements Tokenizer, Serializable {
                 nts.add(segment);
         }
         //System.out.println(phrase+" -> "+nts.stream().reduce("",String::concat));
-        return nts.toArray(new String[nts.size()]);
+        return nts.toArray(new String[0]);
     }
 }
