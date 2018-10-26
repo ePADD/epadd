@@ -6,7 +6,7 @@
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%>
 <%@page import="edu.stanford.muse.webapp.ModeConfig" %>
 
-<%@include file="getArchive.jspf" %>
+<%--<%@include file="getArchive.jspf" %>--%>
 
 <!DOCTYPE HTML>
 <html lang="en">
@@ -113,6 +113,7 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 	<br/>
 	<br/>
 	<%
+		out.flush(); // flush the page now, so that the user sees something before the long log file is read.
 		Log4JUtils.flushAllLogs(); // if we dont flush file is sometimes truncated
 
 	// dump the warnings file first

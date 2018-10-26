@@ -57,8 +57,8 @@
 
 	function LOG(s, p) {
 		if (settings.logger) {
-			if (typeof p == 'undefined')
-				p = true;
+			//if (typeof p == 'undefined')
+			//	p = true;
 			settings.logger(s, p);
 		}
 	}
@@ -878,26 +878,29 @@ function page_in(startPage, endPage, urlParam)
 
 //	ajax request to get lowPage to highPage
 // response pages must be in sequence with pageId attribute set
-	$.get(settings.paging_info.url + "&startPage=" + startPage + "&endPage=" + endPage + urlParam,
-			function(response, t, xhr)
-			{
-				// using $(settings.page_selector, response) leads to stack overflow in ffox :-(, so working around by creating a div and stashing the response in it and using DOM query methods
-			    var p = document.createElement("div");
-			    p.innerHTML = response;
-			    var recvdPages = p.getElementsByClassName('page');
+	var url = settings.paging_info.url + "&startPage=" + startPage + "&endPage=" + endPage + urlParam;
+	$.ajax({
+		url: url,
+		success: function (response, t, xhr) {
+			// using $(settings.page_selector, response) leads to stack overflow in ffox :-(, so working around by creating a div and stashing the response in it and using DOM query methods
+			var p = document.createElement("div");
+			p.innerHTML = response;
+			var recvdPages = p.getElementsByClassName('page');
 
-			    // false param to not log on server since this is latency critical
-				LOG ("received response for pages [" + startPage + ".." + endPage + "], response length is " + response.length + " has " + recvdPages.length + " pages", false);
-				for (var i = 0; i < recvdPages.length; i++)
-				{
-					var recvdPageId = recvdPages[i].getAttribute("pageId");
-					var expectedPageId = startPage+i;
-					if (recvdPageId != expectedPageId)
-						LOG ("Warning: pageId expected " + expectedPageId + " recvd " + recvdPageId);
-					pages[startPage+i] = recvdPages[i].innerHTML;
-				}
+			// false param to not log on server since this is latency critical
+			LOG("received response for pages [" + startPage + ".." + endPage + "], response length is " + response.length + " has " + recvdPages.length + " pages", false);
+			for (var i = 0; i < recvdPages.length; i++) {
+				var recvdPageId = recvdPages[i].getAttribute("pageId");
+				var expectedPageId = startPage + i;
+				if (recvdPageId != expectedPageId)
+					LOG("Warning: pageId expected " + expectedPageId + " recvd " + recvdPageId);
+				pages[startPage + i] = recvdPages[i].innerHTML;
 			}
-	);
+		},
+		error: function(response) {
+			epadd.error("Sorry, there was an error accessing " + url);
+		}
+	});
 }
 
 $.fn.jog_page_reload = function(page, inFull) {

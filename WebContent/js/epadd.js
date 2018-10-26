@@ -31,8 +31,7 @@ epadd.log = function(mesg, warn)
 {
 //	alert ('logging ' + mesg);
 	if (typeof console != 'undefined') {
-		if (warn)
-			console[warn ? 'warn' : 'info'](mesg);
+		console[warn ? 'warn' : 'info'](mesg);
     }
 
 	epadd.post_message(mesg, warn);
