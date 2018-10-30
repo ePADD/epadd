@@ -183,6 +183,7 @@ public class ArchiveReaderWriter{
             // most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
             archive.postDeserialized(baseDir, readOnly);
             result.put("emailDocs", archive.getAllDocs());
+            archive.assignThreadIds();
         }
 
         return result;

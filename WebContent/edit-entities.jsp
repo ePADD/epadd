@@ -31,7 +31,14 @@
 <body>
 <%@include file="header.jspf"%>
 
-<%writeProfileBlock(out, archive, "Edit entities");%>
+<%	Map<Short, String> typeCodeToName = new LinkedHashMap<>();
+	for(NEType.Type t: NEType.Type.values())
+		typeCodeToName.put(t.getCode(), t.getDisplayName());
+
+	Short type = Short.parseShort(request.getParameter("type"));
+	//out.println("<h1>Type: "+ typeCodeToName.get(type)+"</h1>");
+
+	writeProfileBlock(out, archive, "Edit entities    -    "+typeCodeToName.get(type));%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
@@ -75,12 +82,7 @@
 </script>
 
 <%
-	Map<Short, String> typeCodeToName = new LinkedHashMap<>();
-	for(NEType.Type t: NEType.Type.values())
-		typeCodeToName.put(t.getCode(), t.getDisplayName());
 
-	Short type = Short.parseShort(request.getParameter("type"));
-	out.println("<h1>Type: "+ typeCodeToName.get(type)+"</h1>");
 
 	EntityBook entityBook = archive.getEntityBook();
 	Map<String, Integer> displayNameToFreq = entityBook.getDisplayNameToFreq(archive, type);

@@ -70,6 +70,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 
+import javax.print.Doc;
 import java.io.*;
 
 import java.nio.file.*;
@@ -142,7 +143,7 @@ public class Archive implements Serializable {
     transient private Set<Document> allDocsAsSet = null;
     transient private Map<Document,Document> allUniqueDocsMap=null;
     private transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
-
+    private transient Map<Long,List<Document>> threadIDToDocs = new LinkedHashMap<>();
 
     private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
@@ -1411,13 +1412,24 @@ after maskEmailDomain.
         }
         return resultArray;
     }
+
+
+    /*
+    Here invariant is that the cached map 'threadIDToDocs' does not get invalidated once an archive is indexed.
+     */
     public List<Document> docsWithThreadId(long threadID) {
+
+        if(threadIDToDocs!=null && threadIDToDocs.size()!=0){
+            return threadIDToDocs.get(threadID);
+        }
+        threadIDToDocs=new LinkedHashMap<>();
         List<Document> result = new ArrayList<>();
         for (Document ed : allDocs) {
-            if (((EmailDocument) ed).threadID == threadID)
-                result.add(ed);
+            List<Document> doclist = threadIDToDocs.getOrDefault(threadID,new ArrayList<>());
+            doclist.add(ed);
+            threadIDToDocs.put(((EmailDocument)ed).threadID,doclist);
         }
-        return result;
+        return threadIDToDocs.getOrDefault(threadID,new ArrayList<>());
     }
 
     public String getStats() {

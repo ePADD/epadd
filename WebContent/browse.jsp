@@ -25,6 +25,8 @@
 
     // compute the title of the page
     String title = request.getParameter("title");
+    String sortBy = request.getParameter("sortBy");
+
     //<editor-fold desc="Derive title if the original title is not set" input="request" output="title"
     // name="search-title-derivation">
     {
@@ -526,7 +528,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="Sort by">
                         <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
                             <option value="" selected disabled>Sort by</option>
-                            <option value="" selected disabled>(Not yet implemented)</option>
                             <option value="relevance">Most relevant</option>
                             <option value="recent">Newest first</option>
                             <option value="chronological">Oldest first</option>
@@ -566,7 +567,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div class="message-menu">
                     <a href="#" class="annotation-link" title="Message annotation"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
                     <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
-                    <a href="#" class="thread-link" target="_blank" title="Open thread"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <a href="#" class="thread-link" target="_blank" title="Open thread"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
                     <a style="color: inherit" href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
                 </div>
 
@@ -581,6 +582,16 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             scrollTop: $(".attachments").offset().top
                         }, 1000);
                         return false;
+                    });
+
+                    <%--$('.sortby-selectpicker').val('<%=sortBy%>').change();--%>
+                    // set up sort-by handling
+                    $('.sortby-selectpicker').on('change', function () {
+                        var sortoption = $('.sortby-selectpicker').selectpicker('val') || [];
+                        if(sortoption){
+                            <% String newurl = JSPHelper.getURLWithParametersFromRequestParam(request,"sortBy");%>
+                            window.location='<%=newurl%>sortBy='+sortoption;
+                        }
                     });
                 </script>
 
@@ -631,7 +642,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //we need to pass that ordered set to getHTML* method below. This fixed the issue.
         Pair<DataSet, JSONArray> pair = null;
         try {
-            String sortBy = request.getParameter("sortBy");
 
             // note: we currently do not support clustering for "recent" type, only for the chronological type.
             // might be easy to fix if needed in the future.

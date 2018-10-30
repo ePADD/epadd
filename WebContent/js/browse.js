@@ -23,7 +23,16 @@ var Navigation = function(){
         // window.location.origin gives us something like http://localhost:9099
         $('.message-menu a.id-link').attr('data-href', window.location.origin + '/epadd/browse?archiveID=' + archiveID + '&docId=' + window.messageMetadata[PAGE_ON_SCREEN].id);
         $('.message-menu a.thread-link').attr('href', 'browse?archiveID=' + archiveID + '&threadID=' + window.messageMetadata[PAGE_ON_SCREEN].threadID);
+        $('.message-menu a.thread-link .thread-count').text(window.messageMetadata[PAGE_ON_SCREEN].msgInThread);
         $('.message-menu .attach-link span').html(window.messageMetadata[PAGE_ON_SCREEN].nAttachments);
+        /*if(window.messageMetadata[PAGE_ON_SCREEN].annotation || Annotations[PAGE_ON_SCREEN]) {
+            //change the image of add-annotation if this message has annotation. Because we want to display that icon with a green dot if the message has an annotation.
+            $('.message-menu a.annotation-link img').attr('src','images/add_annotation_dot.svg');
+           // $('.message-menu a.annotation-link .image').attr('src', "images/add_annotation_dot.svg");
+        }else{
+            $('.message-menu a.annotation-link img').attr('src','images/add_annotation.svg');
+        }*/
+
     };
 
     var setupEvents = function() {
@@ -125,8 +134,10 @@ var Labels = function() {
                 else if (label.labType === 'GENERAL')
                     class_for_label = 'general-label';
 
-                if (label.isSysLabel)
+                if (label.isSysLabel & label.labId!=2)
                     class_for_label += ' system-label';
+                else
+                    class_for_label += ' system-label cfr-label';
             }
 
             // restriction + system labels will have both system-label and restr. label applied and will be colored red
@@ -281,7 +292,7 @@ var Annotations = function() {
         //set up handlers when different buttons are clicked on annotation modal. For 'Apply to this message' invoke different handler,
         //For 'Apply to all messages' invoke another handler. When modal is dismissed, by default the behaviour will be nothing.
         $('#annotation-modal').on('shown.bs.modal', annotation_modal_shown);
-        $('#annotation-modal').on('hidden.bs.modal', function() { $('.annotation-area').css('filter', ''); /* clear the blur effect */});
+        $('#annotation-modal').on('hidden.bs.modal', function() { Navigation.enableCursorKeys(); $('.annotation-area').css('filter', ''); /* clear the blur effect */});
 
         $('#annotation-modal').find('#ok-button-annotations').click(annotation_modal_dismissed_apply_to_this_message);
         $('#annotation-modal').find('#apply-all-button').click(annotation_modal_dismissed_apply_to_all_messages);
@@ -304,10 +315,14 @@ var Annotations = function() {
 
         if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0) {
             $annotationarea.text(annotations[PAGE_ON_SCREEN]);
-            $annotation.show();
+            $annotation.hide();
+            //change the UI
+            $('.message-menu a.annotation-link img').attr('src','images/add_annotation_dot.svg');
         } else {
             $annotationarea.text('No annotation');
             $annotation.hide();
+            //chage the UI
+            $('.message-menu a.annotation-link img').attr('src','images/add_annotation.svg');
         }
     }
 

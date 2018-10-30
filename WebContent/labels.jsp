@@ -75,7 +75,10 @@
 			<div title="Create label" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
 			<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
 			<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
-		</div>
+			<%if(!ModeConfig.isDiscoveryMode()){%>
+			<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/add_label.svg"></div></div>
+			<%}%>
+</div>
 <% }else{ %>
 <div style="margin:auto; width:1100px">
 <%} %>
@@ -93,7 +96,8 @@
 
 	<div style="clear:both"></div>
 	<br/>
-	<a href="bulk-labels?archiveID=<%=archiveID%>&allDocs=1">Set labels for all messages</a>
+
+
 </div>
 
 	<%

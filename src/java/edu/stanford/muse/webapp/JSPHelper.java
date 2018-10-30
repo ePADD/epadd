@@ -516,6 +516,33 @@ public class JSPHelper {
 		return archive;
 	}
 
+	public static String getURLWithParametersFromRequestParam(HttpServletRequest request,String exclude){
+
+		StringBuilder sb = new StringBuilder(request.getRequestURL()+"?");
+
+		Map<String, String[]> rpMap = request.getParameterMap();
+		for (Object o : rpMap.keySet()) {
+			String str1 = (String) o;
+			if(str1.trim().toLowerCase().equals(exclude.trim().toLowerCase()))
+				continue;
+			//sb.append(str1 + "=");
+			String[] vals = rpMap.get(str1);
+			if (vals.length == 1) {
+				sb.append(str1+"=");
+				sb.append(Util.ellipsize(vals[0], 100));
+				sb.append("&");
+			}
+			else {
+				for (String x : vals) {
+					sb.append(str1+"=");
+					sb.append(Util.ellipsize(x, 100));
+					sb.append("&");
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 	/** also sets current thread name to the path of the request */
 	private static String getRequestDescription(HttpServletRequest request, boolean includingParams)
 	{

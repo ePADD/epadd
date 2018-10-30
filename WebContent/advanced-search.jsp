@@ -436,19 +436,20 @@
 
 						<div class="form-group col-sm-6">
 							<div class="form-group">
-
-							<label for="labelIDs">Labels</label>
+<%	//get general labels
+	Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
+%>
+	<label for="labelIDs">Labels</label>
 							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
 								<option value="" selected disabled>Select</option>
+								<% if(!ModeConfig.isDeliveryMode()){ %>
 								<optgroup label="Restriction Labels">
 								<%
 									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
-									//get general labels
-									Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
 									for (Label opt : restrlabels){
 								%>
 										<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
-								<%}%>
+								<%}}%>
 								</optgroup>
 								<optgroup label="General Labels">
 								<%
@@ -463,12 +464,14 @@
 							</select>
 
 							</div>
+							<%if(!ModeConfig.isDeliveryMode()){%>
 							<div class="checkbox-inline">
 								<label>
 									<input id="multiLabelsCheck" name="multiLabelsCheck" type="checkbox">
 									<span class="label-text">More than one restriction label</span>
 								</label>
 							</div>
+							<%}%>
 						</div>
 
                     </div>

@@ -90,7 +90,7 @@
                 Date Range<br/>
                 <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
                 <% if (cm.nHackyDates > 0) { %>
-                <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> undated</b>
+                <br/><%=Util.pluralize(cm.nHackyDates, "message")%> undated
                 <hr/>
                 <% } %>
                 <% } %>
@@ -109,11 +109,12 @@
                 Documents: <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
                 Others: <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
-                <hr/>
-
                 </p>
 
+
                 <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
+                <hr/>
+
                 <p>
                     Contact email<br/>
                     <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
@@ -121,6 +122,7 @@
                 <% }
 
                     if (ModeConfig.isProcessingMode()) { %>
+                <hr/>
                 <p>
                     <% if (cm.renamedFiles != 0 || cm.normalizedFiles != 0) {%>
                     Preservation Actions <br>

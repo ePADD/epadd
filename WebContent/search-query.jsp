@@ -88,11 +88,11 @@
 
 <div style="text-align:center; margin:auto; width:900px;">
 	<div style="width:100%;margin-bottom:20px;">
-		<a id="simple-search-header"  class="search-header" >Simple search</a>
+		<a id="simple-search-header"  class="search-header" >Simple Search</a>
 		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Multi-Entity Search</a>
 		<% if(!ModeConfig.isPublicMode()){%>
 		<a id="term-search-header" class="search-header" style="margin-left:40px;">Multi-Term Search</a>
-		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;">Correspondent list search</a>
+		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;">Correspondent List Search</a>
 		<%}%>
 	</div>
 

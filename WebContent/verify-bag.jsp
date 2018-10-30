@@ -44,7 +44,7 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
 
 <%
 	if(!checkDone) {
-		out.println("<p> Starting from version 6, ePADD archive follows the Bag-it specification for preservation support. If you received this archive from " +
+		out.println("<p> An ePADD archive follows the Bag-it specification for preservation support. If you received this archive from " +
 				" an untrusted source, you should verify the archive bag's content. Please note that this process might take a while " +
 				" for large archives.</p>");
 	}else{

@@ -115,7 +115,10 @@
             Collection ID<br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span></b>
             <hr/>
-            <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
+            Collection Title<br/>
+            <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionTitle) ? "Unassigned" : cm.collectionTitle)%> </span></b>
+            <hr/>
+        <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
                 <b><span><%= Util.pluralize (cm.accessionMetadatas.size(), "accession")%></span></b>
                 <hr/>
         <% } %>
@@ -158,7 +161,7 @@
             Renamed files: <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
             Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
             <%}%>
-            <button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>
+            <%--<button class="btn-default" id="edit-photos"><i class="fa fa-pencil"></i> Edit Photos</button>--%>
         </p>
         <br/>
 
@@ -198,7 +201,7 @@
                 <br>
                 <b>Notes</b><br/>
                 <%= Util.escapeHTML(cm.notes)%>
-                <div class="epadd-separator"></div>
+                <%--<div class="epadd-separator"></div>--%>
 
         <% } %>
 
@@ -226,7 +229,7 @@
                             <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
                             <div class="epadd-separator"></div>
                             <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
-                            <div class="epadd-separator"></div>
+                            <%--<div class="epadd-separator"></div>--%>
                         </div>
                     </div>
                 <% } %>

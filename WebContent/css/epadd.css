@@ -363,8 +363,8 @@ footer a { color: #ababab; text-decoration: underline;}
     display: table-cell;
     vertical-align: middle;
     padding-left:20px;
-    max-width:320px;
-    width: 320px;
+    max-width:500px;
+    width: 500px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

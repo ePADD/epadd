@@ -345,6 +345,7 @@ public class EmailRenderer {
 					    EmailDocument ed = (EmailDocument) d;
 						jsonObj.put("id", ed.getUniqueId());
                         jsonObj.put ("threadID", ed.threadID);
+                        jsonObj.put("msgInThread",result.getArchive().docsWithThreadId(ed.threadID).size());//docsWithThreadID is not expensive method as it caches the result for future queries
 						jsonObj.put ("nAttachments", ed.attachments != null ? ed.attachments.size(): 0);
 					}
 					resultObj.put(resultCount++, jsonObj);
