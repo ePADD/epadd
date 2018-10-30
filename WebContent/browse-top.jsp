@@ -33,13 +33,25 @@
 
 	<style>
 		div.cta-box { width:270px; height: 200px; display: inline-block; border-color:black; margin:10px; cursor: pointer; }
-		div.cta-box .fa, div.cta-box img { margin-bottom: 10px; height: 30px;}
+		div.cta-box .fa, div.cta-box img { margin-bottom: 10px; height: 50px; padding-left:150px; margin-top: -50px; vertical-align: top;}
 
 		div.cta-box .fa { padding-top: 5px; font-size: 28px; }
-		div.cta-box:hover .fa, div.cta-box:hover img  { display: none; }
-
-		div.cta-box:hover { color: white; }
-		div.cta-box:hover a { color: white; }
+		/*div.cta-box:hover .fa, div.cta-box:hover img  { display: none; }*/
+		div.cta-box .count-elements{text-align: left;
+			margin-left: -150px;
+			padding-top: 50px;}
+		div.cta-box .name-elements{text-align: left;
+			margin-left: -150px;}
+		div.cta-box h1{text-align: left;
+			margin-left: 30px;
+			padding-top: 50px;
+		font-weight: 700;
+		color:black;}
+		div.cta-box h2{text-align: left;
+			margin-left: 30px;}
+		/*div.cta-box:hover { color: white; }*/
+		div.cta-text-1 { color: white; }
+		/*div.cta-box:hover a { color: white; }*/
 	</style>
 
 </head>
@@ -219,93 +231,120 @@
 <% writeProfileBlock(out, true, archive, "Dashboard", 864);%>
 
 <div id="all-cards" style="text-align: center; margin:auto">
-	<div class="cta-box text-center margin30">
+	<div class="cta-box margin30">
 		<a href="correspondents?archiveID=<%=archiveID%>">
-			<i class="icon-browsetoparrow"></i>
-			<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>
-			<p class="cta-text-1">Correspondents (<%=nContacts %>)</p>
-			<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>
-		</a>
+			<img src="images/correspondents.svg">
+			<%--<i class="icon-browsetoparrow"></i>--%>
+			<%--<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>--%>
+			<h1 ><%=Util.commatize(nContacts)%></h1>
+			<h2 >Correspondents</h2>
+			<%--<p class="cta-text-1"><%=nContacts %></p>--%>
+			<%--<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>--%>
+		<%--</a>--%>
 	</div>
 
-	<div class="cta-box text-center margin30">
+	<div class="cta-box  margin30">
 		<a href="entity-types?archiveID=<%=archiveID%>">
-			<i class="icon-browsetoparrow"></i>
-			<i class="fa fa-thumb-tack" style="color:#31a354" aria-hidden="true"></i>
-			<p class="cta-text-1">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>
-			<p class="cta-text-2">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>
+			<img src="images/entities.svg">
+			<h1><%=Util.commatize(nPersonEntities + nNonPersonEntities)%></h1>
+			<h2>Entities</h2>
+			<%--<i class="icon-browsetoparrow"></i>--%>
+			<%--<i class="fa fa-thumb-tack" style="color:#31a354" aria-hidden="true"></i>--%>
+			<%--<p class="cta-text-1">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>--%>
+			<%--<p class="cta-text-2">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>--%>
 		</a>
 	</div>
 
 
-	<div class="cta-box text-center margin30">
+	<div class="cta-box margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
-			<i class="icon-browsetoparrow"></i>
-			<i class="fa fa-tags" style="color:#0b967f" aria-hidden="true"></i>
-			<p class="cta-text-1">Labels</p>
-			<p class="cta-text-2">Labels</p>
+			<img src="images/labels.svg">
+			<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+			<h2>Labels</h2>
+			<%--<i class="icon-browsetoparrow"></i>--%>
+			<%--<i class="fa fa-tags" style="color:#0b967f" aria-hidden="true"></i>--%>
+			<%--<p class="cta-text-1">Labels</p>--%>
+			<%--<p class="cta-text-2">Labels</p>--%>
 		</a>
 	</div>
 
 	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<br/>
 
-		<div class="cta-box text-center margin30">
+		<div class="cta-box  margin30">
 				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
-					<i class="icon-browsetoparrow"></i>
-					<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>
-					<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>
-					<p class="cta-text-2">Image attachments (<%=nImageAttachments%>)</p>
+					<img src="images/image_attachments.svg">
+					<h1 id="nImageAttachments"><%=Util.commatize(nImageAttachments)%></h1>
+					<h2>Image attachments</h2>
+					<%--<i class="icon-browsetoparrow"></i>--%>
+					<%--<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>--%>
+					<%--<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>--%>
+					<%--<p class="cta-text-2">Image attachments (<%=nImageAttachments%>)</p>--%>
 				</a>
 		</div>
 
 
-		<div class="cta-box text-center margin30">
+		<div class="cta-box  margin30">
 			<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
-				<i class="icon-browsetoparrow"></i>
-				<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>
-				<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>
-				<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments)%>)</p>
+				<img src="images/other_attachements.svg">
+				<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>
+				<h2>Other attachments</h2>
+				<%--<i class="icon-browsetoparrow"></i>--%>
+				<%--<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>--%>
+				<%--<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>--%>
+				<%--<p class="cta-text-2">Other attachments (<%=(nAttachments - nImageAttachments)%>)</p>--%>
 			</a>
 		</div>
 
-		<div class="cta-box text-center margin30">
+		<div class="cta-box  margin30">
 			<a href="by-folder?archiveID=<%=archiveID%>">
-				<i class="icon-browsetoparrow"></i>
-				<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>
-				<p class="cta-text-1">Folders (<%=nFolders%>)</p>
-				<p class="cta-text-2">Folders (<%=nFolders%>)</p>
+				<img src="images/folders.svg">
+				<h1><%=Util.commatize(nFolders)%></h1>
+				<h2>Folders</h2>
+				<%--<i class="icon-browsetoparrow"></i>--%>
+				<%--<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>--%>
+				<%--<p class="cta-text-1">Folders (<%=nFolders%>)</p>--%>
+				<%--<p class="cta-text-2">Folders (<%=nFolders%>)</p>--%>
 			</a>
 		</div>
 
 		<br/>
 
-		<div class="cta-box text-center margin30">
+		<div class="cta-box  margin30">
 			<a href="lexicon-top?archiveID=<%=archiveID%>">
-				<i class="icon-browsetoparrow"></i>
-				<img src="images/lexicon.png"/>
-				<p class="cta-text-1">Lexicon search</p>
-				<p class="cta-text-2">Lexicon search</p>
+				<img src="images/lexicon_dashboard.svg">
+				<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+				<h2>Lexicon search</h2>
+				<%--<i class="icon-browsetoparrow"></i>--%>
+				<%--<img src="images/lexicon.png"/>--%>
+				<%--<p class="cta-text-1">Lexicon search</p>--%>
+				<%--<p class="cta-text-2">Lexicon search</p>--%>
 			</a>
 		</div>
 
 		<% if (!ModeConfig.isDeliveryMode()) { %>
-			<div class="cta-box text-center margin30">
+			<div class="cta-box  margin30">
 				<a href="report?archiveID=<%=archiveID%>">
-					<i class="icon-browsetoparrow"></i>
-					<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>
-					<p class="cta-text-1">Reports</p>
-					<p class="cta-text-2">Reports</p>
+					<img src="images/reports.svg">
+					<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+					<h2>Reports</h2>
+					<%--<i class="icon-browsetoparrow"></i>--%>
+					<%--<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>--%>
+					<%--<p class="cta-text-1">Reports</p>--%>
+					<%--<p class="cta-text-2">Reports</p>--%>
 				</a>
 			</div>
 		<% } %>
 
-		<div class="cta-box text-center margin30">
+		<div class="cta-box  margin30">
 			<a href="settings?archiveID=<%=archiveID%>">
-				<i class="icon-browsetoparrow"></i>
-				<i class="fa fa-cog" style="color:#d41298" aria-hidden="true"></i>
-				<p class="cta-text-1">More</p>
-				<p class="cta-text-2">More</p>
+				<img src="images/more.svg">
+				<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+				<h2>More</h2>
+				<%--<i class="icon-browsetoparrow"></i>--%>
+				<%--<i class="fa fa-cog" style="color:#d41298" aria-hidden="true"></i>--%>
+				<%--<p class="cta-text-1">More</p>--%>
+				<%--<p class="cta-text-2">More</p>--%>
 			</a>
 		</div>
 	<% } %>
