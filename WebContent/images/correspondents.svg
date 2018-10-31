@@ -1,16 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" id="Isolation_Mode" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-	 y="0px" width="180px" height="180px" viewBox="0 0 180 180" enable-background="new 0 0 180 180" xml:space="preserve">
-<g>
-	
-		<circle fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="75.89" cy="76.377" r="18.372"/>
-	<path fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-		M40,130.956c0-20.093,16.288-36.382,36.381-36.382s36.382,16.289,36.382,36.382H40z"/>
-	<path fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-		M91.859,52.906c3.112-2.421,7.022-3.862,11.27-3.862c10.145,0,18.369,8.226,18.369,18.372c0,10.145-8.225,18.369-18.369,18.369"/>
-	<path fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-		M103.621,85.785c20.09,0,36.379,16.29,36.379,36.381h-17.742"/>
-</g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="106px" height="88px" viewBox="0 0 106 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>correspondents</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="correspondents" transform="translate(3.000000, 3.000000)" stroke="#000000" stroke-width="5">
+            <circle id="Oval" cx="35.89" cy="27.377" r="18.372"></circle>
+            <path d="M0,81.956 C0,61.863 16.288,45.574 36.381,45.574 C56.474,45.574 72.763,61.863 72.763,81.956 L0,81.956 Z" id="Path"></path>
+            <path d="M51.859,3.906 C54.971,1.485 58.881,0.044 63.129,0.044 C73.274,0.044 81.498,8.27 81.498,18.416 C81.498,28.561 73.273,36.785 63.129,36.785" id="Path"></path>
+            <path d="M63.621,36.785 C83.711,36.785 100,53.075 100,73.166 L82.258,73.166" id="Path"></path>
+        </g>
+    </g>
 </svg>

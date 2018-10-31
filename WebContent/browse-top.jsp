@@ -33,25 +33,23 @@
 
 	<style>
 		div.cta-box { width:270px; height: 200px; display: inline-block; border-color:black; margin:10px; cursor: pointer; }
-		div.cta-box .fa, div.cta-box img { margin-bottom: 10px; height: 50px; padding-left:150px; margin-top: -50px; vertical-align: top;}
+		div.cta-box .fa, div.cta-box img { margin-bottom: 10px; height: 30px; width:180px; padding-left:150px; margin-top: -30px; vertical-align: top;}
 
 		div.cta-box .fa { padding-top: 5px; font-size: 28px; }
 		/*div.cta-box:hover .fa, div.cta-box:hover img  { display: none; }*/
-		div.cta-box .count-elements{text-align: left;
-			margin-left: -150px;
-			padding-top: 50px;}
-		div.cta-box .name-elements{text-align: left;
-			margin-left: -150px;}
 		div.cta-box h1{text-align: left;
 			margin-left: 30px;
-			padding-top: 50px;
+			padding-top: 20px;
 		font-weight: 700;
-		color:black;}
+		color:#0175BC;
+		font-size:36px;}
 		div.cta-box h2{text-align: left;
-			margin-left: 30px;}
-		/*div.cta-box:hover { color: white; }*/
-		div.cta-text-1 { color: white; }
-		/*div.cta-box:hover a { color: white; }*/
+			margin-left: 30px;font-size:24px;font-family: 'Open Sans', bold;color:#666666; }
+		div.cta-box:hover a h2{ color: white; }
+		div.cta-box:hover a h1{ color: white; }
+		img.attachment-icon path{
+			background-color: white;
+		}
 	</style>
 
 </head>
@@ -197,6 +195,8 @@
 
 	Collection<EmailDocument> allDocs = (Collection) archive.getAllDocs();
 
+	//get number of labels.
+	int numlabels = archive.getLabelManager().getAllLabels().size();
 	//int nDocAttachments = EmailUtils.countDocumentAttachmentsInDocs(allDocs);
 	int nFolders = archive.getAllFolders().size();
 	boolean statsAvailable = false;
@@ -233,14 +233,14 @@
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box margin30">
 		<a href="correspondents?archiveID=<%=archiveID%>">
-			<img src="images/correspondents.svg">
+			<img  src="images/correspondents.svg">
 			<%--<i class="icon-browsetoparrow"></i>--%>
 			<%--<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>--%>
 			<h1 ><%=Util.commatize(nContacts)%></h1>
 			<h2 >Correspondents</h2>
 			<%--<p class="cta-text-1"><%=nContacts %></p>--%>
 			<%--<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>--%>
-		<%--</a>--%>
+		</a>
 	</div>
 
 	<div class="cta-box  margin30">
@@ -259,7 +259,7 @@
 	<div class="cta-box margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
 			<img src="images/labels.svg">
-			<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+			<h1 ><%=Util.commatize(numlabels)%></h1><%-- making it invisible because of the formatting issue--%>
 			<h2>Labels</h2>
 			<%--<i class="icon-browsetoparrow"></i>--%>
 			<%--<i class="fa fa-tags" style="color:#0b967f" aria-hidden="true"></i>--%>
@@ -286,7 +286,7 @@
 
 		<div class="cta-box  margin30">
 			<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
-				<img src="images/other_attachements.svg">
+				<img src="images/other_attachments.svg">
 				<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>
 				<h2>Other attachments</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>

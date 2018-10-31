@@ -52,6 +52,11 @@
             %>
 
                 <div class="profile-small-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
+                <%--<div class="profile-small-img" style=" background-size: contain;--%>
+                        <%--background-repeat: no-repeat;--%>
+                        <%--width: 50%;--%>
+                        <%--height: 50%;--%>
+                        <%--padding-top: 20%;  background-image:url('serveImage.jsp?file=<%=file%>')">--%>
             <input type="file" name="profilePhoto" id="profilePhoto" /> <br/><br/>
 
             Landing Page Photo: (Aspect ratio 4:3)<br/>
@@ -74,8 +79,13 @@
                     file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "bannerImage";
             %>
             Banner Image: (Aspect ratio 2.5:1)<br/>
-            <div class="banner-img" style="background-image:url('serveImage.jsp?&file=<%=file%>')">
-            </div>
+                <div class="banner-img" style=" background-size: contain;
+                        background-repeat: no-repeat;
+                        width: 50%;
+                        height: 50%;
+                        padding-top: 20%;  background-image:url('serveImage.jsp?file=<%=file%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
+<%--Height added in style otherwise the image was not being visible--%>
+                </div>
             <br/>
             <br/>
             <input type="file" name="bannerImage" id="bannerImage" />

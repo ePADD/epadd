@@ -40,10 +40,10 @@
             <div id="advanced_options">
 
             <% if (!ModeConfig.isDiscoveryMode()) { %>
-                    <p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer"><i class="fa fa-eye"></i>Verify bag checksum</button>
+<p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer"><i class="fa fa-eye"></i>Verify bag checksum</button></p>
 
                 <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-                    <p><button onclick="window.location='set-images?archiveID=<%=archiveID%>';" class="btn-default" style='cursor:pointer' ><i class="fa fa-picture-o"></i> Set Images</button></p>
+                    <%--NO LONGER NEEDED THIS FUNCTIONALITY HERE<p><button onclick="window.location='set-images?archiveID=<%=archiveID%>';" class="btn-default" style='cursor:pointer' ><i class="fa fa-picture-o"></i> Set Images</button></p>--%>
                 <% }
             } /* archive != null */
         }

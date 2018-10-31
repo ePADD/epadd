@@ -1,17 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" id="Isolation_Mode" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-	 y="0px" width="120px" height="120px" viewBox="0 0 120 120" enable-background="new 0 0 120 120" xml:space="preserve">
-<path fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-	M57.981,103.25H18.503c-0.433,0-0.784-0.351-0.784-0.784V24.034c0-0.433,0.351-0.784,0.784-0.784h14.706h29.019h15.883
-	c0.434,0,0.784,0.351,0.784,0.784v27.517"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.092" y1="39.721" x2="65.759" y2="39.721"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.092" y1="52.27" x2="65.759" y2="52.27"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.092" y1="65.995" x2="50.072" y2="65.995"/>
-<circle fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="75.533" cy="79.655" r="16.351"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="87.826" y1="90.43" x2="102.949" y2="102.793"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="90.18" y1="32.205" x2="90.18" y2="57.303"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="29.092" y1="83.708" x2="34.059" y2="90.43"/>
-<line fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="34.059" y1="90.43" x2="50.072" y2="79.654"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="91px" height="86px" viewBox="0 0 91 86" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice 1</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="lexicon_dashboard" transform="translate(2.000000, 3.000000)" stroke="#22B2D4" stroke-width="5">
+            <path d="M40.981,80.25 L1.503,80.25 C1.07,80.25 0.719,79.899 0.719,79.466 L0.719,1.034 C0.719,0.601 1.07,0.25 1.503,0.25 L16.209,0.25 L45.228,0.25 L61.111,0.25 C61.545,0.25 61.895,0.601 61.895,1.034 L61.895,28.551" id="Path"></path>
+            <path d="M12.092,16.721 L48.759,16.721" id="Path"></path>
+            <path d="M12.092,29.27 L48.759,29.27" id="Path"></path>
+            <path d="M12.092,42.995 L33.072,42.995" id="Path"></path>
+            <circle id="Oval" cx="58.533" cy="56.655" r="16.351"></circle>
+            <path d="M70.826,67.43 L85.949,79.793" id="Path"></path>
+            <path d="M73.18,9.205 L73.18,34.303" id="Path"></path>
+            <path d="M12.092,60.708 L17.059,67.43" id="Path"></path>
+            <path d="M17.059,67.43 L33.072,56.654" id="Path"></path>
+        </g>
+    </g>
 </svg>
