@@ -46,9 +46,15 @@
 	<div class="search-tips" style="display:block">
 
 		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-			<p>[icon 1]  Create a new label.
-			<p>[icon 2]  Download a .json label description file.
-			<p>[icon 3]  Import a .json label description file.
+			<p>		<img  class="helpdrawer-images" src="images/add_label.svg">
+				Create a new label.
+			<p>		<img  class="helpdrawer-images" src="images/download.svg">
+		Download a .json label description file.
+			<p>		<img  class="helpdrawer-images" src="images/upload.svg">
+		Import a .json label description file.
+			<p><img  class="helpdrawer-images" src="images/labels.svg">
+		Apply labels to all messages.
+
 			<p>General labels can be used to describe to a set of messages, to mark a set of messages as reviewed, or for any other purpose. General labels are not machine-actionable.
 			<p>General labels will export from the Appraisal module to the Processing module, but will not export to the Discovery module or to/from the Delivery module.
 			<p>Restriction labels can be used to restrict messages, including for a certain period from the current date, or from the date of creation.
@@ -56,9 +62,9 @@
 			<p>All labels are searchable via Advanced Search.
 			<p>Set default labels for all messages from the Dashboard, under the More option.
 		<% } else if (ModeConfig.isDeliveryMode()) { %>
-			<p>[icon 1]  Create a new label.
-			<p>[icon 2]  Download a .json label description file.
-			<p>[icon 3]  Import a .json label description file.
+			<p><img  class="helpdrawer-images" src="images/add_label.svg">  Create a new label.
+			<p><img  class="helpdrawer-images" src="images/download.svg">  Download a .json label description file.
+			<p><img  class="helpdrawer-images" src="images/upload.svg">  Import a .json label description file.
 			<p>Labels can be used to describe a set of messages or to mark a set of messages as reviewed.
 			<p>Labels will not export.
 		<% } %>
@@ -76,7 +82,7 @@
 			<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
 			<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
 			<%if(!ModeConfig.isDiscoveryMode()){%>
-			<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/add_label.svg"></div></div>
+			<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/labels.svg"></div></div>
 			<%}%>
 </div>
 <% }else{ %>

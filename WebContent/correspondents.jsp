@@ -71,19 +71,20 @@
 		<br>
 		<br>
 
-		[Icon 1] Show graph view of the most active correspondents over time.
+		<img  class="helpdrawer-images" src="images/graph.svg">
+			Show graph view of the most active correspondents over time.
 		<br>
 		<br>
 
-		[Icon 2] Edit correspondents: Merge or unmerge correspondents, designate email addresses as mailing lists, or modify correspondents’ default names.
+			<img  class="helpdrawer-images" src="images/edit_correspondent.svg"> Edit correspondents: Merge or unmerge correspondents, designate email addresses as mailing lists, or modify correspondents’ default names.
 		<br>
 		<br>
 
-		[Icon 3] Download correspondents list for offline editing. You can edit the list using any text editor, following the instructions outlined on the Edit Correspondents page. When you are done making changes, upload the edited correspondent list (.txt) via the Correspondents page.
+		<img  class="helpdrawer-images" src="images/download.svg"> Download correspondents list for offline editing. You can edit the list using any text editor, following the instructions outlined on the Edit Correspondents page. When you are done making changes, upload the edited correspondent list (.txt) via the Correspondents page.
 		<br>
 		<br>
 
-		[Icon 4] Upload correspondents list previously (.txt) downloaded for offline editing.
+		<img  class="helpdrawer-images" src="images/upload.svg"> Upload correspondents list previously (.txt) downloaded for offline editing.
 		<br>
 		<br>
 	<% } else if (ModeConfig.isDiscoveryMode()) { %>

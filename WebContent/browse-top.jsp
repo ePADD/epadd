@@ -33,7 +33,7 @@
 
 	<style>
 		div.cta-box { width:270px; height: 200px; display: inline-block; border-color:black; margin:10px; cursor: pointer; }
-		div.cta-box .fa, div.cta-box img { margin-bottom: 10px; height: 30px; width:180px; padding-left:150px; margin-top: -30px; vertical-align: top;}
+		.icon-images { margin-bottom: 10px; height: 30px; width:180px; padding-left:150px; margin-top: -30px; vertical-align: top;}
 
 		div.cta-box .fa { padding-top: 5px; font-size: 28px; }
 		/*div.cta-box:hover .fa, div.cta-box:hover img  { display: none; }*/
@@ -88,40 +88,49 @@
 			<br/>
 			<br/>
 
-			[Icon 1] Browse, graph, and edit correspondents and associated messages.
+		<img  class="helpdrawer-images" src="images/correspondents.svg">
+		Browse, graph, and edit correspondents and associated messages.
 			<br/>
 			<br/>
 
-			[Icon 2] Browse and edit recognized entities and associated messages.
+		<img class="helpdrawer-images" src="images/entities.svg">
+		Browse and edit recognized entities and associated messages.
 			<br/>
 			<br/>
 
-			[Icon 3] View, add, and edit general and restriction (machine-actionable) labels, and view associated messages.
+		<img class="helpdrawer-images" src="images/labels_dashboard.svg">
+		View, add, and edit general and restriction (machine-actionable) labels, and view associated messages.
 			<br/>
 			<br/>
 
-			[Icon 4] Browse image attachments and associated messages.
+		<img class="helpdrawer-images" src="images/image_attachments.svg">
+		Browse image attachments and associated messages.
 			<br/>
 			<br/>
 
 
-			[Icon 5] View other attachments and associated messages.
+		<img class="helpdrawer-images" src="images/other_attachements.svg">
+		View other attachments and associated messages.
 			<br/>
 			<br/>
 
-			[Icon 6] View original message folders or sources and associated messages.
+		<img class="helpdrawer-images" src="images/folders.svg">
+		View original message folders or sources and associated messages.
 			<br/>
 			<br/>
 
-			[Icon 7] Browse, create, and modify lexicon searches.
+		<img class="helpdrawer-images" src="images/lexicon_dashboard.svg">
+		Browse, create, and modify lexicon searches.
 			<br/>
 			<br/>
 
-			[Icon 8] View any import and merge reports.
+		<img class="helpdrawer-images" src="images/reports.svg">
+		View, import and merge reports.
 			<br/>
 			<br/>
 
-			[Icon 9] Access additional options, including verifying the bag checksum, adding images associated with the creator, and setting default labels.
+		<img class="helpdrawer-images" src="images/more.svg">
+		Access additional options, including verifying the bag checksum, adding images associated with the creator, and setting default labels.
 			<br/>
 			<br/>
 
@@ -144,10 +153,12 @@
 			<br/>
 			<br/>
 
-			[Icon 1] Browse and graph correspondents and associated messages.
+		<img class="helpdrawer-images" src="images/correspondents.svg">
+		Browse and graph correspondents and associated messages.
 			<br/>
 			<br/>
-			[Icon 2] Browse recognized entities and associated messages.
+		<img class="helpdrawer-images" src="images/entities.svg">
+		Browse recognized entities and associated messages.
 			<br/>
 			<br/>
 
@@ -233,7 +244,7 @@
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box margin30">
 		<a href="correspondents?archiveID=<%=archiveID%>">
-			<img  src="images/correspondents.svg">
+			<img  class="icon-images" src="images/correspondents.svg">
 			<%--<i class="icon-browsetoparrow"></i>--%>
 			<%--<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>--%>
 			<h1 ><%=Util.commatize(nContacts)%></h1>
@@ -245,7 +256,7 @@
 
 	<div class="cta-box  margin30">
 		<a href="entity-types?archiveID=<%=archiveID%>">
-			<img src="images/entities.svg">
+			<img class="icon-images" src="images/entities.svg">
 			<h1><%=Util.commatize(nPersonEntities + nNonPersonEntities)%></h1>
 			<h2>Entities</h2>
 			<%--<i class="icon-browsetoparrow"></i>--%>
@@ -258,7 +269,7 @@
 
 	<div class="cta-box margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
-			<img src="images/labels.svg">
+			<img class="icon-images" src="images/labels_dashboard.svg">
 			<h1 ><%=Util.commatize(numlabels)%></h1><%-- making it invisible because of the formatting issue--%>
 			<h2>Labels</h2>
 			<%--<i class="icon-browsetoparrow"></i>--%>
@@ -273,7 +284,7 @@
 
 		<div class="cta-box  margin30">
 				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
-					<img src="images/image_attachments.svg">
+					<img class="icon-images" src="images/image_attachments.svg">
 					<h1 id="nImageAttachments"><%=Util.commatize(nImageAttachments)%></h1>
 					<h2>Image attachments</h2>
 					<%--<i class="icon-browsetoparrow"></i>--%>
@@ -286,7 +297,7 @@
 
 		<div class="cta-box  margin30">
 			<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=others&startDate=&endDate=">
-				<img src="images/other_attachments.svg">
+				<img class="icon-images" src="images/other_attachments.svg">
 				<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>
 				<h2>Other attachments</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
@@ -298,7 +309,7 @@
 
 		<div class="cta-box  margin30">
 			<a href="by-folder?archiveID=<%=archiveID%>">
-				<img src="images/folders.svg">
+				<img class="icon-images" src="images/folders.svg">
 				<h1><%=Util.commatize(nFolders)%></h1>
 				<h2>Folders</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
@@ -312,7 +323,7 @@
 
 		<div class="cta-box  margin30">
 			<a href="lexicon-top?archiveID=<%=archiveID%>">
-				<img src="images/lexicon_dashboard.svg">
+				<img class="icon-images" src="images/lexicon_dashboard.svg">
 				<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
 				<h2>Lexicon search</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
@@ -325,7 +336,7 @@
 		<% if (!ModeConfig.isDeliveryMode()) { %>
 			<div class="cta-box  margin30">
 				<a href="report?archiveID=<%=archiveID%>">
-					<img src="images/reports.svg">
+					<img class="icon-images" src="images/reports.svg">
 					<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
 					<h2>Reports</h2>
 					<%--<i class="icon-browsetoparrow"></i>--%>
@@ -338,7 +349,7 @@
 
 		<div class="cta-box  margin30">
 			<a href="settings?archiveID=<%=archiveID%>">
-				<img src="images/more.svg">
+				<img class="icon-images" src="images/more.svg">
 				<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
 				<h2>More</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>

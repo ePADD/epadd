@@ -166,6 +166,16 @@
         <br/>
 
         <% } %>
+        <%
+            // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
+            if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
+        <a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a>
+        &nbsp;&nbsp;&nbsp;
+        <% } %>
+        <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
+        <a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a>
+        <br/>
+        <% } %>
     </div>
 
     <div class="collection-info">
@@ -245,16 +255,7 @@
         <%}%>
 
             <p></p>
-            <%
-                // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
-                if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
-                    <a target="_blank" href="<%=cm.findingAidLink%>">Finding Aid</a>
-                    &nbsp;&nbsp;&nbsp;
-                <% } %>
-                <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
-                    <a target="_blank" href="<%=cm.catalogRecordLink%>">Catalog Record</a>
-                    <br/>
-                <% } %>
+
 
         </div>
         <div style="margin-left: 745px">

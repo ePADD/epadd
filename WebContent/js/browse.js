@@ -315,7 +315,7 @@ var Annotations = function() {
 
         if (annotations[PAGE_ON_SCREEN] && annotations[PAGE_ON_SCREEN].length > 0) {
             $annotationarea.text(annotations[PAGE_ON_SCREEN]);
-            $annotation.hide();
+            $annotation.show();
             //change the UI
             $('.message-menu a.annotation-link img').attr('src','images/add_annotation_dot.svg');
         } else {

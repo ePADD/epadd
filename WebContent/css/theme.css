@@ -1424,14 +1424,17 @@ body {
 }
 
 .profile-small-img {
-	height: 60px;
-	width: 60px;
+	/*height: 60px;*/
+	/*width: 60px;*/
+	height: 80px;
+	width: 93px;
 	background-color: #e0e4e6; /* consistent with background-color for banner image. */
 	/*background-image: url('../serveImage.jsp?file=profilePhoto.png');*/
 	border-radius: 50%;
 	display: table-cell;
-	background-size: 60px 60px; /* deliberately kept slightly larger */
+	background-size: 80px 80px; /* deliberately kept slightly larger */
 	vertical-align: middle;
+	background-repeat: no-repeat;
 }
 
 .profile-block {
@@ -1447,11 +1450,11 @@ body {
 .profile-pic-edit {
 	border-radius: 50%;
 	position: relative;
-	top:20px;
+	top:25px;
 	height:24px;
 	width:24px;
 	background-color: white;
-	left: 38px;
+	left: 60px;
 	text-align:center;
 	color: #0075bb;
 	border: solid 1px gray;

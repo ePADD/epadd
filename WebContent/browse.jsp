@@ -183,24 +183,33 @@
             <br/>
             <br/>
 
-            [Icon 1] - Download all messages in a set of results.
+        <img  class="helpdrawer-images" src="images/download.svg">
+        - Download all messages in a set of results.
             <br/>
             <br/>
 
+        <img   style="width:60px; height:32px;" src="images/labels.svg">
+        - Apply labels to all messages in a set of results.
+        <br/>
+        <br/>
 
-            [Icon 2] - Annotate this message.
-            <br/>
-            <br/>
-
-            [Icon 3] - Show thread view.
-            <br/>
-            <br/>
-
-            [Icon 4] - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID into your web browser’s address bar. You can also paste the message ID into the appropriate field in Advanced Search.
+        <img  class="helpdrawer-images" src="images/add_annotation.svg">
+        - Annotate this message.
             <br/>
             <br/>
 
-            [Icon 5] - Show message attachments.
+        <img  class="helpdrawer-images" src="images/thread_view.svg">
+        - Show thread view.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/message_id.svg">
+        - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID into your web browser’s address bar. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/attachments.svg">
+        - Show message attachments.
             <br/>
             <br/>
 
@@ -259,23 +268,33 @@
             <br/>
             <br/>
 
-            [Icon 1] - Download all messages in a set of results.
+        <img  class="helpdrawer-images" src="images/download.svg">
+        - Download all messages in a set of results.
             <br/>
             <br/>
 
-            [Icon 2] - Annotate this message.
+        <img   style="width:60px; height:32px;" src="images/labels.svg">
+        - Apply labels to all messages in a set of results.
+        <br/>
+        <br/>
+
+        <img  class="helpdrawer-images" src="images/add_annotation.svg">
+        - Annotate this message.
             <br/>
             <br/>
 
-            [Icon 3] - Show thread view.
+        <img  class="helpdrawer-images" src="images/thread_view.svg">
+        - Show thread view.
             <br/>
             <br/>
 
-            [Icon 4] - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
+        <img  class="helpdrawer-images" src="images/message_id.svg">
+        - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
             <br/>
             <br/>
 
-            [Icon 5] - Show message attachments.
+        <img  class="helpdrawer-images" src="images/attachments.svg">
+        - Show message attachments.
             <br/>
             <br/>
         <% } %>
@@ -499,7 +518,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
-
+                    <%if(!ModeConfig.isDiscoveryMode()){%>
                     <div class="form-group label-picker" style="display:inline-block">
                         <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
@@ -523,6 +542,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             </optgroup>
                         </select>
                     </div>
+                    <%}%>
                     <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
 
                         <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="Sort by">
@@ -537,6 +557,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
+                        <%if(!ModeConfig.isDiscoveryMode()){%>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Label all these messages" src="images/labels.svg"></a>
@@ -545,6 +566,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download messages as mbox" src="images/download.svg"></a>
                         </div>
+                        <%}%>
 
                         <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
                         <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">

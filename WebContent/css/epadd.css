@@ -111,6 +111,10 @@ div.facets {
 	line-height: 2.2;
 }
 
+.helpdrawer-images{width: 50px;
+	height: 50px;
+	margin-right: -25px;}
+
 div.facets .facetTitle { font-size: 15px; font-weight: 600; width: 100%; padding-left: 5px; border-style: solid; border-width: 1px 0px; border-color: #d4d4d4; margin-top: 20px;}
 
 div.facets, div.controls, div.labels-area { background-color: #f5f5f8;  }
