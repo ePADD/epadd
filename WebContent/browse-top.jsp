@@ -42,9 +42,12 @@
 			padding-top: 20px;
 		font-weight: 700;
 		color:#0175BC;
-		font-size:36px;}
+		font-size:36px;
+			font-family: 'Roboto', sans-serif;}
 		div.cta-box h2{text-align: left;
-			margin-left: 30px;font-size:24px;font-family: 'Open Sans', bold;color:#666666; }
+			margin-left: 30px;font-size:24px;
+			font-family: 'Open Sans', sans-serif;
+			color:#666666; }
 		div.cta-box:hover a h2{ color: white; }
 		div.cta-box:hover a h1{ color: white; }
 		img.attachment-icon path{
