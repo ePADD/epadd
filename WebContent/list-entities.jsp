@@ -82,7 +82,9 @@ Browse page for entities based on fine types
     %>
         <div class="button_bar_on_datatable">
                 <div title="Download all <%=entityType%> entities as CSV" class="buttons_on_datatable" onclick="exportEntityHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <%if(!ModeConfig.isDiscoveryMode()){%>
                 <div title="Edit entities" class="buttons_on_datatable" onclick="window.location='edit-entities?archiveID=<%=archiveID%>&type=<%=type%>'"><img class="button_image_on_datatable" src="images/edit_lexicon.svg"></div>
+        <%}%>
             </div>
 <table id="entities" style="display:none">
     <thead><th>Entity</th><th>Score</th><th>Messages</th></thead>
