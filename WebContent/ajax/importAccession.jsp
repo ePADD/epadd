@@ -115,14 +115,14 @@ if (!collectionDir.equals(baseDir))
             Archive.AccessionMetadata am = new Archive.AccessionMetadata();
             am.id = accessionID;
             am.title = request.getParameter("accessionTitle");
-            am.date = request.getParameter("accessionDate");
+          //  am.date = request.getParameter("accessionDate");
             am.scope = request.getParameter("accessionScope");
             am.rights = request.getParameter("accessionRights");
             am.notes = request.getParameter("accessionNotes");
 
-            if(Util.nullOrEmpty(am.date))
-                am.date = new DateTime().toDate().toString();
-            if(Util.nullOrEmpty(am.scope))
+      /*      if(Util.nullOrEmpty(am.date))
+                am.date = "";//new DateTime().toDate().toString();
+*/            if(Util.nullOrEmpty(am.scope))
                 am.scope = "";
             if(Util.nullOrEmpty(am.rights))
                 am.rights= "";

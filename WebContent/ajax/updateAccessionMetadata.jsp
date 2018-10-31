@@ -54,7 +54,7 @@ try {
 	    //ametadata.id=request.getParameter("accessionID");//notneeded because it is not allowed to change (for now)
 	ametadata.notes = request.getParameter("accessionNotes");
 	ametadata.rights = request.getParameter("accessionRights");
-	ametadata.date = request.getParameter("accessionDate");
+	//ametadata.date = request.getParameter("accessionDate");
 	ametadata.scope = request.getParameter("accessionScope");
 	ametadata.title = request.getParameter("accessionTitle");
 

@@ -229,9 +229,9 @@
                         </div>
                         <div class="accession-content">
                             <b>Title</b>: <%=formatMetadataField(am.title)%><br/>
-                            <div class="epadd-separator"></div>
+                            <%--<div class="epadd-separator"></div>--%>
 
-                            <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
+                            <%--<b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>--%>
                             <%if(!Util.nullOrEmpty(am.scope)){%>
                             <div class="epadd-separator"></div>
                             <p><b>Scope and contents</b><br/> <%=formatMetadataField(am.scope)%>

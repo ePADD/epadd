@@ -95,13 +95,13 @@
 			</div>
 		</div>
 
-		<div class="div-input-field">
+		<%--<div class="div-input-field">
 			<div class="input-field-label">Accession Date</div>
 			<br/>
 			<div class="input-field">
 				<input title="Accession Date" value="<%=formatMetadataField(ametadata.date)%>" class="form-control" type="text" name="accessionDate"/>
 			</div>
-		</div>
+		</div>--%>
 
 		<div class="div-input-field">
 			<div class="input-field-label">Scope and Content</div>
