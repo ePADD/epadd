@@ -40,7 +40,7 @@
                     + Util.escapeHTML(title)
                     + "</div>"
                     + "<div class=\"collection-metadata\">" + collectionInfo + "</div>"
-                    + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection (To be implemented)\" src=\"images/information.svg\"/> </div>"
+                    + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection\" src=\"images/information.svg\"/> </div>"
                     + "</div></div><br/>";
 
             out1.println(output);

@@ -327,7 +327,7 @@
 		<div class="cta-box  margin30">
 			<a href="lexicon-top?archiveID=<%=archiveID%>">
 				<img class="icon-images" src="images/lexicon_dashboard.svg">
-				<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+				<h1 style="color:#f5f5f8"></h1><%-- making it invisible because of the formatting issue--%>
 				<h2>Lexicon search</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<img src="images/lexicon.png"/>--%>
@@ -340,7 +340,7 @@
 			<div class="cta-box  margin30">
 				<a href="report?archiveID=<%=archiveID%>">
 					<img class="icon-images" src="images/reports.svg">
-					<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+					<h1 style="color:#f5f5f8"></h1><%-- making it invisible because of the formatting issue--%>
 					<h2>Reports</h2>
 					<%--<i class="icon-browsetoparrow"></i>--%>
 					<%--<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>--%>
@@ -353,7 +353,7 @@
 		<div class="cta-box  margin30">
 			<a href="settings?archiveID=<%=archiveID%>">
 				<img class="icon-images" src="images/more.svg">
-				<h1 style="color:#f5f5f8">-</h1><%-- making it invisible because of the formatting issue--%>
+				<h1 style="color:#f5f5f8"></h1><%-- making it invisible because of the formatting issue--%>
 				<h2>More</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<i class="fa fa-cog" style="color:#d41298" aria-hidden="true"></i>--%>

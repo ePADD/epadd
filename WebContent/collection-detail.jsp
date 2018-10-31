@@ -232,13 +232,19 @@
                             <div class="epadd-separator"></div>
 
                             <b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>
-
+                            <%if(!Util.nullOrEmpty(am.scope)){%>
                             <div class="epadd-separator"></div>
                             <p><b>Scope and contents</b><br/> <%=formatMetadataField(am.scope)%>
+                            <%}%>
+                                    <%if(!Util.nullOrEmpty(am.rights)){%>
+
                             <div class="epadd-separator"></div>
                             <p><b>Rights and conditions</b><br/> <%=formatMetadataField(am.rights)%>
+                            <%}%>
+                                    <%if(!Util.nullOrEmpty(am.notes)){%>
                             <div class="epadd-separator"></div>
                             <p><b>Notes</b><br/> <%=formatMetadataField(am.notes)%>
+                                <%}%>
                             <%--<div class="epadd-separator"></div>--%>
                         </div>
                     </div>
