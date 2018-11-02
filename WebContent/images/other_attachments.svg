@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="85px" height="86px" viewBox="0 0 85 86" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice 1</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="other_attachements" transform="translate(3.000000, 3.000000)" stroke="#009253" stroke-width="5">
+            <polyline id="Path" points="79.205 46.985 79.205 69.109 13.687 69.109 13.687 11.318 44.78 11.318"></polyline>
+            <polyline id="Path" points="64.288 80.346 0.242 80.346 0.242 22.554"></polyline>
+            <path d="M56.556,32.576 C56.556,37.822 61.42,42.08 67.423,42.08 C73.426,42.08 78.292,37.822 78.292,32.576 L78.292,9.85 C78.292,4.598 73.426,0.345 67.423,0.345 C61.42,0.345 56.556,4.598 56.556,9.85 L56.556,11.882 L56.556,17.331 C56.556,20.59 59.201,23.235 62.46,23.235 C65.723,23.235 68.366,20.59 68.366,17.331 L68.366,11.882" id="Path"></path>
+            <path d="M23.676,55.501 L66.699,55.501" id="Path"></path>
+        </g>
+    </g>
+</svg>

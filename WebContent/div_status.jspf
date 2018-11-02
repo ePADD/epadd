@@ -1,5 +1,4 @@
  <!--  status box -->
- <%boolean show_help_page = false; %>
 <div id="status" class="rounded status" style="display:none;" >
 		<div style="float:left;font-size:20px">Working...</div>
 		<div style="float:right">
@@ -17,7 +16,7 @@
 		<a style="display:none" id="cancel" href="#"><img title="cancel" src="images/cancel.svg"/></a> <% /* important, has to be called #cancel because statusUpdate.js depends on it */ %>
 	</div>		
 	
-		<div class="time_remaining" style="display:none;color:#adadad"></div>
+	<div class="time_remaining" style="display:none;color:#adadad"></div>
 </div>
 
 <div style="display:none" class="muse-overlay"></div>

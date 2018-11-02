@@ -19,6 +19,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.Config;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
@@ -27,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,7 +77,9 @@ public class Lexicon implements Serializable {
 		{
 			captionToRawQuery = new LinkedHashMap<>();
 			captionToExpandedQuery = new LinkedHashMap<>();
-			List<String> lines = Util.getLinesFromInputStream(new FileInputStream(filename), false /* ignore comment lines = false, we'll strip comments here */);
+            InputStream is = new FileInputStream(filename);
+			List<String> lines = Util.getLinesFromInputStream(is, false /* ignore comment lines = false, we'll strip comments here */);
+			is.close();
 			for (String line:lines)
 			{
 				int idx = line.indexOf('#'); // strip everything after the comment char
@@ -314,7 +318,25 @@ public class Lexicon implements Serializable {
 			languageToLexicon.put(language, lex);
 		}
 	}
-	
+
+	public void removeLexicon(Archive archive,String dir){
+		String name = this.name ;
+		Set<String> languages = Util.filesWithPrefixAndSuffix(dir, name + ".", LEXICON_SUFFIX);
+		//remove all languages for the given lexicon??
+		for (String language: languages)
+		{
+			String filepath = dir + File.separator + name + "." + language + LEXICON_SUFFIX;  // LEXICON_SUFFIX already has a .
+			try {
+				Files.deleteIfExists(new File(filepath).toPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.debug(e.getMessage());
+			}
+		}
+		//update the bag metadata as well..
+		archive.updateFileInBag(dir+File.separator,archive.baseDir);
+
+	}
 	public Set<String> getAvailableLanguages()	{ return Collections.unmodifiableSet(languageToLexicon.keySet()); }
 	
 	// identify all the langs in the docs, and the corresponding lexicons
@@ -338,8 +360,14 @@ public class Lexicon implements Serializable {
 
     //accumulates counts returned by lexicons in each language
     //TODO: It is possible to write a generic accumulator that accumulates sum over all the languages
-    public static JSONArray getCountsAsJSON(String lexiconName, Archive archive, boolean originalContentOnly, boolean regexSearch){
+    public static JSONArray getCountsAsJSON(String lexiconName, Archive archive, boolean originalContentOnly){
 
+		JSONArray resultArray = null;
+		resultArray = Archive.cacheManager.getLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
+		if(resultArray!=null)
+			return resultArray;
+		else
+			resultArray = new JSONArray();
 		Lexicon lexicon = archive.getLexicon(lexiconName);
 		//call searchresult from here...
         List<Document> docs = archive.indexer.docs;
@@ -366,19 +394,20 @@ public class Lexicon implements Serializable {
 				result.put(category,output.getDocumentSet().size());
 			}
         }
-		JSONArray resultArray = new JSONArray();
-
+		JSONArray finalArray = new JSONArray();
 		AtomicInteger  count = new AtomicInteger(0);
 		result.forEach((category,cnt)-> {
 
 			JSONArray j = new JSONArray();
 			j.put(0, Util.escapeHTML(category));
 			j.put(1, cnt);
-			resultArray.put(count.getAndIncrement(), j);
+			finalArray.put(count.getAndIncrement(), j);
 		});
 
+		//store in cache
+		Archive.cacheManager.cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive),finalArray);
 			// could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
-		return resultArray;
+		return finalArray;
     }
 
 	/** Core sentiment detection method. doNota = none of the above 
@@ -503,6 +532,7 @@ public class Lexicon implements Serializable {
 		langLex.save(dir + File.separator + name + "." + language + LEXICON_SUFFIX); // LEXICON_SUFFIX already has a .
 		//update the bag metadata as well..
 		archive.updateFileInBag(dir,archive.baseDir);
+		//update the summary of lexicons here..
 		return true;
 	}
 

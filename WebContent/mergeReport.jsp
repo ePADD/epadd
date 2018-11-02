@@ -15,8 +15,6 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	Collection<EmailDocument> allDocs =  (Collection) archive.getAllDocs();
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	Archive.MergeResult mResult = archive.getLastMergeResult();
 %>
 <html>
@@ -36,9 +34,9 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
-<%writeProfileBlock(out, archive, "Merge Report", "");%>
+<%writeProfileBlock(out, archive, "Merge Report");%>
 
 
 <br/>

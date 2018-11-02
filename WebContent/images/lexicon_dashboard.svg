@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="91px" height="86px" viewBox="0 0 91 86" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice 1</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="lexicon_dashboard" transform="translate(2.000000, 3.000000)" stroke="#22B2D4" stroke-width="5">
+            <path d="M40.981,80.25 L1.503,80.25 C1.07,80.25 0.719,79.899 0.719,79.466 L0.719,1.034 C0.719,0.601 1.07,0.25 1.503,0.25 L16.209,0.25 L45.228,0.25 L61.111,0.25 C61.545,0.25 61.895,0.601 61.895,1.034 L61.895,28.551" id="Path"></path>
+            <path d="M12.092,16.721 L48.759,16.721" id="Path"></path>
+            <path d="M12.092,29.27 L48.759,29.27" id="Path"></path>
+            <path d="M12.092,42.995 L33.072,42.995" id="Path"></path>
+            <circle id="Oval" cx="58.533" cy="56.655" r="16.351"></circle>
+            <path d="M70.826,67.43 L85.949,79.793" id="Path"></path>
+            <path d="M73.18,9.205 L73.18,34.303" id="Path"></path>
+            <path d="M12.092,60.708 L17.059,67.43" id="Path"></path>
+            <path d="M17.059,67.43 L33.072,56.654" id="Path"></path>
+        </g>
+    </g>
+</svg>

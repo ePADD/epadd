@@ -59,7 +59,7 @@
     </style>
 </head>
 <body style="background-color:white;">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <jsp:include page="div_filepicker.jspf"/>
 <%@include file="getArchive.jspf" %>
 
@@ -67,12 +67,7 @@
 
 
 <%
-//    Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");
-//    if (archive != null) {
-String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-        AddressBook ab = archive.addressBook;
-        writeProfileBlock(out, archive, "", "Export archive");
-//    }
+        writeProfileBlock(out, archive, "Export archive");
 
     if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 %>

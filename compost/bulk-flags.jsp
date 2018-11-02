@@ -8,7 +8,7 @@
 <%@ page import="edu.stanford.muse.util.EmailUtils" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@ page import="edu.stanford.muse.email.AddressBookManager.AddressBook" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="com.google.common.collect.Multimap" %>
@@ -49,13 +49,13 @@
 <body>
     <jsp:include page="../WebContent/header.jspf"/>
 
-    <% writeProfileBlock(out, archive, "Apply actions to multiple messages", "");%>
+    <% writeProfileBlock(out, archive, "Apply actions to multiple messages");%>
 
     <br/>
     <br/>
     <%
 
-        String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
+        String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
         Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
         SearchResult inputSet = new SearchResult(archive,params);
@@ -143,9 +143,7 @@
                     },
                     error: function (jq, textStatus, errorThrown) {
                         fade_spinner_with_delay($spinner);
-                        var message = ("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
-                        epadd.log(message);
-                        epadd.alert(message);
+                        epadd.error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
                     }
                 });
             }

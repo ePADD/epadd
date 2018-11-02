@@ -1,6 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.net.*"%>
 <%@page language="java" import="java.io.*"%>
 <%@page language="java" import="java.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
@@ -22,20 +21,19 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>
 	epadd.nav_mark_active('Export');
 </script>
 
 <% try {
-    String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive, "Export archive");
 %>
 <p>
 <br/>
-<div style="margin-left:170px">
+<div style="width:1100px;margin:auto" class="panel">
 
 <%
 
@@ -52,7 +50,7 @@
 		return;
 	}
 	%>
-	<div id="spinner-div" style="text-align:center;display:none"><i class="fa fa-spin fa-spinner"></i></div>
+	<div id="spinner-div" style="text-align:center;"><i class="fa fa-spin fa-spinner"></i></div>
 	<% out.flush(); %>
 	<%
 	if (Util.nullOrEmpty(dir)) {
@@ -61,7 +59,7 @@
 
 	//TimeKeeper.snap();
 	String folder = dir + File.separator + "ePADD archive of " + bestName;
-	List<Document> docsToExport = new ArrayList<Document>();
+	List<Document> docsToExport = new ArrayList<>();
 
 	/*
 	@TODO-Export Take decision on exporting based on labels of this document set

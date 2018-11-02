@@ -30,8 +30,7 @@
 	</style>
 </head>
 <body style="background-color: white">
-<jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Collections');</script>
+<%@include file="header.jspf"%>
 
 <!-- this is going to be really quick... -->
 <script type="text/javascript" src="js/statusUpdate.js"></script>
@@ -96,13 +95,13 @@
 			</div>
 		</div>
 
-		<div class="div-input-field">
+		<%--<div class="div-input-field">
 			<div class="input-field-label">Accession Date</div>
 			<br/>
 			<div class="input-field">
 				<input title="Accession Date" value="<%=formatMetadataField(ametadata.date)%>" class="form-control" type="text" name="accessionDate"/>
 			</div>
-		</div>
+		</div>--%>
 
 		<div class="div-input-field">
 			<div class="input-field-label">Scope and Content</div>
@@ -162,10 +161,10 @@
                 if (response && response.status === 0)
                     window.location = 'collection-detail?collection=<%=collectionid%>';
                 else
-                    epadd.alert ("Sorry, something went wrong while updating accession metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+                    epadd.error ("Sorry, something went wrong while updating accession metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
             },
             error: function (jqxhr, status, ex) {
-                epadd.alert("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
+                epadd.error("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
             }
         });
         return false;

@@ -4,7 +4,6 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.Set"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="org.jpl7.JPL" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -39,7 +38,7 @@
 
 </head>
 <body style="background-color:white;">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <jsp:include page="div_filepicker.jspf"/>
 
 <% if (ModeConfig.isAppraisalMode()) { %>
@@ -47,8 +46,6 @@
 <% } else { %>
 	<script>epadd.nav_mark_active('New');</script>
 <% } %>
-
-<%@include file="profile-block.jspf"%>
 
 <div class="nav-toggle1 sidebar-icon">
     <img src="images/sidebar.png" alt="sidebar">
@@ -64,18 +61,24 @@
 
     <!--phrase-->
     <div class="search-tips">
-            On this page, you can import email from mbox files or a public or private email IMAP account into a fresh or existing ePADD archive.
-            You can specify multiple email sources at once. On the next screen, you will see folders available in these sources, and can select which folders to import email from.
-            <br/>
-            <br/>
-            Working with mbox files:
-            Please choose the top level folder under which mbox files reside. ePADD will examine all files under that folder's hierarchy and automatically identify the mbox files among them.
-            <br/>
-            <br/>
-            If you have email in non-mbox formats such as PST and Eudora, you can use programs like Emailchemy, Mailstore Home or Aid4Mail to convert them to mbox files.
+		Add the name of archive owner and an associated email address; ePADD won’t work correctly without this information.
+		<br/>
+		<br/>
+
+		Import mail via an IMAP connection or an .mbox file.
+		<br/>
+		<br/>
+
+		Add the name of the email source when importing .mbox files to assist others in identifying the origin of associated messages.  This field is flexible and could include values like work, personal, office, laptop, etc. For email transferred via IMAP, the name of email source is assigned automatically as the email address associated with the archive owner.
+		<br/>
+		<br/>
+
+		You can further refine your import on the next screen by specifying particular mail folders, as well as a range of dates.
+		<br/>
+		<br/>
+
+		If you have email in non-mbox formats such as PST and Eudora, you can use programs like Emailchemy, Mailstore Home or Aid4Mail to convert them to mbox files.
     </div>
-
-
 </nav>
 <%
 	//Term t;
@@ -90,7 +93,7 @@ if (archive != null) {
 	Set<String> addrs = ab.getOwnAddrs();
 	if (addrs.size() > 0)
 		bestEmail = addrs.iterator().next();
-	writeProfileBlock(out, archive, "", "Import email into this archive");
+	writeProfileBlock(out, archive, "Import email into this archive");
 }
 %>
 <%--

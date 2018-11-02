@@ -39,6 +39,9 @@
                         archive.setLexiconMap(map);
                     else
                         error="Some error in uploading the lexicon file";
+
+                    //caclulate the count cache for this lexicon.
+                    Archive.cacheManager.cacheLexiconListing(lexiconname,archiveID);
             }
 
         if (error != null) {

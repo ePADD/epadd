@@ -751,6 +751,8 @@ public class BlobStore implements Serializable {
     }
 
     public Map<Blob, Integer> getDupBlobCount() {
+        if(dupBlobCount==null)
+            return new LinkedHashMap<>();
         return dupBlobCount;
     }
 

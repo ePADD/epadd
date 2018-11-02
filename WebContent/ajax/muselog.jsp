@@ -6,7 +6,11 @@ if (message != null) {
 	message = message.trim();
 	while (message.startsWith("\n"))
 		message = message.substring(1);
-	JSPHelper.log.info("CLIENT LOG: " + message);
+
+	if (request.getParameter("warn") != null)
+		JSPHelper.log.warn("CLIENT LOG warning: " + message);
+	else
+		JSPHelper.log.info("CLIENT LOG: " + message);
 }
 %>
     

@@ -11,6 +11,9 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.AddressBookManager.MailingList;
+import edu.stanford.muse.ie.Entity;
+import edu.stanford.muse.ie.variants.EntityBook;
+import edu.stanford.muse.ie.variants.MappedEntity;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
@@ -311,6 +314,17 @@ public class SearchResult {
 
 
     /* *************************ONLY DOCUMENT SPECIFIC FILTERS*************************************** */
+    /**
+     * returns only the docs containing given entities.
+     */
+//    public  static SearchResult filterForEntities(SearchResult inputSet){
+//
+//        //get the name of the entity to search
+//        String entityname = JSPHelper.getParam(inputSet.queryParams,"entity")
+//
+//        //get the option whether other variants of this entities should be searched or not.
+//
+//    }
 
     /**
      * returns only the docs from amongst the given ones that matches the query specification for flags.
@@ -402,6 +416,26 @@ public class SearchResult {
         return filterForCorrespondents(inputSet, correspondentsStr, checkToField, checkFromField, checkCcField, checkBccField);
     }
 
+    /** version of filterForCorrespondents which reads settings from params. correspondent name can have the OR separator */
+    private static SearchResult filterForCorrespondentList(SearchResult inputSet) {
+
+        String correspondentsListStr = JSPHelper.getParam(inputSet.queryParams, "correspondentList");
+        if (Util.nullOrEmpty(correspondentsListStr))
+            return new SearchResult(inputSet);
+
+        // convert newline separated strings into semi-colon separated strings
+        String[] strs = correspondentsListStr.split("\n");
+        String correspondentsStr = "";
+        for (String s: strs) {
+            s = s.trim();
+            if (Util.nullOrEmpty(s))
+                continue;
+            correspondentsStr += s + ";";
+        }
+
+        return filterForCorrespondents(inputSet, correspondentsStr, true, true, true, true); // to/cc/bcc etc are all true for correspondentlist
+    }
+
     /** returns only the docs where the name or email address in the given field matches correspondentsStr in the given field(s).
      * correspondentsStr can be or-delimited and specify multiple strings. */
     public static SearchResult filterForCorrespondents(SearchResult inputSet,  String correspondentsStr, boolean checkToField, boolean checkFromField, boolean checkCcField, boolean checkBccField) {
@@ -470,6 +504,24 @@ public class SearchResult {
 
         //return modified inputSet
         return(inputSet);
+    }
+    /** returns only the docs matching a threadid.
+     * Note that the parameter threadID will only be a single threadID.. not separated by ; as happens with messageID.
+     *  */
+    private static SearchResult filterForThreadID(SearchResult inputSet) {
+        String threadID = JSPHelper.getParam(inputSet.queryParams, "threadID");
+        long tid=threadID==null?-1:Long.parseLong(threadID);
+        if(tid==-1)
+            return inputSet;
+        inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
+            EmailDocument ed = (EmailDocument)k.getKey();
+            if(ed.threadID==tid)
+                return true;
+            else
+                return false;
+        }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+
+        return inputSet;
     }
 
     /** returns only the docs matching per params[mailingListState].
@@ -556,18 +608,24 @@ public class SearchResult {
         if (Util.nullOrEmpty(val))
             return inputSet;
         Set<String> entities = Util.splitFieldForOr(val);
+        Set<String> entityToSearch = new LinkedHashSet<>();
+        //get the option that says if we should select other variants of this entity or not.
+        boolean checkVariant = "on".equals(JSPHelper.getParam(inputSet.queryParams,"expanded"));
+        if(checkVariant){
+            entityToSearch.addAll(entities.stream().map(entity->EntityBook.canonicalize(entity)).collect(Collectors.toSet()));
+            for(String entity: entities)
+                for(MappedEntity me: inputSet.archive.getEntityBook().getEntitiesForName(entity))
+                    for(String name: me.getAltNames())
+                        entityToSearch.add(EntityBook.canonicalize(name));
+        }else
+            entityToSearch.addAll(entities.stream().map(entity->EntityBook.canonicalize(entity)).collect(Collectors.toSet()));
 
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
                     EmailDocument ed = (EmailDocument)k.getKey();
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
-                    try {
-                        entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getAllNamesInDoc(ed, true)).map(n->n.text.toLowerCase()).collect(Collectors.toSet()));
-                    } catch (IOException ioe) {
-                        Util.print_exception("Error in reading entities", ioe, log);
-                        return false;
-                    }
-                    entitiesInThisDoc.retainAll(entities);
+                    entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntitiesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
+                    entitiesInThisDoc.retainAll(entityToSearch);
                     if (entitiesInThisDoc.size() > 0) {
                         //before returning true also add this information in the document body specific highlighting
                         //object.
@@ -765,7 +823,7 @@ public class SearchResult {
         String category = JSPHelper.getParam(inputSet.queryParams, "lexiconCategory");
         if (Util.nullOrEmpty(category))
             return inputSet;
-
+        category = category.trim();//sometime an empty space comes from the front end.
         //if parameter map contains termAttachments as "on" then remove it as right now we don't have support for searching attachments for lexicon..[Or is this constraints only
         //for regex]
         //inputSet.queryParams.remove("termAttachments","on");
@@ -1294,9 +1352,12 @@ Archive archive = inputSet.archive;
         outResult = filterForAttachments(outResult);
         //function name changed from updateForAttachment to filterForAttachments
         //Pair<Set<EmailDocument>, Set<Blob>> p = updateForAttachments((Set) resultDocs, params);
+        outResult = filterForThreadID(outResult);
         outResult = filterForAttachmentNames(outResult);
         outResult = filterForAttachmentEntities(outResult);
+
         outResult = filterForCorrespondents(outResult);
+        outResult = filterForCorrespondentList(outResult); // this is for bulk upload of correspondents; it is not expected to be combined with any other search criteria
 
         // contactIds are used for facets and from correspondents page etc.
         Collection<String> contactIds = inputSet.queryParams.get("contact");
@@ -1340,6 +1401,9 @@ Archive archive = inputSet.archive;
                 else {
                     log.warn("Unknown sort by option: " + sortBy);
                 }
+            }else{
+                //if no sortby option is specified then default ordering is chronological.
+                sortBy = Indexer.SortBy.CHRONOLOGICAL_ORDER;
             }
         }
 

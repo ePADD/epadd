@@ -28,7 +28,7 @@
 	</style>
 </head>
 <body style="background-color: white">
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Collections');</script>
 
 <p>
@@ -84,6 +84,14 @@
 		</div>
 
 		<div class="div-input-field">
+			<div class="input-field-label">Short Title</div>
+			<br/>
+			<div class="input-field">
+				<input title="Short title" value="<%=formatMetadataField( cm.shortTitle)%>" class="form-control" type="text" name="shortTitle"/>
+			</div>
+		</div>
+
+		<div class="div-input-field">
 			<div class="input-field-label">Collection ID</div>
 			<br/>
 			<div class="input-field">
@@ -118,10 +126,18 @@
 		<br/>
 
 		<div class="div-input-field">
+			<div class="input-field-label">Short Description</div>
+			<br/>
+			<div class="input-field">
+				<input title="Short description" value="<%=formatMetadataField( cm.shortDescription)%>" class="form-control" type="text" name="shortDescription"/>
+			</div>
+		</div>
+
+		<div class="div-input-field">
 			<div class="input-field-label">About</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=cm == null ? "" : formatMetadataField( cm.about)%>
+				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=formatMetadataField(cm.about)%>
 				</textarea>
 			</div>
 		</div>
@@ -129,7 +145,7 @@
 			<div class="input-field-label">Rights and Conditions</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=cm == null ? "" : formatMetadataField( cm.rights)%>
+				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=formatMetadataField( cm.rights)%>
 				</textarea>
 			</div>
 		</div>
@@ -137,7 +153,7 @@
 			<div class="input-field-label">Notes</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=cm == null ? "" : formatMetadataField( cm.notes)%>
+				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=formatMetadataField( cm.notes)%>
 				</textarea>
 			</div>
 		</div>
@@ -146,7 +162,7 @@
 			<div class="input-field-label">Scope and Content</div>
 			<br/>
 			<div class="input-field">
-				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=cm == null ? "" : formatMetadataField( cm.scopeAndContent)%>
+				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=formatMetadataField( cm.scopeAndContent)%>
 				</textarea>
 			</div>
 		</div>
@@ -184,10 +200,10 @@
                 if (response && response.status === 0)
                     window.location = 'collection-detail?collection=<%=id%>';
                 else
-                    epadd.alert ("Sorry, something went wrong while updating collection metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+                    epadd.error ("Sorry, something went wrong while updating collection metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
             },
             error: function (jqxhr, status, ex) {
-                epadd.alert("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
+                epadd.error("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
             }
         });
         return false;

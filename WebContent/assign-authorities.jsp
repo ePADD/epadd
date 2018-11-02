@@ -118,14 +118,11 @@
 <body>
 <%@include file="getArchive.jspf" %>
 
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Authorities');</script>
-
-<script type="text/javascript" src="js/statusUpdate.js"></script>
-<%@include file="div_status.jspf"%>
+<% writeProfileBlock(out, archive, "Assign Authorities");%>
 
 <%
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     CorrespondentAuthorityMapper cAuthorityMapper = archive.getCorrespondentAuthorityMapper();
     AddressBook addressBook = archive.getAddressBook();
 
@@ -323,7 +320,7 @@
                 },
                 error: function () {
                     $spinner.removeClass('fa-spin');
-                    epadd.alert('Unable to save fast ID, sorry!');
+                    epadd.error('Sorry, unable to save confirmed authority.');
                 }
             });
         });
@@ -349,21 +346,18 @@
                 },
                 error: function () {
                    // $spinner.removeClass('fa-spin');
-                    epadd.alert('Unable to save authority, sorry!');
+                    epadd.error('Sorry, unable to save confirmed authority.');
                     $('#manual-assign-modal').modal('hide');
                 }
             });
         });
-
-
     } );
-
 
 </script>
 
 
 <!-- Modal -->
-<div class="modal fade" id="manual-assign-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="info-modal modal fade" id="manual-assign-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- Modal Header -->

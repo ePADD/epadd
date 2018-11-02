@@ -339,6 +339,16 @@
 		<url-pattern>/lexicon</url-pattern>
 	</servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>lexicon-top</servlet-name>
+		<jsp-file>/lexicon-top.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>lexicon-top</servlet-name>
+		<url-pattern>/lexicon-top</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>edit-lexicon</servlet-name>
 		<jsp-file>/edit-lexicon.jsp</jsp-file>
@@ -597,15 +607,6 @@
 		<url-pattern>/about</url-pattern>
 	</servlet-mapping>
 
-	 <servlet>
-		<servlet-name>error</servlet-name>
-		<jsp-file>/debug.jsp</jsp-file> <!-- sgh: both /error and /debug point to debug.jsp. there is no error page any more -->
-  	</servlet>
-  	<servlet-mapping>
-	  	<servlet-name>error</servlet-name>
-	    <url-pattern>/error</url-pattern>
-	</servlet-mapping>
-
 	<servlet>
 		<servlet-name>report</servlet-name>
 		<jsp-file>/report.jsp</jsp-file>
@@ -615,19 +616,49 @@
 		<url-pattern>/report</url-pattern>
 	</servlet-mapping>
 
+    <!-- 404 page -->
+    <servlet>
+        <servlet-name>error-404</servlet-name>
+        <jsp-file>/error-404.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>error-404</servlet-name>
+        <url-pattern>/error-404</url-pattern>
+    </servlet-mapping>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error-404</location>
+    </error-page>
+
+	<!--a java exception or error maps to error-log.jsp which logs the error, then forwards to /error -->
+
+	<servlet>
+		<servlet-name>error</servlet-name>
+		<jsp-file>/debug.jsp</jsp-file> <!-- sgh: both /error and /debug point to debug.jsp. there is no error page any more -->
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>error</servlet-name>
+		<url-pattern>/error</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>error-log</servlet-name>
+		<jsp-file>/error-log.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>error-log</servlet-name>
+		<url-pattern>/error-log</url-pattern>
+	</servlet-mapping>
+
 	<error-page>
-  <exception-type>java.lang.Exception</exception-type>
-  <location>/debug</location>
-</error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/error-log</location>
+	</error-page>
 
-<error-page>
-  <exception-type>java.lang.Error</exception-type>
-  <location>/debug</location>
-</error-page>
-
-<error-page>
-  <error-code>500</error-code>
-  <location>/debug</location>
-</error-page>
+	<error-page>
+		<exception-type>java.lang.Error</exception-type>
+		<location>/error-log</location>
+	</error-page>
 
 </web-app>

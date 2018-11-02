@@ -1,20 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.*"%>
-<%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" import="edu.stanford.muse.email.*"%>
-<%@ page import="java.io.File" %>
+<%@page import="java.util.*"%>
+<%@page import="edu.stanford.muse.index.*"%>
+<%@page import="java.io.File" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
-<% 
-// params:
-// lexicon=<lexicon name>. if no lexicon name, use "default"
-
-	boolean freshLexicon = false; // track whether this is a newly created lexicon -- we suppress the "create new lexicon" option if so.
-
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+<%
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String lexiconName = request.getParameter("lexicon");
 
@@ -53,8 +44,21 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
+
+<style type="text/css">
+	.lexiconCategory {
+		width:fit-content;/*for chrome */
+		width: -moz-max-content; /*for firefox*/
+		/*width: intrinsic;           !* Safari/WebKit uses a non-standard name *!*/
+	}
+	.lexiconName {float:left}
+	.test-category {cursor:pointer;
+		float:right; margin-right: 10px}
+	.delete-category {cursor:pointer;
+		float:right; margin-right: 10px}
+</style>
 
 <% if (lex == null) { %>
 	 Sorry, there is no lexicon named <%=lexiconName%>.
@@ -62,7 +66,7 @@
 	return;
 } %>
 
-<%writeProfileBlock(out, archive, "", "Lexicon: " + lexiconName);%>
+<%writeProfileBlock(out, archive, "Lexicon: " + lexiconName);%>
 <br/>
 
 <!--sidebar content-->
@@ -88,6 +92,13 @@
 		<p>Select Test for a given category to view the number of hits for each keyword in that category. <!-- test not available if in regex -->
 	<% } %>
 </nav>
+<div align="center">
+<div class="button_bar_on_lexicon">
+	<div title="Add Category" class="buttons_on_datatable" id="add-category"><img class="button_image_on_datatable" src="images/add_lexicon.svg"></div>
+	<div title="Download Lexicon" class="buttons_on_datatable" onclick="exportLexiconHandler();return false;"><img class="button_image_on_datatable" src="images/download.svg"></div>
+	<div title="Delete Lexicon" class="buttons_on_datatable" onclick="deleteLexiconHandler();return false;"><img class="button_image_on_datatable" src="images/delete.svg"></div>
+</div>
+</div>
 <!--/sidebar-->
 <div align="center">
 	<p>
@@ -106,12 +117,13 @@
 				%>
 				<p>
 				<div class="lexiconCategory">
-					<b><%=sentiment%></b>
+					<b class="lexiconName"><%=sentiment%></b>
 					<% if (!isRegex) { %>
-						(<a target="_blank" class="test-lexicon" href="#">Test</a>)
+	<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:20px" src="images/test.svg"></div>
+	<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:20px" src="images/delete.svg"></div>
 					<% } %>
                     <br/>
-					<textarea style="padding:5px" cols="120" rows="<%=nRows+1%>" name="<%=sentiment%>" ><%=query%></textarea>
+					<textarea style="width:1100px;height:<%=(nRows+1)*20%>" name="<%=sentiment%>" ><%=query%></textarea>
 				</div>
 				<%
 			}
@@ -126,31 +138,76 @@
 		%>
 	</div> <!--  categories -->
 <br/>
-	<button id="add-category" class="btn-default" class="tools-pushbutton" ><i class="fa fa-plus"></i> Add category</button>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save</button>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<button class="btn-default" id="export-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" onclick="exportLexiconHandler();"><i class="fa fa-download"></i> Download</button>
+
+<button class="btn-default" id="save-button" style="<%= (noCategories?"display:none":"")%>" class="tools-pushbutton" ><i class="fa fa-save"></i> Save</button>
 
 	<script type="text/javascript">
         var exportLexiconHandler=function(){
+            var x='<%=lexiconName%>'
             $.ajax({
                 type: 'POST',
                 url: "ajax/downloadData.jsp",
                 data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
                 dataType: 'json',
                 success: function (data) {
-                    epadd.alert('Lexicon file will be downloaded in your download folder', function () {
+                    epadd.info_confirm_continue('The lexicon file for ' + x + ' will be downloaded in your browser\'s download folder.', function () {
                         window.location=data.downloadurl;
-                    },'');
+                    });
                 },
                 error: function (jq, textStatus, errorThrown) {
-                    var message = ("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                    epadd.log(message);
-                    epadd.alert(message);
+                    epadd.error("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
                 }
             });
         }
+
+        var deleteLexiconHandler = function() {
+            var post_params = {};
+            post_params.archiveID = '<%=archiveID%>';
+            post_params.lexicon = '<%=lexiconName%>';
+            epadd.warn_confirm_continue('Delete lexicon ' + post_params.lexicon + '? This action cannot be undone.', function() {
+                $.ajax({
+                    url: 'ajax/delete-lexicon.jsp',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: post_params,
+                    success: function (j) {
+                        epadd.success('Lexicon \'' + post_params.lexicon + '\' deleted successfully.', function () {
+                                window.location = 'lexicon-top?archiveID=' + post_params.archiveID;
+                        });
+                    },
+                    error: function (j) {
+//                        $('#save-button .fa').removeClass('fa-spin');
+                        epadd.error('Sorry, there was an error removing the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+                    }
+                });
+            });
+        }
+
+        var test_category = function(e) {
+            //$(e.target).closest('.lexiconCategory').children().first().text()
+            var $lexicon = $(e.target).closest('.lexiconCategory');
+            var lexiconTerms = $('textarea', $lexicon).val();
+            if (!lexiconTerms)
+                return;
+            var lexiconTermsArr = lexiconTerms.split('|');
+
+            var url = 'multi-search?archiveID=<%=archiveID%>&';
+            for (var i = 0; i < lexiconTermsArr.length; i++) {
+                url += 'term=' + lexiconTermsArr[i] + '&'; // there will be a trailing &, that's ok
+            }
+            window.location=url;
+            //$(e.target).attr('href', url);
+            return false;
+        };
+
+        var delete_category = function(e) {
+            epadd.warn_confirm_continue('Delete this category? This action cannot be undone', function() {
+                var $lexicon = $(e.target).closest('.lexiconCategory');
+                $($lexicon).attr('onclick', "");//remove event handler otherwise the other one is getting called
+                $($lexicon).remove();
+            });
+            return false;
+        };
 
         $(document).ready(function() {
 			function addCategory() {
@@ -159,17 +216,18 @@
 					return;
 
 				// target = _blank is important here, otherwise the user will navigate off the page, and may not have saved the new category!
-				var html = '<br/><div class="lexiconCategory"> <b>' + name + '</b>';
+				var html = '<br/><div class="lexiconCategory" > <b class="lexiconName">' + name + '</b>';
 				var placeholder;
 
                 <% if (!isRegex) { %>
-	    			html += '(<a target="_blank" class="test-lexicon" href="#">Test</a>)';
-                    placeholder = 'Enter some words or phrases, separated by |';
+	    			html += '<div  title="Test category" class="test-category" onclick="test_category(event);"><img style="height:20px" src="images/test.svg"></div>';
+                	html += '<div  title="Delete category" class="delete-category" onclick="delete_category(event);"><img style="height:20px" src="images/delete.svg"></div>';
+
+                placeholder = 'Enter some words or phrases, separated by |';
     	    	<% } else { %>
 				    placeholder = 'Enter a regular expression';
     	    	<% } %>
-
-                html += '<br/><textarea cols="120" rows="2" name="' + name + '" placeholder="' + placeholder + '"/></div>';
+                html += '<br/><textarea style="width:1100px;" cols="120" rows="2" name="' + name + '" placeholder="' + placeholder + '"/></div>';
 
 				$('#categories').append(html);
 				$('#save-button').fadeIn(); // always show, otherwise it may be hidden if we started with 0 categories
@@ -199,26 +257,13 @@
 					},
 					error: function (j) {
 						$('#save-button .fa').removeClass('fa-spin');
-						epadd.alert('Sorry! There was an error saving the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+						epadd.error('Sorry, there was an error saving the lexicon. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
 					}
 				});
 			});
 
-			var test_lexicon = function(e) {
-				var $lexicon = $(e.target).closest('.lexiconCategory');
-				var lexiconTerms = $('textarea', $lexicon).val();
-				if (!lexiconTerms)
-					return;
-				var lexiconTermsArr = lexiconTerms.split('|');
 
-				var url = 'multi-search?archiveID=<%=archiveID%>&';
-				for (var i = 0; i < lexiconTermsArr.length; i++) {
-					url += 'term=' + lexiconTermsArr[i] + '&'; // there will be a trailing &, that's ok
-				}
-				$(e.target).attr('href', url);
-				return true;
-			};
-			$('.test-lexicon').live('click', test_lexicon); // .live is important because we want it to work with new categories added on the page
+			$('.test-lexicon').live('click', test_category); // .live is important because we want it to work with new categories added on the page
 		});
 	</script>
 </div>

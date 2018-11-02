@@ -26,6 +26,7 @@
 // utils that are specific to other libs should go in their own utils file
 package edu.stanford.muse.util;
 
+import edu.stanford.muse.Config;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.logging.Log;
 
@@ -43,6 +44,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * a general set of utils by Sudheendra... don't introduce dependencies in this
@@ -571,7 +574,10 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 */
 	public static List<String> getLinesFromFile(String filename, boolean ignoreCommentLines) throws IOException
 	{
-		return getLinesFromInputStream(new FileInputStream(filename), ignoreCommentLines);
+		InputStream is = new FileInputStream(filename);
+		List<String> lines = getLinesFromInputStream(is, ignoreCommentLines);
+		is.close();
+		return lines;
 	}
 
 	public static List<String> getLinesFromInputStream(InputStream in, boolean ignoreCommentLines) throws IOException
@@ -803,6 +809,55 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return false;
 	}
 
+
+	public static void zipDirectory(String pathToDirectory, String zipfile) throws IOException {
+		int i;FileOutputStream fos = new FileOutputStream(zipfile);
+		ZipOutputStream zos = new ZipOutputStream(fos);
+		File[] files = new File(pathToDirectory).listFiles();
+
+		for(i=0; i < files.length ; i++)
+		{
+			FileInputStream fin = new FileInputStream(files[i]);
+
+			/*
+			 * To begin writing ZipEntry in the zip file, use
+			 *
+			 * void putNextEntry(ZipEntry entry)
+			 * method of ZipOutputStream class.
+			 *
+			 * This method begins writing a new Zip entry to
+			 * the zip file and positions the stream to the start
+			 * of the entry data.
+			 */
+
+			zos.putNextEntry(new ZipEntry(files[i].getName()));
+
+			/*
+			 * After creating entry in the zip file, actually
+			 * write the file.
+			 */
+			int length;
+
+			byte[] buffer=new byte[1024];
+			while((length = fin.read(buffer)) > 0)
+			{
+				zos.write(buffer, 0, length);
+			}
+
+			/*
+			 * After writing the file to ZipOutputStream, use
+			 *
+			 * void closeEntry() method of ZipOutputStream class to
+			 * close the current entry and position the stream to
+			 * write the next entry.
+			 */
+
+			zos.closeEntry();
+
+			//close the InputStream
+			fin.close();
+		}
+		zos.close();}
 	public static String padWidth(String s, int width)
 	{
 		if (s == null)

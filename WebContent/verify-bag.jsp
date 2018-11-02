@@ -23,12 +23,11 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <%@include file="div_status.jspf"%>
 
 <%--<script>epadd.nav_mark_active('Export');</script>--%>
 <% 	AddressBook addressBook = archive.addressBook;
-String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 boolean checkDone=false;
 boolean success=false;
 if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
@@ -39,13 +38,13 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
         success=false;
 }
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Verify checksum of this archive");
+	writeProfileBlock(out, archive, "Verify checksum of this archive");
 %>
 <div style="margin-left:170px">
 
 <%
 	if(!checkDone) {
-		out.println("<p> Starting from version 6, ePADD archive follows the Bag-it specification for preservation support. If you received this archive from " +
+		out.println("<p> An ePADD archive follows the Bag-it specification for preservation support. If you received this archive from " +
 				" an untrusted source, you should verify the archive bag's content. Please note that this process might take a while " +
 				" for large archives.</p>");
 	}else{

@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedHashSet;
 
 /** class that extracts params from http post by the login page and sets up email stores in the MuseEmailFetcher in the session */
 public class Accounts {
@@ -232,6 +233,10 @@ public class Accounts {
 			// for non-std local folders dir, tbird prefs.js has a line like: user_pref("mail.server.server1.directory-rel", "[ProfD]../../../../../../tmp/tb");
 			log.info("adding mbox account: " + mboxDir);
 			errorMessage = m.addMboxAccount(emailSource, mboxDir, accountType.equals("tbirdLocalFolders"));
+			//Store this info in m for persistence in the data report issue #254
+			if(m.emailSources==null)
+				m.emailSources = new LinkedHashSet<>();
+			m.emailSources.add(emailSource);
 			if (!Util.nullOrEmpty(errorMessage))
 			{
 				result.put("errorMessage", errorMessage);

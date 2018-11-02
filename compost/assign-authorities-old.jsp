@@ -114,7 +114,7 @@
 					$('.fa-spinner').hide();
 				},
 				error: function() { 
-					epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu."); 
+					epadd.error ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu.");
 					$('img[src="images/spinner.gif').hide(); // hide the spinner otherwise it continues on the page even after this crash
 					$('.fa-spinner').hide();
 				}});
@@ -352,7 +352,7 @@
 		e.printStackTrace();
 	}
 
-	writeProfileBlock(out, archive, "", "Assign authority records");
+	writeProfileBlock(out, archive, "Assign authority records");
 	out.println ("<br/>");
 
 	Integer numEntities = null;

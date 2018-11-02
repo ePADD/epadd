@@ -17,7 +17,7 @@
 <%@include file="getArchive.jspf" %>
 <%!
 
-public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> intervals, Collection<EmailDocument> docs, int[] allMessagesHistogram, int w, int h)
+private String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> intervals, Collection<EmailDocument> docs, int[] allMessagesHistogram, int w, int h)
 {
 	Collections.sort(dfis);
 	JSONArray j = new JSONArray();
@@ -53,17 +53,17 @@ public String scriptForFacetsGraph(List<DetailedFacetItem> dfis, List<Date> inte
 	+ "</script>\n";
 }
 
-public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, List<Date> intervals, int[] allMessagesHistogram, int w, int h, int normalizer, HttpSession session)
+private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, List<Date> intervals, int[] allMessagesHistogram, int w, int h, int normalizer, HttpSession session)
 {
 	String totalMessageVolume = JSONUtils.arrayToJson(allMessagesHistogram);
 
 	// normalizer is the max # of documents in a single intervals
 
-	List<Set<DatedDocument>> sentimentDocs = new ArrayList<Set<DatedDocument>>();
+	List<Set<DatedDocument>> sentimentDocs = new ArrayList<>();
 	StringBuilder json = new StringBuilder("[");
 	for (String caption: map.keySet())
 	{
-		Set<DatedDocument> docs = new LinkedHashSet<DatedDocument>((Collection) map.get(caption)); // map.get returns a list, we have to cast it to set
+		Set<DatedDocument> docs = new LinkedHashSet<>((Collection) map.get(caption)); // map.get returns a list, we have to cast it to set
 		int[] hist = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(docs), intervals, true /* ignore invalid dates */);
 		String sentimentVolume = JSONUtils.arrayToJson(hist);
 		if (json.length() > 2)
@@ -81,73 +81,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 }
 
 %>
-<%
 
-	if (archive == null)
-	{
-		if (!session.isNew())
-			session.invalidate();
-	%>
-	    <script type="text/javascript">window.location="index.jsp";</script>
-	<%
-		System.err.println ("Error: session has timed out, archive is null.");
-		return;
-	}
-	String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	
-	Collection<DatedDocument> allDocs = (Collection) archive.getAllDocs();
-
-	AddressBook addressBook = archive.addressBook;
-
-	Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
-	Date globalStart = p.getFirst();
-	Date globalEnd = p.getSecond();
-	List<Date> intervals = null;
-	int nIntervals = 0;
-	if (globalStart != null && globalEnd != null) {
-		intervals = CalendarUtil.divideIntoMonthlyIntervals(globalStart, globalEnd);
-		nIntervals = intervals.size() - 1;
-	}
-	boolean doSentiments = false, doPeople = false, doEntities = false;
-	String view = request.getParameter("view");
-	String type = request.getParameter("type");
-    Short ct = NEType.Type.PERSON.getCode();
-
-    if("en_person".equals(type))
-        ct = NEType.Type.PERSON.getCode();
-    else if("en_loc".equals(type))
-        ct = NEType.Type.PLACE.getCode();
-    else ct = NEType.Type.ORGANISATION.getCode();
-
-		Lexicon lex=null;
-		String name = request.getParameter("lexicon");
-
-		String heading = "", tableURL = "";
-	if ("sentiments".equals(view)) {
-		doSentiments = true;
-		// resolve lexicon based on name in request and existing lex in session.
-		// name overrides lex
-		if (!Util.nullOrEmpty(name)) {
-				lex = archive.getLexicon(name);
-			// else do nothing, the right lex is already loaded
-		} else {
-				// no request param... probably shouldn't happen, get default lexicon
-				name = Config.DEFAULT_LEXICON;
-				lex = archive.getLexicon(name);
-		}
-		JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
-		heading = "Lexicon Graph";
-		tableURL = "lexicon?archiveID="+archiveID;
-	} else if ("people".equals(view)) {
-		heading = "Top correspondents graph";
-		doPeople = true;
-		tableURL = "correspondents?archiveID="+archiveID;
-	} else if ("entities".equals(view)) {
-		doEntities = true;
-		heading = "Top entities graph (type: " + Util.capitalizeFirstLetter(type) + ")";
-		tableURL = "entities?archiveID="+archiveID+"&type=" + type;
-	}
-	%>
 <html>
 <head>
 	<title>Graph</title>	
@@ -177,8 +111,73 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 </head>
 
 <body style="margin:0% 2%"> <!--  override the default of 1% 5% because we need more width on this page -->
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
+<%
+
+    if (archive == null)
+    {
+        if (!session.isNew())
+            session.invalidate();
+%>
+<script type="text/javascript">window.location="index.jsp";</script>
+<%
+        System.err.println ("Error: session has timed out, archive is null.");
+        return;
+    }
+
+    Collection<DatedDocument> allDocs = (Collection) archive.getAllDocs();
+
+    AddressBook addressBook = archive.addressBook;
+
+    Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
+    Date globalStart = p.getFirst();
+    Date globalEnd = p.getSecond();
+    List<Date> intervals = null;
+    int nIntervals = 0;
+    if (globalStart != null && globalEnd != null) {
+        intervals = CalendarUtil.divideIntoMonthlyIntervals(globalStart, globalEnd);
+        nIntervals = intervals.size() - 1;
+    }
+    boolean doSentiments = false, doPeople = false, doEntities = false;
+    String view = request.getParameter("view");
+    String type = request.getParameter("type");
+    short ct = NEType.Type.PERSON.getCode();
+
+    if("en_loc".equals(type))
+        ct = NEType.Type.PLACE.getCode();
+    else
+        ct = NEType.Type.ORGANISATION.getCode();
+
+    Lexicon lex=null;
+    String name = request.getParameter("lexicon");
+
+    String heading = "", tableURL = "";
+    if ("sentiments".equals(view)) {
+        doSentiments = true;
+        // resolve lexicon based on name in request and existing lex in session.
+        // name overrides lex
+        if (!Util.nullOrEmpty(name)) {
+            lex = archive.getLexicon(name);
+            // else do nothing, the right lex is already loaded
+        } else {
+            // no request param... probably shouldn't happen, get default lexicon
+            name = Config.DEFAULT_LEXICON;
+            lex = archive.getLexicon(name);
+        }
+        JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
+        heading = "Lexicon Graph";
+        tableURL = "lexicon?archiveID="+archiveID;
+    } else if ("people".equals(view)) {
+        heading = "Top correspondents graph";
+        doPeople = true;
+        tableURL = "correspondents?archiveID="+archiveID;
+    } else if ("entities".equals(view)) {
+        doEntities = true;
+        heading = "Top entities graph (type: " + Util.capitalizeFirstLetter(type) + ")";
+        tableURL = "entities?archiveID="+archiveID+"&type=" + type;
+    }
+%>
 <%
 	String sentiment = request.getParameter("sentiment");
 	if (sentiment == null)
@@ -196,7 +195,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
 <p>
 <%
-	writeProfileBlock(out, archive, heading, "");
+	writeProfileBlock(out, archive, heading);
 %>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
@@ -216,12 +215,11 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 			 lexiconNames.remove("sensitive");
 		 }
 
-	 boolean onlyOneLexicon = (lexiconNames.size() == 1);
 			if (lexiconNames.size() > 1)
 			{
 	%>
 		<script>function changeLexicon() {	window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments&lexicon=' +	$('#lexiconName').val(); }</script>
-		Lexicon <select id="lexiconName" onchange="changeLexicon()">
+		Lexicon <select title="change lexicon" id="lexiconName" onchange="changeLexicon()">
 		<%
 			// common case, only one lexicon, don't show load lexicon
 			for (String n: lexiconNames)
@@ -286,7 +284,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		int normalizer = ProtovisUtil.normalizingMax(allDocs, addressBook, intervals);
 		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 		Map<Contact, DetailedFacetItem> folders = IndexUtils.partitionDocsByPerson((Collection) allDocs, addressBook);
-		List<DetailedFacetItem> list = new ArrayList<DetailedFacetItem>(folders.values());
+		List<DetailedFacetItem> list = new ArrayList<>(folders.values());
 		graph_script = scriptForFacetsGraph(list, intervals, (Collection) allDocs, allMessagesHistogram, 1000, 450);
 	}
 	else if (doEntities)
@@ -295,8 +293,8 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
 
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-		Map<String, String> canonicalToOriginal = new LinkedHashMap<String, String>();
-		Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
+		Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
+		Map<String, Integer> counts = new LinkedHashMap<>();
 		for (EmailDocument ed: docs) {
             Set<String> set = new LinkedHashSet<>();
             Span[] es = archive.getEntitiesInDoc(ed, true);
@@ -307,8 +305,7 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 
 			for (String e: set) {
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
-				if (canonicalToOriginal.get(canonicalEntity) == null)
-					canonicalToOriginal.put(canonicalEntity, e);
+                canonicalToOriginal.putIfAbsent(canonicalEntity, e);
 				Integer I = counts.get(canonicalEntity);
 				counts.put(canonicalEntity, (I == null) ? 1 : I+1);
 			}
@@ -317,14 +314,14 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 		List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
 		int n = HTMLUtils.getIntParam(request, "n", 10);
 		int count = 0;
-		List<String> topEntities = new ArrayList<String>();
+		List<String> topEntities = new ArrayList<>();
 		for (Pair<String, Integer> pair: pairs) {
 			topEntities.add(pair.getFirst());
 			if (++count > n)
 				break;
 		}
 		
-		Map<String, Set<Document>> map = new LinkedHashMap<String, Set<Document>>();
+		Map<String, Set<Document>> map = new LinkedHashMap<>();
 		/*
 		for (String e: topEntities)
 		{
@@ -355,19 +352,14 @@ public String scriptForSentimentsGraph(Map<String, Collection<Document>> map, Li
 				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
 				if (!topEntities.contains(canonicalEntity))
 					continue;
-				
-				Set<Document> docSet = map.get(canonicalEntity);
-				if (docSet == null)
-				{
-					docSet = new LinkedHashSet<Document>();
-					map.put(canonicalEntity, docSet);
-				}
-				docSet.add(ed);
+
+                Set<Document> docSet = map.computeIfAbsent(canonicalEntity, k -> new LinkedHashSet<>());
+                docSet.add(ed);
 			}
 		}
 
 		// now uncanonicalize the top terms in the map to form newmap
-		Map<String, Collection<Document>> newMap = new LinkedHashMap<String, Collection<Document>>();
+		Map<String, Collection<Document>> newMap = new LinkedHashMap<>();
 		for (String entity: topEntities)
 		{
 			String originalEntity = canonicalToOriginal.get(entity);

@@ -424,20 +424,25 @@ public class EmailUtils {
 
 			mbox.println("--" + frontier);
 			mbox.println("Content-Type: text/plain; charset=\"UTF-8\"");
-			mbox.println("Content-Encoding: quoted-printable\n"); // need blank line after this
-			try {
-				byte encodedBytes[] = QuotedPrintableCodec.decodeQuotedPrintable(contents.getBytes());
+            if(isI18N){
+                //if content is I18N (means large character range) then encode it using base64 [like hindi typed character]
+				mbox.println("Content-Encoding: base64\n"); // need blank line after this
+				byte encodedBytes[] = Base64.encodeBase64(contents.getBytes(), true);
 				for (byte by : encodedBytes)
 					mbox.print((char) by);
 				mbox.println();
-			} catch (DecoderException de) {
-				log.warn("Exception trying to toString contents!" + de);
-				mbox.println(contents);
-				mbox.println();
-			}
-//			mbox.println("--" + frontier + "--");
+                //			mbox.println("--" + frontier + "--");
+                // probably need to fix: other types of charset, encodings
 
-			// probably need to fix: other types of charset, encodings
+            }else{
+                //else if content is not I18N (means only ascii and hence human readable) then encode it using quoted printable encoding
+				mbox.println("Content-Encoding: quoted-printable\n"); // need blank line after this
+				byte encodedBytes[] = QuotedPrintableCodec.encodeQuotedPrintable(null,contents.getBytes());
+				for (byte by : encodedBytes)
+					mbox.print((char) by);
+				mbox.println();
+            }
+
 			if (blobStore != null && attachments != null)
 			{
 				for (Blob b : attachments)
@@ -663,7 +668,7 @@ public class EmailUtils {
 
 			// ignore invalid date if asked
 			if (ignoreInvalidDates)
-				if(DateTimeComparator.getDateOnlyInstance().compare(d,INVALID_DATE)==0)
+				if(DateTimeComparator.getDateOnlyInstance().compare(d,INVALID_DATE)==0 || ed.hackyDate)
 					continue;//Why did we use this comparator instead of equal of Date? Because even if dates were same cdate field was different hence January 1 1960 was considered as different in all of them.//Addding the support that on browse-top page the range should not consider the unreadable dates where ePADD by default puts something like 1 January 1960
 
 			if (first == null || d.before(first))
@@ -763,8 +768,12 @@ public class EmailUtils {
 	public static List<Date> datesForDocs(Collection<? extends DatedDocument> c)
 	{
 		List<Date> result = new ArrayList<>();
-		for (DatedDocument d : c)
-			result.add(d.date);
+		for (DatedDocument d : c) {
+		//Do not add hacky dates..
+			if(!d.hackyDate)
+				result.add(d.date);
+
+		}
 		return result;
 	}
 

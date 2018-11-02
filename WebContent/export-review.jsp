@@ -32,11 +32,10 @@
 	</script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
 
 <%
-	String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 
 String type = request.getParameter("type");
@@ -76,7 +75,7 @@ for (EmailDocument ed: docs)
 
 docs = newDocs;
 //session.setAttribute("action-docs", docs);
-writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
+writeProfileBlock(out, archive, Util.pluralize(docs.size(), "message") + description);%>
 
 
 <br/>

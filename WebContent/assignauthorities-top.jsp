@@ -35,7 +35,7 @@
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Authorities');</script>
 
 		<%
@@ -53,7 +53,7 @@
 				lC=" ("+archive.collectionMetadata.entityCounts.getOrDefault(NEType.Type.PLACE.getCode(),0)+")";
 			}
 			AddressBook ab = archive.addressBook;
-			writeProfileBlock(out, archive, "", "Assign authorities");%>
+			writeProfileBlock(out, archive, "Assign authorities");%>
 <br/>
 <div id="all-cards" style="text-align: center; margin:auto">
 

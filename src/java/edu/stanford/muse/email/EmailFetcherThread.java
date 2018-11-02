@@ -15,10 +15,9 @@
  */
 package edu.stanford.muse.email;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.sun.mail.imap.IMAPFolder;
 import edu.stanford.muse.Config;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.util.EmailUtils;
@@ -40,7 +39,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
-import java.security.GeneralSecurityException;
 import java.util.*;
 
 class EmailFetcherStats implements Cloneable, Serializable {
@@ -276,7 +274,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
         // a better fix would be to improve the parsing in the provider
         // note: the above logic was a cute hack but is being disabled for ePADD as we don't want any guessed dates.
 
-        boolean hackyDate = false;
+        boolean noDate = false;
+        boolean probablyWrongDate = false;
         Date d = m.getSentDate();
         if (d == null)
             d = m.getReceivedDate();
@@ -292,14 +291,17 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         if (d == null) {
             d = INVALID_DATE;
-            hackyDate = true;
+            noDate = true;
+            dataErrors.add("No date for message id:" + id + ": " + EmailUtils.formatMessageHeader(m) );
     } else {
             Calendar c = new GregorianCalendar();
             c.setTime(d);
             int yy = c.get(Calendar.YEAR);
             if (yy < 1960 || yy > 2020) {
                 dataErrors.add("Probably bad date: " + Util.formatDate(c) + " message: " + EmailUtils.formatMessageHeader(m));
-                hackyDate = true;
+                probablyWrongDate = true;
+
+
             }
         }
 
@@ -368,10 +370,22 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 ed.sentToMailingLists[i++] = header;
             }
         }
-        if (hackyDate) {
+       /* if (hackyDate) {
             String s = "Guessed date " + Util.formatDate(c) + " for message id: " + id + ": " + ed.getHeader();
             dataErrors.add(s);
             ed.hackyDate = true;
+        }*/
+        if(noDate){
+            Set<String> lab = new LinkedHashSet<>();
+            lab.add(LabelManager.LABELID_NODATE);
+            getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
+            ed.hackyDate=true;
+        }
+        if(probablyWrongDate){
+            Set<String> lab = new LinkedHashSet<>();
+            lab.add(LabelManager.LABELID_POSS_BADDATE);
+            getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
+            ed.hackyDate=true;
         }
 
         // check if the message has attachments.
@@ -434,10 +448,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * also sets up names of attachments (though it will not download the
      * attachment unless downloadAttachments is true)
      */
-    private List<String> processMessagePart(int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
+    private List<String> processMessagePart(EmailDocument ed, int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
         List<String> list = new ArrayList<>(); // return list
         if (p == null) {
             dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
+            Set<String> label = new LinkedHashSet<>();
+            label.add(LabelManager.LABELID_PARSING_ERRS);
+            archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             return list;
         }
 
@@ -486,6 +503,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
             }
             if (dirty) {
                 dataErrors.add("Dirty message part, has conflicting message part headers."  + folder_name() + " Message# " + messageNum);
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_PARSING_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
                 return list;
             }
 
@@ -501,6 +521,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     content = (String) p.getContent();
             } catch (UnsupportedEncodingException uee) {
                 dataErrors.add("Unsupported encoding: " + folder_name() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_PARSING_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
                 // a particularly nasty issue:javamail can't handle utf-7 encoding which is common with hotmail and exchange servers.
                 // we're using the workaround suggested on this page: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4304013
                 // though it may be better to consider official support for utf-7 or other encodings.
@@ -557,27 +580,34 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
                     // no text or html part. hmmm... blindly process the first part only
                     if (allParts.getCount() >= 1)
-                        list.addAll(processMessagePart(messageNum, m, allParts.getBodyPart(0), attachmentsList));
+                        list.addAll(processMessagePart(ed,messageNum, m, allParts.getBodyPart(0), attachmentsList));
                 } else {
                     // process it like a regular multipart
                     for (int i = 0; i < allParts.getCount(); i++) {
                         BodyPart bp = allParts.getBodyPart(i);
-                        list.addAll(processMessagePart(messageNum, m, bp, attachmentsList));
+                        list.addAll(processMessagePart(ed,messageNum, m, bp, attachmentsList));
                     }
                 }
             } else if (o instanceof Part)
-                list.addAll(processMessagePart(messageNum, m, (Part) o, attachmentsList));
-            else
+                list.addAll(processMessagePart(ed,messageNum, m, (Part) o, attachmentsList));
+            else {
                 dataErrors.add("Unhandled part content, " + folder_name() + " Message #" + messageNum + "Java type: " + o.getClass() + " Content-Type: " + p.getContentType());
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_PARSING_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+            }
         } else {
             try {
                 // do attachments only if downloadAttachments is set.
                 // some apps do not need attachments, so this saves some time.
                 // however, it seems like a lot of time is taken in imap prefetch, which gets attachments too?
                 if (fetchConfig.downloadAttachments)
-                    handleAttachments(messageNum, m, p, list, attachmentsList);
+                    handleAttachments(ed,messageNum, m, p, list, attachmentsList);
             } catch (Exception e) {
                 dataErrors.add("Ignoring attachment for " + folder_name() + " Message #" + messageNum + ": " + Util.stackTrace(e));
+                Set<String> label = new LinkedHashSet<>();
+                label.add(LabelManager.LABELID_ATTCH_ERRS);
+                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             }
         }
 
@@ -590,7 +620,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * in some cases, like a text/html type without a filename, we instead append it to the textlist
      * @throws MessagingException
      */
-    private void handleAttachments(int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
+    private void handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
         String ct = null;
         if (!(m instanceof MimeMessage)) {
             Exception e = new IllegalArgumentException("Not a MIME message!");
@@ -608,6 +638,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
             // javax.mail.internet.ParseException: Expected ';', got "Message"
 
             dataErrors.add("Unable to read attachment name: " + folder_name() + " Message# " + idx);
+            Set<String> label = new LinkedHashSet<>();
+            label.add(LabelManager.LABELID_ATTCH_ERRS);
+            archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             return;
         }
 
@@ -615,6 +648,10 @@ public class EmailFetcherThread implements Runnable, Serializable {
         if (filename == null) {
             String tempFname = sanitizedFName + "." + idx;
             dataErrors.add("attachment filename is null for " + sanitizedFName + " Message#" + idx + " assigning it the name: " + tempFname);
+            //assign a special label to this message to denote that there was some problem in parsing.
+            Set<String> lab = new LinkedHashSet<>();
+            lab.add(LabelManager.LABELID_ATTCH_ERRS);
+            getArchive().getLabelManager().setLabels(ed.getUniqueId(),lab);
             if (p.isMimeType("text/html")) {
                 try {
                     log.info("Turning message " + sanitizedFName + " Message#" + idx + " into text although it is an attachment");
@@ -1125,7 +1162,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
 
                     if (contents == null)
-                        contents = processMessagePart(messageNum, originalMessage, mm, attachmentsList);
+                        contents = processMessagePart(ed,messageNum, originalMessage, mm, attachmentsList);
 
                     // if mm is not prefetched, it is the same as original_mm
                     // will also work, but will be slow as javamail accesses and fetches each mm separately, instead of using the bulk prefetched version
@@ -1148,11 +1185,20 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     String contentStr = sb.toString();
                     if (!messageLooksOk(contentStr)) {
                         dataErrors.add("Skipping message as it seems to have very long words: " + ed);
-                        continue;
+                        Set<String> label = new LinkedHashSet<>();
+                        label.add(LabelManager.LABELID_PARSING_ERRS);
+                        archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                        // but we continue, don't skip the message entirely. See issue #214
+                        //but just truncate the message..
+                        contentStr="<MESSAGE TOO LONG: POSSIBLE PARSING ISSUE- Truncated>" + contentStr.substring(0,100);
+
                     }
 
                     if (contentStr.length() > Config.MAX_TEXT_SIZE_TO_ANNOTATE) {
                         dataErrors.add("Skipping message as it seems to be very long: " + contentStr.length() + " chars, while the max size message that will be annotated for display is " + Config.MAX_TEXT_SIZE_TO_ANNOTATE + " chars. Message = " + ed);
+                        Set<String> label = new LinkedHashSet<>();
+                        label.add(LabelManager.LABELID_PARSING_ERRS);
+                        archive.getLabelManager().setLabels(ed.getUniqueId(),label);
                         // but we continue, don't skip the message entirely. See issue #111
                     }
 

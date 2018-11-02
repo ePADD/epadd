@@ -33,7 +33,7 @@
     String collectionID = request.getParameter("collection");
 %>
 <body>
-    <jsp:include page="header.jspf"/>
+    <%@include file="header.jspf"%>
     <jsp:include page="div_filepicker.jspf"/>
     <script>epadd.nav_mark_active('Add');</script>
 
@@ -117,16 +117,16 @@
             // this currently just copies the archive into the accession.
             // it has to be extended to do a merge if the collection already exists
             var accid = $('#accessionID').val();
-            var accpath = $('#accessionFolder').val()
+            var accpath = $('#accessionFolder').val();
 
                 if (accpath && accpath.length > 0) {
                     if (accid && accid.length > 0)
                         epadd.import_accession(e, muse.collect_input_fields());
                     else
-                        epadd.alert("Please provide an accession ID for this accession");
+                        epadd.error("Please provide an accession ID for this accession");
                 }
                 else
-                    epadd.alert("Please provide an accession folder for this accession");
+                    epadd.error("Please provide an accession folder for this accession");
             // should not reach here, because load_archive redirect, but just in case...
             return false;
         });

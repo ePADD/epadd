@@ -20,6 +20,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import edu.stanford.muse.Config;
+import edu.stanford.muse.ResultCacheManager.ResultCache;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
@@ -69,6 +70,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 
+import javax.print.Doc;
 import java.io.*;
 
 import java.nio.file.*;
@@ -110,8 +112,11 @@ public class Archive implements Serializable {
     public static final String ANNOTATION_SUFFIX = "Annotations.csv";
     public static final String LABELMAPDIR= "LabelMapper";
     public static final String BLOBLNORMALIZATIONFILE_SUFFIX="NormalizationInfo.csv";
+    public transient  static ResultCache cacheManager = new ResultCache();//making it static so that it becomes visible for all archives.
 
     public Multimap<Document, Tuple2<String,String>> getDupMessageInfo() {
+        if(dupMessageInfo==null)
+            return LinkedHashMultimap.create();
         return dupMessageInfo;
     }
 
@@ -138,7 +143,7 @@ public class Archive implements Serializable {
     transient private Set<Document> allDocsAsSet = null;
     transient private Map<Document,Document> allUniqueDocsMap=null;
     private transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
-
+    private transient Map<Long,List<Document>> threadIDToDocs = new LinkedHashMap<>();
 
     private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
@@ -293,6 +298,7 @@ int errortype=0;
                 //don't set the label, log the error message and the count of messages which got this error.
                 countfail=countfail+1;
                 //set the labels to the old labels..
+                errortype=1;
                 labelManager.putOnlyTheseLabels(doc.getUniqueId(),existinglabs);
             }else if(Util.setIntersection(allLabels,timeRestrictedLabels).size()!=0 && isHacky){
                 //related timed restriction can not be applied on hacky dates.
@@ -435,7 +441,7 @@ int errortype=0;
     // these fields are used in the library setting
     static public class CollectionMetadata implements java.io.Serializable {
         private final static long serialVersionUID = 6304656466358754945L; // compatibility
-        public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes, scopeAndContent;
+        public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes, scopeAndContent, shortTitle, shortDescription;
         public long timestamp;
         public String tz;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
@@ -768,6 +774,7 @@ int errortype=0;
         return indexer.getContents(ldoc, originalContentOnly);
     }
 
+    /*
     private void setupAddressBook(List<Document> docs) {
         // in this case, we don't care whether email addrs are incoming or
         // outgoing,
@@ -781,13 +788,16 @@ int errortype=0;
 
         addressBook.organizeContacts();
     }
+    */
 
+    /*
     public List<LinkInfo> extractLinks(Collection<Document> docs) throws Exception {
         prepareAllDocs(docs, indexOptions);
         indexer.clear();
         indexer.extractLinks(docs);
         return EmailUtils.getLinksForDocs(docs);
     }
+    */
 
     public Collection<DatedDocument> docsInDateRange(Date start, Date end) {
         List<DatedDocument> result = new ArrayList<>();
@@ -877,6 +887,7 @@ int errortype=0;
      *
      * @throws Exception
      */
+    /*
     private void prepareAllDocs(Collection<Document> docs, IndexOptions io) throws Exception {
         allDocs = new ArrayList<>();
         allDocs.addAll(docs);
@@ -901,7 +912,7 @@ int errortype=0;
             if (io.filter == null || (io.filter != null && io.filter.matches(d)))
                 newAllDocs.add(d);
 
-        EmailUtils.cleanDates(newAllDocs);
+        //EmailUtils.cleanDates(newAllDocs);
 
         log.info(newAllDocs.size() + " documents after filtering");
 
@@ -909,6 +920,7 @@ int errortype=0;
         Collections.sort(allDocs); // may not be essential
         allDocsAsSet = null;
     }
+    */
 
     private String getFolderInfosMapKey(String accountKey, String longName) {
         return accountKey + "..." + longName;
@@ -1262,6 +1274,7 @@ after maskEmailDomain.
     }
 
 
+
     //method to return the count map of entities provided that the score of the entity is greater than
     //threshold.
     public static Map<Short,Integer> getEntitiesCountMapModuloThreshold(Archive archive, double threshold){
@@ -1399,13 +1412,24 @@ after maskEmailDomain.
         }
         return resultArray;
     }
+
+
+    /*
+    Here invariant is that the cached map 'threadIDToDocs' does not get invalidated once an archive is indexed.
+     */
     public List<Document> docsWithThreadId(long threadID) {
+
+        if(threadIDToDocs!=null && threadIDToDocs.size()!=0){
+            return threadIDToDocs.get(threadID);
+        }
+        threadIDToDocs=new LinkedHashMap<>();
         List<Document> result = new ArrayList<>();
         for (Document ed : allDocs) {
-            if (((EmailDocument) ed).threadID == threadID)
-                result.add(ed);
+            List<Document> doclist = threadIDToDocs.getOrDefault(threadID,new ArrayList<>());
+            doclist.add(ed);
+            threadIDToDocs.put(((EmailDocument)ed).threadID,doclist);
         }
-        return result;
+        return threadIDToDocs.getOrDefault(threadID,new ArrayList<>());
     }
 
     public String getStats() {
@@ -1624,7 +1648,7 @@ after maskEmailDomain.
     }
 
     transient private Multimap<Short, Document> entityTypeToDocs = LinkedHashMultimap.create(); // entity type code -> docs containing it
-    private synchronized void computeEntityTypeToDocMap() {
+    public synchronized void computeEntityTypeToDocMap() {
         if (entityTypeToDocs != null)
             return;
         entityTypeToDocs = LinkedHashMultimap.create();
@@ -1913,6 +1937,33 @@ after maskEmailDomain.
         return Collections.unmodifiableSet(lexiconMap.keySet());
     }
 
+    public JSONArray getAvailableLexiconsWithCategories(boolean isDelivery) {
+        // lexicon map could be stale, re-read it
+        JSONArray resultArray = new JSONArray();
+        try {
+            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+        } catch (Exception e) {
+            Util.print_exception("Error trying to read list of lexicons", e, log);
+        }
+        if (lexiconMap == null)
+            return resultArray;
+        if(isDelivery){
+            //remove sensitive lexicon.
+            lexiconMap.remove(Lexicon.SENSITIVE_LEXICON_NAME);
+        }
+        int count = 0;
+        for (String lexiconname: lexiconMap.keySet()) {
+            Lexicon lexicon = lexiconMap.get(lexiconname);
+            JSONArray result = new JSONArray();
+            Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage("english");
+            int numcategories = lex.captionToExpandedQuery.keySet().size();
+
+            result.put (0, lexiconname);
+            result.put (1, numcategories);
+            resultArray.put (count++, result);
+        }
+        return resultArray;
+    }
     /** returns an array (sorted by doc count for set labels.
      *  each element of the array is itself an array corresponding to the details for one label.
      *  important: labels with 0 count should not be returned. */
@@ -2241,7 +2292,19 @@ after maskEmailDomain.
         try {
             messageDigest = MessageDigest.getInstance(StandardSupportedAlgorithms.MD5.name());
             MessageDigest finalMessageDigest = messageDigest;
-            archiveBag.getPayLoadManifests().forEach(manifest->manifestToMessageDigest.put(manifest, finalMessageDigest));
+            /*A very subtle bug was introduced. The case is as following; a file gets deleted from the directory but the manifest has entry for the deleted file as well.
+            When the manifest construction algorithm is iterated over the directory tree then it recomputes the hash for all files present but it does not remove the hash for deleted files. As a result,
+            although the file is deleted, its entry remains in the tag manifest file resulting in the failure of checksum. For fix; we remove entry for all those files
+            which are present in the folder that needs to be updated.
+             */
+            archiveBag.getPayLoadManifests().forEach(manifest->{
+                //from manifest remove all the files whose parent path is fileOrDirectoryName
+                Map<Path,String> mm = manifest.getFileToChecksumMap().entrySet().stream().filter(entry->
+                    !entry.getKey().startsWith(new File(fileOrDirectoryName).toPath())
+                        ).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+                manifest.setFileToChecksumMap(mm);
+                manifestToMessageDigest.put(manifest, finalMessageDigest);
+            });
             CreatePayloadManifestsVistor sut = new CreatePayloadManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
             Files.walkFileTree(filepathname, sut);
             //Files.walkFileTree(baginfofile,sut);
@@ -2274,7 +2337,78 @@ after maskEmailDomain.
 
 
     }
+    public static int getnBlobsExported(Collection<Document> docs, BlobStore blobStore, List<String> attachmentTypeOptions, String dir, boolean unprocessedonly, Set<String> extensionsNeeded, boolean isOtherSelected, Map<Blob, String> blobToErrorMessage) {
+        int nBlobsExported = 0;
 
+        for (Document d: docs) {
+            EmailDocument ed = (EmailDocument) d;
+            List<Blob> blobs = ed.attachments;
+            if (Util.nullOrEmpty(blobs))
+                continue;
+
+            nextBlob:
+            for (Blob blob: blobs) {
+
+                //check if this blob need to be exported or not depending upon the option
+                //unprocessedonly and the state of this blob.
+                if(unprocessedonly && blob.processedSuccessfully){
+                    continue nextBlob;
+                }
+                try {
+                    String blobName = blobStore.get_URL_Normalized(blob);;
+                    // get rid of any file separators first... don't want them to cause any confusion
+                    if (blobName == null)
+                        blobName = "";
+
+
+                    blobName = blobName.replaceAll("/", "_");
+                    blobName = blobName.replaceAll("\\\\", "_");
+                    String base, ext;
+                    Pair<String, String> pair = Util.splitIntoFileBaseAndExtension(blobName);
+                    base = pair.getFirst();
+                    ext = pair.getSecond();
+                    Util.ASSERT(Util.nullOrEmpty(ext) ? blobName.equals(base) : blobName.equals(base + "." + ext));
+
+                    if (!Util.nullOrEmpty(extensionsNeeded)) {
+                        if (Util.nullOrEmpty(ext))
+                            continue nextBlob;
+                        //Proceed to add this attachment only if either
+                        //1. other is selected and this extension is not present in the list attachmentOptionType, or
+                        //2. this extension is present in the variable extensionNeeded
+                        //Q. [What if there is a file with .others extension?]
+                        boolean firstcondition = isOtherSelected && !attachmentTypeOptions.contains(ext.toLowerCase());
+                        boolean secondcondition = extensionsNeeded.contains(ext.toLowerCase());
+                        if (!firstcondition && !secondcondition)
+                            continue nextBlob;
+                    }
+
+                    //remove ':' from the blobname if present otherwise it creates issue on windows which doesn't allow filename to contain ':'.
+                    blobName = blobName.replaceAll(":","_");
+                    String targetPath = dir + File.separator + blobName;
+
+                    if (new File(targetPath).exists()) {
+                        // try adding (1), (2) etc to the base part of the blob name... keep the extension unchanged
+                        int i = 1;
+                        do {
+                            String targetFile = base + " (" + (i++) + ")" + (Util.nullOrEmpty(ext) ? "" : "." + ext);
+                            //remove ':' from the targetfile if present.
+                            targetFile =targetFile.replaceAll(":","_");
+                            targetPath = dir + File.separator + targetFile;
+                        } while (new File(targetPath).exists());
+                    }
+                    blobStore.createBlobCopy(blob, targetPath);
+                    nBlobsExported++;
+
+                } catch (Exception e) {
+                    Util.print_exception ("Error exporting blob", e, log);
+                    blobToErrorMessage.put (blob, "Error exporting blob: " + e.getMessage());
+                }
+                // blob has the right extensions
+
+            }
+        }
+        return nBlobsExported;
+    }
     public void updateFileInBag(String fileOrDirectoryName, String baseDir) {
         //get bag
         Bag archiveBag = this.getArchiveBag();

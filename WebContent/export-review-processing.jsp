@@ -1,6 +1,4 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.Contact"%>
 <%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
 <%@page language="java" import="org.json.JSONArray"%>
@@ -34,11 +32,10 @@
 	</script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
 
 <%
-AddressBook ab = archive.addressBook;
 Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 
 String type = request.getParameter("type");
@@ -71,7 +68,7 @@ for (EmailDocument ed: docs)
 */
 
 docs = newDocs;
-writeProfileBlock(out, archive, "", Util.pluralize(docs.size(), "message") + description);%>
+writeProfileBlock(out, archive,  Util.pluralize(docs.size(), "message") + description);%>
 <div id="nav3" style="display:inline-block;margin-left:170px;">
 	<nav>
 		<a href="export-review-processing?type=doNotDeliver">Do not deliver</a> <br/>

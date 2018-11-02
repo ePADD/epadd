@@ -30,7 +30,7 @@
   List<EmailDocument> selectedDocs = new ArrayList<>();
   for (Document d: archive.getAllDocs()) {
       EmailDocument ed = (EmailDocument) d;
-      if (ed.addedToCart)
+      if (ed.hackyDate)//dummy
         selectedDocs.add(ed);
   }
 
@@ -39,14 +39,9 @@
   // either we do tags (+ or -) from selectedTags
   // or we do all docs from allDocs
   String cacheDir = archive.baseDir;
-  String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
-  BlobStore bs = null;
-  try {
-    bs = new BlobStore(attachmentsStoreDir);
-    JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
-  } catch (IOException ioe) {
-    JSPHelper.log.error("Unable to initialize attachments store in directory: " + attachmentsStoreDir + " :" + ioe);
-  }
+//  String attachmentsStoreDir = cacheDir + File.separator + "blobs" + File.separator;
+  BlobStore bs = archive.getBlobStore();
+
 
 /*
   String rootDir = JSPHelper.getRootDir(request);

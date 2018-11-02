@@ -9,63 +9,104 @@
 	<title>Labels</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<!-- Optional theme -->
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	
+
 	<jsp:include page="css/css.jsp"/>
+	<link rel="stylesheet" href="css/sidebar.css">
+	<link rel="stylesheet" href="css/main.css">
+
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
 	
-	<style>
-		.remove-label {
-			cursor: pointer;
-			border-bottom: 1px dotted #000;
-		}
-	</style>
+
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "Labels", "");
+<div class="nav-toggle1 sidebar-icon">
+	<img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+	<h2><b>Using labels</b></h2>
+	<!--close button-->
+	<a class="nav-toggle1 show-nav1" href="#">
+		<img src="images/close.png" class="close" alt="close">
+	</a>
 
+	<div class="search-tips" style="display:block">
+
+		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+			<p>		<img  class="helpdrawer-images" src="images/add_label.svg">
+				Create a new label.
+			<p>		<img  class="helpdrawer-images" src="images/download.svg">
+		Download a .json label description file.
+			<p>		<img  class="helpdrawer-images" src="images/upload.svg">
+		Import a .json label description file.
+			<p><img  class="helpdrawer-images" src="images/labels.svg">
+		Apply labels to all messages.
+
+			<p>General labels can be used to describe to a set of messages, to mark a set of messages as reviewed, or for any other purpose. General labels are not machine-actionable.
+			<p>General labels will export from the Appraisal module to the Processing module, but will not export to the Discovery module or to/from the Delivery module.
+			<p>Restriction labels can be used to restrict messages, including for a certain period from the current date, or from the date of creation.
+			<p>Restricted messages (and associated restriction labels) will export from the Appraisal module to the Processing module, but will not export to the Discovery or Delivery modules unless they are also assigned the “Cleared for release” label within the Appraisal or Processing modules.
+			<p>All labels are searchable via Advanced Search.
+			<p>Set default labels for all messages from the Dashboard, under the More option.
+		<% } else if (ModeConfig.isDeliveryMode()) { %>
+			<p><img  class="helpdrawer-images" src="images/add_label.svg">  Create a new label.
+			<p><img  class="helpdrawer-images" src="images/download.svg">  Download a .json label description file.
+			<p><img  class="helpdrawer-images" src="images/upload.svg">  Import a .json label description file.
+			<p>Labels can be used to describe a set of messages or to mark a set of messages as reviewed.
+			<p>Labels will not export.
+		<% } %>
+	</div>
+</nav>
+<%
+	writeProfileBlock(out, archive, "Manage labels");
 %>
 
 <% // new label not available in discovery mode.
   if (!ModeConfig.isDiscoveryMode()) { %>
-    <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-        <button class="btn-default" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><i class="fa fa-pencil-o"></i> Create</button> <!-- no labelID param, so it's taken as a new label -->
-		&nbsp;&nbsp;
-		<button class="btn-default" id="import-label"><i class="fa fa-pencil-o"></i> Upload</button>
-		&nbsp;&nbsp;
-		<button class="btn-default" id="export-label" onclick="exportLabelHandler()"><i class="fa fa-pencil-o"></i> Download</button>
-
-    </div>
-
-<% } %>
-
-<br/>
-<br/>
-
 <div style="margin:auto; width:1100px">
-<table id="labels" style="display:none">
+		<div class="button_bar_on_datatable">
+			<%if(!ModeConfig.isDiscoveryMode()){%>
+			<div title="Create label" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
+			<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
+			<%}%>
+			<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
+			<%if(!ModeConfig.isDiscoveryMode()){%>
+			<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/labels.svg"></div></div>
+			<%}%>
+</div>
+<% }else{ %>
+<div style="margin:auto; width:1100px">
+<%} %>
+<table id="labels" style="display:none;">
 	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% // this column not available in discovery mode
             if (!ModeConfig.isDiscoveryMode()) { %>
-            <th></th><th></th>
+            <th>Actions</th>
         <% } %>
     </tr></thead>
 	<tbody>
 	</tbody>
 </table>
 <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+
+	<div style="clear:both"></div>
+	<br/>
+
+
+</div>
 
 	<%
 		out.flush(); // make sure spinner is seen
@@ -81,14 +122,12 @@
             data: {archiveID: archiveID, data: "labels"},
             dataType: 'json',
             success: function (data) {
-                epadd.alert('A label description file called label-info.json will be downloaded in your browser\'s download folder.', function () {
+                epadd.info_confirm_continue('A label description file called label-info.json will be downloaded in your browser\'s download folder.', function () {
                     window.location=data.downloadurl;
-                }, '');
+                });
             },
             error: function (jq, textStatus, errorThrown) {
-                var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                epadd.log(message);
-                epadd.alert(message);
+                epadd.error("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
             }
         });
     }
@@ -101,17 +140,26 @@
 
 		var dt_right_targets = [1, 2]; // only 2 in discovery mode, convert to [1, 2, 3] in other modes
         <% if (!ModeConfig.isDiscoveryMode()) { %>
-		    dt_right_targets = [1, 2, 3,4];
-			var edit_label_link = function ( data, type, full, meta ) {
+		    dt_right_targets = [1, 2, 3];
+			var edit_remove_label_link = function ( data, type, full, meta ) {
+			    var returnedhtml='';
 				if (full[4])  // system label
-					return '<span title="System labels are not editable">Not editable</span>'; // not editable
-				return '<a href="edit-label?labelID=' + full[0] + '&archiveID=<%=archiveID%>">Edit</a>';
-			};
+                    returnedhtml+='<div title="System labels are not editable" class="buttons_on_datatable_row"><img class="button_image_on_datatable_row disabledDiv" src="images/add_label.svg"></div>'; // not removable
+				else
+				    returnedhtml+= '<div title="Edit label info" class="buttons_on_datatable_row" onclick="window.location=\'edit-label?labelID='+full[0]+'&archiveID=<%=archiveID%>\'"><img class="button_image_on_datatable_row" src="images/add_label.svg"></div>';
+                if (full[4])  // system label
+                    returnedhtml+= '<div title="System label can not be removed" class="buttons_on_datatable_row" ><img class="button_image_on_datatable_row disabledDiv" src="images/delete.svg"></div>'; // not removable
+                else
+                    returnedhtml+= '<div title="Remove label" class="buttons_on_datatable_row remove-label" data-labelID="'+full[0]+'"><img class="button_image_on_datatable_row" src="images/delete.svg"></div>';
+				return returnedhtml;
+            };
 
         var remove_label_link = function ( data, type, full, meta){
                 if (full[4])  // system label
-                    return '<span title="System labels can not be removed">Not removable</span>'; // not removable
-            	return '<span class="remove-label" data-labelID="' + full[0] + '">Remove</span>';
+                    return '<div title="System label can not be removed" class="buttons_on_datatable_row" ><img class="button_image_on_datatable_row disabledDiv" src="images/delete.svg"></div>'; // not removable
+	            return '<div title="Remove label" class="buttons_on_datatable_row remove-label" data-labelID="'+full[0]+'"><img class="button_image_on_datatable_row" src="images/delete.svg"></div>';
+            //          return '<span title="System labels can not be removed">Not removable</span>'; // not removable
+            //	return '<span class="remove-label" data-labelID="' + full[0] + '">Remove</span>';
 //			return '<a href="" data-attr = full[0] onclick="return removereq(full[0])">Remove</div>';
             }
 		$('#import-label').click(function(){
@@ -123,25 +171,25 @@
 
         //function to actually remove the label (send ajax request etc.)
         var removeLabelFn= function(e) {
-            labelID = $(e.target).attr ('data-labelID');
+            labelID = $(e.target).closest('.buttons_on_datatable_row').attr ('data-labelID');
 
-            var c = confirm ('Delete the label? This action cannot be undone!');
-            if (!c)
-                return;
-
-            $.ajax({
-                url:'ajax/removeLabels.jsp',
-                type: 'POST',
-                data: {archiveID: archiveID, labelID: labelID},
-                dataType: 'json',
-                success: function(response) { if(response.status===0)
-                    window.location.reload();
-                else{
-                    epadd.alert(response.error);
-                }
-                },
-                error: function(response) { epadd.alert('There was an error in saving labels, sorry!');
-                }
+            epadd.warn_confirm_continue('Delete the label? This action cannot be undone.', function() {
+                $.ajax({
+                    url:'ajax/removeLabels.jsp',
+                    type: 'POST',
+                    data: {archiveID: archiveID, labelID: labelID},
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.status===0)
+                        	window.location.reload();
+	                    else {
+    	                    epadd.error('Sorry, there was an error in deleting the label.' + response.error);
+        	            }
+                    },
+                    error: function(response) {
+                        epadd.error('Sorry, there was an error in deleting the label.');
+                    }
+                });
             });
         }
 
@@ -153,13 +201,13 @@
 			pagingType: 'simple',
 			order:[[1, 'desc']], // (message count), descending
 			columnDefs: [
-                { className: "dt-right", "targets": dt_right_targets },
+                { className: "dt-center", "targets": dt_right_targets },
                 {targets: 0, width: "400px", render:clickable_message},
                 {targets: 1, render:label_type},
                 {targets: 2, render:label_count},
                 <% if (!ModeConfig.isDiscoveryMode()) { %>
-                    {targets: 3, render:edit_label_link},
-	                {targets: 4, render:remove_label_link},
+                    {targets: 3, render:edit_remove_label_link}
+	               // {targets: 4, render:remove_label_link},
                 <% } %>
 
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
@@ -168,12 +216,6 @@
 		});
 	} );
 
-</script>
-
-<div style="clear:both"></div>
-</div>
-<%--modal for specifying the label description file namd and upload button.--%>
-<script>
     var uploadLabelHandler=function(){
         //collect archiveID and labeljson field. If labeljson is empty alert and return false;
         var filename = $('#labeljson').val();
@@ -187,7 +229,7 @@
         // Create an FormData object
         var data = new FormData(form);
         //hide the modal.
-		$('#label-upload-modal').modal('hide');
+        $('#label-upload-modal').modal('hide');
         //now send to the backend.. on it's success reload the labels page. On failure display the error message.
 
         $.ajax({
@@ -198,14 +240,23 @@
             contentType: false,
             cache: false,
             data: data,
-            success: function(data) { if(data.status==0){epadd.success('Labels uploaded', function() { window.location.reload(); });}else{epadd.alert(data.error);}},
-            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.log (message); epadd.alert(message); }
+            success: function(data) {
+                if (data.status==0){
+                    epadd.success('Labels uploaded', function() { window.location.reload(); });
+                } else {
+					epadd.error('Error uploading labels' + data.error);
+				}
+            },
+            error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.error(message); }
         });
 
     }
 </script>
+
+
+<%--modal for specifying the label description and upload button.--%>
 <div>
-	<div id="label-upload-modal" class="modal fade" style="z-index:9999">
+	<div id="label-upload-modal" class="info-modal modal fade" style="z-index:99999">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -214,9 +265,9 @@
 				</div>
 				<div class="modal-body">
 					<p>
-					NOTE: To import new labels, ensure that you have unapplied all current labels from messages. ePADD cannot import new labels if any current labels are applied.
+					To import new labels, ensure that you currently have no labels applied to messages. If you do, ePADD cannot import new labels.
 					<p>
-					Upload the JSON file containing the label descriptions.
+					Upload a JSON file containing label descriptions.
 					<br/>
 					<form id="uploadjsonform" method="POST" enctype="multipart/form-data" >
 						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
@@ -236,8 +287,6 @@
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 </div>
-
-
 
 <p>
 <br/>

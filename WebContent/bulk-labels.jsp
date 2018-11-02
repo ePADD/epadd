@@ -1,5 +1,4 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="edu.stanford.muse.index.DataSet" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
@@ -34,11 +33,9 @@
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
+<%@include file="header.jspf"%>
 
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
     String docsetID = request.getParameter("docsetID");
     if (docsetID == null)
@@ -50,13 +47,13 @@
     String title = Util.pluralize (docs.size(), "message");
     if (!Util.nullOrEmpty(docsetID))
         title += " (" + docsetID + ")";
-    writeProfileBlock(out, archive, "Labels for ", title);
+    writeProfileBlock(out, archive, "Labels for "+ title);
 %>
 
 <br/>
 <br/>
 
-<div style="margin:auto; width:900px">
+<div style="margin:auto; width:1100px">
 <table id="labels" style="display:none">
 	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
         <% if (!ModeConfig.isDiscoveryMode()) { %>
@@ -124,42 +121,35 @@
 	    //if this label is of type time restrction with relative time then inform the user that this label will not be set for messages with unidentified dates
 		//if this label is of type 'cleared for release' then inform the user that this label will only be set of messages with general restriction labels or with restriction labels where time has expired.
 		var msg="";
-		/*if(action=="set") {
-            if (labelID === "<%=archive.getLabelManager().LABELID_CFR%>")
-                msg = "This label will be set for only those messages where time restriction has expired or which contain only general restriction labels. All the messages with \"Cleared for release\" label will " +
-                    "be exported to the next module. Be careful!";
+		epadd.warn_confirm_continue (msg+' Do you want to ' + action + ' this label for these messages?', function() {
 
-            if (relativeTimedRestrictions.indexOf(labelID) > -1)//means labelID is a relative timed restriction label.
-                msg = "This label will be set for only those messages where a valid date is present. Note that ePADD puts a dummy date 1 Jan 1960 for the messages with corrupt date field.";
-        }
-*/		var c = confirm (msg+' Do you want to ' + action + ' this label for these messages?');
-        if (!c)
-            return;
-
-        //$('#alert-modal').on('hidden.bs.modal', window.location.reload());
-        $.ajax({
-            url:'ajax/applyLabelsAnnotations.jsp',
-            type: 'POST',
-            data: {archiveID: archiveID, labelIDs: labelID, docsetID: '<%=docsetID%>', action:action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
-            dataType: 'json',
-            success: function(response) { if(response.status===1) {
-				alert(response.errorMessage);
-				window.location.reload();
-            }else
-                window.location.reload();
-            },
-            error: function() { epadd.alert('There was an error in saving labels, sorry!');
-            }
+            //$('#alert-modal').on('hidden.bs.modal', window.location.reload());
+            $.ajax({
+                url: 'ajax/applyLabelsAnnotations.jsp',
+                type: 'POST',
+                data: {archiveID: archiveID, labelIDs: labelID, docsetID: '<%=docsetID%>', action: action}, // labels will go as CSVs: "0,1,2" or "id1,id2,id3"
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 1) {
+                        alert(response.errorMessage);
+                        window.location.reload();
+                    } else
+                        window.location.reload();
+                },
+                error: function () {
+                    epadd.error('Sorry, there was an error in saving labels.');
+                }
+            });
         });
     }
 
 	$(document).ready(function() {
 		$('.set-all').click (function(e) {
-		    labelID = $(e.target).attr ('data-labelID');
+		    var labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'set');
         });
         $('.unset-all').click (function(e) {
-            labelID = $(e.target).attr ('data-labelID');
+            var labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'unset');
         });
 	});

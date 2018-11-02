@@ -8,7 +8,7 @@
 <%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.exceptions.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="com.google.common.collect.Multimap"%>
 <%
 	// core JSP that does fetch, grouping and indexing
 	// sets up archive in the session at the end
@@ -70,10 +70,20 @@
         JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
 		archive.postProcess();
 
+//assign threadids'
+            archive.assignThreadIds();
 
 		emailDocs = (List) archive.getAllDocs();
 		AddressBook addressBook = archive.getAddressBook();
 		//Set<String> ownNames = IndexUtils.readCanonicalOwnNames(addressBook); // TODO: to be executed somewhere? used to be passed to doIndexing which in turn passed it to recomputeCards.
+
+        //add labels to messages which encountered errors during addressbook building.
+        Multimap<String,String> dataErrorsMap = addressBook.getDataErrorsMap();
+        for(Map.Entry<String,String> entry: dataErrorsMap.entries()){
+            Set<String> labels = new LinkedHashSet<>();
+            labels.add(entry.getValue());
+            archive.getLabelManager().setLabels(entry.getKey(),labels);
+        }
 
 		if (emailDocs == null) {
 			// if we run out of memory parsing mbox files etc, emailDocs == null is usually the manifestation
@@ -81,6 +91,11 @@
 		} else {
 				resultPage = "browse-top?archiveID="+archiveID;
 				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+				//After archive is saved recreate the cache.. For addressbook the cache gets created inside saveAddressBook.
+				//Do it for Lexicon cache.
+				Archive.cacheManager.cacheLexiconListing(archiveID);
+				//and for entityDoc map as well.
+                Archive.cacheManager.cacheEntitiesListing(archiveID);
 			}
 			try {
 				String aStats = archive.getStats();

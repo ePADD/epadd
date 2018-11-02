@@ -4,7 +4,6 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
-<%@ page import="java.util.stream.Collectors" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -24,12 +23,10 @@
     <script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
-<% 	AddressBook addressBook = archive.addressBook;
-String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+<%
+	writeProfileBlock(out, archive,  "Export archive");
 %>
 <div style="margin-left:170px">
 <div id="spinner-div" style="display:none;text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
@@ -46,6 +43,8 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
     String docsetID=request.getParameter("docsetID");
     String fname = Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+    String attachmentdirname = f.getAbsolutePath() + File.separator + (Util.nullOrEmpty(docsetID)? "epadd-all-attachments" : "epadd-all-attachments-"+docsetID);
+    new File(attachmentdirname).mkdir();
 
     String pathToFile = f.getAbsolutePath() + File.separator + fname;
     PrintWriter pw = null;
@@ -65,32 +64,15 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         DataSet docset = (DataSet) session.getAttribute(docsetID);
         selectedDocs = docset.getDocs();
     }else {
-        selectedDocs = archive.getAllDocs().stream().collect(Collectors.toSet());
+        selectedDocs = new LinkedHashSet<>(archive.getAllDocs());
     }
     JSPHelper.log.info ("export mbox has " + selectedDocs.size() + " docs");
 
 
 // either we do tags (+ or -) from selectedTags
     // or we do all docs from allDocs
-    String cacheDir = archive.baseDir;
-    String attachmentsStoreDir = cacheDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  "blobs" + File.separator;
     BlobStore bs = null;
-    bs = new BlobStore(attachmentsStoreDir);
-    JSPHelper.log.info ("Good, found attachments store in dir " + attachmentsStoreDir);
-
-    /*
-    String rootDir = JSPHelper.getRootDir(request);
-    new File(rootDir).mkdirs();
-    String userKey = JSPHelper.getUserKey(session);
-
-    String name = request.getParameter("name");
-    if (Util.nullOrEmpty(name))
-        name = String.format("%08x", EmailUtils.rng.nextInt());
-    String filename = name + ".mbox.txt";
-
-    String path = rootDir + File.separator + filename;
-    PrintWriter pw = new PrintWriter (path);
-    */
+    bs = archive.getBlobStore();
 
     String noAttach = request.getParameter("noattach");
     boolean noAttachments = "on".equals(noAttach);
@@ -101,6 +83,18 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;
     String linkURL = appURL + "/" +  contentURL;
+
+    /* Code to export attachments for the given set of documents as zip file*/
+    Map<Blob, String> blobToErrorMessage = new LinkedHashMap<>();
+    //Copy all attachment to a temporary directory and then zip it and allow transfer to the client
+    int nBlobsExported = Archive.getnBlobsExported(selectedDocs, archive.getBlobStore(),null, attachmentdirname, false, null, false, blobToErrorMessage);
+    //now zip the attachmentdir and create a zip file in TMP
+    String zipfile = Archive.TEMP_SUBDIR+ File.separator + "all-attachments.zip";
+    Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"zip",JSPHelper.log);
+    Util.zipDirectory(attachmentdirname, zipfile);
+    //return it's URL to download
+    String attachmentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=all-attachments.zip" ;
+    String attachmentDownloadURL = appURL + "/" +  attachmentURL;
 
 %>
 
@@ -116,6 +110,11 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
         This mbox file may also have extra headers like X-ePADD-Folder, X-ePADD-Labels and X-ePADD-Annotation.
     </p>
     <br/>
+    <a href =<%=attachmentDownloadURL%>>Download attachments in a zip file</a>
+    <p></p>
+    This file is in zip format, and contains all attachments in the selected messages.<br/>
+    <br/>
+
 </div>
 <jsp:include page="footer.jsp"/>
 </body>

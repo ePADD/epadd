@@ -2,18 +2,14 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@page language="java" import="edu.stanford.muse.index.Document"%>
-<%@ page import="edu.stanford.muse.index.EmailDocument" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
 <%@ page import="edu.stanford.muse.datacache.Blob" %>ex
 <%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.util.Pair" %>
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="java.util.stream.Stream" %>
-<%@ page import="java.util.stream.Collector" %>
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
@@ -32,13 +28,12 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
 <%
-    String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
     AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive,"Export archive");
 	//get the options that were displayed for attachment types. This will be used to select attachment extensions if the option 'other'
     //was selected by the user in the drop down box of export.jsp.
     List<String> attachmentTypeOptions = Config.attachmentTypeToExtensions.values().stream().map(x->Util.tokenize(x,";")).flatMap(col->col.stream()).collect(Collectors.toList());
@@ -90,72 +85,9 @@
 
     <%
     Map<Blob, String> blobToErrorMessage = new LinkedHashMap<>();
-    int nBlobsExported = 0;
-
-    for (Document d: archive.getAllDocs()) {
-        EmailDocument ed = (EmailDocument) d;
-        List<Blob> blobs = ed.attachments;
-        if (Util.nullOrEmpty(blobs))
-            continue;
-
-        nextBlob:
-        for (Blob blob: blobs) {
-
-            //check if this blob need to be exported or not depending upon the option
-            //unprocessedonly and the state of this blob.
-            if(unprocessedonly && blob.processedSuccessfully){
-                continue nextBlob;
-            }
-            try {
-                String blobName = archive.getBlobStore().get_URL_Normalized(blob);;
-                // get rid of any file separators first... don't want them to cause any confusion
-                if (blobName == null)
-                    blobName = "";
-
-
-                blobName = blobName.replaceAll("/", "_");
-                blobName = blobName.replaceAll("\\\\", "_");
-                String base, ext;
-                Pair<String, String> pair = Util.splitIntoFileBaseAndExtension(blobName);
-                base = pair.getFirst();
-                ext = pair.getSecond();
-                Util.ASSERT(Util.nullOrEmpty(ext) ? blobName.equals(base) : blobName.equals(base + "." + ext));
-
-                if (!Util.nullOrEmpty(extensionsNeeded)) {
-                    if (Util.nullOrEmpty(ext))
-                        continue nextBlob;
-                    //Proceed to add this attachment only if either
-                    //1. other is selected and this extension is not present in the list attachmentOptionType, or
-                    //2. this extension is present in the variable extensionNeeded
-                    //Q. [What if there is a file with .others extension?]
-                    boolean firstcondition = isOtherSelected && !attachmentTypeOptions.contains(ext.toLowerCase());
-                    boolean secondcondition = extensionsNeeded.contains(ext.toLowerCase());
-                    if (!firstcondition && !secondcondition)
-                        continue nextBlob;
-                }
-
-                String targetPath = dir + File.separator + blobName;
-
-                if (new File(targetPath).exists()) {
-                    // try adding (1), (2) etc to the base part of the blob name... keep the extension unchanged
-                    int i = 1;
-                    do {
-                        String targetFile = base + " (" + (i++) + ")" + (Util.nullOrEmpty(ext) ? "" : "." + ext);
-                        targetPath = dir + File.separator + targetFile;
-                    } while (new File(targetPath).exists());
-                }
-                archive.blobStore.createBlobCopy(blob, targetPath);
-                nBlobsExported++;
-
-            } catch (Exception e) {
-                Util.print_exception ("Error exporting blob", e, JSPHelper.log);
-                blobToErrorMessage.put (blob, "Error exporting blob: " + e.getMessage());
-            }
-            // blob has the right extensions
-
-        }
-    }
-%>
+    Collection<Document> docs = archive.getAllDocs();
+        int nBlobsExported = Archive.getnBlobsExported(docs, archive.getBlobStore(),attachmentTypeOptions, dir, unprocessedonly, extensionsNeeded, isOtherSelected, blobToErrorMessage);
+    %>
     <script>$('#spinner-div').hide();</script>
 
     <p>
@@ -181,3 +113,9 @@
 <br/>
 </body>
 </html>
+<%!
+    /*
+    To get all attachments for a given set of documents call with attachmentTypeOptions = null, unprocessedonly = false, extensionsNeeded=null,isOtherSelected=false.
+     */
+
+%>

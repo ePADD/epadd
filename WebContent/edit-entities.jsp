@@ -1,16 +1,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="java.util.*"%>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@page import="java.util.*"%>
 
-<%@ page import="edu.stanford.muse.ner.model.NEType" %>
-<%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@page import="edu.stanford.muse.ner.model.NEType" %>
+<%@page import="java.util.stream.Collectors" %>
+<%@page import="edu.stanford.muse.ie.variants.EntityBook" %>
+<%@page import="edu.stanford.muse.util.Pair" %>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
-	Collection<EmailDocument> allDocs =  (Collection) archive.getAllDocs();
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	String sort = request.getParameter("sort");
 	boolean alphaSort = ("alphabetical".equals(sort));
 %>
@@ -31,9 +29,16 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
-<%writeProfileBlock(out, archive, "Edit entities", "");%>
+<%	Map<Short, String> typeCodeToName = new LinkedHashMap<>();
+	for(NEType.Type t: NEType.Type.values())
+		typeCodeToName.put(t.getCode(), t.getDisplayName());
+
+	Short type = Short.parseShort(request.getParameter("type"));
+	//out.println("<h1>Type: "+ typeCodeToName.get(type)+"</h1>");
+
+	writeProfileBlock(out, archive, "Edit entities    -    "+typeCodeToName.get(type));%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
@@ -41,23 +46,23 @@
 </div>
 
 <nav class="menu1" role="navigation">
-	<h2>Edit Entities</h2>
+	<h2><b>Edit Entities</b></h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
 	</a>
-
 	<p>Merge entities by grouping them together using find, cut, and paste commands.
+
 	<p>Unmerge entities by separating them using find, cut, and paste commands.
-	<p>The first entity name listed within each group of entity names is the one ePADD will display in all search and browsing results and visualizations. Manually change this display name by moving a new name to the top of this list. Alternatively, you can supply a new entity display name to the top of the list. This supplied entity name does not need to appear in the email archive.
+
+	<p>The top listed entity name in a set will be the name displayed in all ePADD interfaces, including search and browsing results and visualizations. You can use an entity name already listed, or supply a new entity name that does not appear in the email archive.
+
 	<p>Assign entities to a different category by cutting and pasting them into a different entity category’s <b>Edit Entities</b> panel.
-
-
 </nav>
 <!--/sidebar-->
 
-<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px;margin-top:20px;">
-	<select id="sort-order">
+<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:40%; width: 20%; margin-bottom: 20px;">
+	<select title="Sort order" id="sort-order" class="form-control selectpicker">
 		<option <%=!alphaSort?"selected":""%> value="volume">Sort by frequency</option>
 		<option <%=alphaSort?"selected":""%> value="alpha">Sort alphabetically</option>
 	</select>
@@ -66,7 +71,7 @@
 <script>
 
 	$(document).ready(function() {
-		$('#sort-order').change(function (e) {
+		$('#sort-order').change(function () {
 			var url = 'edit-entities?archiveID=<%=archiveID%>&type=<%=request.getParameter ("type")%>';
 			if ('alpha' == this.value)
 				window.location = url += '&sort=alphabetical';
@@ -77,12 +82,7 @@
 </script>
 
 <%
-	Map<Short, String> typeCodeToName = new LinkedHashMap<>();
-	for(NEType.Type t: NEType.Type.values())
-		typeCodeToName.put(t.getCode(), t.getDisplayName());
 
-	Short type = Short.parseShort(request.getParameter("type"));
-	out.println("<h1>Type: "+ typeCodeToName.get(type)+"</h1>");
 
 	EntityBook entityBook = archive.getEntityBook();
 	Map<String, Integer> displayNameToFreq = entityBook.getDisplayNameToFreq(archive, type);
@@ -93,7 +93,7 @@
 		entityDisplayNames = new ArrayList<> (displayNameToFreq.keySet());
 		Collections.sort (entityDisplayNames);
 	} else {
-		entityDisplayNames = Util.sortMapByValue(displayNameToFreq).stream().map(p -> p.getFirst()).collect (Collectors.toList());
+		entityDisplayNames = Util.sortMapByValue(displayNameToFreq).stream().map(Pair::getFirst).collect (Collectors.toList());
 	}
 
 	// start building the string that goes into the text box

@@ -47,11 +47,10 @@
     </style>
 </head>  
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
     Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
     SearchResult inputSet = new SearchResult(archive,params);
@@ -103,19 +102,17 @@
     }
 %>
 
-<%writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Image attachments") +
+<%writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "Image attachment") +
 " (" + uniqueAttachments.size() + " unique)");%>
 <%--<%writeProfileBlock(out, archive, "", Util.pluralize(nEntriesForPiclens, "unique attachment"));%>--%>
-<br/>
-<br/>
 
-<div id="all_fields" style="margin:auto; width:900px; padding: 10px">
+<div id="all_fields" style="margin:auto; width:1100px;">
 
     <!-- filter form submits back to the same page -->
     <form action="image-attachments" method="get">
         <section>
             <div class="panel">
-                <div class="panel-heading">Filter images</div>
+                <%--<div class="panel-heading">Filter images</div>--%>
 
                 <% Map<String,String> attatchmentOptions = Config.attachmentTypeToExtensions;
                 String imagetypes = attatchmentOptions.get("Graphics");
@@ -127,10 +124,10 @@
                 <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 
                 <div class="one-line">
-                    <div class="form-group col-sm-6">
-                        <label for="attachmentExtension">Extension</label>
-                        <select name="attachmentExtension" id="attachmentExtension" class="form-control multi-select selectpicker" title="Select" multiple>
-                            <option value="" selected disabled>Select</option>
+                    <div class="form-group col-sm-5">
+                        <%--<label for="attachmentExtension">Extension</label>--%>
+                        <select name="attachmentExtension" id="attachmentExtension" class="form-control multi-select selectpicker empty" title="Select" multiple>
+                            <option value="" selected disabled>Extension</option>
                             <% for(String opt: options){%>
                             <option value="<%=opt%>"><%=opt.toUpperCase()%></option>
                             <% } %>
@@ -138,10 +135,10 @@
                     </div>
 
                     <!--File Size-->
-                    <div class="form-group col-sm-6">
-                        <label for="attachmentFilesize">File Size</label>
-                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
-                            <option value="" selected disabled>Select</option>
+                    <div class="form-group col-sm-2">
+                        <%--<label for="attachmentFilesize">File Size</label>--%>
+                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker empty">
+                            <option value="" selected disabled>File Size</option>
                             <option value="1">&lt; 5KB</option>
                             <option value="2">5-20KB</option>
                             <option value="3">20-100KB</option>
@@ -150,21 +147,18 @@
                             <option value="6">Any</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="one-line">
                     <!--Time Range-->
-                    <div class="form-group col-sm-6">
-                        <label for="time-range">Time Range</label>
+                    <div class="form-group col-sm-4">
+                        <%--<label for="time-range">Time Range</label>--%>
                         <div id="time-range" class="date-input-group">
-                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
-                            <label for="endDate">To</label>
-                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
+                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="From" readonly="true" style="cursor: pointer;background:white;">
+                            <%--<label for="endDate"> </label>--%>
+                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="To" readonly="true" style="cursor: pointer;background:white;">
                         </div>
                     </div>
 
-                    <div class="form-group col-sm-6">
-                        <button type="submit" class="btn-default filter-button">Filter</button>
+                    <div class="form-group col-sm-1">
+                        <button type="submit" class="btn-default">Filter</button>
                     </div>
                 </div>
             </div>
@@ -213,12 +207,12 @@
 
 <div style="text-align: center">
 <% if (nEntriesForPiclens > 0) { %>
-	<object id="o" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="1200" height="720">
+	<object id="o" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="1100" height="720">
 		<param name="movie" value="cooliris/cooliris.swf" />
 		<param name="flashvars" value="feed=<%= piclensRSSFilename %>" />
 		<param name="allowFullScreen" value="true" />
 		<param name="allowScriptAccess" value="n" />
-	<embed type="application/x-shockwave-flash" src="cooliris/cooliris.swf" width="1200" height="720" flashvars="feed=<%= piclensRSSFilename %>" allowFullScreen="true" allowfullscreen="true" allowScriptAccess="never" allowscriptaccess="never"></embed>
+	<embed type="application/x-shockwave-flash" src="cooliris/cooliris.swf" width="1100" height="720" flashvars="feed=<%= piclensRSSFilename %>" allowFullScreen="true" allowfullscreen="true" allowScriptAccess="never" allowscriptaccess="never"></embed>
 	</object>
 	<br/>
 </div>
@@ -231,11 +225,17 @@
         //setting min date as 1 jan 1960. The format is year,month,date. Month is 0 based and all other are 1 based
         $('#startDate').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1930:2030"
         });
         $('#endDate').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1930:2030"
         });
 
     });

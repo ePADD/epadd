@@ -1,6 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
@@ -23,11 +22,10 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Export');</script>
-<% 	AddressBook addressBook = archive.addressBook;
-	String bestName = addressBook.getBestNameForSelf().trim();
-	writeProfileBlock(out, archive, "", "Export archive");
+<%
+	writeProfileBlock(out, archive, "Export archive");
 %>
 <div style="margin-left:170px">
 <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
@@ -42,7 +40,7 @@
     else
         pathToFile = f.getAbsolutePath();
 
-    PrintWriter pw = null;
+    PrintWriter pw;
     try {
         pw = new PrintWriter(pathToFile, "UTF-8");
     } catch (Exception e) {
@@ -51,7 +49,7 @@
         return;
     }
 
-	String exportType = request.getParameter("exportType"); // currently not used
+	// String exportType = request.getParameter("exportType"); // currently not used
 
     try {
 		String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV();

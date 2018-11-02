@@ -21,9 +21,6 @@
  <%
      String collectionID = request.getParameter("collection");
      Archive archive= JSPHelper.getArchive(request);
-     String archiveID=null;
-     if(archive!=null)
-         archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
      //INV: here collectionID=null && archiveID="" can not be true. Exactly one should be true.
      //This page can be invoked in two different context. One: from the colleciton-detail page with collection
@@ -32,13 +29,9 @@
      //as the name of the base directory.
 
  %>
-    <jsp:include page="header.jspf"/>
+ <%@include file="header.jspf"%>
 
     <script>epadd.nav_mark_active('Collections');</script>
-
-    <!-- need status window on this page because upload might take some time, also to alert to errors -->
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
-    <%@include file="div_status.jspf"%>
 
     <div style="margin-left:170px">
         You can upload images that represent the collection here. Only PNG format files are supported.
@@ -55,18 +48,23 @@
                 if(!Util.nullOrEmpty(collectionID))
                     file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
                 else if(!Util.nullOrEmpty(archiveID))
-                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "profilePhoto.png";
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "profilePhoto";
             %>
 
                 <div class="profile-small-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
+                <%--<div class="profile-small-img" style=" background-size: contain;--%>
+                        <%--background-repeat: no-repeat;--%>
+                        <%--width: 50%;--%>
+                        <%--height: 50%;--%>
+                        <%--padding-top: 20%;  background-image:url('serveImage.jsp?file=<%=file%>')">--%>
             <input type="file" name="profilePhoto" id="profilePhoto" /> <br/><br/>
 
             Landing Page Photo: (Aspect ratio 4:3)<br/>
             <%
                 if(!Util.nullOrEmpty(collectionID))
-                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "landingPhoto";
                 else if(!Util.nullOrEmpty(archiveID))
-                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+  Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png";
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+  Archive.IMAGES_SUBDIR + File.separator + "landingPhoto";
             %>
             <div class="landing-img" style="background-image:url('serveImage.jsp?file=<%=file%>')"></div>
             <br/>
@@ -76,13 +74,18 @@
 
             <%
                 if(!Util.nullOrEmpty(collectionID))
-                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+  Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+                    file = collectionID + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+  Archive.IMAGES_SUBDIR + File.separator + "bannerImage";
                 else if(!Util.nullOrEmpty(archiveID))
-                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png";
+                    file = new File(archive.baseDir).getName() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator+ Archive.IMAGES_SUBDIR + File.separator + "bannerImage";
             %>
             Banner Image: (Aspect ratio 2.5:1)<br/>
-            <div class="banner-img" style="background-image:url('serveImage.jsp?&file=<%=file%>')">
-            </div>
+                <div class="banner-img" style=" background-size: contain;
+                        background-repeat: no-repeat;
+                        width: 50%;
+                        height: 50%;
+                        padding-top: 20%;  background-image:url('serveImage.jsp?file=<%=file%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
+<%--Height added in style otherwise the image was not being visible--%>
+                </div>
             <br/>
             <br/>
             <input type="file" name="bannerImage" id="bannerImage" />

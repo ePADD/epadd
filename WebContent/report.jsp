@@ -40,10 +40,14 @@
 	<script type="text/javascript" src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
+<%writeProfileBlock(out, archive, "Reports");%>
 
-<div style="min-height:300px;margin: 10px 50px 10px 50px" class="panel rounded">
 
+<div style="width: 1100px; margin:auto;min-height:300px;" class="panel rounded">
+
+    Jump to <a href="#errors">Errors</a>
+    <br/>
 <%
     // warning: somewhat fragile. depends on the error string! Not desirable, but...
     // also note: we'd prefer to keep backward compatibility with existing archives
@@ -89,7 +93,7 @@
     // gather the errors by type
     List<String>[] errorsByType = new ArrayList[errorTypes.length];
     for (int t = 0; t < errorsByType.length; t++)
-        errorsByType[t] = new ArrayList<String>();
+        errorsByType[t] = new ArrayList<>();
 
     for (String s: allErrors) {
         for (int t = 0; t < errorTypes.length; t++) {
@@ -101,6 +105,7 @@
         }
     }
     %>
+    <a name="errors"></a>
     <p>Summary of error types:
     <p>
     <%

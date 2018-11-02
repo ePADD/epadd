@@ -4,24 +4,29 @@
     JSPHelper.checkContainer(request); // do this early on so we are set up
     request.setCharacterEncoding("UTF-8");
 %>
-<%@page language="java" import="edu.stanford.muse.index.*"%>
-<%@page language="java" import="edu.stanford.muse.util.DetailedFacetItem"%>
-<%@page language="java" import="edu.stanford.muse.util.EmailUtils"%>
-<%@page language="java" import="edu.stanford.muse.util.Pair"%>
-<%@page language="java" import="edu.stanford.muse.webapp.EmailRenderer"%>
-<%@page language="java" import="edu.stanford.muse.webapp.HTMLUtils"%>
-<%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
+<%@page import="edu.stanford.muse.index.*"%>
+<%@page import="edu.stanford.muse.util.DetailedFacetItem"%>
+<%@page import="edu.stanford.muse.util.EmailUtils"%>
+<%@page import="edu.stanford.muse.util.Pair"%>
+<%@page import="edu.stanford.muse.webapp.EmailRenderer"%>
+<%@page import="edu.stanford.muse.webapp.HTMLUtils"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig"%>
 
 <%@ page import="java.util.*" %>
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="edu.stanford.muse.LabelManager.Label" %>
 <%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@ page import="org.json.JSONArray" %>
 
 <%@include file="getArchive.jspf" %>
 
 <%
-    String term = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
+    String searchTerm = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
+
+    // compute the title of the page
     String title = request.getParameter("title");
+    String sortBy = request.getParameter("sortBy");
+
     //<editor-fold desc="Derive title if the original title is not set" input="request" output="title"
     // name="search-title-derivation">
     {
@@ -46,8 +51,8 @@
                         sentimentSummary += " & ";
                 }
 
-            if (term != null)
-                title = "Search: " + term;
+            if (searchTerm != null)
+                title = "Search: " + searchTerm;
             else if (cluster != -1)
                 title = "Cluster " + cluster;
             else if (!Util.nullOrEmpty(sentimentSummary))
@@ -67,27 +72,9 @@
             title = Util.escapeHTML(title);
         }
     }
-    //</editor-fold>
 
-    //<editor-fold desc="Setup (load archive/prepare session) for public mode- if present" input="request"
-    // output="">
-    /*if (ModeConfig.isPublicMode()) {
-        // this browse page is also used by Public mode where the following set up may be requried.
-        String archiveId = request.getParameter("aId");
-        Sessions.loadSharedArchiveAndPrepareSession(session, archiveId);
-    }*/
-    //</editor-fold>
 
-    String docsetID;
-    //<editor-fold desc="generate a random id for this dataset (the terms docset and dataset are used interchangeably)"
-    // input="" output="String:datasetID">
-    {
-        docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
-    }
-    //</editor-fold>
-
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-
+    String docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 %>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -101,8 +88,8 @@
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.qtip.min.css">
     <jsp:include page="css/css.jsp"/>
-    <link href="css/main.css" rel="stylesheet" type="text/css"/>
-
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/main.css">
 
     <script src="js/stacktrace.js" type="text/javascript"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
@@ -110,53 +97,209 @@
     <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/selectpicker.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/sidebar.js"></script>
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
-    <script>var archiveID = '<%=archiveID%>';</script> <!-- make the archiveID available to browse.js -->
-    <script>var docsetID = '<%=docsetID%>';</script> <!-- make the dataset name available to browse.js -->
     <script src="js/browse.js" type="text/javascript"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
 
     <style>
         div.facets hr { width: 90%; }
-        .archive-heading div { font-style: italic; display:inline-block; overflow: hidden; margin: 2px 10px;}
-        .archive-heading .institution-name, .archive-heading .collection-name, .archive-heading .repository-name { width: 25%; text-align:center; }
-        .archive-heading .collection-id { width: 10%;}
-        .archive-heading { border: solid 1px #ccc; }
+        .navbar { margin-bottom: 0; } /* overriding bootstrap */
+        .dropdown-header { font-weight: 600;color: black; font-size: 15px;}
+         a.opt { color: black;  padding-left: 1.25em; }
+        ul.dropdown-menu.inner li, .multi-select .dropdown-menu ul li { border-bottom: none; }
+        svg { fill: blue; color: red; stroke: green; }
     </style>
 
-</head>
-<div id="annotation-modal" class="modal fade" style="z-index:9999">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Annotation</h4>
-            </div>
-            <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
 
-            </textarea>
-            <div class="modal-footer">
-                    <label class="radio-inline">
-                        <input type="radio" name="overwrite-append-options" value="overwrite" checked>
-                        <span class="text-radio">Overwrite</span>
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="overwrite-append-options" value="append">
-                        <span class="text-radio">Append</span>
-                    </label>
-                <br><br>
-                <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
-                <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+</head>
 
 <body > <!--  override margin because this page is framed. -->
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
+<script>
+    var archiveID = '<%=archiveID%>';
+    var docsetID = '<%=docsetID%>';
+</script> <!-- make the dataset name available to browse.js -->
+
 <%--<script>epadd.nav_mark_active('Browse');--%>
+
+<div class="nav-toggle1 sidebar-icon">
+<img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+    <h2>Browsing Messages</h2>
+    <!--close button-->
+    <a class="nav-toggle1 show-nav1" href="#">
+        <img src="images/close.png" class="close" alt="close">
+    </a>
+
+    <div class="search-tips" style="display:block">
+
+        <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
+            <br/>
+            <br/>
+
+            Use the search facets on the left of the message pane to further refine your search results.
+            <br/>
+            <br/>
+
+            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
+            <br/>
+            <br/>
+
+            Create annotations to add description to a single message or set of messages. All annotations you add are searchable via Advanced Search. Annotations will export between the Appraisal, Processing, and Delivery modules. Annotations will not export outside of ePADD, including from the Delivery module.
+            <br/>
+            <br/>
+
+            If you do not want annotations to export between modules, you must clear them by first navigating to the set of messages with that annotation using Advanced Search, then selecting the annotation, then overwriting that annotation with a blank annotation, then selecting “Apply to all messages.”
+            <br/>
+            <br/>
+
+            Use general labels (created via the Labels option on the dashboard) to add a brief description to a set of messages, or to mark messages as already reviewed.
+            <br/>
+            <br/>
+
+            General labels will export between the Appraisal, Processing, and Delivery modules. If you do not want general labels to export between these modules, you must clear them by first navigating to the set of messages with that label from the Labels screen, selecting “Label All,” then selecting “Unset for All” for the given label.
+            <br/>
+            <br/>
+
+            Use restriction labels (created via the Labels option on the dashboard) to flag messages for restriction, including for a certain period from the current date, or from the date of creation.
+            <br/>
+            <br/>
+
+            Restricted messages (and associated restriction labels), except for messages assigned the “Do not Transfer” restriction label, will export from the Appraisal module to the Processing module. Restricted messages will not export to the Discovery or Delivery modules, unless they are also assigned the “Cleared for release” label within the Appraisal or Processing modules.
+            <br/>
+            <br/>
+
+            All labels are searchable via Advanced Search.
+            <br/>
+            <br/>
+
+            Default labels applied to all messages can be set from the Dashboard, under the More option.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/download.svg">
+        - Download all messages in a set of results.
+            <br/>
+            <br/>
+
+        <img   style="width:60px; height:32px;" src="images/labels.svg">
+        - Apply labels to all messages in a set of results.
+        <br/>
+        <br/>
+
+        <img  class="helpdrawer-images" src="images/add_annotation.svg">
+        - Annotate this message.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/thread_view.svg">
+        - Show thread view.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/message_id.svg">
+        - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID into your web browser’s address bar. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/attachments.svg">
+        - Show message attachments.
+            <br/>
+            <br/>
+
+        <% } else if (ModeConfig.isDiscoveryMode()) { %>
+
+            Messages in this view are redacted to protect privacy and copyright. To request access to the full text of any messages, please contact the host institution.
+            <br/>
+            <br/>
+
+            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
+            <br/>
+            <br/>
+
+            Use the search facets on the left of the message pane to further refine your search results.
+            <br/>
+            <br/>
+
+            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
+            <br/>
+            <br/>
+
+            The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+        <% } else if (ModeConfig.isDeliveryMode()) { %>
+            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
+            <br/>
+            <br/>
+
+            Use the search facets on the left of the message pane to further refine your search results.
+            <br/>
+            <br/>
+
+            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
+            <br/>
+            <br/>
+
+            Create annotations to add description to a single message or set of messages. All annotations you add are searchable via Advanced Search. If exported messages have been annotated, the annotations will not export.
+            <br/>
+            <br/>
+
+            Use labels (created via the Labels option on the dashboard) to add a brief description to a set of messages, or mark messages as already reviewed.
+            <br/>
+            <br/>
+
+            Labels will not export.
+            <br/>
+            <br/>
+
+            All labels are searchable via Advanced Search.
+            <br/>
+            <br/>
+
+            Set default labels for all messages from the Dashboard, under the More option.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/download.svg">
+        - Download all messages in a set of results.
+            <br/>
+            <br/>
+
+        <img   style="width:60px; height:32px;" src="images/labels.svg">
+        - Apply labels to all messages in a set of results.
+        <br/>
+        <br/>
+
+        <img  class="helpdrawer-images" src="images/add_annotation.svg">
+        - Annotate this message.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/thread_view.svg">
+        - Show thread view.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/message_id.svg">
+        - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
+            <br/>
+            <br/>
+
+        <img  class="helpdrawer-images" src="images/attachments.svg">
+        - Show message attachments.
+            <br/>
+            <br/>
+        <% } %>
+    </div>
+</nav>
 
 <script>
     $('body').on('click','#normalizationInfo',function(e){
@@ -199,8 +342,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         outputSet = search_result.second;
     }
     //</editor-fold>
-
-
+    %>
+<script>
+    TOTAL_PAGES = <%=docs.size()%>;
+</script>
+<%
     Map<String, Collection<DetailedFacetItem>> facets;
     //<editor-fold desc="Create facets(categories) based on the search data" input="docs;archive"
     // output="facets" name="search-create-facets">
@@ -226,9 +372,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         // remove all the either's because they are not needed, and could mask a real facet selection coming in below
         origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
-//        origQueryString = Util.excludeUrlParam(origQueryString, "reviewed=either");
-//        origQueryString = Util.excludeUrlParam(origQueryString, "doNotTransfer=either");
-//        origQueryString = Util.excludeUrlParam(origQueryString, "transferWithRestrictions=either");
         origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
         origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
         origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
@@ -247,17 +390,16 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 <div class="browsepage" style="min-width:1220px">
 
     <!-- 160px block on the left for facets -->
-    <div style="display:inline-block;vertical-align:top;width:150px;padding-left:5px">
+    <div style="display:inline-block;vertical-align:top;width:150px;">
         <div class="facets" style="min-width:10em;text-align:left;margin-bottom:0px;">
             <%
-                if (!Util.nullOrEmpty(term)) {
-                    out.println("<b>Search</b><br/>\n");
-                    String displayTerm = Util.ellipsize(term, 15);
+                if (!Util.nullOrEmpty(searchTerm)) {
+                    out.println("<div class=\"facetTitle\">Search</div>\n");
+                    String displayTerm = Util.ellipsize(searchTerm, 16);
 
-                    out.println("<span title=\"" + Util.escapeHTML(term) + "\" class=\"facet nojog selected-facet rounded\" style=\"padding-left:2px;padding-right:2px\">" + Util.escapeHTML(displayTerm));
+                    out.println("<span title=\"" + Util.escapeHTML(searchTerm) + "\" class=\"facet nojog selected-facet rounded\" style=\"padding-left:2px;padding-right:2px\">" + Util.escapeHTML(displayTerm));
                     out.println (" <span class=\"facet-count\">(" + docs.size() + ")</span>");
                     out.println ("</span><br/>\n");
-                    out.println("<br/>\n");
                 }
                 //<editor-fold desc="Facet-rendering" input="facets" output="html:out">
                 for (String facet: facets.keySet())
@@ -282,7 +424,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         facetTitle = "correspondents";
 
                     facetTitle = Util.capitalizeFirstLetter(facetTitle);
-                    out.println("<b>" + facetTitle + "</b><br/>\n");
+                    out.println("<div class=\"facetTitle\">" + facetTitle + "</div>\n");
                     Collections.sort(items);
 
                     // generate html for each facet. selected and unselected facets separately
@@ -302,7 +444,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             JSPHelper.log.info ("Warning; empty title!"); /* happened once */
                             continue;
                         }
-                        String name = Util.ellipsize(f.name, 15);
+                        String name = Util.ellipsize(f.name, 16);
                         String url = request.getRequestURI();
                         // f.url is the part that is to be added to the current url
                         if (!Util.nullOrEmpty(origQueryString))
@@ -350,9 +492,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     if (count > N_INITIAL_FACETS)
                     {
                         out.println("</div>");
-                        out.println("<div class=\"clickableLink\" style=\"text-align:right;padding-right:10px;font-size:80%; cursor:pointer;\" onclick=\"muse.reveal(this)\">More</div>\n");
+                        out.println("<div class=\"clickableLink\" style=\"text-align:left;cursor:pointer;\" onclick=\"muse.reveal(this)\">More...</div>\n");
                     }
-                    out.println ("<br/>");
                     out.flush();
                 } // String facet
                 //</editor-fold>
@@ -364,13 +505,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     <%
         //parameterizing the class name so that any future modification is easier
         String jog_contents_class = "message";
-        String collectionName = "", repositoryName = "", institutionName = "", collectionID = "";
         if (!ModeConfig.isAppraisalMode()) {
             Archive.CollectionMetadata cm = archive.collectionMetadata;
-            collectionName = Util.escapeHTML(cm.collectionTitle != null ? cm.collectionTitle : "");
-            repositoryName = Util.escapeHTML(cm.repository != null ? cm.repository : "");
-            institutionName = Util.escapeHTML(cm.institution != null ? cm.institution : "");
-            collectionID = Util.escapeHTML(cm.collectionID != null ? cm.collectionID : "");
         }
 
         String json = archive.getLabelManager().getLabelInfoMapAsJSONString();
@@ -379,45 +515,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             allLabels = JSON.parse('<%=json%>');
         </script>
     <div style="display:inline-block;vertical-align:top;">
-        <% if (!ModeConfig.isAppraisalMode()) { %>
-            <div class="archive-heading" style="">
-                <div title="<%=collectionName%>" class="collection-name"><%= collectionName%></div>
-                <div title="<%=collectionID%>" class="collection-id"><%=collectionID%></div>
-                <div title="<%=repositoryName%>" class="repository-name"><%=repositoryName%></div>
-                <div title="<%=institutionName%>" class="institution-name"><%=institutionName%></div>
-            </div>
-        <% } %>
-
-        <div class="browse_message_area rounded shadow;position:relative" style="width:1020px;min-height:400px">
-            <%
-                // bulk controls not available in discovery mode
-               if (!ModeConfig.isDiscoveryMode()) { %>
-                <div class="bulk-controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);padding-top:5px;">
-                    <div style="float:right;position:relative;">
-                        <div>
-                            <div style="display:inline;vertical-align:top;font-size:20px; position:relative; margin-right:5px" >
-                                <span style="margin-right:5px;cursor:pointer;" class="bulk-export">
-                                    <ul class="pagination">
-                                        <li><a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Export these messages as mbox"><i style="display:inline" class="fa fa-download"></i></a></li>
-                                    </ul>
-                                </span>
-                                <span style="margin-right:5px;cursor:pointer;" class="bulk-edit-labels">
-                                    <ul class="pagination">
-                                        <li><a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>" title="Label these messages"><i style="display:inline" class="fa fa-tags"></i></a></li>
-                                    </ul>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="clear:both"></div>
-                </div>
-            <% } %>
-
-            <div class="controls" style="position:relative;width:100%;border-bottom: solid 1px rgba(0,0,0,0.4);">
-                <div style="float:left;position:relative;top:7px">
-                    <div class="form-group label-picker" style="padding-right:23px;display:inline-block">
-
-
+        <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
+            <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
+                <div style="float:left;padding:5px">
+                    <%if(!ModeConfig.isDiscoveryMode()){%>
+                    <div class="form-group label-picker" style="display:inline-block">
                         <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
 
@@ -438,44 +540,110 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
                                 <%}%>
                             </optgroup>
-
                         </select>
                     </div>
-                    <div style="display:inline" class="labels-area">
-                        <!-- will be filled in by render_labels() in JS -->
-                    </div>
+                    <%}%>
+                    <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
 
-                    <!-- let annotation-area be display:none at the start, so it appears together with labels. otherwise there is a bit of FOUC -->
-                    <span class="annotation-area" title="Click to edit annotation" style="position:relative;top:2px;display:none; cursor:pointer;margin-left: 50px; padding: 10px; border: solid 1px #0075bb; border-radius:3px; box-shadow: 2px 2px 2px rgba(0,0,0,0.15);background-color: white; font-style: italic; overflow:hidden; min-width: 10%; width:20%;">
-                        <!-- will be filled in by JS -->
-                    </span>
+                        <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="Sort by">
+                        <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
+                            <option value="" selected disabled>Sort by</option>
+                            <option value="relevance">Most relevant</option>
+                            <option value="recent">Newest first</option>
+                            <option value="chronological">Oldest first</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div style="float:right;position:relative;top:8px">
-                    <div style="display:inline;vertical-align:top;font-size:20px; position:relative;" >
+                <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
+                    <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
+                        <%if(!ModeConfig.isDiscoveryMode()){%>
 
-                        <div style="display:inline; position:relative; top:-8px;" id="pageNumbering"></div>
-                        <ul class="pagination">
-                            <li class="button">
-                                <a id="page_back" style="border-right:0" href="#" class="icon-peginationarrow"></a>
-                                <a id="page_forward" href="#" class="icon-circlearrow"></a>
-                            </li>
-                        </ul>
+                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Label all these messages" src="images/labels.svg"></a>
+                        </div>
+
+                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download messages as mbox" src="images/download.svg"></a>
+                        </div>
+                        <%}%>
+
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
+                        <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">
+                            <div style="display:inline; position:relative; " id="pageNumbering"></div> of
+                            <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
+                        </div>
+                        <div id="page_forward" class="nav-arrow"> <img title="Next message"  src="images/next.svg"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
-
             </div> <!-- controls -->
 
-            <!--  to fix: these image margins and paddings are held together with ducttape cos the orig. images are not a consistent size -->
-            <!-- <span id="jog_status1" class="showMessageFilter rounded" style="float:left;opacity:0.5;margin-left:30px;margin-top:10px;">&nbsp;0/0&nbsp;</span>  -->
-            <div style="font-size:12pt;opacity:0.5;margin-left:30px;margin-right:30px;margin-top:10px;">
-                <!--	Unique Identifier: <span id="jog_docId" title="Unique ID for this message"></span> -->
+            <div class="labels-area">
+                <!-- will be filled in by render_labels() in JS -->
             </div>
-            <div style="clear:both"></div>
-            <div id="jog_contents" style="position:relative" class="<%=jog_contents_class%>">
-                <div style="text-align:center"><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+
+            <br/>
+
+            <div id="position:relative">
+                <div class="message-menu">
+                    <a href="#" class="annotation-link" title="Message annotation"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
+                    <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
+                    <a href="#" class="thread-link" target="_blank" title="Open thread"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <a style="color: inherit" href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
+                </div>
+
+                <script>
+                    // handlers for message-menu icons
+                    $('a.id-link').click(function() { epadd.show_copy_modal ('Link to this message', $(this).attr('data-href')); });
+
+                    $("a.attach-link").click(function() {
+                        // scroll down to attachments area of message if attach-link is clicked
+                        // https://stackoverflow.com/questions/6677035/jquery-scroll-to-element
+                        $([document.documentElement, document.body]).animate({
+                            scrollTop: $(".attachments").offset().top
+                        }, 1000);
+                        return false;
+                    });
+
+                    <%--$('.sortby-selectpicker').val('<%=sortBy%>').change();--%>
+                    // set up sort-by handling
+                    $('.sortby-selectpicker').on('change', function () {
+                        var sortoption = $('.sortby-selectpicker').selectpicker('val') || [];
+                        if(sortoption){
+                            <% String newurl = JSPHelper.getURLWithParametersFromRequestParam(request,"sortBy");%>
+                            window.location='<%=newurl%>sortBy='+sortoption;
+                        }
+                    });
+                </script>
+
+                <div class="annotation" title="Click to edit annotation">
+                    <div class="annotation-header">
+                        <span>Annotation</span>
+                        <img title="Edit annotation" id="edit-annotation-icon" style="margin-left: 78px; cursor:pointer" src="images/edit_annotation.svg"/>
+                        <img title="Close annotation" id="close-annotation-icon" style="margin-left: 25px; cursor: pointer" src="images/close.svg"/></div>
+                    <div class="annotation-area">
+                        <!-- will be filled in by JS -->
+                    </div>
+                </div>
+
+                <script>
+                    $("#edit-annotation-icon").click(function() {
+                            $('#annotation-modal').modal();
+                            $('.annotation-area').css('filter','blur(2px)')
+                        });
+                        $("#close-annotation-icon").click(function() {
+                            $('.annotation').hide();
+                        });
+
+                </script>
+
+
+                <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
+                    <div style="margin-top:150px;text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                </div>
             </div>
+
         </div>
     </div>
     <%
@@ -485,7 +653,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //commonHLInfo object of outputset by calling appropriate API.
         /*NewFilter filter = (NewFilter) JSPHelper.getSessionAttribute(session, "currentFilter");
         if (filter != null && filter.isRegexSearch()) {
-            outputSet.addCommonHLInfoTerm(filter.get("term"));
+            outputSet.addCommonHLInfoTerm(filter.get("searchTerm"));
         }
         */
         //IMP: github issue #171. Actual sorting of the result is being done by SearchResult class in
@@ -494,9 +662,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //and the documents were taken from the SearchResult class. Note that the order of documents
         //in searchResult class is different from the ordering obtained by 'sortBy' parameters. Hence
         //we need to pass that ordered set to getHTML* method below. This fixed the issue.
-        Pair<DataSet, String> pair = null;
+        Pair<DataSet, JSONArray> pair = null;
         try {
-            String sortBy = request.getParameter("sortBy");
 
             // note: we currently do not support clustering for "recent" type, only for the chronological type.
             // might be easy to fix if needed in the future.
@@ -512,8 +679,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         }
 
         DataSet browseSet = pair.getFirst();
-        String html = pair.getSecond();
-
+        JSONArray jsonObjectsForMessages = pair.getSecond(); // this has message labels
+        %>
+        <script>
+            window.messageMetadata = <%=jsonObjectsForMessages.toString()%>;
+        </script>
+        <%
         // entryPct says how far (what percentage) into the selected pages we want to enter
         int entryPage = IndexUtils.getDocIdxWithClosestDate((Collection) docs,
                 HTMLUtils.getIntParam(request, "startMonth", -1), HTMLUtils.getIntParam(request, "startYear", -1));
@@ -532,12 +703,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             else
                 entryPage = 0;
         }
+
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
         String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
         out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+browseSet.size()+";</script>\n");
         session.setAttribute (docsetID, browseSet);
-        //session.setAttribute ("docs-" + docsetID, new ArrayList<>(docs));
-        out.println (html);
+
         JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + docsetID);
 
     %>
@@ -548,68 +719,53 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <!-- a couple of confirm modals that can be invoked when necessary -->
 <div>
-    <div id="info-modal" class="modal fade" style="z-index:9999">
+    <div id="annotation-modal" class="info-modal modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Confirm</h4>
+                    <h4 class="modal-title">Edit Annotation</h4>
                 </div>
-                <div class="modal-body">
-                </div>
+                <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
+
+            </textarea>
                 <div class="modal-footer">
-                    <button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>
-                    <button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>
-                    <button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <label class="radio-inline">
+                        <input type="radio" name="overwrite-append-options" value="overwrite" checked>
+                        <span class="text-radio">Overwrite</span>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="overwrite-append-options" value="append">
+                        <span class="text-radio">Append</span>
+                    </label>
+                    <br><br>
+                    <button id='ok-button-annotations' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
+                    <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div id="info-modal1" class="modal fade" style="z-index:9999">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Confirm</h4>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button id='no-button' type="button" class="btn btn-default" data-dismiss="modal">Leave flags unchanged</button>
-                    <button id='yes-button' type="button" class="btn btn-default" data-dismiss="modal">Continue</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    <%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
+    <div>
+        <div id="normalization-info-modal" class="info-modal modal fade" style="z-index:99999">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>--%>
+                        <%--<h4 class="modal-title">Confirm</h4>--%>
+                    </div>
+                    <div class="modal-body">
+                        <span id="normalization-description"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button id='ok-button' type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
 </div>
-<%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
-<div>
-    <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>--%>
-                    <%--<h4 class="modal-title">Confirm</h4>--%>
-                </div>
-                <div class="modal-body">
-                    <span id="normalization-description"></span>
-                </div>
-                <div class="modal-footer">
-                    <%--<button id='append-button' type="button" class="btn btn-default" data-dismiss="modal">Append</button>--%>
-                    <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
-                    <%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-</div>
-<script>
-
-
-//    });
-
-</script>
 
 <div style="clear:both"></div>
 <jsp:include page="footer.jsp"/>

@@ -21,6 +21,8 @@
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="css/selectpicker.css" rel="stylesheet" type="text/css" media="screen" />
 	<jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/main.css">
 
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
@@ -29,10 +31,11 @@
 
     <script src="js/filepicker.js"></script>
     <script src="js/selectpicker.js"></script>
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/sidebar.js"></script>
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
 
     <style>
 		.mini-box { height: 105px; vertical-align:top; background-color: #f5f5f8; display: inline-block; width:200px; padding:20px; margin-right:22px;}
@@ -61,17 +64,52 @@
     </style>
 </head>
 <body style="background-color:white;">
-<%@include file="div_status.jspf"%>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <jsp:include page="div_filepicker.jspf"/>
 
 <script>epadd.nav_mark_active('Export');</script>
 
-<%@include file="profile-block.jspf"%>
+
+<div class="nav-toggle1 sidebar-icon">
+    <img src="images/sidebar.png" alt="sidebar">
+</div>
+<nav class="menu1" role="navigation">
+    <h2><b>Exporting email</b></h2>
+    <!--close button-->
+    <a class="nav-toggle1 show-nav1" href="#">
+        <img src="images/close.png" class="close" alt="close">
+    </a>
+
+    <div class="search-tips" style="display:block">
+
+        <% if (ModeConfig.isAppraisalMode()) { %>
+
+        <p>Export to next ePADD module: Export the email archive as a bag for import into the next ePADD module.
+
+        <p>Export attachments: Export all attachments that are not recognized by Apache Tika -- these are the attachments that ePADD does not index or search.  Users may wish to export these attachments to perform further review outside ePADD.
+
+        <p>Export messages: Export all messages, just restricted messages, or just unrestricted messages as an .mbox file.
+
+        <% } else if (ModeConfig.isProcessingMode()) { %>
+            <p>Export to next ePADD module: Export the email archive as a bag for import into the next ePADD module.
+
+            <p>Export attachments: Export all attachments, or just certain attachments. You can also choose to refine the export by just exporting those attachments that are not recognized by Apache Tika -- these are the attachments that ePADD does not index or search.  Users may wish to export these attachments to perform further review outside ePADD.
+
+            <p>Export headers: Export all message headers as a .csv file for network analysis or visualization.
+
+            <p>Export messages: Export all messages, just restricted messages, or just unrestricted messages as an .mbox file.
+
+            <p>Export entities: Export all entities or entities of a particular type as a .csv file for further analysis or visualization.
+
+            <p>Export correspondents: Export confirmed or unconfirmed correspondents as a .csv file. A correspondent can be confirmed as an authorized heading via the Authorities interface.
+
+            <p>Export original text of all non-restricted messages: Export the original text of all non-restricted messages as individual .txt files for further analysis, including topic modeling.
+        <% } %>
+    </div>
+</nav>
 
 <%
 Archive archive = JSPHelper.getArchive(request);
-String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 String bestName = "";
 String bestEmail = "";
 if (archive != null) {
@@ -79,7 +117,7 @@ if (archive != null) {
 	Set<String> addrs = ab.getOwnAddrs();
 	if (addrs.size() > 0)
 		bestEmail = addrs.iterator().next();
-	writeProfileBlock(out, archive, "", "Export archive");
+	writeProfileBlock(out, archive, "Export archive");
 }
 
 if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
@@ -107,7 +145,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 
 <p>
 
-<div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
+<div id="all_fields" style="margin:auto; width:1100px; padding: 10px">
 	<%--<b>Review messages</b>
     <br/>
 	<br/>
@@ -317,7 +355,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
         <section>
             <div class="panel" id="export-mbox">
-                <div class="panel-heading">Export messages in mbox</div>
+                <div class="panel-heading">Export messages in mbox format</div>
                 <div class="one-line">
                     <div class="form-group col-sm-8">
                         <select id="export-mbox-options" name="export-mbox-options" class="form-control selectpicker">
@@ -474,14 +512,12 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     data: {archiveID: archiveID, data: option},
                     dataType: 'json',
                     success: function (data) {
-                        epadd.alert('Correspondents\' file will be downloaded in your download folder!', function () {
+                        epadd.info_confirm_continue('A CSV file of correspondents will be downloaded in your browser\'s download folder.', function () {
                             window.location=data.downloadurl;
                         });
                     },
                     error: function (jq, textStatus, errorThrown) {
-                        var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-                        epadd.log(message);
-                        epadd.alert(message);
+                        epadd.error("Error exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
                     }
                 });
             });

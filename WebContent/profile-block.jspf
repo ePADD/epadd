@@ -3,29 +3,147 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%!
-  // this profile block will go onto pretty much every page after the archive is loaded
-  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String... fields)
-  {
-    try
-    {
-      AddressBook ab = archive.addressBook;
-      String bestName = ab.getBestNameForSelf();
-      String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-      String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
-      out1.println("<div style=\"display:inline-block;text-align:left\">"
-              + "<div class=\"profile-info\">"
-              + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto.png\')\"></div>"
-              + "<div class=\"profile-text\">"
-              + Util.escapeHTML(title) + "<br/>");
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%!
+  // this profile block will go onto pretty much every page via the header.jspf
 
-      for (int i = 0; i < fields.length; i+=2)
-      {
-        if (i + 1 >= fields.length)
-          break;
-        out1.println("<span class=\"field-name\">" + fields[i] + "</span>" + "<span class=\"field-value\">" + fields[i + 1] + "</span><br/>");
-      }
-      out1.println("</div></div></div>");
-    } catch (IOException ioe) { Util.print_exception(ioe, JSPHelper.log);}
+  static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, Archive archive, String pageTitle) {
+      writeProfileBlock (out1, false, archive, pageTitle, 1100); // 1100 px is the default width
   }
+
+    static void writeProfileBlock(javax.servlet.jsp.JspWriter out1, boolean offerEditProfilePhotoOption, Archive archive, String pageTitle, int pixelWidth) {
+        try {
+            AddressBook ab = archive.addressBook;
+            String bestName = ab.getBestNameForSelf();
+            String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
+            String mode = ModeConfig.getModeForDisplay();
+
+            String collectionInfo = "";
+            if (!ModeConfig.isAppraisalMode()) {
+                collectionInfo = "Institution: " + (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
+                collectionInfo += "<br/>" + "Collection ID: " + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
+            }
+
+            String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
+            String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
+                    + "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
+                    + "<div class=\"profile-block\">"
+                    + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
+
+            // don't allow the option to edit profile photo in discovery or delivery mode
+            if (offerEditProfilePhotoOption && !ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode())
+                output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
+
+            output += "</div>"
+                    + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
+                    + Util.escapeHTML(title)
+                    + "</div>"
+                    + "<div class=\"collection-metadata\">" + collectionInfo + "</div>"
+                    + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection\" src=\"images/information.svg\"/> </div>"
+                    + "</div></div><br/>";
+
+            out1.println(output);
+        } catch (IOException ioe) {
+            Util.print_exception(ioe, JSPHelper.log);
+        }
+    }
 %>
+
+
+<% if (haveArchive) {
+
+    Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(ArchiveReaderWriter.getArchiveForArchiveID(archiveID).baseDir); %>
+
+<div id="collection-summary-modal" class="info-modal alert modal fade" style="z-index:99999">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Information about this archive</h4>
+            </div>
+            <div class="modal-body">
+                <% if (!Util.nullOrEmpty(cm.institution)) { %>
+                Institution<br/>
+                <b><span class="detail"><%= cm.institution%> </span></b>
+                <hr/>
+                <% } %>
+
+                <% if (!Util.nullOrEmpty(cm.repository)) { %>
+                Repository<br/>
+                <b><span class="detail"><%= cm.repository%> </span></b>
+                <hr/>
+                <% } %>
+
+                <% if (!Util.nullOrEmpty(cm.collectionID)) { %>
+                Collection ID<br/>
+                <b><span class="detail"><%= cm.collectionID%> </span></b>
+                <hr/>
+                <% } %>
+
+                <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
+                <b><span><%= Util.pluralize(cm.accessionMetadatas.size(), "accession")%></span></b>
+                <hr/>
+                <% } %>
+
+                <% if (cm.firstDate != null && cm.lastDate != null) { %>
+                Date Range<br/>
+                <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
+                <% if (cm.nHackyDates > 0) { %>
+                <br/><%=Util.pluralize(cm.nHackyDates, "message")%> undated
+                <hr/>
+                <% } %>
+                <% } %>
+
+                Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
+                <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
+                <br/>
+                Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
+                Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
+                <% } %>
+                <hr/>
+                Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
+                <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
+                <br/>
+                Images: <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>
+                Documents: <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
+                Others: <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
+                <% } %>
+                </p>
+
+
+                <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
+                <hr/>
+
+                <p>
+                    Contact email<br/>
+                    <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
+                </p>
+                <% }
+
+                    if (ModeConfig.isProcessingMode()) { %>
+                <hr/>
+                <p>
+                    <% if (cm.renamedFiles != 0 || cm.normalizedFiles != 0) {%>
+                    Preservation Actions <br>
+                    Renamed files: <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
+                    Normalized files: <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
+                    <%}%>
+                </p>
+                <br/>
+                <% } %>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="ok-button btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+    // ensure that this func is called only when doc is ready because .profile-more-info doesn't exist yet when this header is included
+    $(function() {
+        $('.profile-more-info').click (function() { $('#collection-summary-modal').modal();});
+    });
+</script>
+<% } %>

@@ -9,6 +9,24 @@
      Renders a table containing the list of entities 
      corresponding to this field
 -->
+<%
+	String type=request.getParameter("type");
+	String et = "";
+	Short ct = NEType.Type.PERSON.getCode();
+	if("en_person".equals(type)||"person".equals(type)) {
+		et = "Person";
+		ct = NEType.Type.PERSON.getCode();
+	}
+	else if("en_loc".equals(type)||"place".equals(type)) {
+		et = "Location";
+		ct = NEType.Type.PLACE.getCode();
+	}
+	else if("en_org".equals(type)||"organisation".equals(type)) {
+		et = "Organisation";
+		ct = NEType.Type.ORGANISATION.getCode();
+	}
+%>
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -29,28 +47,10 @@
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
-<script>epadd.nav_mark_active('Browse');</script>
-
-<%
-    String type=request.getParameter("type");
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	String et = "";
-    Short ct = NEType.Type.PERSON.getCode();
-	if("en_person".equals(type)||"person".equals(type)) {
-        et = "Person";
-        ct = NEType.Type.PERSON.getCode();
-    }
-	else if("en_loc".equals(type)||"place".equals(type)) {
-        et = "Location";
-        ct = NEType.Type.PLACE.getCode();
-    }
-	else if("en_org".equals(type)||"organisation".equals(type)) {
-        et = "Organisation";
-        ct = NEType.Type.ORGANISATION.getCode();
-    }
-	writeProfileBlock(out, archive, et + " entities", "");
+    <%
+	writeProfileBlock(out, archive, et + " entities");
 			%>
 
 <div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">

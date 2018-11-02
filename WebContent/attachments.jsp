@@ -1,20 +1,20 @@
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%!
     private boolean IsNormalized=false;
 %><%
 	JSPHelper.checkContainer(request); // do this early on so we are set up
 	request.setCharacterEncoding("UTF-8");
 %>
-<%@page language="java" import="org.json.JSONArray"%>
-<%@ page import="java.util.*" %>
-<%@page language="java" import="edu.stanford.muse.datacache.BlobStore"%>
-<%@page language="java" import="edu.stanford.muse.datacache.Blob"%>
-<%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@ page import="java.util.stream.Collectors" %>
-<%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="com.google.common.collect.Multimap" %>
-<%@ page import="edu.stanford.muse.index.*" %>
+<%@page import="org.json.JSONArray"%>
+<%@page import="java.util.*" %>
+<%@page import="edu.stanford.muse.datacache.BlobStore"%>
+<%@page import="edu.stanford.muse.datacache.Blob"%>
+<%@page import="edu.stanford.muse.util.Util"%>
+<%@page import="edu.stanford.muse.webapp.JSPHelper"%>
+<%@page import="java.util.stream.Collectors" %>
+<%@page import="edu.stanford.muse.Config" %>
+<%@page import="com.google.common.collect.Multimap" %>
+<%@page import="edu.stanford.muse.index.*" %>
 <%@include file="getArchive.jspf" %>
 
 <!DOCTYPE HTML>
@@ -61,11 +61,10 @@
     </style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	JSONArray resultArray = new JSONArray();
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
@@ -86,7 +85,7 @@
 
     Set<Blob> uniqueAttachments = new LinkedHashSet<>(allAttachments);
 
-    writeProfileBlock(out, archive, "",  Util.pluralize(allAttachments.size(), "Non-image attachment") +
+    writeProfileBlock(out, archive,  Util.pluralize(allAttachments.size(), "non-image attachment") +
             " (" + uniqueAttachments.size() + " unique)");
 %>
 
@@ -103,11 +102,11 @@
 
         <section>
             <div class="panel">
-                <div class="panel-heading">Filter attachments</div>
+                <%--<div class="panel-heading">Filter attachments</div>--%>
 
                 <div class="one-line">
-                    <div class="form-group col-sm-6">
-                        <label for="attachmentType">Type</label>
+                    <div class="form-group col-sm-5">
+                        <%--<label for="attachmentType">Type</label>--%>
                         <select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
                             <option value="" selected disabled>Select</option>
                             <%
@@ -124,10 +123,10 @@
                     </div>
 
                     <!--File Size-->
-                    <div class="form-group col-sm-6">
-                        <label for="attachmentFilesize">File Size</label>
-                        <select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
-                            <option value="" selected disabled>Select</option>
+                    <div class="form-group col-sm-2">
+                        <%--<label for="attachmentFilesize">File Size</label>--%>
+                        <select title="Attachment file size" id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker empty">
+                            <option value="" selected disabled>File Size</option>
                             <option value="1">&lt; 5KB</option>
                             <option value="2">5-20KB</option>
                             <option value="3">20-100KB</option>
@@ -136,21 +135,18 @@
                             <option value="6">Any</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="one-line">
-                    <!--Time Range-->
-                    <div class="form-group col-sm-6">
-                        <label for="time-range">Time Range</label>
+                     <!--Time Range-->
+                    <div class="form-group col-sm-4">
+                        <%--<label for="time-range">Time Range</label>--%>
                         <div id="time-range" class="date-input-group">
-                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
-                            <label for="endDate">To</label>
-                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
+                            <input type = "text" value="<%=request.getParameter ("startDate")==null?"": request.getParameter("startDate")%>" id="startDate" name="startDate" class="form-control" placeholder="From" readonly="true" style="cursor: pointer;background:white;">
+                            <%--<label for="endDate"></label>--%>
+                            <input type = "text" value="<%=request.getParameter ("endDate")==null?"": request.getParameter("endDate")%>" id="endDate" name="endDate"  class="form-control" placeholder="To" readonly="true" style="cursor: pointer;background:white;">
                         </div>
                     </div>
 
-                    <div class="form-group col-sm-6">
-                        <button type="submit" class="btn-default filter-button">Filter</button>
+                    <div class="form-group col-sm-1">
+                        <button type="submit" class="btn-default">Filter</button>
                     </div>
                 </div>
             </div>
@@ -281,11 +277,17 @@ $(document).ready(function() {
     //setting min date as 1 jan 1960. The format is year,month,date. Month is 0 based and all other are 1 based
     $('#startDate').datepicker({
         minDate: new Date(1960, 1 - 1, 1),
-        dateFormat: "yy-mm-dd"
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1930:2030"
     });
     $('#endDate').datepicker({
-            minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+        minDate: new Date(1960, 1 - 1, 1),
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1930:2030"
     });
 
     var clickable_message = function ( data, type, full, meta ) {
@@ -300,7 +302,7 @@ $(document).ready(function() {
             return "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" data-normalization-info=\""+full[7]+"\"</span>";
         }else
             return '';
-    }
+    };
     var sortable_size = function(data, type, full, meta) {
         return Math.floor(full[2]/1024) + " KB";
     };
@@ -332,7 +334,7 @@ $(document).ready(function() {
 });
 </script>
 <div>
-    <div id="normalization-info-modal" class="modal fade" style="z-index:9999">
+    <div id="normalization-info-modal" class="info-modal modal fade" style="z-index:99999">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

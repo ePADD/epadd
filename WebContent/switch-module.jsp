@@ -1,5 +1,4 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.webapp.ModeConfig"%>
 <%--<%@include file="getArchive.jspf" %>--%>
 
@@ -74,7 +73,6 @@
 	<br/>
 	<%
 
-		//String archiveID = SimpleSessions.getArchiveIDForArchive(archive);
 	 if (true) { %>
 		<div id="advanced_options">
 <!--                <p><button class="btn btn-default" id="recompute" style='cursor:pointer'><i class="fa fa-refresh"></i> Recompute Stats</button> -->
@@ -152,7 +150,7 @@
                 data: {mode:val},
                 dataType: 'json',
                 success: function() { if (val == 'appraisal') { window.location="./browse-top"; } else { window.location = './collections';}},
-                error: function() { epadd.alert('Unable to change mode, sorry!'); }
+                error: function() { epadd.error('Sorry, unable to change mode.'); }
             });
         });
     </script>

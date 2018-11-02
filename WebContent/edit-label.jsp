@@ -1,16 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@ page import="edu.stanford.muse.LabelManager.Label" %>
-<%@ page import="edu.stanford.muse.LabelManager.LabelManager" %>
-<%@ page import="java.util.GregorianCalendar" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.util.Calendar" %>
+<%@page import="edu.stanford.muse.LabelManager.Label" %>
+<%@page import="edu.stanford.muse.LabelManager.LabelManager" %>
+<%@page import="java.util.GregorianCalendar" %>
+<%@page import="java.util.Date" %>
+<%@page import="java.util.Calendar" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
 <%
     // labelId = null or empty => tis is a new label
 
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 	// which lexicon? first check if url param is present, then check if url param is specified
 	String labelID = request.getParameter("labelID");
 	String labelName = "", labelDescription = "", labelType = "";
@@ -65,10 +64,9 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
-<script>epadd.nav_mark_active('Browse');</script>
+<%@include file="header.jspf"%>
 
-<% writeProfileBlock(out, archive, "", (Util.nullOrEmpty(labelID) ? "New label" : "Edit Label: " + labelName)); %>
+<% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label: " + labelName)); %>
 <br/>
 <br/>
 <br/>
@@ -84,7 +82,7 @@
             <input name="archiveID" type="hidden" value="<%=archiveID%>" class="form-control"/>
 
         <div class="row">
-            <h4><%=(Util.nullOrEmpty(labelID) ? "New label" : "Edit Label")%></h4>
+            <h4><%=(Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label")%></h4>
             <br/>
             <br/>
             <!--File Name-->
@@ -146,7 +144,7 @@
             <div class="form-group">
                 <div style="display:none" class="div-restrictedUntil form-group col-sm-6">
                     <label for="restrictedUntil"><i class="fa fa-calendar"></i> Restricted until (yyyy-mm-dd)</label>
-                    <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>">
+                    <input name="restrictedUntil" id="restrictedUntil" type="text" class="form-control" value="<%=restrictionUntilTime%>" readonly="true" style="cursor: pointer;background:white;">
                 </div>
                 <div style="display:none" class="div-restrictedForYears form-group col-sm-6">
                     <label for="restrictedForYears">Restricted for (years)</label>
@@ -206,17 +204,20 @@
                 dataType    : 'json', // what type of data do we expect back from the server
                 success: function(response) {
                     if (!response || response.status !== 0) {
-                        epadd.alert("Error: " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
+                        epadd.error("Error saving label. " + ((response && response.errorMessage) ? response.errorMessage : " (unknown reason"));
                     } else {
-                        epadd.alert('Label updated.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
+                        epadd.success('Label saved.', function () {window.location = 'labels?archiveID=<%=archiveID%>'});
                     }
                 },
-                error: function(jq, textStatus, errorThrown) { var message = ("Error saving labels. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+                error: function(jq, textStatus, errorThrown) {
+                    epadd.error("Error saving label. (Details: status = \" + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + \"\\n\" + printStackTrace() + \")\"");
+                }
             });
 
             // stop the form from submitting the normal way and refreshing the page
             event.preventDefault();
         }
+
         $('#labelType').on ('change', label_type_refresh);
         $('#restrictionType').on ('change', restriction_type_refresh);
 
@@ -235,7 +236,10 @@
 
         $('#restrictedUntil').datepicker({
             minDate: new Date(1960, 1 - 1, 1),
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2000:2100"
         });
 
         $('#save-label-form').submit(do_save);

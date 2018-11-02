@@ -1,12 +1,12 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.EmailDocument"%>
-<%@ page import="edu.stanford.muse.util.Pair" %>
-<%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="org.json.JSONArray" %>
-<%@ page import="java.util.Collection" %>
-<%@ page import="java.util.LinkedHashMap" %>
-<%@ page import="java.util.Map" %>
+<%@page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page import="edu.stanford.muse.index.EmailDocument"%>
+<%@page import="edu.stanford.muse.util.Pair" %>
+<%@page import="edu.stanford.muse.util.Util" %>
+<%@page import="org.json.JSONArray" %>
+<%@page import="java.util.Collection" %>
+<%@page import="java.util.LinkedHashMap" %>
+<%@page import="java.util.Map" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -34,20 +34,19 @@
     </script>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-    String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
     AddressBook ab = archive.addressBook;
 %>
 
-<%writeProfileBlock(out, archive, "", "Folders");%>
+<%writeProfileBlock(out, archive, "Folders");%>
 
 <br/>
 <br/>
 
-<div style="margin:auto; width:900px">
+<div style="margin:auto; width:1100px">
     <table id="folders" style="display:none">
         <thead><tr><th>Source</th><th>Folder</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></tr></thead>
         <tbody>

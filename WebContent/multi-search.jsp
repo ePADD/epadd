@@ -31,13 +31,12 @@
 
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-	writeProfileBlock(out, archive, "", "");
+	writeProfileBlock(out, false, archive, "Lexicon test", 900);
 %>
 
 <br/>

@@ -48,6 +48,8 @@
             transition:0.3s ease;
         }
         .btn-cta:hover i{ opacity:1;}
+
+		.container { width: 1100px; margin: auto; padding: 0px;}
     </style>
     <!--scripts-->
 
@@ -66,12 +68,10 @@
 	<script src="js/epadd.js"></script>
 
 </head>
-<%
-	String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-%>
 <body>
-	<jsp:include page="header.jspf"/>
+	<%@include file="header.jspf"%>
 	<script>epadd.nav_mark_active('Search');</script>
+	<% writeProfileBlock(out, archive,"Search");%>
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
@@ -230,6 +230,12 @@
 						<div class="form-group col-sm-12">
 							<label for="entity">Entity</label>
 							<input id="entity" name="entity" type="text" class="form-control">
+						</div>
+						<div class="checkbox-inline">
+							<label>
+								<input type="checkbox" name="expanded" checked>
+								<span class="label-text">Expand to other entities of the same class</span>
+							</label>
 						</div>
 					</div>
 
@@ -430,19 +436,20 @@
 
 						<div class="form-group col-sm-6">
 							<div class="form-group">
-
-							<label for="labelIDs">Labels</label>
+<%	//get general labels
+	Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
+%>
+	<label for="labelIDs">Labels</label>
 							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
 								<option value="" selected disabled>Select</option>
+								<% if(!ModeConfig.isDeliveryMode()){ %>
 								<optgroup label="Restriction Labels">
 								<%
 									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
-									//get general labels
-									Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
 									for (Label opt : restrlabels){
 								%>
 										<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
-								<%}%>
+								<%}}%>
 								</optgroup>
 								<optgroup label="General Labels">
 								<%
@@ -457,12 +464,14 @@
 							</select>
 
 							</div>
+							<%if(!ModeConfig.isDeliveryMode()){%>
 							<div class="checkbox-inline">
 								<label>
 									<input id="multiLabelsCheck" name="multiLabelsCheck" type="checkbox">
 									<span class="label-text">More than one restriction label</span>
 								</label>
 							</div>
+							<%}%>
 						</div>
 
                     </div>
@@ -483,9 +492,9 @@
                         			<span class="glyphicon glyphicon-calendar"></span>
                     				</span>
 								</div>--%>
-								<input type = "text"  id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD">
+								<input type = "text"  id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD" readonly="true" style="cursor: pointer;background:white;">
 								<label for="endDate">To</label>
-								<input type = "text"  id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD">
+								<input type = "text"  id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD" readonly="true" style="cursor:pointer;background:white;">
 							</div>
 						</div>
 
@@ -760,13 +769,13 @@
 					}
 					else {
 						if (response)
-							alert('Error! Code ' + response.status + ', Message ' + response.error);
+							epadd.error('Error getting lexicon categories. Code ' + response.status + ', Message ' + response.error);
 						else
-							alert ('Error! No response from ePADD.');
+                            epadd.error ('Error getting lexicon categories. No response from ePADD.');
 					}
 				},
 				error: function() {
-					epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu.");
+					epadd.error ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report this to epadd_project@stanford.edu.");
 				}});
 
 		});
@@ -802,12 +811,18 @@
             $('#startDate').datepicker({
 
                 minDate: new Date(1960, 1 - 1, 1),
-                dateFormat: "yy-mm-dd"
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+				yearRange: "1930:2030"
 			});
             $('#endDate').datepicker({
 
                 minDate: new Date(1960, 1 - 1, 1),
-                dateFormat: "yy-mm-dd"
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "1930:2030"
             });
 
         });

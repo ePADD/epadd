@@ -70,13 +70,8 @@
 </head>
 <body style="background-color:white">
 
-<jsp:include page="header.jspf"/>
-<%@include file="div_status.jspf"%>
+<%@include file="header.jspf"%>
 <script>epadd.nav_mark_active('Import');</script>
-
-<%@include file="profile-block.jspf"%>
-
-<script type="text/javascript" src="js/statusUpdate.js"></script>
 
 <%
 	/*Archive archive = (Archive) JSPHelper.getSessionAttribute(session, "archive");

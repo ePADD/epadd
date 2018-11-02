@@ -40,7 +40,7 @@
 	</style>
 </head>
 <body>
-<jsp:include page="header.jspf"/>
+<%@include file="header.jspf"%>
 <br/>
 <br/>
 <div style="width:1000px; margin-left:170px">

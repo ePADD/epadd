@@ -18,6 +18,7 @@ package edu.stanford.muse.AddressBookManager;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.index.EmailDocument;
@@ -28,6 +29,7 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
+import sun.awt.image.ImageWatched;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
@@ -74,6 +76,7 @@ public class AddressBook implements Serializable {
 
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
+    private transient Multimap<String,String> dataErrosMap = LinkedHashMultimap.create();
     //needed to keep track of mailingList information
     public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<>();
     private List<Contact> contactListForIds = new ArrayList<>();
@@ -147,6 +150,7 @@ public class AddressBook implements Serializable {
             this.contactListForIds = ab.contactListForIds;
             this.mailingListMap = ab.mailingListMap;
             this.dataErrors = ab.dataErrors;
+            this.dataErrosMap = ab.dataErrosMap;
             this.emailMaskingMap = ab.emailMaskingMap;
         } catch (IOException e) {
             e.printStackTrace();
@@ -257,6 +261,8 @@ public class AddressBook implements Serializable {
             log.warn("Confused: email is null or empty:\n" + Util.stackTrace());
             return null;
         }
+        email = email.trim().toLowerCase();
+        Contact cEmail = lookupByEmail(email);
 
         if (name != null && name.length() == 0)
             name = null; // map empty name to null -- we don't want to have contacts for empty names
@@ -264,28 +270,15 @@ public class AddressBook implements Serializable {
         if (name != null && name.equals(email)) // if the name is exactly the same as the email, it has no content.
             name = null;
 
-        email = email.trim().toLowerCase();
-
         // get existing contacts for email/name
-
-
-           //two cases appear; 1. Found a contact by name but not by email   --- INV: There should be only one contact with that name..Add email to that contact
-
-           //2. Found a contact by email but not by name -- add name to the contact that was found by name
-        
-           //3. No contact found either by email or by name               
+       //two cases appear; 1. Found a contact by name but not by email   --- INV: There should be only one contact with that name..Add email to that contact
+       //2. Found a contact by email but not by name -- add name to the contact that was found by name
+       //3. No contact found either by email or by name
 
            //Case 3- create a new contact
 
-        Contact cEmail = lookupByEmail(email);
-        Collection<Contact> cNames;
-
-
-
-
-
         if (name != null) {
-            cNames = lookupByName(name);
+            Collection<Contact> cNames = lookupByName(name);
             if(cNames!=null) {
                 if(cNames.size()>1){
                     StringBuilder s = new StringBuilder("INFO:::When building the addressbook, name " + name + " mapped to the following contacts\n");
@@ -477,6 +470,10 @@ public class AddressBook implements Serializable {
         // get email and name and normalize. email cannot be null, but name can be.
         String email = a.getAddress();
         email = EmailUtils.cleanEmailAddress(email);
+        if (Util.nullOrEmpty(email)) {
+            return null; // we see this happening in the scamletters dataset -- email addr itself is empty!
+        }
+
         String name = a.getPersonal();
         name = Util.unescapeHTML(name);
         name = EmailUtils.cleanPersonName(name);
@@ -495,12 +492,6 @@ public class AddressBook implements Serializable {
                 name = ""; // usually something like info@paypal.com or info@evite.com or invitations-noreply@linkedin.com -- we need to ignore the name part of such an email address, so it doesn't get merged with anything else.
                 break;
             }
-        }
-
-        List nameTokens = Util.tokenize(name);
-
-        if (Util.nullOrEmpty(email)) {
-            return null; // we see this happening in the scamletters dataset -- email addr itself is empty!
         }
 
         Contact c = unifyContact(email, name);
@@ -528,6 +519,7 @@ public class AddressBook implements Serializable {
         }
         if (namesFromEmailAddress != null)
             for (String possibleName : namesFromEmailAddress) {
+                List nameTokens = Util.tokenize(possibleName);
                 if (nameTokens.size() >= 2)
                     unifyContact(email, possibleName);
             }
@@ -584,21 +576,51 @@ public class AddressBook implements Serializable {
     /**
      * this method should be called with every email doc in the archive
      */
-    public synchronized void processContactsFromMessage(EmailDocument ed) {
+    public synchronized void processContactsFromMessage(EmailDocument ed, Collection<String> trustedAddrs) {
         List<Address> toCCBCC = ed.getToCCBCC();
         boolean noToCCBCC = false;
         if (toCCBCC == null || toCCBCC.size() == 0) {
             noToCCBCC = true;
             markDataError("No to/cc/bcc addresses for: " + ed);
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
+
         }
-        if (ed.from == null || ed.from.length == 0)
+        if (ed.from == null || ed.from.length == 0) {
             markDataError("No from address for: " + ed);
-        if (ed.date == null)
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
+
+        }
+        if (ed.date == null) {
             markDataError("No date for: " + ed);
-        boolean b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
-        if (!b && !noToCCBCC) // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
+        }
+        boolean fromTrustedAddr = false;
+        {
+            Address[] addrs = ed.from;
+            if (ed.from != null) {
+                for (Address a : addrs) {
+                    InternetAddress ia = (InternetAddress) a;
+                    if (trustedAddrs.contains(ia.getAddress().toLowerCase())) {
+                        fromTrustedAddr = true;
+                        break;
+                    }
+                }
+            }
+        }
+        boolean b = false;
+
+        if (fromTrustedAddr) {
+            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
+            log.info("Processing trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+        } else
+            log.warn("Dropping processing of contacts from non-trusted addr" + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+
+        if (!b && !noToCCBCC) { // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
             markDataError("Owner not sender, and no to addr for: " + ed);
+            dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
+
+        }
     }
+
 
     private void markDataError(String s) {
         log.debug(s);
@@ -662,7 +684,12 @@ public class AddressBook implements Serializable {
         return Collections.unmodifiableCollection(dataErrors);
     }
 
-    /* merges self addrs with other's, returns the self contact */
+    public synchronized Multimap<String, String> getDataErrorsMap() {
+        if (dataErrosMap == null)
+            dataErrosMap = LinkedHashMultimap.create();
+        return dataErrosMap;
+    }
+    /* merges self addrs with other's, returns the self contact -- No need to merge dataErrorsMap here*/
     private Contact mergeSelfAddrs(AddressBook other) {
         // merge CIs for the 2 sets of own addrs
         Contact selfContact = getContactForSelf();
@@ -1247,6 +1274,9 @@ mergeResult.newContacts.put(C2,savedC2)
      */
 
     public static JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
+        JSONArray cached = Archive.cacheManager.getCorrespondentListing(archiveID);
+        if(cached!=null)
+            return cached;
         Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
         AddressBook ab = archive.getAddressBook();
         Contact ownContact = ab.getContactForSelf();
@@ -1348,6 +1378,8 @@ mergeResult.newContacts.put(C2,savedC2)
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
         }
+        //store in cache manager.
+        Archive.cacheManager.cacheCorrespondentListing(archiveID,resultArray);
         return resultArray;
     }
 
@@ -1387,6 +1419,7 @@ mergeResult.newContacts.put(C2,savedC2)
             }
         }
 
+
     }
 
     ///////////////////////////Code for writing and reading address book in Human readable format///////
@@ -1399,27 +1432,18 @@ mergeResult.newContacts.put(C2,savedC2)
     delimiter (##################)
     Series of contact objects separated by delimiter(########################)
      */
-    public void
-    writeObjectToStream(BufferedWriter out, boolean alphaSort) throws IOException {
+    public void writeObjectToStream(BufferedWriter out, boolean alphaSort, boolean aliasCountSort) throws IOException {
 
         // always toString first contact as self
         Contact self = this.getContactForSelf();
         if (self != null)
             self.writeObjectToStream(out,"Archive owner");
 
-        if (!alphaSort)
-        {
-            List<Contact> contacts = this.contactListForIds;
-            for (Contact c: contacts)
-                if (c != self) {
-                    c.writeObjectToStream(out, "");
-                    //out.write(PERSON_DELIMITER);
-            }
-        }
-        else
+        List<Contact> allContacts = this.contactListForIds;
+
+        if (alphaSort)
         {
             // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
-            List<Contact> allContacts = this.contactListForIds;
             Map<String, Contact> canonicalBestNameToContact = new LinkedHashMap<>();
             for (Contact c: allContacts)
             {
@@ -1442,6 +1466,36 @@ mergeResult.newContacts.put(C2,savedC2)
                     c.writeObjectToStream(out, "");
                     //out.print(dumpForContact(c, c.pickBestName()));
 
+                }
+            }
+        } else if (aliasCountSort) {
+            // build up a map of best name -> contact, sort it by best name and toString contacts in the resulting order
+            Map<Contact, Integer> contactToAliasCount = new LinkedHashMap<>();
+            for (Contact c: allContacts) {
+                int namesCount = Util.nullOrEmpty(c.getNames()) ? 0 : c.getNames().size();
+                int emailsCount = Util.nullOrEmpty(c.getEmails()) ? 0 : c.getEmails().size();
+                contactToAliasCount.put(c, namesCount + emailsCount);
+            }
+
+            List<Pair<Contact, Integer>> pairs = Util.mapToListOfPairs(contactToAliasCount);
+            Util.sortPairsBySecondElement(pairs);
+
+            for (Pair<Contact, Integer> p: pairs)
+            {
+                Contact c = p.getFirst();
+                if (c != self) {
+                    //c.writeObjectToStream(out, c.pickBestName());
+                    c.writeObjectToStream(out, "");
+                    //out.print(dumpForContact(c, c.pickBestName()));
+
+                }
+            }
+        } else {
+            // contactListForIds is sorted by email volume (?)
+            for (Contact c: allContacts) {
+                if (c != self) {
+                    c.writeObjectToStream(out, "");
+                    //out.write(PERSON_DELIMITER);
                 }
             }
         }
@@ -1472,9 +1526,7 @@ mergeResult.newContacts.put(C2,savedC2)
 
     }
 
-
-
-        public static void main(String args[]) {
+    public static void main(String args[]) {
         List<String> list = EmailUtils.parsePossibleNamesFromEmailAddress("mickey.mouse@disney.com");
         System.out.println(Util.join(list, " "));
         list = EmailUtils.parsePossibleNamesFromEmailAddress("donald_duck@disney.com");
@@ -1495,7 +1547,7 @@ mergeResult.newContacts.put(C2,savedC2)
             } catch (Exception e) {
                 Util.print_exception(e, log);
             }
-            ab.processContactsFromMessage(ed);
+            ab.processContactsFromMessage(ed, new LinkedHashSet<>());
             Util.ASSERT(ab.size() == 5); // 4 addresses should be added + owner
         }
 
@@ -1509,8 +1561,8 @@ mergeResult.newContacts.put(C2,savedC2)
                 ed2.to = new Address[]{new InternetAddress("Merge X Name", "mergeemail1@example.com")};
                 ed2.from = new Address[]{new InternetAddress("Merge X Name", "mergeemail2@example.com")};
             } catch (Exception e) {
-                ab.processContactsFromMessage(ed1);
-                ab.processContactsFromMessage(ed2);
+                ab.processContactsFromMessage(ed1, new LinkedHashSet<>());
+                ab.processContactsFromMessage(ed2, new LinkedHashSet<>());
                 Util.ASSERT(ab.size() == 3);
             }
 

@@ -150,6 +150,7 @@ public class ArchiveReaderWriter{
             /////////////////AddressBook////////////////////////////////////////////
            AddressBook ab = readAddressBook(addressBookPath);
             archive.addressBook = ab;
+
             ////////////////EntityBook/////////////////////////////////////
             EntityBook eb = readEntityBook(entityBookPath);
             archive.setEntityBook(eb);
@@ -182,6 +183,7 @@ public class ArchiveReaderWriter{
             // most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
             archive.postDeserialized(baseDir, readOnly);
             result.put("emailDocs", archive.getAllDocs());
+            archive.assignThreadIds();
         }
 
         return result;
@@ -468,9 +470,8 @@ public class ArchiveReaderWriter{
         log.info("Saving addressBook to file " + addressBookPath);
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(addressBookPath));
-            archive.addressBook.writeObjectToStream(bw,false);
+            archive.addressBook.writeObjectToStream (bw, false, false);
             bw.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -478,6 +479,9 @@ public class ArchiveReaderWriter{
         //if this was an incremental update in addressbook, we need to update the bag's metadata as well..
         if(mode== Archive.Save_Archive_Mode.INCREMENTAL_UPDATE)
             archive.updateFileInBag(addressBookPath,baseDir);
+
+        //update the summary of addressbook (counts etc used on correspondent listing page).
+        Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
     }
 
@@ -702,7 +706,12 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
+                //now intialize the cache.1- correspondent, labels and entities
+                Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(a));
+                Archive.cacheManager.cacheLexiconListing(getArchiveIDForArchive(a));
+                Archive.cacheManager.cacheEntitiesListing(getArchiveIDForArchive(a));
                 return a;
+
             }
         } catch (Exception e) {
             Util.print_exception("Error reading archive from dir: " + archiveFile, e, log);

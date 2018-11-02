@@ -280,17 +280,16 @@ pre code {
 	overflow-y: scroll
 }
 .container {
-	padding-right: 15px;
-	padding-left: 15px;
+/*	padding-right: 15px;
+	padding-left: 15px; */
 	margin-right: auto;
 	margin-left: auto
 }
 
-@media (min-width:1200px) {
 .container {
-	width: 1170px
+	width: 1100px;
 }
-}
+
 .container-fluid {
 	padding-right: 15px;
 	padding-left: 15px;
@@ -928,17 +927,13 @@ pre code {
 	border-radius:2px;
 }
 
-.message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px; border-radius: 4px;}
-.system-label.restriction-label { background: #e00000; color: white; }
-.restriction-label { background: #E27D00; color: white; }
-.general-label { background: #006FC0; color: white;}
-
 .btn-icon >li>a:hover, .btn-icon >li>span:hover, .btn-icon >li>a:focus, .btn-icon >li>span:focus {
 	color: #818da7;
 	background-color: #f5f5f8;
 	border: 1px solid #98a2b7;
 	border-radius:0px;
 }
+
 .btn-icon >.active>a, .btn-icon >.active>span, .btn-icon >.active>a:hover, .btn-icon >.active>span:hover, .btn-icon >.active>a:focus, .btn-icon >.active>span:focus {
 	z-index: 2;
 	color: #fff;
@@ -1428,23 +1423,73 @@ body {
 	vertical-align:top;
 }
 
-.profile-text .field-name{
-	font-size: 12px;
-	color: #9a9a9a;
-}
-
-.profile-text .field-value{
-	font-size: 12px;
-}
-
 .profile-small-img {
-	height: 75px;
-	width: 75px;
-	background-color: #0175bc;
+	/*height: 60px;*/
+	/*width: 60px;*/
+	height: 80px;
+	width: 93px;
+	background-color: #e0e4e6; /* consistent with background-color for banner image. */
 	/*background-image: url('../serveImage.jsp?file=profilePhoto.png');*/
 	border-radius: 50%;
-	display: inline-block;
+	display: table-cell;
 	background-size: 80px 80px; /* deliberately kept slightly larger */
+	vertical-align: middle;
+	background-repeat: no-repeat;
+}
+
+.profile-block {
+	padding: 10px 20px;
+	background-color: #f5f5f8;
+}
+
+.header-block {
+	text-align:left;
+	margin:auto;
+}
+
+.profile-pic-edit {
+	border-radius: 50%;
+	position: relative;
+	top:25px;
+	height:24px;
+	width:24px;
+	background-color: white;
+	left: 60px;
+	text-align:center;
+	color: #0075bb;
+	border: solid 1px gray;
+	cursor: pointer;
+}
+
+.profile-more-info {
+	position: relative;
+	font-size: 16px;
+	vertical-align: middle;
+	display: table-cell;
+	cursor: pointer;
+}
+
+.profile-text {
+	font-weight: bold;
+	border-right: solid 1px #ccc;
+	padding-right: 20px;
+	display: table-cell;
+	vertical-align: middle;
+	padding-left:20px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.profile-more-info>img {
+	width:32px;
+	height:32px;
+}
+
+.nav-arrow { height:30px; width: 30px; display: inline-block; cursor: pointer; position: relative;}
+
+.breadcrumbs {
+	font-size: 16px;
 }
 
 .archive-card {
@@ -1453,7 +1498,9 @@ body {
 	margin: 20px;
 	cursor: hand;
 	background-color: white;
-	box-shadow: 3px 3px 11px 0px rgba(0,0,0,0.75);
+	box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.75);
+	box-sizing: border-box;
+
 }
 
 .landing-img {
@@ -1468,37 +1515,22 @@ body {
 .archive-card .landing-img-text {
 	font-size: 14px;
 	text-align:left;
-	margin-left: 20px;
+	padding-left: 20px;
+	padding-left: 20px;
+	height: 150px;
+	padding-top:20px;
 }
 
-.archive-card .landing-img-text .detail {
-	font-size: 12px;
-	color: #9a9a9a;
-}
 
-.archive-card .landing-img-text {
-	font-size: 14px;
-	text-align:left;
-	margin-left: 20px;
-}
-
-.profile-info {
-	margin-left: 170px; /* needs to be properly calculated */
+.landing-img-text:hover {
+	border-bottom: solid 3px #0175BC;
+	box-sizing: border-box;
 }
 
 .navbar-nav li.nav-active {  color: white; border-bottom: solid 4px white;}
 .nav>li>a { padding-left: 0px; padding-right: 0px; }
 .nav>li { margin-left: 15px; margin-right: 15px; }
 
-.collection-detail { text-align: left; margin:auto; width: 1100px; position: relative;}
-.collection-detail .heading { font-size: 20px;}
-
-.banner-img { box-shadow: 3px 3px 11px 0px rgba(0, 0, 0, 0.75); background-color: #0175bc; background-repeat: no-repeat; background-size: cover; width: 1100px; height: 440px; position: relative; text-align:center;}
-.collection-detail .banner-img-text-block { top: 80px; left: 30px; padding: 20px; font-size: 16px; text-align: left; background-color: #f5f5f8;}
-.collection-detail .banner-img-text-large { font-size: 25px; text-align:left;}
-.collection-detail .details { border-right: dotted 1px rgba(127,127,127,0.5); padding-right: 30px; display: inline-block; width: 250px; overflow: hidden;}
-.collection-detail .related-links { vertical-align: top; display: inline-block; margin-left: 30px; width: 815px;}
-.collection-detail .detail { font-weight: bold; }
 .panel {background-color: #f5f5f8;}
 .previous, .next { cursor: pointer}
 

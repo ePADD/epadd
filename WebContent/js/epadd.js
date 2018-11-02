@@ -11,53 +11,30 @@ var escapeHTML = function(s) {
     return s;
 };
 
-epadd.post_message = function(mesg)
+epadd.post_message = function(mesg, warn)
 {
-	$.ajax({
+	var data = {'message': mesg.toString()};
+	if (warn)
+		data.warn = true;
+
+    $.ajax({
 		url: 'ajax/muselog.jsp',
 		type: 'POST',
-		data: {'message': mesg.toString()},
+		data: data,
 		retryLimit: 3,
 		async: true
 	});
 	//$.post('/ajax/muselog.jsp', {'message': mesg.toString()});
 };
 
-epadd.log = function(mesg, log_on_server)
+epadd.log = function(mesg, warn)
 {
 //	alert ('logging ' + mesg);
-	if (typeof console != 'undefined' && epadd.log)
-		console.log(mesg);
+	if (typeof console != 'undefined') {
+		console[warn ? 'warn' : 'info'](mesg);
+    }
 
-	// log on server only if log_on_server is undefined or true
-	//if (typeof log_on_server == 'undefined' || log_on_server)
-	//	epadd.post_message(mesg); // post JS message to server
-
-};
-
-epadd.success = function(s, f) {
-	epadd.alert (s, f, 'Success');
-}
-
-epadd.info = function(s, f) {
-    epadd.alert (s, f, '');
-}
-
-// s is the message, f is the function to be called when the modal is dismissed, title is the heading (default Alert)
-epadd.alert = function(s, f, title) {
-	// use 'Alert' only if title is not given
-	if (typeof (title) === 'Undefined')
-		title = 'Alert';
-
-	$('#alert-modal .modal-body').html(s);
-    $('#alert-modal .modal-title').html(title);
-
-    // sgh: will this not get associated multiple times as modal is invoked?
-	// need to remove previous handlers if any?
-	if (f) {
-		$('#alert-modal').on('hidden.bs.modal', f);
-	}
-	$('#alert-modal').modal();
+	epadd.post_message(mesg, warn);
 };
 
 epadd.pluralize = function(count, description)
@@ -79,10 +56,22 @@ epadd.do_search = function(e,archiveID) {
 	}
 	// otherwise let term be as is.
 
-	window.open ('browse?archiveID='+archiveID+'&adv-search=1&term=' + term + '&termBody=on&termSubject=on'); // since this function is used from entities page, we don't want to match attachments (?)
+	window.open ('browse?archiveID='+archiveID+'&adv-search=1&term=' + term + '&termBody=on&termSubject=on');
 //	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
 };
+epadd.do_entity_search = function(e,archiveID) {
+    var term = $(e.target).text();
+    // if term is not already quoted, quote it now
+    term = term.trim();
+    if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
+        // not in quotes. encode URI
+        term =   encodeURIComponent(term) ; // remember to encodeURIComponent, otherwise it fails on names with &. Also don't use encodeURI because it doesn't escape &
+    }
+    // otherwise let term be as is.
 
+    window.open ('browse?archiveID='+archiveID+'&adv-search=1&entity=' + term + '&expanded=on'); // Since this function is being used from entity search page we want to expand grouped entities together)
+//	window.open ('browse?adv-search=1&term=' + term + '&termBody=on&termSubject=on&termAttachments=on');
+};
 // do a search on the text of the element that was clicked
 epadd.do_search_incl_attachments = function(e,archiveID) {
     var term = $(e.target).text();
@@ -218,8 +207,7 @@ epadd.do_logins = function() {
 						$($('.fa-key')[x]).removeClass('fa-spin'); // start spinning the password key for the i'th
 						resp_received++;
 						if (j.status != 0) {
-							epadd.log('error message: ' + j.errorMessage);
-							epadd.alert('Error # ' + j.status + ": " + j.errorMessage); // $.jGrowl(j.errorMessage);
+							epadd.error('Login error # ' + j.status + ": " + j.errorMessage); // $.jGrowl(j.errorMessage);
 							n_errors++;
 							$('.input-field', $('.account')[x]).addClass('has-error');
 						}
@@ -234,7 +222,7 @@ epadd.do_logins = function() {
 					return function (j) {
 						$($('.fa-key')[x]).removeClass('fa-spin'); // start spinning the password key for the i'th
 //						$('.input-field', $('.account')[x]).addClass('has-error'); // maybe no need to mark error here. this is an ajax error, not a user error.
-						epadd.alert("There was an AJAX error accessing account #" + x);
+						epadd.error("There was an AJAX error accessing account #" + x);
 					}
 				})(i, accountIdx)
 			});
@@ -272,7 +260,7 @@ epadd.do_logins = function() {
 	epadd.log('n_valid_accounts = ' + n_valid_accounts + ' out of ' + $accounts.length);
 
 	if (n_valid_accounts === 0) {
-		epadd.alert('Please enter some login information');
+		epadd.error('Please enter some login information.');
 		return;
 	}
 
@@ -286,7 +274,7 @@ epadd.do_logins = function() {
 			doActualLogins();
 		},
 		error: function (result) {
-			epadd.alert("Warning: error clearing existing accounts, You may see some stale accounts.");
+			epadd.error("Error clearing existing accounts, You may see some stale accounts.");
 		}
 	});
 
@@ -310,7 +298,7 @@ epadd.submitFolders = function()
 	    var urlParams = "";
 	    if (checked.length == 0)
 	    {
-	        epadd.alert ("Please select at least one folder.");
+	        epadd.error ("Please select at least one folder.");
 	        throw "Error";
 	    }
 
@@ -388,16 +376,16 @@ epadd.import_accession = function(e, post_params) {
             } else if (response.status === 1) {
                 window.location = "./mergeReport?archiveID=" + response.archiveID;
             } else {
-                epadd.alert('Error! Code ' + response.status + ', Message: ' + response.error);
+                epadd.error('Error importing accession. Code ' + response.status + ', Message: ' + response.error);
             }
         }
         else
-			epadd.alert('Error! No response from ePADD.');
+			epadd.error('Sorry, there was an error while importing the accession. Improper response received from the ePADD server.');
 	},
 	error: function() {
 		$('#spinner-div').fadeOut();
 		$('#gobutton').fadeIn();
-		epadd.alert ("Sorry, something went wrong. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.");
+		epadd.error ("Sorry, there was an error while importing the accession. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.");
 	}});
 };
 
@@ -426,8 +414,11 @@ epadd.unloadArchive = function(archiveID) {
         	data: {
                 "archiveID": archiveID
             },
-			success: function(data) {epadd.alert('Archive unloaded successfully!');},
-			error: function(jq, textStatus, errorThrown) { var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+			success: function(data) {epadd.success('Archive unloaded successfully!');},
+			error: function(jq, textStatus, errorThrown) {
+			    var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
+			    epadd.error(message);
+			}
 	});
 };
 
@@ -449,52 +440,120 @@ epadd.saveArchive= function(archiveID,prompt) {
 		return fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params,promptmethod);
 	else
 		return fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+};
 
-	/*
-        return $.ajax({
+
+// pop up an info modal with the given text (user can only close). call continuation if provided on close
+epadd.info = function(text, continuation) {
+    epadd.log ("showing info modal: " + text);
+    $('#info-modal .modal-body').html(text);
+
+    $('#info-modal .ok-button').off('click'); // unset all previous handlers to be safe
+    if (continuation)
+        $('#info-modal .ok-button').click (continuation);
+
+    $('#info-modal').modal();
+};
+
+// pop up a warning modal with the given text (user can only close). call continuation if provided on close
+epadd.warn = function(text, continuation) {
+    epadd.log ("showing warning modal: " + text, true /* log as warning */);
+    $('#warning-modal .modal-body').text(text);
+    $('#warning-modal .ok-button').off('click'); // unset all previous handlers to be safe
+    if (continuation)
+        $('#warning-modal .ok-button').click (continuation);
+
+    $('#warning-modal').modal();
+}
+
+// pop up an error modal with the given text (user can only close). call continuation if provided on close
+epadd.error = function(text, continuation) {
+    epadd.log ("showing error modal: " + text, true /* log as warning */);
+    $('#error-modal .modal-body').text(text);
+    $('#error-modal .ok-button').off('click'); // unset all previous handlers to be safe
+    if (continuation)
+        $('#error-modal .ok-button').click (continuation);
+
+    $('#error-modal').modal();
+}
+
+// pop up a success modal with the given text  (user can only close). call continuation if provided on close
+epadd.success = function(text, continuation) {
+    epadd.log ("showing success modal: " + text);
+    $('#success-modal .modal-body').html(text);
+    $('#success-modal .ok-button').off('click'); // unset all previous handlers to be safe
+    if (continuation)
+        $('#success-modal .ok-button').click (continuation);
+
+    $('#success-modal').modal();
+}
+
+// pop up a warning modal with the given text, with ok/cancel buttons; call continuation if user presses ok
+epadd.warn_confirm_continue = function(text, continuation) {
+    epadd.log ("showing warm-confirm-continue modal: " + text);
+    $('#warning-confirm-modal .modal-body').text(text);
+    $('#warning-confirm-modal .ok-button').off('click'); // unset all previous handlers to be safe
+    if (continuation)
+        $('#warning-confirm-modal .ok-button').click (continuation);
+
+    // both cancel and ok buttons have the bootstrap data-dismiss attribute which dismisses the modal when the button is checked. so no specific handler is needed to dismiss the modal.
+    $('#warning-confirm-modal').modal();
+}
+
+// pop up a simple info modal with the given text, with ok/cancel buttons; call continuation if user presses ok
+epadd.info_confirm_continue = function(text, continuation) {
+    epadd.log ("showing info confirm modal: " + text);
+    $('#info-confirm-modal .modal-body').text(text);
+    $('#info-confirm-modal .ok-button').off('click'); // unset all previous handlers to be safe
+    if (continuation)
+        $('#info-confirm-modal .ok-button').click (continuation);
+
+    $('#info-confirm-modal').modal();
+}
+
+/* show a copy modal. descriptions describes the item being displayed and text is the actual text that is rendered in a textarea adn can be copied */
+epadd.show_copy_modal = function(description, text) {
+    epadd.log ("showing copy modal for header: " + description + " text: " + text);
+    $('#copy-modal .modal-header').text(description);
+    $('#copy-modal .modal-body textarea.copy-textarea').text(text);
+    $('#copy-modal').modal();
+    $('#copy-modal .copy-button').off('click'); // unset all previous handlers to be safe
+    $('#copy-modal .copy-button').click (function() {
+        var copyArea = $('#copy-modal textarea.copy-textarea')[0];
+        copyArea.select();
+        try {
+            var success = document.execCommand('copy');
+            if (success) {
+                epadd.success (description + " has been copied to the system clipboard.");
+            } else {
+                epadd.error ('Sorry: something went wrong trying to copy ' + description + ' to clipboard');
+            }
+        } catch (err) {
+            epadd.error ('Sorry: something went wrong trying to copy ' + description + ' to clipboard. Exception: ' + err);
+        }
+    });
+};
+
+/** not used currrently, but we are retaining this because it may come back in the future */
+epadd.deleteArchive = function(archiveID) {
+	epadd.warn_confirm_continue('Delete the archive? This action cannot be undone!', function() {
+        $.ajax({
             type: 'POST',
-            url: "ajax/save-archive.jsp",
+            url: "ajax/delete-archive.jsp",
             dataType: "json",
             data: {
                 "archiveID": archiveID
             },
             success: function (data) {
-                if (prompt) {
-                    epadd.alert('Archive saved successfully!')
-                }
+                $spinner.removeClass('fa-spin');
+                epadd.success('Archive deleted successfully!', function () { window.location.reload();});
             },
-            error: function(jq, textStatus, errorThrown) { var message = ("Error saving archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
-        });*/
-};
-
-/*
-epadd.saveAndCloseArchive= function() {
-    $.ajax({
-        type: 'POST',
-        url: "ajax/save-archive.jsp",
-        dataType: "json",
-        success: function(data) { epadd.alert(date+'Archive saved successfully! Now closing the archive',epadd.unloadArchive());},
-        error: function(jq, textStatus, errorThrown) { var message = ("Error saving and closing archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")"); epadd.log (message); epadd.alert(message); }
+            error: function (jq, textStatus, errorThrown) {
+                $spinner.removeClass('fa-spin');
+                var message = ("Error deleting archive, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace());
+                epadd.log(message);
+                epadd.error(message);
+            }
+        });
     });
-};
-*/
-
-
-epadd.deleteArchive = function(archiveID) {
-	var c = confirm ('Delete the archive? This action cannot be undone!');
-	if (!c)
-		return;
-	/*var $spinner = $('.spinner', $(e.target));
-	$spinner.addClass('fa-spin'); // revisit this -- fa-spin did not work for loadArchive() after new fa version
-	*/
-	$.ajax({
-		type: 'POST',
-		url: "ajax/delete-archive.jsp",
-		dataType: "json",
-        data: {
-            "archiveID": archiveID
-        },
-		success: function(data) { $spinner.removeClass('fa-spin'); epadd.alert('Archive deleted successfully!', function() { window.location.reload(); });},
-		error: function(jq, textStatus, errorThrown) { $spinner.removeClass('fa-spin'); var message = ("Error deleting archive, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace()); epadd.log (message); epadd.alert(message); }
-	});
 };

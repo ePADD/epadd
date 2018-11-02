@@ -1,10 +1,6 @@
-<!--
+<br/>
 <footer>
-<hr/>
-<div style="text-align:center">
-<span style="color:gray;font-size:small">ePADD version <% out.println(edu.stanford.epadd.Version.version);%></span>
+<div style="">
+    <div style="padding-top:12px;color:#ababab;font-size:12px;width:100%"><a href="https://library.stanford.edu/projects/epadd">ePADD</a> <% out.println(edu.stanford.epadd.Version.version);%> &copy; Stanford University</div>
 </div>
-<br/>
-<br/>
 </footer>
--->

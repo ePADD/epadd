@@ -31,8 +31,10 @@ public class ProtovisUtil {
 	public static int normalizingMax(Collection<DatedDocument> docs,  AddressBook addressBook, List<Date> intervals)
 	{
 		List<Date> dates = new ArrayList<>();
-		for (DatedDocument dd: docs)
-			dates.add(dd.date);
+		for (DatedDocument dd: docs) {
+			if(!dd.hackyDate)
+				dates.add(dd.date);
+		}
 
 		return findNormalizingMax(dates, intervals);
 	}
