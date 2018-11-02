@@ -6,6 +6,7 @@ import edu.stanford.muse.ie.KillPhrases;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.Indexer;
+import edu.stanford.muse.ner.EntityExtractionManager.EntityRecognizer;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
@@ -293,6 +294,123 @@ public class NER implements StatusProvider {
         archive.openForRead();
     }
 
+
+    //main method trains the model, recognizes the entities and updates the doc.
+    public void recognizeArchiveVersion7() throws CancelledException, IOException {
+        time = 0;
+        archive.openForRead();
+        archive.setupForWrite();
+
+        if (cancelled) {
+            status = "Cancelling...";
+            throw new CancelledException();
+        }
+
+        List<Document> docs = archive.getAllDocs();
+
+        if (cancelled) {
+            status = "Cancelling...";
+            throw new CancelledException();
+        }
+
+        int di = 0, ds = docs.size();
+        int ps = 0, ls = 0, os = 0;
+
+        //Added for v7.
+        EntityRecognizer entityRecognizer = new EntityRecognizer();
+        entityRecognizer.extractAndRecognize(archive);
+
+        long totalTime = 0, updateTime = 0, recTime = 0, duTime = 0, snoTime = 0;
+        for (Document doc : docs) {
+            long st1 = System.currentTimeMillis();
+            long st = System.currentTimeMillis();
+            org.apache.lucene.document.Document ldoc = archive.getLuceneDoc(doc.getUniqueId());
+            //pass the lucene doc instead of muse doc, else a major performance penalty
+            //do not recognise names in original content and content separately
+            //Its possible to improve the performance further by using linear kernel
+            // instead of RBF kernel and classifier instead of a regression model
+            // (the confidence scores of regression model can be useful in segmentation)
+            String originalContent = archive.getContents(ldoc, true);
+            String content = archive.getContents(ldoc, false);
+            String title = archive.getTitle(ldoc);
+            //original content is substring of content;
+
+            Span[] names = entityRecognizer.findFromContent(doc.getUniqueId());//.find(content);
+            Span[] namesT = {};//--for the time being just keep it empty. Update entityRecognizer later to add it. //nerModel.find(title);
+            recTime += System.currentTimeMillis() - st;
+            st = System.currentTimeMillis();
+
+            stats.update(names);
+            stats.update(namesT);
+            updateTime += System.currentTimeMillis() - st;
+            st = System.currentTimeMillis();
+
+            //!!!!!!SEVERE!!!!!!!!!!
+            //TODO: an entity name is stored in NAMES, NAMES_ORIGINAL, nameoffsets, and one or more of
+            // EPER, ELOC, EORG fields, that is a lot of redundancy
+            //!!!!!!SEVERE!!!!!!!!!!
+//			storeSerialized(ldoc, NAMES_OFFSETS, mapAndOffsets.second);
+//            storeSerialized(ldoc, TITLE_NAMES_OFFSETS, mapAndOffsetsTitle.second);
+//            storeSerialized(ldoc, FINE_ENTITIES, mapAndOffsets.getFirst());
+//            storeSerialized(ldoc, TITLE_FINE_ENTITIES, mapAndOffsets.getSecond());
+
+            Map<Short, Integer> counts = new LinkedHashMap<>();
+            Map<Short, Integer> countsT = new LinkedHashMap<>();
+            Arrays.stream(names).map(sp-> NEType.getCoarseType(sp.type).getCode()).forEach(s->counts.put(s,counts.getOrDefault(s,0)+1));
+            Arrays.stream(namesT).map(sp-> NEType.getCoarseType(sp.type).getCode()).forEach(s->countsT.put(s,countsT.getOrDefault(s,0)+1));
+            ps += counts.getOrDefault(NEType.Type.PERSON.getCode(), 0) + countsT.getOrDefault(NEType.Type.PERSON.getCode(), 0);
+            ls += counts.getOrDefault(NEType.Type.PLACE.getCode(), 0) + countsT.getOrDefault(NEType.Type.PLACE.getCode(), 0);
+            os += counts.getOrDefault(NEType.Type.ORGANISATION.getCode(), 0) + countsT.getOrDefault(NEType.Type.ORGANISATION.getCode(), 0);
+
+            snoTime += System.currentTimeMillis() - st;
+            st = System.currentTimeMillis();
+
+            String[] updateFields = new String[]{NAMES,NAMES_ORIGINAL,NAMES_TITLE};
+            for(String s: updateFields){
+                if(ldoc.get(s)!=null)
+                    ldoc.removeField(s);
+            }
+            //ldoc.removeField(NAMES);ldoc.removeField(NAMES_TITLE);//may be NAMES_ORIGINAL was left to be deleted hence delete docs were added.
+
+            ldoc.add(new StoredField(NAMES,
+                    Util.join(Arrays.stream(names).map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));
+            ldoc.add(new StoredField(NAMES_TITLE,
+                    Util.join(Arrays.stream(namesT).map(Span::parsablePrint).collect(Collectors.toSet()), Indexer.NAMES_FIELD_DELIMITER)));
+
+            int ocs = originalContent.length();
+            List<String> namesOriginal = Arrays.stream(names).filter(sp->sp.end<ocs).map(Span::parsablePrint).collect(Collectors.toList());
+
+            ldoc.add(new StoredField(NAMES_ORIGINAL, Util.join(namesOriginal, Indexer.NAMES_FIELD_DELIMITER)));
+            //log.info("Found: "+names.size()+" total names and "+names_original.size()+" in original");
+
+            //TODO: Sometimes, updating can lead to deleted docs and keeping these deleted docs can bring down the search performance
+            //Could building a new index be faster?
+            archive.updateDocument(ldoc);
+            duTime += System.currentTimeMillis() - st;
+            di++;
+
+            totalTime += System.currentTimeMillis() - st1;
+            pctComplete = 30 + ((double)di/(double)ds) * 70;
+            double ems = (double) (totalTime * (ds-di)) / (double) (di*1000);
+            status = "Recognized entities in " + Util.commatize(di) + " of " + Util.commatize(ds) + " emails ";
+            //Util.approximateTimeLeft((long)ems/1000);
+            eta = (long)ems;
+
+            if(di%100 == 0)
+                log.info(status);
+            time += System.currentTimeMillis() - st;
+
+            if (cancelled) {
+                status = "Cancelling...";
+                throw new CancelledException();
+            }
+        }
+
+        log.info("Trained and recognised entities in " + di + " docs in " + totalTime + "ms" + "\nPerson: " + ps + "\nOrgs:" + os + "\nLocs:" + ls);
+        archive.close();
+        //prepare to read again.
+        archive.openForRead();
+    }
 
 
     //arrange offsets such that the end offsets are in increasing order and if there are any overlapping offsets, the bigger of them should appear first
