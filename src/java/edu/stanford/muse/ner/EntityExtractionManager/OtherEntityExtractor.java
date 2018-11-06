@@ -3,7 +3,6 @@ package edu.stanford.muse.ner.EntityExtractionManager;
 import edu.stanford.muse.ner.model.NEType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jpl7.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -35,13 +34,8 @@ public class OtherEntityExtractor extends EntityExtractor {
         ////2.1 - Init JPL and load facts/rules
         initPrologAndLoadRules_Facts(input);
         //Step 3. Get the set of resolved CIC's obtained by using the rules.
-        Variable CIC = new Variable("CIC");
-        Variable STRTP = new Variable("STARTP");
-        Variable ENDP = new Variable("ENDP");
-        Variable MID = new Variable("MID");
-        Variable REASON = new Variable("REASON");
-        Variable EID = new Variable("EID");
-        log.info("================================"+type.getDisplayName()+"================================");
+
+        /*log.info("================================"+type.getDisplayName()+"================================");
         Set<String> seenSet = new LinkedHashSet<>();
         {
             //get list of all unresolved CIC's from input docFacts.
@@ -68,8 +62,8 @@ public class OtherEntityExtractor extends EntityExtractor {
                 }
 
             });
-        }
-        seenSet.clear();
+        }*/
+        //seenSet.clear();
         /***** Merging of entities together-- Update as and when more rules are found--------*/
         /*
         //dump the docfacts again, this time setting uniquCICfacts as false.

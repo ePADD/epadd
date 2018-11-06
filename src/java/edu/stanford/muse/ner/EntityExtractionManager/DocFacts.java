@@ -1,7 +1,7 @@
 package edu.stanford.muse.ner.EntityExtractionManager;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
+import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
@@ -9,8 +9,10 @@ import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.ner.tokenize.CICTokenizer;
 import edu.stanford.muse.ner.tokenize.Tokenizer;
+import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.NLPUtils;
 import edu.stanford.muse.util.Triple;
+import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,6 +38,9 @@ public class DocFacts {
     Map<String,Long> nMessageToThread=null;
     Multimap<String,Integer> nMessageToReceiver =null;
     Map<String,Integer> nMessageToSender=null;
+    SetMultimap<String,Integer> nNameToContactID= HashMultimap.create();//to avoid duplicate key,value pairs.
+    SetMultimap<String,Integer> nTokenizedNameToContactID = HashMultimap.create();
+
 
     public DocFacts(Set<Document> docs,Archive archive){
         this.nDocset=docs;
@@ -167,10 +172,49 @@ public class DocFacts {
         if(fromID!=-1)
             nMessageToSender.put(mid,fromID);
         toCCBCCContactsID.stream().forEach(id-> nMessageToReceiver.put(mid,id));
+        buildAddressBookofParticipants();
 
     }
 
+    /*
+    This method builds a map of names and contactid for only the participants (from/to)
+     */
+    private void buildAddressBookofParticipants(){
+        nMessageToSender.values().forEach(contactid->{
+            nArchive.getAddressBook().getContact(contactid).getNames().forEach(contactname->{
+                String cleanedupname = EmailUtils.cleanPersonName(contactname);
+                nNameToContactID.put(cleanedupname,contactid);
+                //tokenize cleanedupname and store separately.
+                List<String> tokens = Util.tokenize(cleanedupname);
+                tokens.forEach(token->nTokenizedNameToContactID.put(token,contactid));
 
+            });
+        });
+
+        nMessageToReceiver.values().forEach(contactid->{
+            nArchive.getAddressBook().getContact(contactid).getNames().forEach(contactname->{
+                String cleanedupname = EmailUtils.cleanPersonName(contactname);
+                nNameToContactID.put(cleanedupname,contactid);
+                //tokenize cleanedupname and store separately.
+                List<String> tokens = Util.tokenize(cleanedupname);
+                tokens.forEach(token->nTokenizedNameToContactID.put(token,contactid));
+            });
+        });
+    }
+
+    /*
+    Given a name it returns the set of contact ID's having that name.
+    First perform exact match, if found return those ID's
+    Next perform containment match i.e. Jeb can match Jeb Bush.
+     */
+    public Set<Integer> getContactIDs(String name){
+        String cleanedupname = EmailUtils.cleanPersonName(name);
+        Set<Integer> result = nNameToContactID.get(cleanedupname);
+        if(result.size()==0){
+            result = nTokenizedNameToContactID.get(cleanedupname);
+        }
+        return result;
+    }
     /*
     This method updates the type of the CIC stored in this object. If messageID is null then the type is applied to
     all CIC (present in any message of this set).
@@ -233,6 +277,22 @@ public class DocFacts {
         cfact.nInBetween = new String(inBetween);
 
         nCICFacts.remove(cfact);
+
+    }
+
+    /*
+   This method removes a given CIC. It is used when some CIC is explicitly merged with other CIC
+    */
+    public void removeCIC(CICFact cic){
+        nCICFacts.remove(cic);
+
+    }
+
+    /*
+   This method add a given CIC.
+    */
+    public void addCIC(CICFact cic){
+        nCICFacts.add(cic);
 
     }
 

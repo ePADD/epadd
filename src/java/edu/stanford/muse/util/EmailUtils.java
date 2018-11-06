@@ -1346,6 +1346,7 @@ public class EmailUtils {
     }
 
     public static void main(String[] args){
-        testLookupNormalizer();
+        System.out.println(EmailUtils.normalizePersonNameForLookup("Bush, Jeb"));
+		//testLookupNormalizer();
     }
 }
