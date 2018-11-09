@@ -624,8 +624,12 @@ public class SearchResult {
                     EmailDocument ed = (EmailDocument)k.getKey();
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
+            //for search in body
                     entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntitiesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
-                    entitiesInThisDoc.retainAll(entityToSearch);
+            //without body
+            entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntitiesInDoc(ed, false)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
+
+            entitiesInThisDoc.retainAll(entityToSearch);
                     if (entitiesInThisDoc.size() > 0) {
                         //before returning true also add this information in the document body specific highlighting
                         //object.
