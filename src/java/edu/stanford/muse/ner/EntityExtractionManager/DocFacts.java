@@ -182,7 +182,7 @@ public class DocFacts {
     private void buildAddressBookofParticipants(){
         nMessageToSender.values().forEach(contactid->{
             nArchive.getAddressBook().getContact(contactid).getNames().forEach(contactname->{
-                String cleanedupname = EmailUtils.cleanPersonName(contactname);
+                String cleanedupname = EmailUtils.normalizePersonNameForLookup(contactname);
                 nNameToContactID.put(cleanedupname,contactid);
                 //tokenize cleanedupname and store separately.
                 List<String> tokens = Util.tokenize(cleanedupname);
@@ -193,7 +193,7 @@ public class DocFacts {
 
         nMessageToReceiver.values().forEach(contactid->{
             nArchive.getAddressBook().getContact(contactid).getNames().forEach(contactname->{
-                String cleanedupname = EmailUtils.cleanPersonName(contactname);
+                String cleanedupname = EmailUtils.normalizePersonNameForLookup(contactname);
                 nNameToContactID.put(cleanedupname,contactid);
                 //tokenize cleanedupname and store separately.
                 List<String> tokens = Util.tokenize(cleanedupname);
@@ -202,13 +202,25 @@ public class DocFacts {
         });
     }
 
+    public CICFact getNextCIC(CICFact cic){
+        List<CICFact> next = nCICFacts.stream().filter(nextcic->{
+            return (nextcic.nCIC.equals(cic.nNextCIC) && nextcic.nMID.equals(cic.nMID) && nextcic.nStart==cic.nEnd + cic.nInBetween.length());
+        }).collect(Collectors.toList());
+        if(next.size()==1)
+            return next.iterator().next();
+        else {
+            log.info("Not able to find the information about the next CIC of "+cic);
+            return null;
+
+        }
+    }
     /*
     Given a name it returns the set of contact ID's having that name.
     First perform exact match, if found return those ID's
     Next perform containment match i.e. Jeb can match Jeb Bush.
      */
     public Set<Integer> getContactIDs(String name){
-        String cleanedupname = EmailUtils.cleanPersonName(name);
+        String cleanedupname = EmailUtils.normalizePersonNameForLookup(name);
         Set<Integer> result = nNameToContactID.get(cleanedupname);
         if(result.size()==0){
             result = nTokenizedNameToContactID.get(cleanedupname);

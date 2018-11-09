@@ -39,4 +39,8 @@ public class CICFact{
         return result;
     }
 
+    public String toString(){
+        return "CIC::"+this.nCIC+","+this.nStart+","+this.nEnd+","+this.nInBetween+","+this.nNextCIC+","+this.nMID;
+    }
+
 }
