@@ -165,8 +165,8 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
             name = Config.DEFAULT_LEXICON;
             lex = archive.getLexicon(name);
         }
-        JSPHelper.log.info("req lex name = " + name + " session lex name = " + ((lex == null) ? "(lex is null)" : lex.name));
-        heading = "Lexicon Graph";
+        JSPHelper.log.info("req lex name = " + name + " session lex name = " + lex.name);
+        heading = "Lexicon Graph: " + lex.name;
         tableURL = "lexicon?archiveID="+archiveID;
     } else if ("people".equals(view)) {
         heading = "Top correspondents graph";
@@ -198,11 +198,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 	writeProfileBlock(out, archive, heading);
 %>
 
-<div style="text-align:center;display:inline-block;vertical-align:top;margin-left:170px">
-	<button class="btn-default" onclick="window.location='<%=tableURL%>'"><i class="fa fa-table"></i> Table View</button>
-</div>
-
-<div align="center">	
+<div align="center">
 <div style="font-size:14px">
 <br/>
 <hr style="margin-top:-6px">
@@ -214,25 +210,6 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 			 lexiconNames = new LinkedHashSet(lexiconNames); // we can't call remve on the collection directly, it throws an unsupported op.
 			 lexiconNames.remove("sensitive");
 		 }
-
-			if (lexiconNames.size() > 1)
-			{
-	%>
-		<script>function changeLexicon() {	window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments&lexicon=' +	$('#lexiconName').val(); }</script>
-		Lexicon <select title="change lexicon" id="lexiconName" onchange="changeLexicon()">
-		<%
-			// common case, only one lexicon, don't show load lexicon
-			for (String n: lexiconNames)
-			{
-		%> <option <%=name.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
-		<%
-			}
-		%>
-		</select>
-	<%
-			}
-	%>
-<%
 	}
 	%>
 

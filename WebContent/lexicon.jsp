@@ -78,67 +78,32 @@
 	// first look for url param for lexicon name if specified
 	if (!Util.nullOrEmpty(lexiconname))
 		lex = archive.getLexicon(lexiconname);
-	else
+
+	if (lex == null)
 	{
-        /*
-		// if no url param, look for lexicon in session
-		lex = (Lexicon) JSPHelper.getSessionAttribute(session, "lexicon");
-		if (lex != null)
-		{
-			name = lex.name;
-			lex = archive.getLexicon(name); // re-read it from the disk. we may have come here just after updating it.
-		}
-        */
-		if (lex == null)
-		{
-			// if not in session either, simply look for default
-			lexiconname = Config.DEFAULT_LEXICON;
-			lex = archive.getLexicon(lexiconname);
-		}
+		// if not in session either, simply look for default
+		lexiconname = Config.DEFAULT_LEXICON;
+		lex = archive.getLexicon(lexiconname);
 	}
-    boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase (lexiconname);
 
 	if (lex == null) {
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(lexiconname) + "</div>");
-	} else {
-//		session.setAttribute("lexicon", lex);
-		JSONArray map = lex.getCountsAsJSON(lexiconname,archive, false /*,!isRegex*/ /* originalContent only */);
-		Collection<String> lexiconNames = archive.getAvailableLexicons();
-		JSONArray jsonArray = new JSONArray(lexiconNames);
-		if (ModeConfig.isDeliveryMode()) {
-			lexiconNames = new LinkedHashSet(lexiconNames); // we can't call remve on the collection directly, it throws an unsupported op.
-			lexiconNames.remove(Lexicon.SENSITIVE_LEXICON_NAME);
-		}
+	}
+	boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase (lexiconname);
+	JSONArray map = lex.getCountsAsJSON(lexiconname,archive, false /*,!isRegex*/ /* originalContent only */);
+%>
 
-		boolean onlyOneLexicon = (lexiconNames.size() == 1);
-		// common case is only one lexicon, don't show load lexicon in this case.
-		if (!onlyOneLexicon) { %>
-			<script>function changeLexicon() {	window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	$('#lexiconName').val(); }</script>
-
-			<%--<div style="text-align:center">
-
-					<div class="form-group" style="width:20%; margin-left:40%">
-						<label for="lexiconName">Choose Lexicon</label>
-						<select id="lexiconName" name="lexiconName" class="form-control selectpicker">
-							<% for (String n: lexiconNames) { %>
-							%> <option <%=lexiconname.equalsIgnoreCase(n) ? "selected":""%> value="<%=n.toLowerCase()%>"><%=Util.capitalizeFirstLetter(n)%></option>
-							<% } %>
-						</select>
-					</div>
-
-			</div>--%>
-			<br/>
-	<% } %>
-
-<br/>
+	<br/>
 
 <div style="margin:auto; width:900px">
+
 	<div class="button_bar_on_datatable">
-		<div title="Go to graph view" class="buttons_on_datatable" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments';"><img class="button_image_on_datatable" src="images/graph.svg"></div>
+		<div title="Go to graph view" class="buttons_on_datatable" onclick="window.location = 'graph?archiveID=<%=archiveID%>&view=sentiments&lexicon=<%=lex.name%>';"><img class="button_image_on_datatable" src="images/graph.svg"></div>
 		<%if(!ModeConfig.isDiscoveryMode()){%>
-		<div title="Edit lexicon" class="buttons_on_datatable" id="edit-lexicon"><img class="button_image_on_datatable" src="images/edit_lexicon.svg"></div>
+			<div title="Edit lexicon" class="buttons_on_datatable" id="edit-lexicon"><img class="button_image_on_datatable" src="images/edit_lexicon.svg"></div>
 		<%}%>
 	</div>
+
 	<table id="table">
 		<thead><th>Lexicon category</th><th>Messages</th></thead>
 		<tbody>			
@@ -154,34 +119,33 @@
 </div>
 <p>
 <br/>
-	<script>
-        $('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
-		$(document).ready (function() {
-            window.is_regex = <%=isRegex%>;
-			$('#lexiconName').change (changeLexicon);
-			$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';});
-        });
 
-        // we're using a simple datatables data source here, because this will be a small table
-        $(document).ready(function() {
-            function do_lexicon_search(e) {
-                var cat = $(e.target).text();
-                var lexname = '<%=lexiconname%>';
-                if (window.is_regex)
-                    window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + lexname); // sensitive=true is what enables regex highlighting
-                else
-                    window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + lexname);
-            }
-            //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
-            var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
-            oTable.fnSort( [ [1,'desc'] ] );
-            $('#table').show();
+<script>
+	$('html').addClass('js'); // see http://www.learningjquery.com/2008/10/1-way-to-avoid-the-flash-of-unstyled-content/
+	$(document).ready (function() {
+		window.is_regex = <%=isRegex%>;
+		$('#edit-lexicon').click (function() { window.location='edit-lexicon?archiveID=<%=archiveID%>&lexicon=<%=lex.name%>';});
+	});
 
-            // attach the click handlers
-            $('.search').click(do_lexicon_search);
-        } );
-	</script>
-<% } // lex != null %>
+	// we're using a simple datatables data source here, because this will be a small table
+	$(document).ready(function() {
+		function do_lexicon_search(e) {
+			var cat = $(e.target).text();
+			var lexname = '<%=lexiconname%>';
+			if (window.is_regex)
+				window.open('browse?adv-search=1&archiveID=<%=archiveID%>&sensitive=true&termBody=on&termSubject=on&termAttachments=on&lexiconCategory=' + cat + '&lexiconName=' + lexname); // sensitive=true is what enables regex highlighting
+			else
+				window.open('browse?adv-search=1&archiveID=<%=archiveID%>&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + lexname);
+		}
+		//if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
+		var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+		oTable.fnSort( [ [1,'desc'] ] );
+		$('#table').show();
+
+		// attach the click handlers
+		$('.search').click(do_lexicon_search);
+	} );
+</script>
 
 
 <jsp:include page="footer.jsp"/>
