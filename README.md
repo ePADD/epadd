@@ -77,7 +77,6 @@ Unless otherwise indicated, software items in this repository are distributed un
 - Josh Schneider, Stanford University Libraries
 
 *Design:*
-- Sachin Salunke;
 - Saumya Sarangi, Lollypop Design;
 - Mandeep RJ, Lollypop Design
 
