@@ -21,8 +21,8 @@ hr {
 .navbar-default .navbar-nav>li>a { color: rgba(255,255,255,0.5);}
 .navbar-default .navbar-nav>li.nav-active a { color: rgba(255,255,255,1.0);}
 .navbar-default .navbar-nav>li>a:hover { color: rgba(255,255,255,1.0);}
-.navbar-brand { padding : 0px; background: #07659E;}
-.navbar-brand img { padding : 0px; background: #07659E;}
+.navbar-brand { height: 55px; padding : 0px; background: #0175BC; border-right: solid 1px rgba(192,192,192,0.5);}
+.navbar-brand img { padding : 0px; background: #0175BC;}
 
 a {color: #3682bb;}
 /* #nav1 { font-size: 120%;}

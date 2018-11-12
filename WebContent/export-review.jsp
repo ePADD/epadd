@@ -82,7 +82,7 @@ writeProfileBlock(out, archive, Util.pluralize(docs.size(), "message") + descrip
 
 <div style="margin:auto; width:900px">
 
-	<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
+	<div id="spinner-div" style="text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>
 	<br/><% out.flush(); %>
 
 	<table id="messages" style="display:none">

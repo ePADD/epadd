@@ -75,27 +75,34 @@ Browse page for entities based on fine types
     </nav>
 
     <div style="margin:auto; width:1100px">
-    <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
-    <%
-        //out.println("<h1>Entity Type: " + entityType + "</h1></br></br>");
-        JSONArray resultArray = archive.getEntitiesInfoJSON(type);
-    %>
+
+        <div id="spinner-div" style="text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>
+        <%
+            //out.println("<h1>Entity Type: " + entityType + "</h1></br></br>");
+            out.flush();
+            JSONArray resultArray = archive.getEntitiesInfoJSON(type);
+        %>
+
         <div class="button_bar_on_datatable">
                 <div title="Download all <%=entityType%> entities as CSV" class="buttons_on_datatable" onclick="exportEntityHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
-        <%if(!ModeConfig.isDiscoveryMode()){%>
+            <%if(!ModeConfig.isDiscoveryMode()){%>
                 <div title="Edit entities" class="buttons_on_datatable" onclick="window.location='edit-entities?archiveID=<%=archiveID%>&type=<%=type%>'"><img class="button_image_on_datatable" src="images/edit_lexicon.svg"></div>
-        <%}%>
-            </div>
-<table id="entities" style="display:none">
-    <thead><th>Entity</th><th>Score</th><th>Messages</th></thead>
-    <tbody>
-    </tbody>
-</table>
+            <%}%>
+        </div>
 
-    <br/>
-    <br/>
-    <br/>
+        <table id="entities" style="display:none">
+            <thead><th>Entity</th><th>Score</th><th>Messages</th></thead>
+            <tbody>
+            </tbody>
+        </table>
 
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+    </div>
 <%--<div style="text-align:center">
     <button class="btn btn-default" onclick="window.location='edit-entities?archiveID=<%=archiveID%>&type=<%=type%>'">Edit Entities</button>
 </div>--%>
@@ -152,10 +159,7 @@ Browse page for entities based on fine types
         } );
     </script>
 
-    <br/>
-    <br/>
-    <br/>
-    </div>
+
     <jsp:include page="footer.jsp"/>
 </body>
 </html>
