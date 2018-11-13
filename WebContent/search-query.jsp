@@ -79,6 +79,7 @@
 
 			Advanced search: Search using a range of advanced parameters, specifying entities, correspondents, and more.
 			<br/><br/>
+			Correspondent List Search: Type or paste a list of email addresses (one address per line) to search the email archive for all matching correspondents.
 		<% } %>
 	</div>
 </nav>

@@ -77,8 +77,8 @@
     boolean isOtherSelected = extensionsNeeded.contains("others");
 
 %>
-    <div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
-
+    <div id="spinner-div" style="text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>
+    <% out.flush();%>
     <br/>
     <br/>
     Exporting <%=msgProcessed%> attachments with extensions: <%=StringUtils.join (extensionsNeeded, ";")%>

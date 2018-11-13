@@ -73,39 +73,35 @@
 <%
 	writeProfileBlock(out, archive, "Manage labels");
 %>
-
-<% // new label not available in discovery mode.
-  if (!ModeConfig.isDiscoveryMode()) { %>
 <div style="margin:auto; width:1100px">
-		<div class="button_bar_on_datatable">
-			<%if(!ModeConfig.isDiscoveryMode()){%>
-			<div title="Create label" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
-			<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
-			<%}%>
-			<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
-			<%if(!ModeConfig.isDiscoveryMode()){%>
-			<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/labels.svg"></div></div>
-			<%}%>
-</div>
-<% }else{ %>
-<div style="margin:auto; width:1100px">
-<%} %>
-<table id="labels" style="display:none;">
-	<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
-        <% // this column not available in discovery mode
-            if (!ModeConfig.isDiscoveryMode()) { %>
-            <th>Actions</th>
-        <% } %>
-    </tr></thead>
-	<tbody>
-	</tbody>
-</table>
-<div id="spinner-div" style="text-align:center"><i class="fa fa-spin fa-spinner"></i></div>
 
-	<div style="clear:both"></div>
+	<div id="spinner-div" style="text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>
+
+<%--new label not available in discovery mode. --%>
+	<div class="button_bar_on_datatable">
+		<%if(!ModeConfig.isDiscoveryMode()){%>
+		<div title="Create label" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
+		<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
+		<%}%>
+		<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
+		<%if(!ModeConfig.isDiscoveryMode()){%>
+		<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/labels.svg"></div>
+	</div>
+		<%}%>
+
+	<table id="labels" style="display:none;">
+		<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
+			<% // this column not available in discovery mode
+				if (!ModeConfig.isDiscoveryMode()) { %>
+				<th>Actions</th>
+			<% } %>
+		</tr></thead>
+		<tbody>
+		</tbody>
+	</table>
+
+
 	<br/>
-
-
 </div>
 
 	<%

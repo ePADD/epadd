@@ -349,7 +349,7 @@ epadd.nav_mark_active = function(text) {
 epadd.import_accession = function(e, post_params) {
     $('#gobutton').hide(); // avoid a second submit
 
-	var $spinner = $('.fa-spinner', $(e.target));
+	var $spinner = $('#spinner-div', $(e.target));
 	$spinner.show();
 	$spinner.addClass('fa-spin');
 	$('#spinner-div').fadeIn();
