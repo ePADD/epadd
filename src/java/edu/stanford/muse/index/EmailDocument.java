@@ -35,6 +35,7 @@ import javax.mail.internet.InternetAddress;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** EmailDocument is really like an email header - it stores metadata about a message.
  * use ed.date, ed.to/from/cc/bcc, and ed.getContents() gets its contents, ed.attachments gets its attachments */
@@ -783,6 +784,14 @@ public class EmailDocument extends DatedDocument implements Serializable
 		for (String a: ownAddrsArray)
 			trustedAddrs.add(a.toLowerCase());
 
+		fillAddressBookFromTrustedAddresses(docs,trustedAddrs,addressBook);
+
+		return addressBook;
+
+	}
+
+	private static void fillAddressBookFromTrustedAddresses(Collection<EmailDocument> docs, Set<String> trustedAddrs, AddressBook addressBook) {
+
 		// 2 passes here: first pass just to unify and find all own email addrs
 		for (EmailDocument ed: docs)
 			addressBook.processContactsFromMessage (ed, trustedAddrs);
@@ -801,6 +810,34 @@ public class EmailDocument extends DatedDocument implements Serializable
 		for (EmailDocument ed: docs)
 			addressBook.processContactsFromMessage(ed, trustedAddrs);
 		addressBook.organizeContacts();
-		return addressBook;
+
+	}
+
+	/**
+	 * This method recomputes addressbook based on a set of trusted email addresses. Initially (when importing an archive) only the owner's
+	 * 	email id (provided at the time of import) is taken as the trusted email addresses. See {@link #buildAddressBook(Collection, Collection, Collection)}
+	 * @param archive
+	 * @param trustedAddress - a set of trusted email addresses.
+	 * @return a new addressbook
+	 */
+
+	public static AddressBook recomputeAddressBook(Archive archive, Set<String> trustedAddress){
+		AddressBook oldAddressBook = archive.getAddressBook();
+		Set<String> ownAddresses = oldAddressBook.getOwnAddrs();
+		Set<String> ownNames = oldAddressBook.getOwnNamesSet();
+		String[] ownAddressesArray = ownAddresses.toArray(new String[ownAddresses.size()]);
+		String[] ownNamesArray = ownNames.toArray(new String[ownNames.size()]);
+		AddressBook newAddressBook = new AddressBook(ownAddressesArray,ownNamesArray);
+		//		log.info("Own addresses: " + EmailUtils.emailAddrsToString(ownAddrs));
+		EmailFetcherThread.log.debug ("Recomputing addressbook with trusted email addresses as- " + trustedAddress.size());
+		Collection<EmailDocument> edocs=archive.getAllDocsAsSet().stream().map(doc->((EmailDocument)doc)).collect(Collectors.toSet());
+
+		//Add original owner's emails also as trusted addresses.
+		Set<String> owneremails_grouped = oldAddressBook.getContact(0).getEmails();
+		trustedAddress.addAll(owneremails_grouped);
+		fillAddressBookFromTrustedAddresses(edocs,trustedAddress,newAddressBook);
+		return newAddressBook;
+
+
 	}
 }

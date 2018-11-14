@@ -695,7 +695,7 @@ public class IndexUtils {
 	{
 
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
-		if(archive.collectionMetadata.accessionMetadatas==null)
+		if(archive.collectionMetadata==null || archive.collectionMetadata.accessionMetadatas==null)
 			return result;
 		Map<String, DetailedFacetItem> tmpresult = new LinkedHashMap<>();//a temp result to hold accessionID
 		// specific facets. Once fully constructed we will convert accessionID to accessionName

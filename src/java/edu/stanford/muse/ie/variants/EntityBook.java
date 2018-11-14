@@ -26,6 +26,10 @@ public class EntityBook implements Serializable {
     public static Log log = LogFactory.getLog(EntityBook.class);
 
     public static final String DELIMS = " .;,-#@&()";
+    private final static String DELIMITER = "--";
+
+    // for all entities in this mapper, canonicalized name -> MappedEntity object. to save space, only contains MappedEntity's for entities that actually have more than 1 name variant
+    Multimap<String, MappedEntity> nameToMappedEntity = LinkedHashMultimap.create();
 
     /**
      * case independent, word order independent, case normalized
@@ -46,10 +50,6 @@ public class EntityBook implements Serializable {
         return Util.join(tokens, " ");
     }
 
-        private final static String DELIMITER = "--";
-
-        // for all entities in this mapper, canonicalized name -> MappedEntity object. to save space, only contains MappedEntity's for entities that actually have more than 1 name variant
-        Multimap<String, MappedEntity> nameToMappedEntity = LinkedHashMultimap.create();
 
         //private List<MappedEntity> entityList = new LinkedList<>();
         /**

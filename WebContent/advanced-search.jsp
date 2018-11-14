@@ -594,8 +594,14 @@
 							<label for="accessionIDs">Accessions</label>
 							<select id="accessionIDs" name="accessionIDs" class="form-control selectpicker">
 								<option value="" selected disabled>Select</option>
-								<% List<Archive.AccessionMetadata> ams= archive.collectionMetadata.accessionMetadatas;
-									for (Archive.AccessionMetadata am: ams) { %>
+								<% List<Archive.AccessionMetadata> ams= null;
+								//to avoid the issue of null collecitonmetadata/accessionmetadata when user copies the archive to cprocessing directory
+									//instead of importing it through UI.
+								if(archive.collectionMetadata!=null && archive.collectionMetadata.accessionMetadatas!=null)
+								    ams = archive.collectionMetadata.accessionMetadatas;
+								else
+								    ams= new LinkedList<>();
+								for (Archive.AccessionMetadata am: ams) { %>
 								<option value="<%=am.id%>"><%=am.id%></option>
 								<% }%>
 							</select>
