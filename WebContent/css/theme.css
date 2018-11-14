@@ -1414,10 +1414,10 @@ body {
 
 .menu-icon {padding: 6px; margin-right: 6px; width: 25px;}
 
-.profile-text {
+.profile-title {
 	color: #404040;
 	font-size: 20px;
-	display: inline-block;
+	display: table-cell;
 	margin-left: 10px;
 	margin-top: 10px;
 	vertical-align:top;
@@ -1427,7 +1427,7 @@ body {
 	/*height: 60px;*/
 	/*width: 60px;*/
 	height: 80px;
-	width: 93px;
+	width: 80px;
 	background-color: #e0e4e6; /* consistent with background-color for banner image. */
 	/*background-image: url('../serveImage.jsp?file=profilePhoto.png');*/
 	border-radius: 50%;
@@ -1440,6 +1440,7 @@ body {
 .profile-block {
 	padding: 10px 20px;
 	background-color: #f5f5f8;
+	position:relative;
 }
 
 .header-block {
@@ -1448,28 +1449,31 @@ body {
 }
 
 .profile-pic-edit {
-	border-radius: 50%;
+	/*border-radius: 50%;*/
 	position: relative;
 	top:25px;
 	height:24px;
 	width:24px;
-	background-color: white;
+	/*background-color: white;*/
 	left: 60px;
 	text-align:center;
 	color: #0075bb;
-	border: solid 1px gray;
+	/*border: solid 1px gray;*/
 	cursor: pointer;
 }
 
 .profile-more-info {
-	position: relative;
+	position: absolute;
 	font-size: 16px;
 	vertical-align: middle;
 	display: table-cell;
 	cursor: pointer;
+	top: 34px ;
+	right: 10px;
+
 }
 
-.profile-text {
+.profile-title {
 	font-weight: bold;
 	border-right: solid 1px #ccc;
 	padding-right: 20px;
@@ -1533,7 +1537,7 @@ body {
 
 .panel {background-color: #f5f5f8;}
 .previous, .next { cursor: pointer}
-
+.profile-block-left { max-width: 50%; display: table-cell;}
 .dataTables_info { adding: 3px 18px 3px 10px; font-weight: normal;  cursor: pointer;  font-size: 12px;  color: #999999;}
 .dataTables_paginate { font-size: 12px;}
 table.dataTable { border: solid 1px rgba(160,160,160,0.3);}

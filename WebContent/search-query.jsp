@@ -60,11 +60,15 @@
 			Simple search: Search for keywords or phrases. Supports Boolean searching.
 			<br/><br/>
 
-			Multi-entity search: Type or paste a text block then click search to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			Multi-entity search: Type or paste a text block to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+
 			<br/><br/>
 
 
-			Multi-term search: Type or past a list of terms (one term per line) then click search to search the email archive for all matching terms. Highlighted terms also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			Multi-term search: Type or paste a list of terms (one term per line) to search the email archive for all matching terms. Highlighted terms also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			<br/><br/>
+
+			Correspondent List Search: Type or paste a list of email addresses (one address per line) to search the email archive for all matching correspondents.
 			<br/><br/>
 
 			Advanced search: Search using a range of advanced parameters, specifying terms, entities, correspondents, attachments, annotations, labels, and more.
@@ -74,12 +78,10 @@
 			Simple search: Search for correspondents or entities. Supports Boolean searching.
 			<br/><br/>
 
-			Multi-entity search: Type or paste a text block then click search to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
+			Multi-entity search: Type or paste a text block to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
 			<br/><br/>
 
 			Advanced search: Search using a range of advanced parameters, specifying entities, correspondents, and more.
-			<br/><br/>
-			Correspondent List Search: Type or paste a list of email addresses (one address per line) to search the email archive for all matching correspondents.
 		<% } %>
 	</div>
 </nav>

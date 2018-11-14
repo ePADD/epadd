@@ -29,17 +29,22 @@
             String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
                     + "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
                     + "<div class=\"profile-block\">"
+                    + "<div class=\"profile-block-left\">"
                     + "<div class=\"profile-small-img\"  style=\"background-image: url(\'serveImage.jsp?archiveID=" + archiveID + "&file=profilePhoto\')\">";
 
             // don't allow the option to edit profile photo in discovery or delivery mode
             if (offerEditProfilePhotoOption && !ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode())
-                output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_profile_pic.svg\"/></div>";
+                output += "<div title=\"upload a picture\" class=\"profile-pic-edit\"><img style=\"height:25px\" src=\"images/edit_summary.svg\"/></div>";
 
-            output += "</div>"
-                    + "<div class=\"profile-text\" style=\"width:" + (pixelWidth - 60 - 32 - 420 - 20) + "px\">"
-                    + Util.escapeHTML(title)
+            // profile block is broken into left half of 50% and right half of 50%
+            int titleWidth = (pixelWidth/2 - 100 - 10 * 2); // -100 for the pic and a further -10px for l/r margin
+            int metadataWidth = (pixelWidth/2 - 32 - 20); // -32 for info icon and a further -10 for l/r margin
+            output += "</div>" // end profile-small-img
+                    + "<div class=\"profile-title\" style=\"width:" + titleWidth + "px;max-width: " + titleWidth + "px\">"
+                        + Util.escapeHTML(title)
                     + "</div>"
-                    + "<div class=\"collection-metadata\">" + collectionInfo + "</div>"
+                    + "</div>" // end profile-block-left
+                    + "<div class=\"collection-metadata\" style=\"width: " + metadataWidth + "px;max-width: " + metadataWidth + "px\">" + collectionInfo + "</div>"
                     + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection\" src=\"images/information.svg\"/> </div>"
                     + "</div></div><br/>";
 
