@@ -833,8 +833,10 @@ public class EmailDocument extends DatedDocument implements Serializable
 		Collection<EmailDocument> edocs=archive.getAllDocsAsSet().stream().map(doc->((EmailDocument)doc)).collect(Collectors.toSet());
 
 		//Add original owner's emails also as trusted addresses.
-		Set<String> owneremails_grouped = oldAddressBook.getContact(0).getEmails();
-		trustedAddress.addAll(owneremails_grouped);
+		//Q. Should we add all combined addresses corresponding to the owner's email ID as well? Not added right now.
+		//That set is obtained by the following piece of code.
+		//Set<String> owneremails_grouped = oldAddressBook.getContact(0).getEmails();
+		trustedAddress.addAll(ownAddresses);
 		fillAddressBookFromTrustedAddresses(edocs,trustedAddress,newAddressBook);
 		return newAddressBook;
 
