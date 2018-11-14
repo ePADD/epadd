@@ -150,7 +150,7 @@
                 data: {archiveID: archiveID, data: "lexicon", lexicon:'<%=lexiconName%>'},
                 dataType: 'json',
                 success: function (data) {
-                    epadd.info_confirm_continue('The lexicon file for ' + x + ' will be downloaded in your browser\'s download folder.', function () {
+                    epadd.info_confirm_continue('The file <%=lexiconName%>.english.lex.txt will be downloaded to your browser\'s download folder.', function () {
                         window.location=data.downloadurl;
                     });
                 },
@@ -164,14 +164,14 @@
             var post_params = {};
             post_params.archiveID = '<%=archiveID%>';
             post_params.lexicon = '<%=lexiconName%>';
-            epadd.warn_confirm_continue('Delete lexicon ' + post_params.lexicon + '? This action cannot be undone.', function() {
+            epadd.warn_confirm_continue('Do you want to delete lexicon ' + post_params.lexicon + '? This action cannot be undone.', function() {
                 $.ajax({
                     url: 'ajax/delete-lexicon.jsp',
                     type: 'POST',
                     dataType: 'json',
                     data: post_params,
                     success: function (j) {
-                        epadd.success('Lexicon \'' + post_params.lexicon + '\' deleted successfully.', function () {
+                        epadd.success('Lexicon \'' + post_params.lexicon + '\' deleted.', function () {
                                 window.location = 'lexicon-top?archiveID=' + post_params.archiveID;
                         });
                     },
@@ -201,7 +201,7 @@
         };
 
         var delete_category = function(e) {
-            epadd.warn_confirm_continue('Delete this category? This action cannot be undone', function() {
+            epadd.warn_confirm_continue('Do you want to delete this category? This action cannot be undone.', function() {
                 var $lexicon = $(e.target).closest('.lexiconCategory');
                 $($lexicon).attr('onclick', "");//remove event handler otherwise the other one is getting called
                 $($lexicon).remove();

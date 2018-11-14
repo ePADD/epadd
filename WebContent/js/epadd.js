@@ -414,7 +414,7 @@ epadd.unloadArchive = function(archiveID) {
         	data: {
                 "archiveID": archiveID
             },
-			success: function(data) {epadd.success('Archive unloaded successfully!');},
+			success: function(data) {epadd.success('Archive unloaded.');},
 			error: function(jq, textStatus, errorThrown) {
 			    var message = ("Error unloading archive. (Details: status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + "\n" + printStackTrace() + ")");
 			    epadd.error(message);
@@ -536,7 +536,7 @@ epadd.show_copy_modal = function(description, text) {
 
 /** not used currrently, but we are retaining this because it may come back in the future */
 epadd.deleteArchive = function(archiveID) {
-	epadd.warn_confirm_continue('Delete the archive? This action cannot be undone!', function() {
+	epadd.warn_confirm_continue('Do you want to delete the archive? This action cannot be undone!', function() {
         $.ajax({
             type: 'POST',
             url: "ajax/delete-archive.jsp",
@@ -546,7 +546,7 @@ epadd.deleteArchive = function(archiveID) {
             },
             success: function (data) {
                 $spinner.removeClass('fa-spin');
-                epadd.success('Archive deleted successfully!', function () { window.location.reload();});
+                epadd.success('Archive deleted.', function () { window.location.reload();});
             },
             error: function (jq, textStatus, errorThrown) {
                 $spinner.removeClass('fa-spin');

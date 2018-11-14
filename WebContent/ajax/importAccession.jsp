@@ -79,7 +79,7 @@ if (!collectionDir.equals(baseDir))
             ArchiveReaderWriter.saveCollectionMetadata(collection.collectionMetadata,collection.baseDir);
             //accession id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
-		    result.put ("message", "Import accession completed successfully.");
+		    result.put ("message", "Import accession completed.");
 	        result.put("archiveID",ArchiveReaderWriter.getArchiveIDForArchive(collection));
 	      }
 	        else{
@@ -104,7 +104,7 @@ if (!collectionDir.equals(baseDir))
                 session.removeAttribute(s);
 
             result.put("status", 1);
-		    result.put ("message", "Accession imported and merged with the collection successfully");
+		    result.put ("message", "Accession imported and merged with the collection.");
 	        result.put("archiveID",ArchiveReaderWriter.getArchiveIDForArchive(collection));
 	        }
 

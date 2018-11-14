@@ -4,7 +4,6 @@
 <%@page language="java" import="edu.stanford.muse.email.StaticStatusProvider" %>
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="edu.stanford.muse.util.Util"%>
-<%@page language="java" import="edu.stanford.muse.webapp.SimpleSessions"%>
 <%@page language="java" import="org.json.JSONObject"%>
 <%@page language="java" import="java.io.File"%>
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%>
@@ -45,7 +44,7 @@
         }
         //by this time the archive must have an archiveID present in SimpleSession mapper.
         String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-        assert archiveID!=null : new AssertionError("Some serious issue, the archive has been laoded by the readArchiveIfPresent method but the archiveID is absent in the mapper");
+        assert archiveID!=null : new AssertionError("Some serious issue, the archive has been loaded by the readArchiveIfPresent method but the archiveID is absent in the mapper");
 
         String resultPage;
         if(isEditAccessionNextScreen)

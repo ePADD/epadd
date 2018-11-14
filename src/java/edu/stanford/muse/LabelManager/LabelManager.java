@@ -131,7 +131,7 @@ public class LabelManager implements Serializable{
         }else{
             //means this label isnot present in doctOlABelidmap so just remove it from labelinfo
             labelInfoMap.remove(labid);
-            return new Pair(0,"Successfully remove label "+name);
+            return new Pair(0,"Removed label "+name);
         }
 
     }

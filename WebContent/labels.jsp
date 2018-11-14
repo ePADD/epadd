@@ -118,7 +118,7 @@
             data: {archiveID: archiveID, data: "labels"},
             dataType: 'json',
             success: function (data) {
-                epadd.info_confirm_continue('A label description file called label-info.json will be downloaded in your browser\'s download folder.', function () {
+                epadd.info_confirm_continue('The file label-info.json will be downloaded to your browser\’s download folder.', function () {
                     window.location=data.downloadurl;
                 });
             },
@@ -169,7 +169,8 @@
         var removeLabelFn= function(e) {
             labelID = $(e.target).closest('.buttons_on_datatable_row').attr ('data-labelID');
 
-            epadd.warn_confirm_continue('Delete the label? This action cannot be undone.', function() {
+            epadd.warn_confirm_continue(' Do you want to delete this label? This action cannot be undone, and will also remove the label from any messages to which the label has been applied. If you wish to replace this label with a new label, cancel this action and first apply the new label to this set, then delete this  label.\n',
+				function() {
                 $.ajax({
                     url:'ajax/removeLabels.jsp',
                     type: 'POST',
@@ -179,11 +180,11 @@
                         if(response.status===0)
                         	window.location.reload();
 	                    else {
-    	                    epadd.error('Sorry, there was an error in deleting the label.' + response.error);
+    	                    epadd.error('There was an error deleting the label. Please try again, and if the error persists, report it to epadd_project@stanford.edu.' + response.error);
         	            }
                     },
                     error: function(response) {
-                        epadd.error('Sorry, there was an error in deleting the label.');
+                        epadd.error('There was an error deleting the label. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
                     }
                 });
             });
@@ -240,7 +241,7 @@
                 if (data.status==0){
                     epadd.success('Labels uploaded', function() { window.location.reload(); });
                 } else {
-					epadd.error('Error uploading labels' + data.error);
+					epadd.error('There was an error uploading the label file. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: ' + data.error);
 				}
             },
             error: function(jq, textStatus, errorThrown) { var message = ("Error uploading labels, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown); epadd.error(message); }

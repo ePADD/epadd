@@ -238,7 +238,7 @@
                 cache: false,
                 data: data,
                 success: function (data) {
-                    epadd.success('Lexicon uploaded successfully.', function () {window.location.reload();});
+                    epadd.success('Lexicon uploaded.', function () {window.location.reload();});
                 },
                 error: function (jq, textStatus, errorThrown) {
                     var message = ("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);

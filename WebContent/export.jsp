@@ -512,7 +512,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     data: {archiveID: archiveID, data: option},
                     dataType: 'json',
                     success: function (data) {
-                        epadd.info_confirm_continue('A CSV file of correspondents will be downloaded in your browser\'s download folder.', function () {
+                        epadd.info_confirm_continue('The file correspondents.csv will be downloaded to your browser\’s download folder.', function () {
                             window.location=data.downloadurl;
                         });
                     },

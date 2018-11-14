@@ -418,7 +418,7 @@ public class Sessions {
     		if (!succeeded)
     			message = "Archive export failed";
     		else
-    			message = "Archive successfully exported to " + dir;
+    			message = "Archive exported to " + dir;
     	} else {
     		message = "No messages in this session";
     	}

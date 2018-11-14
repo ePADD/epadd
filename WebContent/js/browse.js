@@ -103,7 +103,7 @@ var Labels = function() {
                 refreshLabels();//otherwise the selected checkboxes and onscreen labels are not getting reset to the old labels [old means the labels before the erroneous labels were set]
             },
             error: function () {
-                epadd.error('Sorry, there was an error while saving annotations. Please try again.');
+                epadd.error('There was an error saving the annotation. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
             }
         });
     }
@@ -226,7 +226,7 @@ var Annotations = function() {
                     //$('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
                   //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                 },
-                error: function () { epadd.error('There was an error in saving the annotation! Please try again.');}
+                error: function () { epadd.error('There was an error saving the annotation. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');}
             });
         }
 
@@ -241,7 +241,7 @@ var Annotations = function() {
             return false;
             }
             if(overwrite_or_append=="overwrite") {
-                var c = epadd.warn_confirm_continue('The existing annotations on all ' + numMessages + ' messages will be overwritten. Do you want to continue?', function() {
+                var c = epadd.warn_confirm_continue('The existing annotations for all ' + numMessages + ' messages will be overwritten. Do you want to continue?', function() {
                     //If user confirms then proceed.
                     Navigation.enableCursorKeys();
                     var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
@@ -275,7 +275,7 @@ var Annotations = function() {
                                 $('.annotation-area').text(annotation ? annotations[PAGE_ON_SCREEN]: 'No annotation');
                             //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                         },
-                        error: function () { epadd.error('There was an error in saving the annotation! Please try again.');}
+                        error: function () { epadd.error('There was an error saving the annotation. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');}
                     });
                 });
             }

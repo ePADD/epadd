@@ -137,7 +137,7 @@
                         window.location.reload();
                 },
                 error: function () {
-                    epadd.error('Sorry, there was an error in saving labels.');
+                    epadd.error('There was an error saving the label. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
                 }
             });
         });

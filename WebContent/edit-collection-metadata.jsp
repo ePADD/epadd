@@ -200,10 +200,10 @@
                 if (response && response.status === 0)
                     window.location = 'collection-detail?collection=<%=id%>';
                 else
-                    epadd.error ("Sorry, something went wrong while updating collection metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+                    epadd.error ("There was an error updating collection metadata. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: " + (response && response.errorMessage ? response.errorMessage : ""));
             },
             error: function (jqxhr, status, ex) {
-                epadd.error("Sorry, there was an error while updating collection metadata: " + status + ". Exception: " + ex);
+                epadd.error("There was an error updating collection metadata. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: status=" + status + ". Exception: " + ex);
             }
         });
         return false;

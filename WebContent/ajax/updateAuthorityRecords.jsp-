@@ -74,7 +74,7 @@ try {
 	Util.writeObjectToFile (filename, (Serializable) cnameToAuthority);
 	
 	result.put ("status", 0);
-	result.put("message", "Successfully assigned " + numEntries + " authority records" + " and removed " + numRemoved + " records");
+	result.put("message", "Assigned " + numEntries + " authority records" + " and removed " + numRemoved + " records");
 	out.println (result.toString(4));
 	return;
 } catch (Exception e) {

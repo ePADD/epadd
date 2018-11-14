@@ -127,7 +127,7 @@
 		fw = new FileWriter(new File(home+sep+"temp"+sep+"mailContents.txt"));
 		fw.write(contents);
 		fw.close();
-		out.println("<div id='some'>Successfully written #"+i+" mails to file.</div>");
+		out.println("<div id='some'>Written #"+i+" mails to file.</div>");
 	}catch(Exception e){
 		e.printStackTrace();
 		out.println(e);	

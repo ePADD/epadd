@@ -150,7 +150,7 @@
                 data: {mode:val},
                 dataType: 'json',
                 success: function() { if (val == 'appraisal') { window.location="./browse-top"; } else { window.location = './collections';}},
-                error: function() { epadd.error('Sorry, unable to change mode.'); }
+                error: function() { epadd.error('Unable to change ePADD module. Please check that the files ePADD expects to find are in their proper location and try again. Check the user guide for more information. If the error persists, report it to epadd_project@stanford.edu.'); }
             });
         });
     </script>
