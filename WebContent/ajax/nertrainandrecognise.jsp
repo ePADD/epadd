@@ -54,7 +54,7 @@ if(archive!=null){
             // @TODO make it more modular
             //archive.collectionMetadata.entityCounts = ner.stats.counts;
             double theta = 0.001;
-            archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(archive,theta);
+            archive.collectionMetadata.entityCounts = archive.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);//Archive.getEntitiesCountMapModuloThreshold(archive,theta);
 
             JSPHelper.log.info(ner.stats);
         }

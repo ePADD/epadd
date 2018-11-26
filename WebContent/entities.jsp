@@ -71,7 +71,7 @@
 //    Map<Contact, Integer> contactInCount = new LinkedHashMap<Contact, Integer>(), contactOutCount = new LinkedHashMap<Contact, Integer>(), contactMentionCount = new LinkedHashMap<Contact, Integer>();
     int MAX_DEFAULT_RECORDS = 100000;
     int max = HTMLUtils.getIntParam(request, "max", MAX_DEFAULT_RECORDS);
-    JSONArray entityinfo = archive.getEntitiesCountAsJSON(ct,max);
+    JSONArray entityinfo = archive.getEntityBookManager().getEntityBookForType(ct).getInfoAsJSON();//getEntitiesCountAsJSON(ct,max);
 %>
 <table id="entities" style="display:none">
 	<thead><th>Entity</th><th>Messages</th></thead>
@@ -96,7 +96,7 @@
 				data: entities,
 				pagingType: 'simple',
 				columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "630px", targets: 0},{targets: 0, render:click_to_search}],
-				order:[[1, 'desc']], // col 1 (entity message count), descending
+				order:[[2, 'desc']], // col 2 (entity message count), descending
 				fnInitComplete: function() { $('#spinner-div').hide(); $('#entities').fadeIn(); }
 			});
 		} );

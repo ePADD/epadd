@@ -274,7 +274,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 		Map<String, Integer> counts = new LinkedHashMap<>();
 		for (EmailDocument ed: docs) {
             Set<String> set = new LinkedHashSet<>();
-            Span[] es = archive.getEntitiesInDoc(ed, true);
+            Span[] es = archive.getEntityBookManager().getEntitiesInDoc(ed, true);
             es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
             es = edu.stanford.muse.ie.Util.filterEntities(es);
             for(Span sp: es)
@@ -317,7 +317,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 
 		// now create the actual list of docs for each of the top entities
 		for (EmailDocument ed: docs) {
-			Span[] es = archive.getEntitiesInDoc(ed, true);//, type);
+			Span[] es = archive.getEntityBookManager().getEntitiesInDoc(ed, true);//, type);
             es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
             es = edu.stanford.muse.ie.Util.filterEntities(es);
 

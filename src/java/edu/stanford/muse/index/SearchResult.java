@@ -614,7 +614,7 @@ public class SearchResult {
         if(checkVariant){
             entityToSearch.addAll(entities.stream().map(entity->EntityBook.canonicalize(entity)).collect(Collectors.toSet()));
             for(String entity: entities)
-                for(MappedEntity me: inputSet.archive.getEntityBook().getEntitiesForName(entity))
+                for(MappedEntity me: inputSet.archive.getEntityBookManager().getEntitiesForName(entity))
                     for(String name: me.getAltNames())
                         entityToSearch.add(EntityBook.canonicalize(name));
         }else
@@ -625,9 +625,9 @@ public class SearchResult {
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
             //for search in body
-                    entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntitiesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
+                    entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntityBookManager().getEntitiesInDoc(ed, true)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
             //without body
-            entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntitiesInDoc(ed, false)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
+            entitiesInThisDoc.addAll(Arrays.stream(inputSet.archive.getEntityBookManager().getEntitiesInDoc(ed, false)).map(n-> EntityBook.canonicalize(n.text)).collect(Collectors.toSet()));
 
             entitiesInThisDoc.retainAll(entityToSearch);
                     if (entitiesInThisDoc.size() > 0) {
@@ -658,7 +658,7 @@ public class SearchResult {
         Set<Document> docsWithNeededTypes = new LinkedHashSet<>();
         for (String type: neededTypes) {
             short code = Short.parseShort(type);
-            docsWithNeededTypes.addAll(inputSet.archive.getDocsWithEntityType(code));
+            docsWithNeededTypes.addAll(inputSet.archive.getEntityBookManager().getDocsWithEntityType(code));
         }
 
         inputSet.matchedDocs.keySet().retainAll(docsWithNeededTypes);

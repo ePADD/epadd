@@ -1,5 +1,6 @@
 package edu.stanford.muse.ie.variants;
 
+import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.util.Util;
 
 import java.io.BufferedReader;
@@ -53,53 +54,49 @@ public class MappedEntity implements Serializable {
         entity type
          */
     public void writeObjectToStream(BufferedWriter out) throws IOException {
-        out.append("###Names###");
-        out.newLine();
+        //out.append("###Names###");
+        //out.newLine();
         for(String name: this.getAltNames()){
-            if(name.compareTo(this.getDisplayName())==0)
+            if(name.compareTo(this.getDisplayName())==0 && this.getAltNames().size()>1)
                 out.append("*");
             out.append(name);
             out.newLine();
         }
-        out.append("###EntityType###");
-        out.newLine();
-        out.append(Integer.toString(this.getEntityType()));
-        out.newLine();
+        //out.append("###EntityType###");
+        //out.newLine();
+        //out.append(Integer.toString(this.getEntityType()));
+        //out.newLine();
     }
 
 
     public static MappedEntity readObjectFromStream(BufferedReader in) throws IOException {
         String inp = in.readLine();
+        in.mark(1000);
+
         if(inp==null)
             return null;
         MappedEntity tmp = new MappedEntity();
         int state  = 0;
         //0=name_reading,1=state_reading
         while(inp!=null){
-            if(inp.trim().compareTo("###Names###")==0){
-                inp = in.readLine();
-                state=0;
+            if(inp.trim().startsWith(EntityBook.DELIMITER)) {
+                //reset to the marked position
+                in.reset();
+                break;
             }
-            else if(inp.trim().compareTo("###EntityType###")==0){
-                //means we have finished reading the names now the subsequent string should be treated as entity type
-                inp = in.readLine();
-                state =1 ;
-            }
-            if(state==0){
-                //check if the line inp starts with *. If yes then set it as display name as well as altname
-                if(inp.trim().startsWith("*")) {
+            else if(inp.trim().startsWith("*")) {
+                    //check if the line inp starts with *. If yes then set it as display name as well as altname
+
                     tmp.getAltNames().add(inp.trim().substring(1));
                     tmp.setDisplayName(inp.trim().substring(1));
-                }else {
+            }else {
                     //else set it as only altnames
                     tmp.getAltNames().add(inp.trim());
-                }
-            }else if (state==1) {
-                tmp.setEntityType(Short.parseShort(inp.trim()));
-                break; //don't read the next line that is delimiter -------------------
             }
-                //Util.softAssert(tmp.mailingListState,"Some serious issue in reading mailing list state from the contact object",log);
-
+            //Util.softAssert(tmp.mailingListState,"Some serious issue in reading mailing list state from the contact object",log);
+            in.mark(1000);//here readAheadLimit tells how many characters stream can read
+            //without losing the mark. In this case we assume that one line of entitybook can not be more than 1000 characters.
+            //which is a realistic assumption.
             inp = in.readLine();
         }
         //Display name must be set by now, if not then set the first name from altNames as display name.

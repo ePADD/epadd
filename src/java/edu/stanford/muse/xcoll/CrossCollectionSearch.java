@@ -5,10 +5,12 @@ import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
-import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.ArchiveReaderWriter;
-import edu.stanford.muse.index.Document;
-import edu.stanford.muse.index.EmailDocument;
+import edu.stanford.muse.ie.variants.EntityBook;
+import edu.stanford.muse.ie.variants.MappedEntity;
+import edu.stanford.muse.index.*;
+import edu.stanford.muse.util.DetailedFacetItem;
+import edu.stanford.muse.util.EmailUtils;
+import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
 import edu.stanford.muse.webapp.SimpleSessions;
@@ -96,66 +98,69 @@ public class CrossCollectionSearch {
                 String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
                 Map<String, EntityInfo> centityToInfo = new LinkedHashMap<>();
                 {
-                    AddressBook ab = archive.addressBook;
-                    for (Document d : archive.getAllDocs()) {
-                        EmailDocument ed = (EmailDocument) d;
-
-                        // compute centities, the set of all canonicalized entities in this doc.
-                        // see spec in prodpad #140
-                        // first come correspondents, then subject entities, then body.
-                        // for correspondents we incl. all forms of their email addr or contact name)
-                        // it should be a set because we want to count every string only once per message
-                        Set<String> entities, correspondentEntities;
-                        {
-                            entities = new LinkedHashSet<>();
-                            Set<Contact> contacts = ed.getParticipatingContacts(ab);
-                            for (Contact c : contacts) {
-                                if (c.getNames()!= null)
-                                    entities.addAll(c.getNames());
-                                if (c.getEmails()!= null)
-                                    entities.addAll(c.getEmails());
+                    //get all contacts from the addressbook
+                    Set<Pair<String,Pair<Pair<Date,Date>,Integer>>>  correspondentEntities = new LinkedHashSet<>();
+                    {
+                        Map<Contact, DetailedFacetItem> res = IndexUtils.partitionDocsByPerson(archive.getAllDocs(),archive.getAddressBook());
+                        res.entrySet().forEach(s->{
+                            //get contactname
+                            Contact c = s.getKey();
+                            //get duration (first and last doc where this contact was used)
+                            Set<EmailDocument> edocs = s.getValue().docs.stream().map(t->(EmailDocument)t).collect(Collectors.toSet());
+                            Pair<Date,Date> duration = EmailUtils.getFirstLast(edocs);
+                            //get number of messages where this was used.
+                            Integer count = s.getValue().docs.size();
+                            if(c.getNames()!=null){
+                                c.getNames().forEach(w->correspondentEntities.add(new Pair(canonicalize(w),new Pair(duration,count))));
+                            }
+                            if(c.getEmails()!=null){
+                                c.getEmails().forEach(w->correspondentEntities.add(new Pair(canonicalize(w),new Pair(duration,count))));
                             }
 
-                            correspondentEntities = new LinkedHashSet<>(entities); // keep track of the correspondent centities also, separately because we need the isCorrespondent flag
+                        });
 
-                            Set<String> set = archive.getEntitiesInDoc(ed);
-                            if (!Util.nullOrEmpty(set))
-                                entities.addAll (set);
-
-                            // filter out any null or empty strings (just in case)
-                            // don't canonicalize right away because we need to keep the original form of the name
-                            entities = entities.stream().filter(s -> !Util.nullOrEmpty(s)).collect(Collectors.toSet());
-                        }
-
-                        // convert the correspondent entities to c entities
-                        Set<String> correspondentCEntities = correspondentEntities.stream().map(CrossCollectionSearch::canonicalize).collect (Collectors.toSet());
-
-                        for (String entity : entities) {
-                           String centity = canonicalize(entity);
-                            EntityInfo ei = centityToInfo.get(centity);
-                            if (ei == null) {
-                                ei = new EntityInfo();
-                                ei.archiveID = archiveID;
-                                ei.displayName = entity;
-                                centityToInfo.put(centity, ei);
-                            }
-
-                            // isCorrespondent is set to true if ANY of the messages has centity as a correspondent
-                            // it is 1-way, i.e. once it is set, it will not be unset.
-                            if (correspondentCEntities.contains (centity)) {
-                                ei.isCorrespondent = true;
-                            }
-
-                            // update the first/last dates if needed
-                            if (ei.firstDate == null || ei.firstDate.after(ed.date)) {
-                                ei.firstDate = ed.date;
-                            }
-                            if (ei.lastDate == null || ei.lastDate.before(ed.date)) {
-                                ei.lastDate = ed.date;
-                            }
-                            ei.count++;
-                        }
                     }
+
+                    //get all entities from entitybookmanager
+                    Set<Pair<String, Pair<Pair<Date,Date>,Integer>>> entitiessummary = new LinkedHashSet<>();
+                    {
+                        entitiessummary = archive.getEntityBookManager().getAllEntitiesSummary();
+                        // filter out any null or empty strings (just in case)
+                        // don't canonicalize right away because we need to keep the original form of the name
+                        entitiessummary = entitiessummary.stream().filter(s -> !Util.nullOrEmpty(s.first)).collect(Collectors.toSet());
+                    }
+                    //if an entity is present as a person entity as well as in correspondent then consider the count of the person entity as the final count.  Therefore start with
+                    //processing of correspondent entities.
+                    correspondentEntities.forEach(entity->{
+                        String centity = canonicalize(entity.first);
+                        EntityInfo ei = centityToInfo.get(centity);
+                        if (ei == null) {
+                            ei = new EntityInfo();
+                            ei.archiveID = archiveID;
+                            ei.displayName = entity.first;
+                            centityToInfo.put(centity, ei);
+                        }
+                        ei.isCorrespondent=true;
+                        ei.firstDate=entity.second.first.first;
+                        ei.lastDate=entity.second.first.second;
+                        ei.count=entity.second.second;
+                    });
+                    //Now process entities (except correspondents).
+                    entitiessummary.forEach(entity->{
+                        String centity = canonicalize(entity.first);
+                        EntityInfo ei = centityToInfo.get(centity);
+                        if (ei == null) {
+                            ei = new EntityInfo();
+                            ei.archiveID = archiveID;
+                            ei.displayName = entity.first;
+                            centityToInfo.put(centity, ei);
+                        }
+                        //ei.isCorrespondent=true;
+                        ei.firstDate=entity.second.first.first;
+                        ei.lastDate=entity.second.first.second;
+                        ei.count=entity.second.second;
+                    });
+
                 }
 
                 log.info ("Archive # " + archiveNum + " read " + centityToInfo.size() + " entities");

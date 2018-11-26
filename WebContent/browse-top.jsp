@@ -10,6 +10,7 @@
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="edu.stanford.muse.ie.variants.EntityBook" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+<%@ page import="edu.stanford.muse.ie.variants.EntityBookManager" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
@@ -195,13 +196,15 @@
 
 	String entityMerges = request.getParameter("entityMerges");
 	if (!Util.nullOrEmpty(entityMerges)) {
-		EntityBook entityBook = archive.getEntityBook();
 		Short type = -1;
+		type = Short.parseShort (request.getParameter ("entityType"));
+		//get entitybook through entitybook manager.
+		EntityBookManager entityBookManager = archive.getEntityBookManager();
 		try {
-			type = Short.parseShort (request.getParameter ("entityType"));
-			entityBook.initialize (entityMerges,type);
+
+		    entityBookManager.fillEntityBookFromText(entityMerges,type,true);
 			//SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
-			ArchiveReaderWriter.saveEntityBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+			ArchiveReaderWriter.saveEntityBookManager(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE,type);
 		} catch (Exception e) {
 			Util.print_exception("Error in merging entities", e, JSPHelper.log);
 		}

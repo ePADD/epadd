@@ -18,8 +18,8 @@ public class NameExpansion {
 
     private static boolean matchAgainstEmailContent(Archive archive, EmailDocument ed, Matches matchResults, String messageType, float score) {
         Set<String> allNames = new LinkedHashSet();
-        Stream.of(archive.getEntitiesInDoc(ed, false)).map(Span::getText).forEach(allNames::add);
-        Stream.of(archive.getEntitiesInDoc(ed, true)).map(Span::getText).forEach(allNames::add);
+        Stream.of(archive.getEntityBookManager().getEntitiesInDoc(ed, false)).map(Span::getText).forEach(allNames::add);
+        Stream.of(archive.getEntityBookManager().getEntitiesInDoc(ed, true)).map(Span::getText).forEach(allNames::add);
         Iterator it = allNames.iterator();
 
         String name;

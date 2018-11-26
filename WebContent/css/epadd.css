@@ -128,7 +128,7 @@ div.annotation { display: none; z-index: 200; position: absolute; right: 0px; to
 div.annotation-header { font-weight: 600; font-size: 19px; padding-bottom: 10px; border-bottom: solid 1px #d4d4d4; margin-bottom: 10px;}
 div.annotation-area { overflow: scroll; height:200px;}
 
-div.message-menu { z-index: 100; position: absolute; left: 845px; top: 220px;} /* z-index keeps it above the jog area, but below the modals */
+div.message-menu { z-index: 100; position: absolute; left: 845px; top: 220px; min-width: 500px} /* min-width makes sure that scrollbar appears when resizing the window. z-index keeps it above the jog area, but below the modals */
 div.message-menu img { height: 32px;}
 
 .message-label { display: inline; margin-left: 10px; margin-top: 5px; padding: 6px 20px; border-radius: 20px;}

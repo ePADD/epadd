@@ -1,39 +1,55 @@
 package edu.stanford.muse.ie.variants;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
+import edu.stanford.muse.ie.NameTypes;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
+import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.ner.Entity;
-import edu.stanford.muse.util.Span;
+import edu.stanford.muse.ner.model.NEType;
+import edu.stanford.muse.util.EmailUtils;
+import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sun.awt.image.ImageWatched;
+import org.json.JSONArray;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by hangal on 1/31/17. Entity mapper for an archive.
  */
+
+class Summary_L1{
+    double score;
+    Set<Document> messages;
+    Date startDate;
+    Date endDate;
+}
 public class EntityBook implements Serializable {
     public static long serialVersionUID = 1L;
     public static Log log = LogFactory.getLog(EntityBook.class);
 
     public static final String DELIMS = " .;,-#@&()";
-    private final static String DELIMITER = "--";
-
+    public final static String DELIMITER = "--";
+    private Short entityType;
     // for all entities in this mapper, canonicalized name -> MappedEntity object. to save space, only contains MappedEntity's for entities that actually have more than 1 name variant
-    Multimap<String, MappedEntity> nameToMappedEntity = LinkedHashMultimap.create();
-
+    Map<String, MappedEntity> nameToMappedEntity = new LinkedHashMap<>();
+    Map<MappedEntity,Summary_L1> summary_L1_entityCountMap = new LinkedHashMap<>();
+    JSONArray summary_JSON = null;
     /**
      * case independent, word order independent, case normalized
      */
+
+    public EntityBook(Short entityType){
+        this.entityType=entityType;
+    }
+
     public static String canonicalize(String s) {
         if (s == null)
             return s;
@@ -50,12 +66,62 @@ public class EntityBook implements Serializable {
         return Util.join(tokens, " ");
     }
 
+    public  Integer getEntitiesCountMapModuloThreshold(double threshold) {
+
+        List<Summary_L1> list = summary_L1_entityCountMap.values().stream().filter(summary->summary.score>threshold).collect(Collectors.toList());
+        return list.size();
+    }
+
+    public void fillSummaryFields(Map<MappedEntity, Pair<Double,Set<Document>>> docsetmap){
+        JSONArray resultArray = new JSONArray();
+        final Integer[] count = {0};//trick to use count (modifiable variable) inside for each.
+        summary_L1_entityCountMap.clear();
+        docsetmap.entrySet().forEach(entry->{
+            count[0]=count[0]+1;
+                    Summary_L1 summary = new Summary_L1();
+                    summary.score=entry.getValue().first;
+                    summary.messages=entry.getValue().second;
+                    //get date range
+                    Collection<EmailDocument> emaildocs = summary.messages.stream().map(s->(EmailDocument)s).collect(Collectors.toList());
+                    Pair<Date,Date> daterange = EmailUtils.getFirstLast(emaildocs,true);
+                    summary.startDate=daterange.first;
+                    summary.endDate=daterange.second;
+                    summary_L1_entityCountMap.put(entry.getKey(),summary);
+
+            String entity = entry.getKey().getDisplayName();
+            JSONArray j = new JSONArray();
+            Short etype = entityType;
+            Set<String> altNamesSet = entry.getKey().getAltNames();
+            String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
+            j.put (0, Util.escapeHTML(entity));
+            j.put (1, summary.score);
+            j.put (2, summary.messages.size());
+            j.put (3, altNames);
+            if(summary.startDate!=null)
+                j.put (4, new SimpleDateFormat("MM/dd/yyyy").format(summary.startDate));
+            else
+                j.put(4,summary.startDate);
+            if(summary.endDate!=null)
+                j.put (5, new SimpleDateFormat("MM/dd/yyyy").format(summary.endDate));
+            else
+                j.put(5,summary.endDate);
+            //add entity type as well..
+            j.put(6, NEType.getTypeForCode(entityType).getDisplayName());
+            resultArray.put (count[0]-1,j);
+
+        });
+        summary_JSON = resultArray;
+    }
+
+
+
+/*
 
         //private List<MappedEntity> entityList = new LinkedList<>();
-        /**
+        *//**
          * initialize this mapper from the given text
-         */
-        public void initialize(String text, short type) {
+         *//*
+        public void initializeOld(String text, short type) {
             //Dont' remove everything just remove the entries for type. Bug #307
             //nameToMappedEntity.clear();
 Set<MappedEntity> toRemove = new LinkedHashSet<>();
@@ -98,7 +164,7 @@ nameToMappedEntity.values().forEach(me->{
                     linesForEntity.clear();
                 }
             }
-        }
+        }*/
 /*
         public void initializeFromFile(String filename) throws IOException {
             String text = Util.readFile(filename);
@@ -113,114 +179,6 @@ nameToMappedEntity.values().forEach(me->{
      * there is only entityMapper for every fine grained type
      */
 
-    public Collection<MappedEntity> getEntitiesForName(String name){
-    //work on a transient data.. multimap of name to mappedentity.
-        //get canonical name of name.
-        String cname = canonicalize(name);
-        return nameToMappedEntity.get(cname);
-    }
-
-    public MappedEntity getEntityForNameAndType(String name, short type){
-
-        Collection<MappedEntity> entities = getEntitiesForName(name);
-        //filter on entities where type is same same type.
-        Set<MappedEntity> filtered = entities.stream().filter(f->f.getEntityType()==type).collect(Collectors.toSet());
-
-        //ideally this set should be of one element. If not then log it as a message/warning.
-        Util.warnIf(filtered.size()>1,"More than one entities of the same type found. Please check for entity name as "+name+" and type as "+type,log);
-        //return the first element of this filtered list if any.
-        if(filtered.size()==0)
-            return null;
-
-        return filtered.iterator().next();
-    }
-
-    /* get the preferred display name for the given string */
-    public String getDisplayName(String s, short type) {
-        MappedEntity m = getEntityForNameAndType(s,type);
-        if(m==null)
-            return s;
-        else
-            return m.getDisplayName();
-    }
-/*
-    public void initialize(short type, String text) {
-        initialize(text);
-        typeToEntityMapper.put(type, emft);
-    }*/
-
-    /* given this display name for a type, look up its alt names */
-    public Set<String> getAltNamesForDisplayName(String displayName, short type) {
-        MappedEntity m = getEntityForNameAndType(displayName,type);
-        if(m==null)
-            return null;
-        else
-            return m.getAltNames();
-/*
-        String cname = canonicalize(displayName);
-        EntityMapperForType em = typeToEntityMapper.get(type);
-        if (em == null)
-            return null;
-
-        Collection<MappedEntity> mes = em.cNameToMappedEntity.get(cname);
-        if (mes == null || Util.nullOrEmpty(mes))
-            return null;
-
-        MappedEntity me = mes.iterator().next();
-        if (Util.nullOrEmpty(me.displayName))
-            return null;
-
-        if (me.displayName.equals(displayName))
-            return me.altNames;
-
-        return null;*/
-    }
-
-    public Map<String, Integer> getDisplayNameToFreq(Archive archive, short type) {
-        Map<String, Entity> displayNameToEntity = new LinkedHashMap();
-        double theta = 0.001;
-        EntityBook entityBook = archive.getEntityBook();
-
-        for (Document doc : archive.getAllDocs())
-
-        {
-            Span[] spans = archive.getEntitiesInDoc(doc, true);
-            Set<String> seenInThisDoc = new LinkedHashSet<>();
-
-            for (Span span : spans) {
-                // bail out if not of entity type that we're looking for, or not enough confidence
-                if (span.type != type || span.typeScore < theta)
-                    continue;
-
-                String name = span.getText();
-
-                String displayName = name;
-
-                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityBook != null)
-                    displayName = entityBook.getDisplayName(name, span.type);
-
-                displayName = displayName.trim();
-
-                if (seenInThisDoc.contains(displayName))
-                    continue; // count an entity in a doc only once
-
-                seenInThisDoc.add(displayName);
-
-                if (!displayNameToEntity.containsKey(displayName))
-                    displayNameToEntity.put(displayName, new Entity(displayName, span.typeScore));
-                else
-                    displayNameToEntity.get(displayName).freq++;
-            }
-        }
-
-        // convert from displayNameToEntity to displayNameToFreq
-        Map<String, Integer> displayNameToFreq = new LinkedHashMap<>();
-        for (Entity e : displayNameToEntity.values())
-            displayNameToFreq.put(e.entity, e.freq);
-
-        return displayNameToFreq;
-    }
 
     /*
         The format for writing an EntityBook object is as following,
@@ -229,10 +187,44 @@ nameToMappedEntity.values().forEach(me->{
         write an entity delimiter "-----------------------------------" once done (for each mapped Entity)
          */
     public void writeObjectToStream(BufferedWriter out) throws IOException {
-        Set<MappedEntity> entityList = new LinkedHashSet<>(nameToMappedEntity.values());
+        //default writing order is display name.
+        writeObjectToStream(out,true);
+
+    }
+
+    public void writeObjectToStream(BufferedWriter out,boolean alphaSort) throws IOException {
+        //sort the map nameToMappedEntity base on the value of alphasort option.
+
+        List<MappedEntity> entityList = new LinkedList<>();
+        if (alphaSort) {
+            //sorty by alphabetical order of display names.
+            Set<MappedEntity> set = new LinkedHashSet<>(nameToMappedEntity.values());
+            entityList = set.stream().collect(Collectors.toList());
+            Collections.sort(entityList, new Comparator<MappedEntity>() {
+                @Override
+                public int compare(MappedEntity o1, MappedEntity o2) {
+                    return o1.getDisplayName().compareTo(o2.getDisplayName());
+                }
+            });
+
+        } else {
+            //sort by frequency
+            entityList = summary_L1_entityCountMap.entrySet().stream().sorted(new Comparator<Map.Entry<MappedEntity, Summary_L1>>() {
+                @Override
+                public int compare(Map.Entry<MappedEntity, Summary_L1> o1, Map.Entry<MappedEntity, Summary_L1> o2) {
+                    return Integer.compare(o2.getValue().messages.size(),o1.getValue().messages.size());//we need ordering from high to low.
+                }
+            }).sorted(new Comparator<Map.Entry<MappedEntity, Summary_L1>>() {
+                @Override
+                public int compare(Map.Entry<MappedEntity, Summary_L1> o1, Map.Entry<MappedEntity, Summary_L1> o2) {
+                    return Double.compare(o2.getValue().score,o1.getValue().score);
+                }
+            }).map(e->e.getKey()).collect(Collectors.toList());
+        }
+
         for(MappedEntity entity: entityList){
             entity.writeObjectToStream(out);
-            out.write("-------------------------------------------");
+            out.write(DELIMITER);
             out.newLine();
         }
     }
@@ -243,11 +235,11 @@ nameToMappedEntity.values().forEach(me->{
     by calling                             nameToMappedEntity.put(canonicalize(s), me);
     for every s in mappedEntity.altNames.
     */
-    public static EntityBook readObjectFromStream(BufferedReader in) throws IOException {
+    public static EntityBook readObjectFromStream(BufferedReader in,Short type) throws IOException {
         MappedEntity me = MappedEntity.readObjectFromStream(in);
         if(me==null)
-            return null;
-        EntityBook ebook = new EntityBook();
+            return new EntityBook(type);//return empty entitybook
+        EntityBook ebook = new EntityBook(type);
         while(me!=null){
             for(String name: me.getAltNames()){
                 ebook.nameToMappedEntity.put(canonicalize(name),me);
@@ -258,5 +250,16 @@ nameToMappedEntity.values().forEach(me->{
         }
         return ebook;
 
+    }
+
+
+    public JSONArray getInfoAsJSON() {
+        return summary_JSON;
+
+    }
+
+    public Set<String> getAllEntities() {
+        Set<MappedEntity> set = new LinkedHashSet<>(nameToMappedEntity.values());
+        return set.stream().map(s->s.getDisplayName()).collect(Collectors.toSet());
     }
 }

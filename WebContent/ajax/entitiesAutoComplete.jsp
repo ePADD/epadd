@@ -37,7 +37,7 @@
 
         Set<String> seen = new LinkedHashSet<>();
 
-        Set<String> entities = archive.getAllEntities();
+        Set<String> entities = archive.getEntityBookManager().getAllEntities();
         for (String e: entities) {
             String lowerCaseE = e.toLowerCase();
             if (!seen.contains(lowerCaseE) && lowerCaseE.contains(query)) {

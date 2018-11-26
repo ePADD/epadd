@@ -573,7 +573,7 @@
 							<label for="entityType">Entity type</label>
 							<select id="entityType" name="entityType" class="form-control selectpicker">
 								<option value="" selected disabled>Select</option>
-								<% Set<NEType.Type> entityTypes = archive.getEntityTypes();
+								<% Set<NEType.Type> entityTypes = archive.getEntityBookManager().getPresentEntityTypesInArchive();
 									for (NEType.Type type : entityTypes) { %>
 										<option value="<%=type.getCode()%>"><%=type.getDisplayName()%></option>
 								<% }%>

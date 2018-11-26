@@ -10,6 +10,8 @@ import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.email.MuseEmailFetcher;
 import edu.stanford.muse.ie.variants.EntityBook;
+import edu.stanford.muse.ie.variants.EntityBookManager;
+import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
@@ -133,7 +135,7 @@ public class ArchiveReaderWriter{
             String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
 
             String addressBookPath = dir + File.separatorChar + Archive.ADDRESSBOOK_SUFFIX;
-            String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
+            String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
             String cAuthorityPath =  dir + File.separatorChar + Archive.CAUTHORITYMAPPER_SUFFIX;
             String labMapDirPath= dir + File.separatorChar + Archive.LABELMAPDIR;
             String annotationMapPath = dir + File.separatorChar + Archive.ANNOTATION_SUFFIX;
@@ -141,19 +143,20 @@ public class ArchiveReaderWriter{
 
             //Error handling: For the case when epadd is running first time on an archive that was not split it is possible that
             //above three files are not present. In that case start afresh with importing the email-archive again in processing mode.
-            if(!(new File(addressBookPath).exists()) || !(new File(entityBookPath).exists()) || !(new File(cAuthorityPath).exists())){
+            if(!(new File(addressBookPath).exists()) /*|| !(new File(entityBookPath).exists())*/ || !(new File(cAuthorityPath).exists())){
                 result.put("archive", null);
                 return result;
             }
 
+            archive.postDeserialized(baseDir, readOnly);
 
             /////////////////AddressBook////////////////////////////////////////////
            AddressBook ab = readAddressBook(addressBookPath);
             archive.addressBook = ab;
 
             ////////////////EntityBook/////////////////////////////////////
-            EntityBook eb = readEntityBook(entityBookPath);
-            archive.setEntityBook(eb);
+            EntityBookManager eb = readEntityBookManager(archive,entityBookPath);
+            archive.setEntityBookManager(eb);
             ///////////////CorrespondentAuthorityMapper/////////////////////////////
             CorrespondentAuthorityMapper cmapper = null;
             cmapper = CorrespondentAuthorityMapper.readObjectFromStream(cAuthorityPath);
@@ -181,7 +184,6 @@ public class ArchiveReaderWriter{
             }
             /////////////////////////////Done reading//////////////////////////////////////////////////////
             // most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
-            archive.postDeserialized(baseDir, readOnly);
             result.put("emailDocs", archive.getAllDocs());
             archive.assignThreadIds();
         }
@@ -201,21 +203,10 @@ public class ArchiveReaderWriter{
 
     }
 
-    public static EntityBook readEntityBook(String entityBookPath) {
+    public static EntityBookManager readEntityBookManager(Archive archive, String entityBookPath) {
 
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(entityBookPath));
-            EntityBook eb = EntityBook.readObjectFromStream(br);
-            br.close();
-            return eb;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+            EntityBookManager entityBookManager = EntityBookManager.readObjectFromFiles(archive,entityBookPath);
+            return  entityBookManager;
     }
 
     public static AddressBook readAddressBook(String addressBookPath) {
@@ -309,7 +300,7 @@ public class ArchiveReaderWriter{
         /////////////////AddressBook Writing -- In human readable form ///////////////////////////////////
         saveAddressBook(archive,mode);
         ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
-        saveEntityBook(archive,mode);
+        saveEntityBookManager(archive,mode);
         ///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
         saveCorrespondentAuthorityMapper(archive,mode);
         //////////////LabelManager Writing -- Serialized//////////////////////////////////
@@ -372,7 +363,7 @@ public class ArchiveReaderWriter{
     public static void saveMutable_Incremental(Archive archive){
         saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
-        saveEntityBook(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        saveEntityBookManager(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         ///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
         saveCorrespondentAuthorityMapper(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         //////////////LabelManager Writing -- Serialized//////////////////////////////////
@@ -485,25 +476,31 @@ public class ArchiveReaderWriter{
 
     }
 
-    public static void saveEntityBook(Archive archive, Archive.Save_Archive_Mode mode){
+    public static void saveEntityBookManager(Archive archive, Archive.Save_Archive_Mode mode){
+
+        for(NEType.Type t: NEType.Type.values()) {
+            saveEntityBookManager(archive, mode, t.getCode());
+        }
+
+
+
+    }
+
+    public static void saveEntityBookManager(Archive archive, Archive.Save_Archive_Mode mode,Short entityType){
         String baseDir = archive.baseDir;
-        String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
-        //file path name of entitybook
-        String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOK_SUFFIX;
-        log.info("Saving entity book to file " + entityBookPath);
+        String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separator + Archive.ENTITYBOOKMANAGER_SUFFIX;
+        log.info("Saving entity book of type "+entityType+" to file ");
 
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(entityBookPath));
-            archive.getEntityBook().writeObjectToStream(bw);
-            bw.close();
-
+            archive.getEntityBookManager().writeObjectToFile(dir,entityType);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        String filepath = dir + File.separator + NEType.getTypeForCode(entityType).getDisplayName()+ File.separator + Archive.ENTITYBOOK_SUFFIX;
         //if this was an incremental update in entitybook, we need to update the bag's metadata as well..
         if(mode== Archive.Save_Archive_Mode.INCREMENTAL_UPDATE)
-            archive.updateFileInBag(entityBookPath,baseDir);
+            archive.updateFileInBag(filepath,baseDir);
 
 
     }
@@ -709,7 +706,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 //now intialize the cache.1- correspondent, labels and entities
                 Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(a));
                 Archive.cacheManager.cacheLexiconListing(getArchiveIDForArchive(a));
-                Archive.cacheManager.cacheEntitiesListing(getArchiveIDForArchive(a));
+                //Archive.cacheManager.cacheEntitiesListing(getArchiveIDForArchive(a));//Not needed now as this caching happens when reading the archive first time.
                 return a;
 
             }

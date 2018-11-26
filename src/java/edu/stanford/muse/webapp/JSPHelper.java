@@ -389,7 +389,7 @@ public class JSPHelper {
 				// @TODO make it more modular
                 //archive.collectionMetadata.entityCounts = ner.stats.counts;
 				double theta = 0.001;
-				archive.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(archive,theta);
+				archive.collectionMetadata.entityCounts = archive.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);//getEntitiesCountMapModuloThreshold(archive,theta);
                 log.info(ner.stats);
             }
            // archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();

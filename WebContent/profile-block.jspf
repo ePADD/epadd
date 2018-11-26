@@ -25,7 +25,16 @@
                 collectionInfo += "<br/>" + "Collection ID: " + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
             }
 
-            String title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
+            String title = "";
+            //If in processing mode, use collection title instead of archiveTitle because archiveTitle can not be changed in the processing mode.
+            if(ModeConfig.isAppraisalMode())
+                title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
+            else {
+                if(archive.collectionMetadata!=null && !Util.nullOrEmpty(archive.collectionMetadata.collectionTitle)){
+                    title =  archive.collectionMetadata.collectionTitle;
+                }else
+                    title = Util.nullOrEmpty(archive.archiveTitle) ? "Email Archives of " + bestName : archive.archiveTitle;
+            }
             String output = "<div style=\"width: " + pixelWidth + "px\" class=\"header-block\">"
                     + "<div class=\"breadcrumbs\">" + mode + " &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;" + pageTitle + "</div><br/>"
                     + "<div class=\"profile-block\">"

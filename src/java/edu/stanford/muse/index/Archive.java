@@ -32,6 +32,7 @@ import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBook;
+import edu.stanford.muse.ie.variants.EntityBookManager;
 import edu.stanford.muse.ner.Entity;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
@@ -107,6 +108,7 @@ public class Archive implements Serializable {
     private static final String FEATURES_SUBDIR = "mixtures";
     public static final String IMAGES_SUBDIR = "images";
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
+    public static final String ENTITYBOOKMANAGER_SUFFIX = "EntityBooks";
     public static final String ENTITYBOOK_SUFFIX = "EntityBook";
     public static final String CAUTHORITYMAPPER_SUFFIX= "CorrespondentAuthorities";
     public static final String ANNOTATION_SUFFIX = "Annotations.csv";
@@ -148,7 +150,7 @@ public class Archive implements Serializable {
     private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
     public Set<String> ownerNames = new LinkedHashSet<>(), ownerEmailAddrs = new LinkedHashSet<>();
-    private transient EntityBook entityBook;//transient because it is saved explicitly
+    private transient EntityBookManager entityBookManager;//transient because it is saved explicitly
     public transient CorrespondentAuthorityMapper correspondentAuthorityMapper; /* transient because this is saved and loaded separately */
     private Map<String, NameInfo> nameMap;
 
@@ -334,13 +336,14 @@ int errortype=0;
         return labelManager.getLabelIDs(edoc.getUniqueId());
     }
 
-    public synchronized EntityBook getEntityBook() {
-        if (entityBook == null)
-            entityBook = new EntityBook();
-        return entityBook;
+    public synchronized EntityBookManager getEntityBookManager() {
+        if (entityBookManager == null)
+            entityBookManager = new EntityBookManager(this);
+        return entityBookManager;
     }
-    public synchronized  void setEntityBook(EntityBook eb){
-        entityBook = eb;
+
+    public synchronized  void setEntityBookManager(EntityBookManager eb){
+        entityBookManager = eb;
     }
 
     /*
@@ -1260,7 +1263,7 @@ after maskEmailDomain.
 
         //recompute entity count because some documents have been redacted
         double theta = 0.001;
-        this.collectionMetadata.entityCounts = Archive.getEntitiesCountMapModuloThreshold(this,theta);
+        this.collectionMetadata.entityCounts = this.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);// getEntitiesCountMapModuloThreshold(this,theta);
         // write out the archive file.. note that this is a fresh creation of archive in the exported folder
         ArchiveReaderWriter.saveArchive(out_dir, name, this,Save_Archive_Mode.FRESH_CREATION); // save .session file.
         log.info("Completed saving archive object");
@@ -1275,143 +1278,6 @@ after maskEmailDomain.
 
 
 
-    //method to return the count map of entities provided that the score of the entity is greater than
-    //threshold.
-    public static Map<Short,Integer> getEntitiesCountMapModuloThreshold(Archive archive, double threshold){
-        Map<Short,Integer> entityTypeToCount = new LinkedHashMap<>();
-        EntityBook entityBook = archive.getEntityBook();
-        Set<String> seen = new LinkedHashSet<>();
-
-        for(Document doc: archive.getAllDocs()) {
-            Span[] es1 = archive.getEntitiesInDoc(doc, true);
-            Span[] es2 = archive.getEntitiesInDoc(doc, false);
-            Set<Span> ss = Arrays.stream(es1).collect(Collectors.toSet());
-            Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
-            ss.addAll(ss1);
-            for (Span span : ss) {
-                if (span.typeScore < threshold)
-                    continue;
-                String name = span.getText();
-                String displayName = name;
-
-                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityBook != null)
-                    displayName = entityBook.getDisplayName(name, span.type);
-
-                displayName = displayName.trim();
-                if (seen.contains(displayName.toLowerCase()))
-                    continue; // count an entity only once
-
-                seen.add(displayName.toLowerCase());
-                if (!entityTypeToCount.containsKey(span.getType())) {
-                    entityTypeToCount.put(span.getType(), 0);
-                }
-                entityTypeToCount.put(span.getType(), entityTypeToCount.get(span.getType()) + 1);
-            }
-        }
-
-        return entityTypeToCount;
-    }
-
-    /*
-    Set requestedtype as Short.MAX_VALUE if you want to get information about all entities.
-     */
-    public JSONArray getEntitiesInfoJSON( Short requestedtype) {
-        Map<String,Pair<Entity,Short>> entities = new LinkedHashMap();
-        Map<String,Collection<EmailDocument>> entityToDocSet = new LinkedHashMap<>();
-        Map<Short, String> typeCodeToName = new LinkedHashMap<>();
-        for(NEType.Type t: NEType.Type.values())
-            typeCodeToName.put(t.getCode(), t.getDisplayName());
-        double theta = 0.001;
-        EntityBook entityBook = getEntityBook();
-        for (Document doc: getAllDocs()){
-//            Span[] es = archive.getEntitiesInDoc(doc,true);
-            Span[] es1 = getEntitiesInDoc(doc,true);
-            Span[] es2 =  getEntitiesInDoc(doc,false);
-            Set<Span> ss = Arrays.stream(es1).collect(Collectors.toSet());
-            Set<Span> ss1 = Arrays.stream(es2).collect(Collectors.toSet());
-            ss.addAll(ss1);
-            Set<String> seenInThisDoc = new LinkedHashSet<>();
-
-            for (Span span: ss) {
-                //if we have requested for all entity types (means the argument requestedtype was null) then act accordingly.
-                if ((requestedtype!=Short.MAX_VALUE && span.type != requestedtype) || span.typeScore<theta)
-                    continue;
-
-                Short type = span.type;
-                String name = span.getText();
-                String displayName = name;
-
-                //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                if (entityBook != null)
-                    displayName = entityBook.getDisplayName(name, span.type);
-
-                displayName = displayName.trim();
-
-                if (seenInThisDoc.contains(displayName.toLowerCase()))
-                    continue; // count an entity in a doc only once
-
-                seenInThisDoc.add (displayName.toLowerCase());
-
-                //fixed: Here entities map was keeping the keys without lowercase conversion as a result
-                // two entities which are same but differ only in their display name case (lower/upper) were
-                // being identified as separate entities. As a result the count in listing page was shown differently from the
-                //count on the processing metadata page (by a difference of 30 or so). This fix was done after
-                //the fix to handle a large difference in person entities count. For that refer to JSPHelper.java
-                //file fetchAndIndex method.
-                if (!entities.containsKey(displayName.toLowerCase()))
-                    entities.put(displayName.toLowerCase(), new Pair(new Entity(displayName, span.typeScore),type));
-                else
-                    entities.get(displayName.toLowerCase()).first.freq++;
-                //add this document in the map denoting that this entity appears in all these documents. It will be used later to
-                //get the date range of an entity.
-                Collection<EmailDocument> docs = entityToDocSet.getOrDefault(displayName.toLowerCase(),new LinkedHashSet<>());
-                docs.add((EmailDocument)doc);
-                entityToDocSet.put(displayName.toLowerCase(),docs);
-            }
-        }
-
-        Map<Entity, Pair<Double,Short>> vals = new LinkedHashMap<>();
-        Map<String,Pair<Date,Date>> daterange = new LinkedHashMap<>();
-        for(String e : entities.keySet()) {
-            vals.put(entities.get(e).first, new Pair(entities.get(e).first.score,entities.get(e).second));
-            //System.err.println("Putting: "+e+", "+e.score);
-            daterange.put(entities.get(e).first.entity,EmailUtils.getFirstLast(entityToDocSet.get(e),true));
-        }
-        List<Pair<Entity,Pair<Double,Short>>> lst = vals.keySet().stream().map(k->new Pair<Entity,Pair<Double,Short>>(k,vals.get(k))).collect(Collectors.toList());
-        lst.sort((elem1,elem2)->{
-            Double threshold1 = elem1.getSecond().getFirst();
-            Double threshold2=  elem2.getSecond().getFirst();
-            return threshold2.compareTo(threshold1);
-        });
-
-        JSONArray resultArray = new JSONArray();
-        int count = 0;
-        for (Pair<Entity, Pair<Double,Short>> p: lst) {
-            count++;
-            String entity = p.getFirst().entity;
-            JSONArray j = new JSONArray();
-            Short etype = p.second.second;
-            Set<String> altNamesSet = entityBook.getAltNamesForDisplayName(entity, etype);
-            String altNames = (altNamesSet == null) ? "" : "Alternate names: " + Util.join (altNamesSet, ";");
-            j.put (0, Util.escapeHTML(entity));
-            j.put (1, (float)p.getFirst().score);
-            j.put (2, p.getFirst().freq);
-            j.put (3, altNames);
-            if(daterange.get(entity).first!=null)
-                j.put (4, new SimpleDateFormat("MM/dd/yyyy").format(daterange.get(entity).first));
-            else
-                j.put(4,daterange.get(entity).first);
-            if(daterange.get(entity).second!=null)
-                j.put (5, new SimpleDateFormat("MM/dd/yyyy").format(daterange.get(entity).second));
-            else
-                j.put(5,daterange.get(entity).second);
-            //add entity type as well..
-            j.put(6,typeCodeToName.get(etype));
-            resultArray.put (count-1, j);
-        }
-        return resultArray;
-    }
 
 
     /*
@@ -1425,7 +1291,7 @@ after maskEmailDomain.
         threadIDToDocs=new LinkedHashMap<>();
         List<Document> result = new ArrayList<>();
         for (Document ed : allDocs) {
-            List<Document> doclist = threadIDToDocs.getOrDefault(threadID,new ArrayList<>());
+            List<Document> doclist = threadIDToDocs.getOrDefault(((EmailDocument)ed).threadID,new ArrayList<>());
             doclist.add(ed);
             threadIDToDocs.put(((EmailDocument)ed).threadID,doclist);
         }
@@ -1614,25 +1480,17 @@ after maskEmailDomain.
         }
     }
 
-    /* body = true => in message body, false => in subject */
-    public Span[] getEntitiesInDoc(Document d, boolean body){
-        try {
-            return edu.stanford.muse.ner.NER.getNames(d, body, this);
-        }catch(Exception e) {
-            Util.print_exception(e, log);
-            return new Span[]{};
-        }
-    }
+
 
     /** returns all entities in the given doc, both in body and subject */
-    public synchronized Set<String> getEntitiesInDoc(Document d) {
+    /*public synchronized Set<String> getEntitiesInDoc(Document d) {
         Set<String> entities = new LinkedHashSet<>();
         Stream.of(getEntitiesInDoc (d, false)).map(Span::getText).forEach(entities::add);
         Stream.of(getEntitiesInDoc (d, true)).map(Span::getText).forEach(entities::add);
         return entities;
-    }
+    }*/
 
-    public synchronized Set<String> getAllEntities() {
+    /*public synchronized Set<String> getAllEntities() {
 
         if (allEntities == null) {
             allEntities = new LinkedHashSet<>();
@@ -1645,9 +1503,9 @@ after maskEmailDomain.
             }
         }
         return allEntities;
-    }
+    }*/
 
-    transient private Multimap<Short, Document> entityTypeToDocs = LinkedHashMultimap.create(); // entity type code -> docs containing it
+    /*transient private Multimap<Short, Document> entityTypeToDocs = LinkedHashMultimap.create(); // entity type code -> docs containing it
     public synchronized void computeEntityTypeToDocMap() {
         if (entityTypeToDocs != null)
             return;
@@ -1667,13 +1525,13 @@ after maskEmailDomain.
                 entityTypeToDocs.put (sp.type, doc);
             }
         }
-    }
+    }*/
 
-    public synchronized Collection<Document> getDocsWithEntityType(short code) {
+    /*public synchronized Collection<Document> getDocsWithEntityType(short code) {
         return entityTypeToDocs.get (code);
-    }
+    }*/
 
-    public synchronized Set<NEType.Type> getEntityTypes() {
+    /*public synchronized Set<NEType.Type> getEntityTypes() {
         Set<NEType.Type> result = new LinkedHashSet<>();
 
         computeEntityTypeToDocMap();
@@ -1681,10 +1539,10 @@ after maskEmailDomain.
             result.add (NEType.getTypeForCode(t));
         }
         return result;
-    }
+    }*/
 
     //returns a map of names recognised by NER to frequency
-    private Map<String, Integer> countNames() {
+    /*private Map<String, Integer> countNames() {
         Map<String, Integer> name_count = new LinkedHashMap<>();
         for (Document d : getAllDocs()) {
             Set<String> names = getNames(d, Indexer.QueryType.FULL);
@@ -1704,7 +1562,7 @@ after maskEmailDomain.
         // log.info("NameCount:" + e.getKey() + "|" + e.getValue());
         // }
         return name_count;
-    }
+    }*/
 
     public List<String> getNamesForDocId(String id, Indexer.QueryType qt) throws IOException
     {
@@ -1731,6 +1589,8 @@ after maskEmailDomain.
                 doc.threadID = thrId;
             thrId++;
         }
+        //also do the caching here only.
+        docsWithThreadId(1);//to trigger caching of doctothreadid map
         return thrId;
     }
 
@@ -2417,7 +2277,7 @@ after maskEmailDomain.
     }
 
 
-    public JSONArray getEntitiesCountAsJSON(Short entityType,int maxrecords){
+    /*public JSONArray getEntitiesCountAsJSON(Short entityType,int maxrecords){
 
         Map<String, Integer> counts = new LinkedHashMap<>();
         Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
@@ -2472,7 +2332,7 @@ after maskEmailDomain.
             }
         }
     }
-
+*/
     public static void main(String[] args) {
         try {
 

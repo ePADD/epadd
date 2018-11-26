@@ -44,9 +44,9 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
 
 <%
 	if(!checkDone) {
-		out.println("<p> An ePADD archive follows the Bag-it specification for preservation support. If you received this archive from " +
-				" an untrusted source, you should verify the archive bag's content. Please note that this process might take a while " +
-				" for large archives.</p>");
+		out.println("<p> ePADD relies upon the Bag-it specification to ensure the authenticity"+
+				" of the archive for preservation purposes. To check that the archive has not been altered outside of "+
+				"the program, you can verify the checksum. Please note that this process might take a while for large archives.</p>");
 	}else{
 	    if(success){
 	        out.println("<br><p> The bag is verified. The content of this archive was not modified.</p>");

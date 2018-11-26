@@ -6,6 +6,8 @@
 <%@page import="java.util.stream.Collectors" %>
 <%@page import="edu.stanford.muse.ie.variants.EntityBook" %>
 <%@page import="edu.stanford.muse.util.Pair" %>
+<%@ page import="java.io.StringWriter" %>
+<%@ page import="java.io.BufferedWriter" %>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <%
@@ -81,20 +83,9 @@
 	});
 </script>
 
-<%
+<%--<%
 
 
-	EntityBook entityBook = archive.getEntityBook();
-	Map<String, Integer> displayNameToFreq = entityBook.getDisplayNameToFreq(archive, type);
-
-	// get pairs of <displayname, freq> in alpha order of display name, or the order of Freq
-	List<String> entityDisplayNames;
-	if (alphaSort) {
-		entityDisplayNames = new ArrayList<> (displayNameToFreq.keySet());
-		Collections.sort (entityDisplayNames);
-	} else {
-		entityDisplayNames = Util.sortMapByValue(displayNameToFreq).stream().map(Pair::getFirst).collect (Collectors.toList());
-	}
 
 	// start building the string that goes into the text box
 	StringBuilder textBoxVal = new StringBuilder();
@@ -115,7 +106,7 @@
 				}
 		}
 	}
-%>
+%>--%>
 
 <p>
 
@@ -126,7 +117,15 @@
 		<%--//adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
 		//archiveID in all those forms where POST was used to invoke the server page.--%>
 		<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
-		<textarea name="entityMerges" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><%=textBoxVal%>
+		<textarea title="Entities" name="entityMerges" id="text" style="width:600px" rows="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+		<%
+			EntityBook entityBook = archive.getEntityBookManager().getEntityBookForType(type);
+			StringWriter sw = new StringWriter();
+			BufferedWriter bwriter = new BufferedWriter(sw);
+			entityBook.writeObjectToStream (bwriter, alphaSort);
+			bwriter.flush();
+			out.print(sw.toString());
+		%>
 		</textarea>
 		<br/>
 		<br/>

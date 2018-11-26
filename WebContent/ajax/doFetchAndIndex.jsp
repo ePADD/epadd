@@ -8,7 +8,7 @@
 <%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.exceptions.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="com.google.common.collect.Multimap"%>
+<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%>
 <%
 	// core JSP that does fetch, grouping and indexing
 	// sets up archive in the session at the end
@@ -90,12 +90,23 @@
 			errorMessage = "You may not be running with enough memory. Please try again with more memory, or on a folder with fewer messages.";
 		} else {
 				resultPage = "browse-top?archiveID="+archiveID;
-				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+				//and for entityDoc map as well.//not needed.. just make sure that entitybookmanager is also loaded.
+				            String dir = archive.baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
+
+				            String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
+
+				            				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+
+				EntityBookManager entityBookManager = EntityBookManager.readObjectFromFiles(archive,entityBookPath);//this one ensures that we have entitybookmanager filled
+				archive.setEntityBookManager(entityBookManager);
+				ArchiveReaderWriter.saveEntityBookManager(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
 				//After archive is saved recreate the cache.. For addressbook the cache gets created inside saveAddressBook.
 				//Do it for Lexicon cache.
 				Archive.cacheManager.cacheLexiconListing(archiveID);
-				//and for entityDoc map as well.
-                Archive.cacheManager.cacheEntitiesListing(archiveID);
+
+				// (for all entities and also the summary objects- used for cache)
+                //Archive.cacheManager.cacheEntitiesListing(archiveID);
+
 			}
 			try {
 				String aStats = archive.getStats();

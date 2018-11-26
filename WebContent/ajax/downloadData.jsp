@@ -249,7 +249,7 @@
           line.add("Entity Type");
          csvwriter.writeNext(line.toArray(new String[line.size()]));
 
-             JSONArray entityinfo = archive.getEntitiesInfoJSON(entitytype);
+             JSONArray entityinfo = archive.cacheManager.getEntitiesInfoJSON(ArchiveReaderWriter.getArchiveIDForArchive(archive),entitytype);
 //  j.put (0, Util.escapeHTML(entity));
 //            j.put (1, (float)p.getFirst().score);
 //            j.put (2, p.getFirst().freq);

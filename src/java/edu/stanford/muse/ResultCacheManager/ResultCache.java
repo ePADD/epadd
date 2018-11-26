@@ -1,14 +1,20 @@
 package edu.stanford.muse.ResultCacheManager;
 
 import edu.stanford.muse.AddressBookManager.AddressBook;
+import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.index.Lexicon;
+import edu.stanford.muse.ner.Entity;
+import edu.stanford.muse.util.Pair;
+import edu.stanford.muse.util.Util;
 import org.json.JSONArray;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 //This class stores the result of important getter methods. Such memoization helps in retrieving the results of getter
 //faster. Especially in an application like ePADD where majority of the operations include getting the data (instead of setting it).
@@ -19,7 +25,6 @@ public class ResultCache {
 
     Map<String,JSONArray> correspondentCount = new LinkedHashMap<>();
     Map<String,Map<String,JSONArray>> lexiconCount = new LinkedHashMap<>();
-    Map<String,JSONArray> entitiesCount = new LinkedHashMap<>();
 
     /*
     After the modification of AddressBook. Which method gets called?
@@ -42,6 +47,14 @@ public class ResultCache {
         Archive archive =ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
         correspondentCount.put(archiveID, result);
     }
+
+    public JSONArray getEntitiesInfoJSON( String archiveID, Short requestedtype){
+        Archive archive =ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        EntityBook ebook = archive.getEntityBookManager().getEntityBookForType(requestedtype);
+        JSONArray resultArray = ebook.getInfoAsJSON();
+        return resultArray;
+    }
+
 
     public JSONArray getCorrespondentListing(String archiveID){
         return correspondentCount.get(archiveID);
@@ -107,10 +120,10 @@ public class ResultCache {
         return tmp.get(lexicon);
     }
 
-    public void cacheEntitiesListing(String archiveID) {
+    /*public void cacheEntitiesListing(String archiveID) {
         //for now just do computation of entityTypeToDocMap used in Advanced search. Later we will use this to get information about entity listing as well.
         Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
-        archive.computeEntityTypeToDocMap();
+        //archive.computeEntityTypeToDocMap();
 
-    }
+    }*/
 }
