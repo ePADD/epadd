@@ -620,7 +620,21 @@ public class SearchResult {
         }else
             entityToSearch.addAll(entities.stream().map(entity->EntityBook.canonicalize(entity)).collect(Collectors.toSet()));
 
+        //get all the documents which contain the entities to be searched (entityToSearch variable).
+        Set<Document> docResultSet = inputSet.archive.getEntityBookManager().getDocsForEntities(entityToSearch);
+        //from inputSet.matchedDocs map remove all those documents which were not returned by the previous call.
+        // add whichever docs were present (or newly added by this search), add highlight information as the set of entities which were searched.
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
+            Document doc = k.getKey();
+            if(docResultSet.contains(doc)){
+                //add highlight information here and return true.
+                k.getValue().getFirst().addTerms(entityToSearch);
+                return true;
+            }else
+                return false;
+        }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+
+        /*inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
                     EmailDocument ed = (EmailDocument)k.getKey();
                     Set<String> entitiesInThisDoc = new LinkedHashSet<>();
                     // question: should we look at fine entities instead?
@@ -642,7 +656,7 @@ public class SearchResult {
                     return false;
 
         }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-
+*/
 
         return inputSet;
     }

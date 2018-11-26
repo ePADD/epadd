@@ -124,7 +124,7 @@
         <% } %>
             <% if (cm.firstDate != null && cm.lastDate != null) { %>
                 Date Range<br/>
-                <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
+        <span class="detail"><b><%=Util.formatDate(cm.firstDate)%></b> to <b><%=Util.formatDate(cm.lastDate)%></b></span>
                 <% if (cm.nHackyDates > 0) { %>
                    <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> undated</b>
             <hr/>

@@ -8,8 +8,10 @@ import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.util.ArrayUtil;
 
 import javax.print.Doc;
 import java.io.*;
@@ -188,6 +190,56 @@ public class EntityBookManager {
         return res.toArray(new Span[res.size()]);
     }
 
+
+    /**
+     * Get num top entities in the archive. This rating is by count.
+     * @param num
+     * @return
+     */
+    public Map<String,Collection<Document>> getDocsOfTopEntitiesByCount(int num){
+        final Map<String,Set<Document>> topofeach = new LinkedHashMap<>();
+        Map<String,Collection<Document>> topofall = new LinkedHashMap<>();
+        for(NEType.Type t: NEType.Type.values()) {
+            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            ebook.summary_L1_entityCountMap.entrySet().stream().sorted(new Comparator<Map.Entry<MappedEntity, Summary_L1>>() {
+                @Override
+                public int compare(Map.Entry<MappedEntity, Summary_L1> o1, Map.Entry<MappedEntity, Summary_L1> o2) {
+                    return Integer.compare(o2.getValue().messages.size(), o1.getValue().messages.size());//we need ordering from high to low.
+                }
+            }).sorted(new Comparator<Map.Entry<MappedEntity, Summary_L1>>() {
+                @Override
+                public int compare(Map.Entry<MappedEntity, Summary_L1> o1, Map.Entry<MappedEntity, Summary_L1> o2) {
+                    return Double.compare(o2.getValue().score, o1.getValue().score);
+                }
+            }).limit(num).forEach(e->{
+                topofeach.put(e.getKey().getDisplayName(),e.getValue().messages);
+            });
+        }
+        //now sort topofall and limit the result to top num entries. Return the result.
+        topofall=topofeach.entrySet().stream().sorted(new Comparator<Map.Entry<String, Set<Document>>>() {
+            @Override
+            public int compare(Map.Entry<String, Set<Document>> o1, Map.Entry<String, Set<Document>> o2) {
+                return Integer.compare(o2.getValue().size(),o1.getValue().size());//sort based on size.. largest to smallest.
+            }
+        }).limit(num).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+        return topofall;
+    }
+
+    public Set<Document> getDocsForEntities(Set<String> entities){
+        Set<Document> docset = new LinkedHashSet<>();
+        for(NEType.Type t: NEType.Type.values()) {
+            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            for(String name:entities){
+                MappedEntity me = ebook.nameToMappedEntity.get(EntityBook.canonicalize(name));
+                if(me!=null){
+                    //get set of docs for this one. and add to docset result.
+                    docset.addAll(ebook.summary_L1_entityCountMap.get(me).messages);
+                }
+            }
+        }
+        return docset;
+    }
+
     /* body = true => in message body, false => in subject */
     public Span[] getEntitiesInDocFromLucene(Document d, boolean body){
         try {
@@ -208,10 +260,12 @@ public class EntityBookManager {
         for (Document doc : mArchive.getAllDocs())
 
         {
-            Span[] spans = getEntitiesInDocFromLucene(doc, true);
+            Span[] spansbody = getEntitiesInDocFromLucene(doc, true);
+            Span[] spans = getEntitiesInDocFromLucene(doc, false);
+            Span[] allspans = ArrayUtils.addAll(spans,spansbody);
             Set<String> seenInThisDoc = new LinkedHashSet<>();
 
-            for (Span span : spans) {
+            for (Span span : allspans) {
                 // bail out if not of entity type that we're looking for, or not enough confidence
                 if (span.type != type || span.typeScore < theta)
                     continue;
@@ -263,10 +317,12 @@ public class EntityBookManager {
                 for (Document doc : mArchive.getAllDocs())
 
                 {
-                    Span[] spans = getEntitiesInDocFromLucene(doc, true);
+                    Span[] spansbody = getEntitiesInDocFromLucene(doc, true);
+                    Span[] spans = getEntitiesInDocFromLucene(doc, false);
+                    Span[] allspans = ArrayUtils.addAll(spans,spansbody);
                     Set<String> seenInThisDoc = new LinkedHashSet<>();
 
-                    for (Span span : spans) {
+                    for (Span span : allspans) {
                         // bail out if not of entity type that we're looking for, or not enough confidence
                         if (span.type != type || span.typeScore < theta)
                             continue;

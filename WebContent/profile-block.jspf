@@ -102,21 +102,21 @@
 
                 <% if (cm.firstDate != null && cm.lastDate != null) { %>
                 Date Range<br/>
-                <span class="detail"><%=Util.formatDate(cm.firstDate)%> to <%=Util.formatDate(cm.lastDate)%></span>
+                <span class="detail"><b><%=Util.formatDate(cm.firstDate)%></b> to <b><%=Util.formatDate(cm.lastDate)%></b></span>
                 <% if (cm.nHackyDates > 0) { %>
-                <br/><%=Util.pluralize(cm.nHackyDates, "message")%> undated
+                <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> undated</b>
                 <hr/>
                 <% } %>
                 <% } %>
 
-                Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
+                Messages: <span class="detail"><b><%=Util.commatize(cm.nDocs)%></b></span>
                 <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
                 Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
                 Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
                 <% } %>
                 <hr/>
-                Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
+                Attachments: <span class="detail"><b><%=Util.commatize(cm.nBlobs)%></b></span>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                 <br/>
                 Images: <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>

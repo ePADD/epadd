@@ -104,7 +104,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 	<style>
 	.brush .extent {
 	  stroke: black;
-	  stroke-width: 2;
+	  stroke-width: 2px;
 	  fill-opacity: .5;
 	}
 	</style>
@@ -268,26 +268,30 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 	{
 		int normalizer = ProtovisUtil.normalizingMax(allDocs, addressBook, intervals);
 		int[] allMessagesHistogram = CalendarUtil.computeHistogram(EmailUtils.datesForDocs(allDocs), intervals, true /* ignore invalid dates */);
-
-		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
+		//a map of canonicalized entity (IndexUtils.canonicalizeEntity) to count
+		/*Map<String, Integer> counts = new LinkedHashMap<>();
+		//a map of canonicalized entity to original entity
 		Map<String, String> canonicalToOriginal = new LinkedHashMap<>();
-		Map<String, Integer> counts = new LinkedHashMap<>();
-		for (EmailDocument ed: docs) {
-            Set<String> set = new LinkedHashSet<>();
-            Span[] es = archive.getEntityBookManager().getEntitiesInDoc(ed, true);
-            es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
-            es = edu.stanford.muse.ie.Util.filterEntities(es);
-            for(Span sp: es)
-                if(NEType.getCoarseType(sp.type).getCode()==ct) set.add(sp.text);
+		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
 
-			for (String e: set) {
-				String canonicalEntity = IndexUtils.canonicalizeEntity(e);
-                canonicalToOriginal.putIfAbsent(canonicalEntity, e);
-				Integer I = counts.get(canonicalEntity);
-				counts.put(canonicalEntity, (I == null) ? 1 : I+1);
+
+		{
+			for (EmailDocument ed : docs) {
+				Set<String> set = new LinkedHashSet<>();
+				Span[] es = archive.getEntityBookManager().getEntitiesInDoc(ed, true);
+				es = edu.stanford.muse.ie.Util.filterEntitiesByScore(es, 0.001);
+				es = edu.stanford.muse.ie.Util.filterEntities(es);
+				for (Span sp : es)
+					if (NEType.getCoarseType(sp.type).getCode() == ct) set.add(sp.text);
+
+				for (String e : set) {
+					String canonicalEntity = IndexUtils.canonicalizeEntity(e);
+					canonicalToOriginal.putIfAbsent(canonicalEntity, e);
+					Integer I = counts.get(canonicalEntity);
+					counts.put(canonicalEntity, (I == null) ? 1 : I + 1);
+				}
 			}
 		}
-		
 		List<Pair<String, Integer>> pairs = Util.sortMapByValue(counts);
 		int n = HTMLUtils.getIntParam(request, "n", 10);
 		int count = 0;
@@ -299,21 +303,21 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 		}
 		
 		Map<String, Set<Document>> map = new LinkedHashMap<>();
-		/*
+		*//*
 		for (String e: topEntities)
 		{
 			String displayForEntity = canonicalToOriginal.get(e);
 			if (Util.nullOrEmpty(displayForEntity))
 				continue;
 			Set<Document> set = archive.indexer.docsForQuery(e, -1, Indexer.QueryType.FULL);
-			/* note: #docs here could mismatch with counts because a name might hit a doc, but not be recognized as a name in it */
-			/*
+			/* note: #docs here could mismatch with counts because a name might hit a doc, but not be recognized as a name in it *//*
+			*//*
 			if (Util.nullOrEmpty(set))
 				continue;
 				
 			map.put(e, set);
 		}
-		*/
+		*//*
 
 		// now create the actual list of docs for each of the top entities
 		for (EmailDocument ed: docs) {
@@ -343,8 +347,9 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 			if (Util.nullOrEmpty(originalEntity)) // shouldn't really happeb
 				originalEntity = entity;
 			newMap.put(originalEntity, map.get(entity));
-		}
-		
+		}*/
+		Map<String, Collection<Document>> newMap = archive.getEntityBookManager().getDocsOfTopEntitiesByCount(10);
+
 		graph_script = scriptForSentimentsGraph(newMap, intervals, allMessagesHistogram, 1000, 450, normalizer, session);
 	}
 

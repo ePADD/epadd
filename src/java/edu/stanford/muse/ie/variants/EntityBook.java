@@ -30,6 +30,9 @@ class Summary_L1{
     Set<Document> messages;
     Date startDate;
     Date endDate;
+    public Set<Document> getDocs(){
+        return messages;
+    }
 }
 public class EntityBook implements Serializable {
     public static long serialVersionUID = 1L;
@@ -228,6 +231,7 @@ nameToMappedEntity.values().forEach(me->{
             out.newLine();
         }
     }
+
 
     /*For reading and constructing nameToMappedEntity map open a BufferedReader and construct
     mappedEntity object iteratively (in between skipping a line for entity delimiter --------------------).
