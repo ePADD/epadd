@@ -52,6 +52,57 @@ public class EntityBookManager {
             return mTypeToEntityBook.get(entityType);
         }
     }
+
+    /*
+    This method recalculates cache for entitybook of given type. If type is given as Max, it does it for all at once. This method was carved out mainly to reduce the recalculation of
+    individual type entitybook (which involves expensive operation of lucene search for each doc).
+     */
+    private void recalculateCache(Short type){
+
+            Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
+            //iterate over lucene doc to recalculate the count and other summaries of the modified
+            //fill cache summary for ebook in other fields of ebook.
+            double theta = 0.001;
+
+            for (Document doc : mArchive.getAllDocs())
+
+            {
+                Span[] spansbody = getEntitiesInDocFromLucene(doc, true);
+                Span[] spans = getEntitiesInDocFromLucene(doc, false);
+                Span[] allspans = ArrayUtils.addAll(spans,spansbody);
+                Set<String> seenInThisDoc = new LinkedHashSet<>();
+
+                for (Span span : allspans) {
+                    // bail out if not of entity type that we're looking for, or not enough confidence, but don't bail out if we have to do it for all types, i.e. type is Short.MAX_TYPE
+                    if (type!=Short.MAX_VALUE && (span.type != type || span.typeScore < theta))
+                        continue;
+                    type = span.type;//if type is Short.Max_Type then set the type as the current type, if not this is like a NOP.
+                    Double score = new Double(span.typeScore);
+                    String name = span.getText();
+                    String canonicalizedname = EntityBook.canonicalize(name);
+
+                    //  map the name to its display name. if no mapping, we should get the same name back as its displayName
+                    MappedEntity mappedEntity = (mTypeToEntityBook.get(type).nameToMappedEntity.get(canonicalizedname));
+                    if(mappedEntity==null){
+                        continue; //It implies that we have erased some names from the entitybook so no need to consider them.
+                    }
+                    //add this doc in the docsetmap for the mappedEntity.
+                    Double oldscore= Double.valueOf(0);
+                    if(docsetmap.get(mappedEntity)!=null)
+                        oldscore = docsetmap.get(mappedEntity).first;
+                    Double finalscore = Double.max(oldscore,score);
+                    Set<Document> docset  = new LinkedHashSet<>();
+                    if(docsetmap.get(mappedEntity)!=null)
+                        docset=docsetmap.get(mappedEntity).second;
+                    docset.add(doc);
+                    docsetmap.put(mappedEntity,new Pair(finalscore,docset));
+
+                }
+            }
+            //fill cache summary for ebook in other fields of ebook.
+            mTypeToEntityBook.get(type).fillSummaryFields(docsetmap);
+        }
+
     /*
     Method to read different entity books from files and fill this object. This object is then returned to the caller. If file is not present that particular object is not
     constructed. It is not a problem because later when getEntityBook method is called (of this class) and no entitybook is found then an entitybook object is constructed for that type
@@ -59,7 +110,8 @@ public class EntityBookManager {
      */
     public static EntityBookManager readObjectFromFiles(Archive archive, String entitybooksdirpath) {
         //here entitybooksdirpath is of the form             String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
-
+        boolean filledFromFiles=false; //a flag used to detect the path of filling the entitybookmanager. If it read from lucene then the recalculateCache is already done so no need to
+        //redo it again. However if at least one path went through reading the entitybook files then we need to recalculate the cache at the end.
         EntityBookManager entityBookManager = new EntityBookManager(archive);
         if(!new File(entitybooksdirpath).exists())//if no directory exists then create it.
             new File(entitybooksdirpath).mkdir();
@@ -85,7 +137,9 @@ public class EntityBookManager {
                         stringBuilder.append(line);
                         stringBuilder.append("\r\n");
                     }
-                    entityBookManager.fillEntityBookFromText(stringBuilder.toString(), t.getCode(), true);
+                    entityBookManager.fillEntityBookFromText(stringBuilder.toString(), t.getCode(), false);//don't recalculate cache here as it involves an expensive operation once each for the given type.
+                    //instead of that after finishing reading the individual entity books (from file) do recalculation of cache together.
+                    filledFromFiles=true;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -96,6 +150,9 @@ public class EntityBookManager {
                 entityBookManager.fillEntityBookFromLucene(t.getCode());
             }
 
+        }
+        if(filledFromFiles){
+            entityBookManager.recalculateCache(Short.MAX_VALUE);
         }
 
         return entityBookManager;
@@ -250,6 +307,10 @@ public class EntityBookManager {
         }
     }
 
+    /*
+    This is a slow path but the assumption is that it must be used only once when porting the old archives (where entitybooks are not factored out as files). After that only the other
+    path 'fillEntityBookFromText' will be used repetitively (when loading the archive)
+     */
     public void fillEntityBookFromLucene( Short type){
         EntityBook ebook = new EntityBook(type);
         mTypeToEntityBook.put(type,ebook);
@@ -308,49 +369,9 @@ public class EntityBookManager {
         try {
             EntityBook entityBook = EntityBook.readObjectFromStream(br,type);
             mTypeToEntityBook.put(type,entityBook);
-            if(recalculateCache){
-                Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
-                //iterate over lucene doc to recalculate the count and other summaries of the modified
-                //fill cache summary for ebook in other fields of ebook.
-                double theta = 0.001;
+            if(recalculateCache)
+                recalculateCache(type);
 
-                for (Document doc : mArchive.getAllDocs())
-
-                {
-                    Span[] spansbody = getEntitiesInDocFromLucene(doc, true);
-                    Span[] spans = getEntitiesInDocFromLucene(doc, false);
-                    Span[] allspans = ArrayUtils.addAll(spans,spansbody);
-                    Set<String> seenInThisDoc = new LinkedHashSet<>();
-
-                    for (Span span : allspans) {
-                        // bail out if not of entity type that we're looking for, or not enough confidence
-                        if (span.type != type || span.typeScore < theta)
-                            continue;
-                        Double score = new Double(span.typeScore);
-                        String name = span.getText();
-                        String canonicalizedname = EntityBook.canonicalize(name);
-
-                        //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                        MappedEntity mappedEntity = (entityBook.nameToMappedEntity.get(canonicalizedname));
-                        if(mappedEntity==null){
-                            continue; //It implies that we have erased some names from the entitybook so no need to consider them.
-                        }
-                        //add this doc in the docsetmap for the mappedEntity.
-                        Double oldscore= Double.valueOf(0);
-                        if(docsetmap.get(mappedEntity)!=null)
-                         oldscore = docsetmap.get(mappedEntity).first;
-                        Double finalscore = Double.max(oldscore,score);
-                        Set<Document> docset  = new LinkedHashSet<>();
-                        if(docsetmap.get(mappedEntity)!=null)
-                            docset=docsetmap.get(mappedEntity).second;
-                        docset.add(doc);
-                        docsetmap.put(mappedEntity,new Pair(finalscore,docset));
-
-                   }
-                }
-                //fill cache summary for ebook in other fields of ebook.
-                entityBook.fillSummaryFields(docsetmap);
-            }
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -42,6 +42,7 @@
 
             <% if (!ModeConfig.isDiscoveryMode()) { %>
 <p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer">Verify bag checksum</button></p>
+<p>    <button id="debugaddressbook" onclick="window.location='debugAddressBook?archiveID=<%=archiveID%>'"  class="btn-default" style="cursor:pointer">Debug address book</button></p>
 <div class="one-line" id="export-next">
     <input type="text" placeholder="';' separated trusted email addresses" id="trustedaddrs"></input>
 <button id="recomputebutton" onclick="recomputeAddressBookHandler();return false;" class="btn-default" style="cursor:pointer">Recompute Address Book</button>
