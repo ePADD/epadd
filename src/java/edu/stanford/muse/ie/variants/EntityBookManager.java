@@ -57,9 +57,22 @@ public class EntityBookManager {
     This method recalculates cache for entitybook of given type. If type is given as Max, it does it for all at once. This method was carved out mainly to reduce the recalculation of
     individual type entitybook (which involves expensive operation of lucene search for each doc).
      */
-    private void recalculateCache(Short type){
+    private void recalculateCache(Short giventype){
 
+        //a subtle issue: If type is Short.MAX_VALUE then we need to have docsetmap one for each type.
+        //so create a map of this map.
+        Map<Short, Map<MappedEntity,Pair<Double,Set<Document>>>> alldocsetmap = new LinkedHashMap<>();
+        // now fill this map.
+        if(giventype==Short.MAX_VALUE){
+            for(NEType.Type t: NEType.Type.values()) {
+                Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
+                alldocsetmap.put(t.getCode(),docsetmap);
+            }
+        }else{
             Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
+            alldocsetmap.put(giventype,docsetmap);
+        }
+
             //iterate over lucene doc to recalculate the count and other summaries of the modified
             //fill cache summary for ebook in other fields of ebook.
             double theta = 0.001;
@@ -74,9 +87,9 @@ public class EntityBookManager {
 
                 for (Span span : allspans) {
                     // bail out if not of entity type that we're looking for, or not enough confidence, but don't bail out if we have to do it for all types, i.e. type is Short.MAX_TYPE
-                    if (type!=Short.MAX_VALUE && (span.type != type || span.typeScore < theta))
+                    if (giventype!=Short.MAX_VALUE && (span.type != giventype || span.typeScore < theta))
                         continue;
-                    type = span.type;//if type is Short.Max_Type then set the type as the current type, if not this is like a NOP.
+                    Short type = span.type;//if type is Short.Max_Type then set the type as the current type, if not this is like a NOP.
                     Double score = new Double(span.typeScore);
                     String name = span.getText();
                     String canonicalizedname = EntityBook.canonicalize(name);
@@ -88,19 +101,25 @@ public class EntityBookManager {
                     }
                     //add this doc in the docsetmap for the mappedEntity.
                     Double oldscore= Double.valueOf(0);
-                    if(docsetmap.get(mappedEntity)!=null)
-                        oldscore = docsetmap.get(mappedEntity).first;
+                    if(alldocsetmap.get(type).get(mappedEntity)!=null)
+                        oldscore = alldocsetmap.get(type).get(mappedEntity).first;
                     Double finalscore = Double.max(oldscore,score);
                     Set<Document> docset  = new LinkedHashSet<>();
-                    if(docsetmap.get(mappedEntity)!=null)
-                        docset=docsetmap.get(mappedEntity).second;
+                    if(alldocsetmap.get(type).get(mappedEntity)!=null)
+                        docset=alldocsetmap.get(type).get(mappedEntity).second;
                     docset.add(doc);
-                    docsetmap.put(mappedEntity,new Pair(finalscore,docset));
+                    alldocsetmap.get(type).put(mappedEntity,new Pair(finalscore,docset));
 
                 }
             }
             //fill cache summary for ebook in other fields of ebook.
-            mTypeToEntityBook.get(type).fillSummaryFields(docsetmap);
+        //Beware!! what happens if type is MAX (means we need to do this for all types).
+        if(giventype== Short.MAX_VALUE) {
+            for(NEType.Type t: NEType.Type.values()) {
+                mTypeToEntityBook.get(t.getCode()).fillSummaryFields(alldocsetmap.get(t.getCode()));
+            }
+        }else
+            mTypeToEntityBook.get(giventype).fillSummaryFields(alldocsetmap.get(giventype));
         }
 
     /*
@@ -340,9 +359,9 @@ public class EntityBookManager {
                 if(mappedEntity==null){
                     //add this name as a mapped entity in the entiybook.
                     mappedEntity = new MappedEntity();
-                    mappedEntity.setDisplayName(canonicalizedname);
+                    mappedEntity.setDisplayName(name);//Don't canonicalize for the display purpose otherwise 'University of Florida' becomes 'florida of university'
                     mappedEntity.setEntityType(type);
-                    mappedEntity.addAltNames(canonicalizedname);
+                    mappedEntity.addAltNames(name);
                     ebook.nameToMappedEntity.put(canonicalizedname,mappedEntity);
                     Set<Document> docset=new LinkedHashSet<>();
                     docsetmap.put(mappedEntity,new Pair(score,docset));
