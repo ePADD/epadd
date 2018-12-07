@@ -175,7 +175,7 @@
 
     }//////////////////////////////////////Download unconfirmed correspondent file//////////////////////////////////////////////////////////////////////
     else if(query.equals("unconfirmedcorrespondents")){
-	    JSONArray correspondents = AddressBook.getCountsAsJson((Collection)archive.getAllDocs(),true,ArchiveReaderWriter.getArchiveIDForArchive(archive));
+	    JSONArray correspondents = archive.getAddressBook().getCountsAsJSON(false,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 	    //put all these data in a csv, copy to temp directory and return the url to download.
          String destfile = Archive.TEMP_SUBDIR + File.separator + "unconfirmedCorrespondents.csv";
          Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"csv",JSPHelper.log);
@@ -248,16 +248,31 @@
          line.add ("End Date");
           line.add("Entity Type");
          csvwriter.writeNext(line.toArray(new String[line.size()]));
+if(entitytype==Short.MAX_VALUE){
+    for(NEType.Type t: NEType.Type.values())
+        {
+            JSONArray entityinfo = archive.getEntityBookManager().getEntityBookForType(t.getCode()).getInfoAsJSON();//  j.put (0, Util.escapeHTML(entity));
 
-             JSONArray entityinfo = archive.cacheManager.getEntitiesInfoJSON(ArchiveReaderWriter.getArchiveIDForArchive(archive),entitytype);
-//  j.put (0, Util.escapeHTML(entity));
-//            j.put (1, (float)p.getFirst().score);
-//            j.put (2, p.getFirst().freq);
-//            j.put (3, altNames);
-//            j.put (4, daterange.get(entity).first);
-//            j.put (5, daterange.get(entity).second);
-
-                for(int i=0;i<entityinfo.length();i++){
+            for(int i=0;i<entityinfo.length();i++){
+                    JSONArray l = entityinfo.getJSONArray(i);
+                    // write the records
+                    line = new ArrayList<>();
+                    for(int j=0;j<l.length();j++){
+                        if(j==3)
+                            continue;
+                        if(!l.isNull(j))
+                            line.add(l.get(j).toString());
+                        else
+                            line.add("unknown");
+                        }
+                    csvwriter.writeNext(line.toArray(new String[line.size()]));
+                }
+        }
+        csvwriter.close();
+        fw.close();
+        }else{
+         JSONArray entityinfo = archive.getEntityBookManager().getEntityBookForType(entitytype).getInfoAsJSON();//  j.put (0, Util.escapeHTML(entity));
+            for(int i=0;i<entityinfo.length();i++){
                     JSONArray l = entityinfo.getJSONArray(i);
                     // write the records
                     line = new ArrayList<>();
@@ -274,6 +289,14 @@
 
          csvwriter.close();
          fw.close();
+    }
+    //            j.put (1, (float)p.getFirst().score);
+//            j.put (2, p.getFirst().freq);
+//            j.put (3, altNames);
+//            j.put (4, daterange.get(entity).first);
+//            j.put (5, daterange.get(entity).second);
+
+
          String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+fnameprefix+"_entitiesInfo.csv" ;
          downloadURL = appURL + "/" +  contentURL;
 

@@ -59,6 +59,7 @@ public class EntityBookManager {
      */
     private void recalculateCache(Short giventype){
 
+        log.info("Computing EntityBook Cache");
         //a subtle issue: If type is Short.MAX_VALUE then we need to have docsetmap one for each type.
         //so create a map of this map.
         Map<Short, Map<MappedEntity,Pair<Double,Set<Document>>>> alldocsetmap = new LinkedHashMap<>();
@@ -72,7 +73,7 @@ public class EntityBookManager {
             Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
             alldocsetmap.put(giventype,docsetmap);
         }
-
+        //iterate over
             //iterate over lucene doc to recalculate the count and other summaries of the modified
             //fill cache summary for ebook in other fields of ebook.
             double theta = 0.001;
@@ -120,6 +121,8 @@ public class EntityBookManager {
             }
         }else
             mTypeToEntityBook.get(giventype).fillSummaryFields(alldocsetmap.get(giventype));
+
+        log.info("EntityBook Cache computed successfully");
         }
 
     /*
@@ -230,6 +233,7 @@ public class EntityBookManager {
     public void writeObjectToFile(String entitybooksdirpath, short entityType) throws IOException {
         //get corresponding entitybook for this type.
         String entitysubdirname = NEType.getTypeForCode(entityType).getDisplayName();
+        new File(entitybooksdirpath).mkdir();//create directory if not exists.
         new File(entitybooksdirpath + File.separator + entitysubdirname + File.separator).mkdir();//create directory if not exists.
         String entityBookPath = entitybooksdirpath + File.separator + entitysubdirname + File.separator + Archive.ENTITYBOOK_SUFFIX;
         EntityBook ebook = this.getEntityBookForType(entityType);

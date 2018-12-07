@@ -5,6 +5,7 @@
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page contentType="text/html; charset=UTF-8"%>
 
 

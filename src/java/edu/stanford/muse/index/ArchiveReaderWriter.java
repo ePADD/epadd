@@ -121,6 +121,7 @@ public class ArchiveReaderWriter{
                 Util.print_exception(e, log);
             }
 
+            log.info("Session loaded successfully");
         // need to set up sentiments explicitly -- now no need since lexicon is part of the session
         log.info("Memory status: " + Util.getMemoryStats());
 
@@ -148,44 +149,62 @@ public class ArchiveReaderWriter{
                 return result;
             }
 
+            log.info("Setting up post-deserialization action");
             archive.postDeserialized(baseDir, readOnly);
+            log.info("Post-deserialization action completed");
 
             /////////////////AddressBook////////////////////////////////////////////
-           AddressBook ab = readAddressBook(addressBookPath);
+            log.info("Loading address book");
+           AddressBook ab = readAddressBook(addressBookPath,archive.getAllDocs());
             archive.addressBook = ab;
+            log.info("Addressbook loaded successfully");
 
             ////////////////EntityBook/////////////////////////////////////
+            log.info("Loading EntityBook Manager");
             EntityBookManager eb = readEntityBookManager(archive,entityBookPath);
             archive.setEntityBookManager(eb);
+            log.info("EntityBook Manager loaded successfully");
             ///////////////CorrespondentAuthorityMapper/////////////////////////////
             CorrespondentAuthorityMapper cmapper = null;
+            log.info("Loading Correspondent authority mapper");
             cmapper = CorrespondentAuthorityMapper.readObjectFromStream(cAuthorityPath);
-
+            log.info("Correspondent authority mapper loaded successfully");
             archive.correspondentAuthorityMapper = cmapper;
             /////////////////Label Mapper/////////////////////////////////////////////////////
+            log.info("Loading Label Manager");
             LabelManager labelManager = readLabelManager(labMapDirPath);
             archive.setLabelManager(labelManager);
+            log.info("Label Manager loaded successfully");
 
             ///////////////Annotation Manager///////////////////////////////////////////////////////
+            log.info("Loading Annotation Manager");
             AnnotationManager annotationManager = AnnotationManager.readObjectFromStream(annotationMapPath);
             archive.setAnnotationManager(annotationManager);
+            log.info("Annotation Manager loaded successfully");
             ///////////////Processing metadata////////////////////////////////////////////////
             // override the PM inside the archive with the one in the PM file
             //update: since v5 no pm will be inside the archive.
             // this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
+            log.info("Loading collection metadata");
             try {
                 archive.collectionMetadata = readCollectionMetadata(baseDir);
             } catch (Exception e) {
                 Util.print_exception ("Error trying to read processing metadata file", e, log);
             }
+            if(archive.collectionMetadata!=null)
+                log.info("Collection metadata loaded successfully");
             /////////////////////Blob Normalization map (IF exists)//////////////////////////////////////////////////////
             if(new File(blobNormalizationMapPath).exists()) {
+                log.info("Computing blob normalization map (An artifact of AMatica tool)");
                 archive.getBlobStore().setNormalizationMap(blobNormalizationMapPath);
+                log.info("Blob normalization map computed successfully");
             }
             /////////////////////////////Done reading//////////////////////////////////////////////////////
             // most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
             result.put("emailDocs", archive.getAllDocs());
+            log.info("Assigning thread IDs");
             archive.assignThreadIds();
+            log.info("Thread IDs assigned successfully");
         }
 
         return result;
@@ -209,13 +228,13 @@ public class ArchiveReaderWriter{
             return  entityBookManager;
     }
 
-    public static AddressBook readAddressBook(String addressBookPath) {
+    public static AddressBook readAddressBook(String addressBookPath,Collection<Document> alldocs) {
 
         BufferedReader br = null;
 
         try {
             br = new BufferedReader(new FileReader(addressBookPath));
-            AddressBook ab = AddressBook.readObjectFromStream(br);
+            AddressBook ab = AddressBook.readObjectFromStream(br,alldocs);
             br.close();
             return ab;
         } catch (FileNotFoundException e) {
@@ -472,7 +491,8 @@ public class ArchiveReaderWriter{
             archive.updateFileInBag(addressBookPath,baseDir);
 
         //update the summary of addressbook (counts etc used on correspondent listing page).
-        Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
+        //UPDATE: No need to do that as it gets updated as soon as user changes the addressbook and clicks on save.
+        //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
     }
 
@@ -703,10 +723,10 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
-                //now intialize the cache.1- correspondent, labels and entities
-                Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(a));
-                Archive.cacheManager.cacheLexiconListing(getArchiveIDForArchive(a));
-                //Archive.cacheManager.cacheEntitiesListing(getArchiveIDForArchive(a));//Not needed now as this caching happens when reading the archive first time.
+                //now intialize the cache for lexicon
+                JSPHelper.log.info("Computing summary of Lexicons");
+                Lexicon.fillL1_Summary_all(a,false);
+                JSPHelper.log.info("Lexicons summary computed successfully");
                 return a;
 
             }

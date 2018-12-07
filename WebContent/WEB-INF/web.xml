@@ -539,7 +539,7 @@
 		<url-pattern>/export-headers</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
+	<!--<servlet>
 		<servlet-name>export-from-appraisal</servlet-name>
 		<jsp-file>/export-from-appraisal.jsp</jsp-file>
 	</servlet>
@@ -548,7 +548,7 @@
 		<servlet-name>export-from-appraisal</servlet-name>
 		<url-pattern>/export-from-appraisal</url-pattern>
 	</servlet-mapping>
-
+-->
 	<servlet>
 		<servlet-name>export-from-processing</servlet-name>
 		<jsp-file>/export-from-processing.jsp</jsp-file>

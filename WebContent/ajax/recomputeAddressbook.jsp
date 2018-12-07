@@ -32,9 +32,13 @@
         out.println (obj);
         JSPHelper.log.info(obj);
     }else{
-        //set this as current addressbook., also invalidate and recompute the cache.
+        //set this as current addressbook.,
         archive.setAddressBook(newaddressbook);
-        Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
+        archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
+        ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+
+        //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
         obj.put("status", 0);
         obj.put("message","Addressbook reconstructed successfully!");
         out.println (obj);

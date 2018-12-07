@@ -54,6 +54,8 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		page_xhr.onreadystatechange = function () {
 			if (this.readyState != 4)
 				return false;
+			if(this.status == 0)//to avoid the issue when the op was considered as completed but nothing returned in json because the system went to sleep and the network got disconnected.
+				return false;
 			currentOp.done = true;
 			document.title = currentOp.orig_doc_title;
 

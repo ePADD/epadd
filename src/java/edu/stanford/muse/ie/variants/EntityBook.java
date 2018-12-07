@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
+import javax.print.Doc;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -73,6 +74,15 @@ public class EntityBook implements Serializable {
 
         List<Summary_L1> list = summary_L1_entityCountMap.values().stream().filter(summary->summary.score>threshold).collect(Collectors.toList());
         return list.size();
+    }
+
+    public void fillDocSetMap(Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap){
+        Set<MappedEntity> mappedEntities = new LinkedHashSet<>(this.nameToMappedEntity.values());
+        mappedEntities.forEach(mappedEntity -> {
+            //do a lucene search for all names present in mappedEntity.
+            //How to get their scores?? May be- for one of the search result do exact search of that entity and get its score from that span.
+
+        });
     }
 
     public void fillSummaryFields(Map<MappedEntity, Pair<Double,Set<Document>>> docsetmap){

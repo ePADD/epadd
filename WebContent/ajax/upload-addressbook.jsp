@@ -29,14 +29,14 @@
                     //update bag metadata
                     archive.updateFileInBag(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX,archive.baseDir);
                     //read addressbook again
-                    AddressBook ab = ArchiveReaderWriter.readAddressBook(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX);
+                    AddressBook ab = ArchiveReaderWriter.readAddressBook(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX,archive.getAllDocs());
                     if(ab==null){
                         error="Invalid addressbook file used";
                     }else{
                     //set as current archive's addressbook
                     archive.setAddressBook(ab);
-                    //now reinitialize the cache for correspondent summary
-                    Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
+                    //now reinitialize the cache for correspondent summary: NO need now as it happens inside readAddressBook method.
+                    //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
                     }
 
             }

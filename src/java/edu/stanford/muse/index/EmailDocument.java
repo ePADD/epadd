@@ -35,6 +35,7 @@ import javax.mail.internet.InternetAddress;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /** EmailDocument is really like an email header - it stores metadata about a message.
@@ -810,6 +811,11 @@ public class EmailDocument extends DatedDocument implements Serializable
 		for (EmailDocument ed: docs)
 			addressBook.processContactsFromMessage(ed, trustedAddrs);
 		addressBook.organizeContacts();
+		//now fill summary object inside that addressbook.
+		Collection<Document> alldocs = docs.stream().collect(Collectors.toList());
+		JSPHelper.log.info("Computing summary of the addressbook");
+		addressBook.fillL1_SummaryObject(alldocs);
+		JSPHelper.log.info("Summary of the addressbook computed");
 
 	}
 

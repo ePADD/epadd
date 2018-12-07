@@ -50,7 +50,7 @@ public class MailingList implements java.io.Serializable {
 
 	/** update mailing list state for contacts in ab for 1 message with the given toAddrs (which really refers to all of to/cc/bcc)
 	 * sentToMailingLists are confirmed mailingLists that a message has been sent to. */
-	static void trackMailingLists(AddressBook ab, List<Address> toAddrs, boolean sent, Address[] froms, String[] sentToMailingLists)
+	static void trackMailingLists(AddressBook ab, List<Address> toAddrs, boolean sent, Address[] froms, String[] sentToMailingLists, boolean isTrustedAssociation)
 	{
 		/*
 		 * mailing list states:
@@ -86,7 +86,7 @@ public class MailingList implements java.io.Serializable {
 						if (froms != null)
 							for (Address from: froms)
 								if (from instanceof InternetAddress)
-									ml.addMember(ab.registerAddress((InternetAddress) from));
+									ml.addMember(ab.registerAddress((InternetAddress) from,isTrustedAssociation));
 				}
 			}
 		}
@@ -117,7 +117,7 @@ public class MailingList implements java.io.Serializable {
 				if (!(a instanceof InternetAddress))
 					continue;
 	
-				Contact c = ab.registerAddress((InternetAddress) a);
+				Contact c = ab.registerAddress((InternetAddress) a,isTrustedAssociation);
 
 				if (c == null)
 					continue;
@@ -140,7 +140,7 @@ public class MailingList implements java.io.Serializable {
 				if (froms != null)
 					for (Address from: froms)
 						if (from instanceof InternetAddress)
-							ml.addMember(ab.registerAddress((InternetAddress) from));
+							ml.addMember(ab.registerAddress((InternetAddress) from,isTrustedAssociation));
 			}
 			else
 			{
@@ -153,7 +153,7 @@ public class MailingList implements java.io.Serializable {
 					if (froms != null)
 						for (Address from: froms)
 							if (from instanceof InternetAddress)
-									ml.addMember(ab.registerAddress((InternetAddress) from));
+									ml.addMember(ab.registerAddress((InternetAddress) from,isTrustedAssociation));
 				}
 			}
 		}
@@ -166,7 +166,7 @@ public class MailingList implements java.io.Serializable {
 					if (!(a instanceof InternetAddress))
 						continue;
 	
-					Contact c = ab.registerAddress((InternetAddress) a);
+					Contact c = ab.registerAddress((InternetAddress) a,isTrustedAssociation);
 					if (c != null)
 						c.mailingListState |= DEFINITE_NOT;
 				}

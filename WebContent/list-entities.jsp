@@ -81,7 +81,7 @@ Browse page for entities based on fine types
             //out.println("<h1>Entity Type: " + entityType + "</h1></br></br>");
             out.flush();
             //JSONArray resultArray = archive.getEntitiesInfoJSON(type);
-            JSONArray resultArray = archive.cacheManager.getEntitiesInfoJSON(archiveID,type);
+            JSONArray resultArray = archive.getEntityBookManager().getEntityBookForType(type).getInfoAsJSON();
 
         %>
 

@@ -66,7 +66,8 @@
 
 		//After lexicon is saved, invalidate the cache for the result of getCountsAsJson
 		//should we force recomputation here only??Yes
-		Archive.cacheManager.cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
+		archive.getLexicon(lexiconName).fillL1_Summary(lexiconName,archive,false);
+		//Archive..cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
 	}
 

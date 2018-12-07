@@ -1318,10 +1318,11 @@ public class IndexUtils {
 	public static Set<String> allLanguagesInDocs(Collection<? extends Document> docs)
 	{
 		Set<String> result = new LinkedHashSet<>();
-		for (Document d : docs)
+		//for time being (in version 7) short circuiting this traversal. Only handling english.
+		/*for (Document d : docs)
 			if (d.languages != null)
 				result.addAll(d.languages);
-		if (result.size() == 0)
+		if (result.size() == 0)*/
 			result.add("english");
 		return result;
 	}

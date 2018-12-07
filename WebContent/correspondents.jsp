@@ -136,7 +136,8 @@
 	<%
 		out.flush(); // make sure spinner is seen
 		Collection<EmailDocument> docs = (Collection) archive.getAllDocs();
-		JSONArray resultArray = AddressBook.getCountsAsJson(docs, true /* except owner */,archiveID);
+		AddressBook ab = archive.getAddressBook();
+		JSONArray resultArray = ab.getCountsAsJSON( false /* except owner */,archiveID);
 	%>
 	<script>
 	var correspondents = <%=resultArray.toString(4)%>;
@@ -149,7 +150,7 @@
 		$('#people').dataTable({
 			data: correspondents,
 			pagingType: 'simple',
-			order:[[2, 'desc']], // col 12 (outgoing message count), descending
+			order:[[1, 'desc']], // col 12 (outgoing message count), descending
 			columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 1,2,3 ] },{width: "50%", targets: 0},{targets: 0, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
 			fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
 		});

@@ -8,7 +8,8 @@
 <%@page language="java" %>
 <%@page language="java" import="edu.stanford.muse.exceptions.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
-<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%>
+<%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%>
 <%
 	// core JSP that does fetch, grouping and indexing
 	// sets up archive in the session at the end
@@ -94,15 +95,22 @@
 				            String dir = archive.baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
 
 				            String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
-
+JSPHelper.log.info("Archive created- Now saving it!!");
 				            				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+JSPHelper.log.info("Archive saved");
 
+JSPHelper.log.info("Creating entitybooks by reading lucene index.");
 				EntityBookManager entityBookManager = EntityBookManager.readObjectFromFiles(archive,entityBookPath);//this one ensures that we have entitybookmanager filled
+JSPHelper.log.info("Entitybooks created successfully");
 				archive.setEntityBookManager(entityBookManager);
 				ArchiveReaderWriter.saveEntityBookManager(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+				JSPHelper.log.info("Entitybooks saved successfully (first time)");
+
 				//After archive is saved recreate the cache.. For addressbook the cache gets created inside saveAddressBook.
 				//Do it for Lexicon cache.
-				Archive.cacheManager.cacheLexiconListing(archiveID);
+				JSPHelper.log.info("Filling lexicon summaries");
+				Lexicon.fillL1_Summary_all(archive,false);
+				JSPHelper.log.info("Lexicon summaries filled successfully");
 
 				// (for all entities and also the summary objects- used for cache)
                 //Archive.cacheManager.cacheEntitiesListing(archiveID);

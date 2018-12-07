@@ -59,6 +59,9 @@ public class Lexicon implements Serializable {
 	public String name;
 	private Map<String, Lexicon1Lang> languageToLexicon = new LinkedHashMap<>();
 
+	//field to store the summary object for this lexicon.
+	transient         Map<String, Integer> L1_Summary_category_count = new LinkedHashMap<>();
+
 	public Lexicon1Lang getLexiconForLanguage(String language){
 		return languageToLexicon.get(language);
 	}
@@ -358,26 +361,32 @@ public class Lexicon implements Serializable {
 		return lexicons;
 	}
 
-    //accumulates counts returned by lexicons in each language
-    //TODO: It is possible to write a generic accumulator that accumulates sum over all the languages
-    public static JSONArray getCountsAsJSON(String lexiconName, Archive archive, boolean originalContentOnly){
+	/*
+	This method fills the summary object for all lexicons of the given archive.
+	 */
+	public static void fillL1_Summary_all(Archive archive, boolean originalContentOnly){
 
-		JSONArray resultArray = null;
-		resultArray = Archive.cacheManager.getLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
-		if(resultArray!=null)
-			return resultArray;
-		else
-			resultArray = new JSONArray();
-		Lexicon lexicon = archive.getLexicon(lexiconName);
-		//call searchresult from here...
-        List<Document> docs = archive.indexer.docs;
-        Collection<Lexicon1Lang> lexicons  = lexicon.getRelevantLexicon1Langs(docs);
-        Map<String, Integer> result = new LinkedHashMap<>();
-        Set<Document> docs_set = Util.castOrCloneAsSet(docs);
-        // aggregate results for each lang into result
+		for(String lexiconName: archive.getAvailableLexicons()){
+			Lexicon lexicon = archive.getLexicon(lexiconName);
+			lexicon.fillL1_Summary(lexiconName,archive,originalContentOnly);
+		}
 
-        for (Lexicon1Lang lex: lexicons)
-        {
+	}
+
+	/*
+	This method fills the summary object for a particular lexicon
+	 */
+	public void fillL1_Summary(String lexiconName, Archive archive, boolean originalContentOnly){
+		//clear summary objects
+		L1_Summary_category_count.clear();
+	//call searchresult from here...
+		List<Document> docs = archive.indexer.docs;
+		Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
+
+		// aggregate results for each lang into result
+
+		for (Lexicon1Lang lex: lexicons)
+		{
 			Set<String> categories = ((LinkedHashMap) lex.captionToRawQuery).keySet();
 			for(String category: categories){
 				Multimap<String,String> queryparams = LinkedListMultimap.create();
@@ -391,12 +400,20 @@ public class Lexicon implements Serializable {
 				queryparams.put("termAttachments","on");
 				SearchResult input = new SearchResult(archive,queryparams);
 				SearchResult output = SearchResult.filterForLexicons(input);
-				result.put(category,output.getDocumentSet().size());
+				L1_Summary_category_count.put(category,output.getDocumentSet().size());
 			}
-        }
+		}
+
+	}
+	/*
+	This method constructs the JSON object from the summary data and return it.
+	 */
+
+	public  JSONArray getCountsAsJSON(String lexiconName, Archive archive){
+
 		JSONArray finalArray = new JSONArray();
 		AtomicInteger  count = new AtomicInteger(0);
-		result.forEach((category,cnt)-> {
+		L1_Summary_category_count.forEach((category,cnt)-> {
 
 			JSONArray j = new JSONArray();
 			j.put(0, Util.escapeHTML(category));
@@ -404,10 +421,8 @@ public class Lexicon implements Serializable {
 			finalArray.put(count.getAndIncrement(), j);
 		});
 
-		//store in cache
-		Archive.cacheManager.cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive),finalArray);
-			// could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
 		return finalArray;
+
     }
 
 	/** Core sentiment detection method. doNota = none of the above 

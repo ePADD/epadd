@@ -70,8 +70,10 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
+import ucar.httpservices.HTTPSession;
 
 import javax.print.Doc;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 
 import java.nio.file.*;
@@ -1118,7 +1120,7 @@ int errortype=0;
      * @param retainedDocs
      * @throws Exception
      */
-    public synchronized String export(Collection<? extends Document> retainedDocs, Export_Mode export_mode, String out_dir, String name) throws Exception {
+    public synchronized String export(Collection<? extends Document> retainedDocs, Export_Mode export_mode, String out_dir, String name, HttpSession session) throws Exception {
         if (Util.nullOrEmpty(out_dir))
             return null;
         File dir = new File(out_dir);
@@ -1129,7 +1131,11 @@ int errortype=0;
             log.warn("Unable to create directory: " + out_dir);
             return null;
         }
+        String statusmsg = export_mode==Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING? "Exporting to Processing":(export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY?"Exporting to Discovery":"Exporting to Delivery");
+
         boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY;
+        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Preparing base directory.."));
+
         Archive.prepareBaseDir(out_dir);
         if (!exportInPublicMode && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR).exists())
             FileUtils.copyDirectory(new File(baseDir +  File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR),
@@ -1164,6 +1170,8 @@ int errortype=0;
         }
         Set<String> retainedDocIDs = retainedDocs.stream().map(Document::getUniqueId).collect(Collectors.toSet());
         LabelManager newLabelManager = getLabelManager().getLabelManagerForExport(retainedDocIDs,export_mode);
+        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting LabelManager.."));
+
         setLabelManager(newLabelManager);
         // copy index and if for public mode, also redact body and remove title
         // fields
@@ -1229,8 +1237,12 @@ after maskEmailDomain.
             return retainedDocIDs.contains(docId);
         };
 
+        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting Index.."));
+
         indexer.copyDirectoryWithDocFilter(out_dir + File.separatorChar + Archive.BAG_DATA_FOLDER, emailFilter, attachmentFilter);
         log.info("Completed exporting indexes");
+
+        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting Blobs.."));
 
         // save the blobs in a new blobstore
         if (!exportInPublicMode) {
@@ -1260,11 +1272,22 @@ after maskEmailDomain.
             EmailUtils.maskEmailDomain(eds, this.addressBook);
         }
 
+        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting EntityBook Manager.."));
 
+        //now read entitybook manager as well (or build from lucene)
+        String outdir = out_dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
+
+        String entityBookPath = outdir + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
+
+        EntityBookManager entityBookManager= ArchiveReaderWriter.readEntityBookManager(this,entityBookPath);
+        this.setEntityBookManager(entityBookManager);
         //recompute entity count because some documents have been redacted
         double theta = 0.001;
         this.collectionMetadata.entityCounts = this.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);// getEntitiesCountMapModuloThreshold(this,theta);
+
         // write out the archive file.. note that this is a fresh creation of archive in the exported folder
+        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Export done. Saving Archive.."));
+
         ArchiveReaderWriter.saveArchive(out_dir, name, this,Save_Archive_Mode.FRESH_CREATION); // save .session file.
         log.info("Completed saving archive object");
 
@@ -1272,7 +1295,6 @@ after maskEmailDomain.
         setBaseDir(oldBaseDir);
         allDocs = savedAllDocs;
         setLabelManager(oldLabelManager);
-
         return out_dir;
     }
 
@@ -1778,7 +1800,8 @@ after maskEmailDomain.
     public Lexicon getLexicon(String lexName) {
         // lexicon map could be stale, re-read it
         try {
-            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+            if(Util.nullOrEmpty(lexiconMap))
+                lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -1788,7 +1811,8 @@ after maskEmailDomain.
     public Set<String> getAvailableLexicons() {
         // lexicon map could be stale, re-read it
         try {
-            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+            if(Util.nullOrEmpty(lexiconMap))
+                lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -1801,7 +1825,8 @@ after maskEmailDomain.
         // lexicon map could be stale, re-read it
         JSONArray resultArray = new JSONArray();
         try {
-            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+            if(Util.nullOrEmpty(lexiconMap))
+                lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }

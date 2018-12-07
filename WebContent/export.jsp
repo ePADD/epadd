@@ -562,13 +562,35 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 		});
 
         $('#export-next .go-button').click (function(e) {
+
             var $button = $(e.target);
             if ($button.hasClass('faded'))
                 return false; // do nothing;
-            var baseUrl = '<%=ModeConfig.isProcessingMode() ? "export-from-processing":"export-from-appraisal"%>';
+            var baseUrl = '<%=ModeConfig.isProcessingMode() ? "ajax/export-from-processing.jsp":"ajax/export-from-appraisal.jsp"%>';
             var dir = $('.dir', $('#export-next')).val();
-            if (dir && dir.length > 0)
-                window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
+            if (dir && dir.length > 0) {
+                if(<%=ModeConfig.isAppraisalMode()%>) {
+                    var promptmethod = function (dir) {
+                        return function () {
+                            var msg = "ePADD archive exported to: " + dir + "\n." + " Please zip this folder and submit it to the archives.";
+                            epadd.success(msg);
+                        }
+                    }(dir);
+                }else{
+                    var promptmethod = function (dir) {
+                        return function () {
+                            var msg1 = "Full ePADD archive exported to: "+dir+"/-Delivery. Please copy this folder under &lt;HOME&gt;/<%=Util.filePathTail(Config.REPO_DIR_DELIVERY)%> and start ePADD in delivery mode.";
+                            var msg2 = "Public ePADD archive (containing only named entities) exported to: "+dir+"/-Discovery. Please copy this folder under &lt;HOME&gt;/<%=Util.filePathTail(Config.REPO_DIR_DISCOVERY)%> and start ePADD in discovery mode.";
+                            epadd.success(msg1+"\n" +msg2);
+                        }
+                    }(dir);
+                }
+                //window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
+                var post_params = {archiveID: archiveID, dir: dir};
+                fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), post_params,promptmethod);
+            }else{
+                epadd.error("Please enter the directory path where the exported archive will be stored!");
+            }
         });
 
 

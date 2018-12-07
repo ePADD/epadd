@@ -44,8 +44,6 @@
                     archive.setLexiconMap(map);
 
 
-	//After lexicon is removed, invalidate the cache for the result of getCountsAsJson
-	Archive.cacheManager.removeCacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
 	result.put("status", 0);
 	result.put("archiveID",archiveID);//because on success we would like to redirect to some other page.

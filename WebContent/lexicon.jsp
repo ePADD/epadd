@@ -90,7 +90,7 @@
 		out.println ("<div style=\"text-align:center\">Sorry! No lexicon named " + Util.escapeHTML(lexiconname) + "</div>");
 	}
 	boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase (lexiconname);
-	JSONArray map = lex.getCountsAsJSON(lexiconname,archive, false /*,!isRegex*/ /* originalContent only */);
+	JSONArray map = lex.getCountsAsJSON(lexiconname,archive);
 %>
 
 	<br/>

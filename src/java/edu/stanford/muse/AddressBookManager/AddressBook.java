@@ -21,6 +21,7 @@ import com.google.common.collect.SetMultimap;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
+import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.EmailUtils;
@@ -36,6 +37,7 @@ import javax.mail.internet.InternetAddress;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * VIP class.
@@ -73,6 +75,8 @@ public class AddressBook implements Serializable {
     transient private Multimap<String, Contact> nameToContact = LinkedHashMultimap.create(); // do not access directly, use addNameForContactAndUpdateMaps()
     //following can be crated from contactListForIds list hence no need to serialize them
     transient private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
+    //transient fields to store summary data.
+transient          Map<Contact, Set<EmailDocument>> L1_Summary_contactInDocs = new LinkedHashMap<>(), L1_Summary_contactOutDocs = new LinkedHashMap<>(), L1_Summary_contactMentionDocs= new LinkedHashMap<>();
 
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
@@ -137,11 +141,11 @@ public class AddressBook implements Serializable {
      * name2.1
      * etc.
      */
-    public void initialize(String text) {
+    public void initialize(String text,Collection<Document> alldocs) {
         BufferedReader br = new BufferedReader(new StringReader(text));
 
         try {
-            AddressBook ab = AddressBook.readObjectFromStream(br);
+            AddressBook ab = AddressBook.readObjectFromStream(br,alldocs);
             //now assign all fields of this address book using ab.
             this.emailToContact = ab.emailToContact;
             this.nameToContact = ab.nameToContact;
@@ -152,6 +156,9 @@ public class AddressBook implements Serializable {
             this.dataErrors = ab.dataErrors;
             this.dataErrosMap = ab.dataErrosMap;
             this.emailMaskingMap = ab.emailMaskingMap;
+            this.L1_Summary_contactInDocs = ab.L1_Summary_contactInDocs;
+            this.L1_Summary_contactOutDocs = ab.L1_Summary_contactOutDocs;
+            this.L1_Summary_contactMentionDocs = ab.L1_Summary_contactMentionDocs;
         } catch (IOException e) {
             e.printStackTrace();
             Util.print_exception("Unable to initialize the addressbook with different contact information",e,log);
@@ -277,7 +284,7 @@ public class AddressBook implements Serializable {
 
            //Case 3- create a new contact
 
-        if (name != null) {
+        if (!Util.nullOrEmpty(name)) {
             Collection<Contact> cNames = lookupByName(name);
             if(cNames!=null) {
                 if(cNames.size()>1){
@@ -306,7 +313,7 @@ public class AddressBook implements Serializable {
             }
         }
         if (cEmail != null) {
-            if (name != null)
+            if (!Util.nullOrEmpty(name))
                 addNameForContactAndUpdateMaps(name, cEmail);
             return cEmail;
         }
@@ -323,7 +330,7 @@ public class AddressBook implements Serializable {
         contactListForIds.add(c);
         addEmailAddressForContact(email, c);
 
-        if (name != null) {
+        if (!Util.nullOrEmpty(name )) {
             addNameForContactAndUpdateMaps(name, c);
         }
 
@@ -466,7 +473,7 @@ public class AddressBook implements Serializable {
     /* Single place where a <name, email address> equivalence is registered (and used to build the address book and merge different names/email addresses together.
         Any evidence of a name belonging to an email address should be logged by calling this method.
         Warning: can return null if the email address is null! */
-    Contact registerAddress(InternetAddress a) {
+    Contact registerAddress(InternetAddress a, boolean isTrustedAssociation) {
         // get email and name and normalize. email cannot be null, but name can be.
         String email = a.getAddress();
         email = EmailUtils.cleanEmailAddress(email);
@@ -477,7 +484,9 @@ public class AddressBook implements Serializable {
         String name = a.getPersonal();
         name = Util.unescapeHTML(name);
         name = EmailUtils.cleanPersonName(name);
+        String preservedName = name;//to store the name temporarily in case it gets wiped out either because of containing banned words or due to non-trusted association of name-email pair.
 
+        //region Check 1: Checks if name is a valid name or not.
         if (!Util.nullOrEmpty(name)) {
             // watch out for bad "names" and ignore them
             if (name.toLowerCase().equals("'" + email.toLowerCase() + "'")) // sometimes the "name" field is just the same as the email address with quotes around it
@@ -485,7 +494,9 @@ public class AddressBook implements Serializable {
             if (name.contains("@"))
                 name = ""; // name can't be an email address!
         }
+        //endregion
 
+        //region Check 2: Checks if name contains banned words or not.
         for (String s : DictUtils.bannedStartStringsForEmailAddresses) {
             if (email.toLowerCase().startsWith(s)) {
                 log.info("not going to consider name-email pair. email: " + email + " name: " + name + " because email starts with " + s);
@@ -493,10 +504,17 @@ public class AddressBook implements Serializable {
                 break;
             }
         }
+        //endregion
+
+        //region Check 3: Checks if this is a trusted name-address association
+        if(!isTrustedAssociation)
+            name="";
+        //endregion
 
         Contact c = unifyContact(email, name);
 
-        // DEBUG point: enable this to see all the incoming names and email addrs
+        //Following code snippet not needed as unifyContact does the work of adding names and emails in the contact appropriately.
+        /*// DEBUG point: enable this to see all the incoming names and email addrs
         if (c != null) {
             if (!c.getEmails().contains(email)) {
                 if (log.isDebugEnabled())
@@ -509,8 +527,15 @@ public class AddressBook implements Serializable {
                     log.debug("merging name " + name + " into contact " + c);
                 c.getNames().add(name);
             }
+        }*/
+
+        if(Util.nullOrEmpty(name)){
+            //means we emptied it because of either Check 1, Check 2 or Check 3 above. Now add it so that we can do search based on this 'non-trusted' association of name-email
+            addNameForContactAndUpdateMaps(preservedName,c);
         }
 
+        //region Nice to have feature: not needed right now.
+        /*
         // look for names from first.last@... style of email addresses
         List<String> namesFromEmailAddress = EmailUtils.parsePossibleNamesFromEmailAddress(email);
         if (log.isDebugEnabled()) {
@@ -521,34 +546,38 @@ public class AddressBook implements Serializable {
             for (String possibleName : namesFromEmailAddress) {
                 List nameTokens = Util.tokenize(possibleName);
                 if (nameTokens.size() >= 2)
+
                     unifyContact(email, possibleName);
             }
+            */
+        //endregion
+
         return c;
     }
 
-    private boolean processContacts(List<Address> toCCBCCAddrs, Address fromAddrs[], String[] sentToMailingLists) {
+    private boolean processContacts(List<Address> toCCBCCAddrs, Address fromAddrs[], String[] sentToMailingLists, boolean isTrustedAssociation) {
         // let's call registerAddress first just so that the name/email maps can be set up
         if (toCCBCCAddrs != null)
             for (Address a : toCCBCCAddrs)
                 if (a instanceof InternetAddress)
-                    registerAddress((InternetAddress) a);
+                    registerAddress((InternetAddress) a,isTrustedAssociation);
         if (fromAddrs != null)
             for (Address a : fromAddrs)
                 if (a instanceof InternetAddress)
-                    registerAddress((InternetAddress) a);
+                    registerAddress((InternetAddress) a,isTrustedAssociation);
 
         Pair<Boolean, Boolean> p = isSentOrReceived(toCCBCCAddrs, fromAddrs);
         boolean sent = p.getFirst();
         boolean received = p.getSecond();
 
         // update mailing list state info
-        MailingList.trackMailingLists(this, toCCBCCAddrs, sent, fromAddrs, sentToMailingLists);
+        MailingList.trackMailingLists(this, toCCBCCAddrs, sent, fromAddrs, sentToMailingLists,isTrustedAssociation);
 
         if (sent && toCCBCCAddrs != null)
             for (Address a : toCCBCCAddrs) {
                 if (!(a instanceof InternetAddress))
                     continue;
-                registerAddress((InternetAddress) a);
+                registerAddress((InternetAddress) a,isTrustedAssociation);
             }
 
         // for sent messages we don't want to count the from field.
@@ -561,7 +590,7 @@ public class AddressBook implements Serializable {
                     if (!(a instanceof InternetAddress))
                         continue;
 
-                    registerAddress((InternetAddress) a);
+                    registerAddress((InternetAddress) a,isTrustedAssociation);
                 }
         }
 
@@ -608,11 +637,13 @@ public class AddressBook implements Serializable {
         }
         boolean b = false;
 
-        if (fromTrustedAddr) {
-            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
+        if (fromTrustedAddr) {//if this message is from trusted sender then process all name-email pairs present in this message as trusted ones.
+            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists,true);
             log.info("Processing trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
-        } else
-            log.warn("Dropping processing of contacts from non-trusted addr" + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+        } else{
+            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists,false);
+            log.info("Processing non-trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
+        }
 
         if (!b && noToCCBCC) { // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
             markDataError("Owner not sender, and no to addr for: " + ed);
@@ -1042,6 +1073,7 @@ mergeResult.newContacts.put(C2,savedC2)
 
         //call fillTransientfields to update transient maps
         fillTransientFields();
+        //fill in the summary json object.
         return result;
     }
     /**
@@ -1273,115 +1305,10 @@ mergeResult.newContacts.put(C2,savedC2)
      * in a csv format.
      */
 
-    public static JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
-        JSONArray cached = Archive.cacheManager.getCorrespondentListing(archiveID);
-        if(cached!=null)
-            return cached;
-        Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
-        AddressBook ab = archive.getAddressBook();
-        Contact ownContact = ab.getContactForSelf();
-        List<Contact> allContacts = ab.sortedContacts((Collection) docs);
-        Map<Contact, Set<EmailDocument>> contactInDocs = new LinkedHashMap<>(), contactOutDocs = new LinkedHashMap<>(), contactMentionDocs= new LinkedHashMap<>();
+   /* public static JSONArray getCountsAsJson(Collection<EmailDocument> docs, boolean exceptOwner, String archiveID) {
 
-        // compute counts
-        for (EmailDocument ed : docs) {
-            String senderEmail = ed.getFromEmailAddress();
-            Contact senderContact = ab.lookupByEmail(senderEmail);
-            if (senderContact == null)
-                senderContact = ownContact; // should never happen, we should always have a sender contact
 
-            int x = ed.sentOrReceived(ab);
-            // message could be both sent and received
-            if ((x & EmailDocument.SENT_MASK) != 0) {
-                // this is a sent email, each to/cc/bcc gets +1 outcount.
-                // one of them could be own contact also.
-                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
-                for (Contact c : toContacts) {
-                    Set<EmailDocument> tmp = contactOutDocs.get(c);
-                    if(tmp==null)
-                        tmp=new LinkedHashSet<>();
-                    tmp.add(ed);
-                    contactOutDocs.put(c, tmp);
-                }
-            }
-
-            boolean received = (x & EmailDocument.RECEIVED_MASK) != 0 // explicitly received
-                    || (x & EmailDocument.SENT_MASK) == 0; // its not explicitly sent, so we must count it as received by default
-
-            if (received) {
-                // sender gets a +1 in count (could be ownContact also)
-                // all others get a mention count.
-                Set<EmailDocument> tmp = contactInDocs.get(senderContact);
-                if(tmp==null)
-                    tmp=new LinkedHashSet<>();
-                tmp.add(ed);
-                contactInDocs.put(senderContact, tmp);
-
-            }
-
-            if ((x & EmailDocument.SENT_MASK) == 0) {
-                // this message is not sent, its received.
-                // add mentions for everyone who's not me, who's on the to/cc/bcc of this message.
-                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
-                for (Contact c : toContacts) {
-                    if (c == ownContact)
-                        continue; // doesn't seem to make sense to give a mention count for sender in addition to incount
-                    Set<EmailDocument> tmp = contactMentionDocs.get(c);
-                    if(tmp==null)
-                        tmp=new LinkedHashSet<>();
-                    tmp.add(ed);
-                    contactMentionDocs.put(c, tmp);
-                }
-            }
-        }
-
-        JSONArray resultArray = new JSONArray();
-
-        int count = 0;
-        for (Contact c : allContacts) {
-            if (c == ownContact && exceptOwner)
-                continue;
-
-            //	out.println("<tr><td class=\"search\" title=\"" + c.toTooltip().replaceAll("\"", "").replaceAll("'", "") + "\">");
-            int contactId = ab.getContactId(c);
-            //	out.println ("<a style=\"text-decoration:none;color:inherit;\" href=\"browse?contact=" + contactId + "\">");
-            String bestNameForContact = c.pickBestName();
-            String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
-            String nameToPrint = Util.escapeHTML(Util.ellipsize(bestNameForContact, 50));
-            Integer inCount = contactInDocs.getOrDefault(c,new LinkedHashSet<>()).size(), outCount = contactOutDocs.getOrDefault(c,new LinkedHashSet<>()).size(), mentionCount = contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()).size();
-            /*if (inCount == null)
-                inCount = 0;
-            if (outCount == null)
-                outCount = 0;
-            if (mentionCount == null)
-                mentionCount = 0;*/
-            Set<EmailDocument> alldocs = Util.setUnion(contactInDocs.getOrDefault(c,new LinkedHashSet<>()),contactOutDocs.getOrDefault(c,new LinkedHashSet<>()));
-            alldocs=Util.setUnion(alldocs,contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()));
-            Pair<Date,Date> range = EmailUtils.getFirstLast(alldocs,true);
-
-            JSONArray j = new JSONArray();
-            j.put(0, Util.escapeHTML(nameToPrint));
-            j.put(1, inCount);
-            j.put(2, outCount);
-            j.put(3, mentionCount);
-            j.put(4, url);
-            j.put(5, Util.escapeHTML(c.toTooltip()));
-            if(range.first!=null)
-                j.put(6,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
-            else
-                j.put(6,range.first);
-            if(range.second!=null)
-                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
-            else
-                j.put(7,range.second);
-
-            resultArray.put(count++, j);
-            // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
-        }
-        //store in cache manager.
-        Archive.cacheManager.cacheCorrespondentListing(archiveID,resultArray);
-        return resultArray;
-    }
+    }*/
 
 //    static class AddressBookStats implements Serializable {
 //        private static final long serialVersionUID = 1L;
@@ -1506,7 +1433,7 @@ mergeResult.newContacts.put(C2,savedC2)
     and put them in the list contactListForIds. After that we need to call fillTransientFields method to
     fill transient variables.
      */
-    public static AddressBook readObjectFromStream(BufferedReader in) throws IOException {
+    public static AddressBook readObjectFromStream(BufferedReader in, Collection<Document> alldocs) throws IOException {
         Contact self = Contact.readObjectFromStream(in);
         if(self==null)
             return null;
@@ -1522,7 +1449,128 @@ mergeResult.newContacts.put(C2,savedC2)
         ab.fillTransientFields();
         //unify-- may be not.. because the invariant "one name can not be in two contacts" might be broken after editing.
         //ab.organizeContacts();
+        //fill summary objects.
+        ab.fillL1_SummaryObject(alldocs);
         return ab;
+
+    }
+
+    /*
+    THis method fills in a JSON Array from the summary object that was updated during the last change in the addressbook (loading, recomputing, fresh build).
+     */
+    public JSONArray getCountsAsJSON(boolean exceptOwner, String archiveID){
+        JSONArray resultArray = new JSONArray();
+        Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        List<Contact> allContacts = allContacts();
+        Contact ownContact = getContactForSelf();
+        int count = 0;
+        for (Contact c : allContacts) {
+            if (c == ownContact && exceptOwner)
+                continue;
+
+            //	out.println("<tr><td class=\"search\" title=\"" + c.toTooltip().replaceAll("\"", "").replaceAll("'", "") + "\">");
+            int contactId = getContactId(c);
+            //	out.println ("<a style=\"text-decoration:none;color:inherit;\" href=\"browse?contact=" + contactId + "\">");
+            String bestNameForContact = c.pickBestName();
+            String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
+            String nameToPrint = Util.escapeHTML(Util.ellipsize(bestNameForContact, 50));
+            Integer inCount = L1_Summary_contactInDocs.getOrDefault(c,new LinkedHashSet<>()).size(), outCount = L1_Summary_contactOutDocs.getOrDefault(c,new LinkedHashSet<>()).size(), mentionCount = L1_Summary_contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()).size();
+            /*if (inCount == null)
+                inCount = 0;
+            if (outCount == null)
+                outCount = 0;
+            if (mentionCount == null)
+                mentionCount = 0;*/
+            Set<EmailDocument> alldocs = Util.setUnion(L1_Summary_contactInDocs.getOrDefault(c,new LinkedHashSet<>()),L1_Summary_contactOutDocs.getOrDefault(c,new LinkedHashSet<>()));
+            alldocs=Util.setUnion(alldocs,L1_Summary_contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()));
+            Pair<Date,Date> range = EmailUtils.getFirstLast(alldocs,true);
+
+            JSONArray j = new JSONArray();
+            j.put(0, Util.escapeHTML(nameToPrint));
+            j.put(1, inCount);
+            j.put(2, outCount);
+            j.put(3, mentionCount);
+            j.put(4, url);
+            j.put(5, Util.escapeHTML(c.toTooltip()));
+            if(range.first!=null)
+                j.put(6,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
+            else
+                j.put(6,range.first);
+            if(range.second!=null)
+                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
+            else
+                j.put(7,range.second);
+
+            resultArray.put(count++, j);
+            // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
+        }
+
+        return resultArray;
+    }
+
+    public void fillL1_SummaryObject(Collection<Document> alldocs){
+
+        //clear the summary objects.
+        L1_Summary_contactMentionDocs.clear();
+        L1_Summary_contactInDocs.clear();
+        L1_Summary_contactOutDocs.clear();
+       // Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+        AddressBook ab = this;
+        Contact ownContact = ab.getContactForSelf();
+        List<Contact> allContacts = ab.sortedContacts((Collection) alldocs);
+        List<EmailDocument> alldocslist = alldocs.stream().map(e->(EmailDocument)e).collect(Collectors.toList());
+        // compute counts
+        for (EmailDocument ed : alldocslist) {
+            String senderEmail = ed.getFromEmailAddress();
+            Contact senderContact = ab.lookupByEmail(senderEmail);
+            if (senderContact == null)
+                senderContact = ownContact; // should never happen, we should always have a sender contact
+
+            int x = ed.sentOrReceived(ab);
+            // message could be both sent and received
+            if ((x & EmailDocument.SENT_MASK) != 0) {
+                // this is a sent email, each to/cc/bcc gets +1 outcount.
+                // one of them could be own contact also.
+                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
+                for (Contact c : toContacts) {
+                    Set<EmailDocument> tmp = L1_Summary_contactOutDocs.get(c);
+                    if(tmp==null)
+                        tmp=new LinkedHashSet<>();
+                    tmp.add(ed);
+                    L1_Summary_contactOutDocs.put(c, tmp);
+                }
+            }
+
+            boolean received = (x & EmailDocument.RECEIVED_MASK) != 0 // explicitly received
+                    || (x & EmailDocument.SENT_MASK) == 0; // its not explicitly sent, so we must count it as received by default
+
+            if (received) {
+                // sender gets a +1 in count (could be ownContact also)
+                // all others get a mention count.
+                Set<EmailDocument> tmp = L1_Summary_contactInDocs.get(senderContact);
+                if(tmp==null)
+                    tmp=new LinkedHashSet<>();
+                tmp.add(ed);
+                L1_Summary_contactInDocs.put(senderContact, tmp);
+
+            }
+
+            if ((x & EmailDocument.SENT_MASK) == 0) {
+                // this message is not sent, its received.
+                // add mentions for everyone who's not me, who's on the to/cc/bcc of this message.
+                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
+                for (Contact c : toContacts) {
+                    if (c == ownContact)
+                        continue; // doesn't seem to make sense to give a mention count for sender in addition to incount
+                    Set<EmailDocument> tmp = L1_Summary_contactMentionDocs.get(c);
+                    if(tmp==null)
+                        tmp=new LinkedHashSet<>();
+                    tmp.add(ed);
+                    L1_Summary_contactMentionDocs.put(c, tmp);
+                }
+            }
+        }
+
 
     }
 
