@@ -31,12 +31,14 @@ public class NLPUtils {
     public static Chunker chunker;
 
 	static {
+		InputStream sentStream = null, posStream = null, tokenStream = null, chunkerStream = null;
+		SentenceModel model = null;
         try {
-            InputStream sentStream = Config.getResourceAsStream("models/en-sent.bin");
-            SentenceModel model = null;
-            InputStream posStream = Config.getResourceAsStream("models/en-pos-maxent.bin");
-            InputStream tokenStream = Config.getResourceAsStream("models/en-token.bin");
-            InputStream chunkerStream = Config.getResourceAsStream("models/en-chunker.bin");
+            sentStream = Config.getResourceAsStream("models/en-sent.bin");
+            model = null;
+            posStream = Config.getResourceAsStream("models/en-pos-maxent.bin");
+            tokenStream = Config.getResourceAsStream("models/en-token.bin");
+            chunkerStream = Config.getResourceAsStream("models/en-chunker.bin");
             //keeping the dictionary null for now, adding a list of abbreviations could improve the performance or at least makes sure that it does not fail in obvious cases
             //case-insensitive dictionary
             //Dictionary dictionary = new Dictionary(false);
