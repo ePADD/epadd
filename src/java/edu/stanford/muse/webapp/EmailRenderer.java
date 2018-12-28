@@ -48,7 +48,7 @@ public class EmailRenderer {
 				InternetAddress ia = (InternetAddress) a;
 				Pair<String, String> p = JSPHelper.getNameAndURL(archiveID, (InternetAddress) a, addressBook);
 				String url = p.getSecond();
-				String str = ia.toString();
+				String str = ia.toUnicodeString(); //changed from toString to toUnicode string for correct display of special characters in the address.
 				String addr = ia.getAddress();
 				boolean match = false;
 				if (str != null) {
