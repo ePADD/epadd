@@ -25,6 +25,7 @@ import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.HTMLUtils;
 import groovy.lang.Tuple2;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -476,6 +477,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         }
 
         if (p.isMimeType("text/plain")) {
+            String encoding = FORCED_ENCODING;
             //make sure, p is not wrongly labelled as plain text.
             Enumeration headers = p.getAllHeaders();
             boolean dirty = false;
@@ -488,6 +490,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         if (name.equals("Content-transfer-encoding") && value.equals("base64")) {
                             dirty = true;
                             break;
+                        }
+                        if(name.equals("Content-Encoding") && value.equals("base64")){
+                            encoding = "base64";//what about the behaviour of dirty field @TODO
                         }
                     }
                 }
@@ -514,11 +519,22 @@ public class EmailFetcherThread implements Runnable, Serializable {
             String type = p.getContentType(); // new InputStreamReader(p.getInputStream(), "UTF-8");
             try {
                 // if forced encoding is set, we read the string with that encoding, otherwise we just use whatever p.getContent gives us
-                if (FORCED_ENCODING != null) {
+                /*if (FORCED_ENCODING != null) {
                     byte b[] = Util.getBytesFromStream(p.getInputStream());
                     content = new String(b, FORCED_ENCODING);
                 } else
-                    content = (String) p.getContent();
+                    content = (String) p.getContent();*/
+                if (encoding.equals("UTF-8")) {
+                    byte b[] = Util.getBytesFromStream(p.getInputStream());
+                    content = new String(b, FORCED_ENCODING);
+                } else { //if(encoding.equals("base64"))
+                    //Encoding is base64 so perform proper decoding.
+                    //get the content
+                    byte b[] = Util.getBytesFromStream(p.getInputStream());
+                    //decode it.
+                    byte decoded[] = Base64.decodeBase64(b);
+                    content = new String(decoded);
+                }
             } catch (UnsupportedEncodingException uee) {
                 dataErrors.add("Unsupported encoding: " + folder_name() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
                 Set<String> label = new LinkedHashSet<>();

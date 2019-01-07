@@ -399,6 +399,7 @@ public class EmailUtils {
 		if (ed != null)
 			attachments = ed.attachments;
 		boolean hasAttachments = !Util.nullOrEmpty(attachments) && blobStore != null;
+
 		boolean isI18N = Util.isI18N(contents);
 
 		if (!hasAttachments && !isI18N)
@@ -424,24 +425,24 @@ public class EmailUtils {
 
 			mbox.println("--" + frontier);
 			mbox.println("Content-Type: text/plain; charset=\"UTF-8\"");
-            if(isI18N){
-                //if content is I18N (means large character range) then encode it using base64 [like hindi typed character]
+			if(isI18N){
+				//if content is I18N (means large character range) then encode it using base64 [like hindi typed character]
 				mbox.println("Content-Encoding: base64\n"); // need blank line after this
 				byte encodedBytes[] = Base64.encodeBase64(contents.getBytes(), true);
 				for (byte by : encodedBytes)
 					mbox.print((char) by);
 				mbox.println();
-                //			mbox.println("--" + frontier + "--");
-                // probably need to fix: other types of charset, encodings
+				//			mbox.println("--" + frontier + "--");
+				// probably need to fix: other types of charset, encodings
 
-            }else{
-                //else if content is not I18N (means only ascii and hence human readable) then encode it using quoted printable encoding
+			}else{
+				//else if content is not I18N (means only ascii and hence human readable) then encode it using quoted printable encoding
 				mbox.println("Content-Encoding: quoted-printable\n"); // need blank line after this
 				byte encodedBytes[] = QuotedPrintableCodec.encodeQuotedPrintable(null,contents.getBytes());
 				for (byte by : encodedBytes)
 					mbox.print((char) by);
 				mbox.println();
-            }
+			}
 
 			if (blobStore != null && attachments != null)
 			{
@@ -450,7 +451,7 @@ public class EmailUtils {
 					mbox.println("--" + frontier);
 					mbox.println("Content-type: " + b.contentType);
 					mbox.println("Content-transfer-encoding: base64");
-					mbox.println("Content-Disposition: attachment;filename=\"" + blobStore.get_URL_Normalized(b)+ "\"\n");
+					mbox.println("Content-Disposition: attachment;filename=\"" + blobStore.full_filename_normalized(b,false)+ "\"\n");
 
 					byte bytes[] = blobStore.getDataBytes(b);
 					byte encodedBytes[] = Base64.encodeBase64(bytes, true);

@@ -77,7 +77,7 @@ public class AddressBook implements Serializable {
     transient private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
     //transient fields to store summary data.
 transient          Map<Contact, Set<EmailDocument>> L1_Summary_contactInDocs = new LinkedHashMap<>(), L1_Summary_contactOutDocs = new LinkedHashMap<>(), L1_Summary_contactMentionDocs= new LinkedHashMap<>();
-
+transient Map<Contact,Set<EmailDocument>> L1_Summary_totalInDocs = new LinkedHashMap<>();//to store the info about all docs where a contact is present (irrespective of owner).
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
     private transient Multimap<String,String> dataErrosMap = LinkedHashMultimap.create();
@@ -1475,6 +1475,7 @@ mergeResult.newContacts.put(C2,savedC2)
             String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
             String nameToPrint = Util.escapeHTML(Util.ellipsize(bestNameForContact, 50));
             Integer inCount = L1_Summary_contactInDocs.getOrDefault(c,new LinkedHashSet<>()).size(), outCount = L1_Summary_contactOutDocs.getOrDefault(c,new LinkedHashSet<>()).size(), mentionCount = L1_Summary_contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()).size();
+           Integer totalCount = L1_Summary_totalInDocs.getOrDefault(c,new LinkedHashSet<>()).size();
             /*if (inCount == null)
                 inCount = 0;
             if (outCount == null)
@@ -1487,19 +1488,21 @@ mergeResult.newContacts.put(C2,savedC2)
 
             JSONArray j = new JSONArray();
             j.put(0, Util.escapeHTML(nameToPrint));
-            j.put(1, inCount);
-            j.put(2, outCount);
-            j.put(3, mentionCount);
-            j.put(4, url);
-            j.put(5, Util.escapeHTML(c.toTooltip()));
+            j.put(1, totalCount);
+
+            j.put(2, inCount);
+            j.put(3, outCount);
+            j.put(4, mentionCount);
+            j.put(5, url);
+            j.put(6, Util.escapeHTML(c.toTooltip()));
             if(range.first!=null)
-                j.put(6,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
+                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
             else
-                j.put(6,range.first);
+                j.put(7,range.first);
             if(range.second!=null)
-                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
+                j.put(8,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
             else
-                j.put(7,range.second);
+                j.put(8,range.second);
 
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
@@ -1514,6 +1517,7 @@ mergeResult.newContacts.put(C2,savedC2)
         L1_Summary_contactMentionDocs.clear();
         L1_Summary_contactInDocs.clear();
         L1_Summary_contactOutDocs.clear();
+        L1_Summary_totalInDocs.clear();
        // Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
         AddressBook ab = this;
         Contact ownContact = ab.getContactForSelf();
@@ -1526,6 +1530,17 @@ mergeResult.newContacts.put(C2,savedC2)
             if (senderContact == null)
                 senderContact = ownContact; // should never happen, we should always have a sender contact
 
+            //L1_Summary_totalInDocs store the email messages where this contact is a sender.
+
+            {
+                Set<EmailDocument> tmp = L1_Summary_totalInDocs.get(senderContact);
+
+                if (tmp == null)
+                    tmp = new LinkedHashSet<>();
+                tmp.add(ed);
+                L1_Summary_totalInDocs.put(senderContact, tmp);
+            }
+            //for filling other fields.
             int x = ed.sentOrReceived(ab);
             // message could be both sent and received
             if ((x & EmailDocument.SENT_MASK) != 0) {

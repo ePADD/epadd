@@ -1690,15 +1690,59 @@ is what we want.
 	private synchronized Directory copyDirectoryWithDocFilter(boolean attachmentType, String out_basedir, String out_name, FilterFunctor filter_func) throws IOException
 	{
 		long startTime = System.currentTimeMillis();
-		List<org.apache.lucene.document.Document> alldocsLive = getAllDocsWithFields(attachmentType);
-//		IndexReader reader = DirectoryReader.open(dir); // IndexReader.open(dir, true); // read-only=true
-
 		Directory newDir = createDirectory(out_basedir, out_name);
 		IndexWriter writer = openIndexWriter(newDir);
-		//log.info("Removing field(s) " + Util.join(fields_to_be_removed, ", ") + " from index.");
+		List<org.apache.lucene.document.Document> result = new ArrayList<>();
 
+		// read all the docs in the leaf readers. omit deleted docs.
+		DirectoryReader r;
+		if(attachmentType)
+			r = DirectoryReader.open(directory_blob);
+		else
+			r = DirectoryReader.open(directory);
+
+		Bits liveDocs = MultiFields.getLiveDocs(r);
+//IMP: The fields of email index and attachment index are different. We need to extract appropriate field otherwis we will be missing some fields
+		//after exporting the archive index.
+
+		String fieldsArray[] = null;
+		if(attachmentType)
+			fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
+		else
+			fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+					"cc_names","bcc_names","languages","names","names_original","en_names_title"};
+
+		Set<String> fieldsToLoad = new HashSet<String>();
+
+		for(String s: fieldsArray){
+			fieldsToLoad.add(s);
+		}
 		//https://stackoverflow.com/questions/2311845/is-it-possible-to-iterate-through-documents-stored-in-lucene-index
 		int count = 0;
+		for(int i=0;i<r.maxDoc();i++){
+			org.apache.lucene.document.Document doc = r.document(i,fieldsToLoad);
+			if(liveDocs!=null && !liveDocs.get(i))
+				continue;
+
+			if(doc == null || doc.get("docId") == null)
+				continue;
+			if (filter_func == null || filter_func.filter(doc))
+			{
+				writer.addDocument(doc);
+				count++;
+			}
+			//contentDocIds.put(i, doc.get("docId"));
+		}
+		r.close();
+		writer.close();
+
+		/*List<org.apache.lucene.document.Document> alldocsLive = getAllDocsWithFields(attachmentType);
+//		IndexReader reader = DirectoryReader.open(dir); // IndexReader.open(dir, true); // read-only=true
+
+
+		//log.info("Removing field(s) " + Util.join(fields_to_be_removed, ", ") + " from index.");
+
+
 		for(org.apache.lucene.document.Document doc: alldocsLive){
 			if (filter_func == null || filter_func.filter(doc))
 			{
@@ -1706,17 +1750,17 @@ is what we want.
 				count++;
 			}
 		}
-		/*//for (int i = 0; i < reader.numDocs(); i++) {
+		for (int i = 0; i < reader.numDocs(); i++) {
 		for (int i = 0; i < reader.maxDoc(); i++) {
 
 			org.apache.lucene.document.Document doc = reader.document(i);
 			//add only if it is not deleted...
 
-		}*/
+		}
 
 		writer.close();
 		//reader.close();
-
+		*/
 		log.info ("CopyDirectoryWithtDocFilter to dir:" + out_basedir + " name: " + baseDir + " time: " + (System.currentTimeMillis() - startTime) + " ms docs: " + count);
 		return newDir;
 	}
@@ -1773,12 +1817,14 @@ is what we want.
 	synchronized void copyDirectoryWithDocFilter(String out_dir, FilterFunctor emailFilter, FilterFunctor attachmentFilter) throws IOException
 	{
 		//directory = copyDirectoryWithDocFilter(directory, out_dir, INDEX_NAME_EMAILS, emailFilter);
-		directory = copyDirectoryWithDocFilter(false, out_dir, INDEX_NAME_EMAILS, emailFilter);
+		Directory tmpdirecotry = copyDirectoryWithDocFilter(false, out_dir, INDEX_NAME_EMAILS, emailFilter);
         //the docIds of the attachment docs are not the same as email docs, hence the same filter won't work.
         //by supplying a null filter, we are not filtering attachments at all, is this the right thing to do? Because this may retain attachment doc(s) corresponding to a removed email doc
 		//directory_blob = copyDirectoryWithDocFilter(directory_blob, out_dir, INDEX_NAME_ATTACHMENTS, attachmentFilter);
-		directory_blob = copyDirectoryWithDocFilter(true, out_dir, INDEX_NAME_ATTACHMENTS, attachmentFilter);
+		Directory tmpdirecotry_blob = copyDirectoryWithDocFilter(true, out_dir, INDEX_NAME_ATTACHMENTS, attachmentFilter);
 
+		directory = tmpdirecotry;
+		directory_blob = tmpdirecotry_blob;
 	}
 
 	// CAUTION: permanently change the index!
