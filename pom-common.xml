@@ -244,7 +244,7 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.1</version>
+			<version>1.3.3</version>
 		</dependency>
 
 		<!--For learning tasks in segmentation of NER, this could be removed-->
