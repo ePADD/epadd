@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /** important class -- this is the primary class used by clients to fetch email with muse.
  * fetches email from multiple accounts.
@@ -450,14 +451,16 @@ public class MuseEmailFetcher {
      * emailDocs, addressBook and blobstore
      * @throws NoDefaultFolderException 
      * */
-	public void fetchAndIndexEmails(Archive archive, String[] selectedFolders, boolean useDefaultFolders, FetchConfig fetchConfig, HttpSession session)
+	public void fetchAndIndexEmails(Archive archive, String[] selectedFolders, boolean useDefaultFolders, FetchConfig fetchConfig, HttpSession session, Consumer<StatusProvider> setStatusProvider)
 				throws MessagingException, InterruptedException, IOException, JSONException, NoDefaultFolderException, CancelledException
 	{
 		setupFetchers(-1);
 		
 		long startTime = System.currentTimeMillis();
-		if (session != null)
-			session.setAttribute("statusProvider", new StaticStatusProvider("Starting to process messages..."));
+
+		setStatusProvider.accept(new StaticStatusProvider("Starting to process messages..."));
+		//if (session != null)
+			//session.setAttribute("statusProvider", new StaticStatusProvider("Starting to process messages..."));
 
 		boolean op_cancelled = false, out_of_mem = false;
 		
@@ -484,9 +487,11 @@ public class MuseEmailFetcher {
 	    {
 	    	// in theory, different iterations of this loop could be run in parallel ("archive" access will be synchronized)
 
-			if (session != null)
-				session.setAttribute("statusProvider", fetcher);
+			setStatusProvider.accept(fetcher);
 
+			/*if (session != null)
+				session.setAttribute("statusProvider", fetcher);
+*/
 			fetcher.setArchive(archive);
 	    	fetcher.setFetchConfig(fetchConfig);
 		    log.info("Memory status before fetching emails: " + Util.getMemoryStats());
@@ -550,14 +555,16 @@ public class MuseEmailFetcher {
 		//EmailUtils.cleanDates(allEmailDocs);
 
 		// create a new address book	
-		if (session != null)
-			session.setAttribute("statusProvider", new StaticStatusProvider("Building address book..."));
+		//if (session != null)
+			//session.setAttribute("statusProvider", new StaticStatusProvider("Building address book..."));
+		setStatusProvider.accept(new StaticStatusProvider("Building address book..."));
 		AddressBook addressBook = EmailDocument.buildAddressBook(allEmailDocs, archive.ownerEmailAddrs, archive.ownerNames);
 		log.info ("Address book created!!");
 
 		log.info ("Address book stats: " + addressBook.getStats());
-		if (session != null)
-			session.setAttribute("statusProvider", new StaticStatusProvider("Finishing up..."));
+		//if (session != null)
+			//session.setAttribute("statusProvider", new StaticStatusProvider("Finishing up..."));
+		setStatusProvider.accept(new StaticStatusProvider("Finishing up..."));
 		archive.setAddressBook(addressBook);
 
 		// we shouldn't really have dups now because the archive ensures that only unique docs are added
@@ -576,8 +583,8 @@ public class MuseEmailFetcher {
 		stats.fetchAndIndexTimeMillis = elapsedMillis;
 
 	    updateStats(archive, addressBook, stats);
-		if (session != null)
-			session.removeAttribute("statusProvider");
+		//if (session != null)
+		//	session.removeAttribute("statusProvider");
 		log.info ("Fetch+index complete: " + Util.commatize(System.currentTimeMillis() - startTime) + " ms");
 
 

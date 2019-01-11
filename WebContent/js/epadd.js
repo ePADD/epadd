@@ -17,13 +17,13 @@ epadd.post_message = function(mesg, warn)
 	if (warn)
 		data.warn = true;
 
-    $.ajax({
+   /* $.ajax({
 		url: 'ajax/muselog.jsp',
 		type: 'POST',
 		data: data,
 		retryLimit: 3,
 		async: true
-	});
+	});*/
 	//$.post('/ajax/muselog.jsp', {'message': mesg.toString()});
 };
 
@@ -320,7 +320,7 @@ epadd.submitFolders = function()
 	try {
 		var post_params = getSelectedFolderParams() + '&period=Monthly&downloadAttachments=true';
 		// need to check muse.mode here for page to redirect to actually!
-		var page = "ajax/doFetchAndIndex.jsp";
+		var page = "ajax/async/doFetchAndIndex.jsp";
 		fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
 	} catch(err) { }
 };

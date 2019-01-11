@@ -1,5 +1,6 @@
 package edu.stanford.muse.index;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -824,7 +825,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
         return archive;
     }
 
-    public static Archive prepareAndLoadArchive(MuseEmailFetcher m, HttpServletRequest request) throws IOException
+    public static Archive prepareAndLoadArchive(MuseEmailFetcher m, Multimap<String,String> paramsMap) throws IOException
     {
 
         // here's where we create a fresh archive
@@ -848,7 +849,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
             JSPHelper.log.info("Good, existing archive found");
         } else {
             JSPHelper.log.info("Creating a new archive in " + archiveDir);
-            archive = JSPHelper.preparedArchive(request, archiveDir, new ArrayList<>());
+            archive = JSPHelper.preparedArchive(paramsMap, archiveDir, new ArrayList<>());
             //by this time the archive is created
             // add this to global maps archiveID->archive, archive->archiveID
             addToGlobalArchiveMap(archiveDir,archive);

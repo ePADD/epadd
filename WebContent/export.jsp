@@ -566,7 +566,7 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
             var $button = $(e.target);
             if ($button.hasClass('faded'))
                 return false; // do nothing;
-            var baseUrl = '<%=ModeConfig.isProcessingMode() ? "ajax/export-from-processing.jsp":"ajax/export-from-appraisal.jsp"%>';
+            var baseUrl = '<%=ModeConfig.isProcessingMode() ? "ajax/async/export-from-processing.jsp":"ajax/async/export-from-appraisal.jsp"%>';
             var dir = $('.dir', $('#export-next')).val();
             if (dir && dir.length > 0) {
                 if(<%=ModeConfig.isAppraisalMode()%>) {

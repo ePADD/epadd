@@ -319,8 +319,8 @@
 
         //result of succesful ajax/loadArchive should be a call to browse-top page with appropriate archiveID. hence
         //set it as a resultPage of the returned json object in ajax/loadArchive.jsp.
-        var enterparams = {dir: '<%=id%>'};
-        $('.collection-enter').click(function() { fetch_page_with_progress ('ajax/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); /* load_archive_and_call(function() { window.location = "browse-top"} */});
+        var enterparams = 'dir='+encodeURIComponent('<%=id%>');
+        $('.collection-enter').click(function() { fetch_page_with_progress ('ajax/async/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); /* load_archive_and_call(function() { window.location = "browse-top"} */});
 
         var uploadBannerImageHandler=function() {
             //collect archiveID,and addressbookfile field. If  empty return false;
