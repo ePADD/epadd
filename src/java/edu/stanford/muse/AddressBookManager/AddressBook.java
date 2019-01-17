@@ -76,8 +76,8 @@ public class AddressBook implements Serializable {
     //following can be crated from contactListForIds list hence no need to serialize them
     transient private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
     //transient fields to store summary data.
-transient          Map<Contact, Set<EmailDocument>> L1_Summary_contactInDocs = new LinkedHashMap<>(), L1_Summary_contactOutDocs = new LinkedHashMap<>(), L1_Summary_contactMentionDocs= new LinkedHashMap<>();
-transient Map<Contact,Set<EmailDocument>> L1_Summary_totalInDocs = new LinkedHashMap<>();//to store the info about all docs where a contact is present (irrespective of owner).
+transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new LinkedHashMap<>(), L1_Summary_ReceivedDocs = new LinkedHashMap<>(), L1_Summary_RecFrmOwnerDocs= new LinkedHashMap<>();
+//transient Map<Contact,Set<EmailDocument>> L1_Summary_totalInDocs = new LinkedHashMap<>();//to store the info about all docs where a contact is present (irrespective of owner).
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
     private transient Multimap<String,String> dataErrosMap = LinkedHashMultimap.create();
@@ -156,9 +156,9 @@ transient Map<Contact,Set<EmailDocument>> L1_Summary_totalInDocs = new LinkedHas
             this.dataErrors = ab.dataErrors;
             this.dataErrosMap = ab.dataErrosMap;
             this.emailMaskingMap = ab.emailMaskingMap;
-            this.L1_Summary_contactInDocs = ab.L1_Summary_contactInDocs;
-            this.L1_Summary_contactOutDocs = ab.L1_Summary_contactOutDocs;
-            this.L1_Summary_contactMentionDocs = ab.L1_Summary_contactMentionDocs;
+            this.L1_Summary_SentDocs = ab.L1_Summary_SentDocs;
+            this.L1_Summary_ReceivedDocs = ab.L1_Summary_ReceivedDocs;
+            this.L1_Summary_RecFrmOwnerDocs = ab.L1_Summary_RecFrmOwnerDocs;
         } catch (IOException e) {
             e.printStackTrace();
             Util.print_exception("Unable to initialize the addressbook with different contact information",e,log);
@@ -1474,35 +1474,36 @@ mergeResult.newContacts.put(C2,savedC2)
             String bestNameForContact = c.pickBestName();
             String url = "browse?adv-search=1&contact=" + contactId+"&archiveID="+archiveID;
             String nameToPrint = Util.escapeHTML(Util.ellipsize(bestNameForContact, 50));
-            Integer inCount = L1_Summary_contactInDocs.getOrDefault(c,new LinkedHashSet<>()).size(), outCount = L1_Summary_contactOutDocs.getOrDefault(c,new LinkedHashSet<>()).size(), mentionCount = L1_Summary_contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()).size();
-           Integer totalCount = L1_Summary_totalInDocs.getOrDefault(c,new LinkedHashSet<>()).size();
+            Integer recvCount = L1_Summary_ReceivedDocs.getOrDefault(c,new LinkedHashSet<>()).size(), sentCount = L1_Summary_SentDocs.getOrDefault(c,new LinkedHashSet<>()).size();
+            //mentionCount = L1_Summary_contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()).size();
+           Integer recvFromOwnerCount = L1_Summary_RecFrmOwnerDocs.getOrDefault(c,new LinkedHashSet<>()).size();
             /*if (inCount == null)
                 inCount = 0;
             if (outCount == null)
                 outCount = 0;
             if (mentionCount == null)
                 mentionCount = 0;*/
-            Set<EmailDocument> alldocs = Util.setUnion(L1_Summary_contactInDocs.getOrDefault(c,new LinkedHashSet<>()),L1_Summary_contactOutDocs.getOrDefault(c,new LinkedHashSet<>()));
-            alldocs=Util.setUnion(alldocs,L1_Summary_contactMentionDocs.getOrDefault(c,new LinkedHashSet<>()));
+            Set<EmailDocument> alldocs = Util.setUnion(L1_Summary_SentDocs.getOrDefault(c,new LinkedHashSet<>()),L1_Summary_ReceivedDocs.getOrDefault(c,new LinkedHashSet<>()));
+            alldocs=Util.setUnion(alldocs,L1_Summary_RecFrmOwnerDocs.getOrDefault(c,new LinkedHashSet<>()));
             Pair<Date,Date> range = EmailUtils.getFirstLast(alldocs,true);
 
             JSONArray j = new JSONArray();
             j.put(0, Util.escapeHTML(nameToPrint));
-            j.put(1, totalCount);
+            //j.put(1, totalCount);
 
-            j.put(2, inCount);
-            j.put(3, outCount);
-            j.put(4, mentionCount);
-            j.put(5, url);
-            j.put(6, Util.escapeHTML(c.toTooltip()));
+            j.put(1, sentCount);
+            j.put(2, recvCount);
+            j.put(3, recvFromOwnerCount);
+            j.put(4, url);
+            j.put(5, Util.escapeHTML(c.toTooltip()));
             if(range.first!=null)
-                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
+                j.put(6,new SimpleDateFormat("MM/dd/yyyy").format(range.first));
             else
-                j.put(7,range.first);
+                j.put(6,range.first);
             if(range.second!=null)
-                j.put(8,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
+                j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
             else
-                j.put(8,range.second);
+                j.put(7,range.second);
 
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover
@@ -1514,10 +1515,10 @@ mergeResult.newContacts.put(C2,savedC2)
     public void fillL1_SummaryObject(Collection<Document> alldocs){
 
         //clear the summary objects.
-        L1_Summary_contactMentionDocs.clear();
-        L1_Summary_contactInDocs.clear();
-        L1_Summary_contactOutDocs.clear();
-        L1_Summary_totalInDocs.clear();
+        L1_Summary_SentDocs.clear();
+        L1_Summary_ReceivedDocs.clear();
+        L1_Summary_RecFrmOwnerDocs.clear();
+        //L1_Summary_totalInDocs.clear();
        // Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
         AddressBook ab = this;
         Contact ownContact = ab.getContactForSelf();
@@ -1530,47 +1531,61 @@ mergeResult.newContacts.put(C2,savedC2)
             if (senderContact == null)
                 senderContact = ownContact; // should never happen, we should always have a sender contact
 
-            //L1_Summary_totalInDocs store the email messages where this contact is a sender.
+            //L1_Summary_SentDocs store the email messages where this contact is a sender.
 
             {
-                Set<EmailDocument> tmp = L1_Summary_totalInDocs.get(senderContact);
+                Set<EmailDocument> tmp = L1_Summary_SentDocs.get(senderContact);
 
                 if (tmp == null)
                     tmp = new LinkedHashSet<>();
                 tmp.add(ed);
-                L1_Summary_totalInDocs.put(senderContact, tmp);
+                L1_Summary_SentDocs.put(senderContact, tmp);
             }
+
+            //get receiver of this mail.
+            Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
+            for (Contact c : toContacts) {
+                //add the info that all these contacts received this mail.
+                Set<EmailDocument> tmp = L1_Summary_ReceivedDocs.get(c);
+                if(tmp==null)
+                    tmp=new LinkedHashSet<>();
+                tmp.add(ed);
+                L1_Summary_ReceivedDocs.put(c, tmp);
+            }
+            //if this mail was received from the owner then add it in the map L1_Summary_RecFrmOwner
+
+
             //for filling other fields.
             int x = ed.sentOrReceived(ab);
             // message could be both sent and received
             if ((x & EmailDocument.SENT_MASK) != 0) {
-                // this is a sent email, each to/cc/bcc gets +1 outcount.
+                // this is a sent email (sent by the owner), each to/cc/bcc gets +1 outcount.
                 // one of them could be own contact also.
-                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
+//                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
                 for (Contact c : toContacts) {
-                    Set<EmailDocument> tmp = L1_Summary_contactOutDocs.get(c);
+                    Set<EmailDocument> tmp = L1_Summary_RecFrmOwnerDocs.get(c);
                     if(tmp==null)
                         tmp=new LinkedHashSet<>();
                     tmp.add(ed);
-                    L1_Summary_contactOutDocs.put(c, tmp);
+                    L1_Summary_RecFrmOwnerDocs.put(c, tmp);
                 }
             }
 
-            boolean received = (x & EmailDocument.RECEIVED_MASK) != 0 // explicitly received
+           /* boolean received = (x & EmailDocument.RECEIVED_MASK) != 0 // explicitly received
                     || (x & EmailDocument.SENT_MASK) == 0; // its not explicitly sent, so we must count it as received by default
 
             if (received) {
                 // sender gets a +1 in count (could be ownContact also)
                 // all others get a mention count.
-                Set<EmailDocument> tmp = L1_Summary_contactInDocs.get(senderContact);
+                Set<EmailDocument> tmp = L1_Summary_RecFrmOwnerDocs.get(senderContact);
                 if(tmp==null)
                     tmp=new LinkedHashSet<>();
                 tmp.add(ed);
-                L1_Summary_contactInDocs.put(senderContact, tmp);
-
+                L1_Summary_RecFrmOwnerDocs.put(senderContact, tmp);
             }
-
-            if ((x & EmailDocument.SENT_MASK) == 0) {
+*/
+            //Removed the mention semantics in v7.
+           /* if ((x & EmailDocument.SENT_MASK) == 0) {
                 // this message is not sent, its received.
                 // add mentions for everyone who's not me, who's on the to/cc/bcc of this message.
                 Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
@@ -1583,7 +1598,7 @@ mergeResult.newContacts.put(C2,savedC2)
                     tmp.add(ed);
                     L1_Summary_contactMentionDocs.put(c, tmp);
                 }
-            }
+            }*/
         }
 
 

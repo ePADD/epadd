@@ -66,7 +66,8 @@ if(!Util.nullOrEmpty(request.getParameter("checkDone"))){
 <script>
     $('#button-verify-checksum').click (function(e) {
         var enterparams = {archiveID: '<%=archiveID%>'};
-        fetch_page_with_progress ('ajax/verify-bag-checksum.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams); /* load_archive_and_call(function() { window.location = "browse-top"} */;
+        var params = epadd.convertParamsToAmpersandSep(enterparams);
+        fetch_page_with_progress ('ajax/async/verify-bag-checksum.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), params); /* load_archive_and_call(function() { window.location = "browse-top"} */;
     });
     <%}%>
 

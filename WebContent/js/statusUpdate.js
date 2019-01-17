@@ -34,6 +34,11 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	function onSuccess(response,onready,redirect_page){
 
 		if(response.status===1){
+            $(currentOp.status_div).hide();
+            $('.muse-overlay').hide();
+            currentOp.done = true;
+            currentOp.status_div_text.innerHTML = "<br/>&nbsp;<br/>"; // wipe out the status so we dont see residue for the next op
+
             epadd.error(response.error);
             return;
         }
@@ -93,7 +98,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 
             // ok, so the op was successful, have we been told what ready function to call or page to to redirect on the client side by the caller?
             if (onready) {
-                onready(j);
+                onready();
                 return;
             }
 
@@ -388,7 +393,9 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
                                 onSuccess(response, onready, redirect_page);
                             }else {
                                 onStatusReceive(response);
-                                setTimeout(poll_status, POLL_MILLIS);
+                                setTimeout(function(){
+                                    poll_status(onready,redirect_page)}, POLL_MILLIS
+                                );
                             }
                     }
                     else

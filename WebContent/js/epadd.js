@@ -422,7 +422,14 @@ epadd.unloadArchive = function(archiveID) {
 	});
 };
 
-
+epadd.convertParamsToAmpersandSep = function(params){
+	var str='';
+    for(var index in params) {
+        str=str+index+'='+encodeURIComponent(params[index])+'&';
+    }
+    //remove last ampersand?? not needed.
+	return str;
+}
 
 epadd.saveArchive= function(archiveID,prompt) {
     if(prompt==undefined){
@@ -435,7 +442,7 @@ epadd.saveArchive= function(archiveID,prompt) {
 	}
 	var post_params = 'archiveID='+archiveID;
 	// need to check muse.mode here for page to redirect to actually!
-	var page = "ajax/save-archive.jsp";
+	var page = "ajax/async/save-archive.jsp";
 	if(prompt)
 		return fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params,promptmethod);
 	else

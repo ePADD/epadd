@@ -114,7 +114,8 @@ Browse page for entities based on fine types
             var option;
             var msg;
             var post_params={archiveID:archiveID, data: "entities",type:entityType};
-            fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+            var params = epadd.convertParamsToAmpersandSep(post_params);
+            fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params);
 
             /*$.ajax({
                 type: 'POST',

@@ -384,7 +384,8 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                     return false;
                 }
                 var post_params={archiveID:archiveID, data:"to-mbox", type:exportoptions};
-                fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+                var params = epadd.convertParamsToAmpersandSep(post_params);
+                fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params);
 
                 /*
                  $.ajax({
@@ -451,7 +452,8 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 return false;
             }
             var post_params={archiveID:archiveID, data: "entities",type:entityType};
-            fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+            var params = epadd.convertParamsToAmpersandSep(post_params);
+            fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params);
 
             /*$.ajax({
                 type: 'POST',
@@ -541,7 +543,8 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
         <script>
             $('#export-messages-text .go-button').click (function(e) {
                 var post_params={archiveID:archiveID, data: "originaltextasfiles"};
-                fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), post_params);
+                var params = epadd.convertParamsToAmpersandSep(post_params);
+                fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params);
             });
 
         </script>
@@ -587,7 +590,8 @@ if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
                 }
                 //window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
                 var post_params = {archiveID: archiveID, dir: dir};
-                fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), post_params,promptmethod);
+                var params = epadd.convertParamsToAmpersandSep(post_params);
+                fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod);
             }else{
                 epadd.error("Please enter the directory path where the exported archive will be stored!");
             }
