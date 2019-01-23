@@ -5,6 +5,8 @@
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
+<%@ page import="java.util.Set" %>
 <%!
   // this profile block will go onto pretty much every page via the header.jspf
 
@@ -100,6 +102,19 @@
                 <hr/>
                 <% } %>
 
+                <%
+                    Set<String> archiveOwnerNames = ArchiveReaderWriter.getArchiveForArchiveID(archiveID).getAddressBook().getOwnNamesSet();
+                    Set<String> archiveOwnerEmails =  ArchiveReaderWriter.getArchiveForArchiveID(archiveID).getAddressBook().getOwnAddrs();
+                %>
+                <% if(archiveOwnerNames.size()!=0){%>
+                Archive Owner Name:
+                <span class="detail"><b><%=archiveOwnerNames.iterator().next()%></b></span><br>
+                <%}%>
+                <% if(archiveOwnerEmails.size()!=0){%>
+                Archive Owner Email:
+                <span class="detail"><b><%=archiveOwnerEmails.iterator().next()%></b></span><br>
+                <%}%>
+
                 <% if (cm.firstDate != null && cm.lastDate != null) { %>
                 Date Range<br/>
                 <span class="detail"><b><%=Util.formatDate(cm.firstDate)%></b> to <b><%=Util.formatDate(cm.lastDate)%></b></span>
@@ -108,15 +123,19 @@
                 <hr/>
                 <% } %>
                 <% } %>
+<%
+    int sentbyowner = ArchiveReaderWriter.getArchiveForArchiveID(archiveID).getAddressBook().getMsgsSentByOwner();
+%>
+                Messages: <span class="detail"><b><%=Util.commatize(cm.nDocs)%></b></span><br/></b>
+                Sent by owner: <span class="detail"><b><%=Util.commatize(sentbyowner)%></b></span><br/></b>
 
-                Messages: <span class="detail"><b><%=Util.commatize(cm.nDocs)%></b></span>
-                <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
+            <%-- <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
                 Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
                 Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
                 <% } %>
                 <hr/>
-                Attachments: <span class="detail"><b><%=Util.commatize(cm.nBlobs)%></b></span>
+    --%>        Attachments: <span class="detail"><b><%=Util.commatize(cm.nBlobs)%></b></span></b>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                 <br/>
                 Images: <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>

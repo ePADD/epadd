@@ -400,7 +400,7 @@ public class EmailUtils {
 			attachments = ed.attachments;
 		boolean hasAttachments = !Util.nullOrEmpty(attachments) && blobStore != null;
 
-		boolean isI18N = Util.isI18N(contents);
+		boolean isI18N = false;//Util.isI18N(contents); short-circuiting this. Now all message body will be exported in quoted-printable format. This was for issue #342
 
 		if (!hasAttachments && !isI18N)
 		{

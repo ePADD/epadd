@@ -803,8 +803,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	public static boolean isI18N(String s)
 	{
 		byte bytes[] = s.getBytes();
+		//return false;
 		for (byte b : bytes)
-			if (b < 0 || b > 127)
+			if (b < 0 || b > 255)
 				return true;
 		return false;
 	}

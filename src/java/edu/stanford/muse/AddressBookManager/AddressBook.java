@@ -83,7 +83,7 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
     private transient Multimap<String,String> dataErrosMap = LinkedHashMultimap.create();
     //needed to keep track of mailingList information
     public Map<Contact, MailingList> mailingListMap = new LinkedHashMap<>();
-    private List<Contact> contactListForIds = new ArrayList<>();
+    public List<Contact> contactListForIds = new ArrayList<>();
 
     /**
      * these are for providing a layer of opaqueness to contact emails in discovery mode
@@ -372,6 +372,7 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
         return contactForSelf;
     }
 
+    public void setContactForSelf(Contact own){contactForSelf=own;}
     /**
      * return best name to display for owner of this address book. empty string if no names available.
      * warning: this overlaps with contact.pickbestname()
@@ -814,6 +815,16 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
         return uniqueContactsList;
     }
 
+    //should only be called while setting the owner's addresses from EmailDocument::setowners
+    public void removeContacts(Set<Contact> contacts){
+        //remove from contactListForID list and then call filLTransientField
+        contactListForIds.removeAll(contacts);
+        //also remove from mailListMap
+        contacts.forEach(contact-> mailingListMap.remove(contact));
+        fillTransientFields();
+    }
+
+
     /**
      * returns a list of all contacts in the given collection of docs, sorted by outgoing freq.
      */
@@ -950,6 +961,13 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
             ci.resetInfo();
         // similarities = null;
         mailingListMap.clear();
+    }
+
+    public int getMsgsSentByOwner() {
+        Contact owner = getContactForSelf();
+        Set<EmailDocument> docs =  L1_Summary_SentDocs.getOrDefault(owner,new LinkedHashSet<>());
+        return docs.size();
+
     }
 
     public class MergeResult{
@@ -1529,7 +1547,8 @@ mergeResult.newContacts.put(C2,savedC2)
             String senderEmail = ed.getFromEmailAddress();
             Contact senderContact = ab.lookupByEmail(senderEmail);
             if (senderContact == null)
-                senderContact = ownContact; // should never happen, we should always have a sender contact
+                continue;
+                //senderContact = ownContact; // should never happen, we should always have a sender contact: Don't do this otherwise wrongly reporting a message sent by owner.
 
             //L1_Summary_SentDocs store the email messages where this contact is a sender.
 
@@ -1561,7 +1580,7 @@ mergeResult.newContacts.put(C2,savedC2)
             if ((x & EmailDocument.SENT_MASK) != 0) {
                 // this is a sent email (sent by the owner), each to/cc/bcc gets +1 outcount.
                 // one of them could be own contact also.
-//                Collection<Contact> toContacts = ed.getToCCBCCContacts(ab);
+                 toContacts = ed.getToCCBCCContacts(ab);
                 for (Contact c : toContacts) {
                     Set<EmailDocument> tmp = L1_Summary_RecFrmOwnerDocs.get(c);
                     if(tmp==null)

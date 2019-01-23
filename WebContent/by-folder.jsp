@@ -48,7 +48,7 @@
 
 <div style="margin:auto; width:1100px">
     <table id="folders" style="display:none">
-        <thead><tr><th>Source</th><th>Folder</th><th>Incoming messages</th><th>Outgoing messages</th><th>Total</th></tr></thead>
+        <thead><tr><th>Source</th><th>Folder</th><th>Messages from owner</th><th>Total</th></tr></thead>
         <tbody>
         </tbody>
     </table>
@@ -64,11 +64,11 @@
             String folder = ed.folderName;
             Pair<Boolean, Boolean> p = ab.isSentOrReceived(ed.getToCCBCC(), ed.from);
             // p: first sent, second received
-            if (p.getFirst()) {
+            if (p.getFirst()) { //means message is sent from owner.
                 Integer I = folderToOutCount.get(folder);
                 folderToOutCount.put(folder, (I == null) ? 1 : I + 1);
             }
-            if (p.getSecond()) {
+            if (p.getSecond()) {//means the message is received by owner (to/cc/bcc)
                 Integer I = folderToInCount.get(folder);
                 folderToInCount.put(folder, (I == null) ? 1 : I + 1);
             }
@@ -88,9 +88,9 @@
             JSONArray j = new JSONArray();
             j.put(0, Util.escapeHTML(source));
             j.put(1, Util.escapeHTML(folder));
-            j.put(2, folderToInCount.get(folder));
-            j.put(3, folderToOutCount.get(folder));
-            j.put(4, folderToTotalCount.get(folder));
+            //j.put(2, folderToInCount.get(folder));
+            j.put(2, folderToOutCount.getOrDefault(folder,0));
+            j.put(3, folderToTotalCount.getOrDefault(folder,0));
             resultArray.put(count++, j);
         }
     %>
@@ -106,8 +106,8 @@
             $('#folders').dataTable({
                 data: folders,
                 pagingType: 'simple',
-                order:[[4, 'desc']], // col 12 (outgoing message count), descending
-                columnDefs: [{width: "550px", targets: 1}, { className: "dt-right", "targets": [ 2,3,4 ] },{width: "50%", targets: 1},{targets: 1, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+                order:[[3, 'desc']], // col 12 (outgoing message count), descending
+                columnDefs: [{width: "550px", targets: 1}, { className: "dt-right", "targets": [ 2,3 ] },{width: "50%", targets: 1},{targets: 1, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
                 fnInitComplete: function() { $('#spinner-div').hide(); $('#folders').fadeIn(); }
             });
         } );

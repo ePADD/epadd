@@ -93,7 +93,7 @@
 
 			StringBuilder sb = new StringBuilder();
 			for (String name : namesSet.elementSet()) {
-                String link = "debugAddressBook-message.jsp?email=" + emailAddr + "&archiveID=" + ArchiveReaderWriter.getArchiveIDForArchive(archive)+ "&name=" + name;
+                String link = "browse.jsp?debugAddressBookEmail=" + emailAddr + "&archiveID=" + ArchiveReaderWriter.getArchiveIDForArchive(archive)+ "&debugAddressBookName=" + name;
                 String linkText = Util.pluralize(namesSet.count(name), "message");
                 String linkHTML = "<a target=\"_blank\" href=\"" + link + "\">" + linkText + "</a>";
 				sb.append("&nbsp;&nbsp;&nbsp;&nbsp;" + Util.escapeHTML (name) + " (" + linkHTML + ")<br/>\n");

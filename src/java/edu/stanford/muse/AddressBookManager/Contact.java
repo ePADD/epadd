@@ -57,9 +57,9 @@ public class Contact extends UnionFindObject {
 		return c;
 	}
 
-	/*
-	We should correctly work out these two methods. Because contact class is also used as key in hashmap/set etc.
-	public boolean equals(Contact other){
+
+	//We should correctly work out these two methods. Because contact class is also used as key in hashmap/set etc.
+	/*public boolean equals(Contact other){
 		if(!getNames().equals(other.getNames()))
 			return false;
 		if(!getEmails().equals(other.getEmails()))
@@ -75,8 +75,8 @@ public class Contact extends UnionFindObject {
 		for(String name: getNames())
 			hashcode=hashcode*name.hashCode();
 		return hashcode;
-	}
-*/
+	}*/
+
 	public String getFirstEmail()
 	{
 		Iterator<String> it = emails.iterator();
@@ -230,7 +230,7 @@ public class Contact extends UnionFindObject {
 		//		lastReceivedHeaders.clear();
 	}
 
-	void merge(Contact other)
+	public void merge(Contact other)
 	{
 		names.addAll(other.names);
 		emails.addAll(other.emails);

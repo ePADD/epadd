@@ -107,7 +107,7 @@
 		<%
 		boolean noCategories = false;
 		// can show expandedMap here, but then disable update/query option so that the expanded map doesn't get saved
-		Map<String, String> captionToQueryMap = lex.getRawMapFor("english");
+		Map<String, String> captionToQueryMap = lex.getRawMapFor(lex.getLexiconLanguage());
 		if (captionToQueryMap != null && captionToQueryMap.size() > 0)
 		{
 			for (String sentiment: captionToQueryMap.keySet())

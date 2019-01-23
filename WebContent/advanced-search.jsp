@@ -498,26 +498,26 @@
 							</div>
 						</div>
 
-						<!--Message Directions-->
+						<!--Message Senders-->
 						<div class="form-group col-sm-6">
-							<label for="direction">Message Direction</label>
-							<fieldset name="direction" id="direction" class="comman-radio">
-								<legend class="sr-only">Message Direction filters
+							<label for="sender">Message Sender</label>
+							<fieldset name="sender" id="sender" class="comman-radio">
+								<legend class="sr-only">Message Sender filters
 								</legend>
 								<label class="radio-inline">
-									<input value="in" type="radio" name="direction">
-									<span class="text-radio">Incoming</span>
+									<input value="owner" type="radio" name="sender">
+									<span class="text-radio">Owner</span>
 								</label>
 
 								<label class="radio-inline">
-									<input value="out" type="radio" name="direction">
-									<span class="text-radio">Outgoing</span>
+									<input id="sender-any" value="any" type="radio" name="sender" checked>
+									<span class="text-radio">Any one</span>
 								</label>
-
+<%--
 								<label class="radio-inline">
 									<input id="direction-either" value="either" type="radio" name="direction" checked>
 									<span class="text-radio">Either</span>
-								</label>
+								</label>--%>
 							</fieldset>
 						</div>
 					</div>
@@ -799,7 +799,7 @@
 
 			$('input[name="correspondentTo"], input[name="correspondentFrom"], input[name="correspondentCc"], input[name="correspondentBcc"]').prop('checked', true);
 			$('#termSubject, #termBody, #termOriginalBody, #termAttachments').prop('checked', true);
-			$('#doNotTransfer-either, #reviewed-either, #transferWithRestrictions-either, #direction-either, #mailingListState-either').prop ('checked', true);
+			$('#doNotTransfer-either, #reviewed-either, #transferWithRestrictions-either, #sender-any, #mailingListState-either').prop ('checked', true);
 			// TODO: reset the other fields also, esp. the select picker
 			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy,#entityType').prop ('selectedIndex', 0);
 			$('#attachmentType').prop ('selectedIndex', -1); // 0 for this one is not ok

@@ -65,6 +65,10 @@ public class Lexicon implements Serializable {
 	public Lexicon1Lang getLexiconForLanguage(String language){
 		return languageToLexicon.get(language);
 	}
+	//return the language of this lexicon. We will always have only one language per lexicon file.
+	public String getLexiconLanguage(){
+		return languageToLexicon.keySet().iterator().next();
+	}
 	/** inner class that stores lexicon for 1 language */
 
 	public class Lexicon1Lang implements Serializable {
@@ -381,7 +385,9 @@ public class Lexicon implements Serializable {
 		L1_Summary_category_count.clear();
 	//call searchresult from here...
 		List<Document> docs = archive.indexer.docs;
-		Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
+
+		//Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs); INSTEAD of getting only relevant lexicons get all because for now we are not using the language layer.
+		Collection<Lexicon1Lang> lexicons = languageToLexicon.values();
 
 		// aggregate results for each lang into result
 
@@ -429,7 +435,8 @@ public class Lexicon implements Serializable {
 	 * @param captions (null/none = all) */
 	public Map<String, Collection<Document>> getEmotions (Indexer indexer, Collection<Document> docs, boolean doNota, boolean originalContentOnly, String... captions)
 	{	
-		Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs);
+		//Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs); For now just get all language lexicons because we are not using the language layer.
+		Collection<Lexicon1Lang> lexicons = languageToLexicon.values();
 		Map<String, Collection<Document>> result = new LinkedHashMap<>();
 		Set<Document> docs_set = Util.castOrCloneAsSet(docs);
 		// aggregate results for each lang into result

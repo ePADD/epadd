@@ -309,7 +309,8 @@ public class ArchiveReaderWriter{
         }
 
         if(mode== Archive.Save_Archive_Mode.INCREMENTAL_UPDATE){
-            archive.updateFileInBag(filename,archive.baseDir);
+            //archive object doesn't get modified so no point in saving it for incremental one.
+            //archive.updateFileInBag(filename,archive.baseDir);
         }
         //Now write modular transient fields to separate files-
         //By Dec 2017 there are three transient fields which will be saved and loaded separately
@@ -318,7 +319,8 @@ public class ArchiveReaderWriter{
         //3. CorrespondentAuthorityMapper
         //Before final release of v5 in Feb 2018, modularize annotation out of archive.
         /////////////////AddressBook Writing -- In human readable form ///////////////////////////////////
-        saveAddressBook(archive,mode);
+        if(mode!= Archive.Save_Archive_Mode.INCREMENTAL_UPDATE)
+            saveAddressBook(archive,mode); //no need to save addressbook while saving an archive in incrremental mode because address book is saved after every explicit modification.
         ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
         saveEntityBookManager(archive,mode);
         ///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////

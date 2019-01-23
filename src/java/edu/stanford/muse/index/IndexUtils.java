@@ -634,8 +634,8 @@ public class IndexUtils {
 	private static Map<String, DetailedFacetItem> partitionDocsByDirection(Collection<? extends Document> docs, AddressBook ab)
 	{
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
-		DetailedFacetItem f_in = new DetailedFacetItem("Received", "Incoming messages", "direction", "in");
-		DetailedFacetItem f_out = new DetailedFacetItem("Sent", "Outgoing messages", "direction", "out");
+		DetailedFacetItem f_owner = new DetailedFacetItem("Owner", "Incoming messages from the owner", "sender", "owner");
+		//DetailedFacetItem f_out = new DetailedFacetItem("From any", "Incoming messages from anyone", "sender", "any");
 
 		for (Document d : docs)
 		{
@@ -645,17 +645,17 @@ public class IndexUtils {
 			int sent_or_received = ed.sentOrReceived(ab);
 
 			// if sent_or_received = 0 => neither received nor sent. so it must be implicitly received.
-			if (sent_or_received == 0 || (sent_or_received & EmailDocument.RECEIVED_MASK) != 0)
-				f_in.addDoc(ed);
-			if ((sent_or_received & EmailDocument.SENT_MASK) != 0)
-				f_out.addDoc(ed);
+			//if (sent_or_received == 0 || (sent_or_received & EmailDocument.RECEIVED_MASK) != 0)
+			//	f_in.addDoc(ed);
+			if ((sent_or_received & EmailDocument.SENT_MASK) != 0) //means this message is sent from owner
+				f_owner.addDoc(ed);
 		}
 
-		if (f_in.totalCount() > 0)
-			result.put("in", f_in);
-		if (f_out.totalCount() > 0)
-			result.put("out", f_out);
-
+		if (f_owner.totalCount() > 0)
+			result.put("Owner", f_owner);
+		/*if (f_out.totalCount() > 0)
+			result.put("Messages from all", f_out);
+*/
 		return result;
 	}
 
@@ -841,10 +841,10 @@ public class IndexUtils {
 			Map<Contact, DetailedFacetItem> peopleMap = partitionDocsByPerson(docs, addressBook);
 			facetMap.put("correspondent", peopleMap.values());
 
-			// direction
+			// direction (sender: only one if anything with owner)
 			Map<String, DetailedFacetItem> directionMap = partitionDocsByDirection(docs, addressBook);
-			if  (directionMap.size() > 1)
-				facetMap.put("direction", directionMap.values());
+			if  (directionMap.size() > 0) //this size can at max be 1 when there is at least one message sent from the owner
+				facetMap.put("sender", directionMap.values());
 
 			/*
 			--No longer need this code as restriction, reviewed etc. are handled by labels--

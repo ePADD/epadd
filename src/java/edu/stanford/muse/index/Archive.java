@@ -1841,7 +1841,10 @@ after maskEmailDomain.
         for (String lexiconname: lexiconMap.keySet()) {
             Lexicon lexicon = lexiconMap.get(lexiconname);
             JSONArray result = new JSONArray();
-            Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage("english");
+            //what if the lexicon is not of english?? We assume that in one lexicon file there should be only one language.
+            //So instead of relying on english
+            Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage(lexicon.getLexiconLanguage());
+
             int numcategories = lex.captionToExpandedQuery.keySet().size();
 
             result.put (0, lexiconname);
@@ -2241,7 +2244,8 @@ after maskEmailDomain.
                     continue nextBlob;
                 }
                 try {
-                    String blobName = blobStore.get_URL_Normalized(blob);;
+                    //String blobName = blobStore.get_URL_Normalized(blob);;
+                    String blobName= blobStore.full_filename_normalized(blob,true);
                     // get rid of any file separators first... don't want them to cause any confusion
                     if (blobName == null)
                         blobName = "";

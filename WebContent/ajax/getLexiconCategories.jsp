@@ -32,7 +32,7 @@
 	JSPHelper.log.info ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
 
 	// now lexiconName and lex are both set correctly.
-	Collection<String> categories = lex.getRawMapFor("english").keySet();
+	Collection<String> categories = lex.getRawMapFor(lex.getLexiconLanguage()).keySet();
 
 	result.put("status", 0);
 	result.put ("categories", categories);

@@ -252,7 +252,7 @@ try{
          line.add ("Correspondent");
          line.add ("Number_of_messages_sent");
          line.add ("Number_of_messages_received");
-         line.add ("Number_of_messages_mentioned");
+         line.add ("Number_of_messages_received_from_owner");
          line.add ("Start_Date");
          line.add ("End_Date");
 
