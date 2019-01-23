@@ -23,24 +23,36 @@
     String[] trustedaddrs = trustedaddrstring.split(";");
     Set<String> trustedaddrset=new LinkedHashSet<>();
     Arrays.stream(trustedaddrs).forEach(s->trustedaddrset.add(s));
-
+    //read outgoing offset count.
+    String outthreshold = request.getParameter("outoffset");
+    int outthresholdcount = Integer.parseInt(outthreshold);
+    String result = "";
+    if(outthresholdcount==-1){
+        outthresholdcount=archive.getAllDocsAsSet().size()+1;//to denote 'infinity'
+        result = trustedaddrstring;//no new trusted address gets added because the outcount is set as infinity
+    }else{
     //inovke recomputeaddressbook method of class EmailDocument.java
-    AddressBook newaddressbook = EmailDocument.recomputeAddressBook(archive,trustedaddrset);
-    if(newaddressbook==null){
+    Set<String> trustedAddresses = EmailDocument.computeMoreTrustedAddresses(archive,trustedaddrset,outthresholdcount);
+    if(trustedAddresses==null)
+        result="";
+    else
+        result = String.join(";",trustedAddresses);
+    }
+    if(Util.nullOrEmpty(result) ){
         obj.put("status", 1);
         obj.put("error", "Unable to recompute the addressbook!");
         out.println (obj);
         JSPHelper.log.info(obj);
     }else{
-        //set this as current addressbook.,
-        archive.setAddressBook(newaddressbook);
-        archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
-        ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-        ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+//        archive.setAddressBook(newaddressbook);
+  //      archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
+    //    ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+      //  ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 
         //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
         obj.put("status", 0);
-        obj.put("message","Addressbook reconstructed successfully!");
+        obj.put("result",result);
+        obj.put("message","Trusted addresses computed successfully!");
         out.println (obj);
         JSPHelper.log.info(obj);
 
