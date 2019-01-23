@@ -9,18 +9,77 @@
 <%@page language="java" import="edu.stanford.muse.exceptions.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" %><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%>
+<%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="java.util.function.Function"%><%@ page import="java.util.function.Consumer"%>
 <%
-	// core JSP that does fetch, grouping and indexing
+
+{
+    //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
+    //get the operation ID from the request parameter.
+    String encoding = request.getCharacterEncoding();
+    JSPHelper.log.info("request parameter encoding is " + encoding);
+
+    String actionName = request.getRequestURI();
+    String opID = request.getParameter("opID");
+    Multimap<String,String> paramMap = JSPHelper.convertRequestToMap(request);
+    //create a new operation object with the information necessary to run this long running async task.
+    final HttpSession fsession = session;
+    OperationInfo opinfo = new OperationInfo(actionName,opID,paramMap) {
+        @Override
+        public void onStart(JSONObject resultJSON) {
+            //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
+            //operationinfo object
+            Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
+            doFetchAndIndex(this.getParametersMap(),setStatusProvider,fsession,resultJSON);
+        }@Override
+        public void onCancel() {
+            //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
+            //operationinfo object
+            Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
+            cancelFetchAndIndex(setStatusProvider);
+        }
+    };
+
+    //</editor-fold>
+
+    //<editor-fold desc="Store this operation in global map so that others can access this operation">
+    /*Map<String,OperationInfo> operationInfoMap = (Map<String,OperationInfo>) session.getAttribute("operationInfoMap");
+    if(operationInfoMap==null)
+        operationInfoMap = new LinkedHashMap<>();
+    operationInfoMap.put(opID,opinfo);*/
+    JSPHelper.setOperationInfo(session,opID,opinfo);
+    //</editor-fold>
+
+    //<editor-fold desc="Starting the operation">
+    opinfo.run();
+    //when canelling this operation, from cancel.jsp call opinfo.cancel() method.
+    //when getting the status of this operation, call opinfo.getStatusProvider().getStatus() method.
+    //</editor-fold>
+    //just send an empty response telling that the operation has been started.
+    JSONObject obj = new JSONObject();
+    out.println(obj);
+}
+%>
+
+
+<%!
+/**
+* Method that we want to execute asynchronously with progress display in the front end.
+* paramsMap is the parameters passed to this ajax from the front end
+* setStatusProvider is the method that will be called whenever a new logical operation starts and it's corresponding statusprovider
+* need to be set in the operation info object.
+*/
+public void doFetchAndIndex(Multimap<String,String> paramsMap, Consumer<StatusProvider> setStatusProvider,HttpSession session,JSONObject resultJSON){
+// core JSP that does fetch, grouping and indexing
 	// sets up archive in the session at the end
 
-	session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
+	//---session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
+	setStatusProvider.accept(new StaticStatusProvider("Starting up..."));
+
 	boolean cancelled = false;
-	JSONObject result = new JSONObject();
 	String errorMessage = null;
 	String resultPage = null;
 	// simple flow means we're running off the login page and that we'll just use sent folders
-	boolean simpleFlow = request.getParameter("simple") != null;
+	boolean simpleFlow = JSPHelper.getParam(paramsMap,"simple") != null;
 	MuseEmailFetcher m = (MuseEmailFetcher) JSPHelper.getSessionAttribute(session, "museEmailFetcher");
 	// m can't be null here, the stores should already have been set up inside it
 
@@ -32,20 +91,20 @@
         	archive = SimpleSessions.prepareAndLoadArchive(m, request);
 		}*/
 
-	    Archive archive = ArchiveReaderWriter.prepareAndLoadArchive(m, request);
+	    Archive archive = ArchiveReaderWriter.prepareAndLoadArchive(m, paramsMap);
 		// get archive id for this archive from archive mapper..
 
         String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
-		// step 1: fetch		
+		// step 1: fetch
 		Collection<EmailDocument> emailDocs = null;
 
 		// note: folder=<server>^-^<sent folder> is already in the request
-		String str = request.getParameter("downloadAttachments");
+		String str = JSPHelper.getParam(paramsMap,"downloadAttachments");
 		// a little confusing here... some frontends omit downloadAttachments and some frontends send downloadAttachments=false
 		boolean downloadAttachments = !(str == null || "false".equals(str));
-		
-		
+
+
 		// now fetch and index... can take a while
 		// we'll index messages even in slant mode... not strictly needed, but does not hurt.
 		// rewrite for efficiency if slant becomes important.
@@ -61,24 +120,26 @@
         for (EmailStore store : m.emailStores)
             if (!(Util.nullOrEmpty(store.emailAddress)))
                 archive.addOwnerEmailAddr(store.emailAddress);
-		// the emailStores session var has done its job (check login info and hold on to stores till MEF can take over) and can be removed		
+		// the emailStores session var has done its job (check login info and hold on to stores till MEF can take over) and can be removed
     	session.removeAttribute("museEmailFetcher");
 
 
 		// this is a special flag used during screening time to read only headers without the message bodies
-		boolean downloadMessageText = !"false".equals(request.getParameter("downloadMessages"));
+		boolean downloadMessageText = !"false".equals(JSPHelper.getParam(paramsMap,"downloadMessages"));
 
-        JSPHelper.fetchAndIndexEmails(archive, m, request, session, downloadMessageText, downloadAttachments, simpleFlow); // download message text, maybe attachments, use default folders
+        JSPHelper.fetchAndIndexEmails(archive, m, paramsMap, session, downloadMessageText, downloadAttachments, simpleFlow,setStatusProvider); // download message text, maybe attachments, use default folders
 		archive.postProcess();
 
 //assign threadids'
-            archive.assignThreadIds();
+        archive.assignThreadIds();
 
 		emailDocs = (List) archive.getAllDocs();
 		AddressBook addressBook = archive.getAddressBook();
 		//Set<String> ownNames = IndexUtils.readCanonicalOwnNames(addressBook); // TODO: to be executed somewhere? used to be passed to doIndexing which in turn passed it to recomputeCards.
 
         //add labels to messages which encountered errors during addressbook building.
+        setStatusProvider.accept(new StaticStatusProvider("Assigning system labels to messages..."));
+
         Multimap<String,String> dataErrorsMap = addressBook.getDataErrorsMap();
         for(Map.Entry<String,String> entry: dataErrorsMap.entries()){
             Set<String> labels = new LinkedHashSet<>();
@@ -95,13 +156,17 @@
 				            String dir = archive.baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
 
 				            String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
-JSPHelper.log.info("Archive created- Now saving it!!");
-				            				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
-JSPHelper.log.info("Archive saved");
+        JSPHelper.log.info("Archive created- Now saving it!!");
+        setStatusProvider.accept(new StaticStatusProvider("Saving Archive..."));
 
-JSPHelper.log.info("Creating entitybooks by reading lucene index.");
+				            				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
+        JSPHelper.log.info("Archive saved");
+
+        JSPHelper.log.info("Creating entitybooks by reading lucene index.");
+        setStatusProvider.accept(new StaticStatusProvider("Finishing soon..."));
+
 				EntityBookManager entityBookManager = EntityBookManager.readObjectFromFiles(archive,entityBookPath);//this one ensures that we have entitybookmanager filled
-JSPHelper.log.info("Entitybooks created successfully");
+        JSPHelper.log.info("Entitybooks created successfully");
 				archive.setEntityBookManager(entityBookManager);
 				ArchiveReaderWriter.saveEntityBookManager(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
 				JSPHelper.log.info("Entitybooks saved successfully (first time)");
@@ -142,23 +207,35 @@ JSPHelper.log.info("Entitybooks created successfully");
 	}
 
 	if (cancelled) {
-		result.put("status", 0);
-		result.put("cancelled", true);
-						result.put("responseText", "Operation cancelled by the user");
-
+		resultJSON.put("status", 0);
+		resultJSON.put("cancelled", true);
+		resultJSON.put("responseText", "Operation cancelled by the user");
+		setStatusProvider.accept(new StaticStatusProvider("Operation cancelled by the user"));
 	} else if (errorMessage == null) {
-		result.put("status", 0);
-		result.put("resultPage", resultPage);
-						result.put("responseText", "Indexed successfully");
-
+		resultJSON.put("status", 0);
+		resultJSON.put("resultPage", resultPage);
+		resultJSON.put("responseText", "Indexed successfully");
+		setStatusProvider.accept(new StaticStatusProvider("Indexed successfully"));
 	} else {
-		result.put("status", 1);
-		result.put("resultPage", "error");
-		result.put("error", errorMessage);
-				result.put("responseText", errorMessage);
-
+		resultJSON.put("status", 1);
+		resultJSON.put("resultPage", "error");
+		resultJSON.put("error", errorMessage);
+		resultJSON.put("responseText", errorMessage);
+		setStatusProvider.accept(new StaticStatusProvider(errorMessage));
 	}
-	out.println(result);
+	//out.println(result);
 	// resultPage is set up to where we want to go next
-	session.removeAttribute("statusProvider");
+	//session.removeAttribute("statusProvider");
+}
 %>
+
+
+<%!
+/**
+* Method that we want to execute when this operation is cancelled by the front end.
+*/
+public void cancelFetchAndIndex(Consumer<StatusProvider> setStatusProvider){
+
+}
+%>
+

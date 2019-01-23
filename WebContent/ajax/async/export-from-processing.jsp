@@ -7,24 +7,69 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.List" %>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %><%@ page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="edu.stanford.muse.index.Archive"%>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %><%@ page import="org.json.JSONObject"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="edu.stanford.muse.index.Archive"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="java.util.function.Consumer"%><%@ page import="java.io.IOException"%>
 
 <%
-if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
- 		  session.removeAttribute("statusProvider");
-Archive archive = JSPHelper.getArchive(request);
+String actionName = request.getRequestURI();
+    String opID = request.getParameter("opID");
+    Multimap<String,String> paramMap = JSPHelper.convertRequestToMap(request);
+    //create a new operation object with the information necessary to run this long running async task.
+    final HttpSession fsession = session;
+    OperationInfo opinfo = new OperationInfo(actionName,opID,paramMap) {
+        @Override
+        public void onStart(JSONObject resultJSON) {
+            //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
+            //operationinfo object
+            Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
+            exportFromProcessing(this.getParametersMap(),setStatusProvider,fsession,resultJSON);
+        }@Override
+        public void onCancel() {
+            //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
+            //operationinfo object
+            Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
+            cancelExportFromProcessing(setStatusProvider);
+        }
+    };
 
-JSONObject result= new JSONObject();
+    //</editor-fold>
+
+    //<editor-fold desc="Store this operation in global map so that others can access this operation">
+    /*Map<String,OperationInfo> operationInfoMap = (Map<String,OperationInfo>) session.getAttribute("operationInfoMap");
+    if(operationInfoMap==null)
+        operationInfoMap = new LinkedHashMap<>();
+    operationInfoMap.put(opID,opinfo);*/
+    JSPHelper.setOperationInfo(session,opID,opinfo);
+    //</editor-fold>
+
+    //<editor-fold desc="Starting the operation">
+    opinfo.run();
+    //when canelling this operation, from cancel.jsp call opinfo.cancel() method.
+    //when getting the status of this operation, call opinfo.getStatusProvider().getStatus() method.
+    //</editor-fold>
+    //just send an empty response telling that the operation has been started.
+    JSONObject obj = new JSONObject();
+    out.println(obj);
+
+    %>
+
+<%! public void exportFromProcessing(Multimap<String,String>params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultObject){
+
+
+
+//if (JSPHelper.getSessionAttribute(session, "statusProvider") != null)
+// 		  session.removeAttribute("statusProvider");
+Archive archive = JSPHelper.getArchive(params);
+
 	 if (archive == null) {
-        result.put("error", "No archive in session");
-        result.put("status", 1);
-        out.println (result);
-        JSPHelper.log.info(result);
+        resultObject.put("error", "No archive in session");
+        resultObject.put("status", 1);
+        //out.println (result);
+        JSPHelper.log.info(resultObject);
         return;
     }
     AddressBook addressBook = archive.addressBook;
 	String bestName = addressBook.getBestNameForSelf().trim();
-	String rawDir = request.getParameter("dir");
+	String rawDir = JSPHelper.getParam(params,"dir");
 	String dir = new File(rawDir).getAbsolutePath();
 	 String error="";
 
@@ -35,7 +80,15 @@ JSONObject result= new JSONObject();
 
 
 	//JSPHelper.log.info("Saving archive in " + archive.baseDir);
-	ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+	try {
+        ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+	} catch (IOException e) {
+        e.printStackTrace();
+         resultObject.put("status", 1);
+         resultObject.put ("error", error);
+         resultObject.put("responseText", "Error in saving archive.");
+         return;
+    }
 
 	String folder = dir + File.separator + "ePADD archive of " + bestName + "-Delivery";
 	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
@@ -69,12 +122,16 @@ JSONObject result= new JSONObject();
 	// archive.collectionMetadata.entityCounts = null;
 	archive.collectionMetadata.numPotentiallySensitiveMessages = -1;
 	try {
-		archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default",session);
+		archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default",setStatusProvider);
 //		//remove fordelivery archive from the global map
 //		SimpleSessions.removeFromGlobalArchiveMap(folder,fordelivery);
 	} catch (Exception e) {
 		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
 			error = "Sorry, error exporting archive: " + e + ". Please see the log file for more details.";
+			resultObject.put("status", 1);
+            resultObject.put ("error", error);
+            resultObject.put("responseText", error);
+            return;
 	}
 
 
@@ -96,7 +153,16 @@ JSONObject result= new JSONObject();
 		JSPHelper.log.warn(e);
 	}
 	*/
-	archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default",session);
+	try {
+        archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default",setStatusProvider);
+    }catch (Exception e) {
+		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
+			error = "Sorry, error exporting archive: " + e + ". Please see the log file for more details.";
+			resultObject.put("status", 1);
+            resultObject.put ("error", error);
+            resultObject.put("responseText", error);
+            return;
+	}
 // Now remember to reload the archive from baseDir, because we've destroyed the archive in memory
 		//after export make sure to load the archive again. However, readArchiveIfPresent will not read from
 		//memroy if the archive and it's ID is already present in gloablArchiveMap (in SimpleSession).
@@ -109,15 +175,15 @@ JSONObject result= new JSONObject();
 		ArchiveReaderWriter.readArchiveIfPresent(baseDir);
         }
         if (!Util.nullOrEmpty(error)){
-                    result.put("status", 1);
-                    result.put ("error", error);
-                                            result.put("responseText", "Error in exporting archive.");
+                    resultObject.put("status", 1);
+                    resultObject.put ("error", error);
+                                            resultObject.put("responseText", "Error in exporting archive.");
                 } else {
-                    result.put ("status", 0);
-                                result.put("responseText", "Operation successful..");
+                    resultObject.put ("status", 0);
+                                resultObject.put("responseText", "Operation successful..");
             }
-            out.println (result.toString(4));
-        session.removeAttribute("statusProvider");
+            //out.println (result.toString(4));
+        //session.removeAttribute("statusProvider");
 
 	/*archive.setBaseDir(baseDir);
 	session.setAttribute("archive", archive);
@@ -127,5 +193,10 @@ JSONObject result= new JSONObject();
 //	archive.collectionMetadata.entityCounts = ec;
 
 //authority records are exported to authority.csv in delivery mode
+}
+%>
 
+<%! public void cancelExportFromProcessing(Consumer<StatusProvider> setStatusProvider){
+
+}
 %>

@@ -110,7 +110,7 @@
     $(document).ready(function() {
       $('.archive-card').click(function(e) {
         var dir = $(e.target).closest('.archive-card').attr('data-dir');
-        window.location = 'collection-detail?collection=' + escape(dir); // worried about single quotes in dir
+        window.location = 'collection-detail?collection=' + encodeURIComponent(dir); // worried about single quotes in dir
       });
 
       <% if (ModeConfig.isProcessingMode()) { %>

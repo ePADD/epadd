@@ -596,7 +596,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <script>
                     // handlers for message-menu icons
 //                    $('a.id-link').click(function() { epadd.show_info_modal ('Link to this message', $(this).attr('data-href')); });
-                    $('a.id-link').click(function() { epadd.info ('<b>Message ID</b>: <br/>' + window.messageMetadata[PAGE_ON_SCREEN].id + "<br/><br/><b>Link</b>:<br/>" + $(this).attr('data-href')); });
+                    $('a.id-link').click(function() { epadd.info ('<b>Message ID</b>: <br/>' + window.messageMetadata[PAGE_ON_SCREEN].id +
+                        "<br/><br/><b>Link</b>:<br/><input type=\"text\" id=\"linkbox\" value= "+ $(this).attr('data-href')+" style=\"width:100%;\">" + " <button onclick="+ "\"var d = document.getElementById('linkbox');d.select();document.execCommand('copy');alert('Link copied: '+d.value);\"> Copy Link </button>"); });
                     $("a.attach-link").click(function() {
                         // scroll down to attachments area of message if attach-link is clicked
                         // https://stackoverflow.com/questions/6677035/jquery-scroll-to-element

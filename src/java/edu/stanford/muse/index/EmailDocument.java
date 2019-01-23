@@ -17,6 +17,8 @@
 package edu.stanford.muse.index;
 
 
+import com.google.common.collect.LinkedHashMultimap;
+import edu.stanford.muse.AddressBookManager.MailingList;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
@@ -819,6 +821,32 @@ public class EmailDocument extends DatedDocument implements Serializable
 
 	}
 
+	/*
+	This method computes a set of trusted addresses given a set of initial trusted addresses and an outgoing threshold. The logic is that if trusted addresses sent
+	more than 'threshold' number of mails to an address then that address is also a potentially trusted address.
+	 */
+	public static Set<String> computeMoreTrustedAddresses(Archive archive, Set<String> trustedAddress, int outgoingThreshold){
+		//find all messages where trustedAddress is one of the sender
+		String combinedStr = String.join(";",trustedAddress);
+		SearchResult inputSet = new SearchResult(archive, LinkedHashMultimap.create());
+		//use searchresult interface for this set.
+		SearchResult result = SearchResult.filterForCorrespondents(inputSet,combinedStr,false,true,false,false);//search for all the messages where one of
+		//the trusted addresses is a sender.
+
+		//now collect contacts (receives - to) from result set and if a contact appears in more than outgoingThreshold number of messages then that becomes trusted address as well.
+		Map<String,Integer> emailAddressToCount = new LinkedHashMap<>();
+		result.getDocumentSet().forEach(document -> {
+			EmailDocument edoc = (EmailDocument)document;
+			List<String> toemails = Arrays.stream(edoc.to).map(address -> {
+				InternetAddress ia = (InternetAddress)address;
+				return ia.getAddress();
+			}).collect(Collectors.toList());
+			toemails.forEach(email-> emailAddressToCount.put(email,emailAddressToCount.getOrDefault(email,0)+1));
+		});
+		//now search emailAddressToCount map to return those addresses which have count greater than threshold.
+		Set<String> res = emailAddressToCount.entrySet().stream().filter(stringIntegerEntry -> {return (stringIntegerEntry.getValue()>outgoingThreshold);}).map(stringIntegerEntry -> stringIntegerEntry.getKey()).collect(Collectors.toSet());
+		return res;
+	}
 	/**
 	 * This method recomputes addressbook based on a set of trusted email addresses. Initially (when importing an archive) only the owner's
 	 * 	email id (provided at the time of import) is taken as the trusted email addresses. See {@link #buildAddressBook(Collection, Collection, Collection)}
@@ -847,5 +875,40 @@ public class EmailDocument extends DatedDocument implements Serializable
 		return newAddressBook;
 
 
+	}
+
+	/*
+    This method combines the contacts corresponding to the passed email addresses and set the resultant contact as owner.
+     */
+	public static void setOwners(Archive archive, Set<String> emailAddresses){
+		AddressBook ab = archive.getAddressBook();
+		//get contacts for these email addresses.
+		Set<Contact> ofInterest = emailAddresses.stream().map(emailAddress->ab.lookupByEmail(emailAddress)).collect(Collectors.toSet());
+		if(ofInterest.size()==1){
+			//if single element in the set ofInterest then simply set it as owner and recompute summary
+			Contact newowner = ofInterest.iterator().next();
+			ab.setContactForSelf(newowner);
+			ab.fillL1_SummaryObject(archive.getAllDocs());
+		}else {
+			//if multiple elements in the set ofInterest then
+			//combine them to create a new contact.
+			Contact newone = new Contact();
+			//MailingList ml=null;
+			ofInterest.forEach(contact->{
+				newone.merge(contact);
+				//if(ml==null && ab.mailingListMap.containsKey(contact))
+				//	ml = ab.mailingListMap.get(contact);
+			});
+			//set it as ML if any of the contact is ML.-- NOT DONE
+			//add contact to contactListForIds
+			ab.contactListForIds.add(newone);
+			//remove all these contacts (obtained from the input email addresses)
+			ab.removeContacts(ofInterest);
+			//set the newly create contact as owner.
+			ab.setContactForSelf(newone);
+			//recompute L1 summary,not needed now. Just make sure that the caller is invoking it after completion of this method.
+			//just to avoid unnecessary duplication of this call.
+			//ab.fillL1_SummaryObject(archive.getAllDocs());
+		}
 	}
 }

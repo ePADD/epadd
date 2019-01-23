@@ -1,5 +1,6 @@
 package edu.stanford.muse.index;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -308,7 +309,8 @@ public class ArchiveReaderWriter{
         }
 
         if(mode== Archive.Save_Archive_Mode.INCREMENTAL_UPDATE){
-            archive.updateFileInBag(filename,archive.baseDir);
+            //archive object doesn't get modified so no point in saving it for incremental one.
+            //archive.updateFileInBag(filename,archive.baseDir);
         }
         //Now write modular transient fields to separate files-
         //By Dec 2017 there are three transient fields which will be saved and loaded separately
@@ -317,7 +319,8 @@ public class ArchiveReaderWriter{
         //3. CorrespondentAuthorityMapper
         //Before final release of v5 in Feb 2018, modularize annotation out of archive.
         /////////////////AddressBook Writing -- In human readable form ///////////////////////////////////
-        saveAddressBook(archive,mode);
+        if(mode!= Archive.Save_Archive_Mode.INCREMENTAL_UPDATE)
+            saveAddressBook(archive,mode); //no need to save addressbook while saving an archive in incrremental mode because address book is saved after every explicit modification.
         ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
         saveEntityBookManager(archive,mode);
         ///////////////CAuthorityMapper Writing-- Serialized///////////////////////////////
@@ -824,7 +827,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
         return archive;
     }
 
-    public static Archive prepareAndLoadArchive(MuseEmailFetcher m, HttpServletRequest request) throws IOException
+    public static Archive prepareAndLoadArchive(MuseEmailFetcher m, Multimap<String,String> paramsMap) throws IOException
     {
 
         // here's where we create a fresh archive
@@ -848,7 +851,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
             JSPHelper.log.info("Good, existing archive found");
         } else {
             JSPHelper.log.info("Creating a new archive in " + archiveDir);
-            archive = JSPHelper.preparedArchive(request, archiveDir, new ArrayList<>());
+            archive = JSPHelper.preparedArchive(paramsMap, archiveDir, new ArrayList<>());
             //by this time the archive is created
             // add this to global maps archiveID->archive, archive->archiveID
             addToGlobalArchiveMap(archiveDir,archive);

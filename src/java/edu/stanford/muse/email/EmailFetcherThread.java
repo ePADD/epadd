@@ -25,7 +25,9 @@ import edu.stanford.muse.util.JSONUtils;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.HTMLUtils;
 import groovy.lang.Tuple2;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -477,7 +479,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
         }
 
         if (p.isMimeType("text/plain")) {
-            String encoding = FORCED_ENCODING;
+            String encoding = "quoted-printable";
+            String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
             Enumeration headers = p.getAllHeaders();
             boolean dirty = false;
@@ -486,7 +489,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     Header h = (Header) headers.nextElement();
                     String name = h.getName();
                     String value = h.getValue();
-                    if (name != null && value != null) {
+                    if (h.getName().equals("Content-Type")) {
+                        charset = h.getValue().substring(h.getValue().indexOf("=") + 1);
+                        charset = charset.substring(1, charset.length() - 1).toLowerCase();
+                    } else if (h.getName().toLowerCase().equals("content-encoding") || h.getName().toLowerCase().equals("content-transfer-encoding")) {
+                        encoding = h.getValue().toLowerCase();
+                    }
+                    /*if (name != null && value != null) {
                         if (name.equals("Content-transfer-encoding") && value.equals("base64")) {
                             dirty = true;
                             break;
@@ -494,7 +503,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         if(name.equals("Content-Encoding") && value.equals("base64")){
                             encoding = "base64";//what about the behaviour of dirty field @TODO
                         }
-                    }
+                    }*/
                 }
             String fname = p.getFileName();
             if (fname != null) {
@@ -524,16 +533,30 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     content = new String(b, FORCED_ENCODING);
                 } else
                     content = (String) p.getContent();*/
-                if (encoding.equals("UTF-8")) {
+                //Cases: encoding              charset [ For now always assume utf-8 charset but it can be different]
+                ///1      quoted-printable
+                ///2      base64
+                if (encoding.toLowerCase().equals("quoted-printable")) {
                     byte b[] = Util.getBytesFromStream(p.getInputStream());
-                    content = new String(b, FORCED_ENCODING);
-                } else { //if(encoding.equals("base64"))
+                    try {
+                        b = QuotedPrintableCodec.decodeQuotedPrintable(b);
+                    } catch (DecoderException e) {
+                        e.printStackTrace();
+                        log.error("Unable to decode quoted printable encoded message");
+                        return list;
+                    }
+                    content = new String(b, charset);
+                } else if(encoding.equals("base64")){
                     //Encoding is base64 so perform proper decoding.
                     //get the content
                     byte b[] = Util.getBytesFromStream(p.getInputStream());
                     //decode it.
                     byte decoded[] = Base64.decodeBase64(b);
                     content = new String(decoded);
+                }else{
+                    //Encoding is something else (maybe "binary") just read it in the conent without decoding.
+                    byte b[] = Util.getBytesFromStream(p.getInputStream());
+                    content = new String(b);
                 }
             } catch (UnsupportedEncodingException uee) {
                 dataErrors.add("Unsupported encoding: " + folder_name() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
@@ -601,7 +624,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     // process it like a regular multipart
                     for (int i = 0; i < allParts.getCount(); i++) {
                         BodyPart bp = allParts.getBodyPart(i);
-                        list.addAll(processMessagePart(ed,messageNum, m, bp, attachmentsList));
+                        list.addAll(processMessagePart(ed, messageNum, m, bp, attachmentsList));
                     }
                 }
             } else if (o instanceof Part)

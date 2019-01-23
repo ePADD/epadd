@@ -127,7 +127,7 @@
 		<div title="Download correspondents" class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
 	</div>
 <table id="people" style="display:none">
-	<thead><tr><th>Name</th><th>Total sent messages</th><th>Incoming messages from owner</th><th>Outgoing messages to owner</th><th>Mentions</th></tr></thead>
+	<thead><tr><th>Name</th><th>Sent messages</th><th>Received messages</th><th>Received from owner</th></tr></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -144,14 +144,14 @@
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
-			return '<a target="_blank" title="' + full[6] + '" href="' + full[5] + '">' + data + '</a>'; // full[5] has the URL, full[6] has the title tooltip
+			return '<a target="_blank" title="' + full[5] + '" href="' + full[4] + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
 		$('#people').dataTable({
 			data: correspondents,
 			pagingType: 'simple',
-			order:[[1, 'desc']], // col 2 (total message count), descending
-			columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 1,2,3,4 ] },{width: "50%", targets: 0},{targets: 0, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
+			order:[[1, 'desc']], // col 2 (sent message count), descending
+			columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 1,2,3 ] },{width: "50%", targets: 0},{targets: 0, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
 			fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
 		});
 	} );

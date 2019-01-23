@@ -35,6 +35,8 @@
                     }else{
                     //set as current archive's addressbook
                     archive.setAddressBook(ab);
+                    //incremental saving of addressbook
+                    ArchiveReaderWriter.saveAddressBook(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
                     //now reinitialize the cache for correspondent summary: NO need now as it happens inside readAddressBook method.
                     //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
                     }

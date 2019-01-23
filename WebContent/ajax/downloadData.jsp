@@ -1,27 +1,95 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<% 
-	String query = request.getParameter("data");
-	JSONObject result= new JSONObject();
-	Archive archive = JSPHelper.getArchive(request);
+<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="java.util.function.Consumer"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%>
+<%
+
+//This api needs to be supported for both types of flows - long running with status bar and normal (without status bar). Theso two invocation types of this jsp will be identified
+//by the presence of operation ID (opID field) in the request. If it is being invoked as a long running operation then the front end will use fetch_page_progress_bar method to invoke it
+//which in turn will provide it with an operation ID.
+
+
+    Multimap<String,String> paramMap = JSPHelper.convertRequestToMap(request);
+     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+String opID = request.getParameter("opID");
+
+if(opID==null){
+    //invoke this as normal ajax call without using operation Info object.
+    JSONObject result = new JSONObject();
+    downloadData(paramMap,null,session,result,appURL);
+    out.println(result);
+}else{
+    //means it is being invoked as a long running operation using fetch_page_progress api in js. use OperationInfo protocol to invoke it.
+//<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
+    //get the operation ID from the request parameter.
+    String encoding = request.getCharacterEncoding();
+    JSPHelper.log.info("request parameter encoding is " + encoding);
+
+    String actionName = request.getRequestURI();
+
+    //create a new operation object with the information necessary to run this long running async task.
+    final HttpSession fsession = session;
+    OperationInfo opinfo = new OperationInfo(actionName,opID,paramMap) {
+        @Override
+        public void onStart(JSONObject resultJSON) {
+            //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
+            //operationinfo object
+            Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
+            downloadData(this.getParametersMap(),setStatusProvider,fsession,resultJSON,appURL);
+        }@Override
+        public void onCancel() {
+            //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
+            //operationinfo object
+            Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
+            cancelDownloadData(setStatusProvider);
+        }
+    };
+
+    //</editor-fold>
+
+    //<editor-fold desc="Store this operation in global map so that others can access this operation">
+    /*Map<String,OperationInfo> operationInfoMap = (Map<String,OperationInfo>) session.getAttribute("operationInfoMap");
+    if(operationInfoMap==null)
+        operationInfoMap = new LinkedHashMap<>();
+    operationInfoMap.put(opID,opinfo);*/
+    JSPHelper.setOperationInfo(session,opID,opinfo);
+    //</editor-fold>
+
+    //<editor-fold desc="Starting the operation">
+    opinfo.run();
+    //when canelling this operation, from cancel.jsp call opinfo.cancel() method.
+    //when getting the status of this operation, call opinfo.getStatusProvider().getStatus() method.
+    //</editor-fold>
+    //just send an empty response telling that the operation has been started.
+    JSONObject obj = new JSONObject();
+    out.println(obj);
+}
+
+%>
+
+
+<%!
+public void downloadData(Multimap<String,String> params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultJSON, String appURL){
+    if(setStatusProvider!=null)
+        setStatusProvider.accept(new StaticStatusProvider("Downloading data..."));
+    String query = JSPHelper.getParam(params,"data");
+	Archive archive = JSPHelper.getArchive(params);
 	 if (archive == null) {
-        result.put("error", "No archive in session");
-        result.put("status", 1);
-        out.println (result);
-        JSPHelper.log.info(result);
+        resultJSON.put("error", "No archive in session");
+        resultJSON.put("status", 1);
+        //out.println (result);
+        JSPHelper.log.info(resultJSON);
         return;
     }
 
 	query = query.toLowerCase();
 	 String error="";
 	 String downloadURL="";
-     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
 //////////////////////////////////////////////Download Lexicon///////////////////////////////////////////////////////////////////////////////
+try{
 	 if(query.equals("lexicon")){
-	    String lexiconname=request.getParameter("lexicon").toLowerCase();
+	    String lexiconname=JSPHelper.getParam(params,"lexicon").toLowerCase();
 	    String lexiconpath = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.LEXICONS_SUBDIR;
 	    File files[] = new File(lexiconpath).listFiles(new Util.MyFilenameFilter(null, Lexicon.LEXICON_SUFFIX));
 		File fname=null;
@@ -130,7 +198,7 @@
 
     }else if(query.equals("to-mbox")){
 
-        String type=request.getParameter("type");
+        String type=JSPHelper.getParam(params,"type");
         Set<Document> docset = null;
         String fnameprefix=null;
         Archive.Export_Mode mode=null;
@@ -184,7 +252,7 @@
          line.add ("Correspondent");
          line.add ("Number_of_messages_sent");
          line.add ("Number_of_messages_received");
-         line.add ("Number_of_messages_mentioned");
+         line.add ("Number_of_messages_received_from_owner");
          line.add ("Start_Date");
          line.add ("End_Date");
 
@@ -218,7 +286,7 @@
     }//////////////////////////////////////Download entity information file//////////////////////////////////////////////////////////////////////
 	else if(query.equals("entities")){
         //get entitytype
-        Short entitytype = Short.parseShort(request.getParameter("type"));
+        Short entitytype = Short.parseShort(JSPHelper.getParam(params,"type"));
         Map<Short, String> entitytypesOptions= new LinkedHashMap<>();
 
         for(NEType.Type t: NEType.Type.values())
@@ -301,16 +369,25 @@ if(entitytype==Short.MAX_VALUE){
          downloadURL = appURL + "/" +  contentURL;
 
     }
+    }catch (IOException e){
+        error="Unable to export the requested data. File IO errors. Please contact epadd@stanford.edu.";
+    }
   if (!Util.nullOrEmpty(error)){
-            result.put("status", 1);
-            result.put ("error", error);
+            resultJSON.put("status", 1);
+            resultJSON.put ("error", error);
         } else {
-            result.put ("status", 0);
-            result.put ("downloadurl", downloadURL);
-            result.put("resultPage",downloadURL);
-            result.put("responseText","Preparing file for download!");
+            resultJSON.put ("status", 0);
+            resultJSON.put ("downloadurl", downloadURL);
+            resultJSON.put("resultPage",downloadURL);//because sometime this jsp is invoked as a long running operation (using fetch_page_and_progress api in js) and this is the way to tell where to download the data from.
+            resultJSON.put("responseText","Preparing file for download!");
         }
-out.println (result.toString(4));
+//out.println (result.toString(4));
 
+}
+%>
 
+<%!
+public void cancelDownloadData(Consumer<StatusProvider> setStatusProvider){
+
+}
 %>

@@ -22,6 +22,8 @@ import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -352,27 +354,31 @@ public class SearchResult {
         return inputSet;
     }
 
+    /*
+    Filter based on if the mails are from owner or from others..
+     */
     private static SearchResult filterForEmailDirection(SearchResult inputSet) {
 
         AddressBook addressBook = inputSet.archive.addressBook;
-        String val = JSPHelper.getParam(inputSet.queryParams, "direction");
-        if ("either".equals(val) || Util.nullOrEmpty(val))
+        String val = JSPHelper.getParam(inputSet.queryParams, "sender");
+        if ("any".equals(val) || Util.nullOrEmpty(val))
             return inputSet;
 
 
-        //keep on removing those documents from inputSet which do not satisfy the filter conditions.
+        //keep on removing those documents from inputSet which are not from owner (we want to keep only those which are from the owner).
 
-        boolean direction_in = "in".equals(val), direction_out = "out".equals(val);
+        //boolean direction_in = "in".equals(val), direction_out = "out".equals(val);
 
         if (addressBook != null)
         {
             inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(entry->{
                 EmailDocument edoc = (EmailDocument) entry.getKey();
                 int sent_or_received = edoc.sentOrReceived(addressBook);
-                if (direction_in)
+                /*if (direction_in)
                     if (((sent_or_received & EmailDocument.RECEIVED_MASK) != 0) || sent_or_received == 0) // if sent_or_received == 0 => we neither directly recd. nor sent it (e.g. it could be received on a mailing list). so count it as received.
                         return true;//result.add(ed);
-                return direction_out && (sent_or_received & EmailDocument.SENT_MASK) != 0;
+*/                return
+                        (sent_or_received & EmailDocument.SENT_MASK) != 0; //add only if it was sent by the owner
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
         }
 
@@ -454,8 +460,18 @@ public class SearchResult {
 
         inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k -> {
             EmailDocument ed = (EmailDocument) k.getKey();
-            Collection<Contact> contactsInMessage = EmailUtils.getContactsForMessage(ab, ed);
-            return contactsInMessage.stream().anyMatch (searchedContacts::contains);
+            Collection<Contact> contactsOfInterest = new LinkedHashSet<>();
+            if(checkFromField && ed.from!=null) //add from addresses
+                contactsOfInterest.addAll(Arrays.stream(ed.from).map(address -> ab.lookupByAddress(address)).collect(Collectors.toList()));
+            if(checkToField && ed.to!=null) //add to address
+                contactsOfInterest.addAll(Arrays.stream(ed.to).map(address -> ab.lookupByAddress(address)).collect(Collectors.toList()));
+            if(checkCcField && ed.cc!=null) //add ccd addresses
+                contactsOfInterest.addAll(Arrays.stream(ed.cc).map(address -> ab.lookupByAddress(address)).collect(Collectors.toList()));
+            if(checkToField & ed.bcc!=null) //add bcc address
+                contactsOfInterest.addAll(Arrays.stream(ed.bcc).map(address -> ab.lookupByAddress(address)).collect(Collectors.toList()));
+
+            //Collection<Contact> contactsInMessage = EmailUtils.getContactsForMessage(ab, ed);
+            return contactsOfInterest.stream().anyMatch (searchedContacts::contains);
         }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
 
         return inputSet;
@@ -480,6 +496,45 @@ public class SearchResult {
         //now keep only those docs in inputSet which are present in resultDocs set.
         inputSet.matchedDocs.keySet().retainAll(resultDocs);
         return inputSet;
+    }
+
+    /*
+    This method is added to browse the messages related to debugAddressBook feature.
+     */
+    private static SearchResult filterForDebugAddressBookMessages(SearchResult inputSet){
+        String searchedName = JSPHelper.getParam(inputSet.queryParams,"debugAddressBookName");
+        String searchedEmail = JSPHelper.getParam (inputSet.queryParams,"debugAddressBookEmail");
+
+        if(Util.nullOrEmpty(searchedName) || Util.nullOrEmpty(searchedEmail))
+            return inputSet;
+        List<EmailDocument> docs = new ArrayList<>();
+        inputSet.matchedDocs = inputSet.matchedDocs.entrySet().stream().filter(k->{
+            EmailDocument ed = (EmailDocument)k.getKey();
+            List<Address> list = ed.getToCCBCC();
+
+            List<Address> allAddrs = new ArrayList<>();
+            if (list != null)
+                allAddrs.addAll (list);
+            if (ed.from != null)
+                Collections.addAll(allAddrs, ed.from);
+
+            for (Address a: allAddrs) {
+                InternetAddress ia = (InternetAddress) a;
+                String email = ia.getAddress();
+                email = EmailUtils.cleanEmailAddress(email);
+                String name = ia.getPersonal();
+                name = EmailUtils.cleanPersonName(name);
+                if (Util.nullOrEmpty (name) || Util.nullOrEmpty (email))
+                    continue;
+                if (name.equals (searchedName) && email.equals (searchedEmail))
+                    return true;
+            }
+            return false;
+        }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+
+        //return modified inputSet
+        return(inputSet);
+
     }
 
     /** returns only the docs matching params[uniqueId], which could have multiple uniqueIds
@@ -846,7 +901,7 @@ public class SearchResult {
         //for regex]
         //inputSet.queryParams.remove("termAttachments","on");
 
-        Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage("english");
+        Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage(lexicon.getLexiconLanguage());
         String query = lex.captionToExpandedQuery.get(category);
 
         if(!regexsearch){
@@ -1384,6 +1439,7 @@ Archive archive = inputSet.archive;
                 outResult = filterForContactId(outResult, cid);
         }
 
+        outResult = filterForDebugAddressBookMessages(outResult);
         outResult = filterForAnnotationPresence(outResult);
         outResult = filterForAnyAnnotation(outResult);
         outResult = filterForLabelsAndMultipleRestrictionLabels(outResult);

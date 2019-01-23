@@ -154,7 +154,7 @@
 					<include>ajax/jogPageIn.jsp</include>
 					<include>ajax/kill-session.jsp</include>
 					<include>ajax/leadsAsJson.jsp</include>
-					<include>ajax/loadArchive.jsp</include>
+					<include>ajax/async/loadArchive.jsp</include>
 					<include>ajax/muselog.jsp</include>
 					<include>ajax/releaseDataset.jsp</include>
                     <include>ajax/emailSourceAutoComplete.jsp</include>

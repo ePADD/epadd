@@ -81,6 +81,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1120,7 +1121,7 @@ int errortype=0;
      * @param retainedDocs
      * @throws Exception
      */
-    public synchronized String export(Collection<? extends Document> retainedDocs, Export_Mode export_mode, String out_dir, String name, HttpSession session) throws Exception {
+    public synchronized String export(Collection<? extends Document> retainedDocs, Export_Mode export_mode, String out_dir, String name, Consumer<StatusProvider> setStatusProvider) throws Exception {
         if (Util.nullOrEmpty(out_dir))
             return null;
         File dir = new File(out_dir);
@@ -1134,7 +1135,7 @@ int errortype=0;
         String statusmsg = export_mode==Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING? "Exporting to Processing":(export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY?"Exporting to Discovery":"Exporting to Delivery");
 
         boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY;
-        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Preparing base directory.."));
+        setStatusProvider.accept(new StaticStatusProvider(statusmsg+":"+"Preparing base directory.."));
 
         Archive.prepareBaseDir(out_dir);
         if (!exportInPublicMode && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR).exists())
@@ -1170,7 +1171,7 @@ int errortype=0;
         }
         Set<String> retainedDocIDs = retainedDocs.stream().map(Document::getUniqueId).collect(Collectors.toSet());
         LabelManager newLabelManager = getLabelManager().getLabelManagerForExport(retainedDocIDs,export_mode);
-        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting LabelManager.."));
+        setStatusProvider.accept( new StaticStatusProvider(statusmsg+":"+"Exporting LabelManager.."));
 
         setLabelManager(newLabelManager);
         // copy index and if for public mode, also redact body and remove title
@@ -1237,12 +1238,12 @@ after maskEmailDomain.
             return retainedDocIDs.contains(docId);
         };
 
-        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting Index.."));
+        setStatusProvider.accept( new StaticStatusProvider(statusmsg+":"+"Exporting Index.."));
 
         indexer.copyDirectoryWithDocFilter(out_dir + File.separatorChar + Archive.BAG_DATA_FOLDER, emailFilter, attachmentFilter);
         log.info("Completed exporting indexes");
 
-        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting Blobs.."));
+        setStatusProvider.accept(new StaticStatusProvider(statusmsg+":"+"Exporting Blobs.."));
 
         // save the blobs in a new blobstore
         if (!exportInPublicMode) {
@@ -1272,7 +1273,7 @@ after maskEmailDomain.
             EmailUtils.maskEmailDomain(eds, this.addressBook);
         }
 
-        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Exporting EntityBook Manager.."));
+        setStatusProvider.accept(new StaticStatusProvider(statusmsg+":"+"Exporting EntityBook Manager.."));
 
         //now read entitybook manager as well (or build from lucene)
         String outdir = out_dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
@@ -1286,7 +1287,7 @@ after maskEmailDomain.
         this.collectionMetadata.entityCounts = this.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);// getEntitiesCountMapModuloThreshold(this,theta);
 
         // write out the archive file.. note that this is a fresh creation of archive in the exported folder
-        session.setAttribute("statusProvider", new StaticStatusProvider(statusmsg+":"+"Export done. Saving Archive.."));
+        setStatusProvider.accept( new StaticStatusProvider(statusmsg+":"+"Export done. Saving Archive.."));
 
         ArchiveReaderWriter.saveArchive(out_dir, name, this,Save_Archive_Mode.FRESH_CREATION); // save .session file.
         log.info("Completed saving archive object");
@@ -1840,7 +1841,10 @@ after maskEmailDomain.
         for (String lexiconname: lexiconMap.keySet()) {
             Lexicon lexicon = lexiconMap.get(lexiconname);
             JSONArray result = new JSONArray();
-            Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage("english");
+            //what if the lexicon is not of english?? We assume that in one lexicon file there should be only one language.
+            //So instead of relying on english
+            Lexicon.Lexicon1Lang lex = lexicon.getLexiconForLanguage(lexicon.getLexiconLanguage());
+
             int numcategories = lex.captionToExpandedQuery.keySet().size();
 
             result.put (0, lexiconname);
@@ -2240,7 +2244,8 @@ after maskEmailDomain.
                     continue nextBlob;
                 }
                 try {
-                    String blobName = blobStore.get_URL_Normalized(blob);;
+                    //String blobName = blobStore.get_URL_Normalized(blob);;
+                    String blobName= blobStore.full_filename_normalized(blob,true);
                     // get rid of any file separators first... don't want them to cause any confusion
                     if (blobName == null)
                         blobName = "";

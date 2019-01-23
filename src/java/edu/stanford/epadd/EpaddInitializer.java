@@ -5,6 +5,7 @@ import edu.stanford.muse.index.Archive;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class EpaddInitializer implements ServletContextListener {
 
@@ -36,7 +37,8 @@ public class EpaddInitializer implements ServletContextListener {
 				System.err.println ("Sorry, unable to create ePADD base folder: " + f.getPath());
 				throw new RuntimeException();
 			}
-			Archive.LEXICONS = new String[]{
+
+			/*Archive.LEXICONS = new String[]{
 					"general.english.lex.txt",
 					"sensitive.english.lex.txt",
 					"sentiments.english.lex.txt",
@@ -49,8 +51,16 @@ public class EpaddInitializer implements ServletContextListener {
 					"Persona.journalist.activist.politics.and.travel.UCB.english.lex.txt",
 					"Persona.microbiologist.UIUC.english.lex.txt",
 					"Persona.writer.theater.NYPL.english.lex.txt"
-			};
+			};*/
 
+			Archive.LEXICONS = new File(event.getServletContext().getResource(("/WEB-INF/classes/lexicon")).getPath()).list(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if(name.endsWith("lex.txt"))
+						return true;
+					return false;
+				}
+			});
 			System.err.println("muse.log system variable is: "+System.getProperty("muse.log"));
 		} catch (Exception e) {
 			System.err.println ("ERROR initializing ePADD: " + e);

@@ -17,6 +17,7 @@ package edu.stanford.muse.webapp;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import edu.stanford.epadd.util.OperationInfo;
 import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
@@ -31,7 +32,7 @@ import edu.stanford.muse.ner.model.DummyNERModel;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.SequenceModel;
 import edu.stanford.muse.util.*;
-import edu.stanford.muse.util.SloppyDates.DateRangeSpec;
+import net.didion.jwnl.dictionary.morph.Operation;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -51,6 +52,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /* import javax.servlet.jsp.JspWriter; */
 
@@ -96,6 +99,14 @@ public class JSPHelper {
 		log.info("Running on jetty: " + RUNNING_ON_JETTY);
 	}
 
+	public static void checkContainer(HttpSession session)
+	{
+		String serverInfo = session.getServletContext().getServerInfo();
+		log.info("Running inside container: " + serverInfo);
+		if (serverInfo.toLowerCase().contains("jetty"))
+			RUNNING_ON_JETTY = true;
+		log.info("Running on jetty: " + RUNNING_ON_JETTY);
+	}
 	/**
 	 * gets the LOCAL/CLIENT session attribute (to make explicit distinction
 	 * from shared/global/server session)
@@ -113,9 +124,8 @@ public class JSPHelper {
 	}
 
 	/** gets the cache (base) dir for the current session */
-	private static String getBaseDir(MuseEmailFetcher m, HttpServletRequest request)
+	private static String getBaseDir(MuseEmailFetcher m,  HttpSession session)
 	{
-		HttpSession session = request.getSession();
 
 		if (session == null)
 			return SimpleSessions.getDefaultCacheDir();
@@ -174,6 +184,25 @@ public class JSPHelper {
 		return ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
 	}
 
+	public static Archive getArchive(Multimap<String,String> params)
+	{
+		//get archiveID from request parameter..
+		String archiveID = JSPHelper.getParam(params,"archiveID");
+		if(archiveID==null){
+			//if only single archive is present in the map then return that
+			//else return null after logging this information.
+//			Archive onlyleft = SimpleSessions.getDefaultArchiveFromGlobalArchiveMap();
+//			if(onlyleft==null){
+			log.debug("No archive ID parameter passed from the client");
+			//present for the given archive ID. No default archive could be loaded");
+			return null;
+//			}else{
+//				log.debug("No archiveID parameter passed from the client. Loading the default archive.");
+//				return onlyleft;
+//			}
+		}
+		return ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+	}
 	/**
 	 * gets the session attribute - look up from the client-side session storage
 	 * first then the server-side.
@@ -308,29 +337,30 @@ public class JSPHelper {
 	 * @throws NoDefaultFolderException
 	 * @throws Exception
 	 */
-	public static void fetchAndIndexEmails(Archive archive, MuseEmailFetcher m, HttpServletRequest request, HttpSession session, boolean downloadMessageText, boolean downloadAttachments, boolean useDefaultFolders)
+	public static void fetchAndIndexEmails(Archive archive, MuseEmailFetcher m, Multimap<String, String> paramsMap, HttpSession session, boolean downloadMessageText, boolean downloadAttachments, boolean useDefaultFolders, Consumer<StatusProvider> setStatusProvider)
 			throws MessagingException, InterruptedException, IOException, JSONException, NoDefaultFolderException, CancelledException, OutOfMemoryError {
         // first thing, set up a static status so user doesn't see a stale status message
-        session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
-
-        checkContainer(request);
-        String encoding = request.getCharacterEncoding();
-        log.info("request parameter encoding is " + encoding);
+        //session.setAttribute("statusProvider", new StaticStatusProvider("Starting up..."));
+		setStatusProvider.accept(new StaticStatusProvider("Starting up..."));
+        checkContainer(session);//initially it was checkContainer(request)
+        //String encoding = request.getCharacterEncoding();
+        //log.info("request parameter encoding is " + encoding);
 
         if (!downloadMessageText)
-            if ("true".equalsIgnoreCase(request.getParameter("downloadMessageText"))) {
+            if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"downloadMessageText"))) {
                 downloadMessageText = true;
                 log.info("Downloading message text because advanced option was set");
             }
 
         if (!downloadAttachments)
-            if ("true".equalsIgnoreCase(request.getParameter("downloadAttachments"))) {
+            if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"downloadAttachments"))) {
                 downloadAttachments = true;
                 downloadMessageText = true; // because text is needed for attachment wall -- otherwise we can't break out from piclens to browsing messages associated with a particular thumbnail
                 log.info("Downloading attachments because advanced option was set");
             }
 
-        String[] allFolders = request.getParameterValues("folder");
+            List<String> allFoldersList = JSPHelper.getParams(paramsMap,"folder").stream().collect(Collectors.toList());
+        String[] allFolders =  allFoldersList.toArray(new String[allFoldersList.size()]);
         if (allFolders != null) {
             // try to read folder strings, first checking for exceptions
             try {
@@ -346,8 +376,7 @@ public class JSPHelper {
             }
         }
 
-        Multimap<String, String> requestMap = convertRequestToMap(request);
-        Filter filter = Filter.parseFilter(requestMap);
+        Filter filter = Filter.parseFilter(paramsMap);
         // if required, forceEncoding can go into fetch config
         //	String s = (String) session.getAttribute("forceEncoding");
         FetchConfig fc = new FetchConfig();
@@ -355,8 +384,8 @@ public class JSPHelper {
         fc.downloadAttachments = downloadAttachments;
         fc.filter = filter;
 
-        archive.setBaseDir(getBaseDir(m, request));
-        m.fetchAndIndexEmails(archive, allFolders, useDefaultFolders, fc, session);
+        archive.setBaseDir(getBaseDir(m, session));
+        m.fetchAndIndexEmails(archive, allFolders, useDefaultFolders, fc, session, setStatusProvider);
         //make sure the archive is dumped at this point
         archive.close();
         archive.openForRead();
@@ -366,7 +395,8 @@ public class JSPHelper {
             String modelFile = SequenceModel.MODEL_FILENAME;
             NERModel nerModel=null;
             //=(SequenceModel) session.getAttribute("ner");
-            session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
+            //session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
+            setStatusProvider.accept(new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
             {
                 if (System.getProperty("muse.dummy.ner") != null) {
                     log.info("Using dummy NER model, all CIC patterns will be treated as valid entities");
@@ -380,8 +410,9 @@ public class JSPHelper {
                 log.error("Could not load NER model from: " + modelFile);
             } else {
                 NER ner = new NER(archive, nerModel);
-                session.setAttribute("statusProvider", ner);
-                ner.recognizeArchive();
+                //session.setAttribute("statusProvider", ner);
+                setStatusProvider.accept(ner);
+				ner.recognizeArchive();
                 //Here, instead of getting the count of all entities (present in ner.stats object)
 				//get the count of only those entities which pass a given threshold.
 				//This is to fix a bug where the count of person entities displayed on browse-top.jsp
@@ -444,36 +475,36 @@ public class JSPHelper {
 	}
 
 	/** creates a new archive and returns it */
-	public static Archive preparedArchive(HttpServletRequest request, String baseDir, List<String> extraOptions) throws IOException
+	public static Archive preparedArchive(Multimap<String,String> paramsMap, String baseDir, List<String> extraOptions) throws IOException
 	{
 		List<String> list = new ArrayList<>();
 
-		if (request != null)
+		if (paramsMap != null)
 		{
-			if ("yearly".equalsIgnoreCase(request.getParameter("period")))
+			if ("yearly".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"period")))
 				list.add("-yearly");
 
-			if (request.getParameter("noattachments") != null)
+			if (JSPHelper.getParam(paramsMap,"noattachments") != null)
 				list.add("-noattachments");
 
 			// filter params
-			if ("true".equalsIgnoreCase(request.getParameter("sentOnly")))
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"sentOnly")))
 				list.add("-sentOnly");
 
-			String str = request.getParameter("dateRange");
+			String str = JSPHelper.getParam(paramsMap,"dateRange");
 			if (str != null && str.length() > 0)
 			{
 				list.add("-date");
 				list.add(str);
 			}
-			String keywords = request.getParameter("keywords");
+			String keywords = JSPHelper.getParam(paramsMap,"keywords");
 			if (keywords != null && !keywords.equals(""))
 			{
 				list.add("-keywords");
 				list.add(keywords);
 			}
 
-			String filter = request.getParameter("filter");
+			String filter = JSPHelper.getParam(paramsMap,"filter");
 			if (filter != null && !filter.equals(""))
 			{
 				list.add("-filter");
@@ -482,19 +513,19 @@ public class JSPHelper {
 			// end filter params
 
 			// advanced options
-			if ("true".equalsIgnoreCase(request.getParameter("incrementalTFIDF")))
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"incrementalTFIDF")))
 				list.add("-incrementalTFIDF");
-			if ("true".equalsIgnoreCase(request.getParameter("NER")))
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"NER")))
 				list.add("-NER");
-			if (!"true".equalsIgnoreCase(request.getParameter("allText")))
+			if (!"true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"allText")))
 				list.add("-noalltext");
-			if ("true".equalsIgnoreCase(request.getParameter("locationsOnly")))
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"locationsOnly")))
 				list.add("-locationsOnly");
-			if ("true".equalsIgnoreCase(request.getParameter("orgsOnly")))
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"orgsOnly")))
 				list.add("-orgsOnly");
-			if ("true".equalsIgnoreCase(request.getParameter("includeQuotedMessages")))
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"includeQuotedMessages")))
 				list.add("-includeQuotedMessages");
-			String subjWeight = request.getParameter("subjectWeight");
+			String subjWeight = JSPHelper.getParam(paramsMap,"subjectWeight");
 			if (subjWeight != null)
 			{
 				list.add("-subjectWeight");
@@ -515,6 +546,25 @@ public class JSPHelper {
 		log.info("archive setup in " + baseDir);
 		return archive;
 	}
+
+
+	public static void setOperationInfo(HttpSession session, String opID, OperationInfo operationInfo){
+		Map<String,OperationInfo> operationInfoMap = (Map<String,OperationInfo>) session.getAttribute("operationInfoMap");
+		if(operationInfoMap==null)
+			operationInfoMap = new LinkedHashMap<>();
+		operationInfoMap.put(opID,operationInfo);
+		session.setAttribute("operationInfoMap",operationInfoMap);
+
+	}
+
+	public static OperationInfo getOperationInfo(HttpSession session, String opID){
+		Map<String,OperationInfo> operationInfoMap = (Map<String,OperationInfo>) session.getAttribute("operationInfoMap");
+		if(operationInfoMap==null)
+			return null;
+		return operationInfoMap.get(opID);
+	}
+
+
 
 	public static String getURLWithParametersFromRequestParam(HttpServletRequest request,String exclude){
 
@@ -1003,5 +1053,12 @@ public class JSPHelper {
 			result.put ("errorMessage", "Exception while saving label: " + e.getMessage());
 			return result.toString();
 		}
+	}
+
+	public static void removeOperationInfo(HttpSession session, String opID) {
+		Map<String,OperationInfo> operationInfoMap = (Map<String,OperationInfo>) session.getAttribute("operationInfoMap");
+		if(operationInfoMap==null)
+			return;
+		operationInfoMap.remove(opID);
 	}
 }
