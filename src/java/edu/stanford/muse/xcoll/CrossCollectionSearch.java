@@ -81,7 +81,7 @@ public class CrossCollectionSearch {
                 continue;
 
             try {
-                String archiveFile = f.getAbsolutePath() + File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
+                String archiveFile = f.getAbsolutePath() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
                 if (!new File(archiveFile).exists())
                     continue;
 
