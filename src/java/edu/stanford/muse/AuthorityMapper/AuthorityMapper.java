@@ -47,7 +47,8 @@ public class AuthorityMapper implements java.io.Serializable {
     public static class AuthorityRecord implements java.io.Serializable {
         public long fastId;
         public String lcshId, lcnafId, wikipediaId, viafId, localId;
-        public String preferredLabel, altLabels;
+        public String preferredLabel;
+        String altLabels;
         public String extent; /* e.g. 1940-2012, or b. 1223 */
         public boolean isManuallyAssigned;
     }
@@ -57,12 +58,12 @@ public class AuthorityMapper implements java.io.Serializable {
         (2) cnameToFastIdCandidates -> holds candidates for names in an archive. Expensive to compute, so cached and serialized.
         (3) cnameToCount - counts of cname occurrences
      */
-    protected Map<String, AuthorityRecord> cnameToAuthority = new LinkedHashMap<>(); // these are confirmed authority records
+    protected final Map<String, AuthorityRecord> cnameToAuthority = new LinkedHashMap<>(); // these are confirmed authority records
 
     // to save memory, we store only the fast_id's not the entire auth record object. this may change when we start computing candidates using other databases. for now, the only db we use to map to a candidate is FAST.
-    protected Multimap<String, Long> cnameToFastIdCandidates = LinkedHashMultimap.create();
+    protected final Multimap<String, Long> cnameToFastIdCandidates = LinkedHashMultimap.create();
 
-    protected Map<String, Integer> cnameToCount = new LinkedHashMap<>(); // name to count of # of times it appears in the archive. applicable only for correspondents currently.
+    protected final Map<String, Integer> cnameToCount = new LinkedHashMap<>(); // name to count of # of times it appears in the archive. applicable only for correspondents currently.
 
     transient private IndexSearcher indexSearcher;
     transient private QueryParser parser;
@@ -152,7 +153,7 @@ public class AuthorityMapper implements java.io.Serializable {
 
 
     /** populates the other ids, given the fast Id */
-    public AuthorityRecord getAuthRecordForFASTId (long fastId) throws IOException {
+    protected AuthorityRecord getAuthRecordForFASTId(long fastId) throws IOException {
         AuthorityRecord result = new AuthorityRecord();
         String labelSeparator = " ; ";
         result.fastId = fastId;
@@ -187,7 +188,7 @@ public class AuthorityMapper implements java.io.Serializable {
 
 
     /** confirms an auth record */
-    public AuthorityRecord setAuthRecord (String name, long fastId, String viafId, String wikipediaId, String lcnafId, String lcshId, String localId, boolean isManuallyAssigned) throws IOException, ParseException {
+    public AuthorityRecord setAuthRecord (String name, long fastId, String viafId, String wikipediaId, String lcnafId, String lcshId, String localId, boolean isManuallyAssigned) throws IOException {
         AuthorityRecord ar;
 
         if (isManuallyAssigned) {
@@ -223,7 +224,7 @@ public class AuthorityMapper implements java.io.Serializable {
         cnameToAuthority.remove (cname);
     }
 
-    public  List<Document> lookupNameInFastIndex (String name) throws IOException, ParseException {
+    protected List<Document> lookupNameInFastIndex(String name) throws IOException, ParseException {
         List<Document> result = new ArrayList<>();
 
         // be careful, double quotes inside the name can mess things up and result in spurious hits.

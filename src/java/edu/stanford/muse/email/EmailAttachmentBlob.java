@@ -30,7 +30,7 @@ import edu.stanford.muse.util.Util;
 public class EmailAttachmentBlob extends Blob implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-public boolean equals(Blob b) { return (size == b.size) && filename.equals (b.getResourceURI());} // simplistic, should check for c-hash
+private boolean equals(Blob b) { return (size == b.size) && filename.equals (b.getResourceURI());} // simplistic, should check for c-hash
 public boolean equals(Object o) { return (o instanceof EmailAttachmentBlob) && equals((EmailAttachmentBlob) o); }
 public int hashCode() { return ((int) size) ^ filename.hashCode(); }
 
@@ -56,10 +56,10 @@ public EmailAttachmentBlob (String name, long size, MimeMessage m, Part p) throw
    // subject = m.getSubject();
 }
 
-public String get_long_form() { return compute_long_form(); }
+private String get_long_form() { return compute_long_form(); }
 
 // pretty toString a message, ls -l style
-public String compute_long_form()
+private String compute_long_form()
 {
     StringBuilder sb = new StringBuilder();
 

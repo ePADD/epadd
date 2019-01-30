@@ -34,7 +34,7 @@ import java.util.Properties;
 
 public class ImapPopEmailStore extends EmailStore {
 	private final static long serialVersionUID = 1L;
-    private static Log log = LogFactory.getLog(ImapPopEmailStore.class);
+    private static final Log log = LogFactory.getLog(ImapPopEmailStore.class);
 
 	private ImapPopConnectionOptions connectOptions;
 	private static final Properties mstoreProps;
@@ -84,7 +84,7 @@ public class ImapPopEmailStore extends EmailStore {
     public static final class OAuth2Provider extends Provider {
 	    private static final long serialVersionUID = 1L;
 
-	    public OAuth2Provider() {
+	    OAuth2Provider() {
 	      super("Google OAuth2 Provider", 1.0,
 	            "Provides the XOAUTH2 SASL Mechanism");
 	      put("SaslClientFactory.XOAUTH2",
@@ -129,7 +129,7 @@ public class ImapPopEmailStore extends EmailStore {
 	
 	/** returns # of messages in folder. -1 if folder cannot be opened.
 	 * connect should already have been called */
-	public Folder openFolderWithoutCount(Store store, String fname) throws MessagingException
+    protected Folder openFolderWithoutCount(Store store, String fname) throws MessagingException
 	{
 		Folder folder = null;
 
@@ -148,7 +148,7 @@ public class ImapPopEmailStore extends EmailStore {
 		return folder;
 	}
 
-	public Pair<Folder,Integer> openFolder(Store store, String fname) throws MessagingException
+	protected Pair<Folder,Integer> openFolder(Store store, String fname) throws MessagingException
 	{
 		Folder folder = openFolderWithoutCount(store, fname);
 		int count = -1; // -1 signals invalid folder

@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * Created by vihari on 23/09/16.
  */
 public class NEType {
-    static Log log = LogFactory.getLog(NEType.class);
+    private static final Log log = LogFactory.getLog(NEType.class);
 
     /**
      * DO NOT change the code (that is the number assigned to each type) for the types.
@@ -36,9 +36,9 @@ public class NEType {
             DISEASE(36, ORGANISATION, "Disease"),EVENT(37, ORGANISATION, "Event"),
         //any other type that is not one of types above
         OTHER(38, null, "Other");
-        private short code;
-        private Type parent;
-        private String displayName; // end-user friendly name
+        private final short code;
+        private final Type parent;
+        private final String displayName; // end-user friendly name
 
         Type(int code, Type parent, String displayName) {
             this.code = (short)code;
@@ -50,7 +50,7 @@ public class NEType {
             return code;
         }
 
-        public Type parent(){
+        Type parent(){
             return parent;
         }
 
@@ -59,7 +59,7 @@ public class NEType {
         }
     }
 
-    static Map<Type, String[]> dbpediaTypesMap = new LinkedHashMap<>();
+    private static final Map<Type, String[]> dbpediaTypesMap = new LinkedHashMap<>();
     static{
         dbpediaTypesMap.put(Type.PERSON, new String[]{"Person", "Agent"});
         dbpediaTypesMap.put(Type.PLACE, new String[]{"Place", "Park|Place", "ProtectedArea|Place", "PowerStation|Infrastructure|ArchitecturalStructure|Place", "ShoppingMall|Building|ArchitecturalStructure|Place"});
@@ -93,8 +93,7 @@ public class NEType {
     }
 
     public static Short[] getAllTypeCodes() {
-        java.util.List<Short> codes = Stream.of(NEType.getAllTypes()).map(NEType.Type::getCode).collect(Collectors.toList());
-        return codes.toArray(new Short[codes.size()]);
+        return Stream.of(NEType.getAllTypes()).map(Type::getCode).toArray(Short[]::new);
     }
 
     //Never returns NULL, returns OTHER in every other case

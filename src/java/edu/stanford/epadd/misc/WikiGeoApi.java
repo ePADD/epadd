@@ -64,10 +64,10 @@ public class WikiGeoApi {
 	 * "coordinates":[{"lat":20.4215,"lon":77.5631,"primary":"","globe":"earth"}
 	 * ]}}},"limits":{"coordinates":500}}
 	 */
-	Query	query;
-	Some	limits;
+    private Query	query;
+	private Some	limits;
 
-	public static Double calculateDistance(Pair p1, Pair p2) {
+	private static Double calculateDistance(Pair p1, Pair p2) {
 		Double lon2 = (Double) p2.getSecond(), lat2 = (Double) p2.getFirst();
 		Double lon1 = (Double) p1.getSecond(), lat1 = (Double) p1.getFirst();
 

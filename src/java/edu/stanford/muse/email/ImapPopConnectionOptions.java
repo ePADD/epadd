@@ -20,9 +20,11 @@ import java.io.Serializable;
 class ImapPopConnectionOptions implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	public String protocol, server, userName;
-	public transient String password;
-	public int port;
+	public final String protocol;
+    public final String server;
+    public final String userName;
+	public final transient String password;
+	public final int port;
 	
 	/** sometimes we will wipe passwords. in that case the password string is set to this special string so we'll know that it has been wiped. */
 	private static final String WIPED_PASSWORD = "WIPED.PASSWORD";

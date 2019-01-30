@@ -80,10 +80,10 @@ public class EmailFetcherThread implements Runnable, Serializable {
     /* used for buffering imap prefetch data -- necessary for good imap performance*/
     private static final String FORCED_ENCODING = "UTF-8";
 
-    public static Log log = LogFactory.getLog(EmailFetcherThread.class);
+    public static final Log log = LogFactory.getLog(EmailFetcherThread.class);
 
     // set up INVALID_DATE
-    public static Date
+    public static final Date
             INVALID_DATE; // like 0xdeadbeef
 
     static {
@@ -116,7 +116,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
     private int begin_msg_index = 0;
     private int end_msg_index = -1;
 
-    EmailFetcherStats stats = new EmailFetcherStats();
+    final EmailFetcherStats stats = new EmailFetcherStats();
     String currentStatus;
 
 
@@ -185,7 +185,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
     private transient Store store;                                        // we don't really need this serialized across sessions
 
     private transient Archive archive;
-    Collection<String> dataErrors = new LinkedHashSet<>();    // log of input data errors
+    final Collection<String> dataErrors = new LinkedHashSet<>();    // log of input data errors
     private Date prevDate = null;
 
 	/*

@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 
 public class AddressBook implements Serializable {
 
-    public static Log log = LogFactory.getLog(AddressBook.class);
+    public static final Log log = LogFactory.getLog(AddressBook.class);
     private final static long serialVersionUID = 1L;
     public final static String CONTACT_START_PREFIX = "--";
 
@@ -76,7 +76,9 @@ public class AddressBook implements Serializable {
     //following can be crated from contactListForIds list hence no need to serialize them
     transient private Map<Contact, Integer> contactIdMap = new LinkedHashMap<>();
     //transient fields to store summary data.
-transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new LinkedHashMap<>(), L1_Summary_ReceivedDocs = new LinkedHashMap<>(), L1_Summary_RecFrmOwnerDocs= new LinkedHashMap<>();
+private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new LinkedHashMap<>();
+    private transient Map<Contact, Set<EmailDocument>> L1_Summary_ReceivedDocs = new LinkedHashMap<>();
+    private transient Map<Contact, Set<EmailDocument>> L1_Summary_RecFrmOwnerDocs= new LinkedHashMap<>();
 //transient Map<Contact,Set<EmailDocument>> L1_Summary_totalInDocs = new LinkedHashMap<>();//to store the info about all docs where a contact is present (irrespective of owner).
     private Contact contactForSelf;
     private Collection<String> dataErrors = new LinkedHashSet<>();
@@ -110,7 +112,7 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
         contactForSelf = c;
     }
 
-    public AddressBook(Contact self){
+    private AddressBook(Contact self){
 
         contactListForIds.add(self);
         contactForSelf = self;
@@ -970,6 +972,20 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
 
     }
 
+    /*
+    This method returns the set of documents for contact c stored in the summary object.
+     */
+    public Set<EmailDocument> getDocsFromSummary(Contact c) {
+        //It will be sum of Sent + received docs. SHould we also add received from owner?
+        Set<EmailDocument> docs_sent = L1_Summary_SentDocs.getOrDefault(c,new LinkedHashSet<>());
+        Set<EmailDocument> docs_rec = L1_Summary_ReceivedDocs.getOrDefault(c,new LinkedHashSet<>());
+        Set<EmailDocument> doc_rec_from_owner = L1_Summary_RecFrmOwnerDocs.getOrDefault(c,new LinkedHashSet<>());
+        Set<EmailDocument> total = Util.setUnion(docs_sent,docs_rec);
+        total = Util.setUnion(total,doc_rec_from_owner);
+
+        return total;
+    }
+
     public class MergeResult{
         /*mergedContacts map is used to track how a contact in A1 expanded after merging.
          A1: [a b c d e]
@@ -981,7 +997,7 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
         he has to decide if f and x should be part of this merged contact or not. Therefore this information is
         sufficient for him.
         */
-        public Map<Contact,Contact> mergedContacts = new LinkedHashMap<>();
+        public final Map<Contact,Contact> mergedContacts = new LinkedHashMap<>();
 
         /* newlycreatedContacts is used to track the split of a contact in A2. The key of this map
         is the contact of A2 after split and the values are [multimap] the set of contacts in A2 from where
@@ -990,7 +1006,7 @@ transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs = new Li
          [ax] and [ay] separately. For end user we would list all those contacts where a,x,y are present in
          merged addressbook).
          */
-        public SetMultimap<Contact,Contact> newlycreatedContacts = LinkedHashMultimap.create();
+        public final SetMultimap<Contact,Contact> newlycreatedContacts = LinkedHashMultimap.create();
     }
 /*
 Merge algorithm:
@@ -1333,11 +1349,13 @@ mergeResult.newContacts.put(C2,savedC2)
 //No need to keep AddressBookStats class serializable as it's instance is not present anywhere.
         static class AddressBookStats {
 
-        public int nOwnEmails, nOwnNames;
+        int nOwnEmails;
+        int nOwnNames;
         // Calendar firstMessageDate, lastMessageDate;
         // int spanInMonths;
-        public int nContacts;
-        public int nNames = 0, nEmailAddrs = 0;
+        int nContacts;
+        int nNames = 0;
+        int nEmailAddrs = 0;
 
         public String toString() {
             // do not use html special chars here!

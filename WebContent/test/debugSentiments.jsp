@@ -101,9 +101,9 @@
 	/*
 	for (Document d: archive.getAllDocs()) {
 		String text = archive.getContents(d, true);
-		NER.printSentencesWithWords(text, words);
+		openNLPNER.printSentencesWithWords(text, words);
 	}
-	NER.printStats();
+	openNLPNER.printStats();
 	*/
 	/*
 	Map<Integer, Integer>[] map = Sentiments.debugEmotions(driver.indexer, (List) list);

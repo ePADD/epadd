@@ -32,8 +32,9 @@ public class LinkInfo implements Serializable {
 
 private static final long serialVersionUID = 1L;
 
-public String link, originalLink; // link is the canonicalized version, originalLink is the actual string.
-public Document doc; // document this linkinfo belongs to
+public String link;
+	private String originalLink; // link is the canonicalized version, originalLink is the actual string.
+private final Document doc; // document this linkinfo belongs to
 public String tld; // set up later, while sorting...
 int count;
 

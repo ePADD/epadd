@@ -16,8 +16,8 @@ import java.io.PrintStream;
  */
 
 class WPReader {
-    private static PrintStream pageLenStream;
-    private static PrintStream equivsStream;
+    private static   PrintStream pageLenStream;
+    private static   PrintStream equivsStream;
 
 
     static {

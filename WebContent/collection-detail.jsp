@@ -131,12 +131,16 @@
 
                 <% } %>
             <% } %>
-            Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span>
-            <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
+        Messages: <span class="detail"><%=Util.commatize(cm.nDocs)%></span><br/></b>
+        <%
+            int sentbyowner = cm.nOutgoingMessages;
+        %>
+            Sent by owner: <span class="detail"><b><%=Util.commatize(sentbyowner)%></b></span><br/></b>
+    <%--<% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
                 Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
             Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
-            <% } %>
+            <% } %>--%>
         <hr/>
             Attachments: <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>

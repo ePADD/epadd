@@ -20,6 +20,7 @@ import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.StatusProvider;
 import edu.stanford.muse.lang.Languages;
+import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -69,7 +70,7 @@ import java.util.*;
  */
 public class Indexer implements StatusProvider, java.io.Serializable {
 
-	static Log					log					= LogFactory.getLog(Indexer.class);
+	static final Log					log					= LogFactory.getLog(Indexer.class);
 	private static final long	serialVersionUID	= 1L;
 
 	/** these enums should move out of this class if Indexer is to be made protected because they are part of the API -sgh */
@@ -93,7 +94,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
     //I dont see why the presetQueries cannot be static. As we read these from a file, there cannot be two set of preset queries for two (or more) archives in session
 	static String[]		presetQueries				= null;
 
-	private Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// docId -> EmailDoc
+	private final Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// docId -> EmailDoc
 	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
     private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
@@ -106,16 +107,17 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	transient private IndexWriter iwriter;
 	transient private IndexWriter iwriter_blob;
 	transient Map<Integer,String> blobDocIds;
-	transient Map<Integer,String> contentDocIds;														// these are fieldCaches of ldoc -> docId for the docIds (for performance)
+	private transient Map<Integer,String> contentDocIds;														// these are fieldCaches of ldoc -> docId for the docIds (for performance)
 
 	transient private String baseDir = null;												// where the file-based directories should be stored (under "indexes" dir)
 
 	// these are field type configs for all the fields to be stored in the email and attachment index.
 	// most fields will use ft (stored and analyzed), and only the body fields will have a full_ft which is stored, analyzed (with stemming) and also keeps term vector offsets and positions for highlights
 	// some fields like name_offsets absolutely don't need to be indexed and can be kept as storeOnly_ft
-	transient private static FieldType storeOnly_ft;
-	private static transient FieldType ft;
-	static transient FieldType full_ft, unanalyzed_full_ft;													// unanalyzed_full_ft for regex search
+	final transient private static FieldType storeOnly_ft;
+	private static final transient FieldType ft;
+	static final transient FieldType full_ft;
+	static transient FieldType unanalyzed_full_ft;													// unanalyzed_full_ft for regex search
 	static {
 		storeOnly_ft = new FieldType();
 		storeOnly_ft.setStored(true);
@@ -168,7 +170,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	private IndexOptions				io;
 	private boolean				cancel							= false;
-	List<LinkInfo>	links							= new ArrayList<>();
+	final List<LinkInfo>	links							= new ArrayList<>();
 
 	// Collection<String> dataErrors = new LinkedHashSet<String>();
 
@@ -218,18 +220,18 @@ public class Indexer implements StatusProvider, java.io.Serializable {
         public void setSortBy(SortBy sortBy){
             this.sortBy = sortBy;
         }
-        public int getThreshold(){return threshold;}
-        public int getCluster(){return cluster;}
-        public QueryType getQueryType(){return qt;}
-        public Date getStartDate(){return startDate;}
-        public Date getEndDate(){return endDate;}
-        public SortBy getSortBy(){return sortBy;}
+        int getThreshold(){return threshold;}
+        int getCluster(){return cluster;}
+        QueryType getQueryType(){return qt;}
+        Date getStartDate(){return startDate;}
+        Date getEndDate(){return endDate;}
+        SortBy getSortBy(){return sortBy;}
     }
 
 	IndexStats			stats					= new IndexStats();
 
 	private List<MultiDoc>	docClusters;
-	List<Document>				docs					= new ArrayList<>();
+	final List<Document>				docs					= new ArrayList<>();
 
 	private Indexer(IndexOptions io) {
 		clear();
@@ -572,7 +574,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * allDocs.size() + " documents: " + Util.getMemoryStats(); log.info
 	 * (stat1); docClusters = mDocs;
 	 * 
-	 * if (io.do_NER) NER.printAllTypes();
+	 * if (io.do_NER) openNLPNER.printAllTypes();
 	 * 
 	 * computeClusterStats(mDocs); log.info ("Indexing " + allDocs.size() +
 	 * " documents in " + docClusters.size() + " clusters"); int clusterCount =
@@ -621,7 +623,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * 
 	 * // imp: do this at the end to save memory. doesn't save memory during
 	 * indexing but saves mem later, when the index is being used. // esp.
-	 * important for lens. NER.release_classifier(); // release memory for
+	 * important for lens. openNLPNER.release_classifier(); // release memory for
 	 * classifier log.info ("Memory status after releasing classifier: " +
 	 * Util.getMemoryStats()); packIndex();
 	 * 
@@ -728,7 +730,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
             defaultSearchFieldsOriginal = new String[] { "body_original", "title" }; // we want to leave title there because we want to always hit the title -- discussed with Peter June 27 2015
             defaultSearchFieldCorrespondents = new String[] { "to_names", "from_names", "cc_names", "bcc_names", "to_emails", "from_emails", "cc_emails", "bcc_emails" };
             // names field added above after email discussion with Sit 6/11/2013. problem is that we're not using the Lucene EnglishPossessiveFilter, so
-            // NER will extract the name Stanford University in a sentence like:
+            // openNLPNER will extract the name Stanford University in a sentence like:
             // "This is Stanford University's website."
             // but when the user clicks on the name "Stanford University" in say monthly cards, we
             // will not match the message with this sentence because of the apostrophe.
@@ -920,7 +922,7 @@ is what we want.
 	}
 
     // quote chars (> ) interfere with name recognition, so remove them from the text.
-	// however be careful that the char positions don't change since NER returns us offsets into the string.
+	// however be careful that the char positions don't change since openNLPNER returns us offsets into the string.
 	private static String prepareFullBodyForNameExtraction(String text)
 	{
 		// first search & replace the longer strings
@@ -939,7 +941,7 @@ is what we want.
 	private Set<String> setNameFieldsOpenNLP(String text, org.apache.lucene.document.Document doc)
 	{
 		text = prepareFullBodyForNameExtraction(text);
-		Pair<Map<String, List<String>>, List<Triple<String, Integer, Integer>>> mapAndOffsets = NER.categoryToNamesMap(text);
+		Pair<Map<String, List<String>>, List<Triple<String, Integer, Integer>>> mapAndOffsets = edu.stanford.muse.index.openNLPNER.categoryToNamesMap(text);
 
 		List<Triple<String, Integer, Integer>> offsets = mapAndOffsets.second;
 		storeNameOffsets(doc, offsets);
@@ -978,7 +980,7 @@ is what we want.
 	 * internal method, core method for adding a doc to the index.
 	 * adds body, title, people, places, orgs. assumes the index, iwriter etc
 	 * are already set up and open.
-	 * does NER and returns the list of all names
+	 * does openNLPNER and returns the list of all names
 	 *
 	 * @param stats
 	 */
@@ -1000,8 +1002,8 @@ is what we want.
 
 		doc.add(new Field("title", title, full_ft));
 
-		// extract names from both title (weighted by subjectWeight) and body. put a fullstop after title to help NER.
-		StringBuilder effectiveSubject = new StringBuilder(); // put body first so that the extracted NER offsets can be used without further adjustment at a later phase.
+		// extract names from both title (weighted by subjectWeight) and body. put a fullstop after title to help openNLPNER.
+		StringBuilder effectiveSubject = new StringBuilder(); // put body first so that the extracted openNLPNER offsets can be used without further adjustment at a later phase.
 		for (int i = 0; i < io.subjectWeight; i++)
 		{
 			effectiveSubject.append(". ");
@@ -1057,7 +1059,7 @@ is what we want.
 
 		if(edu.stanford.muse.Config.OPENNLP_NER) {
             String textForNameExtraction = body + ". " + effectiveSubject; // Sit says put body first so
-			// that the extracted NER offsets can be used without further adjustment for epadd redaction
+			// that the extracted openNLPNER offsets can be used without further adjustment for epadd redaction
             Set<String> allNames = setNameFieldsOpenNLP(textForNameExtraction, doc);
 
 			String names = Util.join(allNames, NAMES_FIELD_DELIMITER);
@@ -1072,7 +1074,7 @@ is what we want.
 				namesOriginal = allNames;
 			else {
 				String originalTextForNameExtraction = bodyOriginal + ". " + effectiveSubject;
-				namesOriginal = Archive.extractNamesOpenNLP(originalTextForNameExtraction);
+				namesOriginal = Archive. extractNamesOpenNLP(originalTextForNameExtraction);
 			}
 			if(stats!=null) {
 				stats.nNames += allNames.size();
@@ -1360,7 +1362,7 @@ is what we want.
         return getNamesForLuceneDoc(docForThisId, qt);
     }
 
-    public Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
+    private Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
         Pair<Collection<String>,Integer> p;
         if (!isAttachments)
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher, qt, 1);
@@ -1593,15 +1595,13 @@ is what we want.
 	}
 
 	/** returns collection of docId's that hit, at least threshold times */
-	private Collection<String> lookupAsDocIds(String q, int threshold, IndexSearcher searcher, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException
-	{
+	private Collection<String> lookupAsDocIds(String q, int threshold, IndexSearcher searcher, QueryType qt) throws IOException, ParseException {
 		// get as documents, then convert to ids
 		return luceneLookupAsDocIds(q, threshold, searcher, qt);
 	}
 
 	/** returns collection of EmailDocs that hit */
-	protected Set<EmailDocument> lookupDocs(String q, QueryType qt) throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException
-	{
+	protected Set<EmailDocument> lookupDocs(String q, QueryType qt) throws IOException, ParseException {
 		Collection<String> docIds = luceneLookupAsDocIds(q, 1, isearcher, qt);
 		Set<EmailDocument> result = new LinkedHashSet<>();
 		for (String docId : docIds)
@@ -2019,7 +2019,7 @@ is what we want.
         }
     }
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) {
 		//		String content = "A FEDERAL JUDGE DECLINED on Monday to grant to the University of South Florida a declaratory judgment that the university's plan"
 		//				+ " to fire Sami Al-Arian, a tenured professor with alleged links to terrorism, did not violate his First Amendment right to free speech";
 		//		Set<String> pnames = getNamesFromPatterns(content, true);

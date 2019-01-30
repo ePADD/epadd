@@ -37,8 +37,7 @@ public class SimpleSessions {
 	}*/
 
 
-	public static void main(String args[]) throws IOException
-	{
+	public static void main(String args[]) {
 		// just use as <basedir> <string to find>
 		Archive a = ArchiveReaderWriter.readArchiveIfPresent(args[0]);
 		for (Document d : a.getAllDocs())

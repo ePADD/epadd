@@ -10,12 +10,12 @@ import edu.stanford.muse.util.Util;
 
 /** little class to let us pretty toString type hierarchies */
 public class TypeHierarchy {
-	private Map<String, TypeHierarchyNode>	dir	= new LinkedHashMap<>();
+	private final Map<String, TypeHierarchyNode>	dir	= new LinkedHashMap<>();
 
 	class TypeHierarchyNode implements Comparable<TypeHierarchyNode> {
 		int						count, ownCount;	// owncount does not include children's count
 		String					type;
-		List<TypeHierarchyNode>	children;
+		final List<TypeHierarchyNode>	children;
 		TypeHierarchyNode		parent;
 
 		private TypeHierarchyNode() {

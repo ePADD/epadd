@@ -31,7 +31,7 @@ import java.util.List;
 /* version of imap prefetcher that only fetches text fr
 om the first <part> of imap messages */
 public class TextOnlyImapPrefetcher extends ImapPrefetcher implements IMAPFolder.ProtocolCommand {
-    private static Log log = LogFactory.getLog(TextOnlyImapPrefetcher.class);
+    private static final Log log = LogFactory.getLog(TextOnlyImapPrefetcher.class);
 
 Session session;
 

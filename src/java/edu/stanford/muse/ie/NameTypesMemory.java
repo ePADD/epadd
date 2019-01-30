@@ -11,18 +11,19 @@ import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 class NameTypesMemory {
-    private static Log log = LogFactory.getLog(NameTypes.class);
+    private static final Log log = LogFactory.getLog(NameTypes.class);
 	private final static long serialVersionUID = 1L;
-	private static String typesFile = "instance_types_en.nt1.gz";
+	private static final String typesFile = "instance_types_en.nt1.gz";
 	
 	private static void readTypes(Map<String, NameInfoMemory> hitTitles) {
 		// types.gz is of the form First_Last Subtype|Type
 		try {
-			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new GZIPInputStream(NameTypes.class.getClassLoader().getResourceAsStream(typesFile)), "UTF-8"));
+			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new GZIPInputStream(NameTypes.class.getClassLoader().getResourceAsStream(typesFile)), StandardCharsets.UTF_8));
 			while (true)
 			{
 				String line = lnr.readLine();
@@ -87,8 +88,7 @@ class NameTypesMemory {
 	}
 	
 	/** looks up all names in the given docs in the names archive and assigns types to them */
-	public static Map<String, Collection<NameInfoMemory>> assignTypes (Map<String, NameInfoMemory> nameMap) throws IOException
-	{
+	public static Map<String, Collection<NameInfoMemory>> assignTypes (Map<String, NameInfoMemory> nameMap) {
 		// assign types to all the names
 		readTypes(nameMap);
 				

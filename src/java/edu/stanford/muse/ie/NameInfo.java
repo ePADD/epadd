@@ -10,8 +10,10 @@ import java.util.Map;
 public class NameInfo implements Comparable<NameInfo>, Serializable { 
 	private final static long serialVersionUID = 1L;
 
-	public String title /* with _ in place of space */, snippet, type = "notype";
-	public float score;
+	public final String title /* with _ in place of space */;
+	public String snippet;
+	public String type = "notype";
+	private float score;
 	public String word /* no spaces */, originalTerm /* with spaces, capitalization etc */;
 	public int times;
 	public Date firstDate, lastDate = null;
@@ -56,7 +58,7 @@ public class NameInfo implements Comparable<NameInfo>, Serializable {
 
 		String cleanTitle = cleanTitle(); 
 		// title has to be escaped because it may have things like & embedded. e.g. saw Texas A&M university'
-		String result = "<a target=\"_blank\" href=\"browse?term=%22" + java.net.URLEncoder.encode(cleanTitle) + "%22\">" + cleanTitle + "<a>"  + " (" + Util.pluralize(times,  "time") + ")<br>";
+		String result = "<a target=\"_blank\" href=\"browse?term=%22" + Util.URLEncode(cleanTitle) + "%22\">" + cleanTitle + "<a>"  + " (" + Util.pluralize(times,  "time") + ")<br>";
 		/*
 		result += "<span style = 'color:orange'>First Date: " + firstDatetoString() + "<br>Last Date: " + lastDatetoString() + "<br><span style = 'color:green'>";
 		if (sentimentCatToCount != null){

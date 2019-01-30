@@ -29,7 +29,7 @@ import edu.stanford.muse.index.InternTable;
 import edu.stanford.muse.util.Util;
 
 public class Languages {
-    public static Log log = LogFactory.getLog(Languages.class);
+    private static final Log log = LogFactory.getLog(Languages.class);
 
 	/** Google translate supports: 
 	 * English, Afrikaans, Albanian, Arabic, Armenian, Azerbaijani, Basque, Belarusian, Bengali, 
@@ -45,7 +45,7 @@ public class Languages {
 	 * http://answers.oreilly.com/topic/215-how-to-use-unicode-code-points-properties-blocks-and-scripts-in-regular-expressions
 	 * http://www.oracle.com/technetwork/java/javase/locales-137662.html#util-text
 	 */
-	static String[][] script_languages = new String[][] {
+	private static final String[][] script_languages = new String[][] {
 		{"Armenian", "Armenian"},
 		{"Hebrew", "Hebrew"},
 		{"Arabic", "Arabic"},
@@ -106,21 +106,21 @@ public class Languages {
 
 	/** little helper class */
 	static class LangInfo {
-		Pattern pattern;
-		String language;
-		public LangInfo(Pattern p, String language) {
+		final Pattern pattern;
+		final String language;
+		LangInfo(Pattern p, String language) {
 			this.pattern = p;
 			this.language = language;
 		}
 	}
 	
-	public static List<LangInfo> allPatterns = new ArrayList<>();
-	public static Set<String> allScripts = new LinkedHashSet<>();
-	public static Set<String> allLanguages = new LinkedHashSet<>();
+	private static final List<LangInfo> allPatterns = new ArrayList<>();
+	private static final Set<String> allScripts = new LinkedHashSet<>();
+	private static final Set<String> allLanguages = new LinkedHashSet<>();
 	
 	static { init(); }
 	
-	public static void init()
+	private static void init()
 	{		
 		allPatterns.clear();
 		allLanguages.clear();

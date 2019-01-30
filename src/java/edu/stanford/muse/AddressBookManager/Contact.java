@@ -77,7 +77,7 @@ public class Contact extends UnionFindObject {
 		return hashcode;
 	}*/
 
-	public String getFirstEmail()
+	private String getFirstEmail()
 	{
 		Iterator<String> it = emails.iterator();
 		String firstEmail = it.hasNext() ? it.next() : "Unknown";
@@ -141,7 +141,7 @@ public class Contact extends UnionFindObject {
 		return bestName;
 	}
 
-	public void setBestName(String name){
+	private void setBestName(String name){
 		bestName=name;
 	}
 	/** checks whether s occurs anywhere (case normalized) within any name for this contact */

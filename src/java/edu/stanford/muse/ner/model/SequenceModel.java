@@ -24,7 +24,7 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by vihari on 07/09/15.
- * This class implements NER task with a Bernoulli Mixture model.
+ * This class implements openNLPNER task with a Bernoulli Mixture model.
  * Templates or Binomial mixtures are learned over any list of entities without any supervision required.
  * An EM algorithm is used to estimate the params. The implementation can handle training size of order 100K.
  * It is sometimes desired to train over a much larger training files.
@@ -34,25 +34,25 @@ import java.util.zip.GZIPOutputStream;
  */
 public class SequenceModel implements NERModel, Serializable {
     public static String MODEL_FILENAME = "SeqModel.ser.gz";
-    public static String GAZETTE_FILE = "gazettes.ser.gz";
-    public static String RULES_DIRNAME = "rules";
+    private static final String GAZETTE_FILE = "gazettes.ser.gz";
+    public static final String RULES_DIRNAME = "rules";
     private static final long serialVersionUID = 1L;
-    static Log log = LogFactory.getLog(SequenceModel.class);
+    private static final Log log = LogFactory.getLog(SequenceModel.class);
     //public static final int MIN_NAME_LENGTH = 3, MAX_NAME_LENGTH = 100;
     private static FileWriter fdw = null;
-    protected static Tokenizer tokenizer = new CICTokenizer();
+    private static Tokenizer tokenizer = new CICTokenizer();
 
-    static boolean DEBUG = false;
-    protected static short UNKNOWN_TYPE = -10;
+    private static final boolean DEBUG = false;
+    static final short UNKNOWN_TYPE = -10;
 
-    static Random rand = new Random(1);
+    private static final Random rand = new Random(1);
 
     //mixtures of the BMM model
-    public Map<String, MU> mixtures = new LinkedHashMap<>();
+    private Map<String, MU> mixtures = new LinkedHashMap<>();
     //Keep the ref. to the gazette lists it is trained on so that we can lookup these when extracting entities.
-    public Map<String,String> gazettes;
+    private final Map<String,String> gazettes;
 
-    public SequenceModel(Map<String,MU> mixtures, Map<String,String> gazettes) {
+    private SequenceModel(Map<String, MU> mixtures, Map<String, String> gazettes) {
         this.mixtures = mixtures;
         this.gazettes = gazettes;
     }
@@ -129,7 +129,7 @@ public class SequenceModel implements NERModel, Serializable {
         Map<String,Map<String,Float>> muPriors;
         Map<String,String> gazettes;
 
-        static List<String> ignoreDBpediaTypes = new ArrayList<>();
+        static  List<String> ignoreDBpediaTypes = new ArrayList<>();
         static{
             //Consider this, the type dist. of person-like types with the stop word _of_ is
             //10005 Person|Agent
@@ -915,7 +915,7 @@ public class SequenceModel implements NERModel, Serializable {
     }
 
     //writes a .ser.gz file to the file passed in args.
-    static void writeObjectAsSerGZ(Object o, String fileName) throws IOException{
+    private static void writeObjectAsSerGZ(Object o, String fileName) throws IOException{
         FileOutputStream fos = new FileOutputStream(new File(fileName));
         GZIPOutputStream gos = new GZIPOutputStream(fos);
         ObjectOutputStream oos = new ObjectOutputStream(gos);
@@ -964,7 +964,7 @@ public class SequenceModel implements NERModel, Serializable {
         return new SequenceModel(mixtures, gazette);
     }
 
-    public static synchronized Map<String,String> loadGazette(String modelDirName){
+    private static synchronized Map<String,String> loadGazette(String modelDirName){
         ObjectInputStream ois;
         try {
             ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
@@ -992,7 +992,7 @@ public class SequenceModel implements NERModel, Serializable {
     }
 
     //returns token -> {redirect (can be the same as token), page length of the page it redirects to}
-    static Map<String,Map<String,Integer>> getTokenTypePriors(){
+    private static Map<String,Map<String,Integer>> getTokenTypePriors(){
         Map<String,Map<String,Integer>> pageLengths = new LinkedHashMap<>();
         log.info("Parsing token types...");
         try{
@@ -1020,7 +1020,7 @@ public class SequenceModel implements NERModel, Serializable {
         return pageLengths;
     }
 
-    public Span[] findEntitiesFromCICFile(String filename){
+    private Span[] findEntitiesFromCICFile(String filename){
         //get all triples from CIC file..
         List<Triple<String,Integer,Integer>> ciclist = readCICFromFile(filename);
         List<Span> spans = new ArrayList<>();
@@ -1190,7 +1190,7 @@ public class SequenceModel implements NERModel, Serializable {
 
     /**
      * Trains a SequenceModel with default parameters*/
-    public static SequenceModel train() {
+    private static SequenceModel train() {
         long st = System.currentTimeMillis();
         SequenceModel model = train(0.2f, 3);
         try {
@@ -1204,7 +1204,7 @@ public class SequenceModel implements NERModel, Serializable {
         return model;
     }
 
-    static void loadAndTestNERModel(){
+    private static void loadAndTestNERModel(){
         if (fdw == null) {
             try {
                 fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));

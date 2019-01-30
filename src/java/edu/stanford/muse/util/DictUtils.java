@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -21,24 +22,24 @@ import edu.stanford.muse.index.InternTable;
 import edu.stanford.muse.index.MyTokenizer;
 
 public class DictUtils {
-	private static Log			log				= LogFactory.getLog(IndexUtils.class);
+	private static final Log			log				= LogFactory.getLog(IndexUtils.class);
 
 	/**
 	 * some common word sets. static so that all indexers share the same objects
 	 */
-	public static Set<String>			stopWords		= new HashSet<>();
+	private static Set<String>			stopWords		= new HashSet<>();
 	public static Set<String>	commonDictWords	= new HashSet<>();				// these will be pruned from the output
 	public static Set<String>	fullDictWords	= new HashSet<>();
 	public static Set<String>	commonDictWords5000 = new HashSet<>();
-	public static Set<String>	topNames		= new HashSet<>();				// used for NER
-	public static Set<String>	tabooNames		= new LinkedHashSet<>();		// this will be ignored by NER
+	public static Set<String>	topNames		= new HashSet<>();				// used for openNLPNER
+	public static Set<String>	tabooNames		= new LinkedHashSet<>();		// this will be ignored by openNLPNER
 	public static Set<String>   excludedFilesFromImport = new LinkedHashSet<>(); //this will be ignored when listing the mbox files during import.
 	// bannedWords => discrete word; bannedStrings => occurs anywhere in the name
 	// both should be lower case
 	public static Set<String>	bannedWordsInPeopleNames	= new HashSet<>(), bannedStringsInPeopleNames = new HashSet<>();
 
 	public static Set<String>	bannedStartStringsForEmailAddresses = new HashSet<>();
-	static Set<String>			joinWords					= new HashSet<>();  // this will be ignored for the indexing
+	private static Set<String>			joinWords					= new HashSet<>();  // this will be ignored for the indexing
 	private static final String	COMMENT_STRING				= "#";
 
 	static {
@@ -50,43 +51,43 @@ public class DictUtils {
 		try {
 			InputStream is = Config.getResourceAsStream("join.words");
 			if (is != null) {
-				joinWords = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				joinWords = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("stop.words");
 			if (is != null) {
-				stopWords = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				stopWords = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("dict.words");
 			if (is != null) {
-				commonDictWords = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				commonDictWords = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("dict.words.full");
 			if (is != null) {
-				fullDictWords = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				fullDictWords = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("words.5000");
 			if (is != null) {
-				commonDictWords5000 = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				commonDictWords5000 = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("top-names");
 			if (is != null) {
-				topNames = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				topNames = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				is.close();
 			}
 
 			is = Config.getResourceAsStream("taboo-names");
 			if (is != null) {
-				tabooNames = readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+				tabooNames = readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
 				tabooNames.addAll(joinWords);
 				tabooNames.addAll(stopWords);
 				is.close();
@@ -187,14 +188,14 @@ public class DictUtils {
 		return joinWords.contains(canonicalizeTerm(term));
 	}
 
-	public static String canonicalizeMultiWordTerm(String term, boolean doStemming)
+	private static String canonicalizeMultiWordTerm(String term, boolean doStemming)
 	{
 		//		return canonicalizeMultiWordTerm(term, doStemming, true); // by default, skip join words
 		return canonicalizeMultiWordTerm(term, doStemming, false); // by default, skip join words
 	}
 
 	// canonicalizes term, may or may not be multi word
-	public static String canonicalizeMultiWordTerm(String term, boolean doStemming, boolean skipJoinWords)
+	private static String canonicalizeMultiWordTerm(String term, boolean doStemming, boolean skipJoinWords)
 	{
 		// tokenize, ignoring punctuation
 		MyTokenizer st = new MyTokenizer(term); // use mytokenizer because the result of this function will eventually be matched with the content which is parsed with MyTokenizer too
@@ -216,7 +217,7 @@ public class DictUtils {
 	}
 
 	/** for a single word only, use canonicalizeMultiWordTerm for phrases */
-	public static String canonicalizeTerm(String term, boolean doStemming)
+	private static String canonicalizeTerm(String term, boolean doStemming)
 	{
 		if (term.contains(" ") || term.contains("\t"))
 			log.warn("Multi word term used in canonicalizeterm: " + term + " \nUse canonicalizeMultiWordTerm() instead");
@@ -246,7 +247,7 @@ public class DictUtils {
 	}
 
 	/** stemming on by default */
-	public static String canonicalizeTerm(String term) {
+	private static String canonicalizeTerm(String term) {
 		return canonicalizeTerm(term, true);
 	}
 

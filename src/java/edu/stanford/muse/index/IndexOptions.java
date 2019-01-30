@@ -26,17 +26,18 @@ import edu.stanford.muse.util.Util;
 class IndexOptions implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-	private List<String> inputPrefixes = new ArrayList<>();
+	private final List<String> inputPrefixes = new ArrayList<>();
 //	String outputPrefix;
-	boolean monthsNotYears = true, noRecipients = false;
+private boolean monthsNotYears = true;
+    private boolean noRecipients = false;
 	private boolean do_NER = false;
 	private boolean locationsOnly = false;
 	private boolean orgsOnly = false;
-	Filter filter;
+	private Filter filter;
 	boolean includeQuotedMessages = false;
 	boolean ignoreDocumentBody = false;
-	boolean incrementalTFIDF = false;
-	boolean categoryBased = false;
+	private boolean incrementalTFIDF = false;
+	private boolean categoryBased = false;
 	boolean indexAttachments = true;
 	int subjectWeight = Indexer.DEFAULT_SUBJECT_WEIGHT;
 	
@@ -76,7 +77,7 @@ class IndexOptions implements Serializable {
 				case "-yearly":
 					monthsNotYears = false;
 					break;
-				case "-NER":
+				case "-openNLPNER":
 					do_NER = true;
 					break;
 				case "-subjectWeight":
@@ -87,11 +88,11 @@ class IndexOptions implements Serializable {
 					boolean do_allText = false;
 					break;
 				case "-locationsOnly":
-					locationsOnly = do_NER = true; // force NER true
+					locationsOnly = do_NER = true; // force openNLPNER true
 
 					break;
 				case "-orgsOnly":
-					orgsOnly = do_NER = true; // force NER true
+					orgsOnly = do_NER = true; // force openNLPNER true
 
 					break;
 				case "-date":
@@ -145,7 +146,7 @@ class IndexOptions implements Serializable {
 		String s = "Months/!Years "; if (monthsNotYears) tsb.append(s); else fsb.append(s);
 		s = "Include quoted messages "; if (includeQuotedMessages) tsb.append(s); else fsb.append(s);
 		s = "Incremental TF-IDF "; if (incrementalTFIDF) tsb.append(s); else fsb.append(s);
-		s = "Do-NER "; if (do_NER) tsb.append(s); else fsb.append(s);
+		s = "Do-openNLPNER "; if (do_NER) tsb.append(s); else fsb.append(s);
 		s = "Locations only "; if (locationsOnly) tsb.append(s); else fsb.append(s);
 		s = "Orgs only "; if (orgsOnly) tsb.append(s); else fsb.append(s);
 		s = "Category based "; if (categoryBased) tsb.append(s); else fsb.append(s);

@@ -27,13 +27,13 @@ import java.util.*;
 /** a collection of Data's, for which a html view can be generated. */
 public class BlobSet {
 
-private static Log log = LogFactory.getLog(BlobSet.class);
+private static final Log log = LogFactory.getLog(BlobSet.class);
 
 private List<Blob> allBlobs; // all data's known, some of them may be duplicates (in terms of equals()), even though all the items are distinct object
-private Map<String, List<Blob>> personToBlobMap = new LinkedHashMap<>();
-private Map<Blob, List<Blob>> uniqueBlobMap = new LinkedHashMap<>();
-private BlobStore blobStore;
-private String rootDir;
+private final Map<String, List<Blob>> personToBlobMap = new LinkedHashMap<>();
+private final Map<Blob, List<Blob>> uniqueBlobMap = new LinkedHashMap<>();
+private final BlobStore blobStore;
+private final String rootDir;
 
 /*
 private String piclensFormat = "<object id=\"o\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\"1200\" height=\"720\">\n" +
@@ -68,7 +68,7 @@ private void compute_unique_data_map()
 }
 
 // Instance variable for Blob stats
-private Blob.BlobStats stats;
+private final Blob.BlobStats stats;
 
 // Public Method to get the Blob stats of the current BlobSet
 public Blob.BlobStats getStats(){
@@ -214,9 +214,9 @@ private int emit_gallery_page(String prefix, String applicationURL, String extra
     	
     	for (Blob b: unique_datas)
     	{
-    		String title = blobStore.get_URL_Normalized(b);;
-    		String description = blobStore.get_URL_Normalized(b);;
-    		String contentURL, thumbURL, linkURL;
+    		String title = blobStore.get_URL_Normalized(b);
+            String description = blobStore.get_URL_Normalized(b);
+            String contentURL, thumbURL, linkURL;
 
     		// copy over the data content and its thumbnail from the data store to the dataset directory
     		if (!blobStore.contains(b))

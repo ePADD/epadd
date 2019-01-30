@@ -9,17 +9,20 @@ import java.util.*;
 
 public class AssignEmailNameTypes {
 
-	static PrintStream out = System.out, err = System.err;
+	private static PrintStream out = System.out;
+    private static final PrintStream err = System.err;
 	
-	static Map<String, Info> hitTitles = new LinkedHashMap<>();
-	static String typesFile = "instance_types_en.nt1";
+	private static final Map<String, Info> hitTitles = new LinkedHashMap<>();
+	private static final String typesFile = "instance_types_en.nt1";
 	static String abstractsFile = "short_abstracts_en.nt";
-	static String pageLengthsFile = "page-lengths";
-	static String title = "NONE";
+	private static final String pageLengthsFile = "page-lengths";
+	private static String title = "NONE";
 	
 	static class Info implements Comparable<Info>, Serializable { 
-		String title, snippet, type = "notype"; int score, times;
-		public Info(String t) { this.title = t; } 
+		final String title;
+		String snippet;
+		String type = "notype"; int score, times;
+		Info(String t) { this.title = t; }
 		public int compareTo(Info other)
 		{
 			return other.score - this.score;
@@ -30,13 +33,13 @@ public class AssignEmailNameTypes {
 			return score/1000 + "k " + title + " (" + type + ") # " + snippet;
 		}
 		
-		public String toString(boolean b)
+		String toString(boolean b)
 		{
 			return score/1000 + "k " + title + " (" + Util.pluralize(times,  "time") + ") # " + snippet;
 		}
 	}
 	
-	public static void readTypes() {
+	private static void readTypes() {
 		int count = 0;
 		try {
 			LineNumberReader lnr = new LineNumberReader(new FileReader(typesFile));

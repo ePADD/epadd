@@ -12,16 +12,16 @@ import java.util.regex.Pattern;
 public class FeatureUtils implements Serializable {
     static Log log = LogFactory.getLog(FeatureUtils.class);
     //DBpedia type mapping of the types this can handle
-    public static Pattern endClean = Pattern.compile("^\\W+|\\W+$");
+    private static final Pattern endClean = Pattern.compile("^\\W+|\\W+$");
     //this is an enhanced list that is different from EnglishDictionary.stopWords
-    public static List<String> sws = Arrays.asList("and","for","to","in","at","on","the","of", "a", "an", "is", "from",
+    public static final List<String> sws = Arrays.asList("and","for","to","in","at","on","the","of", "a", "an", "is", "from",
             "de", "van","von","da","ibn","mac","bin","del","dos","di","la","du","ben","ap","le","bint","do");
-    static List<String> symbols = Arrays.asList("&","-",",");
+    private static final List<String> symbols = Arrays.asList("&","-",",");
     static final boolean DEBUG = false;
 
     private static final long serialVersionUID = 1L;
 
-    static Random rand = new Random();
+    private static final Random rand = new Random();
     static{
         rand.setSeed(5);
     }

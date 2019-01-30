@@ -22,17 +22,20 @@ import edu.stanford.muse.util.Util;
 class WPMine {
 
 	private static PrintStream out = System.out;
-    private static PrintStream err = System.err;
+    private static final PrintStream err = System.err;
 	
-	private static Map<String, Info> hitTitles = new LinkedHashMap<>();
-	private static String typesFile = "instance_types_en.nt1";
-	private static String abstractsFile = "short_abstracts_en.nt";
-	private static String pageLengthsFile = "page-lengths";
+	private static final Map<String, Info> hitTitles = new LinkedHashMap<>();
+	private static final String typesFile = "instance_types_en.nt1";
+	private static final String abstractsFile = "short_abstracts_en.nt";
+	private static final String pageLengthsFile = "page-lengths";
 	private static String title = "NONE";
 	
 	static class Info implements Comparable<Info>, Serializable { 
-		String title, snippet, type = "notype", url; int score;
-		public Info(String t) { this.title = t; } 
+		final String title;
+		String snippet;
+		String type = "notype";
+		String url; int score;
+		Info(String t) { this.title = t; }
 		public int compareTo(Info other)
 		{
 			return other.score - this.score;
@@ -43,7 +46,7 @@ class WPMine {
 			return score/1000 + "k " + title + " (" + type + ") # " + snippet;
 		}
 		
-		public String toString(boolean b)
+		String toString(boolean b)
 		{
 			return (score == 0 ? "- " : (score/1000) + "k ") + title + " # " + snippet;
 		}

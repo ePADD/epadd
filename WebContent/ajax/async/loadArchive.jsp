@@ -79,7 +79,12 @@ public void loadArchive(Multimap<String,String> params, Consumer<StatusProvider>
             dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dir;
         JSPHelper.log.info("Loading archive from: "+dir);
 
-        Archive archive = ArchiveReaderWriter.readArchiveIfPresent(dir);
+        Archive archive = null;
+        if(ModeConfig.isDiscoveryMode())
+            archive = ArchiveReaderWriter.readArchiveIfPresent(dir,ModeConfig.Mode.DISCOVERY);
+        else
+            archive = ArchiveReaderWriter.readArchiveIfPresent(dir);
+
         if (archive == null)
         {
             resultJSON.put ("status", 2);

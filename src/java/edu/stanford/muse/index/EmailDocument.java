@@ -66,8 +66,8 @@ public class EmailDocument extends DatedDocument implements Serializable
 	// default constructor for serialization
 	public EmailDocument() { /* */ }
 	public EmailDocument(String id) { this.id = id; } /* prob. useful only for errors */
-    private static Log log						= LogFactory.getLog(EmailDocument.class);
-	public static transient Map<String,String> uniqueIdToSignature = new LinkedHashMap<>();
+    private static final Log log						= LogFactory.getLog(EmailDocument.class);
+	public static final transient Map<String,String> uniqueIdToSignature = new LinkedHashMap<>();
 
 	public EmailDocument(String id, String emailSource, String folderName, Address[] to, Address[] cc, Address[] bcc, Address[] from, String subject, String messageID, Date date)
 	{
@@ -447,7 +447,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 		return result;
 	}
 
-	public String getSubject()
+	private String getSubject()
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append ("Subject: " + description + "\n");
@@ -814,7 +814,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 			addressBook.processContactsFromMessage(ed, trustedAddrs);
 		addressBook.organizeContacts();
 		//now fill summary object inside that addressbook.
-		Collection<Document> alldocs = docs.stream().collect(Collectors.toList());
+		Collection<Document> alldocs = new ArrayList<>(docs);
 		JSPHelper.log.info("Computing summary of the addressbook");
 		addressBook.fillL1_SummaryObject(alldocs);
 		JSPHelper.log.info("Summary of the addressbook computed");

@@ -39,13 +39,13 @@ public class EntityBook implements Serializable {
     public static long serialVersionUID = 1L;
     public static Log log = LogFactory.getLog(EntityBook.class);
 
-    public static final String DELIMS = " .;,-#@&()";
+    private static final String DELIMS = " .;,-#@&()";
     public final static String DELIMITER = "--";
-    private Short entityType;
+    private final Short entityType;
     // for all entities in this mapper, canonicalized name -> MappedEntity object. to save space, only contains MappedEntity's for entities that actually have more than 1 name variant
-    Map<String, MappedEntity> nameToMappedEntity = new LinkedHashMap<>();
-    Map<MappedEntity,Summary_L1> summary_L1_entityCountMap = new LinkedHashMap<>();
-    JSONArray summary_JSON = null;
+    final Map<String, MappedEntity> nameToMappedEntity = new LinkedHashMap<>();
+    final Map<MappedEntity,Summary_L1> summary_L1_entityCountMap = new LinkedHashMap<>();
+    private JSONArray summary_JSON = null;
     /**
      * case independent, word order independent, case normalized
      */
@@ -85,7 +85,7 @@ public class EntityBook implements Serializable {
         });
     }
 
-    public void fillSummaryFields(Map<MappedEntity, Pair<Double,Set<Document>>> docsetmap){
+    public void fillSummaryFields(Map<MappedEntity, Pair<Double,Set<Document>>> docsetmap,Archive archive){
         JSONArray resultArray = new JSONArray();
         final Integer[] count = {0};//trick to use count (modifiable variable) inside for each.
         summary_L1_entityCountMap.clear();
@@ -97,7 +97,15 @@ public class EntityBook implements Serializable {
                     //get date range
                     Collection<EmailDocument> emaildocs = summary.messages.stream().map(s->(EmailDocument)s).collect(Collectors.toList());
                     Pair<Date,Date> daterange = EmailUtils.getFirstLast(emaildocs,true);
-                    summary.startDate=daterange.first;
+            if(daterange==null) {
+                daterange = new Pair<>(archive.collectionMetadata.firstDate,archive.collectionMetadata.lastDate);
+            }
+            if(daterange.first==null)
+                daterange.first = archive.collectionMetadata.firstDate;
+            if(daterange.second==null)
+                daterange.second = archive.collectionMetadata.lastDate;
+
+            summary.startDate=daterange.first;
                     summary.endDate=daterange.second;
                     summary_L1_entityCountMap.put(entry.getKey(),summary);
 
@@ -212,7 +220,7 @@ nameToMappedEntity.values().forEach(me->{
         if (alphaSort) {
             //sorty by alphabetical order of display names.
             Set<MappedEntity> set = new LinkedHashSet<>(nameToMappedEntity.values());
-            entityList = set.stream().collect(Collectors.toList());
+            entityList = new ArrayList<>(set);
             Collections.sort(entityList, new Comparator<MappedEntity>() {
                 @Override
                 public int compare(MappedEntity o1, MappedEntity o2) {

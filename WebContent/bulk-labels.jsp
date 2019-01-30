@@ -144,14 +144,15 @@
     }
 
 	$(document).ready(function() {
-		$('.set-all').click (function(e) {
+		$(document).on('click','.set-all', (function(e) {
 		    var labelID = $(e.target).attr ('data-labelID');
+
             do_action (labelID, 'set');
-        });
-        $('.unset-all').click (function(e) {
+        }));
+        $(document).on('click','.unset-all', (function(e) {
             var labelID = $(e.target).attr ('data-labelID');
             do_action (labelID, 'unset');
-        });
+        }));
 	});
 
 </script>

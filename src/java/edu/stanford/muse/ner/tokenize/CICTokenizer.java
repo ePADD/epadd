@@ -17,33 +17,33 @@ import java.util.regex.Pattern;
 /**
  * CIC Pattern based tokenizer
  * This is a utility class to segment pseudo proper nouns from text and emit them
- * Tokenizer is often called in an NER or some other text-processing pipeline so be extra careful about the efficiency
+ * Tokenizer is often called in an openNLPNER or some other text-processing pipeline so be extra careful about the efficiency
  *
  * TODO: CIC tokenizer fails when the sentence tokenizer fails, it is required to make the sentence tokenizer handle at least a few common abbreviations (such as Col. Mt. Inc. Corp. etc.) to make the application look less stupid; OpenNLP splits on some of the periods falsely
  * TODO: split tokens like P.V. Krishnamoorthi -> P. V. Krishnamoorthi
  * TODO: canonicalize and tokenize words such that stop words irrespective of their capitalised form are recognized, for example: "In American Culture", "IN SPANISH", "A NEW FEDERAL POLICY", "THE PROVOST"
  */
 public class CICTokenizer implements Tokenizer, Serializable {
-    private static Log log						= LogFactory.getLog(CICTokenizer.class);
+    private static final Log log						= LogFactory.getLog(CICTokenizer.class);
 
     private static Pattern	entityPattern;
     private static Pattern multipleStopWordPattern;
     //NOTE: All the string lists below namely commonStartWords, commonEndWords, badSubstrings are case-insensitive
     //strips these words from the emitted token if they are seen in the start
     //Checks and strips if a phrase contains {[common start word]+" "}
-    private static String[] commonStartWords = new String[]{
+    private static final String[] commonStartWords = new String[]{
             "hey","the","a","an","hello","dear","hi","met","from","quote","from:","and","my","our","regarding","quoting","on behalf of","behalf of","sorry","but",
             //include all stop words
             "and","for","a","the","to","at", "in", "of",
             "on","with","ok","your","I","to:","thanks", "let","does", "sure", "thank","you","about","&","yes","if","by","why","said","even","am","respected","although","as"
     };
     //Checks and strips if a phrase contains {" "+[common end word]}
-    private static String[] commonEndWords = new String[]{
+    private static final String[] commonEndWords = new String[]{
             "I", "and","for","a","the","to","at", "in", "of"
     };
     //Emitted tokens containing these sub-strings will be dropped
     //checked for {contains " "+[bad substring]+" "} or starts with {[bad substring]+" "} or ends with {" "+[bad substring]}
-    private static String[] badSubstrings = new String[]{
+    private static final String[] badSubstrings = new String[]{
             "Not ", "I'm", "I'll","I am","n't","I've"," Have ","I'd", "You've", "We've", "They've",
             //stuff specifically related to emails
             "Email","To","From","Date","Subject", "begin pgp"

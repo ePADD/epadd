@@ -56,8 +56,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class Util
 {
-	public static String[]	stopwords	= new String[] { "but", "be", "with", "such", "then", "for", "no", "will", "not", "are", "and", "their", "if", "this", "on", "into", "a", "there", "in", "that", "they", "was", "it", "an", "the", "as", "at", "these", "to", "of" };
-	public static boolean	BLUR		= true;																																																								// blurring of fnames
+	public static final String[]	stopwords	= new String[] { "but", "be", "with", "such", "then", "for", "no", "will", "not", "are", "and", "their", "if", "this", "on", "into", "a", "there", "in", "that", "they", "was", "it", "an", "the", "as", "at", "these", "to", "of" };
+	private static boolean	BLUR		= true;																																																								// blurring of fnames
 	private static final long KB = 1024;
 	public static final char OR_DELIMITER = ';'; // used to separate parts of fields that can have multipled OR'ed clauses
 
@@ -65,7 +65,7 @@ public class Util
 		BLUR = b;
 	}
 
-	static Pattern	emptyP	= null;
+	private static Pattern	emptyP	= null;
 	static {
 		emptyP = Pattern.compile("\\W*?\\w+.*");
 	}
@@ -218,7 +218,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	}
 
-	public static void die(String reason)
+	private static void die(String reason)
 	{
 		System.err.println(reason);
 		ASSERT(false);
@@ -359,7 +359,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		run_command(tokensArray, dir);
 	}
 
-	public static void run_command(String[] cmd, String dir) throws IOException
+	private static void run_command(String[] cmd, String dir) throws IOException
 	{
 		// introduced the envp array with the PATH= string after
 		// /opt/local/bin/convert started failing
@@ -582,7 +582,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	public static List<String> getLinesFromInputStream(InputStream in, boolean ignoreCommentLines) throws IOException
 	{
-		return getLinesFromReader(new InputStreamReader(in, "UTF-8"), ignoreCommentLines);
+		return getLinesFromReader(new InputStreamReader(in, StandardCharsets.UTF_8), ignoreCommentLines);
 	}
 
 	/**
@@ -590,7 +590,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 * trims spaces from the lines,
 	 * ignores lines starting with # if ignoreCommentLines is true
 	 */
-	public static List<String> getLinesFromReader(Reader reader, boolean ignoreCommentLines) throws IOException
+	private static List<String> getLinesFromReader(Reader reader, boolean ignoreCommentLines) throws IOException
 	{
 		LineNumberReader lnr = new LineNumberReader(reader);
 		List<String> result = new ArrayList<>();
@@ -1011,7 +1011,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return result;
 	}
 
-	public static List<String> tokenizeAlphaChars(String s)
+	private static List<String> tokenizeAlphaChars(String s)
 	{
 		List<String> result = new ArrayList<>();
 		if (Util.nullOrEmpty(s))
@@ -1075,7 +1075,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return paras;
 	}
 
-	public static void testEllipsizeKeepingExtension()
+	private static void testEllipsizeKeepingExtension()
 	{
 		ASSERT(ellipsizeKeepingExtension("Olson Melvile Reading Group Description (Revised 08.23.01).doc", 15).equals("Olson M...).doc"));
 		ASSERT(ellipsizeKeepingExtension("RobertCreeleyInterview.rtf", 15).equals("RobertC...w.rtf"));
@@ -1275,7 +1275,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	}
 
 	/** returns histogram counts divided by given base */
-	public static double[] normalizeHistogramToBase(int[] hist, double base)
+	private static double[] normalizeHistogramToBase(int[] hist, double base)
 	{
 		double[] result = new double[hist.length];
 		for (int i = 0; i < hist.length; i++)
@@ -1323,9 +1323,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	{
 		BufferedReader br;
 		if (filename.endsWith(".gz"))
-			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(filename)), "UTF-8"));
+			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(filename)), StandardCharsets.UTF_8));
 		else
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
 
 		StringBuilder sb = new StringBuilder();
 		// read all the lines one by one till eof
@@ -1738,7 +1738,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	// Returns true if all deletions were successful.
 	// If a deletion fails, the method stops attempting to delete and returns
 	// false.
-	public static boolean deleteDir(File f,Log log)
+	private static boolean deleteDir(File f, Log log)
 	{
 		if (f.isDirectory())
 		{
@@ -1770,7 +1770,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 			warnIf(true, "Sorry, can't delete path because it doesn't even exist: " + path,log);
 	}
 
-    static String cleanEmailStuff(String content){
+    private static String cleanEmailStuff(String content){
         content = content.replaceAll("(Email:|To:|From:|Date:|Subject: Re:|Subject:)\\W+","");
         return content;
     }
@@ -1796,7 +1796,8 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
     }
 
     public static class MyFilenameFilter implements FilenameFilter {
-		private String	prefix, suffix; // suffix is optional
+		private final String	prefix;
+		private String suffix; // suffix is optional
 
 		public MyFilenameFilter(String prefix) {
 			this.prefix = prefix;
@@ -1932,7 +1933,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	}
 
 	/** sorts in decreasing order of second element of pair */
-	public static <S, T extends Comparable<? super T>> void sortPairsBySecondElementIncreasing(List<Pair<S, T>> input)
+	private static <S, T extends Comparable<? super T>> void sortPairsBySecondElementIncreasing(List<Pair<S, T>> input)
 	{
 		input.sort((p1, p2) -> {
 			T i1 = p1.getSecond();
@@ -1975,7 +1976,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		});
 	}
 
-	public static <T> List<T> permuteList(List<T> in, int seed)
+	private static <T> List<T> permuteList(List<T> in, int seed)
 	{
 		// create a copy of the input
 		List<T> result = new ArrayList<>();
@@ -2207,7 +2208,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	 * if running without security manager). expand=true expands collections
 	 * (array, list, map)
 	 */
-	public static Map<String, String> convertObjectToMap(Object o, boolean expand)
+	private static Map<String, String> convertObjectToMap(Object o, boolean expand)
 	{
 		Map<String, String> map = new LinkedHashMap<>();
 		if (o == null)
@@ -2378,7 +2379,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 
 	// converts fq class names to simple names
 	// e.g. a.b.c.d to d
-	public static String stripPackageFromClassName(String class_name)
+	private static String stripPackageFromClassName(String class_name)
 	{
 		// System.out.toString ("input is " + s);
 
@@ -2480,7 +2481,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		}
 	}
 
-	public static String tail(String s, String separator)
+	private static String tail(String s, String separator)
 	{
 		if (s == null)
 			return null;
@@ -2496,7 +2497,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 			return s;
 	}
 
-	public static void test_tail()
+	private static void test_tail()
 	{
 		Util.ASSERT(tail(null, "|") == null);
 		Util.ASSERT(tail("///", "/").equals(""));
@@ -2820,7 +2821,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return count;
 	}
 
-	private static Pattern spacePattern = Pattern.compile ("[\\s\\xA0]+");
+	private static final Pattern spacePattern = Pattern.compile ("[\\s\\xA0]+");
 	/** replaces sequences of space chars with one space */
 	public static String canonicalizeSpaces(String s)
 	{
@@ -2884,7 +2885,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		// return Sets.union(castOrCloneAsSet(s1), castOrCloneAsSet(s2));
 	}
 
-    public static <E> List<E> listUnion(Collection<E> s1, Collection<E> s2){
+    private static <E> List<E> listUnion(Collection<E> s1, Collection<E> s2){
         if(s1 == null && s2 == null)
             return null;
         if(s1 == null)
@@ -2993,7 +2994,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return newParams;
 	}
 
-	public static boolean isWindowsPlatform()
+	private static boolean isWindowsPlatform()
 	{
 		return (System.getProperty("os.name").toLowerCase().contains("windows"));
 	}
@@ -3179,7 +3180,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
         }
     }
 
-	public static void testTokenizeAlphaChars() {
+	private static void testTokenizeAlphaChars() {
 		String[] tests = new String[]{"12abc xyz", "abc", "abc xyz12", "Dr. Prof. Doolit"};
 		for (String s : tests)
 		{
@@ -3190,7 +3191,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		}
 	}
 
-	public static void test() {
+	private static void test() {
 		testEllipsizeKeepingExtension();
 		testGetExtension();
 		System.out.println("Tests passed ok");

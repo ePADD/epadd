@@ -130,9 +130,17 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 
     AddressBook addressBook = archive.addressBook;
 
-    Pair<Date, Date> p = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
-    Date globalStart = p.getFirst();
-    Date globalEnd = p.getSecond();
+    Pair<Date, Date> duration = EmailUtils.getFirstLast(allDocs, true /* ignore invalid dates */);
+	if(duration==null) {
+		duration = new Pair<>(archive.collectionMetadata.firstDate,archive.collectionMetadata.lastDate);
+	}
+	if(duration.first==null)
+		duration.first = archive.collectionMetadata.firstDate;
+	if(duration.second==null)
+		duration.second = archive.collectionMetadata.lastDate;
+
+	Date globalStart = duration.getFirst();
+    Date globalEnd = duration.getSecond();
     List<Date> intervals = null;
     int nIntervals = 0;
     if (globalStart != null && globalEnd != null) {

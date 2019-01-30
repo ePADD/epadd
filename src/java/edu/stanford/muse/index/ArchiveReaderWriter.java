@@ -40,12 +40,12 @@ import java.util.zip.GZIPOutputStream;
 public class ArchiveReaderWriter{
 
     public static final String SESSION_SUFFIX = ".archive.v2"; // all session files end with .session
-    private static Log log	= LogFactory.getLog(SimpleSessions.class);
+    private static final Log log	= LogFactory.getLog(SimpleSessions.class);
     //private static String SESSIONS_DIR = null;
-    private static String MUSE_DIRNAME = ".muse"; // clients might choose to override this
+    private static   String MUSE_DIRNAME = ".muse"; // clients might choose to override this
 
-    public static String CACHE_BASE_DIR = null; // overruled (but not overwritten) by session's attribute "cacheDir"
-    public static String CACHE_DIR = null; // overruled (but not overwritten) by session's attribute "cacheDir"
+    public static   String CACHE_BASE_DIR = null; // overruled (but not overwritten) by session's attribute "cacheDir"
+    public static   String CACHE_DIR = null; // overruled (but not overwritten) by session's attribute "cacheDir"
 
     static {
         MUSE_DIRNAME = SimpleSessions.getVarOrDefault("muse.defaultArchivesDir", System.getProperty("user.home") + File.separator + ".muse");
@@ -58,29 +58,29 @@ public class ArchiveReaderWriter{
     //#############################################Start: Weak reference cache for the archive object and archive ID################################
     // an archive in a given dir should be loaded only once into memory.
     // this map stores the directory -> archive mapping.
-    private static LinkedHashMap<String, WeakReference<Archive>> globaldirToArchiveMap = new LinkedHashMap<>();
-    private static LinkedHashMap<String,Archive> globalArchiveIDToArchiveMap = new LinkedHashMap<>();
-    private static LinkedHashMap<Archive,String> globalArchiveToArchiveIDMap = new LinkedHashMap<>();
+    private static final LinkedHashMap<String, WeakReference<Archive>> globaldirToArchiveMap = new LinkedHashMap<>();
+    private static final LinkedHashMap<String,Archive> globalArchiveIDToArchiveMap = new LinkedHashMap<>();
+    private static final LinkedHashMap<Archive,String> globalArchiveToArchiveIDMap = new LinkedHashMap<>();
 
     //#############################################End: Weak reference cache for the archive object and archive#####################################
 
     //#############################################Start: Reading/loading an archive bag###########################################################
-    /**
-     * loads session from the given filename, and returns the map of loaded
-     * attributes.
-     * if readOnly is false, caller MUST make sure to call packIndex.
-     * baseDir is Indexer's baseDir (path before "indexes/")
-     *
-     * @throws IOException
-     * @throws LockObtainFailedException
-     * @throws CorruptIndexException
-     * Change as on Nov 2017-
-     * Earlier the whole archive was serialized and deserialized as one big entity. Now it is broken into
-     * four main parts, Addressbook, entitybook, correspondentAuthorityMapper and the rest of the object
-     * We save all these four components separately in saveArchive. Therefore while reading, we need to read
-     * all those separately from appropriate files.
-     */
-    public static Map<String, Object> loadSessionAsMap(String filename, String baseDir, boolean readOnly) throws IOException
+         /**
+         * loads session from the given filename, and returns the map of loaded
+         * attributes.
+         * if readOnly is false, caller MUST make sure to call packIndex.
+         * baseDir is Indexer's baseDir (path before "indexes/")
+         *
+         * @throws IOException
+         * @throws LockObtainFailedException
+         * @throws CorruptIndexException
+         * Change as on Nov 2017-
+         * Earlier the whole archive was serialized and deserialized as one big entity. Now it is broken into
+         * four main parts, Addressbook, entitybook, correspondentAuthorityMapper and the rest of the object
+         * We save all these four components separately in saveArchive. Therefore while reading, we need to read
+         * all those separately from appropriate files.
+         */
+    private static Map<String, Object> loadSessionAsMap(String filename, String baseDir, boolean readOnly,ModeConfig.Mode mode) throws IOException
     {
         log.info("Loading session from file " + filename + " size: " + Util.commatize(new File(filename).length() / 1024) + " KB");
 
@@ -153,36 +153,9 @@ public class ArchiveReaderWriter{
             log.info("Setting up post-deserialization action");
             archive.postDeserialized(baseDir, readOnly);
             log.info("Post-deserialization action completed");
-
-            /////////////////AddressBook////////////////////////////////////////////
-            log.info("Loading address book");
-           AddressBook ab = readAddressBook(addressBookPath,archive.getAllDocs());
-            archive.addressBook = ab;
-            log.info("Addressbook loaded successfully");
-
-            ////////////////EntityBook/////////////////////////////////////
-            log.info("Loading EntityBook Manager");
-            EntityBookManager eb = readEntityBookManager(archive,entityBookPath);
-            archive.setEntityBookManager(eb);
-            log.info("EntityBook Manager loaded successfully");
-            ///////////////CorrespondentAuthorityMapper/////////////////////////////
-            CorrespondentAuthorityMapper cmapper = null;
-            log.info("Loading Correspondent authority mapper");
-            cmapper = CorrespondentAuthorityMapper.readObjectFromStream(cAuthorityPath);
-            log.info("Correspondent authority mapper loaded successfully");
-            archive.correspondentAuthorityMapper = cmapper;
-            /////////////////Label Mapper/////////////////////////////////////////////////////
-            log.info("Loading Label Manager");
-            LabelManager labelManager = readLabelManager(labMapDirPath);
-            archive.setLabelManager(labelManager);
-            log.info("Label Manager loaded successfully");
-
-            ///////////////Annotation Manager///////////////////////////////////////////////////////
-            log.info("Loading Annotation Manager");
-            AnnotationManager annotationManager = AnnotationManager.readObjectFromStream(annotationMapPath);
-            archive.setAnnotationManager(annotationManager);
-            log.info("Annotation Manager loaded successfully");
             ///////////////Processing metadata////////////////////////////////////////////////
+            //Read collection metadata first because some of the collection's information might be used while loading other modules. Like first date and last date of an archive
+            //is used when doc's dates are found corrupted.
             // override the PM inside the archive with the one in the PM file
             //update: since v5 no pm will be inside the archive.
             // this is useful when we import a legacy archive into processing, where we've updated the pm file directly, without updating the archive.
@@ -194,6 +167,40 @@ public class ArchiveReaderWriter{
             }
             if(archive.collectionMetadata!=null)
                 log.info("Collection metadata loaded successfully");
+            /////////////////AddressBook////////////////////////////////////////////
+            log.info("Loading address book");
+            archive.addressBook = readAddressBook(addressBookPath,archive.getAllDocs());
+            log.info("Addressbook loaded successfully");
+
+            ////////////////EntityBook/////////////////////////////////////
+            log.info("Loading EntityBook Manager");
+            EntityBookManager eb = readEntityBookManager(archive,entityBookPath);
+            archive.setEntityBookManager(eb);
+            log.info("EntityBook Manager loaded successfully");
+            ///////////////CorrespondentAuthorityMapper/////////////////////////////
+            if(mode!= ModeConfig.Mode.DISCOVERY) {
+                CorrespondentAuthorityMapper cmapper = null;
+                log.info("Loading Correspondent authority mapper");
+                cmapper = CorrespondentAuthorityMapper.readObjectFromStream(cAuthorityPath);
+                log.info("Correspondent authority mapper loaded successfully");
+                archive.correspondentAuthorityMapper = cmapper;
+            }
+            /////////////////Label Mapper/////////////////////////////////////////////////////
+            if(mode!= ModeConfig.Mode.DISCOVERY) {
+                log.info("Loading Label Manager");
+                LabelManager labelManager = readLabelManager(labMapDirPath);
+                archive.setLabelManager(labelManager);
+                log.info("Label Manager loaded successfully");
+            }
+            ///////////////Annotation Manager///////////////////////////////////////////////////////
+            if(mode!= ModeConfig.Mode.DISCOVERY) {
+
+                log.info("Loading Annotation Manager");
+                AnnotationManager annotationManager = AnnotationManager.readObjectFromStream(annotationMapPath);
+                archive.setAnnotationManager(annotationManager);
+                log.info("Annotation Manager loaded successfully");
+            }
+
             /////////////////////Blob Normalization map (IF exists)//////////////////////////////////////////////////////
             if(new File(blobNormalizationMapPath).exists()) {
                 log.info("Computing blob normalization map (An artifact of AMatica tool)");
@@ -211,7 +218,7 @@ public class ArchiveReaderWriter{
         return result;
     }
 
-    public static LabelManager readLabelManager(String labMapDirPath) {
+    private static LabelManager readLabelManager(String labMapDirPath) {
         LabelManager labelManager = null;
         try {
             labelManager = LabelManager.readObjectFromStream(labMapDirPath);
@@ -225,8 +232,7 @@ public class ArchiveReaderWriter{
 
     public static EntityBookManager readEntityBookManager(Archive archive, String entityBookPath) {
 
-            EntityBookManager entityBookManager = EntityBookManager.readObjectFromFiles(archive,entityBookPath);
-            return  entityBookManager;
+        return EntityBookManager.readObjectFromFiles(archive,entityBookPath);
     }
 
     public static AddressBook readAddressBook(String addressBookPath,Collection<Document> alldocs) {
@@ -450,7 +456,7 @@ public class ArchiveReaderWriter{
         archive.collectionMetadata.firstDate = firstDate;
         archive.collectionMetadata.lastDate = lastDate;
         archive.collectionMetadata.nIncomingMessages = receivedMessages;
-        archive.collectionMetadata.nOutgoingMessages = sentMessages;
+        archive.collectionMetadata.nOutgoingMessages = archive.getAddressBook().getMsgsSentByOwner();
         archive.collectionMetadata.nHackyDates = hackyDates;
 
         archive.collectionMetadata.nBlobs = totalAttachments;
@@ -514,11 +520,7 @@ public class ArchiveReaderWriter{
         String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separator + Archive.ENTITYBOOKMANAGER_SUFFIX;
         log.info("Saving entity book of type "+entityType+" to file ");
 
-        try {
-            archive.getEntityBookManager().writeObjectToFile(dir,entityType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        archive.getEntityBookManager().writeObjectToFile(dir,entityType);
 
         String filepath = dir + File.separator + NEType.getTypeForCode(entityType).getDisplayName()+ File.separator + Archive.ENTITYBOOK_SUFFIX;
         //if this was an incremental update in entitybook, we need to update the bag's metadata as well..
@@ -538,7 +540,7 @@ public class ArchiveReaderWriter{
 
         try {
             archive.getCorrespondentAuthorityMapper().writeObjectToStream(cAuthorityPath);
-        } catch (ParseException | IOException | ClassNotFoundException e) {
+        } catch (ParseException | IOException e) {
             log.warn("Exception while writing correspondent authority files"+e.getMessage());
             e.printStackTrace();
         }
@@ -572,7 +574,7 @@ public class ArchiveReaderWriter{
 
     }
 
-    public static void saveAnnotations(Archive archive, Archive.Save_Archive_Mode mode){
+    private static void saveAnnotations(Archive archive, Archive.Save_Archive_Mode mode){
         String baseDir = archive.baseDir;
         String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
 
@@ -663,6 +665,10 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
 
     //#################################Start: Saving the archive (flat directory or bag) depending upon the mode argument####################
 
+    public static Archive readArchiveIfPresent(String baseDir){
+    return readArchiveIfPresent(baseDir, ModeConfig.Mode.APPRAISAL);//The behaviour of readArchive varies depending upon the mode. If mode is discovery then only addressbook and
+        //correspondents are loaded (apart from archive object ofcourse). For non-disocvery modes the behaviour is same (load everything).
+    }
     /** VIP method. Should be the single place to load an archive from disk.
 * loads an archive from the given directory. always re-uses archive objects loaded from the same directory.
      * this is fine when:
@@ -672,7 +678,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
      * It may NOT be fine if  multiple people are operating on their different copies of an archive loaded from the same place. Don't see a use-case for this right now.
      * if you don't like that, tough luck.
      * return the archive, or null if it doesn't exist. */
-    public static Archive readArchiveIfPresent(String baseDir) {
+    public static Archive readArchiveIfPresent(String baseDir, ModeConfig.Mode mode) {
         //check if a valid bag in basedir.
         Bag archiveBag=Archive.readArchiveBag(baseDir);
         if(archiveBag==null)
@@ -707,7 +713,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 }
 
                 log.info("Archive not already loaded, reading from dir: " + archiveFile);
-                Map<String, Object> map = loadSessionAsMap(archiveFile, baseDir, true);
+                Map<String, Object> map = loadSessionAsMap(archiveFile, baseDir, true,mode);
                 // read the session map, but only use archive
                 Archive a = (Archive) map.get("archive");
                 // could do more health checks on archive here
@@ -726,10 +732,14 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
-                //now intialize the cache for lexicon
-                JSPHelper.log.info("Computing summary of Lexicons");
-                Lexicon.fillL1_Summary_all(a,false);
-                JSPHelper.log.info("Lexicons summary computed successfully");
+
+                if(mode!= ModeConfig.Mode.DISCOVERY) {
+                    //now intialize the cache for lexicon
+                    JSPHelper.log.info("Computing summary of Lexicons");
+                    Lexicon.fillL1_Summary_all(a, false);
+                    JSPHelper.log.info("Lexicons summary computed successfully");
+
+                }
                 return a;
 
             }
@@ -743,7 +753,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
         return new File(dir).getAbsolutePath();
     }
 
-    public static void addToGlobalArchiveMap(String archiveDir, Archive archive){
+    private static void addToGlobalArchiveMap(String archiveDir, Archive archive){
 
         String s = removeTrailingSlashFromDirName(archiveDir);
         //add to globalDirmap
@@ -796,8 +806,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
      * reads from default dir (usually ~/.muse/user) and sets up cachedir,
      * archive vars.
      */
-    public static Archive prepareAndLoadDefaultArchive(HttpServletRequest request) throws IOException
-    {
+    public static Archive prepareAndLoadDefaultArchive(HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         // allow cacheDir parameter to override default location

@@ -23,12 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class NLPUtils {
-    public static Log log					= LogFactory.getLog(NLPUtils.class);
+    private static final Log log					= LogFactory.getLog(NLPUtils.class);
 
-    public static SentenceDetectorME	sentenceDetector;
-    public static POSTagger posTagger;
-    public static Tokenizer tokenizer;
-    public static Chunker chunker;
+    public static   SentenceDetectorME	sentenceDetector;
+    private static   POSTagger posTagger;
+    private static   Tokenizer tokenizer;
+    private static   Chunker chunker;
 
 	static {
 		InputStream sentStream = null, posStream = null, tokenStream = null, chunkerStream = null;
@@ -85,7 +85,7 @@ public class NLPUtils {
     }
 
     //TODO: OpenNLP is too bad with tokenisation of special chars except period. At least handle new lines, '>' whicgh are common in the case of ePADD and muse
-	public static String[] tokenizeSentence(String text) {
+	private static String[] tokenizeSentence(String text) {
         if(text == null)
             return new String[]{};
         return sentenceDetector.sentDetect(text);
@@ -101,11 +101,11 @@ public class NLPUtils {
         }
 	}
 
-    public static String[] tokenize(String sentence){
+    private static String[] tokenize(String sentence){
         return tokenizer.tokenize(sentence);
     }
 
-    public static String[] posTag(String[] tokens) {
+    private static String[] posTag(String[] tokens) {
         return posTagger.tag(tokens);
     }
 

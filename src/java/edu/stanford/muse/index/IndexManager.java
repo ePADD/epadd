@@ -25,9 +25,9 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /** this class for debugging (?) */
-public class IndexManager {
+class IndexManager {
 
-	private String rootDir = "";
+	private final String rootDir = "";
 
 	public void saveFullTextIndex(String datasetName, Archive driver) throws IOException
 	{

@@ -23,13 +23,13 @@ import java.util.stream.Stream;
  * Change log
  * 1. Changed all the MU values from double to float to reduce the model size and we are not interested (actually undesired) to have very small values in MU*/
 public class MU implements Serializable {
-    static Log log = LogFactory.getLog(MU.class);
+    private static final Log log = LogFactory.getLog(MU.class);
     static final long serialVersionUID = 1L;
-    static String[] POSITION_LABELS = new String[]{"S","B","I","E"};
-    static String[] WORD_LABELS = new String[NEType.getAllTypes().length+1];
-    static String[] TYPE_LABELS = new String[NEType.getAllTypes().length];
-    static String[] BOOLEAN_VARIABLES = new String[]{"Y","N"};
-    static String[] DICT_LABELS = BOOLEAN_VARIABLES;
+    private static final String[] POSITION_LABELS = new String[]{"S","B","I","E"};
+    private static final String[] WORD_LABELS = new String[NEType.getAllTypes().length+1];
+    private static final String[] TYPE_LABELS = new String[NEType.getAllTypes().length];
+    private static final String[] BOOLEAN_VARIABLES = new String[]{"Y","N"};
+    private static final String[] DICT_LABELS = BOOLEAN_VARIABLES;
     static{
         NEType.Type[] allTypes = NEType.getAllTypes();
         for(int i=0;i< allTypes.length;i++)
@@ -43,12 +43,12 @@ public class MU implements Serializable {
     //static int NUM_WORDLENGTH_LABELS = 10;
     //feature and the value, for example: <"LEFT: and",200>
     //indicates if the values are final or if they have to be learned
-    public Map<String,Float> muVectorPositive;
+    private Map<String,Float> muVectorPositive;
     public float numMixture;
     //total number of times, this mixture is considered
     public float numSeen;
 
-    public MU(String id){
+    private MU(String id){
         initialize(id, null);
     }
 
@@ -57,7 +57,7 @@ public class MU implements Serializable {
     }
     //Smooth param alpha is chosen based on alpha*35(ie. number of types) = an evidence number you can trust.
     //with 0.2 it is 0.2*35=7; If the token has appeared at least seven times, I can start believing
-    static float SMOOTH_PARAM = 0.2f;
+    private static final float SMOOTH_PARAM = 0.2f;
 
     public static double getMaxEntProb(){
         return (1.0/ MU.WORD_LABELS.length)*(1.0/ MU.WORD_LABELS.length)*(1.0/ MU.TYPE_LABELS.length)*(1.0/ MU.DICT_LABELS.length)*(1.0/(FeatureUtils.sws.size()+1));
@@ -79,7 +79,7 @@ public class MU implements Serializable {
     }
 
     //returns smoothed P(type/this-mixture)
-    public float getLikelihoodWithType(String typeLabel){
+    private float getLikelihoodWithType(String typeLabel){
         float p1, p2;
 
         for(String tl: TYPE_LABELS) {
@@ -109,7 +109,7 @@ public class MU implements Serializable {
     }
 
     //gets number of symbols in the dimension represented by this feature
-    static int getNumberOfSymbols(String f){
+    private static int getNumberOfSymbols(String f){
         if(f.startsWith("L:")||f.startsWith("R:"))
             return WORD_LABELS.length;
         if(f.startsWith("T:"))

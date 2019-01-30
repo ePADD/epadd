@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
  */
 public class LabelManager implements Serializable{
 
-    private static Log log = LogFactory.getLog(LabelManager.class);
+    private static final Log log = LogFactory.getLog(LabelManager.class);
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
-    public final static String LABELID_REVIEWED="1";
+    private final static String LABELID_REVIEWED="1";
     public final static String LABELID_CFR="2";
     public final static String LABELID_NODATE="3";
     public final static String LABELID_POSS_BADDATE="4";
@@ -34,10 +34,10 @@ public class LabelManager implements Serializable{
     public final static String LABELID_PARSING_ERRS="6";
     public final static String LABELID_MISSING_CORRESPONDENT="7";
 
-    private static String JSONFILENAME="label-info.json";
-    private static String CSVFILENAME="docidmap.csv";
+    private static final String JSONFILENAME="label-info.json";
+    private static final String CSVFILENAME="docidmap.csv";
 
-    public static String ALL_EXPIRED="allexpired";
+    public static final String ALL_EXPIRED="allexpired";
     public enum LabType {
         RESTRICTION, GENERAL
     }
@@ -373,8 +373,8 @@ public class LabelManager implements Serializable{
 
     }
     public class MergeResult{
-        public Set<Label> newLabels = new LinkedHashSet<>();
-        public List<Pair<Label,Label>> labelsWithNameClash = new LinkedList<>();
+        public final Set<Label> newLabels = new LinkedHashSet<>();
+        public final List<Pair<Label,Label>> labelsWithNameClash = new LinkedList<>();
     }
     /* Merging of two label managers. Here the implicit assumptions is that the docs on which these labels were
     applied are of same type (i.e. emaildocument here). This merging is just a set union of labels' data structure.
@@ -454,6 +454,7 @@ public class LabelManager implements Serializable{
     Returns true if any label is applied to any message. False otherwise
      */
     public boolean isAnyLabel(){
+
         if(docToLabelID.size()==0)
             return false;
         else

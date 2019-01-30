@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * It's a standalone program, i.e. doesn't need to be included in epadd.war
  */
 public class FASTIndexer {
-    private static Log log = LogFactory.getLog(FASTIndexer.class);
+    private static final Log log = LogFactory.getLog(FASTIndexer.class);
     public static final String FIELD_NAME_LABELS = "labels";
     public static final String FIELD_NAME_FAST_ID = "fastId";
     public static final String FIELD_NAME_WIKIPEDIA_ID = "wikipediaId";
@@ -35,7 +35,8 @@ public class FASTIndexer {
     public static final String FIELD_NAME_LCSH_ID = "lcshId";
     public static final String FIELD_NAME_EXTENT = "extent";
     private static final String LABEL_SEPARATOR = " ; "; // the labels field will have primary name, followed by alt names, all separated with a ";"
-    private static PrintStream out = System.out, err = System.err;
+    private static final PrintStream out = System.out;
+    private static final PrintStream err = System.err;
 
     public static void main (String args[]) throws IOException, ParseException {
         if (args.length != 2) {
@@ -50,7 +51,7 @@ public class FASTIndexer {
     // example line:
     // <http://id.worldcat.org/fast/348231> <http://www.w3.org/2004/02/skos/core#prefLabel> "Obama, Barack" .
     // Note: it ends with space and period.
-    private static Pattern triplePattern = Pattern.compile("([^\\s]*)\\s+([^\\s]*)\\s+(.*) \\.");
+    private static final Pattern triplePattern = Pattern.compile("([^\\s]*)\\s+([^\\s]*)\\s+(.*) \\.");
     private static IndexWriter indexWriter;
 
     public static void index(String fastNTFile, String outputDir) throws IOException {

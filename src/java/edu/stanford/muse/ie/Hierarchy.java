@@ -4,7 +4,7 @@ package edu.stanford.muse.ie;
 /**
  * Created by vihari on 26/12/15.
  */
-public interface Hierarchy {
+interface Hierarchy {
 
     int getNumLevels();
     String getName(int level);

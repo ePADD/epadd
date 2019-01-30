@@ -16,17 +16,17 @@ import java.util.concurrent.Executors;
  */
 public abstract class OperationInfo {
     //to denote the status of this operation
-    StatusProvider statusProvider;
+    private StatusProvider statusProvider;
     //to denote the threadID that is running this operation.
-    ExecutorService executorID;
+    private ExecutorService executorID;
     //Result object in case this operation got over.
-    JSONObject resultJSON;
+    private final JSONObject resultJSON;
     //operationID - unique to every operation object.
-    String opID;
+    private final String opID;
     //name of the JSP API that was invoked
-    String actionName;
+    private final String actionName;
     //map of passed parameters
-    Multimap<String, String> parametersMap;
+    private final Multimap<String, String> parametersMap;
 
     public OperationInfo(String actionName, String opID, Multimap<String,String> parametersMap){
         this.actionName = actionName;

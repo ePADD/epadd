@@ -29,9 +29,9 @@ import java.util.*;
  * Need to release memory when the dataset is not being used, which is done by ajax/releaseDataset.jsp
  */
 public class DataSet {
-    private List<Document> docs = new ArrayList<>();
-    private String datasetTitle;
-    SearchResult searchResult;
+    private final List<Document> docs = new ArrayList<>();
+    private final String datasetTitle;
+    private final SearchResult searchResult;
     //String -> <dbId -> dbType>
     private Map<String, Map<String, Short>> authorisedEntities;
 

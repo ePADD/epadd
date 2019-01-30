@@ -25,7 +25,7 @@ With this change, we now introduce this class that contains information about di
 public class EntityBookManager {
     //we don't need to serialize this class as the date here will be made persistent in form of human readable files.
     public static long serialVersionUID = 1L;
-    public static Log log = LogFactory.getLog(EntityBookManager.class);
+    private static final Log log = LogFactory.getLog(EntityBookManager.class);
 
     private Archive mArchive = null;
 
@@ -33,7 +33,7 @@ public class EntityBookManager {
         this.mArchive=archive;
     }
     //variable to hold mapping of different entity books, one per entity type.
-    private Map<Short,EntityBook> mTypeToEntityBook = new LinkedHashMap<>();
+    private final Map<Short,EntityBook> mTypeToEntityBook = new LinkedHashMap<>();
 
 
     /**
@@ -117,10 +117,10 @@ public class EntityBookManager {
         //Beware!! what happens if type is MAX (means we need to do this for all types).
         if(giventype== Short.MAX_VALUE) {
             for(NEType.Type t: NEType.Type.values()) {
-                mTypeToEntityBook.get(t.getCode()).fillSummaryFields(alldocsetmap.get(t.getCode()));
+                mTypeToEntityBook.get(t.getCode()).fillSummaryFields(alldocsetmap.get(t.getCode()),mArchive);
             }
         }else
-            mTypeToEntityBook.get(giventype).fillSummaryFields(alldocsetmap.get(giventype));
+            mTypeToEntityBook.get(giventype).fillSummaryFields(alldocsetmap.get(giventype),mArchive);
 
         log.info("EntityBook Cache computed successfully");
         }
@@ -230,7 +230,7 @@ public class EntityBookManager {
     /*
     Method for saving a particular entity book to corresponding file.
      */
-    public void writeObjectToFile(String entitybooksdirpath, short entityType) throws IOException {
+    public void writeObjectToFile(String entitybooksdirpath, short entityType) {
         //get corresponding entitybook for this type.
         String entitysubdirname = NEType.getTypeForCode(entityType).getDisplayName();
         new File(entitybooksdirpath).mkdir();//create directory if not exists.
@@ -321,7 +321,7 @@ public class EntityBookManager {
     }
 
     /* body = true => in message body, false => in subject */
-    public Span[] getEntitiesInDocFromLucene(Document d, boolean body){
+    private Span[] getEntitiesInDocFromLucene(Document d, boolean body){
         try {
             return edu.stanford.muse.ner.NER.getNames(d, body, mArchive);
         }catch(Exception e) {
@@ -334,7 +334,7 @@ public class EntityBookManager {
     This is a slow path but the assumption is that it must be used only once when porting the old archives (where entitybooks are not factored out as files). After that only the other
     path 'fillEntityBookFromText' will be used repetitively (when loading the archive)
      */
-    public void fillEntityBookFromLucene( Short type){
+    private void fillEntityBookFromLucene(Short type){
         EntityBook ebook = new EntityBook(type);
         mTypeToEntityBook.put(type,ebook);
 
@@ -382,7 +382,7 @@ public class EntityBookManager {
             }
         }
         //fill cache summary for ebook in other fields of ebook.
-        ebook.fillSummaryFields(docsetmap);
+        ebook.fillSummaryFields(docsetmap,mArchive);
     }
 
     public void fillEntityBookFromText(String entityMerges, Short type,boolean recalculateCache) {
@@ -415,7 +415,7 @@ public class EntityBookManager {
         return result;
     }
 
-    public MappedEntity getEntityForNameAndType(String name, short type) {
+    private MappedEntity getEntityForNameAndType(String name, short type) {
         EntityBook ebook = this.getEntityBookForType(type);
         return ebook.nameToMappedEntity.get(EntityBook.canonicalize(name));
     }

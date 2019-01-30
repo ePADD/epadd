@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class MappedEntity implements Serializable {
 
-    private Set<String> altNames = new LinkedHashSet<>(); // altNames does NOT contain displayName. altNames are not canonicalized
+    private final Set<String> altNames = new LinkedHashSet<>(); // altNames does NOT contain displayName. altNames are not canonicalized
     private String displayName; // this is the preferred name that should be shown to the user when any of the alt names is present
     private short entityType;
 

@@ -21,37 +21,41 @@ Similarly, resource files should be read only through this class. Resource files
  */
 public class Config {
     public static final String COLLECTION_METADATA_FILE = "collection-metadata.json"; // all session files end with .session
-    public static Log log = LogFactory.getLog(Config.class);
-    public static String admin; // this is the admin user for an installation of ePADD
+    private static final Log log = LogFactory.getLog(Config.class);
+    public static final String admin; // this is the admin user for an installation of ePADD
 
     /* default location for dir under which archives are imported/stored. Should not end in File.separator */
-    public final static String	REPO_DIR_APPRAISAL;
-    public final static String	REPO_DIR_PROCESSING;
-    public final static String	REPO_DIR_DISCOVERY;
-    public final static String	REPO_DIR_DELIVERY;
+    public  static String	REPO_DIR_APPRAISAL;
+    public static String	REPO_DIR_PROCESSING;
+    public static String	REPO_DIR_DISCOVERY;
+    public static String	REPO_DIR_DELIVERY;
 
-    public static String	SETTINGS_DIR		= System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator;
+    public static  String	SETTINGS_DIR		= System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator;
 
-    public static String 	FAST_INDEX_DIR, AUTHORITIES_FILENAME, AUTHORITIES_CSV_FILENAME, AUTHORITY_ASSIGNER_FILENAME;
+    public static  String 	FAST_INDEX_DIR;
+    public static String AUTHORITIES_FILENAME;
+    private static String AUTHORITIES_CSV_FILENAME;
+    public static String AUTHORITY_ASSIGNER_FILENAME;
     
-    //List of resource file that the NER model is trained on
-    public static String[] NER_RESOURCE_FILES = new String[0];
-    public static String DBPEDIA_INSTANCE_FILE;
+    //List of resource file that the openNLPNER model is trained on
+    public static   String[] NER_RESOURCE_FILES = new String[0];
+    public static   String DBPEDIA_INSTANCE_FILE;
     
-    public static String	FEATURES_INDEX, TABOO_FILE = "kill.txt";
+    public static   String	FEATURES_INDEX;
+    public static   String TABOO_FILE = "kill.txt";
     
     //this is the folder name that contains the cache for internal authority assignment
-    public static int		MAX_ENTITY_FEATURES			= 200;
-    public static int		MAX_TRY_TO_RESOLVE_NAMES	= 10;
-    public static int		MAX_DOCS_PER_QUERY	= 10000;
-    public static int		MAX_TEXT_SIZE_TO_ANNOTATE	= 100000; // messages with bodies longer than this will not be annotated
+    public static   int		MAX_ENTITY_FEATURES			= 200;
+    public static   int		MAX_TRY_TO_RESOLVE_NAMES	= 10;
+    public static   int		MAX_DOCS_PER_QUERY	= 10000;
+    public static   int		MAX_TEXT_SIZE_TO_ANNOTATE	= 100000; // messages with bodies longer than this will not be annotated
 
-    public static Boolean 	OPENNLP_NER = false;
-    public static String DEFAULT_SETTINGS_DIR = System.getProperty("user.home") + File.separator + "epadd-settings";
-    private static String DEFAULT_BASE_DIR = System.getProperty("user.home");
-    public static String DEFAULT_LEXICON = "general";
-    public static final Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>(); // must be lower case
-    public static final Set<String> allAttachmentExtensions = new LinkedHashSet<>(); // all attachment extensions.
+    public static   Boolean 	OPENNLP_NER = false;
+    public static   String DEFAULT_SETTINGS_DIR = System.getProperty("user.home") + File.separator + "epadd-settings";
+    private static   String DEFAULT_BASE_DIR = System.getProperty("user.home");
+    public static   String DEFAULT_LEXICON = "general";
+    public static   Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>(); // must be lower case
+    public static   Set<String> allAttachmentExtensions = new LinkedHashSet<>(); // all attachment extensions.
 
     private static String EPADD_PROPS_FILE = System.getProperty("user.home") + File.separator + "epadd.properties"; // this need not be visible to the rest of ePADD
 

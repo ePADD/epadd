@@ -47,42 +47,52 @@ public class EntityFeature implements StatusProvider, Serializable {
 	 */
 
 	private static final long	serialVersionUID	= 1L;
-	public String				name;
-	public Map<String, Integer>	cooccuringEntities;
-	public Map<String, Integer>	emailAddresses;
-	public short				type;
+	String				name;
+	Map<String, Integer>	cooccuringEntities;
+	Map<String, Integer>	emailAddresses;
+	short				type;
 
-	public double				priorProbablity		= 0.0;
-	public int					freq				= 0;
+	double				priorProbablity		= 0.0;
+	int					freq				= 0;
 	//acronyms may overlap with ORG or PLACE acronyms are all capital letters
-	public static short			PERSON				= 0, ORG = 1, PLACE = 2, CORRESPONDENT = 3, ACRONYM = 4;
+	private static final short			PERSON				= 0;
+    private static final short ORG = 1;
+    private static final short PLACE = 2;
+    public static short CORRESPONDENT = 3;
+    private static final short ACRONYM = 4;
 
-	public static String		ID					= "id", TID = "tid", NAME = "name", EAS = "emailAddresses", CES = "cooccurringEntities", TYPE = "type", PP = "priorProbablity";
+	private static final String		ID					= "id";
+    private static final String TID = "tid";
+    static final String NAME = "name";
+    static final String EAS = "emailAddresses";
+    static final String CES = "cooccurringEntities";
+    static final String TYPE = "type";
+    static final String PP = "priorProbablity";
 
-	boolean						cancel				= false;
-	String						status;
-	double						pctComplete			= 0.0;
+	private boolean						cancel				= false;
+	private String						status;
+	private double						pctComplete			= 0.0;
 
-	static IndexReader			reader				= null;
-	static IndexSearcher		searcher			= null;
+	private static IndexReader			reader				= null;
+	private static IndexSearcher		searcher			= null;
 
-    public static Log log						= LogFactory.getLog(EntityFeature.class);
+    private static final Log log						= LogFactory.getLog(EntityFeature.class);
 
     /**
 	 * This constructor is initialized so that the status provider will be given
 	 * some handle for status messages while checking for index
 	 */
-	public EntityFeature() {
+    EntityFeature() {
 	}
 
-	public EntityFeature(String name, short type) {
+	private EntityFeature(String name, short type) {
 		this.name = name;
 		this.cooccuringEntities = new HashMap<>();
 		this.emailAddresses = new HashMap<>();
 		this.type = type;
 	}
 
-	public EntityFeature(Document doc) {
+	private EntityFeature(Document doc) {
 		name = doc.get(NAME);
 		try {
 			type = Short.parseShort(doc.get(TYPE));
@@ -107,7 +117,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		}
 	}
 
-	public void addCE(String entity) {
+	private void addCE(String entity) {
 		if (this.cooccuringEntities.size() >= Config.MAX_ENTITY_FEATURES)
 			return;
 		entity = StringEscapeUtils.escapeJava(entity);
@@ -116,7 +126,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		this.cooccuringEntities.put(entity, this.cooccuringEntities.get(entity) + 1);
 	}
 
-	public void addEA(String address) {
+	private void addEA(String address) {
 		if (this.emailAddresses.size() >= Config.MAX_ENTITY_FEATURES)
 			return;
 		address = StringEscapeUtils.escapeJava(address);
@@ -128,16 +138,16 @@ public class EntityFeature implements StatusProvider, Serializable {
 	/**
 	 * Should be called once per document
 	 */
-	public void accountForThis() {
+    private void accountForThis() {
 		this.freq++;
 	}
 
-	public void addAllCE(Collection<String> entities) {
+	private void addAllCE(Collection<String> entities) {
 		for (String entity : entities)
 			addCE(entity);
 	}
 
-	public void addAllEA(Collection<String> addresses) {
+	private void addAllEA(Collection<String> addresses) {
 		for (String address : addresses)
 			addEA(address);
 	}
@@ -161,7 +171,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		return (cScore * 0.5 + eScore * 0.5);
 	}
 
-	public List<Pair<EntityFeature, Double>> getClosestEntities(Archive archive) {
+	private List<Pair<EntityFeature, Double>> getClosestEntities(Archive archive) {
         Map<EntityFeature, Double> scoresU = new LinkedHashMap<>();
         Set<EntityFeature> efts = null;
         if(type!=EntityFeature.ACRONYM)
@@ -257,7 +267,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		return name;
 	}
 
-	public Document getIndexerDoc() {
+	Document getIndexerDoc() {
 		Document doc = new Document();
 		Field nameF = null, probF = null, typeF = null;
 
@@ -285,7 +295,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 	}
 
 	/** Cleans the mixtures directory */
-	public void clean(Archive archive) {
+    private void clean(Archive archive) {
 		String iDir = getFeaturesDir(archive);
 		File f = new File(iDir);
 		if (f.exists()) {
@@ -297,7 +307,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 	/**
 	 * @return true if successful
 	 */
-	public boolean index(Map<String, EntityFeature> features, Archive archive) {
+    private boolean index(Map<String, EntityFeature> features, Archive archive) {
 		IndexWriter w = null;
 		try {
 			String iDir = getFeaturesDir(archive);
@@ -349,7 +359,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		return true;
 	}
 
-	public static String getFeaturesDir(Archive archive) {
+	private static String getFeaturesDir(Archive archive) {
 		return archive.baseDir + File.separator + Config.FEATURES_INDEX;
 	}
 
@@ -373,7 +383,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 	 *       Checks and creates index if required.
 	 * @return true if successful
 	 */
-	public boolean checkIndex(Archive archive, boolean force) {
+    private boolean checkIndex(Archive archive, boolean force) {
 		Boolean exists = indexExists(archive);
 		int c1 = 0, c2 = 0, c3 = 0;
 		int g1 = 0, g2 = 0, g3 = 0;
@@ -497,7 +507,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		return istatus;
 	}
 
-	public static EntityFeature getExactMatches(String name, Archive archive) {
+	private static EntityFeature getExactMatches(String name, Archive archive) {
 		String iDir = getFeaturesDir(archive);
 		if (searcher == null || reader == null)
 			try {
@@ -527,7 +537,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 	}
 
 	/** Not exact matches */
-	public static Set<EntityFeature> getMatches(String name, Archive archive) {
+	private static Set<EntityFeature> getMatches(String name, Archive archive) {
 		String iDir = getFeaturesDir(archive);
 		if (reader == null | searcher == null)
 			try {
@@ -571,7 +581,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 		}
 	}
 
-	public static Set<EntityFeature> getAbbreviations(String name, Archive archive) {
+	private static Set<EntityFeature> getAbbreviations(String name, Archive archive) {
 		String iDir = getFeaturesDir(archive);
 		name = IndexUtils.canonicalizeEntity(name);
 		if (name == null) {

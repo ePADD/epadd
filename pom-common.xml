@@ -247,7 +247,7 @@
 			<version>1.4</version>
 		</dependency>
 
-		<!--For learning tasks in segmentation of NER, this could be removed-->
+		<!--For learning tasks in segmentation of openNLPNER, this could be removed-->
 		<dependency>
 		  <groupId>org.apache.commons</groupId>
 		  <artifactId>commons-math3</artifactId>

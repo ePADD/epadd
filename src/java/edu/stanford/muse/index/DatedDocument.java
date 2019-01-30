@@ -37,7 +37,7 @@ import edu.stanford.muse.util.Util;
 public class DatedDocument extends Document {
 	private static final long serialVersionUID = 2208220822082208L;
 
-	private static Log log = LogFactory.getLog(DatedDocument.class);
+	private static final Log log = LogFactory.getLog(DatedDocument.class);
 
     public Date date;
     public boolean hackyDate; // indicates that we're not certain about the date

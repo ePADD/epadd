@@ -89,12 +89,12 @@
                 String modelFile = SequenceModel.RULES_DIRNAME;
                 SequenceModel nerModel = null;
 //        = (SequenceModel) session.getAttribute("ner");
-                session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from: " + modelFile + "..."));
-                JSPHelper.log.info("Loading NER sequence model from: " + modelFile + " ...");
+                session.setAttribute("statusProvider", new StaticStatusProvider("Loading openNLPNER sequence model from: " + modelFile + "..."));
+                JSPHelper.log.info("Loading openNLPNER sequence model from: " + modelFile + " ...");
                 nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
 
                 if (nerModel == null) {
-                    JSPHelper.log.error("Could not load NER model from: " + modelFile);
+                    JSPHelper.log.error("Could not load openNLPNER model from: " + modelFile);
                 } else {
                     NER ner = new NER(archive, nerModel);
                     session.setAttribute("statusProvider", ner);
@@ -117,7 +117,7 @@
                 session.removeAttribute("statusProvider");
                 resultPage = "browse-top?archiveID=" + archiveID;
             } catch (CancelledException ce) {
-                JSPHelper.log.warn("ePADD NER entity extraction cancelled by user");
+                JSPHelper.log.warn("ePADD openNLPNER entity extraction cancelled by user");
                 cancelled = true;
             } catch (Exception e) {
                 JSPHelper.log.warn("Exception training/recognised named entities with epadd-ner");

@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  * Contains IE related util funtions and fields
  */
 public class Util {
-	static int			TIMEOUT		= 10000;
+	private static final int			TIMEOUT		= 10000;
 
 	/**
 	 * @param context
@@ -170,12 +170,12 @@ public class Util {
 	}
 
 	//TODO: ideally kill phrases class should be doing all this.
-	static Log						log								= LogFactory.getLog(Util.class);
-	static Map<String, Set<String>>	files							= new LinkedHashMap<>();
+	private static final Log						log								= LogFactory.getLog(Util.class);
+	private static final Map<String, Set<String>>	files							= new LinkedHashMap<>();
 	//order person, location, org
-	static String[]					TYPE_SPECIFIC_COMMON_WORDS_FILE	= new String[] { edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "per-kill.txt", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "loc-kill.txt", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "org-kill.txt" };
+	private static final String[]					TYPE_SPECIFIC_COMMON_WORDS_FILE	= new String[] { edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "per-kill.txt", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "loc-kill.txt", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "org-kill.txt" };
 
-	static Set<String> readFile(String fileName) {
+	private static Set<String> readFile(String fileName) {
         if (files.containsKey(fileName))
             return files.get(fileName);
         try {
@@ -188,7 +188,7 @@ public class Util {
 		}
 	}
 
-    static Set<String> readFileFromResource(String fileName) {
+    private static Set<String> readFileFromResource(String fileName) {
         if (files.containsKey(fileName))
             return files.get(fileName);
         try {
@@ -201,7 +201,7 @@ public class Util {
         }
     }
 
-    static Set<String> readFile(InputStream in, String fileName){
+    private static Set<String> readFile(InputStream in, String fileName){
         if (files.containsKey(fileName))
             return files.get(fileName);
         Set<String> words = new LinkedHashSet<>();
@@ -223,11 +223,11 @@ public class Util {
     }
 
 
-    public static boolean filterEntity(String e){
+    private static boolean filterEntity(String e){
         return filterEntity(e, (short)-1);
     }
 
-    public static boolean filterEntity(Span s){
+    private static boolean filterEntity(Span s){
         return filterEntity(s.getText(),s.type);
     }
 
@@ -235,7 +235,7 @@ public class Util {
 	 * Filters any entity that does not look like one
 	 * returns true if the entity looks OK and false otherwise, type can be null if it is of unknown type
      */
-	public static boolean filterEntity(String e, short type) {
+	private static boolean filterEntity(String e, short type) {
 		if (e == null)
 			return false;
 
@@ -311,13 +311,11 @@ public class Util {
 	}
 
 	public static Span[] filterEntities(Span[] entities) {
-		List<Span> sps = Stream.of(entities).filter(Util::filterEntity).collect(Collectors.toList());
-        return sps.toArray(new Span[sps.size()]);
+		return Stream.of(entities).filter(Util::filterEntity).toArray(Span[]::new);
 	}
 
 	public static Span[] filterEntitiesByScore(Span[] entities, double threshold) {
-        List<Span> sps = Stream.of(entities).filter(e->e.typeScore>threshold).collect(Collectors.toList());
-        return sps.toArray(new Span[sps.size()]);
+		return Stream.of(entities).filter(e -> e.typeScore > threshold).toArray(Span[]::new);
 	}
 
 	public static void main(String[] args) {

@@ -29,7 +29,7 @@ import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Util;
 
 public class SessionListener implements HttpSessionListener {
-    public static Log log = LogFactory.getLog(JSPHelper.class);
+    private static final Log log = LogFactory.getLog(JSPHelper.class);
     static {
     	log.info ("Initializing class edu.stanford.muse.webapp.SessionListener");
     }

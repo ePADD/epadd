@@ -38,13 +38,13 @@ import java.util.*;
 public class Filter implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-    private static Log log = LogFactory.getLog(Filter.class);
+    private static final Log log = LogFactory.getLog(Filter.class);
 
-	private List<String> personNameOrEmails = new ArrayList<>(); // currently can only be 1 person, but we might want to support more
-    private Set<Contact> personContacts = new LinkedHashSet<>(); // mirror of personNameOrEmails w/contact objs. setup when we are assigned an address book.
+	private final List<String> personNameOrEmails = new ArrayList<>(); // currently can only be 1 person, but we might want to support more
+    private final Set<Contact> personContacts = new LinkedHashSet<>(); // mirror of personNameOrEmails w/contact objs. setup when we are assigned an address book.
 	private List<String> keywords = new ArrayList<>();
 	private Date startDate, endDate;
-	private boolean sentMessagesOnly;
+	private final boolean sentMessagesOnly;
 	private Contact ownContact;
 	private AddressBook addressBook; // used for matching people
 
@@ -75,7 +75,7 @@ public class Filter implements Serializable {
 	}
 	
 	// this is an AND filter
-	public Filter (boolean sentMessagesOnly, Date startDate, Date endDate, String keywordString)
+	private Filter(boolean sentMessagesOnly, Date startDate, Date endDate, String keywordString)
 	{
 		this.sentMessagesOnly = sentMessagesOnly;
 		this.startDate = startDate;

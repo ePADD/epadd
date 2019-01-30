@@ -24,7 +24,7 @@ import java.util.Date;
 
 public class Blob implements Serializable {
 
-private static Log log = LogFactory.getLog(Blob.class);
+private static final Log log = LogFactory.getLog(Blob.class);
 
 private final static long serialVersionUID = 1L;
 
@@ -56,9 +56,8 @@ public Date getModifiedDate() { return modifiedDate; }
 public long getSize() { return size; }
 
 public String[] getTypes() { return null; } /* dummy */
-public void removeCacheURI(String s) { } /* dummy */
-public void addCacheURI(String s) { } /* dummy */
-public String[] getCacheURIs() { return null; } /* dummy */
+
+	public String[] getCacheURIs() { return null; } /* dummy */
 
 public String[] getTopics()
 {

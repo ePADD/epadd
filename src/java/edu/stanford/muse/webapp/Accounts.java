@@ -42,7 +42,7 @@ import java.util.LinkedHashSet;
 /** class that extracts params from http post by the login page and sets up email stores in the MuseEmailFetcher in the session */
 public class Accounts {
 
-	public static Log log = LogFactory.getLog(Accounts.class);
+	private static final Log log = LogFactory.getLog(Accounts.class);
 	
 	/** does account setup and login (and look up default folder if well-known account) from the given request.
 	 * request params are loginName<N>, password<N>, etc (see loginForm for details).

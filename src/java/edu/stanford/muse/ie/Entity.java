@@ -25,16 +25,16 @@ import java.util.*;
  */
 public class Entity extends EntityFeature {
 	private static final long	serialVersionUID	= -6930196836983330301L;
-	Set<String>					names				= new HashSet<>();
+	private Set<String>					names				= new HashSet<>();
 	//These are all the co-occurring entities, and those that are not used for closeness measure.
-	Map<String, Integer>		allCE				= new HashMap<>();
+    private Map<String, Integer>		allCE				= new HashMap<>();
 	Map<String, Boolean>		extra				= new HashMap<>();
 	//default time quantization - day
-	public Map<Date, Integer>	timeHistogram		= new HashMap<>();
+    private final Map<Date, Integer>	timeHistogram		= new HashMap<>();
 	//in address book?
-	boolean						inAddressBook		= false;
+    private boolean						inAddressBook		= false;
 	//#times referred back in the replay of the message.
-	int							numReferBack		= 0;
+    private int							numReferBack		= 0;
 	//prior probability that denotes the entityness score of this phrase, prior is calculated based on some of the signals above.
 	double						prior				= 0.0;
 	double						entropyCE			= -1, entropyEA = -1, entropyTime = -1;
@@ -45,9 +45,9 @@ public class Entity extends EntityFeature {
 	//case insensitive frequency
 	int							cifreq				= 0;
 
-	static String				ENTITIES			= "entities";
-	static Set<String>			sws					= new HashSet<>();
-	static EnglishAnalyzer		en_an				= new EnglishAnalyzer(new CharArraySet(Arrays.asList(edu.stanford.muse.util.Util.stopwords),true));
+	private static final String				ENTITIES			= "entities";
+	private static final Set<String>			sws					= new HashSet<>();
+	private static final EnglishAnalyzer		en_an				= new EnglishAnalyzer(new CharArraySet(Arrays.asList(edu.stanford.muse.util.Util.stopwords),true));
 	static QueryParser			parser				= new QueryParser("some_field", en_an);
 
 	static {
@@ -63,7 +63,7 @@ public class Entity extends EntityFeature {
 		this.allCE = new HashMap<>();
 	}
 
-	public static <K> void putAll(Map<K, Integer> target, Map<K, Integer> source) {
+	private static <K> void putAll(Map<K, Integer> target, Map<K, Integer> source) {
 		if (source == null)
 			return;
 		for (K src : source.keySet()) {
@@ -73,7 +73,7 @@ public class Entity extends EntityFeature {
 		}
 	}
 
-	public void merge(Entity e) {
+	private void merge(Entity e) {
 		if (e == null)
 			return;
 		names.addAll(e.names);
@@ -86,7 +86,7 @@ public class Entity extends EntityFeature {
 		this.freq += e.freq;
 	}
 
-	public static boolean isDictionaryWord(String word) {
+	private static boolean isDictionaryWord(String word) {
 		word = word.toLowerCase();
 		return DictUtils.fullDictWords.contains(word) && !sws.contains(word);
 	}
@@ -136,14 +136,14 @@ public class Entity extends EntityFeature {
 		return doc;
 	}
 
-	public Entity getExactMatch(String str, Map<String, Entity> features) {
+	private Entity getExactMatch(String str, Map<String, Entity> features) {
 		for (String en : features.keySet())
 			if (str.equals(en.toLowerCase()))
 				return features.get(en);
 		return null;
 	}
 
-	public List<Pair<Entity, Double>> scoreMatches(Map<String, Entity> candidates, Map<String, Entity> features) {
+	private List<Pair<Entity, Double>> scoreMatches(Map<String, Entity> candidates, Map<String, Entity> features) {
 		//String c = "Elisa Berslein";
 		//System.err.println("Features contain: " + c + "\t" + features.containsKey(c));
 		Collection<Entity> efts = candidates.values();
@@ -226,7 +226,7 @@ public class Entity extends EntityFeature {
 	/**
 	 * Should also be able to handle phrases like: NY Times
 	 */
-	public static String getAcronym(String phrase) {
+	private static String getAcronym(String phrase) {
 		String[] words = phrase.split("\\s+");
 		String acr = "";
 		for (String word : words) {
@@ -243,7 +243,7 @@ public class Entity extends EntityFeature {
 
 	//should also get phrases smaller in length and also those of same size.
 	//check for ancronym if the name is all caps or if there are more than one word in the string
-	static Map<String, Entity> getMatches(String name, Map<String, Entity> features) {
+	private static Map<String, Entity> getMatches(String name, Map<String, Entity> features) {
 		Map<String, Entity> res = new HashMap<>();
 		if (name == null)
 			return res;
@@ -294,7 +294,7 @@ public class Entity extends EntityFeature {
 	}
 
 	/** Cleans a name recognised from pattern */
-	public static String clean(String name) {
+	private static String clean(String name) {
 		if (name == null)
 			return name;
 		String[] frags = name.split(" and ");

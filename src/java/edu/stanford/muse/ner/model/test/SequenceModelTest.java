@@ -30,14 +30,15 @@ import static org.junit.Assert.*;
  * Created by vihari on 26/09/16.
  */
 public class SequenceModelTest {
-    static Log log = LogFactory.getLog(SequenceModelTest.class);
+    private static final Log log = LogFactory.getLog(SequenceModelTest.class);
 
     public static class ParamsCONLL{
         enum TEST{
             testa,testb
         }
-        public TEST testType;
-        public boolean ignoreSegmentation, onlyMultiWord;
+        TEST testType;
+        boolean ignoreSegmentation;
+        boolean onlyMultiWord;
 
         public ParamsCONLL(){
             testType = TEST.testa;
@@ -330,7 +331,7 @@ public class SequenceModelTest {
         return stats;
     }
 
-    static boolean compareSpan(Span obj, Span tgt){
+    private static boolean compareSpan(Span obj, Span tgt){
         return obj.text.equals(tgt.text) &&
                 obj.type == tgt.type &&
                 obj.start == tgt.start &&
@@ -338,13 +339,13 @@ public class SequenceModelTest {
     }
 
     //makes sure everything in target is in vals
-    static boolean compareSpans(Span[] tgts, Span[] vals){
+    private static boolean compareSpans(Span[] tgts, Span[] vals){
         return !Stream.of(tgts).anyMatch(t->
             !Stream.of(vals).anyMatch(v -> compareSpan(t, v))
         );
     }
 
-    static String debugText(String content, Span[] found, Span[] expected){
+    private static String debugText(String content, Span[] found, Span[] expected){
         StringBuilder sb = new StringBuilder();
         sb.append("\nContent: "+content+"\n");
         sb.append("Found: ");
@@ -355,7 +356,7 @@ public class SequenceModelTest {
     }
 
     //checks if the model is working sensibly and not missing at least the obvious ones.
-    public static void testCommon(SequenceModel model) {
+    private static void testCommon(SequenceModel model) {
         if(model!=null) {
             List<Pair<String, Span[]>> test = new ArrayList<>();
             //test.add(new Pair<>("Bob", new Span[]{new Span("Bob", 0, 3, NEType.Type.PERSON.getCode())}));
@@ -509,7 +510,7 @@ public class SequenceModelTest {
         return new Pair<>(dict1, dict2);
     }
 
-    public static void testOnDBpedia(NERModel nerModel, Map<String,String> dbpediaTestSplit){
+    private static void testOnDBpedia(NERModel nerModel, Map<String, String> dbpediaTestSplit){
         //when testing remember to change
         //1. lookup method, disable the lookup
         System.err.println("DBpedia scoring check starts");
@@ -519,7 +520,7 @@ public class SequenceModelTest {
         //number of entries assigned to wrong type and number missed because they are assigned OTHER
         int missAssigned=0, missSegmentation = 0, missNoEvidence = 0;
         int correct = 0;
-        //these are the entries which are not completely tagged as OTHER by NER, but may have some segments that are not OTHER, hence visible
+        //these are the entries which are not completely tagged as OTHER by openNLPNER, but may have some segments that are not OTHER, hence visible
         double CUTOFF = 0;
         Map<Short,Map<Short,Integer>> confMat = new LinkedHashMap<>();
         Map<Short, Integer> freqs = new LinkedHashMap<>();
@@ -644,7 +645,7 @@ public class SequenceModelTest {
         System.err.println("Precision: "+precision+"\nRecall: "+recall);
     }
 
-    static void writeToDir(Pair<Map<String,String>,Map<String,String>> trainTest, String dirName){
+    private static void writeToDir(Pair<Map<String, String>, Map<String, String>> trainTest, String dirName){
         try {
             FileOutputStream fos = new FileOutputStream(dirName + File.separator + "trainTestDBpedia.ser.gz");
             GZIPOutputStream gos = new GZIPOutputStream(fos);
@@ -656,7 +657,7 @@ public class SequenceModelTest {
         }
     }
 
-    static Pair<Map<String,String>,Map<String,String>> readFromDir(String dirName){
+    private static Pair<Map<String,String>,Map<String,String>> readFromDir(String dirName){
         try {
             //the buffer size can be much higher than default 512 for GZIPInputStream
             ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(dirName+File.separator+"trainTestDBpedia.ser.gz")));
@@ -669,7 +670,7 @@ public class SequenceModelTest {
         }
     }
 
-    static void testOnDbpediaHelper(){
+    private static void testOnDbpediaHelper(){
         SequenceModel model;
         try {
             String modelName = "dbpediaTest"+File.separator+"SeqModel-80.ser.gz";

@@ -17,7 +17,7 @@ package edu.stanford.muse.exceptions;
 
 /** exception when a mbox folder is not present or not readable */
 public class MboxFolderNotReadableException extends Exception {
-	private String displayMessage;
+	private final String displayMessage;
 	public MboxFolderNotReadableException(String displayMessage)
 	{
 		this.displayMessage = displayMessage;

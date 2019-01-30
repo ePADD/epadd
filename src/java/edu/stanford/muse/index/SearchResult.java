@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * VIP class. Performs various search functions.
  */
 public class SearchResult {
-    private static Log log = LogFactory.getLog(SearchResult.class);
+    private static final Log log = LogFactory.getLog(SearchResult.class);
 
     //Helper function to add key-value pair in a map (especially for terms)
     private void enhance(Map<String,Set<String>> map, String key, String term) {
@@ -60,7 +60,7 @@ public class SearchResult {
     //class that holds the highlighting information that is applicable to all search result documents.
     //Right now, lexicon words, search term, search regex are examples of this set.
     class CommonHLInfo{
-        private Map<String,Set<String>> commonHLInfo = new HashMap<>();
+        private final Map<String,Set<String>> commonHLInfo = new HashMap<>();
         void addTerm(String term){
             enhance(commonHLInfo,"term",term);
         }
@@ -85,7 +85,7 @@ public class SearchResult {
      }
     //class that holds the document body specific highlighting information
     class BodyHLInfo{
-        private Map<String,Set<String>> info;
+        private final Map<String,Set<String>> info;
         BodyHLInfo(){
             info = new HashMap<>();
         }
@@ -104,7 +104,7 @@ public class SearchResult {
     //in the attachment to be highlighted.
 
     class AttachmentHLInfo{
-        private Map<Blob,Set<String>> info;
+        private final Map<Blob,Set<String>> info;
         AttachmentHLInfo(){
             info = new HashMap<>();
         }
@@ -119,10 +119,10 @@ public class SearchResult {
     request parameters used during search.
      */
     private String regexToHighlight;
-    private CommonHLInfo commonHLInfo;
-    private Archive archive;
+    private final CommonHLInfo commonHLInfo;
+    private final Archive archive;
     //query parameters
-    private Multimap<String, String> queryParams;
+    private final Multimap<String, String> queryParams;
     //Set of documents  where the search params
     //matched. BodyHLInfo and AttachmentHLInfo specify the names of the attachments where they matched
     //and whether the terms matched in both(attachments and doc) or only in one of them
@@ -147,8 +147,8 @@ public class SearchResult {
         regexToHighlight = "";
     }
 
-    public SearchResult(Map<Document, Pair<BodyHLInfo,AttachmentHLInfo>> matchedDocs, Archive archive,
-                        Multimap<String,String> queryParams, CommonHLInfo commonHLInfo, String regexToHighlight){
+    private SearchResult(Map<Document, Pair<BodyHLInfo, AttachmentHLInfo>> matchedDocs, Archive archive,
+                         Multimap<String, String> queryParams, CommonHLInfo commonHLInfo, String regexToHighlight){
         this.queryParams=queryParams;
         this.archive=archive;
         this.matchedDocs=matchedDocs;
@@ -159,7 +159,7 @@ public class SearchResult {
     Another constructor to create SearchResult object directly by putting in the set of documents and blobs
     passing the filters so far. Note that we do not copy the matched docs, just assign the reference.
      */
-    public SearchResult(SearchResult other) {
+    private SearchResult(SearchResult other) {
         this.archive = other.archive;
         this.queryParams = other.queryParams;
         this.matchedDocs = other.matchedDocs;
@@ -387,16 +387,19 @@ public class SearchResult {
 
     /** returns only the docs matching the given contact id. used by facets, correspondents table, etc */
     private static SearchResult filterForContactId(SearchResult inputSet, String cid) {
-        String correspondentName = null;
-        AddressBook ab = inputSet.archive.addressBook;
+         AddressBook ab = inputSet.archive.addressBook;
         int contactId = -1;
         try { contactId = Integer.parseInt(cid); } catch (NumberFormatException nfe) { Util.print_exception("Bad contactId in filterForContactId", nfe, log); }
         if (contactId >= 0) {
             Contact c = ab.getContact(contactId);
-            correspondentName = c.pickBestName();
+            //now get the set of documents from addressbook summary object because we have already calculated that.
+            Set<EmailDocument> docs = ab.getDocsFromSummary(c);
+            inputSet.matchedDocs.keySet().retainAll(docs);
+            //add this information to body highlight object under "contact" key
+            inputSet.commonHLInfo.addContact(contactId);
         }
 
-        //highlighting info addition
+       /* //highlighting info addition
         try {
             int ci = Integer.parseInt(cid);
             //add this information to body highlight object under "contact" key
@@ -404,7 +407,8 @@ public class SearchResult {
         } catch (Exception e) {
             JSPHelper.log.warn(cid + " is not a contact id");
         }
-        return filterForCorrespondents(inputSet, correspondentName, true, true, true, true); // for contact id, all the 4 fields - to/from/cc/bcc are enabled
+        return filterForCorrespondents(inputSet, correspondentName, true, true, true, true); // for contact id, all the 4 fields - to/from/cc/bcc are enabled*/
+        return inputSet;
     }
 
     /** version of filterForCorrespondents which reads settings from params. correspondent name can have the OR separator */

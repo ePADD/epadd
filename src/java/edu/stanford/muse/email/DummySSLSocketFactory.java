@@ -22,9 +22,9 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import java.security.cert.X509Certificate;
 
-public class DummySSLSocketFactory extends SSLSocketFactory {
+class DummySSLSocketFactory extends SSLSocketFactory {
   private SSLSocketFactory factory;
-  public DummySSLSocketFactory() {
+  private DummySSLSocketFactory() {
     System.out.println( "DummySocketFactory instantiated");
     try {
     	/*

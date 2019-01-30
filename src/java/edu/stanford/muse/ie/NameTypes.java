@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class NameTypes {
-	private static Log			log					= LogFactory.getLog(NameTypes.class);
+	private static final Log			log					= LogFactory.getLog(NameTypes.class);
 	private final static long	serialVersionUID	= 1L;
 
 	static String				typesFile			= "instance_types_en.nt1.gz";
@@ -24,7 +24,7 @@ public class NameTypes {
 	 * hitTitles key is canonicalized answer, the corr. NameInfo's title field
 	 * is the uncanonicalized version.
 	 */
-	public static void readTypes(Map<String, NameInfo> hitTitles) {
+	private static void readTypes(Map<String, NameInfo> hitTitles) {
 		// types.gz is of the form First_Last Subtype|Type
 		try {
 			Map<String, String> dbpedia = EmailUtils.readDBpedia();
@@ -83,7 +83,7 @@ public class NameTypes {
 			String id = ed.getUniqueId();
 			//String content = archive.getContents(ed, false);
 			//Set<String> pnames = tokenize.tokenizeWithoutOffsets(content, true);
-			//Note that archive.getAllNames does not fetch the corr. names, but NER names.
+			//Note that archive.getAllNames does not fetch the corr. names, but openNLPNER names.
             List<String> pnames = ed.getAllNames();
             List<String> names = new ArrayList<>();
 
@@ -126,8 +126,7 @@ public class NameTypes {
 	 * looks up all names in the given docs in the names archive and assigns
 	 * types to them
 	 */
-	public static Map<String, Collection<NameInfo>> assignTypes(Map<String, NameInfo> nameMap) throws IOException
-	{
+	public static Map<String, Collection<NameInfo>> assignTypes(Map<String, NameInfo> nameMap) {
 		// assign types to all the names
 		readTypes(nameMap);
 

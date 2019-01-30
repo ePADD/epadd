@@ -17,8 +17,10 @@ package edu.stanford.muse.index;
 
 import edu.stanford.muse.util.Util;
 
-public class LocationInfo {
-	public String locationName, lat, longi;
+class LocationInfo {
+	private final String locationName;
+    private final String lat;
+    private final String longi;
 	public LocationInfo (String locationName, String lat, String longi)
 	{
 		this.locationName = locationName;

@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ import java.util.stream.Collectors;
  * because the rest of the Muse code can be used in other, non-web apps.
  */
 public class JSPHelper {
-	public static Log		log						= LogFactory.getLog(JSPHelper.class);
+	public static final Log		log						= LogFactory.getLog(JSPHelper.class);
 
 	// jetty processes request params differently from tomcat
 	// tomcat assumes incoming params (both get/post) are iso8859.
@@ -76,7 +77,7 @@ public class JSPHelper {
 	// define -Dmuse.container=jetty
 	// check request.getSession().getServletContext().getServerInfo()
 
-	public static boolean	RUNNING_ON_JETTY		= false;
+	private static boolean	RUNNING_ON_JETTY		= false;
 
 	static {
 		// log4j initialize should be called before anything else happens. this is the best place to initialize
@@ -99,7 +100,7 @@ public class JSPHelper {
 		log.info("Running on jetty: " + RUNNING_ON_JETTY);
 	}
 
-	public static void checkContainer(HttpSession session)
+	private static void checkContainer(HttpSession session)
 	{
 		String serverInfo = session.getServletContext().getServerInfo();
 		log.info("Running inside container: " + serverInfo);
@@ -116,7 +117,7 @@ public class JSPHelper {
 		return session.getAttribute(attr_name); // intentional use of session . getSessionAttribute()
 	}
 
-	public static String getUserKey(HttpSession session)
+	private static String getUserKey(HttpSession session)
 	{
 		String userKey = (String) getHttpSessionAttribute(session, "userKey");
 		// do sanitizeFileName for security reason also
@@ -281,7 +282,7 @@ public class JSPHelper {
 		}
 		if (param == null)
 			return null;
-		String newParam = new String(param.getBytes("ISO-8859-1"), "UTF-8");
+		String newParam = new String(param.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 		if (!newParam.equals(param))
 			log.info("Converted to utf-8: " + param + " -> " + newParam);
 		return newParam;
@@ -359,8 +360,7 @@ public class JSPHelper {
                 log.info("Downloading attachments because advanced option was set");
             }
 
-            List<String> allFoldersList = JSPHelper.getParams(paramsMap,"folder").stream().collect(Collectors.toList());
-        String[] allFolders =  allFoldersList.toArray(new String[allFoldersList.size()]);
+		String[] allFolders = JSPHelper.getParams(paramsMap, "folder").stream().toArray(String[]::new);
         if (allFolders != null) {
             // try to read folder strings, first checking for exceptions
             try {
@@ -395,19 +395,19 @@ public class JSPHelper {
             String modelFile = SequenceModel.MODEL_FILENAME;
             NERModel nerModel=null;
             //=(SequenceModel) session.getAttribute("ner");
-            //session.setAttribute("statusProvider", new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
-            setStatusProvider.accept(new StaticStatusProvider("Loading NER sequence model from resource: " + modelFile + "..."));
+            //session.setAttribute("statusProvider", new StaticStatusProvider("Loading openNLPNER sequence model from resource: " + modelFile + "..."));
+            setStatusProvider.accept(new StaticStatusProvider("Loading openNLPNER sequence model from resource: " + modelFile + "..."));
             {
                 if (System.getProperty("muse.dummy.ner") != null) {
-                    log.info("Using dummy NER model, all CIC patterns will be treated as valid entities");
+                    log.info("Using dummy openNLPNER model, all CIC patterns will be treated as valid entities");
                     nerModel = new DummyNERModel();
                 } else {
-                    log.info("Loading NER sequence model from: " + modelFile + " ...");
+                    log.info("Loading openNLPNER sequence model from: " + modelFile + " ...");
                     nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
                 }
             }
             if (nerModel == null) {
-                log.error("Could not load NER model from: " + modelFile);
+                log.error("Could not load openNLPNER model from: " + modelFile);
             } else {
                 NER ner = new NER(archive, nerModel);
                 //session.setAttribute("statusProvider", ner);
@@ -515,8 +515,8 @@ public class JSPHelper {
 			// advanced options
 			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"incrementalTFIDF")))
 				list.add("-incrementalTFIDF");
-			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"NER")))
-				list.add("-NER");
+			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"openNLPNER")))
+				list.add("-openNLPNER");
 			if (!"true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"allText")))
 				list.add("-noalltext");
 			if ("true".equalsIgnoreCase(JSPHelper.getParam(paramsMap,"locationsOnly")))

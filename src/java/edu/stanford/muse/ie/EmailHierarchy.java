@@ -22,13 +22,13 @@ import javax.mail.internet.InternetAddress;
  *     <li>Anywhere in the archive</li>
  * </ul>*/
 public class EmailHierarchy implements Hierarchy{
-    static Log log = LogFactory.getLog(EmailHierarchy.class);
+    private static final Log log = LogFactory.getLog(EmailHierarchy.class);
 
     public int getNumLevels(){
         return 5;
     }
 
-    static String[] levelNames = new String[]{"docId","threadId","to-from","from","to","def"};
+    private static final String[] levelNames = new String[]{"docId","threadId","to-from","from","to","def"};
     public String getName(int level){return levelNames[level];}
 
     //Beware: this can return null

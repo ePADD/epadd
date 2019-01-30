@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
  * An Utility class to link proper nouns in an archive
  */
 public class ProperNounLinker {
-    static Log log = LogFactory.getLog(ProperNounLinker.class);
+    private static final Log log = LogFactory.getLog(ProperNounLinker.class);
 
     /**
      * breaks the phrase into words, lowercases and stems each of the word
      * will break mixed capitals into individual words,
      * for example: VanGogh -> [van, gogh] and NYTimes -> [ny, time]
      */
-    static Set<String> bow(String phrase) {
+    private static Set<String> bow(String phrase) {
         if (phrase == null)
             return new LinkedHashSet<>();
         phrase = stripTitles(phrase);
@@ -89,7 +89,7 @@ public class ProperNounLinker {
      * US Supreme Court -> [Supreme, Court]
      * NYTimes -> Times
      */
-    static Set<String> nonAcronymWords(String phrase) {
+    private static Set<String> nonAcronymWords(String phrase) {
         String[] tokens = phrase.split("\\s+");
         Set<String> naw = new LinkedHashSet<>();
         //the pattern below should pick up all the extra chars that CIC tokenize allows in the name, else may end up classifying Non-consecutive and Non-profit as a valid merge
@@ -105,7 +105,7 @@ public class ProperNounLinker {
         return naw;
     }
 
-    static String stripTitles(String str) {
+    private static String stripTitles(String str) {
         EnglishDictionary.articles.toArray(new String[EnglishDictionary.articles.size()]);
         List<String> titles = new ArrayList<>();
         titles.addAll(Arrays.asList("dear", "hi", "hello"));
@@ -126,7 +126,7 @@ public class ProperNounLinker {
      * can handle MoMA, Museum of Modern Arts
      * does not handle WaPo, Washington Post are acronyms like these common enough to bother?
      */
-    static boolean isAcronymOf(String c1, String c2) {
+    private static boolean isAcronymOf(String c1, String c2) {
         if (c2.equals("WaPo") && (c1.equals("The Washington Post") || c1.equals("Washington Post")))
             return true;
         int uc = 0, lc = 0;
@@ -143,7 +143,7 @@ public class ProperNounLinker {
         return uc >= lc && (Util.getAcronym(c1).equals(c2) || Util.getAcronym(c1, true).equals(c2));
     }
 
-    static String flipComma(String str) {
+    private static String flipComma(String str) {
         if (!str.contains(", "))
             return str;
         String fields[] = str.split(", ");
@@ -283,7 +283,7 @@ public class ProperNounLinker {
         return false;
     }
 
-    static String getLastWord(String phrase) {
+    private static String getLastWord(String phrase) {
         String word = "";
         boolean start = false;
         for (int x = phrase.length() - 1; x >= 0; x--) {
@@ -298,7 +298,7 @@ public class ProperNounLinker {
         return word;
     }
 
-    static String getFirstWord(String phrase) {
+    private static String getFirstWord(String phrase) {
         String word = "";
         boolean start = false;
         for (int x = 0; x < phrase.length(); x++) {
@@ -317,7 +317,7 @@ public class ProperNounLinker {
      * This is a much simpler merge evaluator
      * assumes that one of c1,c2 is a single word
      */
-    static boolean isValidMergeSimple(String c1, String c2) {
+    private static boolean isValidMergeSimple(String c1, String c2) {
         if (c1 == null || c2 == null || (c1.contains(" ") && c2.contains(" "))) {
             return false;
         }
@@ -364,10 +364,10 @@ public class ProperNounLinker {
     }
 
     public static class EmailMention {
-        public Span entity;
-        public String[] contextLevels;
-        EmailDocument ed;
-        Date date;
+        public final Span entity;
+        final String[] contextLevels;
+        final EmailDocument ed;
+        final Date date;
 
         public EmailMention(Span entity, Document context, Hierarchy hierarchy) {
             this.entity = entity;
@@ -624,7 +624,7 @@ public class ProperNounLinker {
         System.err.println("All tests done in: "+(System.currentTimeMillis()-st)+"ms\nFailed ["+numFailed+"/"+numTest+"]");
     }
 
-    public static void BOWtest(){
+    private static void BOWtest(){
         String[] phrases = new String[]{"NYTimes","DaVinci","Vincent VanGogh", "George H.W. Bush","George H W Bush","George W. Bush","Non-consecutive"};
         String[][] expected = new String[][]{
                 new String[]{"ny","time"},

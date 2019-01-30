@@ -20,11 +20,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class ThunderbirdUtils {
-    private static Log log = LogFactory.getLog(ThunderbirdUtils.class);
+class ThunderbirdUtils {
+    private static final Log log = LogFactory.getLog(ThunderbirdUtils.class);
     
     private class ThunderbirdAccount {
     	String accountName, serverHostname, serverRealHostName, serverType, username, userRealName, userEmail, dir_rel, fcc_folder;
@@ -37,7 +38,7 @@ public class ThunderbirdUtils {
 		// user_pref("mail.server.server2.directory-rel", "[ProfD]Mail/Local Folders");
 		// to create a map of user_pref's
 		Map<String, String> map = new LinkedHashMap<>();
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(prefsFile), "UTF-8"));
+		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(prefsFile), StandardCharsets.UTF_8));
 		while (true)
 		{
 			String line = lnr.readLine();
@@ -214,7 +215,7 @@ public class ThunderbirdUtils {
 		each list is in turn a list of length exactly 4:
 		account name, hostname, server type, user name
 	*/
-	public static List<List<String>> getThunderbirdAccounts()
+	private static List<List<String>> getThunderbirdAccounts()
 	{
 		try {
 			List<List<String>> newResult = getThunderbirdAccountsNew();
@@ -237,7 +238,7 @@ public class ThunderbirdUtils {
 				return result;
 			}
 
-			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(prefs), "UTF-8"));
+			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(prefs), StandardCharsets.UTF_8));
 
 			// example fragment of input
 			//        user_pref("mail.server.server2.capability", 21520929);

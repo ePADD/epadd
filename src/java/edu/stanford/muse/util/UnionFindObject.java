@@ -24,12 +24,12 @@ public class UnionFindObject implements Serializable
     private UnionFindObject _parent;
     private int _rank;
 
-    public UnionFindObject ()
+    protected UnionFindObject()
     {
         reset();
     }
 
-    public void reset()
+    private void reset()
     {
         _parent = this;
         _rank = 0;

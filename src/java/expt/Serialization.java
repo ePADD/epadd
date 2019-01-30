@@ -8,8 +8,9 @@ import java.io.*;
 class Serialization implements Serializable {
     private final static long serialVersionUID = 8496087002446756002L;
 
-    int a, b;
-    transient int c;
+    private int a;
+    private int b;
+    private transient int c;
 
 
     public String toString() {

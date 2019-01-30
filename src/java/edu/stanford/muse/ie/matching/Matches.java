@@ -10,21 +10,21 @@ import java.util.Set;
 /* class that represent the results of matching of a given string. Matching currently means expansion of a single word name or acronym, but it could be generalized in the future */
 public class Matches {
 
-    private String matchString;
-    private int maxMatches;
-    private transient Set<String> matchedCstrings = new LinkedHashSet();
-    private List<Matches.Match> matches = new ArrayList();
+    private final String matchString;
+    private final int maxMatches;
+    private final transient Set<String> matchedCstrings = new LinkedHashSet();
+    private final List<Matches.Match> matches = new ArrayList();
 
     /* small class that encapsulates information of a given match */
-    public class Match {
+    class Match {
         private String originalString;
-        private String match;
-        private float score;
-        private StringMatchType matchType;
-        private String matchDescription;
-        private boolean isContact;
+        private final String match;
+        private final float score;
+        private final StringMatchType matchType;
+        private final String matchDescription;
+        private final boolean isContact;
 
-        public Match(String matchString, float score, StringMatchType matchType, String matchDescription, boolean isContact) {
+        Match(String matchString, float score, StringMatchType matchType, String matchDescription, boolean isContact) {
             this.score = score;
             this.match = matchString;
             this.matchType = matchType;

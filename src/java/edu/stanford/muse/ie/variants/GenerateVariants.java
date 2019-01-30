@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -17,14 +18,14 @@ import java.util.zip.GZIPInputStream;
  * Needs stop words file and SurfaceForms_LRD-WAT.nofilter.tsv in ~/data and writes out to variants.txt in the same dir */
 class GenerateVariants {
     private static final Log log = LogFactory.getLog(GenerateVariants.class);
-    private static final String BASE_DIR = System.getProperty("user.home") + File.separator + "data";
-    private static final int THRESHOLD = 10; // min. #times a token pair should appear in order to be output
-    private static final String TSV_FILE = "SurfaceForms_LRD-WAT.nofilter.tsv.gz", STOP_WORDS_FILE = "stop.words.full";
-    private static final int WORD_FREQ_SUPPORT = 8;
-    private static Set<String> stopWords;
+    private static   String BASE_DIR = System.getProperty("user.home") + File.separator + "data";
+    private static   int THRESHOLD = 10; // min. #times a token pair should appear in order to be output
+    private static   String TSV_FILE = "SurfaceForms_LRD-WAT.nofilter.tsv.gz", STOP_WORDS_FILE = "stop.words.full";
+    private static   int WORD_FREQ_SUPPORT = 8;
+    private static  Set<String> stopWords;
     private static Map<String, Integer> wordToFreq = new LinkedHashMap<>();
 
-    public static class Variant implements Comparable<Variant>, Serializable {
+    static class Variant implements Comparable<Variant>, Serializable {
         String main, alias;
         float score1, score2;
         int freq1, freq2;
@@ -53,7 +54,7 @@ class GenerateVariants {
     static {
         try {
             InputStream is = new FileInputStream(BASE_DIR + File.separator + STOP_WORDS_FILE);
-            stopWords = DictUtils.readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+            stopWords = DictUtils.readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
             is.close();
         } catch (IOException ioe) {
             Util.print_exception("Error reading stop words file", ioe, log);
@@ -82,7 +83,7 @@ class GenerateVariants {
 
     private static Map<String, String> readDbpedia(String file) throws IOException {
         Map<String, String> result = new LinkedHashMap<>();
-        LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file), true), "UTF-8"));
+        LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file), true), StandardCharsets.UTF_8));
         System.out.println ("Reading Dbpedia");
 
         int count = 0;

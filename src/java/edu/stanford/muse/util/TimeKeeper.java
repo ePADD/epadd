@@ -8,7 +8,7 @@ import java.util.List;
 
 /** utility class to help keep track of the time */
 public class TimeKeeper {
-    public static Log log = LogFactory.getLog(TimeKeeper.class);
+    private static final Log log = LogFactory.getLog(TimeKeeper.class);
 
 	private static final int MAX = 100;
 	
@@ -20,7 +20,7 @@ public class TimeKeeper {
          }
      };
 
-     public static void snap() {
+     private static void snap() {
     	 List<Long> threadLocalTimes = times.get();
     	 // just be defensive, in case this got called in a loop... it will run away and take an unbounded amount of memory. if it goes above MAX, just clear and throw away the values.
     	 if (threadLocalTimes.size() == MAX)
@@ -34,7 +34,7 @@ public class TimeKeeper {
      public static String since() { return since(1); }
      
      /** n is the number of snaps to go back */
-     public static String since(int n)
+     private static String since(int n)
      {
     	 List<Long> threadLocalTimes = times.get();
     	 long now = System.currentTimeMillis();
@@ -51,7 +51,7 @@ public class TimeKeeper {
      }     
 
      static class TestTimeKeeper extends Thread {
-    	 int id;
+    	 final int id;
     	 TestTimeKeeper(int id) { this.id = id; }
     	 public void run() {
     		 TimeKeeper.snap ();

@@ -34,7 +34,7 @@ import java.util.List;
 
 class ImapPrefetcher implements IMAPFolder.ProtocolCommand {
 
-List<Integer> messageNums;
+final List<Integer> messageNums;
 private Session session;
 
 /* start and end are inclusive */

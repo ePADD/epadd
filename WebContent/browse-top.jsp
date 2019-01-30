@@ -222,8 +222,8 @@
 	int nPersonEntities = 0;
 	String nSensitiveMessages ="";
 	int nNonPersonEntities = 0,outCount=0,inCount=0,nAttachments=0,nImageAttachments=0;
-	outCount = archive.collectionMetadata.nOutgoingMessages;
-	inCount = archive.collectionMetadata.nIncomingMessages;
+	//outCount = archive.collectionMetadata.nOutgoingMessages;
+	//inCount = archive.collectionMetadata.nIncomingMessages;
 	//if normalization map is available in blobstore recalculate the attachments count.
 	if(archive.getBlobStore().isNormalized()){
 	    ArchiveReaderWriter.recalculateCollectionMetadata(archive);
@@ -273,6 +273,9 @@
 	</div>
 
 
+
+
+	<% if (!ModeConfig.isDiscoveryMode()) { %>
 	<div class="cta-box margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
 			<img class="icon-images" src="images/labels_dashboard.svg">
@@ -284,8 +287,6 @@
 			<%--<p class="cta-text-2">Labels</p>--%>
 		</a>
 	</div>
-
-	<% if (!ModeConfig.isDiscoveryMode()) { %>
 		<br/>
 
 		<div class="cta-box  margin30">

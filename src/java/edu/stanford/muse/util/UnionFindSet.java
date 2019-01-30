@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UnionFindSet<T> {
+class UnionFindSet<T> {
 
-	private Map<T, UnionFindBox<T>> map = new LinkedHashMap<>();
+	private final Map<T, UnionFindBox<T>> map = new LinkedHashMap<>();
 		
 	private UnionFindBox<T> createBox(T element)
 	{

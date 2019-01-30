@@ -408,6 +408,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     if (items.size() == 0)
                         continue; // don't show facet if it has no items.
 
+                    //don't show certain facets in discovery mode. Like labels and annotations.
+                    if(facet.toLowerCase().equals("annotations") && ModeConfig.isDiscoveryMode())
+                        continue;
                     // the facet items could still all have 0 count, in which case, skip this facet
                     boolean nonzero = false;
                     for (DetailedFacetItem f: items)
@@ -587,7 +590,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
             <div id="position:relative">
                 <div class="message-menu">
+                    <%if(!ModeConfig.isDiscoveryMode()){%>
                     <a href="#" class="annotation-link" title="Message annotation"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
+                    <%}%>
                     <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
                     <a href="#" class="thread-link" target="_blank" title="Open thread"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
                     <a style="color: inherit" href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>

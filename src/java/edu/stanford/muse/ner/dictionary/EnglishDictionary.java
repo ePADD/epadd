@@ -16,28 +16,34 @@ import java.util.*;
 /**
  * A language related util class, created so as to be able to easily expand to other languages by just creating and using a similar dictionary for the language*/
 public class EnglishDictionary {
-    private static String adverbsFile = "dictionaries/en-pure-adv.txt";
-    private static String adjFile = "dictionaries/en-pure-adj.txt";
-    static String verbsFile = "dictionaries/en-pure-verbs.txt";
-    static String prepFile = "dictionaries/en-prepositions.txt";
-    static String pronounFile = "dictionaries/en-pronouns.txt";
-    static String abbFile = "dictionaries/en-abbreviations.txt";
-    static String tagDictFile = "dictionaries/ANC-written-count.txt";
-    static String fullDictFile = "dict.words.full";
-    static String dictStatsFile = "stats.txt";
-    static String commonNamesFile = "firstNames.txt";
+    private static final String adverbsFile = "dictionaries/en-pure-adv.txt";
+    private static final String adjFile = "dictionaries/en-pure-adj.txt";
+    private static final String verbsFile = "dictionaries/en-pure-verbs.txt";
+    private static final String prepFile = "dictionaries/en-prepositions.txt";
+    private static final String pronounFile = "dictionaries/en-pronouns.txt";
+    private static final String abbFile = "dictionaries/en-abbreviations.txt";
+    private static final String tagDictFile = "dictionaries/ANC-written-count.txt";
+    private static final String fullDictFile = "dict.words.full";
+    private static final String dictStatsFile = "stats.txt";
+    private static final String commonNamesFile = "firstNames.txt";
 
-    static Log log = LogFactory.getLog(EnglishDictionary.class);
+    private static final Log log = LogFactory.getLog(EnglishDictionary.class);
 
-    static Set<String> adverbs, adjectives, verbs, prepositions, pronouns, dictionary, commonNames;
-    static Multimap<String,String> abbDict;
-    static Multimap<String,Pair<String,Integer>> tagDict;
+    private static Set<String> adverbs;
+    private static Set<String> adjectives;
+    private static Set<String> verbs;
+    private static Set<String> prepositions;
+    private static Set<String> pronouns;
+    private static Set<String> dictionary;
+    private static Set<String> commonNames;
+    private static Multimap<String,String> abbDict;
+    private static Multimap<String,Pair<String,Integer>> tagDict;
     //word -> <#capitalised,#total>
-    static Map<String,Pair<Integer,Integer>> dictStats;
-    public static List<String> stopWords = Arrays.asList("but", "be", "with", "such", "then", "for", "no", "will", "not", "are", "and", "their", "if", "this", "on", "into", "a", "there", "in", "that", "they", "was", "it", "an", "the", "as", "at", "these", "to", "of" );
+    private static Map<String,Pair<Integer,Integer>> dictStats;
+    public static final List<String> stopWords = Arrays.asList("but", "be", "with", "such", "then", "for", "no", "will", "not", "are", "and", "their", "if", "this", "on", "into", "a", "there", "in", "that", "they", "was", "it", "an", "the", "as", "at", "these", "to", "of" );
     public static List<String> separatingStopWords = Arrays.asList("for", "and", "on", "a", "in", "an", "the", "at", "to", "of" );
-    public static List<String> personTitles = Arrays.asList("mr.", "mr", "ms.", "ms", "mrs.", "mrs", "dr.", "dr", "prof.", "prof","dean", "president", "provost","pm","amb.");
-    public static List<String> articles = Arrays.asList("the","a","an");
+    public static final List<String> personTitles = Arrays.asList("mr.", "mr", "ms.", "ms", "mrs.", "mrs", "dr.", "dr", "prof.", "prof","dean", "president", "provost","pm","amb.");
+    public static final List<String> articles = Arrays.asList("the","a","an");
 
     /**
      * @return dictionary entry -> #times appeared in capitalised form, total number of occurrences */
@@ -84,7 +90,7 @@ public class EnglishDictionary {
         return pronouns;
     }
 
-    public static Set<String> getTopAdverbs(){
+    private static Set<String> getTopAdverbs(){
         if(adverbs==null) {
             adverbs = getCanonicalizedEntriesInFile(adverbsFile);
             log.info("Read "+adverbs.size()+" entries from "+adverbsFile);
@@ -265,7 +271,7 @@ public class EnglishDictionary {
         return abbDict;
     }
 
-    public static Set<String> readFile(String fileName){
+    private static Set<String> readFile(String fileName){
         Set<String> entries = new LinkedHashSet<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Config.getResourceAsStream(fileName)))) {
             String line;
@@ -274,14 +280,13 @@ public class EnglishDictionary {
                     continue;
                 entries.add(line.trim());
             }
-            br.close();
         } catch(IOException e){
             Util.print_exception("Cannot read/close file: ", e, log);
         }
         return entries;
     }
 
-    public static Set<String> getCanonicalizedEntriesInFile(String fileName){
+    private static Set<String> getCanonicalizedEntriesInFile(String fileName){
         Set<String> lines = readFile(fileName);
         Set<String> ces = new LinkedHashSet<>();
         lines.forEach(line -> ces.add(line.toLowerCase()));

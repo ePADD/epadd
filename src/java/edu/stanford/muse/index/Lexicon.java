@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -48,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Lexicon implements Serializable {
 	
-	private static Log log = LogFactory.getLog(Lexicon.class);
+	private static final Log log = LogFactory.getLog(Lexicon.class);
 	public static final String LEXICON_SUFFIX = ".lex.txt";
 	public static final String REGEX_LEXICON_NAME = "regex"; // this is a special lexicon name, to which regex search is applied
 	public static final String SENSITIVE_LEXICON_NAME = "sensitive"; // this is a special lexicon name, to which regex search is applied
@@ -56,17 +57,20 @@ public class Lexicon implements Serializable {
 	private static final long serialVersionUID = 1377456163104266479L;//1L;
 
 	public static Map<String, Lexicon> lexiconMap = new LinkedHashMap<>(); // directory of lexicons // not used but still need when deserialized old archives
-	public String name;
-	private Map<String, Lexicon1Lang> languageToLexicon = new LinkedHashMap<>();
+	public final String name;
+	private final Map<String, Lexicon1Lang> languageToLexicon = new LinkedHashMap<>();
 
 	//field to store the summary object for this lexicon.
-	transient         Map<String, Integer> L1_Summary_category_count = new LinkedHashMap<>();
+	private final transient         Map<String, Integer> L1_Summary_category_count = new LinkedHashMap<>();
 
 	public Lexicon1Lang getLexiconForLanguage(String language){
 		return languageToLexicon.get(language);
 	}
 	//return the language of this lexicon. We will always have only one language per lexicon file.
 	public String getLexiconLanguage(){
+		Set<String> keyset = languageToLexicon.keySet();
+		if(keyset.isEmpty())
+			return "english";
 		return languageToLexicon.keySet().iterator().next();
 	}
 	/** inner class that stores lexicon for 1 language */
@@ -77,10 +81,11 @@ public class Lexicon implements Serializable {
 		/** there are 2 caption -> query maps. the expanded query is the actual query made to the index.
 		 * the rawquery is what the user specified (in the <name>.<lang>.lex.txt file 
 		 */
-		public Map<String, String> captionToExpandedQuery = new LinkedHashMap<>(), captionToRawQuery = new LinkedHashMap<>();
-		public Set<String> usedInOtherCaptions = new LinkedHashSet<>();
-		public Lexicon1Lang() {}
-		public Lexicon1Lang(String filename) throws IOException
+		public Map<String, String> captionToExpandedQuery = new LinkedHashMap<>();
+		Map<String, String> captionToRawQuery = new LinkedHashMap<>();
+		final Set<String> usedInOtherCaptions = new LinkedHashSet<>();
+		Lexicon1Lang() {}
+		Lexicon1Lang(String filename) throws IOException
 		{
 			captionToRawQuery = new LinkedHashMap<>();
 			captionToExpandedQuery = new LinkedHashMap<>();
@@ -112,7 +117,7 @@ public class Lexicon implements Serializable {
 			expandQueries();
 		}
 		
-		public void setRawQueryMap(Map<String, String> map)
+		void setRawQueryMap(Map<String, String> map)
 		{
 			captionToRawQuery = map;
 			expandQueries();
@@ -171,9 +176,9 @@ public class Lexicon implements Serializable {
 				captionToExpandedQuery.remove(caption);
 		}
 		
-		public void save (String filename) throws Exception
+		void save(String filename) throws Exception
 		{
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename), "UTF-8"));
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8));
 			for (String caption: captionToRawQuery.keySet())
 				pw.println (caption + ":" + captionToRawQuery.get(caption));
 			pw.close();
@@ -191,7 +196,7 @@ public class Lexicon implements Serializable {
          * vihari
          * This is a weird name for a method that returns documents with emotions instead of emotions.
 		 */
-		public Map<String, Collection<Document>> getEmotions (Indexer indexer, Collection<Document> docs, boolean originalContentOnly, String... captions)
+		Map<String, Collection<Document>> getEmotions(Indexer indexer, Collection<Document> docs, boolean originalContentOnly, String... captions)
 		{
 			Map<String, Collection<Document>> result = new LinkedHashMap<>();
 			Set<Document> docs_set = Util.castOrCloneAsSet(docs);
@@ -239,7 +244,7 @@ public class Lexicon implements Serializable {
 		
 		/** NOTA = None of the above. like getEmotions but also returns a category called None for docs that don't match any sentiment.
 		 */
-		public Map<String, Collection<Document>> getEmotionsWithNOTA (Indexer indexer, Collection<Document> docs, boolean originalContentOnly)
+		Map<String, Collection<Document>> getEmotionsWithNOTA(Indexer indexer, Collection<Document> docs, boolean originalContentOnly)
 		{
 			Collection<Document> allDocs;
 			if (docs == null)

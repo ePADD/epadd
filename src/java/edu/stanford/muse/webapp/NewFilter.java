@@ -26,8 +26,8 @@ import java.util.Map;
 
 /** called NewFilter only because we have an old class called Filter, that is mostly not used */
 public class NewFilter {
-	private Map<String, String[]> map = new LinkedHashMap<>();
-    public static Log log = LogFactory.getLog(NewFilter.class);
+	private final Map<String, String[]> map = new LinkedHashMap<>();
+    private static final Log log = LogFactory.getLog(NewFilter.class);
 	
 	/** in future, could create Filter from a list of detailed facet items to make it more robust
 	// currently, we create a filter from the given request */
@@ -65,7 +65,7 @@ public class NewFilter {
 	}
 	
 	/** gets value for given key directly from the map. only returns first value for that key */
-	public String get(String key) {
+    private String get(String key) {
 		String[] values = map.get(key);
 		if (values == null || values.length == 0)
 			return null;

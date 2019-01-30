@@ -32,7 +32,7 @@ import java.util.*;
 public class MboxEmailStore extends EmailStore implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-	private static Log log = LogFactory.getLog(MboxEmailStore.class);
+	private static final Log log = LogFactory.getLog(MboxEmailStore.class);
 
 	private static final String CACHE_FILENAME = ".muse.dir";
 
@@ -175,7 +175,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		}
 	}
 
-	public Folder openFolderWithoutCount(Store s, String fname) throws MessagingException
+	protected Folder openFolderWithoutCount(Store s, String fname) throws MessagingException
 	{
 		if (fname == null)
 			fname = "INBOX";
@@ -209,8 +209,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 	@Override
 	/** we need the Store s parameter from superclass, but it is not used in the folder store
-	 */
-	public Pair<Folder, Integer> openFolder(Store s, String fname) throws MessagingException
+	 */ protected Pair<Folder, Integer> openFolder(Store s, String fname) throws MessagingException
 	{
 		Folder folder = openFolderWithoutCount(s, fname);
 		int count = 0;
@@ -221,8 +220,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	}
 
 	@Override
-	public void computeFoldersAndCounts(String foldersAndCountsDir) throws MessagingException
-	{
+	public void computeFoldersAndCounts(String foldersAndCountsDir) {
 		doneReadingFolderCounts = false;
 		
 		new File(foldersAndCountsDir).mkdirs(); // ensure cacheDir exists
@@ -276,8 +274,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		// Notes: we are never deleting cache entries. so they will live on for mbox files that may have been deleted.
 		// doesn't really matter.
 		// in case memory becomes a problem, we may consider not caching folders with 0 messages (right now we cache those too)
-		public Map<String, FolderInfo> cacheMap = new LinkedHashMap<>();
-		private String cacheFile;
+		Map<String, FolderInfo> cacheMap = new LinkedHashMap<>();
+		private final String cacheFile;
 
 		FolderCache(String path)
 		{

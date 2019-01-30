@@ -27,9 +27,9 @@ import org.apache.commons.logging.LogFactory;
 
 /** a sloppy date parser that can handle natural lang. ways of specifying a date, like jan 10, sep 29, etc. */
 public class SloppyDates {
-    private static Log log = LogFactory.getLog(SloppyDates.class);
+    private static final Log log = LogFactory.getLog(SloppyDates.class);
 
-	private static String[] monthNames = {"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
+	private static final String[] monthNames = {"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
 	private static Triple<Integer, Integer, Integer> parseDate(String s)
 	{
 		// separate into month and date
@@ -155,11 +155,11 @@ public class SloppyDates {
  		return result;
 	}
 
-	public static class DateRangeSpec {
+	static class DateRangeSpec {
 		boolean specificDate;
 		Triple<Integer, Integer, Integer> startDate, endDate;
 
-		public DateRangeSpec (String spec)
+		DateRangeSpec(String spec)
 		{
  			StringTokenizer st1 = new StringTokenizer(spec, "-");
  			if (st1.countTokens() == 1)
@@ -168,13 +168,13 @@ public class SloppyDates {
  				setRange(parseDate(st1.nextToken()), parseDate(st1.nextToken()));
 		}
 
-		public void setRange(Triple<Integer, Integer, Integer> t)
+		void setRange(Triple<Integer, Integer, Integer> t)
 		{
 			this.startDate = t;
 			this.endDate = t;
 		}
 
-		public void setRange(Triple<Integer, Integer, Integer> startDate, Triple<Integer, Integer, Integer> endDate)
+		void setRange(Triple<Integer, Integer, Integer> startDate, Triple<Integer, Integer, Integer> endDate)
 		{
 			this.startDate = startDate;
 			this.endDate = endDate;

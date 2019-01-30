@@ -47,7 +47,7 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 		Logger.getLogger("net.sf.ehcache").setLevel(Level.OFF); // and shut the damn thing up!
 	}
 
-	private static Log log = LogFactory.getLog(MTEmailFetcher.class);
+	private static final Log log = LogFactory.getLog(MTEmailFetcher.class);
 	private final static long serialVersionUID = 1L;
 
 	private EmailStore emailStore;

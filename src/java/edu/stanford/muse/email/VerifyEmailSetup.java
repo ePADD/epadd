@@ -32,9 +32,9 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 
 public class VerifyEmailSetup {
-    private static Log log = LogFactory.getLog(VerifyEmailSetup.class);
+    private static final Log log = LogFactory.getLog(VerifyEmailSetup.class);
 
-	public static Pair<Boolean, String> run ()
+	private static Pair<Boolean, String> run()
 	{
         PrintStream savedOut = System.out;
         InputStream savedIn = System.in;

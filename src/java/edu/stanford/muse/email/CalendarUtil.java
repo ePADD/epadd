@@ -27,10 +27,10 @@ import java.util.*;
 /** bunch of utils for manipulating date ranges and splitting them
  up into intervals based on exchanges with contacts etc. */
 public class CalendarUtil {
-    public static Log log = LogFactory.getLog(CalendarUtil.class);
+    private static final Log log = LogFactory.getLog(CalendarUtil.class);
 
     // we want to change the month to 3 char format everywhere in ePADD
-	private static String[] monthStrings = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	private static final String[] monthStrings = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 //    private static String[] monthStrings = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 	//private static String[] monthStrings = new DateFormatSymbols().getMonths();
 	private final static int nMonthPerYear = monthStrings.length;
@@ -99,7 +99,7 @@ public class CalendarUtil {
 		return result;
 	}
 
-	public static Calendar startOfMonth(Date d)
+	private static Calendar startOfMonth(Date d)
 	{
 		Calendar c = new GregorianCalendar();
 		c.setTime(d);
@@ -249,7 +249,7 @@ public class CalendarUtil {
 		return convertYYMMDDToDate(y, m, 1, beginning_of_day);
 	}
 
-    public static Date convertYYMMDDToDate(int y, int m, int d, boolean beginning_of_day)
+    private static Date convertYYMMDDToDate(int y, int m, int d, boolean beginning_of_day)
     {
         // if m is out of range, its equiv to 0
         if (m < 0 || m > 11)
@@ -275,7 +275,7 @@ public class CalendarUtil {
         return c.getTime();
     }
 	
-    public static Pair<Date, Date> getDateRange(int startY, int startM, int endY, int endM){
+    private static Pair<Date, Date> getDateRange(int startY, int startM, int endY, int endM){
 		return getDateRange(startY, startM, -1, endY, endM, -1);
     }
 
@@ -355,7 +355,7 @@ public class CalendarUtil {
     }
 
 	/** the quarter beginning just before this d */
-	public static Date quarterBeginning(Date d)
+	private static Date quarterBeginning(Date d)
 	{
 		Calendar c = new GregorianCalendar();		
 		c.setTime(d);

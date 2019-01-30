@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -14,11 +15,11 @@ import java.util.*;
  * Use this to parse the DBpedia instance NT file.
  */
 public class DBpediaTypeParser {
-    public static Log log = LogFactory.getLog(DBpediaTypeParser.class);
+    private static final Log log = LogFactory.getLog(DBpediaTypeParser.class);
 
-    public static Map<String,String> parseOntology(String ontologyFile) {
+    private static Map<String,String> parseOntology(String ontologyFile) {
         try {
-            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(ontologyFile)), "UTF-8"));
+            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(ontologyFile)), StandardCharsets.UTF_8));
             //node -> Parent
             Map<String,String> tree = new LinkedHashMap<>();
             String line;
@@ -61,12 +62,12 @@ public class DBpediaTypeParser {
         }
     }
 
-    public static void parse(String typesFile, String typeOntologyFile, String outPath) {
+    private static void parse(String typesFile, String typeOntologyFile, String outPath) {
         try {
             Map<String,String> ontology = parseOntology(typeOntologyFile);
             if(ontology==null)
                 return;
-            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(typesFile), true), "UTF-8"));
+            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(typesFile), true), StandardCharsets.UTF_8));
             String line;
             int titleS = "<http://dbpedia.org/resource/".length();
             int typeS = "<http://dbpedia.org/ontology/".length();
@@ -108,13 +109,13 @@ public class DBpediaTypeParser {
         }
     }
 
-    public static void printStats(String typesFile, String ontologyFile){
+    private static void printStats(String typesFile, String ontologyFile){
         Map<String,String> ontology = parseOntology(ontologyFile);
         int nlines = 0;
         Set<String> uniqetitles = new LinkedHashSet<>();
         Map<Short,Set<String>> typeTitles = new LinkedHashMap<>();
         try {
-            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(typesFile), true), "UTF-8"));
+            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(typesFile), true), StandardCharsets.UTF_8));
             String line;
             int titleS = "<http://dbpedia.org/resource/".length();
             int typeS = "<http://dbpedia.org/ontology/".length();

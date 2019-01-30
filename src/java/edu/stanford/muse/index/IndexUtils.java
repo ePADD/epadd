@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 /** useful utilities for indexing */
 public class IndexUtils {
-	private static Log	log	= LogFactory.getLog(IndexUtils.class);
+	private static final Log	log	= LogFactory.getLog(IndexUtils.class);
 
 	/** temporary method */
 	public static boolean query(String s, String query)
@@ -150,10 +150,10 @@ public class IndexUtils {
         return result.toString();
     }
 
-	public static class Window {
-		public Date					start;
-		public Date					end;
-		public List<EmailDocument>	docs;
+	static class Window {
+		Date					start;
+		Date					end;
+		List<EmailDocument>	docs;
 
 		public String toString() {
 			return "[" + CalendarUtil.getDisplayMonth(start) + " - " + CalendarUtil.getDisplayMonth(end) + "), " + docs.size() + " messages";
@@ -614,7 +614,7 @@ public class IndexUtils {
 		return result;
 	}
 
-	public static Map<String, DetailedFacetItem> partitionDocsByFolder(Collection<? extends Document> docs)
+	private static Map<String, DetailedFacetItem> partitionDocsByFolder(Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<>();
 		for (Document d : docs)
@@ -691,7 +691,7 @@ public class IndexUtils {
 
 	//Does this facet make sense in appraisal mode? Because in appraisal mode there is only one accession
 	//at a time.
-	public static Map<String, DetailedFacetItem> partitionDocsByAccessionID(Collection<? extends Document> docs, Archive archive)
+	private static Map<String, DetailedFacetItem> partitionDocsByAccessionID(Collection<? extends Document> docs, Archive archive)
 	{
 
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
@@ -959,7 +959,7 @@ public class IndexUtils {
 
     // date, month is 1-based NOT 0-based
 	// if month is < 0, it is ignored
-	public static <D extends DatedDocument> List<D> selectDocsByDateRange(Collection<D> c, int year, int month, int date)
+	private static <D extends DatedDocument> List<D> selectDocsByDateRange(Collection<D> c, int year, int month, int date)
 	{
         //Calendar date is not 0 indexed: https://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html#DATE
 		--month; // adjust month to be 0 based because that's what calendar gives us
@@ -1154,7 +1154,7 @@ public class IndexUtils {
 	/**
 	 * all suffixes of prefixes or all prefixes of suffixes.
 	 * */
-	public static Set<String> computeAllSubstrings(Set<String> set) {
+	private static Set<String> computeAllSubstrings(Set<String> set) {
 		Set<String> substrs = new HashSet<>();
 		for (String s : set) {
 			substrs.addAll(computeAllPrefixes(computeAllSuffixes(s)));
@@ -1284,7 +1284,7 @@ public class IndexUtils {
 	//	
 	//			for (String para: paras)
 	//			{
-	//				List<Pair<String, Float>> names = NER.namesFromText(para);
+	//				List<Pair<String, Float>> names = openNLPNER.namesFromText(para);
 	//				List<String> paraNames = new ArrayList<String>();
 	//				for (Pair<String, ?> pair: names)
 	//				{

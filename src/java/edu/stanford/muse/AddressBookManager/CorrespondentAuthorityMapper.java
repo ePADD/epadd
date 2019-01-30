@@ -27,13 +27,13 @@ import static edu.stanford.muse.ie.variants.EntityBook.canonicalize;
  */
 public class CorrespondentAuthorityMapper extends AuthorityMapper implements   java.io.Serializable  {
 
-    public static Log log					= LogFactory.getLog(CorrespondentAuthorityMapper.class);
-    public static String CANDIDATE_AUTHORITIES_FILE_NAME = "CandidateCorrespondentAuthorities.csv";
-    public static String CONFIRMED_AUTHORITIES_FILE_NAME= "ConfirmedCorrespondentAuthorities.csv";
+    private static final Log log					= LogFactory.getLog(CorrespondentAuthorityMapper.class);
+    private static final String CANDIDATE_AUTHORITIES_FILE_NAME = "CandidateCorrespondentAuthorities.csv";
+    private static final String CONFIRMED_AUTHORITIES_FILE_NAME= "ConfirmedCorrespondentAuthorities.csv";
     private final static long serialVersionUID = 1L;
 
     /* creates a mapper. first checks if it already exists in the archive dir. otherwise creates a new one, and initializes it for the archive (might take a while to generate candidates) */
-    public static CorrespondentAuthorityMapper createCorrespondentAuthorityMapper (Archive archive) throws IOException, ParseException {
+    public static CorrespondentAuthorityMapper createCorrespondentAuthorityMapper (Archive archive) throws IOException {
 
         String filename = archive.baseDir + File.separator + Config.AUTHORITIES_FILENAME;
         File authMapperFile = new File (filename);
@@ -62,7 +62,7 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
     }
 
     /** this should be called during creation time, or any time the cnameToFastIdCandidates has to be recomputed */
-    public void setupCandidatesAndCounts(Archive archive) {
+    private void setupCandidatesAndCounts(Archive archive) {
         AddressBook ab = archive.getAddressBook();
 
         List<Contact> contacts = ab.allContacts();
@@ -112,14 +112,17 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
     /** small class meant to convey temp. results to the frontend. Not serialized. */
     public static class AuthorityInfo {
         public boolean isConfirmed;
-        public int nMessages;
-        public String name, tooltip, url, errorMessage;
+        int nMessages;
+        String name;
+        String tooltip;
+        String url;
+        String errorMessage;
         public AuthorityMapper.AuthorityRecord confirmedAuthority;
         public List<AuthorityMapper.AuthorityRecord> candidates;
     }
 
     /** returns an authorityInfo object representing info needed by the front-end. Use only for rendering the authorities table. */
-    public AuthorityInfo getCorrespondentAuthorityInfo (String archiveID, AddressBook ab, String name) throws IOException, ParseException {
+    public AuthorityInfo getCorrespondentAuthorityInfo (String archiveID, AddressBook ab, String name) throws IOException {
         String cname = canonicalize (name);
         AuthorityInfo result = new AuthorityInfo();
         result.isConfirmed = false;

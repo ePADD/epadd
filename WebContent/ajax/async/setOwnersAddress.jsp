@@ -104,8 +104,6 @@ archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mapp
     e.printStackTrace();
 } catch (ParseException e) {
     e.printStackTrace();
-} catch (ClassNotFoundException e) {
-    e.printStackTrace();
 }
             setStatusProvider.accept(new StaticStatusProvider("Finishing.."));
 

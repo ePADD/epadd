@@ -11,11 +11,11 @@ public class Messages {
 		return getMessage(Locale.getDefault(), bundleName, key, null);
 	}
 
-	public static  String getMessage(String bundleName, String key, Object[] args) {
+	private static  String getMessage(String bundleName, String key, Object[] args) {
 		return getMessage(Locale.getDefault(), bundleName, key, args);
 	}
 
-	public static String getMessage(Locale locale, String bundleName, String key, Object[] args) {
+	private static String getMessage(Locale locale, String bundleName, String key, Object[] args) {
 
 		if (args == null)
 			args = new Object[0]; // null is the same as no arg

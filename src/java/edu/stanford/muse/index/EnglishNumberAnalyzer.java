@@ -14,7 +14,7 @@ import org.apache.lucene.analysis.miscellaneous.SetKeywordMarkerFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardFilter;
 
-public class EnglishNumberAnalyzer extends StopwordAnalyzerBase {
+class EnglishNumberAnalyzer extends StopwordAnalyzerBase {
 	private final CharArraySet stemExclusionSet;
 
 	public static CharArraySet getDefaultStopSet() {
@@ -29,7 +29,7 @@ public class EnglishNumberAnalyzer extends StopwordAnalyzerBase {
 		this(stopwords, CharArraySet.EMPTY_SET);
 	}
 
-	public EnglishNumberAnalyzer(CharArraySet stopwords, CharArraySet stemExclusionSet) {
+	private EnglishNumberAnalyzer(CharArraySet stopwords, CharArraySet stemExclusionSet) {
 		super(stopwords);
 		this.stemExclusionSet = CharArraySet.unmodifiableSet(CharArraySet.copy(stemExclusionSet));
 	}

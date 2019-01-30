@@ -40,17 +40,17 @@ import java.util.*;
 
 public class BlobStore implements Serializable {
 
-    public Set<Blob> uniqueBlobs = new LinkedHashSet<>();
+    public final Set<Blob> uniqueBlobs = new LinkedHashSet<>();
 
-    private transient Map<Blob,Integer> dupBlobCount = new LinkedHashMap<>();//map to maintain the count of duplicate blobs so that it can be reported in the data report
+    private final transient Map<Blob,Integer> dupBlobCount = new LinkedHashMap<>();//map to maintain the count of duplicate blobs so that it can be reported in the data report
     // mapping of each data item to a data id
-    private Map<Blob, Integer> id_map = new LinkedHashMap<>();
-    private Map<Blob, URL> urlMap = new LinkedHashMap<>(); // -- seems this is not really used
+    private final Map<Blob, Integer> id_map = new LinkedHashMap<>();
+    private final Map<Blob, URL> urlMap = new LinkedHashMap<>(); // -- seems this is not really used
     // data id's are just assigned sequentially starting from 0
     private int next_data_id = 0;
 
     // mapping of each data to its views
-    private Map<Blob, Map<String,Object>> views = new LinkedHashMap<>();
+    private final Map<Blob, Map<String,Object>> views = new LinkedHashMap<>();
     //map of original file name and (cleanedupname, normalizedname) generated from Amatica normalization
     //transient because this can always be built from the normalziation info file (csv) present in session directory of the archive.
     private transient  Map<String,Pair<String,String>> normalizationMap = new LinkedHashMap<>();
@@ -69,7 +69,7 @@ public class BlobStore implements Serializable {
 
     private Multimap<Blob, String> blobToKeywords;
 
-    private static Log log = LogFactory.getLog(BlobStore.class);
+    private static final Log log = LogFactory.getLog(BlobStore.class);
     private final static long serialVersionUID = 1L;
 
     private String dir; // base dir where this data store keeps it files
@@ -111,7 +111,7 @@ public class BlobStore implements Serializable {
     /**
      * copies the selected blobs to a new file blobstore at the given path
      */
-    public BlobStore createCopy(String path, Collection<Blob> blobs) throws IOException {
+    public BlobStore createCopy(String path, Collection<Blob> blobs) {
         BlobStore fbs = new BlobStore(path); // no owner field
         for (Blob b : blobs) {
             try {
@@ -250,7 +250,7 @@ public class BlobStore implements Serializable {
         return full_filename_cleanedup(b, true);
     }
 
-    public String full_filename_cleanedup(Blob b, boolean useIndex) {
+    private String full_filename_cleanedup(Blob b, boolean useIndex) {
         return full_filename_cleanedup(b, b.filename,useIndex);
     }
     /**
@@ -481,7 +481,7 @@ public class BlobStore implements Serializable {
         Util.copy_stream_to_file(is, dir + File.separatorChar + full_filename_normalized(primary_data));
     }
 
-    public InputStream getInputStream(Blob b) throws IOException {
+    private InputStream getInputStream(Blob b) throws IOException {
         URL u = urlMap.get(b);
         if (u == null)
             return new FileInputStream(dir + File.separatorChar + full_filename_normalized(b));
@@ -630,7 +630,7 @@ public class BlobStore implements Serializable {
             return;
         }
 
-        String filename = "tn." + full_filename_normalized(b,false);;
+        String filename = "tn." + full_filename_normalized(b,false);
         String tmp_filename = TMP_DIR + File.separatorChar + filename;
         String tnFilename = null;
         boolean noThumb = false;

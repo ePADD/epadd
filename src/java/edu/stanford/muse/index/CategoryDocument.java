@@ -24,7 +24,7 @@ import java.util.Map;
 /** CategoryDocument is something that is associated with some sort of category like a section or time period */
 public class CategoryDocument extends Document {
 	private static final long serialVersionUID = 12208220822082208L;
-    public String category;
+    private final String category;
 
 	public CategoryDocument(int num, String s, String category)
 	{

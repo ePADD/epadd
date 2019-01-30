@@ -411,6 +411,7 @@
 
 				<!--Actions-->
 
+				<%if(!ModeConfig.isDiscoveryMode()){%>
                 <div class=" actions search-wraper clearfix">
 
 					<h4>Actions</h4>
@@ -476,6 +477,7 @@
 
                     </div>
 				</div>
+				<%}%>
                <!--/Actions-->
 				<!--Others-->
 				<div class="others search-wraper">

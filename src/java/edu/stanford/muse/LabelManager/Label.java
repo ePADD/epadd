@@ -17,7 +17,7 @@ public class Label implements Serializable{
 
     // basic fields
     LabelManager.LabType labType; // restricted or general
-    String labId;
+    private String labId;
     String labName;
     String description;
 
@@ -36,7 +36,7 @@ public class Label implements Serializable{
     private int restrictedForYears;
     // if set to non-null and non-empty, the restriction applies only to this text within the body of the message. Otherwise the whole message is restricted.
     // this is orthogonal to restriction time
-    String labelAppliesToMessageText = null;
+    private String labelAppliesToMessageText = null;
 
 
     /*This constructor should only be used by GSon to convert this class to json format.

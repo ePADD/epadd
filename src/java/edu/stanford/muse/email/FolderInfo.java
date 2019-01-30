@@ -29,16 +29,16 @@ import java.util.Date;
  * do not introduce refs to other objects in this! */
 public class FolderInfo implements Serializable {
 	private final static long serialVersionUID = 1L;
-    public static Log log = LogFactory.getLog(FolderInfo.class);
+    private static final Log log = LogFactory.getLog(FolderInfo.class);
 
-    public String accountKey;
+    public final String accountKey;
     public long lastSeenUID; // the # to allocate upwards from for new messages from this folder. derived for IMAP UID (see Javamail UIDFolder) or otherwise for other types.
     
-	public String longName;
-	public String shortName;
-	public int messageCount;
-	public long timestamp; // millis since epoch when this folder was read. used only by mbox folder.
-	public long fileSize = -1L; // size in bytes (for mbox files only). If not available, (imap accounts, etc) it will be -1.
+	public final String longName;
+	public final String shortName;
+	public final int messageCount;
+	public final long timestamp; // millis since epoch when this folder was read. used only by mbox folder.
+	private long fileSize = -1L; // size in bytes (for mbox files only). If not available, (imap accounts, etc) it will be -1.
 
 	public FolderInfo(String accountKey, String fullName, String shortName, int count) {
 		this(accountKey, fullName, shortName, count, -1L);

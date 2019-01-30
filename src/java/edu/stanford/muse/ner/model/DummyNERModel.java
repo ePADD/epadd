@@ -10,18 +10,17 @@ import java.util.stream.Collectors;
 
 /**
  * Created by vihari on 24/02/16.
- * A dummy model that simulates the behavior of a NER model.
+ * A dummy model that simulates the behavior of a openNLPNER model.
  * This model returns all pseudo proper nouns in the content and hence generally is a super-set of all the possible entities in the content
  */
 public class DummyNERModel implements NERModel{
-    Tokenizer tokenizer = new CICTokenizer();
+    private Tokenizer tokenizer = new CICTokenizer();
     public Span[] find (String content) {
         // collect all pseudo proper nouns
         List<Triple<String, Integer, Integer>> pns = tokenizer.tokenize(content);
         //we will make a dummy object of type map
-        List<Span> chunks = pns.stream().map(pn -> new Span(pn.getFirst(), pn.getSecond(), pn.getThird())).collect(Collectors.toList());
 
-        return chunks.toArray(new Span[chunks.size()]);
+        return pns.stream().map(pn -> new Span(pn.getFirst(), pn.getSecond(), pn.getThird())).toArray(Span[]::new);
     }
 
     @Override

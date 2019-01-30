@@ -10,7 +10,9 @@ import java.util.Map;
 public class NameInfoMemory implements Comparable<NameInfoMemory>, Serializable { 
 	private final static long serialVersionUID = 1L;
 
-	public String title /* with _ in place of space */, snippet, type = "notype";
+	private final String title /* with _ in place of space */;
+	public String snippet;
+	public String type = "notype";
 	private float score;
 	public String word /* no spaces */, originalTerm /* with spaces, capitalization etc */;
 	public int times;
@@ -56,12 +58,12 @@ public class NameInfoMemory implements Comparable<NameInfoMemory>, Serializable 
 
 		String cleanTitle = cleanTitle(); 
 		// title has to be escaped because it may have things like & embedded. e.g. saw Texas A&M university'
-		String result = "<a target=\"_blank\" href=\"browse?term=%22" + java.net.URLEncoder.encode(cleanTitle) + "%22\">" + cleanTitle + "<a>"  + " (" + Util.pluralize(times,  "time") + ")<br>";
+		String result = "<a target=\"_blank\" href=\"browse?term=%22" + Util.URLEncode(cleanTitle) + "%22\">" + cleanTitle + "<a>"  + " (" + Util.pluralize(times,  "time") + ")<br>";
 		result += "<span style = 'color:orange'>First Date: " + firstDatetoString() + "<br>Last Date: " + lastDatetoString() + "<br><span style = 'color:green'>";
 		result +="<span style = 'color:green'>Frequency burst metric: "; //add burst metric here.
 		if (sentimentCatToCount != null){
 			for (String sentiment :sentimentCatToCount.keySet()){
-				String sentimentlink = "browse?sentiment=" + sentiment+"&term=%22" + java.net.URLEncoder.encode(cleanTitle) + "%22\">" + sentiment + "<a>";
+				String sentimentlink = "browse?sentiment=" + sentiment+"&term=%22" + Util.URLEncode(cleanTitle) + "%22\">" + sentiment + "<a>";
 				result += "<span style = 'color:aqua'><a target=\"new\" href=\"" + sentimentlink + " = " + sentimentCatToCount.get(sentiment) + ", ";
 			}
 		}

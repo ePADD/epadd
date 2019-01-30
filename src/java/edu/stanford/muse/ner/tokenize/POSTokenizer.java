@@ -12,7 +12,7 @@ import java.util.*;
  *
  * A tokenize based on POS tagging */
 public class POSTokenizer implements Tokenizer{
-    final static int MAX_SENT_LENGTH = 500;
+    private final static int MAX_SENT_LENGTH = 500;
 
     /**
      * {@inheritDoc}

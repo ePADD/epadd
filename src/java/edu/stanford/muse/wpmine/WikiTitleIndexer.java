@@ -1,6 +1,7 @@
 package edu.stanford.muse.wpmine;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
@@ -29,11 +30,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public class WikiTitleIndexer {
     //https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz
-    static String			REDIRECT_FILE	= System.getProperty("user.home") + File.separator + "data" + File.separator + "enwiki-latest-redirect.sql.gz";
+    private static final String			REDIRECT_FILE	= System.getProperty("user.home") + File.separator + "data" + File.separator + "enwiki-latest-redirect.sql.gz";
     //https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-page.sql.gz
-    static String			PAGE_FILE       = System.getProperty("user.home") + File.separator + "data" + File.separator + "enwiki-latest-page.sql.gz";
+    private static final String			PAGE_FILE       = System.getProperty("user.home") + File.separator + "data" + File.separator + "enwiki-latest-page.sql.gz";
 
-    public static String[] parseTuple(String str) {
+    private static String[] parseTuple(String str) {
         List<String> vals = new ArrayList<>();
         boolean inside = false;
         String val = "";
@@ -74,7 +75,7 @@ public class WikiTitleIndexer {
     }
 
     //start parsing line from offset
-    public static String[][] parseLine(String line, int offset) {
+    private static String[][] parseLine(String line, int offset) {
         line = line.substring(offset);
         //remove the last ')'
         line = line.substring(0, line.length() - 1);
@@ -89,7 +90,7 @@ public class WikiTitleIndexer {
         return records.toArray(new String[records.size()][]);
     }
 
-    public static Map<String, String> readRedirectTable(){
+    private static Map<String, String> readRedirectTable(){
         //not so big, probably around 500MB
         Map<String, String> redirects = new LinkedHashMap<>();
         final String REDIRECT_INSERT_STATEMENT = "INSERT INTO `redirect` VALUES (";
@@ -124,8 +125,11 @@ public class WikiTitleIndexer {
     }
 
     private static class WikiDocument{
-        String wiki_id, title, is_redirect, redirect;
-        int pageLength;
+        final String wiki_id;
+        final String title;
+        final String is_redirect;
+        String redirect;
+        final int pageLength;
         WikiDocument(String wiki_id, String title, String is_redirect, int pageLength){
             this.wiki_id = wiki_id;
             this.title = title;
@@ -137,7 +141,7 @@ public class WikiTitleIndexer {
     /**
      * Note: only parses lines corresponding to pages in Wiki article namespace (0); if the entire line does not contain
      * any pages of 0 namespace then returns an empty list*/
-    public static Collection<WikiDocument> parseLineInPagesTable(String line) {
+    private static Collection<WikiDocument> parseLineInPagesTable(String line) {
         final String PAGES_INSERT_STATEMENT = "INSERT INTO `pages` VALUES (";
 
         List<WikiDocument> wikiDocs = new ArrayList<>();
@@ -164,7 +168,7 @@ public class WikiTitleIndexer {
      * This method is used to identify single word titles (including redirects) in the entire dump.
      * The titles are further filtered on page length
      * This method outputs a file containing such titles, with their redirects (if exist) and page lengths*/
-    static void extractAllSingleWordTypes() {
+    private static void extractAllSingleWordTypes() {
         try {
             Map<String, String> redirects = readRedirectTable();
 
@@ -172,10 +176,10 @@ public class WikiTitleIndexer {
             int qualityPageLength = 5000;
             int numRecords = 0;
             Writer fw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(System.getProperty("user.home") + File.separator + "data" + File.separator + "TokenTypes.txt"), "UTF-8"));
+                    new FileOutputStream(System.getProperty("user.home") + File.separator + "data" + File.separator + "TokenTypes.txt"), StandardCharsets.UTF_8));
             Map<String, Integer> pageLens = new LinkedHashMap<>();
 
-            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(new File(PAGE_FILE))), "UTF-8"));
+            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(new File(PAGE_FILE))), StandardCharsets.UTF_8));
             String line;
             while ((line = lnr.readLine()) != null) {
                 if (!line.startsWith("INSERT INTO"))

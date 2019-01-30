@@ -4,7 +4,7 @@
 <%--
   User: vihari
   Date: 31/08/15
-  ePADD NER is session dependant and cannot be loaded with a static class
+  ePADD openNLPNER is session dependant and cannot be loaded with a static class
 --%>
 <%
 // if archive not in session, nothing can be done
@@ -12,7 +12,7 @@
     if (nerModel == null)
     {
         String modelFile = SequenceModel.MODEL_FILENAME;
-        JSPHelper.log.info("Loading NER model from: "+modelFile);
+        JSPHelper.log.info("Loading openNLPNER model from: "+modelFile);
         nerModel = SequenceModel.loadModel(modelFile);
         JSPHelper.log.info("Loaded ner model from "+modelFile);
         request.getSession().setAttribute("ner", nerModel);

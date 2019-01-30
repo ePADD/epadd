@@ -10,7 +10,7 @@ import edu.stanford.muse.util.Pair;
 
 public class FriendsLocation {
 
-	static final int N = 10;
+	private static final int N = 10;
 
 	/** finds best locations for input.size() friends to meet */
 	private static Pair<Integer, Integer> findBestLocation(List<Pair<Integer, Integer>> input)	

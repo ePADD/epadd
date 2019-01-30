@@ -16,7 +16,7 @@ public class FetchStats implements Serializable {
     public long fetchAndIndexTimeMillis;
     public String userKey;
     EmailFetcherStats importStats;
-    public List<Pair<String, FolderInfo>> selectedFolders = new ArrayList<>(); // selected folders and their counts
+    public final List<Pair<String, FolderInfo>> selectedFolders = new ArrayList<>(); // selected folders and their counts
     private Filter messageFilter;
     public long firstMessageDate, lastMessageDate;
     private int spanInMonths;

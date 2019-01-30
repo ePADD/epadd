@@ -19,10 +19,10 @@ import java.util.List;
 
 import edu.stanford.muse.util.Pair;
 
-/** little container class that can enumerate the tokens identified by NER */
+/** little container class that can enumerate the tokens identified by openNLPNER */
 public class NERTokenizer extends MyTokenizer
 {
-	private List<Pair<String,String>> nerTokens;
+	private final List<Pair<String,String>> nerTokens;
 	public NERTokenizer(List<Pair<String,String>> tokens)
 	{
 		nerTokens = new ArrayList<>(tokens);

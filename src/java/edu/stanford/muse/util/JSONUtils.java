@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -44,7 +45,7 @@ import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 
 public class JSONUtils {
-	private static Log log = LogFactory.getLog(JSONUtils.class);
+	private static final Log log = LogFactory.getLog(JSONUtils.class);
 
 	public static String jsonForIntList(List<Integer> list) throws JSONException
 	{
@@ -291,7 +292,7 @@ public class JSONUtils {
 			String url = "http://dbpedia.org/data/" + name + ".jsod";
 			byte[] b = Util.getBytesFromStream(new URL(url).openStream());
 	//		String contents = new String(CryptoUtils.decryptBytes(b), "UTF-8");
-			String contents = new String(b, "UTF-8");
+			String contents = new String(b, StandardCharsets.UTF_8);
 			org.json.simple.JSONObject o = (org.json.simple.JSONObject) org.json.simple.JSONValue.parse(contents);
 			org.json.simple.JSONObject o1 = (org.json.simple.JSONObject) o.get("d");
 			org.json.simple.JSONArray o2 = (org.json.simple.JSONArray) o1.get("results");
@@ -305,7 +306,7 @@ public class JSONUtils {
 	//		String wp_page = (String) o8.get("uri");
 			
 //			String wp_contents = doc.body().text();
-		//	List<Pair<String,Integer>> list = NER.namesFromURL(wp_page);
+		//	List<Pair<String,Integer>> list = openNLPNER.namesFromURL(wp_page);
 			return new Pair<>(o6, null);
 //			return new Pair<String, List<Pair<String,Integer>>> (o6, list);
 		} catch (Exception e) { 

@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
  *      This is due to improper offsets in token stream or could be because lucene highlighter is considering endoffset like startoffset+token.length()
  */
 class Highlighter {
-    private static Log log = LogFactory.getLog(Highlighter.class);
+    private static final Log log = LogFactory.getLog(Highlighter.class);
 
-    private static Random			randnum			= new Random();
+    private static final Random			randnum			= new Random();
     static {
         randnum.setSeed(123456789);
     }
@@ -550,9 +550,9 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
                 Set<String> termsToHighlight = new HashSet<>();
                 for(String[] ht: highlightTerms)
                         termsToHighlight.addAll(Arrays.asList(ht));
-//                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.NER.EPER).forEach(e->ewid.put(e,new Archive.Entity(e,null,Arrays.asList("cp").stream().collect(Collectors.toSet()))));
-//                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.NER.ELOC).forEach(e->ewid.put(e,new Archive.Entity(e,null,Arrays.asList("cl").stream().collect(Collectors.toSet()))));
-//                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.NER.EORG).forEach(e->ewid.put(e,new Archive.Entity(e, null, Arrays.asList("co").stream().collect(Collectors.toSet()))));
+//                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.openNLPNER.EPER).forEach(e->ewid.put(e,new Archive.Entity(e,null,Arrays.asList("cp").stream().collect(Collectors.toSet()))));
+//                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.openNLPNER.ELOC).forEach(e->ewid.put(e,new Archive.Entity(e,null,Arrays.asList("cl").stream().collect(Collectors.toSet()))));
+//                archive.getEntitiesInDoc(ed, edu.stanford.muse.ner.openNLPNER.EORG).forEach(e->ewid.put(e,new Archive.Entity(e, null, Arrays.asList("co").stream().collect(Collectors.toSet()))));
                 String htmlcontent = getHTMLAnnotatedDocumentContents(archive,"<body>"+content+"</body>",ed.date,ed.getUniqueId(),null /* regex to highlight */,termsToHighlight,ewid,null,true);
                 System.out.println("Done highlighting.");
                 htmlcontent += "<br>------<br>"+content.replaceAll("\n","<br>\n");

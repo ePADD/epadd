@@ -26,7 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Log4JUtils {
-    private static Log log = LogFactory.getLog(Log4JUtils.class);
+    private static final Log log = LogFactory.getLog(Log4JUtils.class);
     private static boolean initialized = false;
 	private static final String BACKUP_FILE_SIZE = "100MB";
 	private static final int N_BACKUP_FILES = 30;
@@ -140,7 +140,7 @@ public class Log4JUtils {
 	}
 
 	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
-	public static void addLogFileAppenderForPackage(String packagename, String filename) {
+	private static void addLogFileAppenderForPackage(String packagename, String filename) {
 		try
 		{
 			Logger packageLogger = LogManager.getLoggerRepository().getLogger(packagename);

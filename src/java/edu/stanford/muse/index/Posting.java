@@ -23,23 +23,23 @@ public class Posting implements Comparable<Posting>, java.io.Serializable {
 	private final static long serialVersionUID = 1L;
 	// traditional postings are <termid, docid, term freq>
 	//public Document document;
-	public String term; // this is the canonical term (may be stemmed etc)
-	String originalTerm; // this is the actual un-normalized
+    private String term; // this is the canonical term (may be stemmed etc)
+	private String originalTerm; // this is the actual un-normalized
 						 // term which may be displayed back to the user.
 						 // it may have original capitalization, spacing, join words etc.
 //	float normalizedTF;
-	int tf;
-	float idf;
+                         private int tf;
+	private float idf;
 	private byte[] pos;
 
-	public static int nPostingsAllocated = 0;
+	private static int nPostingsAllocated = 0;
 
 	public Posting()
 	{
 		Posting.nPostingsAllocated++;
 	}
 
-	public float score()
+	private float score()
 	{
 		return tf * idf;
 	}
@@ -107,7 +107,7 @@ public class Posting implements Comparable<Posting>, java.io.Serializable {
 	}
 
 
-	public String short_toString()
+	private String short_toString()
 	{
 		return ("Term: [" + term + "] score " + score() + " freq: " + tf + " idf: " + String.format("%.2f", idf) + " tf-idf: " + String.format("%.2f", (tf*idf)) + " ntf: " + tf + " pos: ");
 	}

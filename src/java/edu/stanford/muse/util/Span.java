@@ -6,14 +6,15 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Created by vihari on 24/02/16.
  * Similar in spirit to opennlp.tools.util
- * used to represent the chunks recognized by a NER model, @see edu.stanford.muse.ner.model.NERModel interface
+ * used to represent the chunks recognized by a openNLPNER model, @see edu.stanford.muse.ner.model.NERModel interface
  */
 public class Span implements java.io.Serializable {
-    public int start, end;
-    public String text;
+    public final int start;
+    public final int end;
+    public final String text;
     public short type = -1;
     public float typeScore = 0f;
-    public static Log log = LogFactory.getLog(Span.class);
+    private static final Log log = LogFactory.getLog(Span.class);
 
 
     /**
@@ -80,7 +81,7 @@ public class Span implements java.io.Serializable {
     /**
      * This method investigates the best way to store Span objects that balances both space and time requirements
      * Experiments with text, serialized, and gzipped serialized output formats and compares the disk space and parse time of each*/
-    static void experimentio() {
+    private static void experimentio() {
         java.util.List<java.util.List<Span>> spans = new java.util.ArrayList<>();
         java.util.Random rand = new java.util.Random();
         int MAX = 1000;

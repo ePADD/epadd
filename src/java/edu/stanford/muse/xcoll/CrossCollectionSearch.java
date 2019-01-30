@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 /** This is a class that keeps track of all entities in multiple archives and provides an interface to search through them at a token level. */
 
 public class CrossCollectionSearch {
-    public static Log log = LogFactory.getLog(CrossCollectionSearch.class);
+    private static final Log log = LogFactory.getLog(CrossCollectionSearch.class);
 
   /*  public static List<Archive.CollectionMetadata> archiveMetadatas = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
     public static List<String> archiveDirs = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
 */
     private static Multimap<String, EntityInfo> cTokenToInfos; // this token -> infos mapping is intended to make the lookup more efficient. Otherwise, we'd have to go through all the infos for looking up a string.
-    private static Set<String> allCEntities = new LinkedHashSet<>(); // this token -> infos mapping is intended to make the lookup more efficient. Otherwise, we'd have to go through all the infos for looking up a string.
+    private static final Set<String> allCEntities = new LinkedHashSet<>(); // this token -> infos mapping is intended to make the lookup more efficient. Otherwise, we'd have to go through all the infos for looking up a string.
 
     // this has to be fleshed out some more -- which version of canonicalize to use?
     // right now, we only lowercase the input string and return it.
@@ -48,8 +48,8 @@ public class CrossCollectionSearch {
     }
 
     /* should be synchronized so there's no chance of doing it multiple times at the same time. */
-    synchronized public static void initialize() {
-        if (cTokenToInfos != null)
+    private synchronized static void initialize() {
+        if (cTokenToInfos != null && cTokenToInfos.size()!=0)
             return;
 
         if (ModeConfig.isDiscoveryMode())
@@ -82,10 +82,13 @@ public class CrossCollectionSearch {
 
             try {
                 String archiveFile = f.getAbsolutePath() + File.separator + Archive.BAG_DATA_FOLDER+ File.separator + Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
-                if (!new File(archiveFile).exists())
+                if (!new File(archiveFile).exists()) {
+                    log.warn("Unable to find archive file"+archiveFile+".. Serious error");
                     continue;
 
-                Archive archive = ArchiveReaderWriter.readArchiveIfPresent(f.getAbsolutePath());
+                }
+            //Assumption is that this feature is present only in discovery mode. In future when we want to add it to processing, we need proper care.
+                Archive archive = ArchiveReaderWriter.readArchiveIfPresent(f.getAbsolutePath(), ModeConfig.Mode.DISCOVERY);
                 if (archive == null) {
                     log.warn ("failed to read archive from " + f.getAbsolutePath());
                     continue;
@@ -98,6 +101,7 @@ public class CrossCollectionSearch {
                 String archiveID= ArchiveReaderWriter.getArchiveIDForArchive(archive);
                 Map<String, EntityInfo> centityToInfo = new LinkedHashMap<>();
                 {
+
                     //get all contacts from the addressbook
                     Set<Pair<String,Pair<Pair<Date,Date>,Integer>>>  correspondentEntities = new LinkedHashSet<>();
                     {
@@ -108,13 +112,24 @@ public class CrossCollectionSearch {
                             //get duration (first and last doc where this contact was used)
                             Set<EmailDocument> edocs = s.getValue().docs.stream().map(t->(EmailDocument)t).collect(Collectors.toSet());
                             Pair<Date,Date> duration = EmailUtils.getFirstLast(edocs);
+
+                            if(duration==null) {
+                                duration = new Pair<>(archive.collectionMetadata.firstDate,archive.collectionMetadata.lastDate);
+                            }
+                            if(duration.first==null)
+                                duration.first = archive.collectionMetadata.firstDate;
+                            if(duration.second==null)
+                                duration.second = archive.collectionMetadata.lastDate;
+
                             //get number of messages where this was used.
                             Integer count = s.getValue().docs.size();
                             if(c.getNames()!=null){
-                                c.getNames().forEach(w->correspondentEntities.add(new Pair(canonicalize(w),new Pair(duration,count))));
+                                Pair<Date, Date> finalDuration = duration;
+                                c.getNames().forEach(w->{if(!Util.nullOrEmpty(w) && finalDuration !=null && count!=null)correspondentEntities.add(new Pair(canonicalize(w),new Pair(finalDuration,count)));});
                             }
                             if(c.getEmails()!=null){
-                                c.getEmails().forEach(w->correspondentEntities.add(new Pair(canonicalize(w),new Pair(duration,count))));
+                                Pair<Date, Date> finalDuration1 = duration;
+                                c.getEmails().forEach(w->{if(!Util.nullOrEmpty(w) && finalDuration1 !=null && count!=null)correspondentEntities.add(new Pair(canonicalize(w),new Pair(finalDuration1,count)));});
                             }
 
                         });

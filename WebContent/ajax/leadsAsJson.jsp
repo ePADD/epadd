@@ -12,7 +12,7 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper"%><%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
 <%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.index.Archive"%>
-<%//Archive needs to be loaded since NER is archive dependant%>
+<%//Archive needs to be loaded since openNLPNER is archive dependant%>
 
 <%
 JSPHelper.setPageUncacheable(response);
@@ -125,7 +125,7 @@ try {
 			names.add(new Pair<>((String)e.getKey(),(Float)e.getValue()));
 
 		long ner_end_millis = System.currentTimeMillis();
-		JSPHelper.log.info("NER time " + (ner_end_millis - ner_start_millis) + " ms");
+		JSPHelper.log.info("openNLPNER time " + (ner_end_millis - ner_start_millis) + " ms");
 
 		String DATE_FORMAT = "yyyyMMdd";
 		JSPHelper.log.info(termFreqMap.size() + " unique name(s) identified");

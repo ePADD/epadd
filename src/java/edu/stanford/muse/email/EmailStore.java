@@ -33,7 +33,7 @@ import java.util.List;
 
 /** a store is an account, a source of email. */
 public abstract class EmailStore implements Serializable {
-    private static Log log = LogFactory.getLog(EmailStore.class);
+    private static final Log log = LogFactory.getLog(EmailStore.class);
 	private final static long serialVersionUID = 1L;
 
 	String displayName;

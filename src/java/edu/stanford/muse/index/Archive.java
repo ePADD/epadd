@@ -26,14 +26,11 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
-import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper;
 import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.ie.NameInfo;
-import edu.stanford.muse.ie.variants.EntityBook;
 import edu.stanford.muse.ie.variants.EntityBookManager;
-import edu.stanford.muse.ner.Entity;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
@@ -61,7 +58,6 @@ import gov.loc.repository.bagit.reader.BagReader;
 import gov.loc.repository.bagit.util.PathUtils;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
-import groovy.lang.Tuple;
 import groovy.lang.Tuple2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -70,10 +66,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
-import ucar.httpservices.HTTPSession;
 
-import javax.print.Doc;
-import javax.servlet.http.HttpSession;
 import java.io.*;
 
 import java.nio.file.*;
@@ -83,7 +76,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Core data structure that represents an archive. Conceptually, an archive is a
@@ -128,7 +120,8 @@ public class Archive implements Serializable {
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
-    public enum Save_Archive_Mode {INCREMENTAL_UPDATE, FRESH_CREATION};
+    public enum Save_Archive_Mode {INCREMENTAL_UPDATE, FRESH_CREATION}
+
     ////////////  CACHE variables ////////
     ////////////  CACHE variables ///////////////
     // these 5 variables cache the list of all entities/blob names/annotations/folders/ email sources in the archive
@@ -147,12 +140,13 @@ public class Archive implements Serializable {
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
     transient private Map<Document,Document> allUniqueDocsMap=null;
-    private transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
+    private final transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
     private transient Map<Long,List<Document>> threadIDToDocs = new LinkedHashMap<>();
 
-    private Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
+    private final Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
     transient private LinkedHashMap<String, FolderInfo> fetchedFolderInfosMap = null;
-    public Set<String> ownerNames = new LinkedHashSet<>(), ownerEmailAddrs = new LinkedHashSet<>();
+    public final Set<String> ownerNames = new LinkedHashSet<>();
+    public final Set<String> ownerEmailAddrs = new LinkedHashSet<>();
     private transient EntityBookManager entityBookManager;//transient because it is saved explicitly
     public transient CorrespondentAuthorityMapper correspondentAuthorityMapper; /* transient because this is saved and loaded separately */
     private Map<String, NameInfo> nameMap;
@@ -161,7 +155,7 @@ public class Archive implements Serializable {
 
     private transient AnnotationManager annotationManager;//transient because it will be saved and loaded separately
     public transient CollectionMetadata collectionMetadata = new CollectionMetadata();//setting it as transient since v5 as it will be stored/read separately
-    public List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
+    public final List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
 
     public String archiveTitle; // this is the name of this archive
 
@@ -172,14 +166,14 @@ public class Archive implements Serializable {
     public void setArchiveBag(Bag bag){
         this.archiveBag=bag;
     }
-    public synchronized CorrespondentAuthorityMapper getCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
+    public synchronized CorrespondentAuthorityMapper getCorrespondentAuthorityMapper() throws IOException, ParseException {
         // auth mapper is transient, so may have to be created each time. but it will be loaded from a file if it already exists
         if (correspondentAuthorityMapper == null)
             correspondentAuthorityMapper = CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
         return correspondentAuthorityMapper;
     }
     /** recreates the authority mapper, call this, e.g. if the address book changes. */
-    public synchronized void recreateCorrespondentAuthorityMapper() throws IOException, ParseException, ClassNotFoundException {
+    public synchronized void recreateCorrespondentAuthorityMapper() throws IOException, ParseException {
         correspondentAuthorityMapper= CorrespondentAuthorityMapper.createCorrespondentAuthorityMapper(this);
     }
 
@@ -451,8 +445,10 @@ int errortype=0;
         public long timestamp;
         public String tz;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
+        //Since v7, nOutgoing messages in this class will be treated as the number of messages sent by the owner.
         public int nBlobs, nUniqueBlobs, nImageBlobs, nDocBlobs, nOtherBlobs; // this is just a cache so we don't have to read the archive
-        public String ownerName, about;
+        String ownerName;
+        public String about;
         //will be set by method that computes epadd-ner
         public Map<Short, Integer> entityCounts;
         public int numPotentiallySensitiveMessages = -1;
@@ -651,7 +647,7 @@ int errortype=0;
     /**
      * This should be the only place that creates the cache dir.
      */
-    public static void prepareBaseDir(String dir) {
+    private static void prepareBaseDir(String dir) {
         dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar+ LEXICONS_SUBDIR;
         File f_dir = new File(dir);
 
@@ -859,8 +855,7 @@ int errortype=0;
         // TODO: should we recomputeCards? call nukeCards for now to invalidate
         // cards since archive may have been modified.
 
-        List<LinkInfo> links = getLinks();
-        return links;
+        return getLinks();
     }
 
     /**
@@ -1089,7 +1084,7 @@ int errortype=0;
     /*
     Checks if the timerestrictionlabel applied to a given document has expired or not.
      */
-    public boolean isTimeRestrictionExpired(EmailDocument ed,Set<String> timedRestriction){
+    private boolean isTimeRestrictionExpired(EmailDocument ed, Set<String> timedRestriction){
         //1.means at least one timed restriction label on this doc. Check for the timed data
         //if it is past current date/time then export else dont'
         //2.get those timed restrictions
@@ -1564,7 +1559,7 @@ after maskEmailDomain.
         return result;
     }*/
 
-    //returns a map of names recognised by NER to frequency
+    //returns a map of names recognised by openNLPNER to frequency
     /*private Map<String, Integer> countNames() {
         Map<String, Integer> name_count = new LinkedHashMap<>();
         for (Document d : getAllDocs()) {
@@ -1801,7 +1796,7 @@ after maskEmailDomain.
     public Lexicon getLexicon(String lexName) {
         // lexicon map could be stale, re-read it
         try {
-            if(Util.nullOrEmpty(lexiconMap))
+            if(Util.nullOrEmpty(lexiconMap) || lexiconMap.get(lexName.toLowerCase())==null)
                 lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
@@ -1934,15 +1929,13 @@ after maskEmailDomain.
 
     public Span[] getOriginalNamesOfATypeInDoc(edu.stanford.muse.index.Document doc, short type) throws IOException{
         Span[] spans = getAllOriginalNamesInDoc(doc);
-        List<Span> req = Arrays.stream(spans).filter(sp->sp.type==type).collect(Collectors.toList());
-        return req.toArray(new Span[req.size()]);
+        return Arrays.stream(spans).filter(sp -> sp.type == type).toArray(Span[]::new);
     }
 
     private Span[] getAllOriginalNamesInDoc(edu.stanford.muse.index.Document doc) throws IOException{
         Span[] spans = getAllNamesInDoc(doc, true);
         String oc = getContents(doc, true);
-        List<Span> req = Arrays.stream(spans).filter(sp->sp.end<oc.length()).collect(Collectors.toList());
-        return req.toArray(new Span[req.size()]);
+        return Arrays.stream(spans).filter(sp -> sp.end < oc.length()).toArray(Span[]::new);
     }
 
     /**@return a list of names filtered to remove dictionary matches*/
@@ -1953,8 +1946,7 @@ after maskEmailDomain.
     /**@return list of all names in the lucene doc without filtering dictionary words*/
     private static Span[] getNamesOfATypeInLuceneDoc(org.apache.lucene.document.Document ldoc, boolean body, short type) {
         Span[] allNames = NER.getNames(ldoc, body);
-        List<Span> req = Arrays.stream(allNames).filter(s->type==s.type).collect(Collectors.toList());
-        return req.toArray(new Span[req.size()]);
+        return Arrays.stream(allNames).filter(s -> type == s.type).toArray(Span[]::new);
     }
 
     public Span[] getAllNamesInDoc(edu.stanford.muse.index.Document d, boolean body) throws IOException{
@@ -1967,8 +1959,7 @@ after maskEmailDomain.
 
     public Span[] getAllNamesMapToInDoc(edu.stanford.muse.index.Document d, boolean body, short coarseType) throws IOException{
         Span[] allNames = getAllNamesInDoc(d, body);
-        List<Span> req = Arrays.stream(allNames).filter(n-> NEType.getCoarseType(n.type).getCode()==coarseType).collect(Collectors.toList());
-        return req.toArray(new Span[req.size()]);
+        return Arrays.stream(allNames).filter(n -> NEType.getCoarseType(n.type).getCode() == coarseType).toArray(Span[]::new);
     }
 
     /**@return list of all email sources */
@@ -2034,11 +2025,11 @@ after maskEmailDomain.
 
 
     /**
-     * Recognises names in the supplied text with OpenNLP NER
+     * Recognises names in the supplied text with OpenNLP openNLPNER
      * @Deprecated
      */
     @Deprecated public static Set<String> extractNamesOpenNLP(String text) throws Exception {
-        List<Pair<String, Float>> pairs = edu.stanford.muse.index.NER.namesFromText(text);
+        List<Pair<String, Float>> pairs = edu.stanford.muse.index.openNLPNER.namesFromText(text);
         Set<String> names = new LinkedHashSet<>();
         for (Pair<String, ?> p : pairs)
             names.add(p.getFirst());
@@ -2087,9 +2078,7 @@ after maskEmailDomain.
             e.printStackTrace();
             errorMessage = "The file format of the bag is invalid :" + e.getMessage();
         }
-        //If error in reading the bag return null;
-        if (!Util.nullOrEmpty(errorMessage))
-            return null;
+
        /* BagVerifier bv = new BagVerifier(Executors.newSingleThreadExecutor());
         try {
             bv.isValid(bag, true);

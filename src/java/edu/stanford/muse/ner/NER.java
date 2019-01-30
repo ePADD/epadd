@@ -26,26 +26,28 @@ import java.util.stream.Collectors;
  *
  * TODO: trainAndrecognise and train methods should take proper options argument and there should be a class that represents training options*/
 public class NER implements StatusProvider {
-    public static Log		    log					= LogFactory.getLog(NER.class);
+    private static final Log		    log					= LogFactory.getLog(NER.class);
     //names and names_original should include all the names in the title
-    public static String		NAMES				= "names", NAMES_ORIGINAL = "names_original";
-    public static String		NAMES_TITLE			= "en_names_title";
+    public static final String		NAMES				= "names";
+    private static final String NAMES_ORIGINAL = "names_original";
+    public static final String		NAMES_TITLE			= "en_names_title";
 
-    String						status;
-    double						pctComplete			= 0;
-    boolean						cancelled			= false;
-    Archive						archive				= null;
-    NERModel               nerModel;
+    private String						status;
+    private double						pctComplete			= 0;
+    private boolean						cancelled			= false;
+    private Archive						archive				= null;
+    private NERModel               nerModel;
     //in seconds
-    long						time				= -1, eta = -1;
-    static FieldType			ft;
+    private long						time				= -1;
+    private long eta = -1;
+    private static final FieldType			ft;
     int[]						pcts				= new int[] { 16, 32, 50, 100 };
-    StatusProvider statusProvider =  null;
+    private final StatusProvider statusProvider =  null;
 
     public static class NERStats {
         //non-repeating number of instances of each type
-        public Map<Short, Integer>		counts;
-        public Map<Short, Set<String>>	all;
+        public final Map<Short, Integer>		counts;
+        public final Map<Short, Set<String>>	all;
 
         public NERStats() {
             counts = new LinkedHashMap<>();
@@ -76,11 +78,13 @@ public class NER implements StatusProvider {
     }
 
     public static class NEROptions {
-        public boolean addressbook = true, dbpedia = true, segmentation = true;
-        public String prefix = "";
+        boolean addressbook = true;
+        boolean dbpedia = true;
+        boolean segmentation = true;
+        String prefix = "";
         public String wfsName = "WordFeatures.ser", modelName = "svm.model";
-        public String evaluatorName = "ePADD NER complete";
-        public String dumpFldr = null;
+        String evaluatorName = "ePADD openNLPNER complete";
+        String dumpFldr = null;
 
         public NEROptions setAddressBook(boolean val) {
             this.addressbook = val;
@@ -169,9 +173,8 @@ public class NER implements StatusProvider {
 
         String[] plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
         // remove kill phrases here itself
-        List<Span> spans = Arrays.stream(plainSpans).map(Span::parse).filter(s -> s != null && !KillPhrases.isKillPhrase(s.getText())).collect(Collectors.toList());
 
-        return spans.toArray(new Span[spans.size()]);
+        return Arrays.stream(plainSpans).map(Span::parse).filter(s -> s != null && !KillPhrases.isKillPhrase(s.getText())).toArray(Span[]::new);
     }
 
     /* body = true => in message body, false => in subject */
@@ -330,7 +333,7 @@ public class NER implements StatusProvider {
 //		try {
 //			String userDir = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
 //            Archive archive = SimpleSessions.readArchiveIfPresent(userDir);
-//            NER ner = new NER(archive, null);
+//            openNLPNER ner = new openNLPNER(archive, null);
 //            System.err.println("Loading model...");
 //            long start = System.currentTimeMillis();
 //            NERModel model = ner.trainModel(false);

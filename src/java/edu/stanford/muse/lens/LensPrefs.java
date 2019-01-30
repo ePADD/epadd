@@ -39,7 +39,7 @@ import edu.stanford.muse.util.Util;
 
 public class LensPrefs implements Serializable {
 	private static final long serialVersionUID = 1L;
-    public static Log log = LogFactory.getLog(LensPrefs.class);
+    private static final Log log = LogFactory.getLog(LensPrefs.class);
     
     // key structure: stores term -> page -> score map.
     // default score is 1. If a term is cancelled, it's score gets set to 0.
@@ -47,7 +47,7 @@ public class LensPrefs implements Serializable {
     private Map<String, Map<String, Float>> prefs = new LinkedHashMap<>();
     
 	private final static String PREFS_FILENAME = "lens.prefs"; // TODO: decide which directory this goes in
-	private String pathToPrefsFile;
+	private final String pathToPrefsFile;
 		
     public LensPrefs(String cacheDir)
     {

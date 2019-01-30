@@ -23,15 +23,15 @@ import java.io.LineNumberReader;
 */
 public class EmailContactsFetcherCLI {
 
-static String protocol = "imaps";
-static String host = "imap.gmail.com";
-static int port = -1;
-static String user = "hangal";
-static String password = null;
-static String identityName = null;
-static String alternateEmailAddrs = null;
-static String folder = "[Gmail]/Starred";
-static int N_THREADS = 1; // max # of threads used to access mailbox
+private static String protocol = "imaps";
+private static String host = "imap.gmail.com";
+private static int port = -1;
+private static String user = "hangal";
+private static String password = null;
+private static String identityName = null;
+private static String alternateEmailAddrs = null;
+private static String folder = "[Gmail]/Starred";
+private static int N_THREADS = 1; // max # of threads used to access mailbox
 
 @SuppressWarnings("unused")
 private static void parseOptions(String[] args)

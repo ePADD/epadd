@@ -54,7 +54,7 @@ import java.util.function.Consumer;
  * then call fetchAndIndexEmails() */
 
 public class MuseEmailFetcher {
-    private static Log log = LogFactory.getLog(MuseEmailFetcher.class);
+    private static final Log log = LogFactory.getLog(MuseEmailFetcher.class);
 
     public String name, archiveTitle, alternateEmailAddrs; // temp storage--- IMP: Primary email address on email-sources page is named as alternateEmailAddrs
 	public Set<String> emailSources; //temp
@@ -452,7 +452,7 @@ public class MuseEmailFetcher {
      * @throws NoDefaultFolderException 
      * */
 	public void fetchAndIndexEmails(Archive archive, String[] selectedFolders, boolean useDefaultFolders, FetchConfig fetchConfig, HttpSession session, Consumer<StatusProvider> setStatusProvider)
-				throws MessagingException, InterruptedException, IOException, JSONException, NoDefaultFolderException, CancelledException
+				throws InterruptedException, JSONException, NoDefaultFolderException, CancelledException
 	{
 		setupFetchers(-1);
 		
@@ -590,7 +590,7 @@ public class MuseEmailFetcher {
 
 	}
 
-	public Collection<String> getDataErrors()
+	private Collection<String> getDataErrors()
 	{
 		Collection<String> result = new LinkedHashSet<>();
 		if (fetchers == null)

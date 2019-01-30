@@ -16,12 +16,12 @@ import java.util.*;
 
 public class AnnotationManager{
 
-    private static Log log = LogFactory.getLog(AnnotationManager.class);
+    private static final Log log = LogFactory.getLog(AnnotationManager.class);
 
     //mapping from object id (string) to annotation (String).
 
     //moving forward we can think of internalizing strings so that storage is minimized.
-    Map<String,String> docToAnnotation;
+    private final Map<String,String> docToAnnotation;
 
 
     public AnnotationManager (){

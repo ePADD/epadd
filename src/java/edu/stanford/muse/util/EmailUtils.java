@@ -38,6 +38,7 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -899,7 +900,7 @@ public class EmailUtils {
 			result.append(originalLine);
 
 			// be careful, need to ensure that result is same as original text if nothing was stripped.
-			// this is important because indexer will avoid redoing NER etc. if stripped content is exactly the same as the original.
+			// this is important because indexer will avoid redoing openNLPNER etc. if stripped content is exactly the same as the original.
 			if (nextLine == null)
 			{
 				// we're at end of input, append \n only if original text had it.
@@ -1247,7 +1248,7 @@ public class EmailUtils {
 			}
 
             //true argument for BZip2CompressorInputStream so as to load the whole file content into memory
-            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(is, true), "UTF-8"));
+            LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(is, true), StandardCharsets.UTF_8));
             while (true) {
                 String line = lnr.readLine();
                 if (line == null)
@@ -1268,10 +1269,10 @@ public class EmailUtils {
                  * National_Bureau_of_Asian_Research__2 PersonFunction
                  * Which leads to classifying "National_Bureau_of_Asian_Research" as PersonFunction and not Org.
                  */
-                if (r.contains("__")) {
-                    d++;
-                    continue;
-                }
+//                if (r.contains("__")) {
+//                    d++;
+//                    continue;
+//                }
                 //if it still contains this, is a bad title.
                 if (r.equals("") || r.contains("__")) {
                     d++;

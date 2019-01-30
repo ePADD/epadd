@@ -29,7 +29,7 @@ import java.util.Set;
 
 public class Document implements Serializable, Comparable<Document> {
 	private static final long serialVersionUID = 5713436068523824254L;
-	private static Log log = LogFactory.getLog(Document.class);
+	private static final Log log = LogFactory.getLog(Document.class);
 	String id; // just some handle - do not assume anything about values. not unique across folders.
 	public String description;
 	Document() { /* */ }

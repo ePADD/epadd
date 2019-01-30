@@ -27,7 +27,7 @@ public class EmailRenderer {
 	private static final int TEXT_WRAP_WIDTH = 80;
 
 	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
-															 String datasetTitle) throws Exception {
+															 String datasetTitle) {
 		return pagesForDocuments(docs, result, datasetTitle, MultiDoc.ClusteringType.MONTHLY);
 	}
 
@@ -472,9 +472,9 @@ public class EmailRenderer {
 
 	/** I'm not sure what this is used for -- I think its used only for rendering HTML for the message. */
     public static class Entity {
-        public Map<String, Short> ids;
+        public final Map<String, Short> ids;
         //person,places,orgs, custom
-        public String name;
+        public final String name;
         public Set<String> types = new HashSet<>();
 
         public Entity(String name, Map<String, Short> ids, Set<String> types) {

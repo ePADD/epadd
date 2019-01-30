@@ -30,9 +30,9 @@ import java.util.List;
  */
 public class EmailThread
 {
-	private String normalizedSubject;
+	private final String normalizedSubject;
 	// Set<String> recipients;
-	public List<EmailDocument> emails = new ArrayList<>();
+	public final List<EmailDocument> emails = new ArrayList<>();
 	private Date lastDate = null;
 
 	public EmailThread(EmailDocument email, String normalizedSubject)

@@ -26,7 +26,7 @@ public class MultiDoc extends Document {
 
 	private final static long serialVersionUID = 1L;
 
-	public List<Document> docs = new ArrayList<>();
+	public final List<Document> docs = new ArrayList<>();
 //	public Indexer perDocIndexer;
 
 	public List<Document> getDocs() {

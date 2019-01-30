@@ -11,8 +11,8 @@ import java.util.StringTokenizer;
 
 public class WPGenTypes {
 	
-	static Set<String> uniqueOs = new LinkedHashSet<>();
-	static PrintStream out = System.out;
+	private static final Set<String> uniqueOs = new LinkedHashSet<>();
+	private static final PrintStream out = System.out;
 	
 	public static void main (String[] args) throws IOException
 	{

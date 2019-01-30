@@ -19,7 +19,7 @@ package edu.stanford.muse.wpmine;
 
 import java.io.Serializable;
 
-public class Pair<N, V> implements Serializable {
+class Pair<N, V> implements Serializable {
 	private N first;
 	private V second;
 
@@ -32,7 +32,7 @@ public class Pair<N, V> implements Serializable {
 		this.first = first;
 	}
 
-	public N getFirst() {
+	N getFirst() {
 		return first;
 	}
 
@@ -40,7 +40,7 @@ public class Pair<N, V> implements Serializable {
 		this.second = second;
 	}
 
-	public V getSecond() {
+	V getSecond() {
 		return second;
 	}
 

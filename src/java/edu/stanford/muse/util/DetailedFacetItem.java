@@ -38,7 +38,7 @@ public class DetailedFacetItem implements Comparable<DetailedFacetItem>
 		this(name, description, null, paramName, paramValue);
 	}
 	
-	public DetailedFacetItem(String name, String description, Set<Document> docs, String paramName, String paramValue)
+	private DetailedFacetItem(String name, String description, Set<Document> docs, String paramName, String paramValue)
 	{
 		this.name = name; this.description = description;
 		this.docs = docs == null ? new HashSet<>() : docs;

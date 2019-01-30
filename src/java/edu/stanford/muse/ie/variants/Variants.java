@@ -8,6 +8,7 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,13 +27,13 @@ public class Variants {
     private final Multimap<String, String> map = HashMultimap.create();
     private static final Log log = LogFactory.getLog(Variants.class);
 
-    public static Variants nameVariants;
-    private static Set<String> stopWords;
+    public static   Variants nameVariants;
+    private static   Set<String> stopWords;
 
     static {
         try {
             InputStream is = Config.getResourceAsStream("stop.words"); // can change this to stop.words.new or stop.words.full if we want to
-            stopWords = DictUtils.readStreamAndInternStrings(new InputStreamReader(is, "UTF-8"));
+            stopWords = DictUtils.readStreamAndInternStrings(new InputStreamReader(is, StandardCharsets.UTF_8));
             is.close();
         } catch (Exception ioe) {
             Util.print_exception("Error reading stop words file", ioe, log);
@@ -144,7 +145,7 @@ public class Variants {
 
     private static Map<String, String> readDbpedia(String file) throws IOException {
         Map<String, String> result = new LinkedHashMap<>();
-        LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file), true), "UTF-8"));
+        LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file), true), StandardCharsets.UTF_8));
         System.out.println ("Reading Dbpedia");
 
         int count = 0;
@@ -164,7 +165,9 @@ public class Variants {
         return result;
     }
 
-    private static Pattern p1 = Pattern.compile ("_\\(.*\\)"), p2 = Pattern.compile ("\\(.*\\)"), p3 = Pattern.compile ("[_,\\.\\(\\)]");
+    private static final Pattern p1 = Pattern.compile ("_\\(.*\\)");
+    private static final Pattern p2 = Pattern.compile ("\\(.*\\)");
+    private static final Pattern p3 = Pattern.compile ("[_,\\.\\(\\)]");
 
     // remove unnecessary punctuation
     private static String withoutPunctuation(String s) {
@@ -196,15 +199,15 @@ public class Variants {
         }
     }
 
-    public static class EntityMap {
-        Multimap<String, String> cEntityToDEntity = HashMultimap.create();
-        Multimap<String, String> tokenToCEntity = HashMultimap.create();
-        public static final String DELIMS = " .;,-#@&()";
+    static class EntityMap {
+        final Multimap<String, String> cEntityToDEntity = HashMultimap.create();
+        final Multimap<String, String> tokenToCEntity = HashMultimap.create();
+        static final String DELIMS = " .;,-#@&()";
 
         /**
          * case independent, word order independent, case normalized
          */
-        public static String canonicalize(String s) {
+        static String canonicalize(String s) {
             if (s == null)
                 return s;
 
@@ -222,7 +225,7 @@ public class Variants {
             return Util.join(tokens, " ");
         }
 
-        public static String abbreviate(String s) {
+        static String abbreviate(String s) {
             List<String> tokens = Util.tokenize(s, DELIMS);
             StringBuilder result = new StringBuilder();
             for (String token : tokens)
@@ -230,7 +233,7 @@ public class Variants {
             return result.toString();
         }
 
-        public void setupEntityMapping(Set<String> allEntities) {
+        void setupEntityMapping(Set<String> allEntities) {
             int count = 0;
             for (String dEntity : allEntities) {
                 dEntity = dEntity.trim();
@@ -270,7 +273,7 @@ public class Variants {
         }
 
         /* returns map of centities -> weight that the string s maps to */
-        public Map<String, Integer> lookupAsWeightedMap(String s) {
+        Map<String, Integer> lookupAsWeightedMap(String s) {
             Map<String, Integer> result = new LinkedHashMap<>(); // cEntityToScore
             s = canonicalize(s);
             if (Util.nullOrEmpty(s))

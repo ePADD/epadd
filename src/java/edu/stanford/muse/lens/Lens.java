@@ -36,9 +36,9 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 
 public class Lens {
-    public static Log log = LogFactory.getLog(JSPHelper.class);
+    public static final Log log = LogFactory.getLog(JSPHelper.class);
 
-	private static Set<String> knownBadTerms = new LinkedHashSet<>(); /** imp: canonicalized to lower case */
+	private static final Set<String> knownBadTerms = new LinkedHashSet<>(); /** imp: canonicalized to lower case */
 
 	static {
 		String LENS_KILL_FILE = "lens-kill.txt";
@@ -206,8 +206,7 @@ public class Lens {
 	}
 	
 	/** gets details from index for the given term */
-	public static JSONObject detailsForTerm(String term, float pageScore, Archive archive, AddressBook ab, String baseURL, Collection<EmailDocument> allDocs) throws JSONException, IOException, GeneralSecurityException
-	{
+	public static JSONObject detailsForTerm(String term, float pageScore, Archive archive, AddressBook ab, String baseURL, Collection<EmailDocument> allDocs) throws JSONException, IOException {
 		if (term.length() <= 2)
 			return null;
 

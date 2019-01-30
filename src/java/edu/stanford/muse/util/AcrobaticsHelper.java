@@ -15,6 +15,6 @@
 */
 package edu.stanford.muse.util;
 
-public class AcrobaticsHelper {
+class AcrobaticsHelper {
 
 }
