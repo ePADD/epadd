@@ -164,12 +164,12 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
-			<version>1.14</version>
+			<version>1.17</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.14</version>
+			<version>1.17</version>
 		</dependency>
 
                 <!-- no direct dependency on pdfbox now, only through tika 
@@ -251,7 +251,7 @@
 		<dependency>
 		  <groupId>org.mnode.mstor</groupId>
 		  <artifactId>mstor</artifactId>
-		  <version>0.9.14</version>
+		  <version>0.9.13</version>
 		</dependency>
 
 		<dependency>

@@ -247,6 +247,8 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
 
                 long fastid = 0;
                 try{
+                    if(record.length==1) //FIX: in some cases when candidate is corrupted then we won't have it in the form of two entries.
+                        continue;
                     fastid = Long.parseLong(record[1].trim());
                 }catch(NumberFormatException e){
                     fastid=-1;
