@@ -36,7 +36,7 @@
     <div style="margin-left:170px">
         You can upload images that represent the collection here. Only PNG format files are supported.
         <p></p>
-        <form method="POST" action="upload-images" enctype="multipart/form-data" >
+        <form id="uploadProfilePhotoForm" method="POST" enctype="multipart/form-data" >
             <%--adding a hidden input field to pass collectionID the server. This is a common pattern used to pass--%>
             <%--archiveID in all those forms where POST was used to invoke the server page.--%>
             <input type="hidden" value="<%=collectionID%>" name="collection"/>
@@ -90,10 +90,57 @@
             <br/>
             <input type="file" name="bannerImage" id="bannerImage" />
             <br/><br/>
-            <button id="upload-btn" class="btn btn-cta">Upload <i class="icon-arrowbutton"></i></button>
+            <button id="upload-btn" class="btn btn-cta" onclick="uploadPhotoHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
         </form>
     </div>
+ <script>
+     var uploadPhotoHandler=function() {
+         event.preventDefault(); //prevent default action
 
+         //collect archiveID,and addressbookfile field. If  empty return false;
+         var profilePhotoFilePath = $('#profilePhoto').val();
+         var landingPhotoFilePath = $('#landingPhoto').val();
+         var bannerImageFilePath = $('#bannerImage').val();
+
+         if (!profilePhotoFilePath && !landingPhotoFilePath && !bannerImageFilePath) {
+             alert('Please provide the path of at least one image type!');
+             return false;
+         }
+
+
+
+         var form = $('#uploadProfilePhotoForm')[0];
+
+         // Create an FormData object
+         var data = new FormData(form);
+         //hide the modal.
+         //$('#profilePhoto-upload-modal').modal('hide');
+         //now send to the backend.. on it's success reload the same page. On failure display the error message.
+
+         $.ajax({
+             type: 'POST',
+             enctype: 'multipart/form-data',
+             processData: false,
+             url: "ajax/upload-images.jsp",
+             contentType: false,
+             cache: false,
+             data: data,
+             success: function (data) {
+                 //epadd.success('Profile photo uploaded and applied.', function () {
+                 window.location.reload();
+                 //});
+             },
+             error: function (jq, textStatus, errorThrown) {
+                 epadd.error("Error uploading files, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
+             }
+         });
+     }
+
+    /* $('div.profile-pic-edit').click (function() {
+         $('#profilePhoto-upload-modal').modal();
+     });*/
+
+ </script>
     <jsp:include page="footer.jsp"/>
 
     </body>

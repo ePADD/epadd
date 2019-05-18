@@ -12,7 +12,7 @@
 <%@page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@page import="edu.stanford.muse.Config" %>
 <%@page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
-<%@page import="gov.loc.repository.bagit.domain.Bag" %>
+<%@page import="gov.loc.repository.bagit.domain.Bag" %><%@ page import="java.lang.ref.WeakReference"%>
 <%
 // note: this is ajax/upload-images.jsp (not just upload-images.jsp, which will be removed)
 
@@ -54,8 +54,22 @@
 
                 String dname=null;
                 Archive archive=null;
-                if(collectionID != null && !"null".equals(collectionID))
+                /*
+                A subtle issue is as following; if archive was loaded (by opening it earlier and then closing it) then
+                the archive object is already in weak memory reference (for faster loading). However here, because archiveID
+                was not passed explicitly we think that the archive is not loaded yet and after updating bag metadata we don't
+                update the bag object stored in that archive object (which is in cache). So we should also check if cache
+                contains an archive object for this colleciton id or not. If yes then after updating bag metadata we also update
+                the bag's reference in that archive object.
+                 */
+                if(collectionID != null && !"null".equals(collectionID)){
                     dname = collectionID;
+                	String archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + dname;
+                	WeakReference<Archive> warchive = ArchiveReaderWriter.getArchiveFromGlobalArchiveMap(archiveBaseDir);
+                    if(warchive!=null){
+	                archive=   warchive.get();
+            	    }
+                }
                 else if(!"null".equals(archiveID)) {
                     archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
                     dname = new File(archive.baseDir).getName();
@@ -99,6 +113,8 @@
                 }
                 //after uploading the images, update the bag metadata as well.
                 Archive.updateFileInBag(bag,dir,basedir);
+                if(archive!=null)
+                  archive.setArchiveBag(bag);
             } catch (Exception e) {
                 Util.print_exception(e, JSPHelper.log);
                 error = "Sorry, there was an error uploading files.";
