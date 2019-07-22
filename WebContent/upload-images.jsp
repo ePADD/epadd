@@ -110,6 +110,8 @@
                        }
                        //after uploading the images, update the bag metadata as well.
                        Archive.updateFileInBag(bag,dir,basedir);
+                       if(archive!=null)
+                           archive.setArchiveBag(bag);
                    } catch (Exception e) {
                        Util.print_exception(e, JSPHelper.log);
                        error = "Sorry, there was an error uploading files.";

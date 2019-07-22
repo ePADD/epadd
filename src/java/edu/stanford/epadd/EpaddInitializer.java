@@ -53,15 +53,27 @@ public class EpaddInitializer implements ServletContextListener {
 					"Persona.writer.theater.NYPL.english.lex.txt"
 			};*/
 
-			Archive.LEXICONS = new File(event.getServletContext().getResource(("/WEB-INF/classes/lexicon")).getPath()).list(new FilenameFilter() {
+			/*File lexresource = new File(event.getServletContext().getResource(("/WEB-INF/classes/lexicon")).getPath());
+			if(lexresource==null)
+				System.err.println("Error reading lexicon folder from the resource folder....!!!");
+			else {
+				System.err.println("lexicon folder read properly from the resource folder..");
+				System.err.println(lexresource.list().length + " entries present in lexicon folder");
+			}*/
+			//Now Archive.LEXICONS is initialized statically. It was mainly done to counter an issue that came up on windows
+			//where lexicon directory was not read properly from the resource.
+			/*Archive.LEXICONS = lexresource.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
 					if(name.endsWith("lex.txt"))
 						return true;
 					return false;
 				}
-			});
-			System.err.println("muse.log system variable is: "+System.getProperty("muse.log"));
+			});*/
+			if(Archive.LEXICONS ==null) {
+				System.err.println("Error reading lexicon from the resource folder....");
+			}
+				System.err.println("muse.log system variable is: "+System.getProperty("muse.log"));
 		} catch (Exception e) {
 			System.err.println ("ERROR initializing ePADD: " + e);
 			e.printStackTrace(System.err);

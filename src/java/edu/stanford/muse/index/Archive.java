@@ -119,7 +119,14 @@ public class Archive implements Serializable {
 
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
-    public static String[] LEXICONS =  new String[]{"default.english.lex.txt"}; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
+    public static String[] LEXICONS =  new String[]{
+                                                    "default.english.lex.txt","Persona.academic.administrator.sensitive.duke.english.lex.txt",
+                                                    "Persona.author.princeton.english.lex.txt","Persona.composer.NYPL.english.lex.txt",
+            "Persona.environmental.artist.projects.stanford.english.lex.txt","Persona.faculty.UCI.english.lex.txt",
+            "Persona.journalist.activist.politics.and.travel.UCB.english.lex.txt","Persona.microbiologist.UIUC.english.lex.txt",
+            "Persona.writer.theater.NYPL.english.lex.txt","regex.english.lex.txt","sensitive.english.lex.txt",
+            "sensitive-cca-french.french.lex.txt","sensitive-ccca-german.german.lex.txt","sentiments.english.lex.txt"
+                                                    }; // this is the default, for Muse. EpaddIntializer will set it differently. don't make it final
     public enum Save_Archive_Mode {INCREMENTAL_UPDATE, FRESH_CREATION}
 
     ////////////  CACHE variables ////////
@@ -656,7 +663,10 @@ int errortype=0;
         // copy lexicons over to the muse dir
         // unfortunately, hard-coded because we are loading as a ClassLoader resource and not as a file, so we can't use Util.filesWithSuffix()
         // we have a different set of lexicons for epadd and muse which will be set up in LEXICONS by the time we reach here
-        log.info("copying " + LEXICONS.length + " lexicons to " + dir);
+        if(LEXICONS!=null)
+          log.info("copying " + LEXICONS.length + " lexicons to " + dir);
+        else
+            log.warn("Lexicon is null!!!");
         for (String l : LEXICONS) {
             try {
 
