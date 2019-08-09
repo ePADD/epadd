@@ -16,8 +16,6 @@
 package edu.stanford.muse.email;
 
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.AddressBookManager.AddressBook;
@@ -269,6 +267,19 @@ public class MuseEmailFetcher {
 			return null;
 		EmailStore emailStore = new MboxEmailStore(accountKey, localFolders ? "Local Folders" : mailDirs, mailDirs);
 		return doConnect(emailStore);
+	}
+
+	/*
+	This method was added by Chinmay to add the support for fetching and indexing messages directly from gmail.
+	It slightly differs in uniformity from the above method (addMboxAccount) in the sense that here the  client creates
+	gmailStore object and passes to this function whereas in the above method client only passes some information about the account
+	and the method creates MboxEmailStore object. Chinmay's rationale of doing it is if the client already knows
+	which method to invoke (addMobx.. or addGmail..) then she may as well pass the constructed store object. Nothing important for now
+	but just a brooding thought (sitting in the Dehradun airport I had ample time to document this :) ).
+	 */
+	public synchronized String addGmailAccount(GmailStore gmailStore){
+		return doConnect(gmailStore);
+
 	}
 
 	private String doConnect(EmailStore emailStore)

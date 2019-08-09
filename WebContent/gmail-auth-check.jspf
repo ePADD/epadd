@@ -1,0 +1,19 @@
+<%@ page import="edu.stanford.muse.email.GmailAuth.AuthenticatedUserInfo" %><%--
+  Created by IntelliJ IDEA.
+  User: tech
+  Date: 8/2/19
+  Time: 7:51 PM
+  To change this template use File | Settings | File Templates.
+--%>
+<%
+/*Check if session has a authInfo object stored or not. If it is stored and auth method is google then Get accessToken in a variable
+  and quit. Else change window location to gmail-auth page so that the user is forced to do google auth first*/
+    AuthenticatedUserInfo authenticatedUserInfo = (AuthenticatedUserInfo)session.getAttribute("authInfo");
+    boolean isLogged=false;
+    if(authenticatedUserInfo!=null)
+        isLogged=true;
+    else{
+        %>
+            window.location='gmail-auth';
+        <%}
+%>

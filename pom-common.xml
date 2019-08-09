@@ -34,6 +34,23 @@
 	</pluginRepositories>
 	
 	<dependencies>
+		<!-- Google libraries and auth section -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-gmail</artifactId>
+			<version>v1-rev98-1.25.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.25.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client</artifactId>
+			<version>1.25.0</version>
+		</dependency>
 		<dependency>
 			<groupId>tw.edu.ntu.csie</groupId>
 			<artifactId>libsvm</artifactId>
@@ -153,11 +170,18 @@
                 </dependency>
         -->
 
-<dependency>
+<!--<dependency>
 	<groupId>javax.mail</groupId>
 	<artifactId>mail</artifactId>
-	<version>1.4.2</version>
-</dependency>
+	<version>1.4.7</version>
+</dependency>-->
+		<!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>net.sf.jtidy</groupId>

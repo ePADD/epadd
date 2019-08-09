@@ -1047,19 +1047,29 @@ public class EmailFetcherThread implements Runnable, Serializable {
     //keep track of the total time elapsed in fetching messages across batches
     private static long fetchStartTime = System.currentTimeMillis();
 
-    /**
-     * fetch given message idx's in given folder -- @performance critical
-     *
-     * @param offset - the original offset of the first message in the messages array, important to initialize
-     *               for proper assignment of unique id or doc Id
+
+    /*
+    This method is just a delegate to the original method. The original method signature was changed to handle the gmail store case which doesn't have a proper java.mail.folder object ready.
+    Similarly the prefetching too does not make sense there. Therefore these two attributes are extracted out in form of method parameters. This change in the method signature (in the original fetchandindex method)
+    required us to create this delegate method (so as to avoid breaking the  existing clients of this code).
      */
-    //private void fetchUncachedMessages(String sanitizedFName, Folder folder, DocCache cache, List<Integer> msgIdxs) throws MessagingException, FileNotFoundException, IOException, GeneralSecurityException {
     private void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) {
+        fetchAndIndexMessages(folder,messages,offset,totalMessages,true,folder.getName());
+    }
+
+        /**
+         * fetch given message idx's in given folder -- @performance critical
+         *
+         * @param offset - the original offset of the first message in the messages array, important to initialize
+         *               for proper assignment of unique id or doc Id
+         */
+    //private void fetchUncachedMessages(String sanitizedFName, Folder folder, DocCache cache, List<Integer> msgIdxs) throws MessagingException, FileNotFoundException, IOException, GeneralSecurityException {
+    private void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages, boolean shouldPrefetch, String foldername) {
         //mark the processing of new batch
         if (offset == 0)
             fetchStartTime = System.currentTimeMillis();
 
-        currentStatus = JSONUtils.getStatusJSON((emailStore instanceof MboxEmailStore) ? "Parsing " + folder.getName() + " (can take a while)..." : "Reading " + folder.getName() + "...");
+        currentStatus = JSONUtils.getStatusJSON((emailStore instanceof MboxEmailStore) ? "Parsing " + foldername + " (can take a while)..." : "Reading " + foldername + "...");
 
         // bulk fetch of all message headers
         int n = messages.length;
@@ -1093,7 +1103,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 Message m = messages[i];
                 MimeMessage mm = (MimeMessage) m;
 
-                if (i >= last_i_prefetched) {
+                if (i >= last_i_prefetched && shouldPrefetch) {
                     // critical perf. step: do a bulk imap prefetch
                     // the prefetch will fetch as many messages as possible up to a max buffer size, and return the messages prefetched
                     // last_i_prefetched tracks what is the last index into idxs that we have prefetched.
@@ -1111,7 +1121,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 long unprocessedSecs = Util.getUnprocessedMessage(i + offset, totalMessages, elapsedMillis);
                 int N_TEASERS = 50; // 50 ok here, because it takes a long time to fetch and process messages, so teaser computation is relatively not expensive
                 int nTriesForThisMessage = 0;
-                currentStatus = getStatusJSONWithTeasers("Reading " + Util.commatize(totalMessages) + " messages from " + folder.getName() + "...", pctDone, elapsedMillis / 1000, unprocessedSecs, emails, N_TEASERS);
+                currentStatus = getStatusJSONWithTeasers("Reading " + Util.commatize(totalMessages) + " messages from " + foldername + "...", pctDone, elapsedMillis / 1000, unprocessedSecs, emails, N_TEASERS);
 
                 int messageNum = mm.getMessageNumber();
 
@@ -1305,9 +1315,11 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         store = emailStore.connect();
         folder = emailStore.get_folder(store, folder_name());
-        if (folder != null)
+        if (folder != null && !(emailStore instanceof GmailStore))
             return folder.getMessageCount();
-        else
+        else if(folder == null && emailStore instanceof GmailStore){
+            return emailStore.openFolder(store,folder_name()).second;
+        }else
             return 0;
     }
 
@@ -1437,7 +1449,47 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     log.info("Fetch stats for this fetcher thread: " + stats);
                 }
                 log.info("Read #" + nMessages + " messages in #" + b + " batches of size: " + BATCH + " in " + (System.currentTimeMillis() - st) + "ms");
-            } else {
+            } else if (emailStore instanceof GmailStore) {
+                /**
+                 *  GmailStore is emailStore extended object which connects and fetch messages using Java REST APIs
+                 *  specified in developer console google. We can use it by instantiating museEmailFetcher with this store. However, I realized that gmail can
+                 *  also be accessed using IMAP interaface and so we ended up using IMAPPopEmailStore (which is already an emailStore extended class) to connect
+                 *  and get gmail data.
+                 */
+
+                //invoke methods of GmailStore to read messages and pass them to convertToEmailDocument and add to archive.
+                GmailStore gmailStore = (GmailStore) emailStore;
+                long st = System.currentTimeMillis();
+                //prepare query string
+                String query = fetchConfig.filter.getQueryStringGmailStore();
+                //now invoke gmailstore method which returns an iterator. We iterate over it to first get message id's and then actual messages.
+                GmailMessageEnumerator gmailMessageEnumerator = gmailStore.IteratorMessagesMatchingQuery(gmailStore.userId, query);
+                List<com.google.api.services.gmail.model.Message> messageIDList = gmailMessageEnumerator.nextElement();
+                nMessagesProcessedSuccess = 0;
+                while (messageIDList != null) {
+                    //read actual messages in a list of mimemessges.
+                    List<Message> messages = gmailStore.getMessagesForIds(gmailStore.userId, messageIDList);
+                    nMessagesProcessedSuccess = nMessagesProcessedSuccess + messages.size();
+                    begin_msg_index = nMessagesProcessedSuccess;
+                    if (isCancelled)
+                        return;
+                    if (fetchConfig.downloadMessages) {
+                        //now index all thes messages and add them to archive.
+                        log.info(messages.size() + " messages will be fetched for indexing");
+                        Message[] message_array = messages.toArray(new Message[messages.size()]);
+                        //Note that here folder is null (because we don't have a java mail equivalaent to oauth gmail api access
+                        //CHINMAY: We want to use existing method to fetch and index message but can't expect prefetch to work. So modified the fetchAndIndexMessage method
+                        //to create a delegate with an extra boolean flag (shouldPrefetch). By default it will always be true except when set explicitly as false.
+                        //When we get more understanding about Rest API based access to gmail then we can further refine it @TODO
+                        fetchAndIndexMessages(folder, message_array, begin_msg_index, nMessages, false, folder_name());
+                        log.info("Fetch stats for this fetcher thread: " + stats);
+                        log.info("Read #" + nMessagesProcessedSuccess + " messages in # in " + (System.currentTimeMillis() - st) + "ms");
+
+                    }
+                    messageIDList = gmailMessageEnumerator.nextElement();
+                }
+            }
+            else  {
                 // IMAP etc are pretty efficient with lazily populating message objects, so unlike mbox, its ok to use openFolderAndGetMessages() on the entire folder.
                 // remember to init the begin/end_msg_index before calling openFolderAndGetMessages
                 begin_msg_index = 1;

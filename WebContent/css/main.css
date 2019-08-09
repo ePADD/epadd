@@ -6,8 +6,8 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600,300);
 @font-face {
   font-family: FontAwesome;
-  src: url(../fonts/fontawesome-webfont.eot?v=4.2.0);
-  src: url(../fonts/fontawesome-webfont.eot?#iefix&v=4.2.0) format("embedded-opentype"), url(../fonts/fontawesome-webfont.woff?v=4.2.0) format("woff"), url(../fonts/fontawesome-webfont.ttf?v=4.2.0) format("truetype"), url(../fonts/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular) format("svg");
+  src: url(fonts/font-awesome/fonts/fontawesome-webfont.eot?v=4.3.0);
+  src: url(fonts/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.3.0) format("embedded-opentype"), url(fonts/font-awesome/fonts/fontawesome-webfont.woff?v=4.3.0) format("woff"), url(fonts/font-awesome/fonts/fontawesome-webfont.ttf?v=4.3.0) format("truetype"), url(fonts/font-awesome/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular) format("svg");
   font-weight: 400;
   font-style: normal; }
 .fa {

@@ -140,6 +140,25 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>gmail-auth</servlet-name>
+		<jsp-file>/test-gmail-login.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>gmail-auth</servlet-name>
+		<url-pattern>/gmail-auth</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet>
+		<servlet-name>gmail-top</servlet-name>
+		<jsp-file>/gmail-top.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>gmail-top</servlet-name>
+		<url-pattern>/gmail-top</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>edit-collection-metadata</servlet-name>
 		<jsp-file>/edit-collection-metadata.jsp</jsp-file>
 	</servlet>

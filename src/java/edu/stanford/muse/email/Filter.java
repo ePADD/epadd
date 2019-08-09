@@ -32,6 +32,9 @@ import org.apache.commons.logging.LogFactory;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.*;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /** filter for FETCHING email messages. this is only an AND filter, i.e. all clauses must match for the filter to match */
@@ -139,6 +142,22 @@ public class Filter implements Serializable {
 		personNameOrEmails.add(s);
 	}
 
+	/*
+	This method prepares a gmail query string used for Rest API based Gmail access. This is used by GmailStore class (which implements reading /downloading data from Gmail (without IMAP)_)
+	 */
+	public String getQueryStringGmailStore(){
+		String query="";
+		if(sentMessagesOnly)
+			query+=" is:sent ";
+		LocalDate stlocaldate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate endlocaldate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		String startdate = stlocaldate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));//simpleDateFormat.format(prevdate);
+		String enddate = endlocaldate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+
+		query = query + "after:" + startdate + " before:" + enddate;
+		return query;
+
+	}
 	private boolean matchesDate (DatedDocument dd)
 	{
 		if (startDate != null && endDate != null)

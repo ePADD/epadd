@@ -4,6 +4,7 @@
 <%@page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@page language="java" import="java.util.Set"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.email.GmailAuth.AuthenticatedUserInfo" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -24,9 +25,38 @@
 		.input-field {width:350px;}
 		.input-field-label {font-size: 12px;}
 
+		#customBtn:hover {
+			cursor: pointer;
+		}
+
+		.provider-icon {
+			position: absolute;
+			left: 20px;
+			top: 13px;
+		}
+
+		.login-container .provider-link {
+			color: white;
+			display: block;
+			font-size: 16px;
+			height: 40px;
+			line-height: 40px;
+			position: relative;
+			text-align: center;
+			width: 100%;
+			margin-bottom: 20px;
+		}
+
+		#login-google {
+			background-color: #bf4434;
+		}
+
+
 	</style>
 
 	<script src="js/jquery.js"></script>
+	<script src="https://apis.google.com/js/api:client.js"></script>
+	<script src="https://apis.google.com/js/client:platform.js" async defer></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="jqueryFileTree/jqueryFileTree.js"></script>
 	<script src="js/filepicker.js"></script>
@@ -95,6 +125,19 @@ if (archive != null) {
 		bestEmail = addrs.iterator().next();
 	writeProfileBlock(out, archive, "Import email into this archive");
 }
+//Check if user is logged in (via gmail oauth) then fill in server username and password boxes already. So that the normal flow of adding account and login
+	AuthenticatedUserInfo authInfo = (AuthenticatedUserInfo) session.getAttribute("authInfo");
+	boolean loggedIn=true;
+	if ((authInfo == null) || (authInfo.getAuthToken() == null)) { // authenticated session expired, log out of PM
+		loggedIn = false;
+	}
+	String useremail = "";
+	String xoauthtoken = "";
+	String OAUTH_MAGIC_STRING="xoauth";
+	if(loggedIn){
+	    useremail = authInfo.getUserName();
+	    xoauthtoken = OAUTH_MAGIC_STRING+authInfo.getAccessToken();
+	}
 %>
 <%--
 <!--sidebar content-->
@@ -154,6 +197,18 @@ if (archive != null) {
 	</section>
 
 	<section>
+		<% /*For google oauth login */ %>
+		<div id="serversimap" class="accounts panel">
+			<div class="provider-link" style="width:100px;display:inline-block" id="login-google">
+			<div id="customBtn">
+				<span style="text-align:center;color:white;"><i class="fa fa-google fa-2"></i></span>
+				<span class="provider-name">Google</span>
+			</div>
+			</div>
+		</div>
+	</section>
+
+	<section>
 	<div id="servers" class="accounts panel">
 		<% /* proper field names and ids will be assigned later, when the form is actually submitted */ %>
 		<div class="panel-heading">Public Email Accounts (Gmail, Yahoo, Hotmail, Live.com, etc)</div>
@@ -164,13 +219,13 @@ if (archive != null) {
 			<div class="div-input-field">
 				<div class="input-field-label"><i class="fa fa-envelope"></i> Email Address</div>
 				<br/>
-				<div class="input-field"><input class="form-control" type="text" name="loginName0"/></div>
+				<div class="input-field"><input class="form-control" type="text" name="loginName0" value="<%=useremail%>" /></div>
 			</div>
 
 			<div class="div-input-field">
 				<div class="input-field-label"><i class="fa fa-key"></i> Password <img class="spinner" id="spinner0" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"></div>
 				<br/>
-				<div class="input-field"><input class="form-control" type="password" name="password0"/></div>
+				<div class="input-field"><input class="form-control" type="password" name="password0" value="<%=xoauthtoken%>"/></div>
 			</div>
 			<br/>
 		</div>
@@ -277,6 +332,79 @@ if (archive != null) {
 <jsp:include page="footer.jsp"/>
 
 	<script>
+        var googleInitSignIn = function() {
+            gapi.load('auth2', function(){
+                // Retrieve the singleton for the GoogleAuth library and set up the client.
+                auth2 = gapi.auth2.init({
+                    client_id: '893886069594-hsbcr0elt6u0vgr2qa7qei7boop3jgu2.apps.googleusercontent.com',
+                    // client_id: '606753072852-c2aoi9qu516lvo05gscdb017062a83hm.apps.googleusercontent.com',
+                    cookiepolicy: 'single_host_origin',
+                    // Request scopes in addition to 'profile' and 'email'
+                    //scope: 'additional_scope'
+                    // scope: 'email profile https://www.googleapis.com/auth/gmail.readonly'
+                    scope: 'email profile https://www.googleapis.com/auth/gmail.readonly https://mail.google.com/'
+                });
+                attachSignin(document.getElementById('customBtn'));
+            });
+        };
+
+        function attachSignin(element) {
+            auth2.attachClickHandler(element, {},
+                function(googleUser) {
+                    //https://stackoverflow.com/questions/52883909/google-api-accessing-gmail-from-java-with-id-token-from-javascript
+                    //authenticate(AUTH_METHOD.GOOGLE, googleUser.getAuthResponse().id_token); // The user has successfully singled in, pass the id token at the server
+                    authenticate(googleUser.getAuthResponse().id_token, googleUser.getAuthResponse().access_token); // The user has successfully singled in, pass the id token at the server
+                }, function(error) {
+                    console.log("Google login failed");
+                    // LOG("Google login failed:" + JSON.stringify(error, undefined, 2));
+                });
+        }
+        function authenticate(idToken,accessToken) {
+            // validate username and password
+            var url = 'ajax/gmail-auth/authenticate.jsp';
+            var username='';
+            var password='';
+            $.ajax({
+                type: 'POST',
+                url: url,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                data: {idToken: idToken, username:username, passwd:password, accessToken: accessToken},
+                success: function(response) {
+                    $('#info-modal .modal-title #spinner').remove();
+                    if (response && response.status === 0) {
+                        console.log("login successfull!!");
+                        window.location='email-sources'
+                        //location.pathname = location.pathname.replace(/(.*)\/[^/]*/, "$1/"+ 'dashboard');
+                    }
+                    else {
+                        console.log("Login failed")
+                        //LOG("Showing error");
+                        $('#info-modal').css("color", "black");
+                        $('#info-modal .modal-title').html('Error');
+                        $('#info-modal .modal-body').html((response.error ? response.error : "") + '<br/>Contact puzzlemaster@amuselabs.com if this error persists.');
+                        $('#info-modal').modal();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#info-modal .modal-title #spinner').remove();
+                    $('#info-modal .modal-title').html('Error');
+                    $('#info-modal .modal-body').html ('Sorry, there was an error in connecting to the server.');
+                    $('#info-modal').modal();
+                    //LOG_ON_SERVER("Error in saving the puzzle:" + textStatus + ", errorThrown:" + errorThrown);
+                }
+            });
+        }
+        $(document).ready(function() {
+            //$.backstretch("images/login_bg_img.png");
+            googleInitSignIn(); // Google auth login setup
+			$('input#loginName0').val('<%=useremail%>');
+			$('input#password0').val('<%=xoauthtoken%>');
+        });
+	</script> <!-- make the dataset name available to browse.js -->
+
+	<script>
+
 		function add_server() {
 			// clone the first account
 			var $logins = $('#servers .account');
@@ -318,12 +446,13 @@ if (archive != null) {
 		}
 
 		$(document).ready(function() {
+		    localStorage.clear();
 			$('input[type="text"]').each(function () {
 				var field = 'email-source:' + $(this).attr('name');
 				if (!field)
 					return;
 				var value = localStorage.getItem(field);
-				$(this).val(value);
+				//$(this).val(value);
 			});
 		});
 

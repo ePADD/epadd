@@ -118,7 +118,7 @@ public class Accounts {
 		boolean imapDBLookupFailed = false;
 		String errorMessage = "";
 		int errorStatus = 0;
-
+		String emailDomain = loginName.substring(loginName.indexOf("@") + 1);
 		if(accountType.equals("email") && Util.nullOrEmpty(server)) {
 			log.info("accountType = email");
 			
@@ -128,7 +128,6 @@ public class Accounts {
 				// ISPDB from Mozilla
 				imapDBLookupFailed = true;
 
-				String emailDomain = loginName.substring(loginName.indexOf("@") + 1);
 				log.info("Domain: " + emailDomain);
 
 				// from http://suhothayan.blogspot.in/2012/05/how-to-install-java-cryptography.html
@@ -209,7 +208,7 @@ public class Accounts {
 			}
 		}		
 		
-		if (imapDBLookupFailed)
+		if (imapDBLookupFailed && !emailDomain.equals("gmail.com")) //No need to return if emaildomain name contains gmail.
 		{
 			log.info("ISPDB Fail");
 			result.put("status", errorStatus); 

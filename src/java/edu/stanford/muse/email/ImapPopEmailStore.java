@@ -16,6 +16,7 @@
 package edu.stanford.muse.email;
 
 import com.sun.mail.util.MailSSLSocketFactory;
+import edu.stanford.muse.email.google.OAuth2Authenticator;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.logging.Log;
@@ -26,8 +27,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import java.security.GeneralSecurityException;
-import java.security.Provider;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,7 +43,6 @@ public class ImapPopEmailStore extends EmailStore {
 	static {
 		 // see http://www.javaworld.com/javatips/jw-javatip115.html
 	//	 Security.addProvider( new com.sun.net.ssl.internal.ssl.Provider());
-
 		 mstoreProps = System.getProperties();
 
 		// see RFC 3501 http://www.faqs.org/rfcs/rfc3501.html
@@ -55,7 +53,7 @@ public class ImapPopEmailStore extends EmailStore {
 		// protocol=imaps has no issues, so plain mode can be left enabled.
 		// some buggy servers have trouble with SASL plain auth, disable it
 		mstoreProps.put("mail.imap.auth.plain.disable", "true");
-		
+
 		// see http://java.sun.com/products/javamail/javadocs/com/sun/mail/imap/package-summary.html for imap properties
 
 		mstoreProps.put("mail.imaps.partialfetch", "false"); // sometimes imap servers have a bug: see http://java.sun.com/products/javamail/FAQ.html#imapserverbug
@@ -81,23 +79,12 @@ public class ImapPopEmailStore extends EmailStore {
 	//	mstoreProps.put("mail.debug", "true");
 	}
 
-    public static final class OAuth2Provider extends Provider {
-	    private static final long serialVersionUID = 1L;
-
-	    OAuth2Provider() {
-	      super("Google OAuth2 Provider", 1.0,
-	            "Provides the XOAUTH2 SASL Mechanism");
-	      put("SaslClientFactory.XOAUTH2",
-	          "com.google.code.samples.oauth2.OAuth2SaslClientFactory");
-	    }
-    }
-	
 	public ImapPopEmailStore(ImapPopConnectionOptions options, String emailAddress)
 	{
 		super(options.userName + "@" + options.server, emailAddress);
 		this.connectOptions = options;
 		this.displayName = computeSimpleDisplayName();
-		Security.addProvider(new OAuth2Provider());
+		OAuth2Authenticator.initialize();//IMP: Necessary to make imap work for gmail.
 	}
 
 	public String getServerHostname() { return connectOptions.server; }
@@ -249,19 +236,26 @@ public class ImapPopEmailStore extends EmailStore {
 		    if ("xoauth".length() < connectOptions.password.length())
 		    {
 		    	oauthToken = connectOptions.password.substring(OAUTH_MAGIC_STRING.length());
-			    mstoreProps.put("mail.imaps.sasl.enable", "true");
-			    mstoreProps.put("mail.imaps.sasl.mechanisms", "XOAUTH2");
-		    	// mstoreProps.put(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, oauthToken);
 			    log.info("Using oauth login for store " + this);
 		    }
 		}
 
-		session = Session.getInstance(mstoreProps, null);
-	//	session.setDebug(DEBUG);
-		Store st = session.getStore(connectOptions.protocol);
-		st.connect(connectOptions.server, connectOptions.port, connectOptions.userName, Util.nullOrEmpty(oauthToken) ? connectOptions.password : ""); // no password if oauth
-		this.store = st;
-		return st;
+
+		//Somehow this didn't work in 1.6.2 as was mentioned on the official site https://javaee.github.io/javamail/OAuth2
+		//Ideally we would like to avoid using OAuth2Authenticator class which was from google guys as a hack to work with old versions of JavaMail.
+		/*Properties props = new Properties();
+		props.put("mail.imaps.ssl.enable", "true"); // required for Gmail
+		props.put("mail.imaps.auth.mechanisms", "XOAUTH2");
+		Session session = Session.getInstance(props);
+		IMAPSSLStore store = new IMAPSSLStore(session, null);
+		//Store store = session.getStore("imap");
+		store.connect(connectOptions.server, connectOptions.userName, oauthToken); //connectOptions.server is imaps.*/
+		try {
+			store = OAuth2Authenticator.connectToImap(connectOptions.server,connectOptions.port,connectOptions.userName,oauthToken,true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return store;
 	}
 	
 	@Override
