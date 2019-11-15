@@ -490,8 +490,22 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     String name = h.getName();
                     String value = h.getValue();
                     if (h.getName().equals("Content-Type")) {
-                        charset = h.getValue().substring(h.getValue().indexOf("=") + 1);
-                        charset = charset.substring(1, charset.length() - 1).toLowerCase();
+                        //An example of h.getValue() is text/plain; format=flowed; charset=US-ASCII
+                        //To get charset from it. First tokenize based on ; and then iterate over all tokens to check that value which starts with charset= and get its value.
+                        StringTokenizer multiTokenizer = new StringTokenizer(h.getValue(), ";");
+                        while(multiTokenizer.hasMoreTokens()){
+                            String token = multiTokenizer.nextToken();
+                            if(token.trim().startsWith("charset")){ //trim is needed because sometime there is a space before "charset=utf-8"
+                                charset = token.substring(token.indexOf("=") + 1).trim();
+                                //Interesting issue: sometime charset is already within double quotes, so windows-1252 will be like "windows-1252"
+                                //Therefore we need to strip leading and trailing quotes to get actual charset. But unfortunately it is not uniform. For
+                                //example, utf-8 does not have this property so we should not be stripping quotes otherwise it distorts the charset variable
+                                //and the decoding fails. So a simple check introduced is to check if the leading and trailing quotes are present in charset then
+                                //only we should strip them
+                                if(charset.startsWith("\"") && charset.endsWith("\""))
+                                    charset = charset.substring(1, charset.length() - 1).toLowerCase();
+                            }
+                        }
                     } else if (h.getName().toLowerCase().equals("content-encoding") || h.getName().toLowerCase().equals("content-transfer-encoding")) {
                         encoding = h.getValue().toLowerCase();
                     }
@@ -543,7 +557,11 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     } catch (DecoderException e) {
                         e.printStackTrace();
                         log.error("Unable to decode quoted printable encoded message");
-                        return list;
+                        dataErrors.add("Unable to decode quoted printable encoded message in  " + folder_name() + " Message #" + messageNum + " type " + type );
+                        Set<String> label = new LinkedHashSet<>();
+                        label.add(LabelManager.LABELID_PARSING_ERRS);
+                        archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                        //return list; //If decoding fails at least try to create content by new String(b,charset) using default encoding.
                     }
                     content = new String(b, charset);
                 } else if(encoding.equals("base64")){
@@ -776,7 +794,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         // the size passed in here is the part size, which is not really the binary blob size.
         // when we read the stream below in blobStore.add(), we'll set it again to the binary blob size
         Blob b = new EmailAttachmentBlob(filename, p.getSize(), (MimeMessage) m, p);
-
+//fetchConfig.downloadAttachments=false; Just for testing..
         if (fetchConfig.downloadAttachments) {
             // this containment check is only on the basis of file name and size currently,
             // not on the actual hash
