@@ -2,7 +2,7 @@ Performances:gig|engagement|show|performance|concert|recital|festival|workshop|"
 
 Composition:session|"work in progress"|work-in-progress|draft|drafts|idea|ideas|theme|project|motif|piece|parts|score|scores|rehearsal|rehearsals|run-through|"run through"|run-out|"run out"|new|sketches|sketch|work|Finale|Sibelius|MIDI|chart|charts
 
-Instruments:flute|"alto flute"|"bass flute"|piccolo|clarinet|"bass clarinet"|oboe|"English horn"|bassoon|contrabassoon|trumpet|trombone|tuba|violin|viola|cello|Ôcello|bass|stringbass|contrabass|drums|percussion|snare|timpani|congas|timbales|cymbals|bells|piano|synthesizer|keyboard|keyboards|Frenchhorn|horn|guitar|mandolin|tom-toms|theremin|moog|saxophone|"alto saxophone"|"soprano saxophone"|"tenor saxophone|"baritone saxophone"|sax|harpsichord|dobro|tabla|sitar|fiddle|voice|alto|soprano|tenor|bass|mezzo-soprano|contralto
+Instruments:flute|"alto flute"|"bass flute"|piccolo|clarinet|"bass clarinet"|oboe|"English horn"|bassoon|contrabassoon|trumpet|trombone|tuba|violin|viola|cello|cello|bass|stringbass|contrabass|drums|percussion|snare|timpani|congas|timbales|cymbals|bells|piano|synthesizer|keyboard|keyboards|Frenchhorn|horn|guitar|mandolin|tom-toms|theremin|moog|saxophone|"alto saxophone"|"soprano saxophone"|"tenor saxophone"|"baritone saxophone"|sax|harpsichord|dobro|tabla|sitar|fiddle|voice|alto|soprano|tenor|bass|mezzo-soprano|contralto
 
 Composition Types:solo|quartet|quintet|duo|suite|symphony|solo|trio|sextet|ensemble|"chamber group"|electronic|digital|opera|musical|song|chorale|choral|orchestration|arrangement|"string quartet"
 

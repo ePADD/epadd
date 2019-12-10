@@ -344,8 +344,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			//don't tokenize if the content.first is of type zip or gzip which means use ft instead of full_ft
             if(content.first.contains("text"))
                 doc.add(new Field("body", content.second, full_ft));
-            else
-                doc.add(new Field("body", content.second, ft));
+            //else
+            	//don't add body field if we can not search this field for the non-text type.
+			//Earlier we had resorted to using "ft" (non-positional) indexing but two different type of indexing for the same field gave error
+			//while performing phrase query.
+            //    doc.add(new Field("body", content.second, ft));
 
 			iwriter_blob.addDocument(doc);
 			//log.info("Indexed attachment #" + id + " : text = '" + documentText + "' names = '" + s + "'");
