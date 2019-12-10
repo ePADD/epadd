@@ -164,6 +164,15 @@ public class Contact extends UnionFindObject {
 		}
 		emails = maskedEmails;
 		// "names" may also contain email address - see comments in AddressBook:maskEmailDomain()
+		//masking names too (if they contain email address). This came up while fixing issue #370
+		Set<String> maskedEmailsInNames = new LinkedHashSet<>();
+		for (String e : names) {
+			maskedEmailsInNames.add(ab.getMaskedEmail(e));
+		}
+		names = maskedEmailsInNames;
+
+		bestName = ab.getMaskedEmail(bestName);
+
 	}
 
 	/** return all names and emails as a tooltip */

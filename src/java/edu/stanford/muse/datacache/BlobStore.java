@@ -575,8 +575,9 @@ public class BlobStore implements Serializable {
 
             try {
                 // skip mp3 files, tika has trouble with it and hangs
+                // skip zip files too. tika has trouble with some zip formats as well.
                 String fname = get_URL_Normalized(blob);
-                if (!Util.nullOrEmpty(fname) && !fname.toLowerCase().endsWith(".mp3"))
+                if (!Util.nullOrEmpty(fname) && !fname.toLowerCase().endsWith(".mp3") &&  !fname.toLowerCase().endsWith(".zip"))
                     parser.parse(stream, handler, metadata, context);
 
                 String[] names = metadata.names();

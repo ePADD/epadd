@@ -1,1 +1,1 @@
-ePADD version Release 7.1
+ePADD version Release 7.2

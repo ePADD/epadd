@@ -341,7 +341,14 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			doc.add(new Field("meta", content.first, full_ft));
 			doc.add(new Field("fileName", blobStore.get_URL_Normalized(b), full_ft));
 
-			doc.add(new Field("body", content.second, full_ft));
+			//don't tokenize if the content.first is of type zip or gzip which means use ft instead of full_ft
+            if(content.first.contains("text"))
+                doc.add(new Field("body", content.second, full_ft));
+            //else
+            	//don't add body field if we can not search this field for the non-text type.
+			//Earlier we had resorted to using "ft" (non-positional) indexing but two different type of indexing for the same field gave error
+			//while performing phrase query.
+            //    doc.add(new Field("body", content.second, ft));
 
 			iwriter_blob.addDocument(doc);
 			//log.info("Indexed attachment #" + id + " : text = '" + documentText + "' names = '" + s + "'");
@@ -1041,6 +1048,13 @@ is what we want.
 			String bcc_names = Util.join(EmailUtils.personalNames(ed.bcc), " ");
 			doc.add(new Field("bcc_names", bcc_names, full_ft));
 
+			//IMP: Field body sometimes wrongly include the attachment binary resulting in large size of this term. This further results in throwing an
+			//exception when adding this document in the index. Therefore truncate the size of body upto 32766.
+			int len = body.length()>32766?32766:body.length();
+			body = body.substring(0,len);
+			if(len!=body.length()){
+			    //mark dataerror to record this truncation.@TODO
+            }
 			doc.add(new Field("body", body, full_ft)); // save raw before preprocessed
 		}
 
@@ -1086,8 +1100,13 @@ is what we want.
 			doc.add(new Field("names_original", namesOriginalString, full_ft));
 		}
 
-		iwriter.addDocument(doc);
+		try {
+			iwriter.addDocument(doc);
+		}catch(IllegalArgumentException exception){
+			exception.printStackTrace(); //There were few instances where add Document failed. This catch is to detect those cases which will otherwise ripple to ner recognition phase
+			//because the document will not be found in lucene index if addDocument failed.
 
+		}
 		// why not maintain lucene doc id map instead of email doc id -> doc
 		// how to get lucene doc id?
 		docIdToEmailDoc.put(id, (EmailDocument) d);
