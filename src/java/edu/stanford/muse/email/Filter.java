@@ -76,7 +76,7 @@ public class Filter implements Serializable {
 	}
 	
 	// this is an AND filter
-	private Filter(boolean sentMessagesOnly, Date startDate, Date endDate, String keywordString)
+	public Filter(boolean sentMessagesOnly, Date startDate, Date endDate, String keywordString)
 	{
 		this.sentMessagesOnly = sentMessagesOnly;
 		this.startDate = startDate;

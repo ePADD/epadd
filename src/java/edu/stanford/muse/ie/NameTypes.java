@@ -25,7 +25,7 @@ public class NameTypes {
 	 * hitTitles key is canonicalized answer, the corr. NameInfo's title field
 	 * is the uncanonicalized version.
 	 */
-	private static void readTypes(Map<String, NameInfo> hitTitles) {
+	public static void readTypes(Map<String, NameInfo> hitTitles) {
 		// types.gz is of the form First_Last Subtype|Type
 		try {
 			Map<String, String> dbpedia = EmailUtils.readDBpedia();

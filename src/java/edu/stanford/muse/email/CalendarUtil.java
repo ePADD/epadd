@@ -356,7 +356,7 @@ public class CalendarUtil {
     }
 
 	/** the quarter beginning just before this d */
-	private static Date quarterBeginning(Date d)
+	public static Date quarterBeginning(Date d)
 	{
 		Calendar c = new GregorianCalendar();		
 		c.setTime(d);

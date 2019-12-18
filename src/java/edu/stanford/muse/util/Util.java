@@ -589,7 +589,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 	 * trims spaces from the lines,
 	 * ignores lines starting with # if ignoreCommentLines is true
 	 */
-	private static List<String> getLinesFromReader(Reader reader, boolean ignoreCommentLines) throws IOException
+	public static List<String> getLinesFromReader(Reader reader, boolean ignoreCommentLines) throws IOException
 	{
 		LineNumberReader lnr = new LineNumberReader(reader);
 		List<String> result = new ArrayList<>();

@@ -13,7 +13,7 @@ public class NameInfo implements Comparable<NameInfo>, Serializable {
 	public final String title /* with _ in place of space */;
 	public String snippet;
 	public String type = "notype";
-	private float score;
+	public float score;
 	public String word /* no spaces */, originalTerm /* with spaces, capitalization etc */;
 	public int times;
 	public Date firstDate, lastDate = null;
