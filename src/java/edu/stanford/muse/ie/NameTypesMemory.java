@@ -3,9 +3,10 @@ package edu.stanford.muse.ie;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 class NameTypesMemory {
-    private static final Log log = LogFactory.getLog(NameTypes.class);
+    private static final Logger log =  LogManager.getLogger(NameTypes.class);
 	private final static long serialVersionUID = 1L;
 	private static final String typesFile = "instance_types_en.nt1.gz";
 	

@@ -35,8 +35,10 @@ import javax.mail.Address;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +47,7 @@ import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 
 public class JSONUtils {
-	private static final Log log = LogFactory.getLog(JSONUtils.class);
+	private static final Logger log =  LogManager.getLogger(JSONUtils.class);
 
 	public static String jsonForIntList(List<Integer> list) throws JSONException
 	{

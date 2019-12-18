@@ -17,9 +17,10 @@ package edu.stanford.muse.webapp;
 
 import edu.stanford.muse.util.DetailedFacetItem;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ import java.util.Map;
 /** called NewFilter only because we have an old class called Filter, that is mostly not used */
 public class NewFilter {
 	private final Map<String, String[]> map = new LinkedHashMap<>();
-    private static final Log log = LogFactory.getLog(NewFilter.class);
+    private static final Logger log =  LogManager.getLogger(NewFilter.class);
 	
 	/** in future, could create Filter from a list of detailed facet items to make it more robust
 	// currently, we create a filter from the given request */

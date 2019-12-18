@@ -37,8 +37,10 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTimeComparator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,7 +69,7 @@ import java.util.stream.Collectors;
  * because the rest of the Muse code can be used in other, non-web apps.
  */
 public class JSPHelper {
-	public static final Log		log						= LogFactory.getLog(JSPHelper.class);
+	public static final Logger		log						= LogManager.getLogger(JSPHelper.class);
 
 	// jetty processes request params differently from tomcat
 	// tomcat assumes incoming params (both get/post) are iso8859.

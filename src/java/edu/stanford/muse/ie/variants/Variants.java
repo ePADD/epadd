@@ -6,7 +6,8 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -14,9 +15,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 /* class meant to handle variants. note this maps each word to one or more other words.
 e.g. sandy could map to sandra or alexander
   * sandy -> sandra, or alexander
@@ -25,7 +25,7 @@ e.g. sandy could map to sandra or alexander
 public class Variants {
 
     private final Multimap<String, String> map = HashMultimap.create();
-    private static final Log log = LogFactory.getLog(Variants.class);
+    private static final Logger log =  LogManager.getLogger(Variants.class);
 
     public static   Variants nameVariants;
     private static   Set<String> stopWords;

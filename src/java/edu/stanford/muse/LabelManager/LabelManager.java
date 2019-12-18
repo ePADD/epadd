@@ -10,9 +10,10 @@ import com.google.gson.reflect.TypeToken;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public class LabelManager implements Serializable{
 
-    private static final Log log = LogFactory.getLog(LabelManager.class);
+    private static final Logger log =  LogManager.getLogger(LabelManager.class);
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
     private final static String LABELID_REVIEWED="1";

@@ -22,14 +22,15 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import edu.stanford.muse.index.ArchiveReaderWriter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Util;
 
 public class SessionListener implements HttpSessionListener {
-    private static final Log log = LogFactory.getLog(JSPHelper.class);
+    private static final Logger log =  LogManager.getLogger(JSPHelper.class);
     static {
     	log.info ("Initializing class edu.stanford.muse.webapp.SessionListener");
     }

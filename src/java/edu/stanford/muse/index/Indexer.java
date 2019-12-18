@@ -23,8 +23,10 @@ import edu.stanford.muse.lang.Languages;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.util.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -70,7 +72,7 @@ import java.util.*;
  */
 public class Indexer implements StatusProvider, java.io.Serializable {
 
-	static final Log					log					= LogFactory.getLog(Indexer.class);
+	static final Logger					log					= LogManager.getLogger(Indexer.class);
 	private static final long	serialVersionUID	= 1L;
 
 	/** these enums should move out of this class if Indexer is to be made protected because they are part of the API -sgh */

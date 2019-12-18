@@ -27,8 +27,10 @@ import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 
 import java.io.*;
@@ -42,7 +44,7 @@ import java.util.zip.GZIPInputStream;
  * //@deprecated because it is not used any more--
  */
 @Deprecated public class openNLPNER {
-	public static Log								log						= LogFactory.getLog(openNLPNER.class);
+	public static Logger						log						= LogManager.getLogger(openNLPNER.class);
 	public static boolean							REMOVE_I18N_CHARS		= false;
 
 	public static final Map<String, LocationInfo>	locations				= new LinkedHashMap<>();

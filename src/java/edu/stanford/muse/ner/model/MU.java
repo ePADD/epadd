@@ -4,9 +4,10 @@ import edu.stanford.muse.ner.featuregen.FeatureUtils;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
  * Change log
  * 1. Changed all the MU values from double to float to reduce the model size and we are not interested (actually undesired) to have very small values in MU*/
 public class MU implements Serializable {
-    private static final Log log = LogFactory.getLog(MU.class);
+    private static final Logger log =  LogManager.getLogger(MU.class);
     static final long serialVersionUID = 1L;
     private static final String[] POSITION_LABELS = new String[]{"S","B","I","E"};
     private static final String[] WORD_LABELS = new String[NEType.getAllTypes().length+1];

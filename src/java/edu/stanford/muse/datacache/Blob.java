@@ -14,17 +14,17 @@
    limitations under the License.
 */
 package edu.stanford.muse.datacache;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+////import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
 public class Blob implements Serializable {
 
-private static final Log log = LogFactory.getLog(Blob.class);
+private static final Logger log =  LogManager.getLogger(Blob.class);
 
 private final static long serialVersionUID = 1L;
 

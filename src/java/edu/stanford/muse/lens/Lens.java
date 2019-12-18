@@ -23,8 +23,10 @@ import edu.stanford.muse.index.*;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +38,7 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 
 public class Lens {
-    public static final Log log = LogFactory.getLog(JSPHelper.class);
+    public static final Logger log =  LogManager.getLogger(JSPHelper.class);
 
 	private static final Set<String> knownBadTerms = new LinkedHashSet<>(); /** imp: canonicalized to lower case */
 

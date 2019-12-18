@@ -19,11 +19,12 @@ import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 public class NLPUtils {
-    private static final Log log					= LogFactory.getLog(NLPUtils.class);
+    private static final Logger log					= LogManager.getLogger(NLPUtils.class);
 
     public static   SentenceDetectorME	sentenceDetector;
     private static   POSTagger posTagger;

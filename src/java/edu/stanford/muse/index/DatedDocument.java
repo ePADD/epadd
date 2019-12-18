@@ -24,10 +24,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.util.Util;
 
@@ -37,7 +37,7 @@ import edu.stanford.muse.util.Util;
 public class DatedDocument extends Document {
 	private static final long serialVersionUID = 2208220822082208L;
 
-	private static final Log log = LogFactory.getLog(DatedDocument.class);
+	private static final Logger log =  LogManager.getLogger(DatedDocument.class);
 
     public Date date;
     public boolean hackyDate; // indicates that we're not certain about the date

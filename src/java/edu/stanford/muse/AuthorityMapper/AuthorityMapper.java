@@ -8,8 +8,10 @@ import edu.stanford.muse.Config;
 //import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.ie.FASTIndexer;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -36,7 +38,7 @@ import static edu.stanford.muse.ie.variants.EntityBook.canonicalize;
  * or for the entities.
  */
 public class AuthorityMapper implements java.io.Serializable {
-    public static Log log					= LogFactory.getLog(AuthorityMapper.class);
+    public static Logger log					= LogManager.getLogger(AuthorityMapper.class);
 
     private final static long serialVersionUID = 1L;
     public final static long INVALID_FAST_ID = -1L;

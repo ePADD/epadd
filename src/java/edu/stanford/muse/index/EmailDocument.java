@@ -27,8 +27,10 @@ import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,7 +68,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	// default constructor for serialization
 	public EmailDocument() { /* */ }
 	public EmailDocument(String id) { this.id = id; } /* prob. useful only for errors */
-    private static final Log log						= LogFactory.getLog(EmailDocument.class);
+    private static final Logger log						= LogManager.getLogger(EmailDocument.class);
 	public static final transient Map<String,String> uniqueIdToSignature = new LinkedHashMap<>();
 
 	public EmailDocument(String id, String emailSource, String folderName, Address[] to, Address[] cc, Address[] bcc, Address[] from, String subject, String messageID, Date date)

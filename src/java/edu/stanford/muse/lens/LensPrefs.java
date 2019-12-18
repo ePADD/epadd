@@ -28,10 +28,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.util.Util;
 
 /** class to keep track of browser preferences of highlighted terms. 
@@ -39,7 +39,7 @@ import edu.stanford.muse.util.Util;
 
 public class LensPrefs implements Serializable {
 	private static final long serialVersionUID = 1L;
-    private static final Log log = LogFactory.getLog(LensPrefs.class);
+    private static final Logger log =  LogManager.getLogger(LensPrefs.class);
     
     // key structure: stores term -> page -> score map.
     // default score is 1. If a term is cancelled, it's score gets set to 0.

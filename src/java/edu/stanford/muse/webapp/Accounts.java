@@ -18,8 +18,10 @@ package edu.stanford.muse.webapp;
 
 import edu.stanford.muse.email.MuseEmailFetcher;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -42,7 +44,7 @@ import java.util.LinkedHashSet;
 /** class that extracts params from http post by the login page and sets up email stores in the MuseEmailFetcher in the session */
 public class Accounts {
 
-	private static final Log log = LogFactory.getLog(Accounts.class);
+	private static final Logger log =  LogManager.getLogger(Accounts.class);
 	
 	/** does account setup and login (and look up default folder if well-known account) from the given request.
 	 * request params are loginName<N>, password<N>, etc (see loginForm for details).

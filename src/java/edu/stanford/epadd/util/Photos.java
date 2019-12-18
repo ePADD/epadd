@@ -6,9 +6,10 @@ import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 
 import edu.stanford.muse.webapp.ModeConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -18,7 +19,7 @@ import java.io.IOException;
 
 public class Photos
 {
-    private static final Log log = LogFactory.getLog(JSPHelper.class);
+    private static final Logger log =  LogManager.getLogger(JSPHelper.class);
 
 	/**
 	 * serve up an image file.

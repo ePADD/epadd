@@ -3,9 +3,10 @@ package edu.stanford.muse.wpmine;
 import edu.stanford.muse.ner.model.NEType;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -15,7 +16,7 @@ import java.util.*;
  * Use this to parse the DBpedia instance NT file.
  */
 public class DBpediaTypeParser {
-    private static final Log log = LogFactory.getLog(DBpediaTypeParser.class);
+    private static final Logger log =  LogManager.getLogger(DBpediaTypeParser.class);
 
     private static Map<String,String> parseOntology(String ontologyFile) {
         try {

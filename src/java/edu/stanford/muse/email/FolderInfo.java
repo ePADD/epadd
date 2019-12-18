@@ -17,9 +17,10 @@ package edu.stanford.muse.email;
 
 
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,7 +30,7 @@ import java.util.Date;
  * do not introduce refs to other objects in this! */
 public class FolderInfo implements Serializable {
 	private final static long serialVersionUID = 1L;
-    private static final Log log = LogFactory.getLog(FolderInfo.class);
+    private static final Logger log =  LogManager.getLogger(FolderInfo.class);
 
     public final String accountKey;
     public long lastSeenUID; // the # to allocate upwards from for new messages from this folder. derived for IMAP UID (see Javamail UIDFolder) or otherwise for other types.

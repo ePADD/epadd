@@ -23,8 +23,10 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import java.io.*;
@@ -49,7 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Lexicon implements Serializable {
 	
-	private static final Log log = LogFactory.getLog(Lexicon.class);
+	private static final Logger log =  LogManager.getLogger(Lexicon.class);
 	public static final String LEXICON_SUFFIX = ".lex.txt";
 	public static final String REGEX_LEXICON_NAME = "regex"; // this is a special lexicon name, to which regex search is applied
 	public static final String SENSITIVE_LEXICON_NAME = "sensitive"; // this is a special lexicon name, to which regex search is applied

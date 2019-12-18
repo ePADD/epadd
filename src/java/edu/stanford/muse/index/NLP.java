@@ -20,14 +20,14 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.util.Util;
 
 public class NLP {
-    private static Log log = LogFactory.getLog(NLP.class);
+    private static Logger log = LogManager.getLogger(NLP.class);
     /*
 	private static MaxentTagger tagger;
 

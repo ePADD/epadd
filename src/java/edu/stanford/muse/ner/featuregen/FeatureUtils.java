@@ -2,15 +2,16 @@ package edu.stanford.muse.ner.featuregen;
 
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
 import edu.stanford.muse.ner.model.NEType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class FeatureUtils implements Serializable {
-    static Log log = LogFactory.getLog(FeatureUtils.class);
+    static Logger log = LogManager.getLogger(FeatureUtils.class);
     //DBpedia type mapping of the types this can handle
     private static final Pattern endClean = Pattern.compile("^\\W+|\\W+$");
     //this is an enhanced list that is different from EnglishDictionary.stopWords

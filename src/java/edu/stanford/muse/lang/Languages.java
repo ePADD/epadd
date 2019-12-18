@@ -21,15 +21,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.index.InternTable;
 import edu.stanford.muse.util.Util;
 
 public class Languages {
-    private static final Log log = LogFactory.getLog(Languages.class);
+    private static final Logger log =  LogManager.getLogger(Languages.class);
 
 	/** Google translate supports: 
 	 * English, Afrikaans, Albanian, Arabic, Armenian, Azerbaijani, Basque, Belarusian, Bengali, 

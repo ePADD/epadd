@@ -21,13 +21,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 /** a sloppy date parser that can handle natural lang. ways of specifying a date, like jan 10, sep 29, etc. */
 public class SloppyDates {
-    private static final Log log = LogFactory.getLog(SloppyDates.class);
+    private static final Logger log =  LogManager.getLogger(SloppyDates.class);
 
 	private static final String[] monthNames = {"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
 	private static Triple<Integer, Integer, Integer> parseDate(String s)

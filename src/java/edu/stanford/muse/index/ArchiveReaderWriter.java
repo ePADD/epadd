@@ -21,8 +21,10 @@ import gov.loc.repository.bagit.creator.BagCreator;
 import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -40,7 +42,7 @@ import java.util.zip.GZIPOutputStream;
 public class ArchiveReaderWriter{
 
     public static final String SESSION_SUFFIX = ".archive.v2"; // all session files end with .session
-    private static final Log log	= LogFactory.getLog(SimpleSessions.class);
+    private static final Logger log	= LogManager.getLogger(SimpleSessions.class);
     //private static String SESSIONS_DIR = null;
     private static   String MUSE_DIRNAME = ".muse"; // clients might choose to override this
 

@@ -18,9 +18,10 @@ package edu.stanford.muse.email;
 import com.sun.mail.util.MailSSLSocketFactory;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -34,7 +35,7 @@ import java.util.Properties;
 
 public class ImapPopEmailStore extends EmailStore {
 	private final static long serialVersionUID = 1L;
-    private static final Log log = LogFactory.getLog(ImapPopEmailStore.class);
+    private static final Logger log =  LogManager.getLogger(ImapPopEmailStore.class);
 
 	private ImapPopConnectionOptions connectOptions;
 	private static final Properties mstoreProps;

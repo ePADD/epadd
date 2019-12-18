@@ -114,7 +114,7 @@ Build Info: <%= edu.stanford.epadd.Version.buildInfo%><br/>
 	<br/>
 	<%
 		out.flush(); // flush the page now, so that the user sees something before the long log file is read.
-		Log4JUtils.flushAllLogs(); // if we dont flush file is sometimes truncated
+		//Log4JUtils.flushAllLogs(); // if we dont flush file is sometimes truncated
 
 	// dump the warnings file first
 	{

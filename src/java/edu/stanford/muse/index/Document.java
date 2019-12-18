@@ -17,9 +17,10 @@ package edu.stanford.muse.index;
 
 
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -29,7 +30,7 @@ import java.util.Set;
 
 public class Document implements Serializable, Comparable<Document> {
 	private static final long serialVersionUID = 5713436068523824254L;
-	private static final Log log = LogFactory.getLog(Document.class);
+	private static final Logger log =  LogManager.getLogger(Document.class);
 	String id; // just some handle - do not assume anything about values. not unique across folders.
 	public String description;
 	Document() { /* */ }

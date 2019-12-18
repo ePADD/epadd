@@ -24,10 +24,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import edu.stanford.muse.datacache.BlobStore;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 
 import edu.stanford.muse.index.Archive;
@@ -44,10 +44,10 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 		System.setProperty("mstor.cache.disabled", "true"); 
 		System.setProperty("net.sf.ehcache.disabled", "true"); 
 		System.setProperty("net.sf.ehcache.skipUpdateCheck", "true");
-		Logger.getLogger("net.sf.ehcache").setLevel(Level.OFF); // and shut the damn thing up!
+		//LogManager.getLogger("net.sf.ehcache").(Level.OFF); // and shut the damn thing up!
 	}
 
-	private static final Log log = LogFactory.getLog(MTEmailFetcher.class);
+	private static final Logger log =  LogManager.getLogger(MTEmailFetcher.class);
 	private final static long serialVersionUID = 1L;
 
 	private EmailStore emailStore;

@@ -21,9 +21,10 @@ import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.protocol.IMAPProtocol;
 import com.sun.mail.imap.protocol.IMAPResponse;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.Session;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.List;
 /* version of imap prefetcher that only fetches text fr
 om the first <part> of imap messages */
 public class TextOnlyImapPrefetcher extends ImapPrefetcher implements IMAPFolder.ProtocolCommand {
-    private static final Log log = LogFactory.getLog(TextOnlyImapPrefetcher.class);
+    private static final Logger log =  LogManager.getLogger(TextOnlyImapPrefetcher.class);
 
 Session session;
 

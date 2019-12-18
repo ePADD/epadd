@@ -16,9 +16,12 @@
 package edu.stanford.muse.util;
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.*;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import java.io.File;
 import java.util.Enumeration;
@@ -26,9 +29,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Log4JUtils {
-    private static final Log log = LogFactory.getLog(Log4JUtils.class);
+    private static final Logger log = LogManager.getLogger(Log4JUtils.class);
     private static boolean initialized = false;
-	private static final String BACKUP_FILE_SIZE = "100MB";
+	private static final String BACKUP_FILE_SIZE = "300M";
 	private static final int N_BACKUP_FILES = 30;
 
 	public static String LOG_FILE, WARNINGS_LOG_FILE; // = System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "muse.log";
@@ -92,7 +95,8 @@ public class Log4JUtils {
         } catch (Exception e) { Util.print_exception(e);}
 
     	// now rename, truncate or create the actual log file
-		try {
+		//Not used for now.
+		/*try {
 			String ENTITY_LOG_FILE = LOG_FILE + ".entityExtractor.log";
 			addLogFileAppenderForPackage("edu.stanford.muse.ner.EntityExtractionManager",	ENTITY_LOG_FILE);
 
@@ -100,73 +104,115 @@ public class Log4JUtils {
 			String message = "Entity log messages will be recorded in " + ENTITY_LOG_FILE;
 			System.out.println(message);
 			log.info (message);
-		} catch (Exception e) { Util.print_exception(e);}
+		} catch (Exception e) { Util.print_exception(e);}*/
 
 		initialized = true;
 	}
 
-	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
 	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout.
 	 * also puts warnings and errors into a separate warningsFilename which allows operator to look at warnings/errors/fatal separately */
 	private static void addLogFileAppender(String filename, String warningsFilename)
 	{
-		try {
-			Logger rootLogger = LogManager.getLoggerRepository().getRootLogger();
-			Enumeration allAppenders = rootLogger.getAllAppenders();
 
-			while(allAppenders.hasMoreElements()) {
-				Object next = allAppenders.nextElement();
-				if (next instanceof ConsoleAppender) {
-					Layout layout = ((ConsoleAppender) next).getLayout();
-					RollingFileAppender rfa = new RollingFileAppender(layout, filename);
-					rfa.setMaxFileSize(BACKUP_FILE_SIZE);
-					rfa.setMaxBackupIndex(N_BACKUP_FILES);
-					rfa.setEncoding("UTF-8");
-					rootLogger.addAppender (rfa);
+		try{
+			ConfigurationBuilder<BuiltConfiguration> builder =
+					ConfigurationBuilderFactory.newConfigurationBuilder();
+			//Configurator.initialize(builder.build());
+			builder.setConfigurationName("RollingBuilder");
+			LayoutComponentBuilder layoutBuilder = builder.newLayout("PatternLayout")
+					.addAttribute("pattern", "%d{dd MMM HH:mm:ss} %c{1} %-5p - %m%n");
 
-					// add another appender specially for warnings
-					RollingFileAppender rfa1 = new RollingFileAppender(layout, warningsFilename);
-					rfa1.setThreshold(Level.WARN);
-					rfa1.setMaxFileSize(BACKUP_FILE_SIZE);
-					rfa1.setMaxBackupIndex(N_BACKUP_FILES);
-					rfa1.setEncoding("UTF-8");
-					rootLogger.addAppender (rfa1);
-				}
-			}
-		} catch(Exception e) {
-			log.error("Failed creating log appender in " + filename);
-			System.err.println("Failed creating log appender in " + filename);
-		}
+
+			//Console
+			AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE").addAttribute("target",
+					org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_OUT);
+
+			appenderBuilder.add(layoutBuilder);
+			builder.add(appenderBuilder);
+			//file = all
+			ComponentBuilder triggeringPolicy = builder.newComponent("Policies")
+					.addComponent(builder.newComponent("CronTriggeringPolicy").addAttribute("schedule", "0 0 0 * * ?"))
+					.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", BACKUP_FILE_SIZE));
+			appenderBuilder = builder.newAppender("rollingAll", "RollingFile")
+					.addAttribute("fileName", filename)
+					.addAttribute("filePattern", filename+"-%d{MM-dd-yy}.log.gz")
+					.add(layoutBuilder)
+					.addComponent(triggeringPolicy);
+			builder.add(appenderBuilder);
+			//file=warning
+			appenderBuilder = builder.newAppender("rollingWarning", "RollingFile")
+					.addAttribute("fileName", warningsFilename)
+					.addAttribute("filePattern", filename+"-%d{MM-dd-yy}.log.warnings.gz")
+					.add(layoutBuilder)
+					.addComponent(triggeringPolicy);
+			builder.add(appenderBuilder);
+
+			//All level messages will be written to stdout and filename
+			builder.add(builder.newRootLogger( org.apache.logging.log4j.Level.ALL).
+					add(builder.newAppenderRef("Stdout")).
+					add(builder.newAppenderRef("rollingAll").addAttribute("level", org.apache.logging.log4j.Level.ALL)).
+					add(builder.newAppenderRef("rollingWarning").addAttribute("level", org.apache.logging.log4j.Level.WARN)));
+					//addAttribute("additivity",false));
+			//addAttribute("additivity", false));
+			LoggerContext lc = Configurator.initialize(builder.build());
+			//We need to shutdown it sometime to stop the already running context.
+			Configurator.shutdown(lc);
+			lc = Configurator.initialize(builder.build());
+			lc.start();
+			} catch(Exception e) {
+ 	        log.error("Failed creating log appender in " + filename);
+ 	        System.err.println("Failed creating log appender in " + filename);
+ 	    }
 	}
 
 	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
 	private static void addLogFileAppenderForPackage(String packagename, String filename) {
 		try
 		{
-			Logger packageLogger = LogManager.getLoggerRepository().getLogger(packagename);
-			Logger rootLogger = LogManager.getRootLogger();
-			Enumeration allAppenders = rootLogger.getAllAppenders();
-			while(allAppenders.hasMoreElements())
-			{
-				Object next = allAppenders.nextElement();
-				if (next instanceof ConsoleAppender)
-				{
-					Layout layout = ((ConsoleAppender) next).getLayout();
-					RollingFileAppender rfa = new RollingFileAppender(layout, filename);
-					rfa.setMaxFileSize("10MB");
-					rfa.setMaxBackupIndex(10); // do we
-					rfa.setEncoding("UTF-8");
-					packageLogger.addAppender (rfa);
-				}
-			}
-		}
-		catch(Exception e)
-		{
+
+				ConfigurationBuilder<BuiltConfiguration> builder =
+						ConfigurationBuilderFactory.newConfigurationBuilder();
+				//Configurator.initialize(builder.build());
+				builder.setConfigurationName("RollingBuilderEntities");
+				LayoutComponentBuilder layoutBuilder = builder.newLayout("PatternLayout")
+						.addAttribute("pattern", "%d{dd MMM HH:mm:ss.SSS} %c{1} %-5p - %m%n");
+
+
+				//Console
+				AppenderComponentBuilder appenderBuilder = builder.newAppender("StdoutEntities", "CONSOLE").addAttribute("target",
+						org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_OUT);
+
+				appenderBuilder.add(layoutBuilder);
+				builder.add(appenderBuilder);
+				//file = all
+				ComponentBuilder triggeringPolicy = builder.newComponent("Policies")
+						.addComponent(builder.newComponent("CronTriggeringPolicy").addAttribute("schedule", "0 0 0 * * ?"))
+						.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "100M"));
+				appenderBuilder = builder.newAppender("rollingAllEntities", "RollingFile")
+						.addAttribute("fileName", filename)
+						.addAttribute("filePattern", filename+"-%d{MM-dd-yy}.log.gz")
+						.add(layoutBuilder)
+						.addComponent(triggeringPolicy);
+				builder.add(appenderBuilder);
+
+
+				//All level messages will be written to stdout and filename
+				builder.add(builder.newLogger(packagename, org.apache.logging.log4j.Level.ALL).
+						add(builder.newAppenderRef("StdoutEntities")).
+						add(builder.newAppenderRef("rollingAllEntities")));
+				//addAttribute("additivity", false));
+			LoggerContext lc = Configurator.initialize(builder.build());
+			//We need to shutdown it sometime to stop the already running context.
+			//Configurator.shutdown(lc);
+			//lc = Configurator.initialize(builder.build());
+			//lc.start();
+
+		} catch (Exception e) {
 			log.error("Failed creating log appender in " + filename);
 			System.err.println("Failed creating log appender in " + filename);
 		}
 	}
- 	public static void setLoggingLevel (Logger logger, String level)
+ 	/*public static void setLoggingLevel (Logger logger, String level)
  	{
  		if ("debug".equalsIgnoreCase(level))
 	    	logger.setLevel(Level.DEBUG);
@@ -183,9 +229,9 @@ public class Log4JUtils {
  		
  		log.info ("Effective logging level for " + logger.getName() + " is " + logger.getEffectiveLevel());
 	}
-
+*/
  	/** taken from: http://stackoverflow.com/questions/3060240/how-do-you-flush-a-buffered-log4j-fileappender */
- 	public static void flushAllLogs()
+ 	/*public static void flushAllLogs()
  	{
  	    try
  	    {
@@ -221,5 +267,5 @@ public class Log4JUtils {
  	    {
  	        log.error("Failed flushing logs", e);
  	    }
- 	}
+ 	}*/
 }

@@ -17,13 +17,13 @@ package edu.stanford.muse.index;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 class Trace {
 	public static final boolean isEnabled = false;
-    private static final Log log = LogFactory.getLog("MuseTrace");
+    private static final Logger log =  LogManager.getLogger("MuseTrace");
     private static final Set<String> traceTerms = new LinkedHashSet<>();
     static {
 //    	traceTerms.add("mahish");

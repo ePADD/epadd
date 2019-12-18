@@ -18,16 +18,17 @@ package edu.stanford.muse.datacache;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.util.*;
 
 /** a collection of Data's, for which a html view can be generated. */
 public class BlobSet {
 
-private static final Log log = LogFactory.getLog(BlobSet.class);
+private static final Logger log =  LogManager.getLogger(BlobSet.class);
 
 private List<Blob> allBlobs; // all data's known, some of them may be duplicates (in terms of equals()), even though all the items are distinct object
 private final Map<String, List<Blob>> personToBlobMap = new LinkedHashMap<>();

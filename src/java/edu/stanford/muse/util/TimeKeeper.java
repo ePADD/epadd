@@ -1,14 +1,15 @@
 package edu.stanford.muse.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
 
 /** utility class to help keep track of the time */
 public class TimeKeeper {
-    private static final Log log = LogFactory.getLog(TimeKeeper.class);
+    private static final Logger log =  LogManager.getLogger(TimeKeeper.class);
 
 	private static final int MAX = 100;
 	

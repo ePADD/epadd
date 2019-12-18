@@ -20,8 +20,10 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.CharArraySet;
@@ -76,7 +78,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 	private static IndexReader			reader				= null;
 	private static IndexSearcher		searcher			= null;
 
-    private static final Log log						= LogFactory.getLog(EntityFeature.class);
+    private static final Logger log						= LogManager.getLogger(EntityFeature.class);
 
     /**
 	 * This constructor is initialized so that the status provider will be given

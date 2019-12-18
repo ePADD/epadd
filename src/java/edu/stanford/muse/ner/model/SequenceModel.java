@@ -12,9 +12,10 @@ import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.cli.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class SequenceModel implements NERModel, Serializable {
     private static final String GAZETTE_FILE = "gazettes.ser.gz";
     public static final String RULES_DIRNAME = "rules";
     private static final long serialVersionUID = 1L;
-    private static final Log log = LogFactory.getLog(SequenceModel.class);
+    private static final Logger log =  LogManager.getLogger(SequenceModel.class);
     //public static final int MIN_NAME_LENGTH = 3, MAX_NAME_LENGTH = 100;
     private static FileWriter fdw = null;
     private static Tokenizer tokenizer = new CICTokenizer();

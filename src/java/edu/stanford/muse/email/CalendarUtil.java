@@ -17,17 +17,18 @@ package edu.stanford.muse.email;
 
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTimeComparator;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /** bunch of utils for manipulating date ranges and splitting them
  up into intervals based on exchanges with contacts etc. */
 public class CalendarUtil {
-    private static final Log log = LogFactory.getLog(CalendarUtil.class);
+    private static final Logger log =  LogManager.getLogger(CalendarUtil.class);
 
     // we want to change the month to 3 char format everywhere in ePADD
 	private static final String[] monthStrings = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};

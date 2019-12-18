@@ -5,9 +5,10 @@ import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,7 +28,7 @@ public class EnglishDictionary {
     private static final String dictStatsFile = "stats.txt";
     private static final String commonNamesFile = "firstNames.txt";
 
-    private static final Log log = LogFactory.getLog(EnglishDictionary.class);
+    private static final Logger log =  LogManager.getLogger(EnglishDictionary.class);
 
     private static Set<String> adverbs;
     private static Set<String> adjectives;

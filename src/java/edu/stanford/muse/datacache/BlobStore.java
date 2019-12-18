@@ -19,8 +19,10 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
@@ -69,7 +71,7 @@ public class BlobStore implements Serializable {
 
     private Multimap<Blob, String> blobToKeywords;
 
-    private static final Log log = LogFactory.getLog(BlobStore.class);
+    private static final Logger log =  LogManager.getLogger(BlobStore.class);
     private final static long serialVersionUID = 1L;
 
     private String dir; // base dir where this data store keeps it files

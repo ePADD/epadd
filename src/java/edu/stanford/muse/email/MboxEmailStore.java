@@ -20,9 +20,10 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.*;
 import java.io.*;
 import java.util.*;
@@ -32,7 +33,7 @@ import java.util.*;
 public class MboxEmailStore extends EmailStore implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-	private static final Log log = LogFactory.getLog(MboxEmailStore.class);
+	private static final Logger log =  LogManager.getLogger(MboxEmailStore.class);
 
 	private static final String CACHE_FILENAME = ".muse.dir";
 

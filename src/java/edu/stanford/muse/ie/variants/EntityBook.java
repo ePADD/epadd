@@ -9,8 +9,10 @@ import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import javax.print.Doc;
@@ -37,7 +39,7 @@ class Summary_L1{
 }
 public class EntityBook implements Serializable {
     public static long serialVersionUID = 1L;
-    public static Log log = LogFactory.getLog(EntityBook.class);
+    public static Logger log = LogManager.getLogger(EntityBook.class);
 
     private static final String DELIMS = " .;,-#@&()";
     public final static String DELIMITER = "--";

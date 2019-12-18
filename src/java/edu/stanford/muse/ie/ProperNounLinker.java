@@ -13,9 +13,10 @@ import edu.stanford.muse.util.Pair;
 
 import edu.stanford.muse.util.Span;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
  * An Utility class to link proper nouns in an archive
  */
 public class ProperNounLinker {
-    private static final Log log = LogFactory.getLog(ProperNounLinker.class);
+    private static final Logger log =  LogManager.getLogger(ProperNounLinker.class);
 
     /**
      * breaks the phrase into words, lowercases and stems each of the word

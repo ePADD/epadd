@@ -15,17 +15,17 @@
 */
 package edu.stanford.muse.util;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
 class ThunderbirdUtils {
-    private static final Log log = LogFactory.getLog(ThunderbirdUtils.class);
+    private static final Logger log =  LogManager.getLogger(ThunderbirdUtils.class);
     
     private class ThunderbirdAccount {
     	String accountName, serverHostname, serverRealHostName, serverType, username, userRealName, userEmail, dir_rel, fcc_folder;

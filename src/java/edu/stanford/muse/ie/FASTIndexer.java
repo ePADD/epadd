@@ -4,8 +4,10 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.document.*;
@@ -26,7 +28,7 @@ import java.util.regex.Pattern;
  * It's a standalone program, i.e. doesn't need to be included in epadd.war
  */
 public class FASTIndexer {
-    private static final Log log = LogFactory.getLog(FASTIndexer.class);
+    private static final Logger log =  LogManager.getLogger(FASTIndexer.class);
     public static final String FIELD_NAME_LABELS = "labels";
     public static final String FIELD_NAME_FAST_ID = "fastId";
     public static final String FIELD_NAME_WIKIPEDIA_ID = "wikipediaId";

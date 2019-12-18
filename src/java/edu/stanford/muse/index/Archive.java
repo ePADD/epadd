@@ -60,8 +60,10 @@ import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
 import groovy.lang.Tuple2;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
@@ -90,7 +92,7 @@ import java.util.stream.Collectors;
  *
  */
 public class Archive implements Serializable {
-    private static final Log log = LogFactory.getLog(Archive.class);
+    private static final Logger log =  LogManager.getLogger(Archive.class);
     private static final long serialVersionUID = 1L;
 
     // the archive structure: the archive's top level dir has these subdirs

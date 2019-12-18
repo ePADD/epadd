@@ -14,9 +14,10 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
 import edu.stanford.muse.webapp.SimpleSessions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 /** This is a class that keeps track of all entities in multiple archives and provides an interface to search through them at a token level. */
 
 public class CrossCollectionSearch {
-    private static final Log log = LogFactory.getLog(CrossCollectionSearch.class);
+    private static final Logger log =  LogManager.getLogger(CrossCollectionSearch.class);
 
   /*  public static List<Archive.CollectionMetadata> archiveMetadatas = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo
     public static List<String> archiveDirs = new ArrayList<>(); // metadata's for the archives. the position number in this list is what is used in the EntityInfo

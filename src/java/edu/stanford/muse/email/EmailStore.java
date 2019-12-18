@@ -21,9 +21,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Store;
@@ -33,7 +34,7 @@ import java.util.List;
 
 /** a store is an account, a source of email. */
 public abstract class EmailStore implements Serializable {
-    private static final Log log = LogFactory.getLog(EmailStore.class);
+    private static final Logger log =  LogManager.getLogger(EmailStore.class);
 	private final static long serialVersionUID = 1L;
 
 	String displayName;

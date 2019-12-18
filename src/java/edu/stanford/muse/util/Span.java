@@ -1,8 +1,9 @@
 package edu.stanford.muse.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 /**
  * Created by vihari on 24/02/16.
  * Similar in spirit to opennlp.tools.util
@@ -14,7 +15,7 @@ public class Span implements java.io.Serializable {
     public final String text;
     public short type = -1;
     public float typeScore = 0f;
-    private static final Log log = LogFactory.getLog(Span.class);
+    private static final Logger log =  LogManager.getLogger(Span.class);
 
 
     /**

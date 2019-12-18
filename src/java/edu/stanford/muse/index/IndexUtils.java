@@ -27,8 +27,10 @@ import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeComparator;
 
 import java.io.*;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 
 /** useful utilities for indexing */
 public class IndexUtils {
-	private static final Log	log	= LogFactory.getLog(IndexUtils.class);
+	private static final Logger	log	= LogManager.getLogger(IndexUtils.class);
 
 	/** temporary method */
 	public static boolean query(String s, String query)

@@ -9,8 +9,10 @@ import edu.stanford.muse.index.Indexer;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StoredField;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * TODO: trainAndrecognise and train methods should take proper options argument and there should be a class that represents training options*/
 public class NER implements StatusProvider {
-    private static final Log		    log					= LogFactory.getLog(NER.class);
+    private static final Logger		    log					= LogManager.getLogger(NER.class);
     //names and names_original should include all the names in the title
     public static final String		NAMES				= "names";
     private static final String NAMES_ORIGINAL = "names_original";

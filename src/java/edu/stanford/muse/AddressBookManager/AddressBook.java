@@ -27,8 +27,10 @@ import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import sun.awt.image.ImageWatched;
 
@@ -57,7 +59,7 @@ import java.util.stream.Collectors;
 
 public class AddressBook implements Serializable {
 
-    public static final Log log = LogFactory.getLog(AddressBook.class);
+    public static final Logger log =  LogManager.getLogger(AddressBook.class);
     private final static long serialVersionUID = 1L;
     public final static String CONTACT_START_PREFIX = "--";
 

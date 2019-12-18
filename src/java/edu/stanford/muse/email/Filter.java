@@ -26,9 +26,10 @@ import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.*;
 import java.io.Serializable;
@@ -38,7 +39,7 @@ import java.util.*;
 public class Filter implements Serializable {
 	private final static long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(Filter.class);
+    private static final Logger log =  LogManager.getLogger(Filter.class);
 
 	private final List<String> personNameOrEmails = new ArrayList<>(); // currently can only be 1 person, but we might want to support more
     private final Set<Contact> personContacts = new LinkedHashSet<>(); // mirror of personNameOrEmails w/contact objs. setup when we are assigned an address book.

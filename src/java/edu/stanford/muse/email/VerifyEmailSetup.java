@@ -24,15 +24,15 @@ import java.util.Properties;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Session;
 import javax.mail.Store;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 
 public class VerifyEmailSetup {
-    private static final Log log = LogFactory.getLog(VerifyEmailSetup.class);
+    private static final Logger log =  LogManager.getLogger(VerifyEmailSetup.class);
 
 	private static Pair<Boolean, String> run()
 	{

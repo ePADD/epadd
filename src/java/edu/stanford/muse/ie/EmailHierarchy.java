@@ -5,9 +5,10 @@ package edu.stanford.muse.ie;
  */
 
 import edu.stanford.muse.index.EmailDocument;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
@@ -22,7 +23,7 @@ import javax.mail.internet.InternetAddress;
  *     <li>Anywhere in the archive</li>
  * </ul>*/
 public class EmailHierarchy implements Hierarchy{
-    private static final Log log = LogFactory.getLog(EmailHierarchy.class);
+    private static final Logger log =  LogManager.getLogger(EmailHierarchy.class);
 
     public int getNumLevels(){
         return 5;

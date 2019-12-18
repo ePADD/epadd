@@ -28,8 +28,10 @@ import groovy.lang.Tuple2;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,7 +82,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
     /* used for buffering imap prefetch data -- necessary for good imap performance*/
     private static final String FORCED_ENCODING = "UTF-8";
 
-    public static final Log log = LogFactory.getLog(EmailFetcherThread.class);
+    public static final Logger log =  LogManager.getLogger(EmailFetcherThread.class);
 
     // set up INVALID_DATE
     public static final Date

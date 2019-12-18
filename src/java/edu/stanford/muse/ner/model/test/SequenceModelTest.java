@@ -12,9 +12,10 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import opennlp.tools.formats.Conll03NameSampleStream;
 import opennlp.tools.namefind.NameSample;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;import org.junit.Test;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -30,7 +31,7 @@ import static org.junit.Assert.*;
  * Created by vihari on 26/09/16.
  */
 public class SequenceModelTest {
-    private static final Log log = LogFactory.getLog(SequenceModelTest.class);
+    private static final Logger log =  LogManager.getLogger(SequenceModelTest.class);
 
     public static class ParamsCONLL{
         enum TEST{
@@ -431,7 +432,6 @@ public class SequenceModelTest {
         }
     }
 
-    @Test
     public void test() {
         SequenceModel model;
         {

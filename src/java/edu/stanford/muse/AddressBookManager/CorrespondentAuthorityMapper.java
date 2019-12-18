@@ -8,8 +8,10 @@ import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 
@@ -27,7 +29,7 @@ import static edu.stanford.muse.ie.variants.EntityBook.canonicalize;
  */
 public class CorrespondentAuthorityMapper extends AuthorityMapper implements   java.io.Serializable  {
 
-    private static final Log log					= LogFactory.getLog(CorrespondentAuthorityMapper.class);
+    private static final Logger log					= LogManager.getLogger(CorrespondentAuthorityMapper.class);
     private static final String CANDIDATE_AUTHORITIES_FILE_NAME = "CandidateCorrespondentAuthorities.csv";
     private static final String CONFIRMED_AUTHORITIES_FILE_NAME= "ConfirmedCorrespondentAuthorities.csv";
     private final static long serialVersionUID = 1L;

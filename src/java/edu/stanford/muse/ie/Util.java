@@ -9,8 +9,10 @@ import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -170,7 +172,7 @@ public class Util {
 	}
 
 	//TODO: ideally kill phrases class should be doing all this.
-	private static final Log						log								= LogFactory.getLog(Util.class);
+	private static final Logger						log								= LogManager.getLogger(Util.class);
 	private static final Map<String, Set<String>>	files							= new LinkedHashMap<>();
 	//order person, location, org
 	private static final String[]					TYPE_SPECIFIC_COMMON_WORDS_FILE	= new String[] { edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "per-kill.txt", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "loc-kill.txt", edu.stanford.muse.Config.SETTINGS_DIR + File.separator + "org-kill.txt" };

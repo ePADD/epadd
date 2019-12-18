@@ -30,8 +30,10 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeComparator;
 
 import javax.mail.Address;
@@ -48,7 +50,7 @@ import java.util.stream.Collectors;
 import static edu.stanford.muse.email.EmailFetcherThread.INVALID_DATE;
 
 public class EmailUtils {
-	public static final Log					log				= LogFactory.getLog(EmailUtils.class);
+	public static final Logger				log				= LogManager.getLogger(EmailUtils.class);
 	private static org.apache.commons.collections4.map.CaseInsensitiveMap<String, String> dbpedia			= null;
 
     /** Returns the part before @ in an email address, e.g. hangal@gmail.com => hangal.

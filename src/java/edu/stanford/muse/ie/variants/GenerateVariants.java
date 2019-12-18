@@ -4,9 +4,10 @@ import com.google.common.collect.*;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -17,7 +18,7 @@ import java.util.zip.GZIPInputStream;
  * prints token pairs that occur at least THRESHOLD times.
  * Needs stop words file and SurfaceForms_LRD-WAT.nofilter.tsv in ~/data and writes out to variants.txt in the same dir */
 class GenerateVariants {
-    private static final Log log = LogFactory.getLog(GenerateVariants.class);
+    private static final Logger log =  LogManager.getLogger(GenerateVariants.class);
     private static   String BASE_DIR = System.getProperty("user.home") + File.separator + "data";
     private static   int THRESHOLD = 10; // min. #times a token pair should appear in order to be output
     private static   String TSV_FILE = "SurfaceForms_LRD-WAT.nofilter.tsv.gz", STOP_WORDS_FILE = "stop.words.full";

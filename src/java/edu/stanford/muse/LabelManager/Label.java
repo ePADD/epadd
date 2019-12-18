@@ -1,8 +1,9 @@
 package edu.stanford.muse.LabelManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 
 /**
@@ -12,7 +13,7 @@ public class Label implements Serializable{
 
     /** note: these field names are used in JS as well. do not change casually */
 
-    private static Log log = LogFactory.getLog(Label.class);
+    private static Logger log = LogManager.getLogger(Label.class);
     private final static long serialVersionUID = 1L;
 
     // basic fields

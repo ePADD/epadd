@@ -6,9 +6,10 @@ import opennlp.tools.util.Span;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 
 import com.google.common.collect.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
  * TODO: canonicalize and tokenize words such that stop words irrespective of their capitalised form are recognized, for example: "In American Culture", "IN SPANISH", "A NEW FEDERAL POLICY", "THE PROVOST"
  */
 public class CICTokenizer implements Tokenizer, Serializable {
-    private static final Log log						= LogFactory.getLog(CICTokenizer.class);
+    private static final Logger log						= LogManager.getLogger(CICTokenizer.class);
 
     private static Pattern	entityPattern;
     private static Pattern multipleStopWordPattern;

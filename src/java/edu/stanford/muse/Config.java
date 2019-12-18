@@ -2,9 +2,10 @@ package edu.stanford.muse;
 
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,7 +22,7 @@ Similarly, resource files should be read only through this class. Resource files
  */
 public class Config {
     public static final String COLLECTION_METADATA_FILE = "collection-metadata.json"; // all session files end with .session
-    private static final Log log = LogFactory.getLog(Config.class);
+    private static final Logger log =  LogManager.getLogger(Config.class);
     public static final String admin; // this is the admin user for an installation of ePADD
 
     /* default location for dir under which archives are imported/stored. Should not end in File.separator */

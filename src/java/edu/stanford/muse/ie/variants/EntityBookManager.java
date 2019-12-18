@@ -9,9 +9,10 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import edu.stanford.muse.util.Util;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.poi.util.ArrayUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;import org.apache.poi.util.ArrayUtil;
 
 import javax.print.Doc;
 import java.io.*;
@@ -25,7 +26,7 @@ With this change, we now introduce this class that contains information about di
 public class EntityBookManager {
     //we don't need to serialize this class as the date here will be made persistent in form of human readable files.
     public static long serialVersionUID = 1L;
-    private static final Log log = LogFactory.getLog(EntityBookManager.class);
+    private static final Logger log =  LogManager.getLogger(EntityBookManager.class);
 
     private Archive mArchive = null;
 

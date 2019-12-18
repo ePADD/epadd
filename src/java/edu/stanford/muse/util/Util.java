@@ -28,8 +28,7 @@ package edu.stanford.muse.util;
 
 import edu.stanford.muse.Config;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
-import org.apache.commons.logging.Log;
-
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -179,20 +178,20 @@ public class Util
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b,Log log)
+	public static boolean softAssert(boolean b,Logger log)
 	{
 		warnIf(!b, "Soft assert failed!",log);
 		return true;
 	}
 
 	/* like assert, bit does not crash */
-	public static boolean softAssert(boolean b, String message, Log log)
+	public static boolean softAssert(boolean b, String message, Logger log)
 	{
 		warnIf(!b, "Soft assert failed! " + message, log);
 		return true;
 	}
 
-	public static void warnIf(boolean b, String message, Log log)
+	public static void warnIf(boolean b, String message, Logger log)
 	{
 		if (b)
 		{
@@ -201,7 +200,7 @@ public class Util
 		}
 	}
 
-public static void aggressiveWarn(String message, long sleepMillis, Log log)
+public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 	{
 		String errmsg = "\n\n\n\n\n" + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
 				"\n\n\n\n\n\n" + message + "\n\n\n\n\n\n" +
@@ -229,7 +228,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		// permanent breakpoint
 	}
 
-	public static void print_exception(String message, Throwable t, Log log)
+	public static void print_exception(String message, Throwable t, Logger log)
 	{
 		String trace = stackTrace(t);
 		String s = message + "\n" + t.toString() + "\n" + trace;
@@ -238,7 +237,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		System.err.println(s);
 	}
 
-	public static void print_exception(Throwable t, Log log)
+	public static void print_exception(Throwable t, Logger log)
 	{
 		print_exception("", t, log);
 	}
@@ -254,7 +253,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		throw new RuntimeException(t);
 	}
 
-	public static void report_exception_and_rethrow(Throwable t, Log log)
+	public static void report_exception_and_rethrow(Throwable t, Logger log)
 	{
 		print_exception(t, log);
 		throw new RuntimeException(t);
@@ -1738,7 +1737,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	// Returns true if all deletions were successful.
 	// If a deletion fails, the method stops attempting to delete and returns
 	// false.
-	private static boolean deleteDir(File f, Log log)
+	private static boolean deleteDir(File f, Logger log)
 	{
 		if (f.isDirectory())
 		{
@@ -1756,7 +1755,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 		return f.delete();
 	}
 
-	public static void deleteDir(String path, Log log)
+	public static void deleteDir(String path, Logger log)
 	{
 		if (path == null)
 			return;
@@ -1874,7 +1873,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Log log)
 	}
 
 	/** cleans up files in directory with the given suffix */
-	public static void deleteAllFilesWithSuffix(String dir, String suffix, Log log) {
+	public static void deleteAllFilesWithSuffix(String dir, String suffix, Logger log) {
 		if (dir == null)
 			return;
 		File cache = new File(dir);
