@@ -83,6 +83,8 @@ public class JSPHelper {
 
 	static {
 		// log4j initialize should be called before anything else happens. this is the best place to initialize
+		//IMP: When muse.jar (jar carved out from epadd war) is included in other projects and we do not want these log
+		//settings to override that project specific settings then we disable the call for this initialization.
 		Log4JUtils.initialize();
 		// check container
 		String container = System.getProperty("muse.container");
