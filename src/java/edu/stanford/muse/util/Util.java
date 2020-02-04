@@ -2748,7 +2748,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 	public static String maskEmailDomain(String s)
 	{
 		//return s.replaceAll("\\b([A-Za-z0-9][A-Za-z0-9\\-_\\.]*)@[A-Za-z0-9][A-Za-z\\-0-9_]*(\\.[A-Za-z0-9][A-Za-z\\-0-9_]*)*\\.[A-Za-z]{2,4}\\b", "$1@...");
-		return s.replaceAll("\\b([.]*)@([\\s\\S]*)\\bd", "$1@...");
+		return s.replaceAll("\\b([^@]*)@([\\S]*)\\b", "$1@...");
 
 	}
 
