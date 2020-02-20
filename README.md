@@ -70,9 +70,11 @@ Unless otherwise indicated, software items in this repository are distributed un
 
 *Research and Development:*
 - Sudheendra Hangal, Ashoka University and Amuse Labs;
+- Chinmay Narayan, Amuse Labs;
 - Vihari Piratla, Amuse Labs;
 - Sit Manovit, iXora Inc.;
 - Peter Chan, Stanford University Libraries;
+- Sally DeBauche, Stanford University Libraries;
 - Glynn Edwards, Stanford University Libraries;
 - Josh Schneider, Stanford University Libraries
 
