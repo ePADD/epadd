@@ -131,8 +131,9 @@ Unless otherwise indicated, software items in this repository are distributed un
 - Laura O'Hara, formerly SLAC National Accelerator Laboratory
 
 *Funding:*
-- Andrew W. Mellon Foundation (ePADD Phase 3)
-- Instiute for Museum and Library Services (ePADD Phase 2)
+- Andrew W. Mellon Foundation (ePADD Phase 3);
+- David C. Weber Librarian's Research Fund from the Stanford University Libraries (ePADD Phase 3);
+- Institute for Museum and Library Services (ePADD Phase 2);
 - National Historical Publications & Records Commission (ePADD Phase 1);
 - Payton J. Treat Fund from the Stanford University Libraries (ePADD Phase 1);
 - U.S. National Science Foundation (Muse);
