@@ -453,6 +453,10 @@ int errortype=0;
         public String institution, repository, collectionTitle, collectionID, findingAidLink, catalogRecordLink, contactEmail, rights, notes, scopeAndContent, shortTitle, shortDescription;
         public long timestamp;
         public String tz;
+        //To make the first date and last date format agnostic we store them in unix timestamp format (using Date.getTime() method).
+        public long firstDateTS, lastDateTS;
+        //To keep track of the locale where this ingestion took place.
+        public String ingestionLocaleTag;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
         //Since v7, nOutgoing messages in this class will be treated as the number of messages sent by the owner.
         public int nBlobs, nUniqueBlobs, nImageBlobs, nDocBlobs, nOtherBlobs; // this is just a cache so we don't have to read the archive
@@ -461,7 +465,8 @@ int errortype=0;
         //will be set by method that computes epadd-ner
         public Map<Short, Integer> entityCounts;
         public int numPotentiallySensitiveMessages = -1;
-        public Date firstDate, lastDate;
+        //Following two fields have been set as transient to avoid their serialization and deserialization by Gson library.
+        transient public Date firstDate, lastDate;
         public List<AccessionMetadata> accessionMetadatas;
         public int renamedFiles=0;//to record number of files that were renamed /cleanedup as a result of Amatica integration
         public int normalizedFiles=0;//to record number of files that were normalized (format change) as a result of Amatica integration.

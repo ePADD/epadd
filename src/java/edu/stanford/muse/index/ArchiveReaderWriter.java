@@ -266,6 +266,12 @@ public class ArchiveReaderWriter{
         String processingFilename = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR + File.separatorChar + Config.COLLECTION_METADATA_FILE;
         try (Reader reader = new FileReader(processingFilename)) {
             Archive.CollectionMetadata metadata = new Gson().fromJson(reader, Archive.CollectionMetadata.class);
+            //Using timestamp to crate first and last date of the archive using locale specific format.
+            //Don't assume that firstDateTS and lastDateTS will be non zero (as they should be). If not proper then don't fill in firstDate and lastDate
+            if(metadata.firstDateTS!=0)
+                metadata.firstDate = new Date(metadata.firstDateTS);
+            if(metadata.lastDateTS!=0)
+                metadata.lastDate = new Date(metadata.lastDateTS);
             return metadata;
         } catch (Exception e) {
             Util.print_exception("Unable to read processing metadata from file" + processingFilename, e, log);
@@ -457,6 +463,14 @@ public class ArchiveReaderWriter{
 
         archive.collectionMetadata.firstDate = firstDate;
         archive.collectionMetadata.lastDate = lastDate;
+        //Fill in the current locale and unix timestamp values for firstDate and lastDate. For more information on these variables refer to the
+        //class definition of CollectionMetaData.
+        archive.collectionMetadata.ingestionLocaleTag = Locale.getDefault().toLanguageTag();
+        if(firstDate!=null)
+            archive.collectionMetadata.firstDateTS = firstDate.getTime();
+        if(lastDate!=null)
+            archive.collectionMetadata.lastDateTS = lastDate.getTime();
+
         archive.collectionMetadata.nIncomingMessages = receivedMessages;
         archive.collectionMetadata.nOutgoingMessages = archive.getAddressBook().getMsgsSentByOwner();
         archive.collectionMetadata.nHackyDates = hackyDates;
@@ -878,17 +892,14 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
 
     public static void main(String args[]){
         File tmp = null;
-        try {
-            FileUtils.moveDirectory(Paths.get("/home/chinmay/test").toFile(),Paths.get("/home/chinmay/test2").toFile());
+        ArchiveReaderWriter.readCollectionMetadata("/Users/tech/epadd-appraisal/user");
+          /*  FileUtils.moveDirectory(Paths.get("/home/chinmay/test").toFile(),Paths.get("/home/chinmay/test2").toFile());
             //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
             File wheretocopy = Paths.get("/home/chinmay/test2/test").toFile();
-            Util.deleteDir(wheretocopy.getPath(),log);
+            Util.deleteDir(wheretocopy.getPath(),log);*/
 
-            //FileUtils.moveDirectory(tmp.toPath().toFile(),wheretocopy);
+        //FileUtils.moveDirectory(tmp.toPath().toFile(),wheretocopy);
 
-        } catch (IOException e) {
-
-        }
         tmp.delete();
 
 
