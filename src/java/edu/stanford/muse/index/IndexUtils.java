@@ -800,8 +800,8 @@ public class IndexUtils {
 		return result;
 	}
 
-	/** version that stores actual dates instead of just counts for each facet */
-	public static Map<String, Collection<DetailedFacetItem>> computeDetailedFacets(Collection<Document> docs, Archive archive)
+	/** Compute facet list for message browsing screen.*/
+	public static Map<String, Collection<DetailedFacetItem>> computeDetailedFacetsForMessageBrowsing(Collection<Document> docs, Archive archive)
 	{
 		AddressBook addressBook = archive.addressBook;
 
@@ -892,6 +892,81 @@ public class IndexUtils {
 			if  (folderNameMap.size() > 0)
 				facetMap.put("folders", folderNameMap.values());
 		}
+
+		// sort so that in each topic, the heaviest facets are first
+		for (String s : facetMap.keySet())
+		{
+			Collection<DetailedFacetItem> detailedFacets = facetMap.get(s);
+			List<DetailedFacetItem> list = new ArrayList<>(detailedFacets);
+			Collections.sort(list);
+			facetMap.put(s, list);
+		}
+
+		return facetMap;
+	}
+
+
+	/*
+	Comput facet list for attachment browsing screen.
+	 */
+	public static Map<String, Collection<DetailedFacetItem>> computeDetailedFacetsForAttachmentBrowsing(Collection<Document> docs, Archive archive)
+	{
+		AddressBook addressBook = archive.addressBook;
+
+		Map<String, Collection<DetailedFacetItem>> facetMap = new LinkedHashMap<>();
+		if (!ModeConfig.isPublicMode())
+		{
+			Map<String, DetailedFacetItem> attachmentTypesMap = partitionDocsByAttachmentType(archive,docs);
+			facetMap.put("attachment type", attachmentTypesMap.values());
+		}
+		if (addressBook != null) {
+			// people
+			Map<Contact, DetailedFacetItem> peopleMap = partitionDocsByPerson(docs, addressBook);
+			facetMap.put("correspondent", peopleMap.values());
+
+			// direction (sender: only one if anything with owner)
+			Map<String, DetailedFacetItem> directionMap = partitionDocsByDirection(docs, addressBook);
+			if  (directionMap.size() > 0) //this size can at max be 1 when there is at least one message sent from the owner
+				facetMap.put("sender", directionMap.values());
+
+		}
+		if (!ModeConfig.isPublicMode())
+		{
+			Map<String, DetailedFacetItem> folderNameMap = partitionDocsByFolder(docs);
+			if  (folderNameMap.size() > 0)
+				facetMap.put("folders", folderNameMap.values());
+		}
+		Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs,archive);
+		facetMap.put("Annotations", annotationPresenceMap.values());
+		// Note: order is important here -- the facets will be displayed in the order they are inserted in facetMap
+		// current order: sentiments, groups, people, direction, folders
+		/* disabling sentiment facets
+		if (indexer != null)
+		{
+			List<DetailedFacetItem> sentimentItems = new ArrayList<DetailedFacetItem>();
+			Set<Document> docSet = new LinkedHashSet<Document>(docs);
+
+			// rather brute-force, compute docs for all sentiments and then intersect...
+			// a better way might be to process the selected messages and see which sentiments they reflect
+			Map<String, String> captionToQueryMap;
+			if (lexicon != null && !ModeConfig.isPublicMode())
+				captionToQueryMap = lexicon.getCaptionToQueryMap(docs);
+			else
+				captionToQueryMap = new LinkedHashMap<>();
+
+			for (String sentiment : captionToQueryMap.keySet())
+			{
+				String query = captionToQueryMap.get(sentiment);
+                Indexer.QueryOptions options = new Indexer.QueryOptions();
+                //options.setQueryType(Indexer.QueryType.ORIGINAL);
+				options.setSortBy(Indexer.SortBy.RELEVANCE); // to avoid unnecessary sorting
+				Collection<Document> docsForTerm = indexer.docsForQuery(query, options);
+				docsForTerm.retainAll(docSet);
+				sentimentItems.add(new DetailedFacetItem(sentiment, captionToQueryMap.get(sentiment), new ArrayList<Document>(docsForTerm), "sentiment", sentiment));
+			}
+			facetMap.put("sentiments", sentimentItems);
+		}
+		*/
 
 		// sort so that in each topic, the heaviest facets are first
 		for (String s : facetMap.keySet())

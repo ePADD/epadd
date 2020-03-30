@@ -913,7 +913,7 @@ $.fn.jog_page_reload = function(page, inFull) {
 function page_out(start, end)
 {
 	// sometimes start, end could be < 0
-	for (var i = start; i <= end; i++) // note: start and end page inclusive (same as jogPageIn.jsp)
+	for (var i = start; i <= end; i++) // note: start and end page inclusive (same as jogPageInMessages.jsp)
 		if (i >= 0)
 			pages[i] = null;
 }

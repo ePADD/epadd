@@ -44,9 +44,9 @@ var Navigation = function(){
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         jog = $(document).jog({
             paging_info: {
-                url: 'ajax/jogPageIn.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
-                window_size_back: 30,
-                window_size_fwd: 50
+                url: 'ajax/jogPageInAttachments.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
+                window_size_back: 1,
+                window_size_fwd: 1
             },
             page_change_callback: page_change_callback,
             logger: epadd.log,

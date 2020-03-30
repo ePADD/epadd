@@ -110,7 +110,7 @@ public class EmailRenderer {
 	}
 
 	/**
-	 * returns a string for documents.
+	 * returns a string for documents - in message browsing screen.
 	 *
 	 * @param
 	 * @throws Exception
@@ -125,6 +125,174 @@ public class EmailRenderer {
 		Archive archive = searchResult.getArchive();
 		String html = null;
 		boolean overflow = false;
+		if (d instanceof EmailDocument) {
+			// for email docs, 1 doc = 1 page
+			ed = (EmailDocument) d;
+			List<Blob> highlightAttachments = searchResult.getAttachmentHighlightInformation(d);
+			StringBuilder page = new StringBuilder();
+			page.append("<div class=\"muse-doc\">\n");
+
+			page.append("<div class=\"muse-doc-header\">\n");
+			page.append(EmailRenderer.getHTMLForHeader(ed, searchResult, IA_links, debug));
+			page.append("</div>"); // muse-doc-header
+
+			/*
+			 * Map<String, List<String>> sentimentMap =
+			 * indexer.getSentiments(ed); for (String emotion:
+			 * sentimentMap.keySet()) { page.append ("<b>" + emotion +
+			 * "</b>: "); for (String word: sentimentMap.get(emotion))
+			 * page.append (word + " "); page.append ("<br/>\n");
+			 * page.append("<br/>\n"); }
+			 */
+			//get highlight terms from searchResult object for this document.
+			Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);
+
+			page.append("\n<div class=\"muse-doc-body\">\n");
+			Pair<StringBuilder, Boolean> contentsHtml = searchResult.getArchive().getHTMLForContents(d, ((EmailDocument) d).getDate(),
+					d.getUniqueId(), searchResult.getRegexToHighlight(), highlightTerms,
+					authorisedEntities, IA_links, inFull, true);
+
+			StringBuilder htmlMessageBody = contentsHtml.first;
+			overflow = contentsHtml.second;
+			// page.append(ed.getHTMLForContents(indexer, highlightTermsStemmed,
+			// highlightTermsUnstemmed, IA_links));
+			page.append(htmlMessageBody);
+			page.append("\n</div> <!-- .muse-doc-body -->\n"); // muse-doc-body
+
+			// page.append("\n<hr class=\"end-of-browse-contents-line\"/>\n");
+			List<Blob> attachments = ed.attachments;
+			if (attachments != null && attachments.size() > 0) {
+				// show thumbnails of all the attachments
+
+				if (ModeConfig.isPublicMode()) {
+					page.append(attachments.size() + " attachment" + (attachments.size() == 1 ? "" : "s") + ".");
+				} else {
+					page.append("<hr/>\n<div class=\"attachments\">\n");
+					int i = 0;
+					for (; i < attachments.size(); i++) {
+						Blob attachment = attachments.get(i);
+						boolean highlight = highlightAttachments != null && highlightAttachments.contains(attachment);
+						String css_class = "attachment" + (highlight ? " highlight" : "");
+						page.append("<div class=\"" + css_class + "\">");
+
+						String thumbnailURL = null, attachmentURL = null;
+						boolean is_image = Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(attachment));
+						BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
+						if (attachmentStore != null) {
+							String contentFileDataStoreURL = attachmentStore.get_URL_Normalized(attachment);
+							attachmentURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(contentFileDataStoreURL);
+							String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
+							if (tnFileDataStoreURL != null)
+								thumbnailURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(tnFileDataStoreURL);
+							else {
+								if (archive.getBlobStore().is_image(attachment))
+									thumbnailURL = attachmentURL;
+								else
+									thumbnailURL = "images/sorry.png";
+							}
+						} else
+							JSPHelper.log.warn("attachments store is null!");
+
+						// toString the filename in any case,
+						String url = archive.getBlobStore().full_filename_normalized(attachment, false);
+						// cap to a length of 25, otherwise the attachment name
+						// overflows the tn
+						String display = Util.ellipsize(url, 25);
+						page.append("&nbsp;" + "<span title=\"" + Util.escapeHTML(url) + "\">" + Util.escapeHTML(display) + "</span>&nbsp;");
+						page.append("<br/>");
+
+						css_class = "attachment-preview" + (is_image ? " img" : "");
+						String leader = "<img class=\"" + css_class + "\" ";
+
+						// punt on the thumbnail if the attachment tn or content
+						// URL is not found
+						if (thumbnailURL != null && attachmentURL != null) {
+							// d.hashCode() is just something to identify this
+							// page/message
+							page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(url) + "\" href=\"" + attachmentURL + "\">");
+							page.append(leader + "href=\"" + attachmentURL + "\" src=\"" + thumbnailURL + "\"></img>\n");
+							page.append("<a>\n");
+						} else {
+							// page.append
+							// ("&nbsp;<br/>&nbsp;<br/>Not fetched<br/>&nbsp;<br/>&nbsp;&nbsp;&nbsp;");
+							// page.append("<a title=\"" + attachment.filename +
+							// "\" href=\"" + attachmentURL + "\">");
+							page.append(leader + "src=\"images/no-attachment.png\"></img>\n");
+							// page.append ("<a>\n");
+
+							if (thumbnailURL == null)
+								JSPHelper.log.info("No thumbnail for " + attachment);
+							if (attachmentURL == null)
+								JSPHelper.log.info("No attachment URL for " + attachment);
+						}
+						BlobStore bstore = archive.getBlobStore();
+						//if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+						//origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+						//so the attributes are either only originalfilename or cleanedupfileURL or both.
+						String cleanedupname = bstore.full_filename_cleanedup(attachment);
+						String normalizedname = bstore.full_filename_normalized(attachment);
+						String cleanupurl = bstore.get_URL_Cleanedup(attachment);
+						boolean isNormalized = !cleanedupname.equals(normalizedname);
+						boolean isCleanedName = !cleanedupname.equals(bstore.full_filename_original(attachment));
+						if (isNormalized || isCleanedName) {
+							String completeurl_cleanup = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(cleanupurl);
+
+							page.append("<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" ");
+							if (isNormalized) {
+								page.append("data-originalurl=" + "\"" + completeurl_cleanup + "\" ");
+								page.append("data-originalname=" + "\"" + bstore.full_filename_original(attachment, false) + "\" ");
+							}
+							if (isCleanedName) {
+								page.append("data-originalname=" + "\"" + bstore.full_filename_original(attachment, false) + "\"");
+							}
+							page.append("></span>");
+						}
+
+						page.append("</div>");
+					}
+					page.append("\n</div>  <!-- .muse-doc-attachments -->\n"); // muse-doc-attachments
+				}
+
+			}
+			page.append("\n</div>  <!-- .muse-doc -->\n"); // .muse-doc
+			html = page.toString();
+		} else if (d instanceof DatedDocument) {
+			/*
+			 * DatedDocument dd = (DatedDocument) d; StringBuilder page = new
+			 * StringBuilder();
+			 *
+			 * page.append (dd.getHTMLForHeader()); // directly jam in contents
+			 * page.append ("<div class=\"muse-doc\">\n"); page.append
+			 * (dd.getHTMLForContents(indexer)); // directly jam in contents
+			 * page.append ("\n</div>"); // doc-contents return page.toString();
+			 */
+			html = "To be implemented";
+		} else {
+			JSPHelper.log.warn("Unsupported Document: " + d.getClass().getName());
+			html = "";
+		}
+
+		return new Pair<>(html, overflow);
+	}
+
+
+	/**
+	 * returns a string for documents - on attachment browsing screen.
+	 *
+	 * @param
+	 * @throws Exception
+	 */
+	//TODO: inFull, debug params can be removed
+	//TODO: Consider a HighlighterOptions class
+	public static Pair<String, Boolean> htmlForAttachments(List<Document> docs,int year, SearchResult searchResult, String datasetTitle,
+														Map<String, Map<String, Short>> authorisedEntities,
+														boolean IA_links, boolean inFull, boolean debug, String archiveID) throws Exception {
+		JSPHelper.log.debug("Generating HTML for attachments in year: " + year);
+		EmailDocument ed = null;
+		Archive archive = searchResult.getArchive();
+		String html = null;
+		boolean overflow = false;
+		Document d = docs.get(0);
 		if (d instanceof EmailDocument) {
 			// for email docs, 1 doc = 1 page
 			ed = (EmailDocument) d;
