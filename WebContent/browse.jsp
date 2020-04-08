@@ -48,6 +48,14 @@
         //get Facet Information for Attachment browsing screen.
         facets = JSPHelper.getFacetItemsForAttachmentBrowsing(request,docs,archive);
 
+    String murl = request.getRequestURI();
+
+    String msgBrowsingURL = Util.excludeUrlParam(origQueryString,"browseType=attachments");
+    msgBrowsingURL = murl+"?"+msgBrowsingURL;
+    String attachmentBrowsingURL = Util.excludeUrlParam(origQueryString,"browseType=attachments");
+    attachmentBrowsingURL+="&browseType=attachments";
+    attachmentBrowsingURL = murl + "?" +attachmentBrowsingURL;
+
 %>
 <!DOCTYPE HTML>
 <html lang="en">

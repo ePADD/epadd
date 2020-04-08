@@ -387,6 +387,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             <option value="chronological">Oldest first</option>
                         </select>
                     </div>
+                    <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" onclick="window.location='<%=attachmentBrowsingURL%>'">Attachment View</button>
+
                 </div>
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">

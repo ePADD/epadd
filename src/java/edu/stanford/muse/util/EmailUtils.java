@@ -769,6 +769,17 @@ public class EmailUtils {
 		return totalMessageCount;
 	}
 
+	public static Pair<Integer, Integer> getStartEndYear(Collection<Document> docs) {
+		List<Date> dates = EmailUtils.datesForDocs((Collection)docs);
+		Calendar calendear = Calendar.getInstance();
+		dates.sort(Date::compareTo);
+		calendear.setTime(dates.get(0));//to get the starting year
+		int startYear= calendear.get(Calendar.YEAR);
+		calendear.setTime(dates.get(dates.size()-1));//to get the last year
+		int lastYear = calendear.get(Calendar.YEAR);
+		return new Pair(startYear,lastYear);
+	}
+
 	public static List<Date> datesForDocs(Collection<? extends DatedDocument> c)
 	{
 		List<Date> result = new ArrayList<>();

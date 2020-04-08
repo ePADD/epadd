@@ -6,6 +6,12 @@
 
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@ page import="edu.stanford.muse.util.EmailUtils" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Calendar" %>
+<%@ page import="edu.stanford.muse.util.Pair" %>
 <%@page contentType="text/html; charset=UTF-8"%>
 
 <%
@@ -27,7 +33,13 @@
 	out.println ("<div>");
 
 	boolean IA_links = "true".equals(JSPHelper.getSessionAttribute(session, "IA_links"));
-	for (int i = startPage; i <= endPage; i++) // note: start and end page inclusive
+	//here each page corresponds to a year. Let us say that the range of years for dataset is from 1954 to 1978 then on first page the attachments for
+	//year 1954 will be displayed. On the second page the attachments for 1955 will be displayed.
+	Pair<Integer,Integer> startEndYear = EmailUtils.getStartEndYear(dataset.getDocs());
+	int startYear = startEndYear.first;
+	int endYear = startEndYear.second;
+
+	for (int i = startPage+startYear; i <= endPage+startYear; i++) // note: start and end page inclusive
 	{
 		out.println ("<div class=\"page\" pageId=\"" + i + "\" display=\"none\">");
 		if (error)

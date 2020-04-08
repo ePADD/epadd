@@ -399,3 +399,24 @@ div.epadd-separator { height: 3px; width: 25px; border: solid 1px #0175bc; backg
 .success-modal .modal-header .modal-title { background-image:url('../images/success.svg'); }
 .modal-body { /* word-break: break-all; */} /* needed to ensure long URLs don't bleed. but break-all is causing breaks in the middle of words! */
 /**** end modals --------------------------------  */
+
+div.square{
+	border: solid thin;
+	padding: 10px;
+	margin-right: 20px;
+	margin-bottom: 20px;
+	height: 100px;
+	text-align : center;
+	z-index: 1;
+}
+div.square:hover{
+	background-color: dimgray;
+	cursor: pointer;
+}
+div.insidesquare{
+	background-color: #E4E4E4;
+	height: 50px;
+	top: 3%;
+	left:4%;
+	z-index: -1;
+}
