@@ -71,6 +71,7 @@
     <jsp:include page="css/css.jsp"/>
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" type="text/css" media="screen" />
 
     <script src="js/stacktrace.js" type="text/javascript"></script>
     <script src="js/jquery.js" type="text/javascript"></script>
@@ -80,6 +81,7 @@
     <script src="js/selectpicker.js"></script>
     <script src="js/modernizr.min.js"></script>
     <script src="js/sidebar.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>

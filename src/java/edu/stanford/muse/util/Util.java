@@ -318,6 +318,18 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		return lower_case_name.endsWith(".pdf");
 	}
 
+	public static boolean is_ppt_filename(String filename)
+	{
+		String lower_case_name = filename.toLowerCase();
+		return lower_case_name.endsWith(".ppt");
+	}
+
+	public static boolean is_zip_filename(String filename)
+	{
+		String lower_case_name = filename.toLowerCase();
+		return lower_case_name.endsWith(".zip");
+	}
+
 	public static boolean is_office_document(String filename)
 	{
 		String lower_case_name = filename.toLowerCase();

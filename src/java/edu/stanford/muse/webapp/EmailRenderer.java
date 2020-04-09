@@ -343,8 +343,8 @@ public class EmailRenderer {
 				// cap to a length of 25, otherwise the attachment name
 				// overflows the tn
 				String display = Util.ellipsize(url, 15);
-				page.append("<div onmouseenter=\"hoverin_squarebox(this)\" onmouseleave=\"hoverout_squarebox(this)\" class=\"square col-sm-2\" data-filename=\""+url+"\"  data-displayname=\""+display+"\">");
-
+				page.append("<div  class=\"square col-sm-2\" onmouseenter=\"hoverin_squarebox(this)\" onmouseleave=\"hoverout_squarebox(this)\" data-filename=\""+url+"\"  data-displayname=\""+display+"\">");
+//
 				String thumbnailURL = null, attachmentURL = null;
 				boolean is_image = Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(attachment));
 				BlobStore attachmentStore = searchResult.getArchive().getBlobStore();
@@ -357,9 +357,19 @@ public class EmailRenderer {
 					else {
 						if (archive.getBlobStore().is_image(attachment))
 							thumbnailURL = attachmentURL;
-						else
-							thumbnailURL = "images/sorry.png";
+						else if(Util.is_doc_filename(contentFileDataStoreURL)){
+								thumbnailURL="images/doc_icon.svg";
+						}else if(Util.is_pdf_filename(contentFileDataStoreURL)){
+								thumbnailURL="images/pdf_icon.svg";
+						}else if(Util.is_ppt_filename(contentFileDataStoreURL)){
+								thumbnailURL="images/ppt_icon.svg";
+						}else if(Util.is_zip_filename(contentFileDataStoreURL)){
+								thumbnailURL="images/zip_icon.svg";
+						}else{
+								thumbnailURL="images/sorry.svg";
+						}
 					}
+
 				} else
 					JSPHelper.log.warn("attachments store is null!");
 
@@ -388,18 +398,18 @@ public class EmailRenderer {
 				}
 */
 				//attachment icon/preview goes here, inside another square box.
-				page.append("<div class=\"insidesquare\" style=\"overflow:hidden\">");
+				page.append("<div class=\"insidesquare\" style=\"overflow:hidden\" data-fancybox=\"gallery\">");
 
 				/** Attachment preview related html**/
 				css_class = "attachment-preview" + (is_image ? " img" : "");
-				String leader = "<img class=\"" + css_class + "\" style=\"height:inherit\" ";
+				String leader = "<img class=\"" + css_class + "\"  ";
 
 				// punt on the thumbnail if the attachment tn or content
 				// URL is not found
 				if (thumbnailURL != null && attachmentURL != null) {
 					// d.hashCode() is just something to identify this
 					// page/message
-					page.append(leader + "href=\"" + attachmentURL + "\" src=\"" + thumbnailURL + "\"></img>\n");
+					page.append(leader + "href=\"" + attachmentURL + "\"  src=\"" + thumbnailURL + "\"></img>\n");
 					/*page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(url) + "\" href=\"" + attachmentURL + "\">");
 					page.append("<a>\n");*/
 				} else {

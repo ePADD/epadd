@@ -199,6 +199,8 @@
 </nav>
 
 <script>
+
+
     $('body').on('click','#normalizationInfo',function(e){
         // get the attribute's values - originalURL and originalName.
         var origianlURL = $(e.target).data('originalurl');
@@ -226,7 +228,7 @@
             //change the text color to white.
             $(spanelem).css('color','white');
             //hide inside square to increase the readability of the filename
-            $(e).find('div').hide();
+            //$(e).find('div').hide();
 
         };
 
@@ -238,11 +240,16 @@
             //change the text color to black.
             $(spanelem).css('color','black');
         //show inside square back to normal
-        $(e).find('div').show();
+        //$(e).find('div').show();
 
     };
 
-
+    $().fancybox({
+        selector : '.row div:div:visible',
+        thumbs   : {
+            autoStart : true
+        }
+    });
 
 
 </script>
