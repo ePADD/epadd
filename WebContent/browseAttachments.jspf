@@ -6,9 +6,16 @@
 
 <script src="js/browseAttachments.js" type="text/javascript"></script>
 <%
-    Pair<Integer,Integer> startEndYear = EmailUtils.getStartEndYear(docs);
-    int startYear = startEndYear.first;
-    int endYear = startEndYear.second;
+    List<Pair<Integer,Integer>> yearwiseAttachments = EmailUtils.getStartEndYearOfAttachments(docs);
+    int startYear = yearwiseAttachments.get(0).first; //Becuase the list is already in sorted order.
+    int endYear = yearwiseAttachments.get(yearwiseAttachments.size()-1).first; //last element in this sorted list corresponds to the last year of the range.
+    //calculate total number of attachments to be displayed on the loading screen.
+    int totalAttachments=0;
+    int totalDocs = docs.size();
+    for(Pair<Integer,Integer> yearinfo: yearwiseAttachments){
+        totalAttachments+=yearinfo.second;
+    }
+
 %>
 
 <script>
@@ -20,6 +27,31 @@
     //for attachment section we also need start year for the purpose of displaying the year.
     var START_YEAR= <%=startYear%>;
 
+    var isNormalized=false;
+
+
+    /*An array of json objects containing src, opts[index,thumb] and a few attachment specific parameters which need to be used while displaying fancybox*/
+    var attachmentDetails;
+    /*=[
+        {
+            //src  : 'https://source.unsplash.com/IvfoDk30JnI/1500x1000',
+            opts : {
+                index: 0,
+                thumb   : 'https://source.unsplash.com/IvfoDk30JnI/240x160'
+            }
+        },
+        {
+            //src  : 'https://source.unsplash.com/0JYgd2QuMfw/1500x1000',
+            opts : {
+                index: 1,
+                thumb   : 'https://source.unsplash.com/0JYgd2QuMfw/240x160'
+
+            }
+        }
+    ];*/
+
+
+    var isListView=false;//to track the current view selected by the user so that subsequent loading of data preserve that.
 </script> <!-- make the dataset name available to browseAttachments.js -->
 
 
@@ -200,6 +232,19 @@
 
 <script>
 
+    function showTileView(){
+        //hide list view and show tile view.
+        $('#attachment-list').hide();
+        $('#attachment-tiles').show();
+        isListView=false;
+    }
+
+    function showListView(){
+        //hide tile view and show list view.
+        $('#attachment-tiles').hide();
+        $('#attachment-list').show();
+        isListView=true;
+    }
 
     $('body').on('click','#normalizationInfo',function(e){
         // get the attribute's values - originalURL and originalName.
@@ -220,11 +265,10 @@
     });
     //to setup on hover handling over the tiles.
    var hoverin_squarebox=function(e){
-            // get the attribute's values - originalURL and originalName.
-            var filename = $(e).attr('data-filename');
+
             //get the encompassing (child relation) span with id #display-name
             var spanelem = $(e).find('span');
-            $(spanelem).text(filename);
+
             //change the text color to white.
             $(spanelem).css('color','white');
             //hide inside square to increase the readability of the filename
@@ -233,23 +277,156 @@
         };
 
     var hoverout_squarebox=    function(e){
-            var displayname  = $(e).attr('data-displayname');
+
             //get the encompassing (child relation) span with id #display-name
             var spanelem = $(e).find('span');
-            $(spanelem).text(displayname);
-            //change the text color to black.
+             //change the text color to black.
             $(spanelem).css('color','black');
         //show inside square back to normal
         //$(e).find('div').show();
 
     };
 
-    $().fancybox({
-        selector : '.row div:div:visible',
-        thumbs   : {
-            autoStart : true
+    var getTitleHTML=function(obj){
+        filename = obj["filename"];
+        sender = obj["from"];
+        dt = obj["date"];
+        subject = obj["subject"];
+        downloadURL=obj["downloadURL"];
+        msgURL = obj["msgURL"];
+
+        html="<hr style=\"margin-bottom:5px;\">\n" +
+            "<div class=\"fbox_toolbar\">\n" +
+            "  <div title=\"Download attachment\" class=\"fbox_downloadbtn\" onclick=\"window.location='"+downloadURL+"'\">\n" +
+            "    <img class=\"fbox_toolbarimg\" src=\"images/download.svg\"  ></img>\n" +
+            "  </div>\n" +
+            "  <div title=\"Go to message\" class=\"fbox_msgbtn\" onclick=\"(function(){window.open('"+msgURL+"')})()\">\n" +
+            "    <img class=\"fbox_toolbarimg\" src=\"images/edit_lexicon.svg\" ></img>\n" +
+            "  </div>\n" +
+            "</div>\n" +
+            "<hr class=\"fbox_seperator\">\n" +
+            "<div class=\"fbox_metabar\">\n" +
+            "  <div class=\"fbox_metacol1\">\n" +
+            "    <div class=\"fbox_filename\" style=\"font-weight:bold\">"+filename+"</div>\n" +
+            "    <div class=\"fbox_subject\">"+subject+"</div>\n" +
+            "  </div>\n" +
+            "  <div class=\"fbox_metacol2\">\n" +
+            "    <div class=\"fbox_sender\" style=\"display:inline-flex\">" +
+            "       <div style=\"margin-right:5px; font-weight:bold\">" +sender+" </div>\n" +
+            "       <div> sent this </div>\n" +
+            "    </div>\n" +
+            "    <div class=\"fbox_date\">"+dt+"</div>\n" +
+            "  </div>\n" +
+            "</div>\n" +
+            "<hr class=\"fbox_seperator\">"
+
+
+        return html;
+    }
+    var clickable_message = function ( data, type, full, meta ) {
+        return '<a target="_blank" href="' + full["msgURL"] + '">' + data + '</a>';
+    };
+    var clickable_attachment = function ( data, type, full, meta ) {
+//	    var moreinfo = "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" </span>";
+        return '<a title="' + full["filename"] + '" target="_blank" href="' + full["downloadURL"] + '">' + data + '</a>' ;
+    };
+    var clickable_normalization_info = function(data,type,full,meta){
+        if(full["info"]){
+            return "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" data-normalization-info=\""+full["info"]+"\"</span>";
+        }else
+            return '';
+    };
+    var sortable_size = function(data, type, full, meta) {
+        return Math.floor(full["size"]/1024) + " KB";
+    };
+
+    $.fn.dataTableExt.oSort['sort-kb-asc']  = function(x,y) {
+        console.log('x =' + x + ' y = ' + y);
+        x = parseInt(x.substring(0, x.indexOf(' KB')));
+        y = parseInt(y.substring(0, y.indexOf(' KB')));
+        console.log('x =' + x + ' y = ' + y);
+        return ((x < y) ? -1 : ((x > y) ?  1 : 0));
+    };
+
+    $.fn.dataTableExt.oSort['sort-kb-desc']  = function(x,y) { return -1 * $.fn.dataTableExt.oSort['sort-kb-asc'](x,y); };
+
+
+
+    var loadAttachmentList = function(){
+        if(isNormalized){
+            $('#attachments').dataTable({
+                data: attachmentDetails,
+                pagingType: 'simple',
+                columnDefs: [{targets: 0,render:clickable_message},
+                    {targets:3,render:clickable_attachment},
+                    {targets:4, render:clickable_normalization_info}, ///This is the only difference between two instantiations of datatable.
+                    {targets:1,width:'180px',className: "dt-right"},
+                    {targets:2,render:sortable_size,width:'100px',type:'sort-kb',className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
+                order:[[1, 'asc']], // col 1 (date), ascending
+                fnInitComplete: function() { $('#attachments').fadeIn();}
+            });
+        }else{
+            $('#attachment-table').dataTable({
+                data: attachmentDetails,
+                pagingType: 'simple',
+                columns: [
+                    { data: 'subject' },
+                    { data: 'date' },
+                    { data: 'size' },
+                    { data: 'filename' }
+                ],
+                columnDefs: [{targets: 0,render:clickable_message},
+                    {targets:3,render:clickable_attachment},
+                    {targets:1,width:'180px',className: "dt-right"},
+                    {targets:2,render:sortable_size,width:'100px',type:'sort-kb',className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
+                order:[[1, 'asc']], // col 1 (date), ascending
+                //fnInitComplete: function() { $('#attachments').fadeIn();}
+            });
         }
+    }
+
+    $('body').on('click','#square',function(e){
+        //get data-index attribute of that box.
+        var squareindex = $(this).attr('data-index');
+        //console.log(squareindex);
+
+        var instance = $.fancybox.open(attachmentDetails, {
+            beforeLoad: function() {
+                //get this.index and use it to get msgindex.
+                attachmentIndex = this["index"];
+                this.title = getTitleHTML(this);//returns the HTML title from the information fields present in this element.
+                //disable jog's cursor key because it conflicts with the keypress handlers of fancybox.
+                jog.cursorKeysDisabled=true;
+                //need to set it back to false on close.
+
+            },
+            afterClose: function(){
+                jog.cursorKeysDisabled=false;
+            },
+            wrapCSS:'fbox_custom',
+            loop : true,
+            index:squareindex,
+            thumbs : {
+                autoStart : false
+            },
+            buttons: [
+                //"zoom",
+            //"share",
+            "slideShow",
+            //"fullScreen",
+            "download",
+            //"thumbs",
+            "close"
+        ],
+            helpers: {
+                title: {type: 'inside', position:'top'}/*, overlay: {locked: false}*/
+            },
+        });
+        //$.fanceybox.getInstance().update();
+
+        $.fancybox.jumpto(squareindex);
     });
+
 
 
 </script>
@@ -438,17 +615,19 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <button id="switchMsgView" name="switchMsgView" type="button" class="btn btn-default" onclick="window.location='<%=msgBrowsingURL%>'">Message View</button>
 
                 </div>
+                    <div class="message-label general-label" id="attachmentMsg"></div>
 
-                <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
+                    <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
                         <%if(!ModeConfig.isDiscoveryMode()){%>
 
-                        <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                       <%-- <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Label all these messages" src="images/labels.svg"></a>
-                        </div>
+                        </div>--%>
+
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download messages as mbox" src="images/download.svg"></a>
+                            <a target="_blank" href="export-attachments-bydocset.jsp?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download attachments in zip file" src="images/download.svg"></a>
                         </div>
                         <%}%>
 
@@ -465,9 +644,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             </div> <!-- controls -->
 
             <%--Area to display the  set of labels applied to the currently displayed message. It will be filled by JS depending upon the data--%>
-            <div class="labels-area">
+          <%--  <div class="labels-area">
                 <!-- will be filled in by render_labels() in JS -->
-            </div>
+            </div>--%>
 
             <br/>
 
@@ -529,7 +708,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 
                 <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
-                    <div style="margin-top:150px;text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                    <div style="margin-top:150px;text-align:center"><br/><br/><h2>Loading <%=Util.commatize(totalAttachments)%> attachments from <%=Util.commatize(totalDocs)%> messages<img style="height:20px" src="images/spinner.gif"/></h2></div>
                 </div>
             </div>
 

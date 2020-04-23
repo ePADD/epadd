@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 /** useful utilities for indexing */
 public class IndexUtils {
+	private enum FacetType { MESSAGES, ATTACHMENTS}
 	private static final Logger	log	= LogManager.getLogger(IndexUtils.class);
 
 	/** temporary method */
@@ -616,6 +617,63 @@ public class IndexUtils {
 		return result;
 	}
 
+	/*
+				Semantics: Person1 -> Number of attachments in mails where Person1 was a correspondent,
+			   Person2 -> Number of attachments in mails where Person2 was a correspondent.
+	 */
+
+	private static Map<Contact, DetailedFacetItem> partitionAttachmentsByPerson(Collection<? extends Document> docs, AddressBook ab)
+	{
+		Map<Contact, DetailedFacetItem> result = new LinkedHashMap<>();
+		Map<Contact, Pair<String, String>> tooltip_cache = new LinkedHashMap<>();
+		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
+
+		for (Document d : docs)
+		{
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+			List<Contact> people = ed.getParticipatingContactsExceptOwn(ab);
+			for (Contact c : people)
+			{
+				String s = null;
+				String tooltip = null;
+				Pair<String, String> p = tooltip_cache.get(c);
+				if (p != null) {
+					s = p.getFirst();
+					tooltip = p.getSecond();
+				} else {
+					s = c.pickBestName();
+					tooltip = c.toTooltip();
+					if (ModeConfig.isPublicMode()) {
+						s = Util.maskEmailDomain(s);
+						tooltip = Util.maskEmailDomain(tooltip);
+					}
+					tooltip_cache.put(c, new Pair<>(s, tooltip));
+				}
+				DetailedFacetItem f = result.get(c);
+				if (f == null)
+				{
+					//String url = "person=" + c.canonicalEmail;
+					//String url = "contact=" + ab.getContactId(c);
+					f = new DetailedFacetItem(s, tooltip, "contact", Integer.toString(ab.getContactId(c)));
+					result.put(c, f);
+				}
+				//For each attachment in this mail add a dummy document.
+				for(Blob attachment: ed.attachments) {
+					//dfi.addDoc(ed);
+					//create a dummy doc such that no two docs are same.
+					EmailDocument edummy = new EmailDocument(ed.id,ed.emailSource,ed.folderName,ed.to,ed.cc,ed.bcc,ed.from,ed.getSubjectWithoutTitle(),ed.messageID+indexToDifferentiate,ed.date);
+					//add it to f.
+					f.addDoc(edummy);
+					indexToDifferentiate++;
+				}
+			}
+		}
+		return result;
+	}
+
+
 	private static Map<String, DetailedFacetItem> partitionDocsByFolder(Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<>();
@@ -632,6 +690,37 @@ public class IndexUtils {
 		}
 		return folderNameMap;
 	}
+
+	/*
+	Semantics: Folder1-> Number of attachments in the mails present in this folder.
+	Folder2-> Number of attachments in the mails present in this folder.
+	 */
+	private static Map<String, DetailedFacetItem> partitionAttachmentsByFolder(Collection<? extends Document> docs)
+	{
+		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<>();
+		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
+
+		for (Document d : docs)
+		{
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+			String s = ed.folderName;
+			if (s == null)
+				continue;
+			DetailedFacetItem f = folderNameMap.computeIfAbsent(s, s1 -> new DetailedFacetItem(Util.filePathTail(s1), s1, "folder", s1));
+			//For each attachment in this mail add a dummy document.
+			for(Blob attachment: ed.attachments) {
+				//create a dummy doc such that no two docs are same.
+				EmailDocument edummy = new EmailDocument(ed.id,ed.emailSource,ed.folderName,ed.to,ed.cc,ed.bcc,ed.from,ed.getSubjectWithoutTitle(),ed.messageID+indexToDifferentiate,ed.date);
+				//add it to f.
+				f.addDoc(edummy);
+				indexToDifferentiate++;
+			}
+		}
+		return folderNameMap;
+	}
+
 
 	private static Map<String, DetailedFacetItem> partitionDocsByDirection(Collection<? extends Document> docs, AddressBook ab)
 	{
@@ -661,6 +750,48 @@ public class IndexUtils {
 		return result;
 	}
 
+	/*
+	Semantics: sent -> (Number of attachments which were sent), Receive -> (Number of attachments which were received).
+	To calculate it, if a message was sent then for each attachment in that message add a doc in DetailedFacetItem to reflect the count.
+	If a message was received then for each attachment in that message add a doc in DetailedFacetItem to reflect the count.
+	 */
+	private static Map<String, DetailedFacetItem> partitionAttachmentsByDirection(Collection<? extends Document> docs, AddressBook ab)
+	{
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
+		DetailedFacetItem f_owner = new DetailedFacetItem("Owner", "Incoming messages from the owner", "sender", "owner");
+		//DetailedFacetItem f_out = new DetailedFacetItem("From any", "Incoming messages from anyone", "sender", "any");
+		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
+
+		for (Document d : docs)
+		{
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+			int sent_or_received = ed.sentOrReceived(ab);
+
+			// if sent_or_received = 0 => neither received nor sent. so it must be implicitly received.
+			//if (sent_or_received == 0 || (sent_or_received & EmailDocument.RECEIVED_MASK) != 0)
+			//	f_in.addDoc(ed);
+			if ((sent_or_received & EmailDocument.SENT_MASK) != 0) //means this message is sent from owner
+			{
+				//for each attachment in this doc create a document (dummy) in f_owner.
+				for(Blob attachment: ed.attachments) {
+					//create a dummy doc such that no two docs are same.
+					EmailDocument edummy = new EmailDocument(ed.id,ed.emailSource,ed.folderName,ed.to,ed.cc,ed.bcc,ed.from,ed.getSubjectWithoutTitle(),ed.messageID+indexToDifferentiate,ed.date);
+					//add it to dfi.
+					f_owner.addDoc(edummy);
+					indexToDifferentiate++;
+				}
+			}
+		}
+
+		if (f_owner.totalCount() > 0)
+			result.put("Owner", f_owner);
+		/*if (f_out.totalCount() > 0)
+			result.put("Messages from all", f_out);
+*/
+		return result;
+	}
 	/** Partition documents by the presence/absence of annotation text */
 	private static Map<String, DetailedFacetItem> partitionDocsByAnnotationPresence(Collection<? extends Document> docs,Archive archive) {
 
@@ -800,6 +931,49 @@ public class IndexUtils {
 		return result;
 	}
 
+	/** note: attachment types are lower-cased
+	 * This function is exactly same as partitionDocsByAttachmentTypes except here the count represents the number of attachments instead of
+	 * number of documents of that attachment type. So the semantics is
+	 * Attachment type 1 -> Number of attachmets of that type,
+	 * Attachment type 2 -> Number of attachments of that type
+	 */
+	private static Map<String, DetailedFacetItem> partitionAttachmentsByAttachmentType(Archive archive, Collection<? extends Document> docs)
+	{
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
+
+		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
+		for (Document d : docs)
+		{
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+			List<Blob> attachments = ed.attachments;
+			if (attachments != null)
+				for (Blob b : attachments)
+				{
+					String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
+					if (ext == null)
+						ext = "none";
+					ext = ext.toLowerCase();
+					DetailedFacetItem dfi = result.get(ext);
+					if (dfi == null)
+					{
+						dfi = new DetailedFacetItem(ext, ext + " attachments", "attachmentExtension", ext);
+						result.put(ext, dfi);
+					}
+
+					//dfi.addDoc(ed);
+					//create a dummy doc such that no two docs are same (by appending an incrementing number in messageID.
+					//This is fine as long as we don't use the docset present in this DetaileFacetItem for anything other than counting purpose.
+					EmailDocument edummy = new EmailDocument(ed.id,ed.emailSource,ed.folderName,ed.to,ed.cc,ed.bcc,ed.from,ed.getSubjectWithoutTitle(),ed.messageID+indexToDifferentiate,ed.date);
+					//add it to dfi.
+					dfi.addDoc(edummy);
+					indexToDifferentiate++;
+				}
+		}
+		return result;
+	}
+
 	/** Compute facet list for message browsing screen.*/
 	public static Map<String, Collection<DetailedFacetItem>> computeDetailedFacetsForMessageBrowsing(Collection<Document> docs, Archive archive)
 	{
@@ -916,29 +1090,29 @@ public class IndexUtils {
 		Map<String, Collection<DetailedFacetItem>> facetMap = new LinkedHashMap<>();
 		if (!ModeConfig.isPublicMode())
 		{
-			Map<String, DetailedFacetItem> attachmentTypesMap = partitionDocsByAttachmentType(archive,docs);
+			Map<String, DetailedFacetItem> attachmentTypesMap = partitionAttachmentsByAttachmentType(archive,docs);
 			facetMap.put("attachment type", attachmentTypesMap.values());
 		}
 		if (addressBook != null) {
 			// people
-			Map<Contact, DetailedFacetItem> peopleMap = partitionDocsByPerson(docs, addressBook);
+			Map<Contact, DetailedFacetItem> peopleMap = partitionAttachmentsByPerson(docs, addressBook);
 			facetMap.put("correspondent", peopleMap.values());
 
 			// direction (sender: only one if anything with owner)
-			Map<String, DetailedFacetItem> directionMap = partitionDocsByDirection(docs, addressBook);
+			Map<String, DetailedFacetItem> directionMap = partitionAttachmentsByDirection(docs, addressBook);
 			if  (directionMap.size() > 0) //this size can at max be 1 when there is at least one message sent from the owner
 				facetMap.put("sender", directionMap.values());
 
 		}
 		if (!ModeConfig.isPublicMode())
 		{
-			Map<String, DetailedFacetItem> folderNameMap = partitionDocsByFolder(docs);
+			Map<String, DetailedFacetItem> folderNameMap = partitionAttachmentsByFolder(docs);
 			if  (folderNameMap.size() > 0)
 				facetMap.put("folders", folderNameMap.values());
 		}
-		Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs,archive);
+	/*	Map<String, DetailedFacetItem> annotationPresenceMap = partitionDocsByAnnotationPresence(docs,archive);
 		facetMap.put("Annotations", annotationPresenceMap.values());
-		// Note: order is important here -- the facets will be displayed in the order they are inserted in facetMap
+*/		// Note: order is important here -- the facets will be displayed in the order they are inserted in facetMap
 		// current order: sentiments, groups, people, direction, folders
 		/* disabling sentiment facets
 		if (indexer != null)

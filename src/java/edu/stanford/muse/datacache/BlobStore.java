@@ -225,6 +225,28 @@ public class BlobStore implements Serializable {
         return full_filename_normalized(b, b.filename,useIndex);
     }
 
+    public boolean isCleaned(Blob b){
+        //if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+        //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+        //so the attributes are either only originalfilename or cleanedupfileURL or both.
+        String cleanedupname = full_filename_cleanedup(b);
+          boolean isCleanedName = !cleanedupname.equals(full_filename_original(b));
+        return isCleanedName;
+
+    }
+
+    public boolean isNormalized(Blob b){
+        //if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+        //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+        //so the attributes are either only originalfilename or cleanedupfileURL or both.
+        String cleanedupname = full_filename_cleanedup(b);
+        String normalizedname=full_filename_normalized(b);
+         boolean isNormalized = !cleanedupname.equals(normalizedname);
+         return isNormalized;
+
+    }
+
+
     /**
      * full filename for an arbitrary file associated with d
      */

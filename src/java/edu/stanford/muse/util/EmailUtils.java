@@ -769,6 +769,12 @@ public class EmailUtils {
 		return totalMessageCount;
 	}
 
+	/**
+	 * This method returns the start year and the end year for all the messages in docs. A related method is
+	 *
+	 * @param docs
+	 * @return
+	 */
 	public static Pair<Integer, Integer> getStartEndYear(Collection<Document> docs) {
 		List<Date> dates = EmailUtils.datesForDocs((Collection)docs);
 		Calendar calendear = Calendar.getInstance();
@@ -778,6 +784,71 @@ public class EmailUtils {
 		calendear.setTime(dates.get(dates.size()-1));//to get the last year
 		int lastYear = calendear.get(Calendar.YEAR);
 		return new Pair(startYear,lastYear);
+	}
+
+	/*
+	Returns a list of pairs (in sorted order) listing for each year the number of attachments
+	 */
+	public static List<Pair<Integer,Integer>> getStartEndYearOfAttachments(Collection<Document> docs){
+		Map<Integer,Integer> yearWiseAttachments = EmailUtils.getYearWiseAttachments(docs);
+		//Iterate over map and make the start year as the oldest year with non-zero attachments.
+		//Similarly make the end year as the latest year with non-zero attachments.
+		//get the years in sorted order.
+		List<Integer> years = new ArrayList<>(yearWiseAttachments.keySet());
+		Collections.sort(years);
+		int startYear = -1;
+		int endYear = -1;
+		for(Integer year: years){
+			if(yearWiseAttachments.get(year)!=0) {
+
+				startYear = year;
+				break;
+			}
+		}
+		//Now iterate in reverse order to remove years with zero attachments from the end.
+		Collections.reverse(years);
+		for(Integer year: years){
+			if(yearWiseAttachments.get(year)!=0) {
+				endYear = year;
+				break;
+			}
+		}
+		List<Pair<Integer,Integer>> result = new LinkedList<>();
+		for(int j=startYear;j<=endYear;j++){
+			if(yearWiseAttachments.get(j)!=null)
+				result.add(new Pair(j,yearWiseAttachments.get(j)));
+		}
+    	return result;
+	}
+
+	/**
+	 * This method returns the Year wise attachment counts for all the emails in the set docs.
+	 *
+	 * @param docs
+	 * @return a map of year and the count of attachments in that year.
+	 */
+	public static Map<Integer, Integer> getYearWiseAttachments(Collection<Document> docs) {
+		Map<Integer,Integer> result = new LinkedHashMap<>();
+		for (Document d : docs) {
+			EmailDocument ed = (EmailDocument)d;
+			//Do not add hacky dates..
+			if(!ed.hackyDate) {
+				//if ed has nonzero attachments then update that number for the year of this email.
+				if(ed.attachments.size()!=0){
+					//get year of the email.
+					Calendar calendear = Calendar.getInstance();
+					calendear.setTime(ed.date);//to get the starting year
+					int startYear= calendear.get(Calendar.YEAR);
+					if(!result.containsKey(startYear)){
+						result.put(startYear,0);
+					}
+					int updatedval = result.get(startYear)+ed.attachments.size();
+					result.put(startYear,updatedval);
+				}
+			}
+
+		}
+		return result;
 	}
 
 	public static List<Date> datesForDocs(Collection<? extends DatedDocument> c)

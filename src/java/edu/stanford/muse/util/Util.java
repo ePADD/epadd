@@ -1806,7 +1806,14 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
         return acrs;
     }
 
-    public static class MyFilenameFilter implements FilenameFilter {
+	public static String escapeJSON(String subject) {
+		String s = subject.replace("\t","\\t");
+		s = s.replace("\r","\\r");
+		s=s.replace("\n","\\n");
+		return s;
+	}
+
+	public static class MyFilenameFilter implements FilenameFilter {
 		private final String	prefix;
 		private String suffix; // suffix is optional
 
