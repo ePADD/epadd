@@ -1,7 +1,7 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.Document"%>
+<%@page language="java" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="java.io.File" %>
@@ -10,6 +10,9 @@
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="edu.stanford.muse.index.*" %>
+<%@ page import="edu.stanford.muse.datacache.BlobStore" %>
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
@@ -44,75 +47,69 @@
 
 
 <%
-    String dir = request.getParameter ("dir");
-    boolean unprocessedonly = Boolean.parseBoolean(request.getParameter("unprocessedonly"));
-    String msgProcessed = unprocessedonly?"Only Unprocessed" : "All (processed and unprocessed";
+    String dir = Archive.TEMP_SUBDIR + File.separator;
+    new File(dir).mkdir();//make sure it exists
+    //create mbox file in localtmpdir and put it as a link on appURL.
+
+//    String dir = request.getParameter ("dir");
     File f = new File(dir);
-    if (!f.isDirectory()) {
-        out.println ("Sorry, you must choose a directory in which the attachments will be exported");
-        return;
+    String docsetID=request.getParameter("docsetID");
+//    String fname = Util.nullOrEmpty(docsetID) ? "epadd-export-all.mbox" : "epadd-export-" + docsetID + ".mbox";
+    String attachmentdirname = f.getAbsolutePath() + File.separator + (Util.nullOrEmpty(docsetID)? "epadd-all-attachments" : "epadd-all-attachments-"+docsetID);
+
+    new File(attachmentdirname).mkdir();
+
+
+
+    //check if request contains docsetID then work only on those messages which are in docset
+    //else export all messages of mbox.
+    Collection<Document> selectedDocs;
+
+    if(!Util.nullOrEmpty(docsetID)){
+        DataSet docset = (DataSet) session.getAttribute(docsetID);
+        selectedDocs = docset.getDocs();
+    }else {
+        selectedDocs = new LinkedHashSet<>(archive.getAllDocs());
     }
-
-    if (!f.canWrite()) {
-        out.println("Sorry, you must choose a directory in which the attachments will be exported");
-        return;
-    }
-
-    String type = request.getParameter ("type");
-    //Multiple selections in the checkbox dropdown are returned in comma separated form whereas the extensions of one type of documents
-    //are separated by semicolon therefore we need the following conversion to uniformly handle them in Util.tokenize method.
-    type = type.replaceAll(",",";");
-    String extension = request.getParameter ("ext");
+    JSPHelper.log.info ("exporting attachments for" + selectedDocs.size() + " docs");
 
 
-            Set<String> extensionsNeeded = new LinkedHashSet<>();
-    if (!Util.nullOrEmpty (type))
-        extensionsNeeded.addAll(Util.tokenize(type, ";"));
-    if (!Util.nullOrEmpty (extension))
-        extensionsNeeded.addAll(Util.tokenize(extension, ";"));
 
-            // convert to lower case and remove empty types
-    extensionsNeeded = extensionsNeeded.stream().filter(x -> !Util.nullOrEmpty(x)).map (x -> x.toLowerCase()).collect (Collectors.toSet());
-    //a variable to select if the extensions needed contain others.
-    boolean isOtherSelected = extensionsNeeded.contains("others");
+    String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+
+    /* Code to export attachments for the given set of documents as zip file*/
+    Map<Blob, String> blobToErrorMessage = new LinkedHashMap<>();
+    //Copy all attachment to a temporary directory and then zip it and allow transfer to the client
+    int nBlobsExported = Archive.getnBlobsExported(selectedDocs, archive.getBlobStore(),null, attachmentdirname, false, null, false, blobToErrorMessage);
+    //now zip the attachmentdir and create a zip file in TMP
+    String zipfile = Archive.TEMP_SUBDIR+ File.separator + "attachments.zip";
+    Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"zip",JSPHelper.log);
+    Util.zipDirectory(attachmentdirname, zipfile);
+    //return it's URL to download
+    String attachmentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=attachments.zip" ;
+    String attachmentDownloadURL = appURL + "/" +  attachmentURL;
+
+
 
 %>
-    <div id="spinner-div" style="text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>
+    <%--<div id="spinner-div" style="text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>--%>
     <% out.flush();%>
     <br/>
     <br/>
-    Exporting <%=msgProcessed%> attachments with extensions: <%=StringUtils.join (extensionsNeeded, ";")%>
+    Exporting <%=nBlobsExported%> attachments.
+    <br/>
 
-    <%
-    Map<Blob, String> blobToErrorMessage = new LinkedHashMap<>();
-    Collection<Document> docs = archive.getAllDocs();
-        int nBlobsExported = Archive.getnBlobsExported(docs, archive.getBlobStore(),attachmentTypeOptions, dir, unprocessedonly, extensionsNeeded, isOtherSelected, blobToErrorMessage);
-    %>
-    <script>$('#spinner-div').hide();</script>
+    <br/>
+    <a href =<%=attachmentDownloadURL%>>Download attachments in a zip file</a>
+    <p></p>
+    This file is in zip format, and contains all attachments in the selected messages.<br/>
+    <br/>
 
-    <p>
-
-    <p>
-		<p>
-		<%=nBlobsExported%> attachments exported to <%=Util.escapeHTML(dir)%>.<br/>
-
-        <%
-        JSPHelper.log.info ("nBlobsExported: " + nBlobsExported);
-
-        if (blobToErrorMessage.size() > 0) {
-            out.println (Util.pluralize (blobToErrorMessage.size(), "error") + "occurred.");
-            out.println ("<p>Errors:");
-            for (Blob b: blobToErrorMessage.keySet())
-                out.println (b + "<br/>" + blobToErrorMessage.get(b) + "<p>");
-        }
-        %>
-
-	</div>
-<p>
-<br/>
-<br/>
+</div>
+<jsp:include page="footer.jsp"/>
 </body>
 </html>
+
 <%!
     /*
     To get all attachments for a given set of documents call with attachmentTypeOptions = null, unprocessedonly = false, extensionsNeeded=null,isOtherSelected=false.
