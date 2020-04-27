@@ -1813,6 +1813,10 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		return s;
 	}
 
+	public static String escapeFileNameForCommand(String tmp_filename) {
+		return tmp_filename.replace(" ","\\ ").replace("(","\\(").replace(")","\\)");
+	}
+
 	public static class MyFilenameFilter implements FilenameFilter {
 		private final String	prefix;
 		private String suffix; // suffix is optional

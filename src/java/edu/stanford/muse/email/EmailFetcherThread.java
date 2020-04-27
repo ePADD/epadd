@@ -833,13 +833,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
             if (success) {
                 attachmentsList.add(b);
 
-                /// generate thumbnail only if not already cached
+              /*  /// generate thumbnail only if not already cached,
                 try {
                     archive.getBlobStore().generate_thumbnail(b); // supplement
                 } catch (IOException ioe) {
                     log.warn("failed to create thumbnail, filename: " + filename + " size = " + p.getSize() + " subject: " + m.getSubject() + " Date : " + m.getSentDate().toString() + "\nException: " + ioe);
                     ioe.printStackTrace(System.out);
-                }
+                }*/
             }
         }
     }

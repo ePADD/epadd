@@ -402,9 +402,10 @@ div.epadd-separator { height: 3px; width: 25px; border: solid 1px #0175bc; backg
 
 div.square{
 	display:inline-block;
-	border: solid thin black;
-	width:150px;
-	height:150px;
+	border-radius: 3px;
+	background-color: lightgray;
+	width:216px;
+	height:162px;
 	margin:10px;
 	text-align:center;
 	text-overflow: ellipsis;
@@ -419,16 +420,15 @@ div.square:hover{
 }
 div.insidesquare{
 	margin:10px;
-	background-color: #E4E4E4;
-	height: 80px;
-	width: 130px;
-	margin-top:20px;
+	background-color: whitesmoke;
+	height: 102px;
+	width: 196px;
 	z-index: -1;
 }
 
 img.attachmenttiles{
-	width:130px;
-	height:80px;
+	width:196px;
+	height:102px;
 	object-fit: scale-down;
 	margin: auto;
 }
@@ -446,6 +446,12 @@ img.attachmenttiles{
     height: 20px;
 }
 
+.displayname{
+	font-family: open sans regular;
+	font-size: 14px;
+	color: #333;
+}
+
 .fbox_toolbar{
        text-align:right;
     width:inherit;
@@ -458,11 +464,11 @@ img.attachmenttiles{
 .fbox_metacol1{
     display:inline-block;
     text-align:left;
-	width:50%;
+	width:350px;  /*because the fancybox size (and so image size) is 700. So half of it is 350.*/
 }
 .fbox_metacol2{
     display:inline-block;
-	width: 50%;
+	width: 350px;  /*because the fancybox size (and so image size) is 700. So half of it is 350.*/
     text-align:right;
 }
 .fbox_seperator{

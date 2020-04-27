@@ -169,7 +169,7 @@ public class EmailRenderer {
 				if (ModeConfig.isPublicMode()) {
 					page.append(attachments.size() + " attachment" + (attachments.size() == 1 ? "" : "s") + ".");
 				} else {
-					page.append("<hr/>\n<div class=\"attachments\">\n");
+					page.append("<hr style=\"margin:10px\"/>\n<div class=\"attachments\">\n");
 					int i = 0;
 					for (; i < attachments.size(); i++) {
 						Blob attachment = attachments.get(i);
@@ -301,18 +301,8 @@ public class EmailRenderer {
 		StringBuilder tilediv = new StringBuilder();
 		StringBuilder listdiv = new StringBuilder();
 
-		page.append("<div class=\"muse-doc\">\n");
 
-		//For list view and tile view buttons..
-		page.append("<div class=\"gallery_viewchangebar\">\n");
-		page.append(  "  <div title=\"List view\" class=\"listView\" onclick=\"showListView()\">\n" +
-				"    <img class=\"fbox_toolbarimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
-				"  </div>\n" +
-				"  <div title=\"Tile view\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
-				"    <img class=\"fbox_toolbarimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
-				"  </div>\n" );
-		page.append("</div>");
-
+		int numAttachments=0;
 		//Document d = docs.get(0);
 		// for attachments 1 year = 1 page.
 		//step 1: get the set of attachments for docs in year.
@@ -327,9 +317,24 @@ public class EmailRenderer {
 					//prepare a list of attachments (not set) keeping possible repetition but also count unique attachments here.
 					docAttachmentMap.put(ed,ed.attachments);
 					//attachments.addAll(ed.attachments);
+					numAttachments+=ed.attachments.size();
 				}
 			}
 		}
+		page.append("<div class=\"muse-doc\">\n");
+
+		//For list view and tile view buttons..
+		page.append("<div style=\"display:flex\">\n");
+		page.append("<div style=\"width:87%;margin-top:10px;font-family:open sans regular;color:#666;font-size:16px;\">"+numAttachments+" attachments for "+year +"</div>\n");
+		page.append("<div class=\"gallery_viewchangebar\" style=\"justify-content:flex-end\">\n");
+		page.append(  "  <div title=\"List view\" class=\"listView\" onclick=\"showListView()\">\n" +
+				"    <img class=\"fbox_toolbarimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
+				"  </div>\n" +
+				"  <div title=\"Tile view\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
+				"    <img class=\"fbox_toolbarimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
+				"  </div>\n" );
+		page.append("</div>");
+		page.append("</div>");
 
 		/***** @TODO
 		//get HTML for attachment page header are
@@ -472,11 +477,11 @@ public class EmailRenderer {
 
 		//javascript code, convert arrays and maps to corresponding javascript variables.
 		page.append("\n<script>\n");
-		if(attachmentDetails.length()==0){
+		/*if(attachmentDetails.length()==0){
 			page.append("$('#attachmentMsg').html(\"No attachments found in year "+year+"\");");
 		}else{
 			page.append("$('#attachmentMsg').html(\""+attachmentDetails.length()+" attachments found in year "+year+"\");");
-		}
+		}*/
 		if(isNormalized)
 			page.append("isNormalized=true\n"); //to pass this information to the front end we assign it to a JS variable.
 		page.append("attachmentDetails=JSON.parse('"+attachmentDetails.toString()+"');\n");

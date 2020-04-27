@@ -656,7 +656,7 @@ public class IndexUtils {
 				{
 					//String url = "person=" + c.canonicalEmail;
 					//String url = "contact=" + ab.getContactId(c);
-					f = new DetailedFacetItem(s, tooltip, "contact", Integer.toString(ab.getContactId(c)));
+					f = new DetailedFacetItem(s, "Number of attachments sent or received from " + tooltip, "contact", Integer.toString(ab.getContactId(c)));
 					result.put(c, f);
 				}
 				//For each attachment in this mail add a dummy document.
@@ -922,7 +922,7 @@ public class IndexUtils {
 					DetailedFacetItem dfi = result.get(ext);
 					if (dfi == null)
 					{
-						dfi = new DetailedFacetItem(ext, ext + " attachments", "attachmentExtension", ext);
+						dfi = new DetailedFacetItem(ext, "Number of messages having at least one " + ext + " attachment", "attachmentExtension", ext);
 						result.put(ext, dfi);
 					}
 					dfi.addDoc(ed);
@@ -958,7 +958,7 @@ public class IndexUtils {
 					DetailedFacetItem dfi = result.get(ext);
 					if (dfi == null)
 					{
-						dfi = new DetailedFacetItem(ext, ext + " attachments", "attachmentExtension", ext);
+						dfi = new DetailedFacetItem(ext, "number of " + ext + " attachments in this set of messages.", "attachmentExtension", ext);
 						result.put(ext, dfi);
 					}
 

@@ -572,6 +572,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         </script>
     <div style="display:inline-block;vertical-align:top;">
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
+            <div class="breadcrumbs"> Attachments &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;<%=totalAttachments%></div><br/>
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <%--Label picker and sorty by picker--%>
                 <div style="float:left;padding:5px">
@@ -615,7 +616,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <button id="switchMsgView" name="switchMsgView" type="button" class="btn btn-default" onclick="window.location='<%=msgBrowsingURL%>'">Message View</button>
 
                 </div>
-                    <div class="message-label general-label" id="attachmentMsg"></div>
+                    <%--<div class="message-label general-label" id="attachmentMsg"></div>--%>
 
                     <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
                     <div style="display:inline;vertical-align:top;font-size:16px; position:relative;" >
@@ -631,13 +632,13 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         </div>
                         <%}%>
 
-                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous Year" src="images/prev.svg"/></span></div>
                         <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">
                             <div style="display:inline; position:relative; " id="pageNumbering"></div>
                             <%--of
                             <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>--%>
                         </div>
-                        <div id="page_forward" class="nav-arrow"> <img title="Next message"  src="images/next.svg"/></div>
+                        <div id="page_forward" class="nav-arrow"> <img title="Next Year"  src="images/next.svg"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
