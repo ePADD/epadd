@@ -8,13 +8,17 @@
 
 <html>
 <head>
-    <title>Collections</title>
+
+    <script src="js/jquery.js"></script>
+    <%@include file="header.jspf"%>
+
+    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.head-collections")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <jsp:include page="css/css.jsp"/>
 
-    <script src="js/jquery.js"></script>
+<%-- The jquery was present here earlier --%>
     <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
@@ -22,19 +26,21 @@
 </head>
 
 <body>
-<%@include file="header.jspf"%>
+<%-- The headder.jspf file was included here --%>
+
+
 <script>epadd.nav_mark_active('Collections');</script>
 
 <div style="width:1100px; margin:auto">
     <% if (ModeConfig.isProcessingMode()) { %>
-        <h1>Welcome to the ePADD processing module.</h1>
+        <h1><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.welcome-processing")%></h1>
   <% } else if (ModeConfig.isDeliveryMode()) { %>
-        <h1>Welcome to the ePADD delivery module.</h1>
+        <h1><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.welcome-delivery")%></h1>
     <% } else if (ModeConfig.isDiscoveryMode()) { %>
-        <h1>Discover historical email from around the world</h1>
+        <h1><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.welcome-discover")%></h1>
 
     <% } else if (ModeConfig.isAppraisalMode()) { %>
-        <div style="text-align:center">Sorry, this page is not available in appraisal mode.</div>
+        <div style="text-align:center"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.welcome-appraisal")%></div>
         <% return;
     }
   %>
@@ -92,9 +98,9 @@
                       </div>
 
                       <div class="landing-img-text">
-                          <span style="font-size:20px;font-weight:600;color:#0175BC"><%=Util.nullOrEmpty(cm.shortTitle) ? "(No title)" : Util.escapeHTML(cm.shortTitle)%></span>
+                          <span style="font-size:20px;font-weight:600;color:#0175BC"><%=Util.nullOrEmpty(cm.shortTitle) ? edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.no-title") : Util.escapeHTML(cm.shortTitle)%></span>
                           <div class="epadd-separator"></div>
-                          <%=Util.nullOrEmpty(cm.shortDescription) ? "(No description)" : Util.escapeHTML(cm.shortDescription)%>
+                          <%=Util.nullOrEmpty(cm.shortDescription) ? edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.no-description") : Util.escapeHTML(cm.shortDescription)%>
                       </div>
                       </div>
       <%
@@ -118,7 +124,7 @@
             //collect archiveID,and addressbookfile field. If  empty return false;
             var filePath = $('#landingPhoto').val();
             if (!filePath) {
-                alert('Please provide the path of the landing page image');
+                alert("<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.landing-page-image-request")%>");
                 return false;
             }
 
@@ -143,11 +149,11 @@
                     if (data && data.status === 0) {
                         window.location.reload();
                     } else {
-                        epadd.error('There was an error uploading the landing page image. (' + data.error + ')');
+                        epadd.error("<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.error-in-image")%> + '(' + data.error + ')'");
                     }
                 },
                 error: function (jq, textStatus, errorThrown) {
-                    epadd.error("There was an error uploading the landing page image. (status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + ')');
+                    epadd.error("<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.error-in-image")%>" + " (status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + ')');
                 }
             });
         });
@@ -169,13 +175,13 @@
           <div class="modal-content">
               <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                  <h4 class="modal-title">Upload a landing page image (4:3 aspect ratio)</h4>
+                  <h4 class="modal-title"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.image.upload")%></h4>
               </div>
               <div class="modal-body">
                   <form id="uploadLandingPhotoForm" method="POST" enctype="multipart/form-data" >
                       <div class="form-group">
                           <input class="collectionID" name="collectionID" type="hidden" value="foobar"/>
-                          <label for="landingPhoto" class="col-sm-2 control-label">File</label>
+                          <label for="landingPhoto" class="col-sm-2 control-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.image.file")%></label>
                           <div class="col-sm-10">
                               <input type="file" id="landingPhoto" name="landingPhoto" value=""/>
                           </div>
@@ -185,7 +191,7 @@
                   </form>
               </div>
               <div class="modal-footer">
-                  <button class="upload-btn btn btn-cta">Upload <i class="icon-arrowbutton"></i></button>
+                  <button class="upload-btn btn btn-cta"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection.image.upload-button")%> <i class="icon-arrowbutton"></i></button>
 
 
                   <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>

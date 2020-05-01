@@ -2,6 +2,34 @@
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
+<%@page language="java" %>
+
+<%
+	boolean haveArchive=false;
+	String archiveID = null;
+	//The following code means haveArchive is false when either archiveID was not passed to the jsp file
+	//or there is no archive in globalDirArchiveMap for the given archiveID (to avoid improper input handling)
+	if(request.getParameter("archiveID")!= null){
+		if(ArchiveReaderWriter.getArchiveForArchiveID(request.getParameter("archiveID"))!=null)
+		{
+			archiveID = request.getParameter("archiveID");
+			haveArchive=true;
+		}
+	}else if(request.getAttribute("archiveID")!=null){
+		archiveID = (String)request.getAttribute("archiveID");
+		haveArchive = true;
+	}
+%>
+
+<%	/* For tabs on the email-sources and browse-top pages */
+	String imp= edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.import");
+	String browse= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-browse");
+	String search= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-search");
+	String export= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-export");
+	String save= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-save");
+	String authorities= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-authorities");
+	String close=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-close");
+%>
 
 <script type="text/javascript" src="js/muse.js"></script>
 
@@ -25,21 +53,9 @@
              -->
 				<%	String logo = "images/epadd_header_logo.svg";
 
-	boolean haveArchive=false;
-	String archiveID = null;
-	//The following code means haveArchive is false when either archiveID was not passed to the jsp file
-	//or there is no archive in globaDirArchiveMap for the given archiveID (to avoid improper input handling)
-	if(request.getParameter("archiveID")!= null){
-	    if(ArchiveReaderWriter.getArchiveForArchiveID(request.getParameter("archiveID"))!=null)
-		{
-		    archiveID = request.getParameter("archiveID");
-		    haveArchive=true;
-		}
-	}else if(request.getAttribute("archiveID")!=null){
-	    archiveID = (String)request.getAttribute("archiveID");
-		haveArchive = true;
-	}
+
 %>
+				<%-- The archive part was present above in <> --%>
 	<div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
@@ -52,37 +68,38 @@
 	<div id="bs-example-navbar-collapse" class="collapse navbar-collapse bs-navbar-collapse">
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav">
 
+
 			<% if (ModeConfig.isAppraisalMode()) {
-				out.println("<li style='display:inline'><a href='email-sources'>Import</a></li>");
+				out.println("<li style='display:inline'><a href='email-sources'>"+imp+"</a></li>");
 			} else if(!haveArchive) { //display collection tab only if there is no archive opened currently. Note that the first and second
 				//conditions (if and else part) can be true simultaneously. Therefore the ordering of these two is important because we want
 				//to display import tab in the appraisal mode and collection tab in other modes.
-				out.println("<li style='display:inline'><a href='collections'>Collections</a></li>");
+				out.println("<li style='display:inline'><a href='collections'>"+ edu.stanford.muse.util.Messages.getMessage("messages", "collections.title-collection")+"</a></li>");
 			}
 
 			if (ModeConfig.isProcessingMode() && !haveArchive) {
-				out.println("<li style='display:inline'><a href='add-accession'>Add</a></li>");
+				out.println("<li style='display:inline'><a href='add-accession'>"+edu.stanford.muse.util.Messages.getMessage("messages", "collections.title-add") +"</a></li>");
 //				out.println("<li style='display:inline'><a href='email-sources'>New</a></li>");
 			}
 
 			// offer the following options only if an archive is actually in the session
 			if (haveArchive) { %>
-				<li style="display:inline"><a href="browse-top?archiveID=<%=archiveID%>">Browse</a></li>
-				<li style="display:inline"><a href="search-query?archiveID=<%=archiveID%>">Search</a></li>
+				<li style="display:inline"><a href="browse-top?archiveID=<%=archiveID%>"><%=browse%></a></li>
+				<li style="display:inline"><a href="search-query?archiveID=<%=archiveID%>"><%=search%></a></li>
 
 				<% if (ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="assign-authorities?archiveID=<%=archiveID%>&type=correspondent">Authorities</a></li>
+					<li style="display:inline"><a href="assign-authorities?archiveID=<%=archiveID%>&type=correspondent"><%=authorities%></a></li>
 				<% } %>
 
 				<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-					<li style="display:inline"><a href="export?archiveID=<%=archiveID%>">Export</a></li>
+					<li style="display:inline"><a href="export?archiveID=<%=archiveID%>"><%=export%></a></li>
 				<% } %>
 
 			<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() ) { %>
-				    <li style="display:inline"><a id="save-archive" href="#">Save</a></li>
+				    <li style="display:inline"><a id="save-archive" href="#"><%=save%></a></li>
 			    <% } %>
 			    <% if (ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode() ) { %>
-			        <li style="display:inline"><a id="close-save-archive" href="#">Close</a></li>
+			        <li style="display:inline"><a id="close-save-archive" href="#"><%=close%></a></li>
                 <% } %>
 			<% if (ModeConfig.isDiscoveryMode()) { %>
 			<li style="display:inline"><a id="close-only-archive" href="#">Close</a></li>
@@ -142,14 +159,14 @@
 					%>
 					<%}%>
 
-					<li><a target="_blank" href="https://docs.google.com/document/d/1CVIpWK5FNs5KWVHgvtWTa7u0tZjUrFrBHq6_6ZJVfEA/edit">Documentation</a></li>
-					<li><a target="_blank" href="https://epadd.nimeyo.com">User forums</a></li>
+					<li><a target="_blank" href="https://docs.google.com/document/d/1CVIpWK5FNs5KWVHgvtWTa7u0tZjUrFrBHq6_6ZJVfEA/edit"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.documentation")%></a></li>
+					<li><a target="_blank" href="https://epadd.nimeyo.com"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.user-forum")%></a></li>
 
 					<% if (!ModeConfig.isDiscoveryMode()) { %>
-						<li><a href="debug?archiveID=<%=archiveID%>">Report a problem</a></li>
+						<li><a href="debug?archiveID=<%=archiveID%>"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.report-problem")%></a></li>
 					<% } %>
 <!--					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD mode</a></li> -->
-					<li><a id="about" href="about">About ePADD</a></li>
+					<li><a id="about" href="about"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.about-epadd")%></a></li>
 		 		</ul>
 	 		</li>
 		</ul>

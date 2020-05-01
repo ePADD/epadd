@@ -2,19 +2,26 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@include file="getArchive.jspf" %>
+
 <!DOCTYPE HTML>
 <html>
+
+<script src="js/jquery.js"></script>
+<%@include file="header.jspf"%>
+
 <head>
+
+
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Search</title>
-	
+	<title> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.head-search")%> </title>
+
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
 	<link rel="stylesheet" href="css/main.css">
 
-	<script src="js/jquery.js"></script>
+<%-- jquery was present here earlier--%>
 	
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
@@ -38,10 +45,12 @@
 	</style>
 </head>
 <body>
-<%@include file="header.jspf"%>
+
+<%-- The file header.jspf was present here --%>
+
 <script>epadd.nav_mark_active('Search');</script>
 
-<%writeProfileBlock(out, false, archive, "Search", 900);%>
+<%writeProfileBlock(out, false, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.profile-search"), 900);%>
 
 <div class="nav-toggle1 sidebar-icon">
 	<img src="images/sidebar.png" alt="sidebar">
@@ -63,7 +72,6 @@
 			Multi-entity search: Type or paste a text block to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
 
 			<br/><br/>
-
 
 			Multi-term search: Type or paste a list of terms (one term per line) to search the email archive for all matching terms. Highlighted terms also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
 			<br/><br/>
@@ -91,11 +99,11 @@
 
 <div style="text-align:center; margin:auto; width:900px;">
 	<div style="width:100%;margin-bottom:20px;">
-		<a id="simple-search-header"  class="search-header" >Simple Search</a>
-		<a id="query-generator-header" class="search-header" style="margin-left:40px;">Multi-Entity Search</a>
+		<a id="simple-search-header"  class="search-header" > <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.simple-title")%> </a>
+		<a id="query-generator-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-entity-title")%> </a>
 		<% if(!ModeConfig.isPublicMode()){%>
-		<a id="term-search-header" class="search-header" style="margin-left:40px;">Multi-Term Search</a>
-		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;">Correspondent List Search</a>
+		<a id="term-search-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-term-title")%> </a>
+		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.correspondent-title")%> </a>
 		<%}%>
 	</div>
 
@@ -105,7 +113,7 @@
 			//archiveID in all those forms where POST was used to invoke the server page.
 	--%>
 		<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<input style="width:900px" name="term" placeholder="search query"/>
+			<input style="width:900px" name="term" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.simple-search-description")%>"/>
 			<div style="display:none">
 				<input type="hidden" name="adv-search"/>
 				<input type="checkbox" name="termBody" checked>
@@ -117,7 +125,7 @@
 			<br/>
 
 
-			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 		</form>
 	</div>
 <p>
@@ -125,10 +133,10 @@
 	<div style="display:none" id="term-search">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<textarea placeholder="Type or paste terms here (one line per term) to search the email archive for all matching terms. Following the search, select a highlighted term to view related messages." name="refTextTerms" id="refTextTerms"  style="width:900px"  rows="10"></textarea>
+			<textarea placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-term-search-description")%>" name="refTextTerms" id="refTextTerms"  style="width:900px"  rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
-				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 			</div>
 		</form>
 	</div>
@@ -136,10 +144,10 @@
 	<div style="display:none" id="query-generator">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<textarea placeholder="Type or paste text here to search the email archive for all matching entities. Following the search, select a highlighted entity to view related messages." name="refText" id="refText" style="width:900px"  rows="10"></textarea>
+			<textarea placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-entity-search-description")%>" name="refText" id="refText" style="width:900px"  rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
-				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 			</div>
 		</form>
 	</div>
@@ -147,16 +155,16 @@
 	<div style="display:none" id="correspondent-list-search">
 		<form method="post" action="browse" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<textarea placeholder="Type or paste email addresses here (one on each line)." name="correspondentList" id="correspondentList" style="width:900px" rows="10"></textarea>
+			<textarea placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.correspondent-list-search-description")%>" name="correspondentList" id="correspondentList" style="width:900px" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
-				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 			</div>
 		</form>
 	</div>
 
 	<br/>
-	Need more search options? Try <a href="advanced-search?archiveID=<%=archiveID%>">Advanced Search</a>.
+	<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.pre-advanced-text")%>  <a href="advanced-search?archiveID=<%=archiveID%>"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.advanced-search")%></a>.
 	<br/>
 	<br/>
 	<br/>

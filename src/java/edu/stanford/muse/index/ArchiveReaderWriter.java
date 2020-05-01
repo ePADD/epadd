@@ -268,7 +268,7 @@ public class ArchiveReaderWriter{
             Archive.CollectionMetadata metadata = new Gson().fromJson(reader, Archive.CollectionMetadata.class);
             //Using timestamp to crate first and last date of the archive using locale specific format.
             //Don't assume that firstDateTS and lastDateTS will be non zero (as they should be). If not proper then don't fill in firstDate and lastDate
-            if(metadata.firstDateTS!=0)
+           if(metadata.firstDateTS!=0)
                 metadata.firstDate = new Date(metadata.firstDateTS);
             if(metadata.lastDateTS!=0)
                 metadata.lastDate = new Date(metadata.lastDateTS);
@@ -892,7 +892,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
 
     public static void main(String args[]){
         File tmp = null;
-        ArchiveReaderWriter.readCollectionMetadata("/Users/tech/epadd-appraisal/user");
+        ArchiveReaderWriter.readCollectionMetadata("C:/Users/Jayant Lohani/epadd-appraisal/user"); //This can be changed as per location
           /*  FileUtils.moveDirectory(Paths.get("/home/chinmay/test").toFile(),Paths.get("/home/chinmay/test2").toFile());
             //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
             File wheretocopy = Paths.get("/home/chinmay/test2/test").toFile();

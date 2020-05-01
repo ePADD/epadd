@@ -12,21 +12,42 @@
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page import="edu.stanford.muse.ie.variants.EntityBookManager" %>
 <%@include file="getArchive.jspf" %>
+
 <!DOCTYPE HTML>
 <html>
+
+<script src="js/jquery.js"></script>
+
+
+<%
+	//ArchiveID part is added here so that the test() can be used for the title of page too.
+
+	//This is to handle the scenario when appraisal mode browse-top is being invoked without archiveID. As
+	//a default behaviour archive is loaded by reading from epadd-appraisal directory. However as no archiveID
+	//is present in the request the headers are not rendered properly. Now we set archiveID from the archive object
+	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
+	//not passed from the request) and used for rendering the header properly.
+	if(archive!=null && request.getParameter("archiveID")==null)
+		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
+%>
+<%@include file="header.jspf"%>
+
+
 <head>
 <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Archive Information</title>
+	<title>
+		<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.head-archive-info")%>
+		<%--Original code =edu.stanford.muse.util.Messages.getMessage("messages", "browse-top.head-archive-info")--%>
+	</title>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
 	<link rel="stylesheet" href="css/main.css">
 
-	<script src="js/jquery.js"></script>
+<%-- jquery was present here earlier --%>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 
@@ -58,16 +79,10 @@
 
 </head>
 <body>
-<%
-	//This is to handle the scenario when appraisal mode browse-top is being invoked without archiveID. As
-	//a default behaviour archive is loaded by reading from epadd-appraisal directory. However as no archiveID
-	//is present in the request the headers are not rendered properly. Now we set archiveID from the archive object
-	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
-	//not passed from the request) and used for rendering the header properly.
-	if(archive!=null && request.getParameter("archiveID")==null)
-		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
-%>
-<%@include file="header.jspf"%>
+
+
+<%-- The archive ID section that is moved to the head tag was present here --%>
+
 
 <script>epadd.nav_mark_active('Browse');</script>
 
@@ -189,7 +204,7 @@
 		archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
         //SimpleSessions.saveArchive(archive);//instead of saving whole archive object now we save only those parts which changed.
 		ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-        ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+		ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 
         //after this invalidate the cache for removing the result of AddressBook.getCountsAsJSON result.. Or should we recalculate the result here only.
     }
@@ -245,7 +260,18 @@
 	int nContacts = ab.allContacts().size();
 %>
 
-<% writeProfileBlock(out, true, archive, "Dashboard", 864);%>
+<%-- The Real Code
+<%=writeProfileBlock(out, true, archive, edu.stanford.muse.util.Messages.getMessage("messages", "browse-top.profile-dashboard") , 864); %>		<!-- Appraisal | Dashboard -->
+--%>
+
+
+<%--Code Below is written for testing a new method test() created primarily for checking french language --%>
+<% writeProfileBlock(out, true, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.profile-dashboard") , 864);%>
+
+
+<%-- This was coded earlier for testing
+	<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","collection.head-collections")%>
+--%>
 
 <div id="all-cards" style="text-align: center; margin:auto">
 	<div class="cta-box margin30">
@@ -254,7 +280,7 @@
 			<%--<i class="icon-browsetoparrow"></i>--%>
 			<%--<i class="fa fa-address-card-o" style="color:#3182bd" aria-hidden="true"></i>--%>
 			<h1 ><%=Util.commatize(nContacts)%></h1>
-			<h2 >Correspondents</h2>
+			<h2 ><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-correspondents")%></h2>
 			<%--<p class="cta-text-1"><%=nContacts %></p>--%>
 			<%--<p class="cta-text-2">Correspondents (<%=nContacts %>)</p>--%>
 		</a>
@@ -264,7 +290,7 @@
 		<a href="entity-types?archiveID=<%=archiveID%>">
 			<img class="icon-images" src="images/entities.svg">
 			<h1><%=Util.commatize(nPersonEntities + nNonPersonEntities)%></h1>
-			<h2>Entities</h2>
+			<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-entities")%></h2>
 			<%--<i class="icon-browsetoparrow"></i>--%>
 			<%--<i class="fa fa-thumb-tack" style="color:#31a354" aria-hidden="true"></i>--%>
 			<%--<p class="cta-text-1">Entities (<%=nPersonEntities + nNonPersonEntities%>)</p>--%>
@@ -273,14 +299,12 @@
 	</div>
 
 
-
-
 	<% if (!ModeConfig.isDiscoveryMode()) { %>
 	<div class="cta-box margin30">
 		<a href="labels?archiveID=<%=archiveID%>">
 			<img class="icon-images" src="images/labels_dashboard.svg">
 			<h1 ><%=Util.commatize(numlabels)%></h1><%-- making it invisible because of the formatting issue--%>
-			<h2>Labels</h2>
+			<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-labels")%></h2>
 			<%--<i class="icon-browsetoparrow"></i>--%>
 			<%--<i class="fa fa-tags" style="color:#0b967f" aria-hidden="true"></i>--%>
 			<%--<p class="cta-text-1">Labels</p>--%>
@@ -290,10 +314,10 @@
 		<br/>
 
 		<div class="cta-box  margin30">
-				<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
+				<a href="image-attachments?archiveID=<%=archiveID%>> &attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
 					<img class="icon-images" src="images/image_attachments.svg">
 					<h1 id="nImageAttachments"><%=Util.commatize(nImageAttachments)%></h1>
-					<h2>Image attachments</h2>
+					<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-image-attach")%></h2>
 					<%--<i class="icon-browsetoparrow"></i>--%>
 					<%--<i class="fa fa-picture-o" style="color:#756bb1" aria-hidden="true"></i>--%>
 					<%--<p class="cta-text-1">Image attachments (<span id="nImageAttachments"><%=nImageAttachments%></span>)</p>--%>
@@ -306,7 +330,7 @@
 			<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=pdf&attachmentType=others&startDate=&endDate=">
 				<img class="icon-images" src="images/other_attachments.svg">
 				<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>
-				<h2>Other attachments</h2>
+				<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-other-attach")%></h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>--%>
 				<%--<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>--%>
@@ -318,7 +342,7 @@
 			<a href="by-folder?archiveID=<%=archiveID%>">
 				<img class="icon-images" src="images/folders.svg">
 				<h1><%=Util.commatize(nFolders)%></h1>
-				<h2>Folders</h2>
+				<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-folders")%></h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<i class="fa fa-folder-o" style="color:#636363" aria-hidden="true"></i>--%>
 				<%--<p class="cta-text-1">Folders (<%=nFolders%>)</p>--%>
@@ -332,7 +356,7 @@
 			<a href="lexicon-top?archiveID=<%=archiveID%>">
 				<img class="icon-images" src="images/lexicon_dashboard.svg">
 				<h1 style="color:#f5f5f8"></h1><%-- making it invisible because of the formatting issue--%>
-				<h2>Lexicon search</h2>
+				<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-lexicon-search")%></h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<img src="images/lexicon.png"/>--%>
 				<%--<p class="cta-text-1">Lexicon search</p>--%>
@@ -345,7 +369,7 @@
 				<a href="report?archiveID=<%=archiveID%>">
 					<img class="icon-images" src="images/reports.svg">
 					<h1 style="color:#f5f5f8"></h1><%-- making it invisible because of the formatting issue--%>
-					<h2>Reports</h2>
+					<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-reports")%></h2>
 					<%--<i class="icon-browsetoparrow"></i>--%>
 					<%--<i class="fa fa-flag-o" style="color:#d41298" aria-hidden="true"></i>--%>
 					<%--<p class="cta-text-1">Reports</p>--%>
@@ -358,7 +382,7 @@
 			<a href="settings?archiveID=<%=archiveID%>">
 				<img class="icon-images" src="images/more.svg">
 				<h1 style="color:#f5f5f8"></h1><%-- making it invisible because of the formatting issue--%>
-				<h2>More</h2>
+				<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-more")%></h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<i class="fa fa-cog" style="color:#d41298" aria-hidden="true"></i>--%>
 				<%--<p class="cta-text-1">More</p>--%>
@@ -375,13 +399,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Upload a profile photo (1:1 aspect ratio)</h4>
+                    <h4 class="modal-title"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.upload-profile-pic.title")%></h4>
                 </div>
                 <div class="modal-body">
                     <form id="uploadProfilePhotoForm" method="POST" enctype="multipart/form-data" >
                         <input type="hidden" value="<%=archiveID%>" name="archiveID"/>
                         <div class="form-group **text-left**">
-                            <label for="profilePhoto" class="col-sm-2 control-label **text-left**">File</label>
+                            <label for="profilePhoto" class="col-sm-2 control-label **text-left**"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.upload-profile-pic.file")%></label>
                             <div class="col-sm-10">
                                 <input type="file" id="profilePhoto" name="profilePhoto" value=""/>
                             </div>
@@ -391,7 +415,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="upload-btn" class="btn btn-cta" onclick="uploadProfilePhotoHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+                    <button id="upload-btn" class="btn btn-cta" onclick="uploadProfilePhotoHandler();return false;"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.upload-profile-pic.upload")%> <i class="icon-arrowbutton"></i></button>
 
 
                     <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>

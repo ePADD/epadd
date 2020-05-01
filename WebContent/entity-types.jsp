@@ -12,8 +12,12 @@
 --%>
 <!DOCTYPE HTML>
 <html>
+
+<script src="js/jquery.js"></script>
+<%@include file="header.jspf"%>
+
 <head>
-    <title>Entities</title>
+    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.head-entities")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -21,7 +25,7 @@
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
 
-    <script src="js/jquery.js"></script>
+    <%-- jquery was present here earlier --%>
     <script src="js/jquery.dataTables.min.js"></script>
 
     <!-- Optional theme -->
@@ -37,7 +41,7 @@
 
 </head>
 <body>
-<%@include file="header.jspf"%>
+<%-- The file header.jspf was present here --%>
 
 
 <div class="nav-toggle1 sidebar-icon">
@@ -63,7 +67,7 @@
     </div>
 </nav>
 
-<%writeProfileBlock(out, archive, "Entity types");%>
+<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.head-entities") );%>
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
@@ -85,13 +89,13 @@
 %>
 <div style="margin:auto; width:1100px;">
     <div class="button_bar_on_datatable">
-        <div title="Download all entities in a csv file" class="buttons_on_datatable" onclick="exportAllEntitiesHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.download-in-csv-file")%>" class="buttons_on_datatable" onclick="exportAllEntitiesHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
        <%--This second div added just for formatting purposes.. Therefore made it hidden. If we remove this div then the alignment of download buttons goes missing.
        This is because of the way in which class buttons_on_datatable has been defined. It requires at least two divs to be formatted nicely. Fix is later.--%>
-        <div title="Download all entities as csv" class="buttons_on_datatable" style="display:none" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.download-as-csv")%>" class="buttons_on_datatable" style="display:none" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
     </div>
     <table id="entities" style="display:none;">
-        <thead><th>Entity Type</th><th># entities</th></thead>
+        <thead><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.entity-type")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.entities")%></th></thead>
         <tbody>
         </tbody>
     </table>

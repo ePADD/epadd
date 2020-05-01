@@ -10,6 +10,8 @@
 
 <html>
 <head>
+	<%@include file="header.jspf"%>
+
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
@@ -19,7 +21,7 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/muse.js" type="text/javascript"></script>
 	<script src="js/epadd.js" type="text/javascript"></script>
-	<title>Collection Metadata</title>
+	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.head-collection-metadata")%></title>
 
 	<style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}
@@ -28,7 +30,9 @@
 	</style>
 </head>
 <body style="background-color: white">
-<%@include file="header.jspf"%>
+
+<%-- The header.jspf file was included here --%>
+
 <script>epadd.nav_mark_active('Collections');</script>
 
 <p>
@@ -54,13 +58,13 @@
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
         <div class="panel-heading">
-            Collection: <%=Util.escapeHTML(id)%>
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.collection") + Util.escapeHTML(id)%>
         </div>
 
         <input type="hidden" name="collection" value="<%=Util.escapeHTML(id)%>"/>
 
         <div class="div-input-field">
-			<div class="input-field-label">Institution</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.institution")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Institution" value="<%=formatMetadataField( cm.institution)%>" class="form-control" type="text" name="institution"/>
@@ -68,7 +72,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Repository</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.repository")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Repository" value="<%=formatMetadataField( cm.repository)%>" class="form-control" type="text" name="repository"/>
@@ -76,7 +80,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Collection Title</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.collection-title")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Collection title" value="<%=formatMetadataField( cm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
@@ -84,7 +88,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Short Title</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.short-title")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Short title" value="<%=formatMetadataField( cm.shortTitle)%>" class="form-control" type="text" name="shortTitle"/>
@@ -92,7 +96,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Collection ID</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.collection-id")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Collection ID" value="<%=formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="collectionID"/> <!-- this is the institutional collection ID, not ePADD's -->
@@ -100,7 +104,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Finding Aid Link</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.aid-link")%>k</div>
 			<br/>
 			<div class="input-field">
 				<input title="Finding aid link" value="<%=formatMetadataField( cm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
@@ -108,7 +112,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Catalog Record Link</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.record-link")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Catalog record link" value="<%=formatMetadataField( cm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
@@ -116,7 +120,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Contact Email Address</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.contact-email")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Contact email" value="<%=formatMetadataField( cm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
@@ -126,7 +130,7 @@
 		<br/>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Short Description</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.short-desc")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Short description" value="<%=formatMetadataField( cm.shortDescription)%>" class="form-control" type="text" name="shortDescription"/>
@@ -134,7 +138,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">About</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.about")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=formatMetadataField(cm.about)%>
@@ -142,7 +146,7 @@
 			</div>
 		</div>
 		<div class="div-input-field">
-			<div class="input-field-label">Rights and Conditions</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.rights-cond")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=formatMetadataField( cm.rights)%>
@@ -150,7 +154,7 @@
 			</div>
 		</div>
 		<div class="div-input-field">
-			<div class="input-field-label">Notes</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.notes")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=formatMetadataField( cm.notes)%>
@@ -159,7 +163,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label">Scope and Content</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.scope-content")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=formatMetadataField( cm.scopeAndContent)%>
@@ -170,7 +174,7 @@
 		<br/>
 		<br/>
 		<div style="margin-left:40px">
-			<button class="btn btn-cta" id="gobutton">Save <i class="icon-arrowbutton"></i></button><br/><br/>
+			<button class="btn btn-cta" id="gobutton"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
 		</div>
 	</div>
 	</div>

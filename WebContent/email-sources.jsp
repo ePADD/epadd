@@ -5,11 +5,20 @@
 <%@page language="java" import="java.util.Set"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@page language="java" %>
+
+<%--
+	<%@ page import="Internationalisation.ReadFromProp"%>
+--%>
+
+
 <!DOCTYPE HTML>
 <html>
+
+<%@include file="header.jspf" %>
+
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Specify Email Sources</title>
+	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.head-specify-source")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 
@@ -38,7 +47,10 @@
 
 </head>
 <body style="background-color:white;">
-<%@include file="header.jspf"%>
+
+
+<%-- header.jspf was here --%>
+
 <jsp:include page="div_filepicker.jspf"/>
 
 <% if (ModeConfig.isAppraisalMode()) { %>
@@ -53,36 +65,21 @@
 
 <!--sidebar content-->
 <nav class="menu1" role="navigation">
-    <h2>Import Help</h2>
-    <!--close button-->
+	<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "email-sources.help.head-import")%></h2>
+
+	<!--close button-->
     <a class="nav-toggle1 show-nav1" href="#">
         <img src="images/close.png" class="close" alt="close">
     </a>
 
     <!--phrase-->
     <div class="search-tips">
-		Add the name of archive owner and an associated email address; ePADD won’t work correctly without this information.
-		<br/>
-		<br/>
-
-		Import mail via an IMAP connection or an .mbox file.
-		<br/>
-		<br/>
-
-		Add the name of the email source when importing .mbox files to assist others in identifying the origin of associated messages.  This field is flexible and could include values like work, personal, office, laptop, etc. For email transferred via IMAP, the name of email source is assigned automatically as the email address associated with the archive owner.
-		<br/>
-		<br/>
-
-		You can further refine your import on the next screen by specifying particular mail folders, as well as a range of dates.
-		<br/>
-		<br/>
-
-		If you have email in non-mbox formats such as PST and Eudora, you can use programs like Emailchemy, Mailstore Home or Aid4Mail to convert them to mbox files.
-    </div>
+		<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "email-sources.help.import-info")%>
+	</div>
 </nav>
 <%
 	//Term t;
-	//initialization of JPL -- just for testing
+	//initialization of JPL -- just for Testing
 	//JPL.init();
 	//load model file..
 Archive archive =  JSPHelper.getArchive(request);
@@ -126,16 +123,16 @@ if (archive != null) {
 <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
 	<section>
 		<div class="panel">
-			<div class="panel-heading">About this archive</div>
+			<div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.about-archive")%> </div>
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-user"></i> Name of archive owner</div>
+				<div class="input-field-label"><i class="fa fa-user"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.owner-name")%> </div>
 				<br/>
 				<div class="input-field">
 					<input title="Name of archive owner" class="form-control" type="text" name="name" value="<%=bestName%>"/>
 				</div>
 			</div>
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-envelope"></i> Primary email address</div>
+				<div class="input-field-label"><i class="fa fa-envelope"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.p-email")%></div>
 				<br/>
 				<div class="input-field">
 					<input class="form-control" type="text" name="alternateEmailAddrs" value="<%=bestEmail%>"/>
@@ -143,7 +140,7 @@ if (archive != null) {
 			</div>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-tag"></i> Archive title</div>
+				<div class="input-field-label"><i class="fa fa-tag"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.archive-title")%></div>
 				<br/>
 				<div class="input-field">
 					<input class="form-control" type="text" name="archiveTitle" value=""/>
@@ -156,19 +153,19 @@ if (archive != null) {
 	<section>
 	<div id="servers" class="accounts panel">
 		<% /* proper field names and ids will be assigned later, when the form is actually submitted */ %>
-		<div class="panel-heading">Public Email Accounts (Gmail, Yahoo, Hotmail, Live.com, etc)</div>
+		<div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.public-imap")%></div>
 
 		<div class="account">
 			<input class="accountType" type="text" style="display:none" id="accountType0" name="accountType0" value="email"/>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-envelope"></i> Email Address</div>
+				<div class="input-field-label"><i class="fa fa-envelope"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.public-imap-email")%></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="text" name="loginName0"/></div>
 			</div>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-key"></i> Password <img class="spinner" id="spinner0" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"></div>
+				<div class="input-field-label"><i class="fa fa-key"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.public-imap-pass")%><img class="spinner" id="spinner0" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="password" name="password0"/></div>
 			</div>
@@ -176,7 +173,7 @@ if (archive != null) {
 		</div>
 		<br/>
 
-		<button style="margin-left:40px" class="btn-default" onclick="add_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.email-sources.another-public-imap")%></button>
+		<button style="margin-left:40px" class="btn-default" onclick="add_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.another-public-imap")%></button>
 		<br/>
 		<br/>
 	</div> <!--  end servers -->
@@ -185,7 +182,7 @@ if (archive != null) {
 	<section>
 	<div id="private_servers" class="accounts panel">
 		<div class="panel-heading">
-			Private Email IMAP Accounts (Google Apps, university account, corporate account, etc.)<br/>
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap")%><br/>
 		</div>
 		<p></p>
 
@@ -194,20 +191,20 @@ if (archive != null) {
 			<input class="accountType" type="text" style="display:none" id="accountType1" name="accountType1" value="email"/>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-server"></i> IMAP Server</div>
+				<div class="input-field-label"><i class="fa fa-server"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap-server")%></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="text" name="server1"/></div>
 			</div>
 			<br/>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-envelope"></i> Email Address</div>
+				<div class="input-field-label"><i class="fa fa-envelope"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap-email")%></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="text" name="loginName1"/></div>
 			</div>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-key"></i> Password <img class="spinner" id="spinner1" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"><br/>
+				<div class="input-field-label"><i class="fa fa-key"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap-pass")%> <img class="spinner" id="spinner1" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"><br/>
 				</div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="password" name="password1"/></div>
@@ -216,7 +213,7 @@ if (archive != null) {
 
 		</div>
 		<br/>
-		<button style="margin-left:40px" class="btn-default" onclick="add_private_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage("messages", "appraisal.email-sources.another-private-imap")%></button>
+		<button style="margin-left:40px" class="btn-default" onclick="add_private_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.another-private-imap")%></button>
 		<br/>
 		<br/>
 
@@ -227,14 +224,14 @@ if (archive != null) {
 	<section>
 		<div id="mboxes" class="accounts panel">
 			<div class="panel-heading">
-				Mbox files<br/>
+				<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.mbox-file")%><br/>
 			</div>
 
 			<% /* all mboxes folders will be in account divs here */ %>
 			<div class="account">
 				<input class="accountType" type="text" style="display:none" name="accountType2" value="mbox"/>
 				<div class="div-input-field">
-					<div class="input-field-label"><i class="fa fa-folder-o"></i> Folder or file location</div>
+					<div class="input-field-label"><i class="fa fa-folder-o"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.f-location")%></div>
 					<br/>
 					<div class="input-field" style="width:800px"> <!-- override default 350px width because we need a wider field and need browse button on side-->
                         <div class="form-group col-sm-8">
@@ -242,14 +239,14 @@ if (archive != null) {
                         </div>
                         <div class="form-group col-sm-4">
                             <button style="height:37px" class="browse-button btn-default"><i class="fa fa-file"></i> <!-- special height for this button to make it align perfectly with input box. same height is used in export page as well -->
-                                <span>Browse</span>
+                                <span><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.browse")%></span>
                             </button>
                         </div>
 					</div>
 					<br/>
 				</div>
 				<div class="div-input-field">
-					<div class="input-field-label"><i class="fa fa-bullseye"></i> Name of email source</div>
+					<div class="input-field-label"><i class="fa fa-bullseye"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.source-name")%></div>
 					<br/>
 					<div class="input-field">
 						<input class="form-control" type="text" name="emailSource2" value=""/>
@@ -259,14 +256,14 @@ if (archive != null) {
 				<br/>
 			</div> <!--  end account -->
 			<br/>
-			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i> Add folder</button>
+			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.add-folder")%></button>
 			<br/>
 			<br/>
 		</div>
 	</section>
 
 	<div style="text-align:center;margin-top:20px">
-		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false">Next <i class="icon-arrowbutton"></i> </button>
+		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.next")%> <i class="icon-arrowbutton"></i> </button>
 	</div>
 </div> <!--  all fields -->
 

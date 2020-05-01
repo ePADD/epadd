@@ -15,9 +15,13 @@
  */
 package edu.stanford.muse.webapp;
 
+
 /** mainly for epadd modes. Needs to be simplified, and rolled into Config. */
 public class ModeConfig
 {
+
+
+
 	public static Mode mode = Mode.APPRAISAL;
 
 	// default: appraisal mode.
@@ -58,16 +62,19 @@ public class ModeConfig
 		return isPublicMode() || isServerMode();
 	}
 
-	public static String getModeForDisplay() {
+	public static String getModeForDisplay(String archiveID) {
+
+
+
 		String mode="";
 		if(ModeConfig.isAppraisalMode())
-			mode="Appraisal";
+			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.appraisal");		/* message class called instead of "Appraisal" */
 		else if(ModeConfig.isProcessingMode())
-			mode="Processing";
+			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.processing");	/* message class called instead of "Processing" */
 		else if(ModeConfig.isDeliveryMode())
-			mode="Delivery";
+			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.delivery");		/* message class called instead of "Delivery" */
 		else if(ModeConfig.isDiscoveryMode())
-			mode="Discovery";
+			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.discovery");		/* message class called instead of "Discovery" */
 		return mode;
 	}
 }

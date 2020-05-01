@@ -409,7 +409,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         continue; // don't show facet if it has no items.
 
                     //don't show certain facets in discovery mode. Like labels and annotations.
-                    if(facet.toLowerCase().equals("annotations") && ModeConfig.isDiscoveryMode())
+                    if(facet.toLowerCase().equals("anotationss") && ModeConfig.isDiscoveryMode())
                         continue;
                     // the facet items could still all have 0 count, in which case, skip this facet
                     boolean nonzero = false;
@@ -424,7 +424,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                     String facetTitle = Util.escapeHTML(facet);
                     if ("correspondent".equals(facetTitle))
-                        facetTitle = "correspondents";
+                        facetTitle = edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.correspondent") ; /* Change made here */
 
                     facetTitle = Util.capitalizeFirstLetter(facetTitle);
                     out.println("<div class=\"facetTitle\">" + facetTitle + "</div>\n");
@@ -523,10 +523,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div style="float:left;padding:5px">
                     <%if(!ModeConfig.isDiscoveryMode()){%>
                     <div class="form-group label-picker" style="display:inline-block">
-                        <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="labels" multiple>
+                        <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label")%>" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
 
-                            <optgroup label="Restriction Labels">
+                            <optgroup label="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label.restriction")%>">
                                 <%
                                     Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
                                     //get general labels
@@ -536,7 +536,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
                                 <%}%>
                             </optgroup>
-                            <optgroup label="General Labels">
+                            <optgroup label="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label.general")%>">
                                 <%
                                     for (Label opt : genlabels){
                                 %>
@@ -548,12 +548,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <%}%>
                     <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
 
-                        <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="Sort by">
+                        <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort")%>">
                         <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
-                            <option value="" selected disabled>Sort by</option>
-                            <option value="relevance">Most relevant</option>
-                            <option value="recent">Newest first</option>
-                            <option value="chronological">Oldest first</option>
+                            <option value="" selected disabled> Sort by </option>
+                            <option value="relevance"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort.most-relevant")%> </option>
+                            <option value="recent"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort.newest-first")%> </option>
+                            <option value="chronological"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort.oldest-first")%> </option>
                         </select>
                     </div>
                 </div>
@@ -563,20 +563,20 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <%if(!ModeConfig.isDiscoveryMode()){%>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Label all these messages" src="images/labels.svg"></a>
+                            <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label-all-messages")%>" src="images/labels.svg"></a>
                         </div>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download messages as mbox" src="images/download.svg"></a>
+                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.download-as-mbox")%>" src="images/download.svg"></a>
                         </div>
                         <%}%>
 
-                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.previous-message")%>" src="images/prev.svg"/></span></div>
                         <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">
                             <div style="display:inline; position:relative; " id="pageNumbering"></div> of
                             <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
                         </div>
-                        <div id="page_forward" class="nav-arrow"> <img title="Next message"  src="images/next.svg"/></div>
+                        <div id="page_forward" class="nav-arrow"> <img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.next-message")%>"  src="images/next.svg"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
@@ -591,11 +591,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div id="position:relative">
                 <div class="message-menu">
                     <%if(!ModeConfig.isDiscoveryMode()){%>
-                    <a href="#" class="annotation-link" title="Message annotation"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
+                    <a href="#" class="annotation-link" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.message-annotation")%>"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
                     <%}%>
-                    <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
-                    <a href="#" class="thread-link" target="_blank" title="Open thread"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
-                    <a style="color: inherit" href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
+                    <a href="#" class="id-link" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.get-message-id")%>"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
+                    <a href="#" class="thread-link" target="_blank" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.open-thread")%>"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <a style="color: inherit" href="#" class="attach-link" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.scroll-for-attach")%>"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
                 </div>
 
                 <script>
@@ -625,7 +625,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                 <div class="annotation" title="Click to edit annotation">
                     <div class="annotation-header">
-                        <span>Annotation</span>
+                        <span><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.head")%></span>
                         <img title="Edit annotation" id="edit-annotation-icon" style="margin-left: 78px; cursor:pointer" src="images/edit_annotation.svg"/>
                         <img title="Close annotation" id="close-annotation-icon" style="margin-left: 25px; cursor: pointer" src="images/close.svg"/></div>
                     <div class="annotation-area">
@@ -646,7 +646,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 
                 <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
-                    <div style="margin-top:150px;text-align:center"><br/><br/><h2>Loading <%=Util.commatize(docs.size())%> messages <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                    <div style="margin-top:150px;text-align:center"><br/><br/><h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.loading") %> <%=Util.commatize(docs.size()) %> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.messages")%> <img style="height:20px" src="images/spinner.gif"/></h2></div>
                 </div>
             </div>
 
@@ -730,7 +730,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Edit Annotation</h4>
+                    <h4 class="modal-title"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.title-edit")%> </h4>
                 </div>
                 <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
 
@@ -738,15 +738,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div class="modal-footer">
                     <label class="radio-inline">
                         <input type="radio" name="overwrite-append-options" value="overwrite" checked>
-                        <span class="text-radio">Overwrite</span>
+                        <span class="text-radio"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.overwrite")%> </span>
                     </label>
                     <label class="radio-inline">
                         <input type="radio" name="overwrite-append-options" value="append">
-                        <span class="text-radio">Append</span>
+                        <span class="text-radio"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.append")%> </span>
                     </label>
                     <br><br>
-                    <button id='ok-button-annotations' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO THIS MESSAGE</button>
-                    <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal">APPLY TO ALL MESSAGES</button>
+                    <button id='ok-button-annotations' type="button" class="btn btn-default" data-dismiss="modal"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.apply-to-this")%> </button>
+                    <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.apply-to-all")%> </button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
