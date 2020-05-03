@@ -5,8 +5,11 @@
 
 <!DOCTYPE HTML>
 <html lang="en">
+    <script src="js/jquery.js"></script>
+    <%@include file="header.jspf"%>
+
 <head>
-    <title>ePADD Settings</title>
+    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.head-epadd-settings")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -14,7 +17,7 @@
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
 
-	<script src="js/jquery.js"></script>
+	<%-- Jscript was included here --%>
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
@@ -28,8 +31,8 @@
 	</style>
 </head>
 <body style="color:gray;">
-<%@include file="header.jspf"%>
-<%writeProfileBlock(out, archive, "Settings");%>
+    <%-- Header.jsp was included here earlier --%>
+<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.manage-settings"));%>
 
 <jsp:include page="alert.jspf"/>
 
@@ -41,30 +44,30 @@
             <div id="advanced_options">
 
             <% if (!ModeConfig.isDiscoveryMode()) { %>
-<p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer">Verify bag checksum</button></p>
-<p>    <button id="debugaddressbook" onclick="window.location='debugAddressBook?archiveID=<%=archiveID%>'"  class="btn-default" style="cursor:pointer">Debug address book</button></p>
+<p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.verify-bag-checksum")%></button></p>
+<p>    <button id="debugaddressbook" onclick="window.location='debugAddressBook?archiveID=<%=archiveID%>'"  class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.debug-address-book")%></button></p>
 
 <section>
     <div class="panel" id="export-headers">
-        <div class="panel-heading">Trusted Address Computation</div>
+        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.trusted-address-computation")%></div>
 
         <div class="one-line">
             <div class="form-group col-sm-4">
                 <%--<label for="trustedaddrsForComputation">Trusted emails addresses</label>--%>
-                <input type="text" placeholder="';' separated trusted email addresses" id="trustedaddrsForComputation"></input>
+                <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.trusted-email-addresses")%>" id="trustedaddrsForComputation"></input>
             </div>
             <div class="form-group col-sm-5">
                 <%--<label for="outgoingthreshold">Outgoing messages threshold</label>--%>
-                <input type="text" placeholder="Min. outgoing messages (e.g. 10)" id="outgoingthreshold"></input>
+                <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.min-outgoing-messages")%>" id="outgoingthreshold"></input>
             </div>
             <div class="form-group col-sm-2 picker-buttons">
-                <button id="moreComputation" onclick="computeMoreTrustedAddressHandler();return false;" class="btn-default" style="cursor:pointer">Get Trusted Addresses</button>
+                <button id="moreComputation" onclick="computeMoreTrustedAddressHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.get-trusted-addresses-button")%></button>
             </div>
         </div>
         <br/>
         <br/>
             <div class="form-group col-sm-4">
-                <input type="text" id="result-more-trusted" placeholder="RESULT" readonly></input>
+                <input type="text" id="result-more-trusted" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.result")%>" readonly></input>
             </div>
         <br/>
         <br/>
@@ -73,22 +76,22 @@
 
 <section>
     <div class="panel" id="recomputation">
-        <div class="panel-heading">Addrssbook recomputation</div>
+        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.address-book-recomputation")%></div>
 
 <div class="one-line" >
-    <input type="text" placeholder="';' separated trusted email addresses" id="trustedaddrs"></input>
-<button id="recomputebutton" onclick="recomputeAddressBookHandler();return false;" class="btn-default" style="cursor:pointer">Recompute Address Book</button>
+    <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.trusted-email-addresses")%>" id="trustedaddrs"></input>
+<button id="recomputebutton" onclick="recomputeAddressBookHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.recompute-address-book-button")%></button>
 </div>
     </div>
 </section>
 
 <section>
     <div class="panel" id="ownersetting">
-        <div class="panel-heading">Set Owner's Contact</div>
+        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.set-owners-contact")%></div>
 
 <div class="one-line" >
-    <input type="text" placeholder="owner's email id (Separated by ';' if multiple)" id="ownermailid"></input>
-    <button id="owenersetting" onclick="setOwnerMailHandler();return false;" class="btn-default" style="cursor:pointer">Set as Owner</button>
+    <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.owner-email-id")%>" id="ownermailid"></input>
+    <button id="owenersetting" onclick="setOwnerMailHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.set-as-owner")%></button>
 </div>
     </div>
 </section>

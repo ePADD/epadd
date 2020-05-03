@@ -5,8 +5,12 @@
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
+
+<script src="js/jquery.js"></script>
+<%@include file="header.jspf"%>
+
 <head>
-	<title>Labels</title>
+	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.head-labels")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
@@ -17,7 +21,7 @@
 	<link rel="stylesheet" href="css/sidebar.css">
 	<link rel="stylesheet" href="css/main.css">
 
-	<script src="js/jquery.js"></script>
+	<%-- Jquery was present here earlier --%>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
@@ -30,7 +34,8 @@
 
 </head>
 <body>
-<%@include file="header.jspf"%>
+	<%-- The header.jspf file was included here --%>
+
 <script>epadd.nav_mark_active('Browse');</script>
 
 <div class="nav-toggle1 sidebar-icon">
@@ -71,7 +76,7 @@
 	</div>
 </nav>
 <%
-	writeProfileBlock(out, archive, "Manage labels");
+	writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.manage-labels") );
 %>
 <div style="margin:auto; width:1100px">
 
@@ -80,20 +85,20 @@
 <%--new label not available in discovery mode. --%>
 	<div class="button_bar_on_datatable">
 		<%if(!ModeConfig.isDiscoveryMode()){%>
-		<div title="Create label" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
-		<div title="Upload label description" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
+		<div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.create-label")%>" class="buttons_on_datatable" onclick="window.location='edit-label?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/add_label.svg"></div>
+		<div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.upload-label-desc")%>" class="buttons_on_datatable" id="import-label"><img class="button_image_on_datatable" src="images/upload.svg"></div>
 		<%}%>
-		<div title="Download label description" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
+		<div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.download-label-desc")%>" class="buttons_on_datatable" onclick=exportLabelHandler()><img class="button_image_on_datatable" src="images/download.svg"></div>
 		<%if(!ModeConfig.isDiscoveryMode()){%>
-		<div title="Set labels for all messages" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/labels.svg"></div>
+		<div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.set-labels-for-all-mess")%>" class="buttons_on_datatable" onclick="window.location='bulk-labels?archiveID=<%=archiveID%>&allDocs=1'"><img class="button_image_on_datatable" src="images/labels.svg"></div>
 	</div>
 		<%}%>
 
 	<table id="labels" style="display:none;">
-		<thead><tr><th>Label</th><th>Type</th><th>Messages</th>
+		<thead><tr><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.label")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.type")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.messages")%></th>
 			<% // this column not available in discovery mode
 				if (!ModeConfig.isDiscoveryMode()) { %>
-				<th>Actions</th>
+				<th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.actions")%></th>
 			<% } %>
 		</tr></thead>
 		<tbody>
@@ -118,7 +123,7 @@
             data: {archiveID: archiveID, data: "labels"},
             dataType: 'json',
             success: function (data) {
-                epadd.info_confirm_continue('The file label-info.json will be downloaded to your browser\’s download folder.', function () {
+                epadd.info_confirm_continue('<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.download-label-desc-message")%>', function () {
                     window.location=data.downloadurl;
                 });
             },
@@ -262,9 +267,7 @@
 				</div>
 				<div class="modal-body">
 					<p>
-					To import new labels, ensure that you currently have no labels applied to messages. If you do, ePADD cannot import new labels.
-					<p>
-					Upload a JSON file containing label descriptions.
+							<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.upload-label-desc-message")%>
 					<br/>
 					<form id="uploadjsonform" method="POST" enctype="multipart/form-data" >
 						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
@@ -274,7 +277,7 @@
 				</form>
 				</div>
 				<div class="modal-footer">
-					<button id="upload-label-btn" class="btn btn-cta" onclick="uploadLabelHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+					<button id="upload-label-btn" class="btn btn-cta" onclick="uploadLabelHandler();return false;"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "labels.upload-label.upload-button")%> <i class="icon-arrowbutton"></i></button>
 
 
 				<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>

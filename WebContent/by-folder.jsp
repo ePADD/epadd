@@ -10,11 +10,14 @@
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
+    <script src="js/jquery.js"></script>
+    <%@include file="header.jspf"%>
+
 <head>
-    <title>Folders</title>
+    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.head-folders")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-    <script src="js/jquery.js"></script>
+    <%-- Jquery was present here earlier --%>
     <script src="js/jquery.dataTables.min.js"></script>
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -34,21 +37,21 @@
     </script>
 </head>
 <body>
-<%@include file="header.jspf"%>
+    <%-- Header.jsp file was included here earlier --%>
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%
     AddressBook ab = archive.addressBook;
 %>
 
-<%writeProfileBlock(out, archive, "Folders");%>
+<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.manage-folders") );%>
 
 <br/>
 <br/>
 
 <div style="margin:auto; width:1100px">
     <table id="folders" style="display:none">
-        <thead><tr><th>Source</th><th>Folder</th><th>Messages from owner</th><th>Total</th></tr></thead>
+        <thead><tr><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.source")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.folder")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.messages-from-owner")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.total")%></th></tr></thead>
         <tbody>
         </tbody>
     </table>

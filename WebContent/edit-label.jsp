@@ -7,6 +7,7 @@
 <%@page import="java.util.Calendar" %>
 <!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
+<%@include file="header.jspf"%>
 <%
     // labelId = null or empty => tis is a new label
 
@@ -43,8 +44,10 @@
     }
 %>
 <html>
+
+<script src="js/jquery.js"></script>
 <head>
-	<title>Edit Label</title>
+	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-label.head-edit-label")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png"/>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css"/>
@@ -53,7 +56,7 @@
     <link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
     <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
 
-	<script src="js/jquery.js"></script>
+	<%-- Jquery was present here earlier --%>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/jquery-ui/jquery-ui.js"></script>
 
@@ -64,7 +67,7 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<%@include file="header.jspf"%>
+<%-- Header.jspf was present here earlier --%>
 
 <% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label: " + labelName)); %>
 <br/>
@@ -82,7 +85,7 @@
             <input name="archiveID" type="hidden" value="<%=archiveID%>" class="form-control"/>
 
         <div class="row">
-            <h4><%=(Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label")%></h4>
+            <h4><%=(Util.nullOrEmpty(labelID) ? edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.create-label") : edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-label.edit-label") )%></h4>
             <br/>
             <br/>
             <!--File Name-->
@@ -90,20 +93,20 @@
 
                 <!--input box-->
                 <div class="form-group">
-                    <label for="labelName">Label name</label>
+                    <label for="labelName"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.label-name")%></label>
                     <input name="labelName" id="labelName" type="text" class="form-control" value="<%=labelName%>">
                 </div>
             </div>
 
             <!--File Size-->
             <div class="form-group col-sm-6">
-                <label for="labelType">Label type</label>
+                <label for="labelType"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.label-type")%></label>
                 <select id="labelType" name="labelType" class="form-control selectpicker">
-                    <option value="" selected disabled>Choose label type</option>
+                    <option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label-choose-label-type")%></option>
                     <%if(!ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode()){%>
-                        <option value="<%=LabelManager.LabType.RESTRICTION.toString()%>" <%=LabelManager.LabType.RESTRICTION.toString().equals(labelType) ? "selected":""%> >Restriction label</option>
+                        <option value="<%=LabelManager.LabType.RESTRICTION.toString()%>" <%=LabelManager.LabType.RESTRICTION.toString().equals(labelType) ? "selected":""%> ><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.choose-label-type.restriction")%></option>
                     <%}%>
-                    <option value="<%=LabelManager.LabType.GENERAL.toString()%>"  <%=LabelManager.LabType.GENERAL.toString().equals(labelType) ? "selected":""%> >General label</option>
+                    <option value="<%=LabelManager.LabType.GENERAL.toString()%>"  <%=LabelManager.LabType.GENERAL.toString().equals(labelType) ? "selected":""%> ><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.choose-label-type.general")%></option>
                 </select>
             </div>
         </div>
@@ -114,7 +117,7 @@
 
                 <!--input box-->
                 <div class="form-group">
-                    <label for="labelDescription">Label description</label>
+                    <label for="labelDescription"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.label-description")%></label>
                     <input name="labelDescription" id="labelDescription" type="text" class="form-control" value="<%=Util.escapeHTML(labelDescription)%>">
                 </div>
 
@@ -126,18 +129,18 @@
         <div style="" class="restriction-details row">
             <br/>
             <div class="form-group col-sm-6">
-                <label for="restrictionType">Restriction type</label>
+                <label for="restrictionType"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.restriction-type")%></label>
                 <select id="restrictionType" name="restrictionType" class="form-control selectpicker">
-                    <option value="" selected disabled>Restriction type</option>
+                    <option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.restriction-type")%></option>
                     <option value="<%=LabelManager.RestrictionType.OTHER.toString()%>"
                             <%=LabelManager.RestrictionType.OTHER.toString().equals(restrictionType) ? "selected":""%>
-                    >Not actionable</option>
+                    ><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.restriction-type.not-actionable")%></option>
                     <option value="<%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString()%>"
                                  <%=LabelManager.RestrictionType.RESTRICTED_UNTIL.toString().equals(restrictionType) ? "selected":""%>
-                            >Until date</option>
+                            ><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.restriction-type.until-date")%></option>
                     <option value="<%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString()%>"
                         <%=LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.toString().equals(restrictionType) ? "selected":""%>
-                        >Years from date of message</option>
+                        ><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.restriction-type.years-from-date-of-mess")%></option>
                 </select>
             </div>
 
@@ -160,7 +163,7 @@
 
     </div>
     <div style="text-align:center">
-        <button class="btn btn-cta" type="submit" id="save-button">Update <i class="icon-arrowbutton"></i> </button>
+        <button class="btn btn-cta" type="submit" id="save-button"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.update-button")%> <i class="icon-arrowbutton"></i> </button>
     </div>
     </div>
 </div>
