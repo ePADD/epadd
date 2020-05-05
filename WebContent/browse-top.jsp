@@ -101,71 +101,7 @@
 	<div class="search-tips" style="display:block">
 
 		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-			Use the dashboard to browse and interact with an email archive.
-			Browse correspondents and extracted entities (including persons, organizations, events, and more),
-			create labels that can be assigned to messages, review attachments, create and view results of thematic lexicon searches, and learn more about both the archive and the import into ePADD through reports.
-			<br/>
-			<br/>
-
-		<img  class="helpdrawer-images" src="images/correspondents.svg">
-		Browse, graph, and edit correspondents and associated messages.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/entities.svg">
-		Browse and edit recognized entities and associated messages.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/labels_dashboard.svg">
-		View, add, and edit general and restriction (machine-actionable) labels, and view associated messages.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/image_attachments.svg">
-		Browse image attachments and associated messages.
-			<br/>
-			<br/>
-
-
-		<img class="helpdrawer-images" src="images/other_attachements.svg">
-		View other attachments and associated messages.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/folders.svg">
-		View original message folders or sources and associated messages.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/lexicon_dashboard.svg">
-		Browse, create, and modify lexicon searches.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/reports.svg">
-		View, import and merge reports.
-			<br/>
-			<br/>
-
-		<img class="helpdrawer-images" src="images/more.svg">
-		Access additional options, including verifying the bag checksum, adding images associated with the creator, and setting default labels.
-			<br/>
-			<br/>
-
-			Select Search from the menu bar to view additional options for searching across the archive.
-			<br/>
-			<br/>
-			<b>Screening Email for Sensitive Information</b>
-			Regular expression lexicon searches, sensitive lexicon searches, and the disease entity category are particularly helpful to locate potentially sensitive information, including personally identifiable information (PII).
-			<br/>
-			<br/>
-			Use the Advanced Search option, under Search, to further refine criteria to identify potentially sensitive information.
-			<br/>
-			<br/>
-			To restrict a message or set of messages, create a restriction label via the Labels menu option, then apply that label from the message browse screen.
-			<br/>
-			<br/>
+	<%=edu.stanford.muse.util.Messages.test(archiveID,"help","browse-top.help.appraisal-processing")%>
 
 		<% } else if (ModeConfig.isDiscoveryMode()) { %>
 			Use the dashboard to browse and interact with an email archive.
