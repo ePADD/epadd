@@ -69,7 +69,7 @@
 <body>
 <%-- Header.jspf was present here earlier --%>
 
-<% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? "Create label" : "Edit Label: " + labelName)); %>
+<% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? edu.stanford.muse.util.Messages.test(archiveID,"messages","edit-label.create-label") : edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-label.edit-label") + labelName)); %>
 <br/>
 <br/>
 <br/>
