@@ -40,8 +40,7 @@
 	//get the filename for this lexicon
 	lex.removeLexicon(archive,archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR);
  //read lexicons again and set in the archive.
-                    Map<String,Lexicon> map = Archive.createLexiconMap(archive.baseDir+File.separator+Archive.BAG_DATA_FOLDER);
-                    archive.setLexiconMap(map);
+                    archive.removeFromLexiconMap(lexiconName);
 
 
 

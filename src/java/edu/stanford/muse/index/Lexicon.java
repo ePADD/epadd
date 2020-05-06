@@ -347,6 +347,7 @@ public class Lexicon implements Serializable {
 				log.debug(e.getMessage());
 			}
 		}
+		archive.removeFromLexiconMap(name);
 		//update the bag metadata as well..
 		archive.updateFileInBag(dir+File.separator,archive.baseDir);
 
