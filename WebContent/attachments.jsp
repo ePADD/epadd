@@ -209,20 +209,15 @@
                     String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
                     String subject = !Util.nullOrEmpty(ed.description) ? ed.description : "NONE";
                     String displayFileName = archive.getBlobStore().full_filename_normalized(b,false);
-//if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
-                    //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
-                    //so the attributes are either only originalfilename or cleanedupfileURL or both.
-                    String cleanedupname = blobStore.full_filename_cleanedup(b);
-                    String normalizedname=blobStore.full_filename_normalized(b);
-                    String cleanupurl = blobStore.get_URL_Cleanedup(b);
-                    boolean isNormalized = !cleanedupname.equals(normalizedname);
-                    boolean isCleanedName = !cleanedupname.equals(blobStore.full_filename_original(b));
 
                     JSONArray j = new JSONArray();
                     j.put(0, Util.escapeHTML(subject));
                     j.put(1, ed.dateString());
                     j.put(2, b.size);
                     j.put(3, Util.escapeHTML(Util.ellipsize(displayFileName, 50)));
+                    boolean isNormalized = archive.getBlobStore().isNormalized(b);
+                    boolean isCleanedName = archive.getBlobStore().isCleaned(b);
+                    String cleanupurl = archive.getBlobStore().get_URL_Cleanedup(b);
 
                     // urls for doc and blob go to the extra json fields, #4 and #5. #6 contains the full filename, shown on hover, since [3] is ellipsized.
                     j.put(4, messageURL);

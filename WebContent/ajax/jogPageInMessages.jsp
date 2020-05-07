@@ -36,7 +36,7 @@
 		{
 			try {
 				out.println ("<script>$('.qtip').remove()</script>");
-				out.println (dataset.getPage(i, IA_links, inFull, debug,archiveID));
+				out.println (dataset.getPageForMessages(i, IA_links, inFull, debug,archiveID));
 				out.println ("\n");
                 out.println ("<script src=\"js/epadd.js\"></script>");
 				out.println ("<script>initialiseqtip()</script>");
