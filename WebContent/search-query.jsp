@@ -56,7 +56,7 @@
 	<img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-	<h2><b>Searching email</b></h2>
+	<h2><b><%=edu.stanford.muse.util.Messages.test(archiveID,"help","search-query.help.head")%></b></h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
@@ -65,31 +65,11 @@
 	<div class="search-tips" style="display:block">
 
 		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","search-query.help.appraisal-processing-delivery")%>
 
-			Simple search: Search for keywords or phrases. Supports Boolean searching.
-			<br/><br/>
-
-			Multi-entity search: Type or paste a text block to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
-
-			<br/><br/>
-
-			Multi-term search: Type or paste a list of terms (one term per line) to search the email archive for all matching terms. Highlighted terms also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
-			<br/><br/>
-
-			Correspondent List Search: Type or paste a list of email addresses (one address per line) to search the email archive for all matching correspondents.
-			<br/><br/>
-
-			Advanced search: Search using a range of advanced parameters, specifying terms, entities, correspondents, attachments, annotations, labels, and more.
-			<br/><br/>
 
 		<% } else if (ModeConfig.isDiscoveryMode()) { %>
-			Simple search: Search for correspondents or entities. Supports Boolean searching.
-			<br/><br/>
-
-			Multi-entity search: Type or paste a text block to search the email archive for all matching entities. Underlined terms have been identified by ePADD as entities. Highlighted terms represent entities that also appear in the email archive. Click on a highlighted term to view a brief list of messages, linked to the resulting set.
-			<br/><br/>
-
-			Advanced search: Search using a range of advanced parameters, specifying entities, correspondents, and more.
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","search-query.help.discovery")%>
 		<% } %>
 	</div>
 </nav>

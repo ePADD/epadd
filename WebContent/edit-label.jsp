@@ -5,9 +5,12 @@
 <%@page import="java.util.GregorianCalendar" %>
 <%@page import="java.util.Date" %>
 <%@page import="java.util.Calendar" %>
-<!DOCTYPE html>
 <%@include file="getArchive.jspf" %>
+<!DOCTYPE html>
+
 <%@include file="header.jspf"%>
+<script src="js/jquery.js"></script>
+
 <%
     // labelId = null or empty => tis is a new label
 
@@ -45,7 +48,7 @@
 %>
 <html>
 
-<script src="js/jquery.js"></script>
+<%-- Jquery was present here last time--%>
 <head>
 	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-label.head-edit-label")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png"/>

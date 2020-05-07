@@ -92,7 +92,7 @@
 	<img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-	<h2><b>Using the Dashboard</b></h2>
+	<h2><b><%=edu.stanford.muse.util.Messages.test(archiveID,"help","browse-top.help.head")%></b></h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
@@ -101,30 +101,13 @@
 	<div class="search-tips" style="display:block">
 
 		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-	<%=edu.stanford.muse.util.Messages.test(archiveID,"help","browse-top.help.appraisal-processing")%>
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","browse-top.help.appraisal-processing")%>
 
 		<% } else if (ModeConfig.isDiscoveryMode()) { %>
-			Use the dashboard to browse and interact with an email archive.
-			<br/>
-			<br/>
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","browse-top.help.discovery")%>
 
-		<img class="helpdrawer-images" src="images/correspondents.svg">
-		Browse and graph correspondents and associated messages.
-			<br/>
-			<br/>
-		<img class="helpdrawer-images" src="images/entities.svg">
-		Browse recognized entities and associated messages.
-			<br/>
-			<br/>
-
-			Select Search from the menu bar to view additional options for searching across the archive.
 		<% } else if (ModeConfig.isDeliveryMode()) { %>
-			Use the dashboard to browse and interact with an email archive.
-			Browse correspondents and extracted entities (including persons, organizations, events, and more), create labels that can be assigned to messages, review attachments, create and view results of thematic lexicon searches.
-			<br/>
-			<br/>
-
-			Select Search from the menu bar to view additional options for searching across the archive.
+			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","browse-top.help.delivery")%>
 
 		<% } %>
 	</div>

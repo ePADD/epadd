@@ -65,7 +65,7 @@
 
 <!--sidebar content-->
 <nav class="menu1" role="navigation">
-	<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "email-sources.help.head-import")%></h2>
+	<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"help", "email-sources.help.head")%></h2>
 
 	<!--close button-->
     <a class="nav-toggle1 show-nav1" href="#">
@@ -74,7 +74,7 @@
 
     <!--phrase-->
     <div class="search-tips">
-		<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "email-sources.help.import-info")%>
+		<%=edu.stanford.muse.util.Messages.test(archiveID,"help", "email-sources.help.import-info")%>
 	</div>
 </nav>
 <%
