@@ -6,7 +6,7 @@
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
-<%@ page import="java.util.Collection"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.EmailDocument"%><%@ page import="java.util.Arrays"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.ResultCacheManager.ResultCache"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="java.util.Collection"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.EmailDocument"%><%@ page import="java.util.Arrays"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.ResultCacheManager.ResultCache"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.muse.index.Document"%><%@ page import="edu.stanford.muse.datacache.Blob"%>
 <%
     Archive archive = JSPHelper.getArchive(request);
     	JSONObject obj = new JSONObject();
@@ -18,45 +18,37 @@
         JSPHelper.log.info(obj);
         return;
     }
-    String trustedaddrstring = request.getParameter("trustedaddrs");
-    //split trustedaddrs on semicolon
-    String[] trustedaddrs = trustedaddrstring.split(";");
-    Set<String> trustedaddrset=new LinkedHashSet<>();
-    Arrays.stream(trustedaddrs).forEach(s->trustedaddrset.add(s));
-    //read outgoing offset count.
-    String outthreshold = request.getParameter("outoffset");
-    int outthresholdcount = Integer.parseInt(outthreshold);
-    String result = "";
-    if(outthresholdcount==-1){
-        outthresholdcount=archive.getAllDocsAsSet().size()+1;//to denote 'infinity'
-        result = trustedaddrstring;//no new trusted address gets added because the outcount is set as infinity
-    }else{
-    //inovke recomputeaddressbook method of class EmailDocument.java
-    Set<String> trustedAddresses = EmailDocument.computeMoreTrustedAddresses(archive,trustedaddrset,outthresholdcount);
-    if(trustedAddresses==null)
-        result="";
-    else
-        result = String.join(";",trustedAddresses);
-    }
-    if(Util.nullOrEmpty(result) ){
-        obj.put("status", 1);
-        obj.put("error", "Unable to recompute the addressbook!");
-        out.println (obj);
-        JSPHelper.log.info(obj);
-    }else{
-//        archive.setAddressBook(newaddressbook);
-  //      archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
-    //    ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-      //  ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+    String result = "",error="";
+    int thumbgenerated=0;//to track number of successfully generated thumbnails.
 
-        //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
+    String sofficepath = request.getParameter("sofficepath");
+    String convertpath = request.getParameter("convertpath");
+    //Check if we have executables on these paths. If not then return immediately with error message.
+    if(!new File(sofficepath).exists()){
+        error="Path to 'soffice' is not valid. Please check again!";
+    }
+    if(!new File(convertpath).exists()){
+        error="Path to 'convert' is not valid. Please check again!";
+    }
+    if(Util.nullOrEmpty(error)){
+        //Iterate over all documents in archive and for each document iterate over all attachments and call the method to generate thumnbnail of that attachment.
+        //Also keep track of number of created thumbnails.
+        archive.getBlobStore().setExecutablePath("convert",convertpath);
+        archive.getBlobStore().setExecutablePath("soffice",sofficepath);
+        for(Blob b: archive.getBlobStore().uniqueBlobs){
+            if(archive.getBlobStore().generate_thumbnail(b))
+                thumbgenerated++;
+        }
         obj.put("status", 0);
-        obj.put("result",result);
-        obj.put("message","Trusted addresses computed successfully!");
+        obj.put("result", "Generated thumbnails for "+thumbgenerated+" attachments successfully!");
         out.println (obj);
-        JSPHelper.log.info(obj);
-
+        //JSPHelper.log.info(obj);
+    }else{
+        //means we had error. Build the response object accordingly.
+        obj.put("status", 1);
+        obj.put("error", error);
+        out.println (obj);
+       // JSPHelper.log.info(obj);
     }
-
 
 %>

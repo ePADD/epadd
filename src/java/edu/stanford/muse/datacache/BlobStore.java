@@ -678,7 +678,13 @@ public class BlobStore implements Serializable {
             try {
                 if(!Util.is_pdf_filename(filename)) {
                     //Following command will generate the pdf file with the same name (only extension changed to pdf).
-                   Util.run_command(new String[]{libreoffice, "--headless", "--convert-to", "pdf", "--outdir", TMP_DIR+File.separatorChar, tmp_filename});
+                    String[] pdfcmd = new String[]{libreoffice, "--headless", "--convert-to", "pdf", "--outdir", TMP_DIR+File.separatorChar, tmp_filename};
+                   Util.run_command(pdfcmd);
+                   //check if pdf file was created or not.
+                    if(!new File(tmp_filename).exists()){
+                        log.warn("Could not generate pdf. Command "+pdfcmd.toString()+" failed\n");
+                        noThumb=true;
+                    }
                 }
                 //Split into basefile name and extension.
                 Pair<String,String> nameExtension = Util.splitIntoFileBaseAndExtension(filename);
@@ -686,11 +692,13 @@ public class BlobStore implements Serializable {
                 String outputImagePath = TMP_DIR + File.separator + nameExtension.first+".png";//This is the output file from the convert command below.
                 //now use pdfToImage to convert this pdf file to image file and assign the generated file name to tnFilename variable.
                 //Using some density to make image readable. desnsity 100 didn't give good image resolution. More desnity also mean more time to create image.
+                String[] convertcmd = new String[]{convert,"-density", "100", pdfFilePath+"[0]", outputImagePath};
                 Util.run_command(new String[]{convert,"-density", "100", pdfFilePath+"[0]", outputImagePath}); //[0] is to convert only first page of the pdf.
                 //outputImagePath will be the path of thumbnail.
                 tnFilename = outputImagePath;
                 if(!new File(tnFilename).exists())
                 {
+                    log.warn("Could not generated thumbnail. Command "+convertcmd.toString()+" failed\n");
                     //means something wrong happened during conversion. Can not generate thumbnail.
                     noThumb=true;
                 }
@@ -709,8 +717,10 @@ public class BlobStore implements Serializable {
                 //Name that should be used to store the thumbnail. Make it same as the basename of the file with 'png' suffix and 'tn' prefix.
                 String tnFnameInStore = "tn"+Util.splitIntoFileBaseAndExtension(full_filename_original(b)).first+".png";
                 this.addView(b, tnFnameInStore, "tn", new FileInputStream(tnFilename));
+                log.info("Generating thumbnail for data with tn filename: " + tnFilename);
+            }else{
+                log.info("No thumbnail will be generated for "+filename+"\n");
             }
-            log.info("Generating thumbnail for data with tn filename: " + tnFilename);
 
             // best effort to delete the intermediate files, dont worry too much if we fail.
             if (!new File(tmp_filename).delete())
