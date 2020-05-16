@@ -68,13 +68,13 @@ public class ModeConfig
 
 		String mode="";
 		if(ModeConfig.isAppraisalMode())
-			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.appraisal");		/* message class called instead of "Appraisal" */
+			mode=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "profile-mode.appraisal");		/* message class called instead of "Appraisal" */
 		else if(ModeConfig.isProcessingMode())
-			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.processing");	/* message class called instead of "Processing" */
+			mode=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "profile-mode.processing");	/* message class called instead of "Processing" */
 		else if(ModeConfig.isDeliveryMode())
-			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.delivery");		/* message class called instead of "Delivery" */
+			mode=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "profile-mode.delivery");		/* message class called instead of "Delivery" */
 		else if(ModeConfig.isDiscoveryMode())
-			mode=edu.stanford.muse.util.Messages.test(archiveID,"messages", "profile-mode.discovery");		/* message class called instead of "Discovery" */
+			mode=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "profile-mode.discovery");		/* message class called instead of "Discovery" */
 		return mode;
 	}
 }
