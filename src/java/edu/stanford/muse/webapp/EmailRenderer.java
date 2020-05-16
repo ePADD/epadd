@@ -404,6 +404,7 @@ public class EmailRenderer {
 		{
 			result.append(formatAddressesAsHTML(archiveID,addrs, addressBook, TEXT_WRAP_WIDTH, highlightTerms, contactNames, contactAddresses));
 		}
+		result.append("\n</td></tr>\n");
 
 		result.append(style + "To: </td><td align=\"left\">");
 		addrs = ed.to;
