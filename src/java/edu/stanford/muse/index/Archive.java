@@ -145,7 +145,7 @@ public class Archive implements Serializable {
     private IndexOptions indexOptions;
     public BlobStore blobStore;
     public transient AddressBook addressBook; //transient because it is saved explicitly
-    transient private Map<String, Lexicon> lexiconMap = null;
+    transient private Map<String, Lexicon> lexiconMap = new HashMap<String, Lexicon>();
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
     transient private Map<Document,Document> allUniqueDocsMap=null;
@@ -600,7 +600,6 @@ int errortype=0;
      * */
     public void setup(String baseDir, BlobStore blobStore, String args[]) throws IOException {
         prepareBaseDir(baseDir);
-        lexiconMap = createLexiconMap(baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER);
         indexOptions = new IndexOptions();
         indexOptions.parseArgs(args);
         log.info("Index options are: " + indexOptions);
@@ -1644,7 +1643,7 @@ after maskEmailDomain.
         }
 
         if (lexiconMap == null) {
-            lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+            updateOrCreateLexiconMap();
         }
 
         // recompute... sometimes the processing metadata may be stale, because some messages have been redacted at export.
@@ -1752,7 +1751,8 @@ after maskEmailDomain.
         result.newLexicons = new LinkedHashSet<>();
         result.clashedLexicons = new LinkedHashSet<>();
         try {
-            Map<String,Lexicon> collectionLexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+            updateOrCreateLexiconMap();
+            Map<String,Lexicon> collectionLexiconMap = lexiconMap;
             if (!otherlexDirFile.exists()) {
                 log.warn("'lexicons' directory is missing from the accession");
             } else {
@@ -1784,37 +1784,38 @@ after maskEmailDomain.
 //        this.collectionMetadata.merge(other.collectionMetadata);
 //    }
 
+    public void removeFromLexiconMap(String lexiconName)
+    {
+        lexiconMap.remove(lexiconName);
+    }
+
     /*IMP: If there were two lexicons with same name but different languages then the following method will pick only the first one
     So, how do we support a mix language archive?
      */
-    public static Map<String, Lexicon> createLexiconMap(String baseDir) throws IOException {
-        String lexDir = baseDir + File.separatorChar + LEXICONS_SUBDIR;
-        Map<String, Lexicon> map = new LinkedHashMap<>();
+    public void updateOrCreateLexiconMap() throws IOException {
+        String lexDir = baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER+ File.separatorChar + LEXICONS_SUBDIR;
+        if (lexiconMap == null)
+        {
+            lexiconMap = new HashMap<String, Lexicon>();
+        }
         File lexDirFile = new File(lexDir);
         if (!lexDirFile.exists()) {
             log.warn("'lexicons' directory is missing from archive");
         } else {
             for (File f : lexDirFile.listFiles(new Util.MyFilenameFilter(null, Lexicon.LEXICON_SUFFIX))) {
                 String name = Lexicon.lexiconNameFromFilename(f.getName());
-                if (!map.containsKey(name)) {
-                    map.put(name.toLowerCase(), new Lexicon(lexDir, name));
+                if (!lexiconMap.containsKey(name.toLowerCase())) {
+                    lexiconMap.put(name.toLowerCase(), new Lexicon(lexDir, name));
                 }
             }
         }
-        return map;
-    }
-
-    //Method added to support importing new lexicon from UI.
-    public void setLexiconMap(Map<String,Lexicon> lexmap){
-        this.lexiconMap=lexmap;
-
     }
 
     public Lexicon getLexicon(String lexName) {
         // lexicon map could be stale, re-read it
         try {
             if(Util.nullOrEmpty(lexiconMap) || lexiconMap.get(lexName.toLowerCase())==null)
-                lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+                updateOrCreateLexiconMap();
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -1825,7 +1826,7 @@ after maskEmailDomain.
         // lexicon map could be stale, re-read it
         try {
             if(Util.nullOrEmpty(lexiconMap))
-                lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+                updateOrCreateLexiconMap();
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -1839,7 +1840,7 @@ after maskEmailDomain.
         JSONArray resultArray = new JSONArray();
         try {
             if(Util.nullOrEmpty(lexiconMap))
-                lexiconMap = createLexiconMap(baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER);
+                updateOrCreateLexiconMap();
         } catch (Exception e) {
             Util.print_exception("Error trying to read list of lexicons", e, log);
         }
@@ -2232,6 +2233,12 @@ after maskEmailDomain.
 
 
     }
+
+    public boolean lexiconMapContains(String lexiconName)
+    {
+        return lexiconMap.containsKey(lexiconName);
+    }
+
     public static int getnBlobsExported(Collection<Document> docs, BlobStore blobStore, List<String> attachmentTypeOptions, String dir, boolean unprocessedonly, Set<String> extensionsNeeded, boolean isOtherSelected, Map<Blob, String> blobToErrorMessage) {
         int nBlobsExported = 0;
 

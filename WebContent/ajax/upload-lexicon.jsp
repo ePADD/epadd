@@ -34,11 +34,11 @@
                     //update bag metadata
                     archive.updateFileInBag(lexicondir,archive.baseDir);
                     //read lexicons again and set in the archive.
-                    Map<String,Lexicon> map = Archive.createLexiconMap(archive.baseDir+File.separator+Archive.BAG_DATA_FOLDER);
-                    if(map.containsKey(lexiconname))
-                        archive.setLexiconMap(map);
-                    else
+                    archive.updateOrCreateLexiconMap();
+                    if(!archive.lexiconMapContains(lexiconname))
+                    {
                         error="Some error in uploading the lexicon file";
+                    }
 
                     //caclulate the count cache for this lexicon.
                     archive.getLexicon(lexiconname).fillL1_Summary(lexiconname,archive,false);

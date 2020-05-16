@@ -177,6 +177,13 @@ epadd.do_logins = function() {
 
 	epadd.log('doing login (go button pressed) for ' + $('#loginName0').val());
 	var post_params = muse.collect_input_fields();
+	
+	
+	if (!post_params.name || $.trim(post_params.name).length === 0){
+		//name doesn't exist or is just whitespace
+		epadd.error('Please enter name of archive owner.');
+		return;
+	}
 	var is_valid_account = [];
 	$('.account .input-field').removeClass('has-error'); // remove all input fields marked with an error
 

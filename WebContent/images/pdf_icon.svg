@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="28px" height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+<g>
+	<defs>
+		<rect id="SVGID_1_" width="28" height="28"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  overflow="visible"/>
+	</clipPath>
+	<g id="custom_1" clip-path="url(#SVGID_2_)">
+		<g id="pdf_icon" transform="translate(2 2)">
+			<path id="XMLID_1_" fill="#FFFFFF" stroke="#CA2128" stroke-width="1.5" stroke-miterlimit="10" d="M19.512,24H4.488
+				c-0.571,0.047-1.071-0.378-1.118-0.949c-0.003-0.04-0.004-0.081-0.002-0.122V1.071C3.383,0.467,3.883-0.012,4.488,0H19.4
+				c0.604-0.012,1.105,0.467,1.121,1.071v21.858c0.068,0.521-0.299,0.997-0.818,1.065C19.639,24.002,19.576,24.004,19.512,24z"/>
+			<rect id="XMLID_28_" y="10.823" fill="#CA2128" width="24" height="10.661"/>
+			<g id="XMLID_3_" transform="translate(3.367 12.772)">
+				<path id="XMLID_4_" fill="#FFFFFF" d="M1.571,4.712v2.47H0v-7.07h2.469c1.8,0,2.693,0.786,2.693,2.244
+					c0.027,0.655-0.266,1.283-0.786,1.683C3.802,4.492,3.087,4.73,2.356,4.712H1.571z M1.571,1.233v2.244h0.673
+					c0.9,0,1.234-0.337,1.234-1.122c0.02-0.604-0.453-1.109-1.057-1.131C2.362,1.222,2.303,1.225,2.244,1.233H1.571z"/>
+				<path id="XMLID_8_" fill="#FFFFFF" d="M6.164,7.07v-7.07h2.469c2.469,0,3.816,1.123,3.816,3.479
+					c0.127,1.915-1.321,3.572-3.236,3.7c-0.155,0.01-0.31,0.01-0.464,0H6.164V7.07z M7.735,1.347v4.488h0.9
+					c0.602,0.041,1.186-0.209,1.571-0.672c0.415-0.458,0.618-1.068,0.561-1.684c0.024-0.576-0.177-1.141-0.561-1.57
+					c-0.465-0.402-1.07-0.604-1.683-0.562H7.737L7.735,1.347z"/>
+				<path id="XMLID_11_" fill="#FFFFFF" d="M17.715,1.347h-2.469V3.03h2.244v1.347h-2.244V7.07h-1.571v-7.07h4.04V1.347z"/>
+			</g>
+			<path id="XMLID_7_" fill="#FFFFFF" stroke="#CA2128" stroke-width="0.5" stroke-miterlimit="10" d="M15.702,7.07
+				c1.459,0,0.899,1.683-0.337,0.9c-1.818-1.268-3.131-3.137-3.707-5.277c-0.449-0.9,1.234-1.01,1.121,0.112
+				c-0.084,2.566-1.125,5.008-2.917,6.846c-0.9,0.561-1.347-0.561-0.673-0.9C11.207,7.71,13.433,7.136,15.702,7.07z"/>
+		</g>
+	</g>
+</g>
+</svg>

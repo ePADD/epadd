@@ -1,10 +1,10 @@
 
 // global vars, used by every module below
 
-var docIDs = []; // this is required for posting the docid of the message to which the label/annotation change should be applied.
+var docIDs = []; //Not used now for attachment page. this is required for posting the docid of the message to which the label/annotation change should be applied.
 var PAGE_ON_SCREEN = -1; // current page displayed on screen
 var TOTAL_PAGES = 0;
-
+var START_YEAR=0;
 // interacts with #page_forward, #page_back, and #pageNumbering on screen
 var Navigation = function(){
 
@@ -13,7 +13,7 @@ var Navigation = function(){
     var page_change_callback = function(oldPage, currentPage) {
 
         PAGE_ON_SCREEN = currentPage;
-        $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : currentPage+1));
+        $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : START_YEAR+currentPage));
         Labels.refreshLabels();
         Annotations.refreshAnnotation();
 
@@ -44,9 +44,9 @@ var Navigation = function(){
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         jog = $(document).jog({
             paging_info: {
-                url: 'ajax/jogPageIn.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
-                window_size_back: 30,
-                window_size_fwd: 50
+                url: 'ajax/jogPageInAttachments.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
+                window_size_back: 1,
+                window_size_fwd: 1
             },
             page_change_callback: page_change_callback,
             logger: epadd.log,

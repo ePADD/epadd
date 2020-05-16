@@ -519,7 +519,8 @@ Jog.prototype.disableCursorKeys = function() { this.cursorKeysDisabled = true;}
 			return true; // don't handle if we've been told to ignore
 		}
 		
-		if (code == 37 && !jog.cursorKeysDisabled) // left arrow
+		if (code == 37 && !jog.cursorKeysDisabled) // left arrow and there is no modal box on top of the document. This is crucial because
+			//when fancybox is displayed over top of the document then this key code changes the state of both elements, not desirable.
 		{
 		  doPageBackward();
 		  handled = true;
@@ -779,8 +780,8 @@ function showCurrentPage()
 	// downside is that it only works for images
 	// re-investigate if we have attachments with image previews that link to download of actual file (like for PDFs)
 	var temp = $(".attachments img.img");
-	if (temp.length > 0)
-		temp.lightBox();
+	/*if (temp.length > 0)
+		temp.lightBox();*/
 	/*
 	$(".attachments img").fancybox({
 		'transitionIn'	:	'elastic',
@@ -913,7 +914,7 @@ $.fn.jog_page_reload = function(page, inFull) {
 function page_out(start, end)
 {
 	// sometimes start, end could be < 0
-	for (var i = start; i <= end; i++) // note: start and end page inclusive (same as jogPageIn.jsp)
+	for (var i = start; i <= end; i++) // note: start and end page inclusive (same as jogPageInMessages.jsp)
 		if (i >= 0)
 			pages[i] = null;
 }

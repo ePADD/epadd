@@ -56,6 +56,7 @@ public class BlobStore implements Serializable {
     //map of original file name and (cleanedupname, normalizedname) generated from Amatica normalization
     //transient because this can always be built from the normalziation info file (csv) present in session directory of the archive.
     private transient  Map<String,Pair<String,String>> normalizationMap = new LinkedHashMap<>();
+    private transient  HashMap<String,String> executablePathMap = new LinkedHashMap();
 
     public Multimap<Blob, String> getBlobToKeywords() {
         return blobToKeywords;
@@ -224,6 +225,28 @@ public class BlobStore implements Serializable {
     public String full_filename_normalized(Blob b, boolean useIndex) {
         return full_filename_normalized(b, b.filename,useIndex);
     }
+
+    public boolean isCleaned(Blob b){
+        //if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+        //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+        //so the attributes are either only originalfilename or cleanedupfileURL or both.
+        String cleanedupname = full_filename_cleanedup(b);
+          boolean isCleanedName = !cleanedupname.equals(full_filename_original(b));
+        return isCleanedName;
+
+    }
+
+    public boolean isNormalized(Blob b){
+        //if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
+        //origina.notequals(normalized) then only name cleanup happened.(originalfilename)
+        //so the attributes are either only originalfilename or cleanedupfileURL or both.
+        String cleanedupname = full_filename_cleanedup(b);
+        String normalizedname=full_filename_normalized(b);
+         boolean isNormalized = !cleanedupname.equals(normalizedname);
+         return isNormalized;
+
+    }
+
 
     /**
      * full filename for an arbitrary file associated with d
@@ -480,7 +503,7 @@ public class BlobStore implements Serializable {
     private synchronized void addView(Blob primary_data, String filename, String view, InputStream is) throws IOException {
         // for file data store, the object stored for the View is the file name
         addView(primary_data, view, filename);
-        Util.copy_stream_to_file(is, dir + File.separatorChar + full_filename_normalized(primary_data));
+        Util.copy_stream_to_file(is, dir + File.separatorChar + filename);
     }
 
     private InputStream getInputStream(Blob b) throws IOException {
@@ -537,7 +560,7 @@ public class BlobStore implements Serializable {
         if (filename == null)
             return null;
         else
-            return get_cache_URL(full_filename_normalized(b));
+            return get_cache_URL(filename);//full_filename_normalized(b));
     }
 
     public byte[] getDataBytes(Blob b) throws IOException {
@@ -624,70 +647,90 @@ public class BlobStore implements Serializable {
 
     }
 
+
+
     /**
      * generates thumbnail for the given image and adds it as a "tn" supplement
+     * On successful generation it returns true.
      */
-    public void generate_thumbnail(Blob b) throws IOException {
+    public boolean generate_thumbnail(Blob b) throws IOException {
         if (this.hasView(b, "tn")) {
             log.info("Already have thumbnail for blob " + b);
-            return;
+            return false;
         }
 
-        String filename = "tn." + full_filename_normalized(b,false);
+        String filename = full_filename_normalized(b,false);
+
         String tmp_filename = TMP_DIR + File.separatorChar + filename;
+        String pdfFilePath=null;
         String tnFilename = null;
         boolean noThumb = false;
-        String MOGRIFY = "/opt/local/bin/mogrify";
-        if (Util.is_image_filename(full_filename_normalized(b,false)) && new File(MOGRIFY).exists()) {
-            // mogrify will update tmp_filename in place, creating a thumbnail
-            tnFilename = tmp_filename;
-            createBlobCopy(b, tmp_filename);
+        String libreoffice = this.executablePathMap.get("soffice");//"/Applications/LibreOffice.app/Contents/MacOS/soffice";
+        String convert = this.executablePathMap.get("convert");//"/usr/local/bin/convert";
+       // if(either is null return false)
+        if(Util.nullOrEmpty(libreoffice) || Util.nullOrEmpty(convert) || !new File(libreoffice).exists() || !new File(convert).exists())
+            return false;
+        //For now we are only generating thumnbnails for non image attachments using libreoffice writer.
+        if ( Util.is_doc_filename(filename) && new File(libreoffice).exists()) { //exclude pdf files too..
+            //First generate pdf file using libreoffice writer.
+  //          tnFilename = tmp_filename;
+            createBlobCopy(b, tmp_filename); //create a copy of the blob  in temp directory.
             try {
-                Util.run_command(new String[]{MOGRIFY, "-geometry", "160x120", tmp_filename});
+                if(!Util.is_pdf_filename(filename)) {
+                    //Following command will generate the pdf file with the same name (only extension changed to pdf).
+                    String[] pdfcmd = new String[]{libreoffice, "--headless", "--convert-to", "pdf", "--outdir", TMP_DIR+File.separatorChar, tmp_filename};
+                   Util.run_command(pdfcmd);
+                   //check if pdf file was created or not.
+                    if(!new File(tmp_filename).exists()){
+                        log.warn("Could not generate pdf. Command "+pdfcmd.toString()+" failed\n");
+                        noThumb=true;
+                    }
+                }
+                //Split into basefile name and extension.
+                Pair<String,String> nameExtension = Util.splitIntoFileBaseAndExtension(filename);
+                pdfFilePath = TMP_DIR + File.separator + nameExtension.first+".pdf"; //This file must have been generated by libreoffice command above.
+                String outputImagePath = TMP_DIR + File.separator + nameExtension.first+".png";//This is the output file from the convert command below.
+                //now use pdfToImage to convert this pdf file to image file and assign the generated file name to tnFilename variable.
+                //Using some density to make image readable. desnsity 100 didn't give good image resolution. More desnity also mean more time to create image.
+                String[] convertcmd = new String[]{convert,"-density", "100", pdfFilePath+"[0]", outputImagePath};
+                Util.run_command(new String[]{convert,"-density", "100", pdfFilePath+"[0]", outputImagePath}); //[0] is to convert only first page of the pdf.
+                //outputImagePath will be the path of thumbnail.
+                tnFilename = outputImagePath;
+                if(!new File(tnFilename).exists())
+                {
+                    log.warn("Could not generated thumbnail. Command "+convertcmd.toString()+" failed\n");
+                    //means something wrong happened during conversion. Can not generate thumbnail.
+                    noThumb=true;
+                }
             } catch (Exception e) {
-                log.warn("mogrify failed: " + e.getMessage() + "\n" + Util.stackTrace(e));
+                log.warn("libreoffice failed: " + e.getMessage() + "\n" + Util.stackTrace(e));
                 noThumb = true;
             }
-        } else if (!NO_CONVERT_PDFS && Util.is_pdf_filename(full_filename_normalized(b,false))) {
-//    	tnFilename = tmp_filename + ".jpg";
-//    	// [0] converts only page 0
-//    	// only works on mac, after port install imagemagick
-//    	Util.run_command(new String[] {"/opt/local/bin/convert", tmp_filename + "[0]", tnFilename});
-//    	Util.run_command(new String[] {"/opt/local/bin/mogrify", "-geometry", "160x120", tnFilename});
-            try {
-                // pdfToImage will create x1.png from x.pdf
-                tnFilename = tmp_filename.substring(0, tmp_filename.length() - ".pdf".length()); // strip the ".pdf"
-                tnFilename += "1.png";
-                String[] args = new String[]{"-imageType", "png", "-startPage", "1", "-endPage", "1", tmp_filename};
-                // disabling pdfbox because it interferes with tika parsers
-               // org.apache.pdfbox.PDFToImage.main(args);
-                log.info("Saving PDF thumbnail to " + tnFilename);
-                filename = filename + ".png"; // make sure the suffix for the thumbnail is named with a .png suffix in the cache
-            } catch (Throwable e) {
-                // make sure to catch Throwable and not just Exception because the PDF can throw a
-                // java.lang.NoClassDefFoundError: org/bouncycastle/jce/provider/BouncyCastleProvider for password protected PDFs
-                log.warn("PDF to image got exception: " + e.getMessage() + "\n" + Util.stackTrace(e));
-                tnFilename = null;
-                noThumb = true;
-            }
-        } else {
+        }  else {
             noThumb = true;
             // log.info ("No thumbnail for attachment file named: " + b.filename);
         }
 
         if (!noThumb) {
             // add thumbnail to data store
-            if (tnFilename != null)
-                this.addView(b, filename, "tn", new FileInputStream(tnFilename));
-
-            log.info("Generating thumbnail for data with tn filename: " + tnFilename);
+            if (tnFilename != null) {
+                //Name that should be used to store the thumbnail. Make it same as the basename of the file with 'png' suffix and 'tn' prefix.
+                String tnFnameInStore = "tn"+Util.splitIntoFileBaseAndExtension(full_filename_original(b)).first+".png";
+                this.addView(b, tnFnameInStore, "tn", new FileInputStream(tnFilename));
+                log.info("Generating thumbnail for data with tn filename: " + tnFilename);
+            }else{
+                log.info("No thumbnail will be generated for "+filename+"\n");
+            }
 
             // best effort to delete the intermediate files, dont worry too much if we fail.
             if (!new File(tmp_filename).delete())
-                log.warn("REAL WARNING: Unable to delete file: " + tmp_filename);
-            if (tnFilename != null && !(tmp_filename == tnFilename) && !new File(tnFilename).delete())
-                log.warn("REAL WARNING: Unable to delete file: " + tnFilename);
+                log.warn("REAL WARNING: Unable to delete file: " + tmp_filename); //tmp_filename is the original file copied to temp directory.
+            if (pdfFilePath!=null && !new File(pdfFilePath).delete())
+                log.warn("REAL WARNING: Unable to delete intermediate pdf file: " + pdfFilePath);
+            return true;
         }
+        else
+            return false;
     }
 
     /* copy blob to filePath */
@@ -757,6 +800,12 @@ public class BlobStore implements Serializable {
         if(dupBlobCount==null)
             return new LinkedHashMap<>();
         return dupBlobCount;
+    }
+
+    public void setExecutablePath(String progname, String progpath) {
+        if(this.executablePathMap==null)
+            this.executablePathMap=new LinkedHashMap<>();
+        this.executablePathMap.put(progname,progpath);
     }
 
     /*public void writeNormalizationMap(String filename){

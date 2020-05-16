@@ -35,6 +35,7 @@
 <%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.manage-settings"));%>
 
 <jsp:include page="alert.jspf"/>
+<div id="spinner-div" style="text-align:center;display:none"> <img style="height:20px" src="images/spinner.gif"/></div>
 
 <p>
 
@@ -46,6 +47,33 @@
             <% if (!ModeConfig.isDiscoveryMode()) { %>
 <p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.verify-bag-checksum")%></button></p>
 <p>    <button id="debugaddressbook" onclick="window.location='debugAddressBook?archiveID=<%=archiveID%>'"  class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.debug-address-book")%></button></p>
+
+<section>
+    <div class="panel" id="generate-thumbnails">
+        <div class="panel-heading">Generate Thumbnails for Attachmetns</div>
+
+        <div class="one-line">
+            <div class="form-group col-sm-4">
+                <%--<label for="trustedaddrsForComputation">Trusted emails addresses</label>--%>
+                <input type="text" placeholder="Path to soffice executable (from Libreoffice) /Applications/LibreOffice.app/Contents/MacOS/soffice" id="libreofficpath"></input>
+            </div>
+            <div class="form-group col-sm-5">
+                <%--<label for="outgoingthreshold">Outgoing messages threshold</label>--%>
+                <input type="text" placeholder="Path to convert (from ImageMagik) /usr/local/bin/convert" id="convertpath"></input>
+            </div>
+            <div class="form-group col-sm-2 picker-buttons">
+                <button id="createThumbnails" onclick="createThumbnailsAddressHandler();return false;" class="btn-default" style="cursor:pointer">Create Thumbnails</button>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <div class="form-group col-sm-4">
+            <input type="text" id="thumbnail-gen-result" placeholder="RESULT" readonly></input>
+        </div>
+        <br/>
+        <br/>
+    </div>
+</section>
 
 <section>
     <div class="panel" id="export-headers">
@@ -157,6 +185,59 @@
                     }
                 });*/
             };
+
+            var createThumbnailsAddressHandler = function(){
+                var archiveID='<%=archiveID%>';
+                //path to soffice program (from Libreoffice)
+                var sofficepath = $('#libreofficpath').val();
+                //path to convert program (from ImageMagick)
+                var convertpath = $('#convertpath').val();
+                //if any of them is empty then return with warning.
+                if (!sofficepath || !convertpath) {
+                    epadd.error("Please provide path to 'soffice' and 'convert' executables which are needed to create thumbnails.");
+                    return;
+                }
+                //pass to backend three params, archiveID, path to convert program, path to soffice program.
+                var $spinner = $('#spinner-div');
+                $spinner.show();
+                $spinner.addClass('fa-spin');
+                $('#spinner-div').fadeIn();
+                $('#createThumbnails').fadeOut();
+                var data = {'archiveID': archiveID,'sofficepath':sofficepath,'convertpath':convertpath};
+
+
+                $.ajax({type: 'POST',
+                    dataType: 'json',
+                    url: 'ajax/createThumbnails.jsp',
+                    data: data,
+                    success: function (response) {
+                        $spinner.removeClass('fa-spin');
+                        $('#spinner-div').fadeOut();
+                        $('#createThumbnails').fadeIn();
+
+                        if (response) {
+                            if (response.status === 0) {
+                                epadd.info("Successfully created the thumbnails for all attachments.",function(){
+                                    $('#thumbnail-gen-result').val(response.result)
+                                })
+                            } else{
+
+                                epadd.error('Error creating thumbnails:  ' + response.status + ', Message: ' + response.error);
+                            }
+                        }
+                        else{
+                            epadd.error('Error creating thumbnails. Improper response received!');
+                        }
+                    },
+                    error: function(jq, textStatus, errorThrown) {
+                        $('#spinner-div').fadeOut();
+                        $('#createThumbnails').fadeIn();
+                        epadd.error('Sorry, there was an error while creating the thumbnails for attachments. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.');
+                    }
+                });
+                //On success return the number that was
+            }
+
 
     var computeMoreTrustedAddressHandler = function(){
         var archiveID='<%=archiveID%>';

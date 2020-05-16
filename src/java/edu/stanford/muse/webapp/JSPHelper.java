@@ -32,7 +32,6 @@ import edu.stanford.muse.ner.model.DummyNERModel;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.SequenceModel;
 import edu.stanford.muse.util.*;
-import net.didion.jwnl.dictionary.morph.Operation;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -56,7 +55,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /* import javax.servlet.jsp.JspWriter; */
 
@@ -1064,5 +1062,151 @@ public class JSPHelper {
 		if(operationInfoMap==null)
 			return;
 		operationInfoMap.remove(opID);
+	}
+
+	/*
+	Helper methods for browse page. This page now loads browseMessage.jsp or browseAttachments.jsp depending upon the parameters passed to it.
+	 */
+
+
+	/*
+	This method returns page title and facet title based on the parameters passed to this page.
+	 */
+
+	public static Pair<String,String> getTitles(HttpServletRequest request) throws UnsupportedEncodingException {
+		//get searchTerm if present
+		String searchTerm = JSPHelper.convertRequestParamToUTF8(request.getParameter("term"));
+
+		// compute the title of the page
+		String title = request.getParameter("title");
+		//String sortBy = request.getParameter("sortBy");
+
+		//<editor-fold desc="Derive title if the original title is not set" input="request" output="title"
+		// name="search-title-derivation">
+		{
+			if (Util.nullOrEmpty(title)) {
+
+				// good to give a meaningful title to the browser tab since a lot of them may be open
+				// warning: remember to convert, otherwise will not work for i18n queries!
+				String sentiments[] = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("lexiconCategory"));
+
+				String[] persons = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("person"));
+				String[] attachments = JSPHelper.convertRequestParamsToUTF8(request.getParameterValues("attachment"));
+
+				int month = HTMLUtils.getIntParam(request, "month", -1);
+				int year = HTMLUtils.getIntParam(request, "year", -1);
+				int cluster = HTMLUtils.getIntParam(request, "timeCluster", -1);
+
+				String sentimentSummary = "";
+				if (sentiments != null && sentiments.length > 0)
+					for (int i = 0; i < sentiments.length; i++) {
+						sentimentSummary += sentiments[i];
+						if (i < sentiments.length - 1)
+							sentimentSummary += " & ";
+					}
+
+				if (searchTerm != null)
+					title = "Search: " + searchTerm;
+				else if (cluster != -1)
+					title = "Cluster " + cluster;
+				else if (!Util.nullOrEmpty(sentimentSummary))
+					title = sentimentSummary;
+				else if (attachments != null && attachments.length > 0)
+					title = attachments[0];
+				else if (month >= 0 && year >= 0)
+					title = month + "/" + year;
+				else if (year >= 0)
+					title = Integer.toString(year);
+				else if (persons != null && persons.length > 0) {
+					title = persons[0];
+					if (persons.length > 1)
+						title += "+" + (persons.length - 1);
+				} else
+					title = "Browse";
+				title = Util.escapeHTML(title);
+			}
+		}
+
+		return new Pair<>(title,searchTerm);
+	}
+
+
+	public static Pair<Collection<Document>,SearchResult> getSearchResultDocs(HttpServletRequest request, Archive archive) throws UnsupportedEncodingException {
+		//<editor-fold desc="Search archive based on request parameters and return the result" input="archive;request"
+		// output="collection:docs;collection:attachments(highlightAttachments) name="search-archive">
+			// convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+			Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+			SearchResult inputSet = new SearchResult(archive,params);
+			Pair<Collection<Document>,SearchResult> search_result = SearchResult.selectDocsAndBlobs(inputSet);
+
+
+		return search_result;
+	}
+
+
+	/*
+	Return facets information obtained from the docs for message browsing screen.
+	 */
+
+	public static Map<String, Collection<DetailedFacetItem>> getFacetItemsForMessageBrowsing(HttpServletRequest request, Collection<Document> docs, Archive archive){
+		Map<String, Collection<DetailedFacetItem>> facets;
+		//<editor-fold desc="Create facets(categories) based on the search data" input="docs;archive"
+		// output="facets" name="search-create-facets">
+		{
+			facets = IndexUtils.computeDetailedFacetsForMessageBrowsing(docs, archive);
+		}
+		//</editor-fold>
+
+		return facets;
+	}
+
+	/*
+	Return facets information obtained from the docs for attachment browsing screen.
+	 */
+
+	public static Map<String, Collection<DetailedFacetItem>> getFacetItemsForAttachmentBrowsing(HttpServletRequest request, Collection<Document> docs, Archive archive){
+		Map<String, Collection<DetailedFacetItem>> facets;
+		//<editor-fold desc="Create facets(categories) based on the search data" input="docs;archive"
+		// output="facets" name="search-create-facets">
+		{
+			facets = IndexUtils.computeDetailedFacetsForAttachmentBrowsing(docs, archive);
+		}
+		//</editor-fold>
+
+		return facets;
+	}
+
+	/*
+	Return original query string
+	 */
+	public static String getOrigQueryString(HttpServletRequest request){
+		String origQueryString = request.getQueryString();
+		//<editor-fold desc="Massaging the query string (containing all search parameter)" input="request"
+		// output="string:origQueryString" name="search-query-string-massaging" >
+		{
+			if (origQueryString == null)
+				origQueryString = "";
+
+			// make sure adv-search=1 is present in the query string since we've now switched over to the new searcher
+			if (!origQueryString.contains("adv-search=")) {
+				if (origQueryString.length() > 0)
+					origQueryString += "&";
+				origQueryString += "adv-search=1";
+			}
+
+			// remove all the either's because they are not needed, and could mask a real facet selection coming in below
+			origQueryString = Util.excludeUrlParam(origQueryString, "direction=either");
+			origQueryString = Util.excludeUrlParam(origQueryString, "mailingListState=either");
+			origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+			origQueryString = Util.excludeUrlParam(origQueryString, "entity=");
+			origQueryString = Util.excludeUrlParam(origQueryString, "correspondent=");
+			origQueryString = Util.excludeUrlParam(origQueryString, "attachmentFilename=");
+			origQueryString = Util.excludeUrlParam(origQueryString, "attachmentExtension=");
+			origQueryString = Util.excludeUrlParam(origQueryString, "annotation=");
+			origQueryString = Util.excludeUrlParam(origQueryString, "folder=");
+			// entity=&correspondent=&correspondentTo=on&correspondentFrom=on&correspondentCc=on&correspondentBcc=on&attachmentFilename=&attachmentExtension=&annotation=&startDate=&endDate=&folder=&lexiconName=general&lexiconCategory=Award&attachmentExtension=gif
+		}
+		//</editor-fold>
+		return origQueryString;
 	}
 }

@@ -151,7 +151,8 @@
 					<include>ajax/cancel.jsp</include>
 					<include>ajax/expandname.jsp</include>
 					<include>ajax/getHitTermDetails.jsp</include>
-					<include>ajax/jogPageIn.jsp</include>
+					<include>ajax/jogPageInMessages.jsp</include>
+					<include>ajax/jogPageInAttachments.jsp</include>
 					<include>ajax/kill-session.jsp</include>
 					<include>ajax/leadsAsJson.jsp</include>
 					<include>ajax/async/loadArchive.jsp</include>

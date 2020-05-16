@@ -399,3 +399,131 @@ div.epadd-separator { height: 3px; width: 25px; border: solid 1px #0175bc; backg
 .success-modal .modal-header .modal-title { background-image:url('../images/success.svg'); }
 .modal-body { /* word-break: break-all; */} /* needed to ensure long URLs don't bleed. but break-all is causing breaks in the middle of words! */
 /**** end modals --------------------------------  */
+
+div.square{
+	display:inline-block;
+	border-radius: 3px;
+	background-color: lightgray;
+	width:216px;
+	height:162px;
+	margin:10px;
+	text-align:center;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	font-size:12px;
+}
+div.square:hover{
+	background-color: dimgray;
+	cursor: pointer;
+}
+div.insidesquare{
+	margin:10px;
+	background-color: whitesmoke;
+	height: 102px;
+	width: 196px;
+	z-index: -1;
+}
+
+img.attachmenttiles{
+	width:196px;
+	height:102px;
+	object-fit: scale-down;
+	margin: auto;
+}
+
+.fbox_downloadbtn{
+    display:inline-block;
+    cursor:pointer;
+    height: 20px;
+    padding-right: 10px;
+}
+
+.fbox_msgbtn{
+    display:inline-block;
+    cursor:pointer;
+    height: 20px;
+}
+
+.displayname{
+	font-family: open sans regular;
+	font-size: 14px;
+	color: #333;
+}
+
+.fbox_toolbar{
+       text-align:right;
+    width:inherit;
+}
+
+.fbox_metabar{
+    display: flex;
+    justify-content: space-between;
+}
+.fbox_metacol1{
+    display:inline-block;
+    text-align:left;
+	width:350px;  /*because the fancybox size (and so image size) is 700. So half of it is 350.*/
+}
+.fbox_metacol2{
+    display:inline-block;
+	width: 350px;  /*because the fancybox size (and so image size) is 700. So half of it is 350.*/
+    text-align:right;
+}
+.fbox_seperator{
+    margin-top:10px;
+    margin-bottom:0px;
+}
+.fbox_toolbarimg{
+    height:20px;
+    padding-right:5px;
+    vertical-align:middle;
+    border-right:1px solid black;
+}
+.listView{
+    margin-left:auto;
+    cursor: pointer;
+}
+.tileView{
+    margin-left:94%;
+    cursor: pointer;
+}
+.gallery_viewchangebar{
+    display:flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin-top:10px;
+}
+/*Overriding datable td properties. It is possible that there is a better way to handle it.*/
+table.dataTable td {
+	padding: 3px 10px;
+	font-size: 13px;
+}
+
+
+.fbox_custom{
+	height: auto !important;
+	width:auto !important;
+}
+
+.fancybox-image{
+	width: 700px;
+	height: 525px;
+	object-fit:scale-down;
+}
+
+.fancybox-inner{
+	height: auto !important;
+	width:auto !important;
+}
+
+.fancybox-close{
+	position: absolute;
+	top: 0px;
+	right: 0;
+	width: 36px;
+	height: 36px;
+	cursor: pointer;
+	z-index: 8040;
+}

@@ -191,7 +191,7 @@ public class CICTokenizer implements Tokenizer, Serializable {
         }
 
         ///Code added to dump the extracted CIC information in a file..
-        //dumpCICInformation(content,matches);
+        dumpCICInformation(content,matches);
         return matches;
     }
 
@@ -203,24 +203,24 @@ public class CICTokenizer implements Tokenizer, Serializable {
         //put each elemnt in the triple in comma separated format
         // when done put separator (---)
 
-        File f = new File("/home/chinmay/CICWords.txt");
+        File f = new File("/Users/tech/CICWordsOnly.txt");
         if(!f.exists())
             try {
                 f.createNewFile();
             } catch (IOException e) {
 
             }
-        try(FileWriter fw = new FileWriter("/home/chinmay/CICWords.txt", true);
+        try(FileWriter fw = new FileWriter("/Users/tech/CICWordsOnly.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
-            out.println(content);
-            out.println("########################################################");
+            //out.println(content);
+            //out.println("########################################################");
             //dump cic list in comma separated value.
-            ciclist.forEach(triple-> out.println(triple.first+","+triple.second+","+triple.third));
+            ciclist.forEach(triple-> out.println(triple.first));//+","+triple.second+","+triple.third));
             out.println("--------------------------------------------------------");
         } catch (IOException e) {
-           log.warn("Unable to dump the CIC information in CICWords.txt file");
+           log.warn("Unable to dump the CIC information in CICWordsOnly.txt file");
         }
 
 
