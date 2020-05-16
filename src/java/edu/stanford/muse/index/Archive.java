@@ -188,7 +188,7 @@ public class Archive implements Serializable {
 
     public synchronized  LabelManager getLabelManager() {
         if(labelManager == null)
-            labelManager = new LabelManager();
+            labelManager = new LabelManager(ArchiveReaderWriter.getArchiveIDForArchive(this));
         return labelManager;
     }
 

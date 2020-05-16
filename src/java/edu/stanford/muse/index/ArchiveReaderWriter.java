@@ -190,7 +190,7 @@ public class ArchiveReaderWriter{
             /////////////////Label Mapper/////////////////////////////////////////////////////
             if(mode!= ModeConfig.Mode.DISCOVERY) {
                 log.info("Loading Label Manager");
-                LabelManager labelManager = readLabelManager(labMapDirPath);
+                LabelManager labelManager = readLabelManager(ArchiveReaderWriter.getArchiveIDForArchive(archive),labMapDirPath);
                 archive.setLabelManager(labelManager);
                 log.info("Label Manager loaded successfully");
             }
@@ -220,13 +220,13 @@ public class ArchiveReaderWriter{
         return result;
     }
 
-    private static LabelManager readLabelManager(String labMapDirPath) {
+    private static LabelManager readLabelManager(String archiveID, String labMapDirPath) {
         LabelManager labelManager = null;
         try {
-            labelManager = LabelManager.readObjectFromStream(labMapDirPath);
+            labelManager = LabelManager.readObjectFromStream(archiveID,labMapDirPath);
         } catch (Exception e) {
             Util.print_exception ("Exception in reading label manager from archive, assigning a new label manager", e, log);
-            labelManager = new LabelManager();
+            labelManager = new LabelManager(archiveID);
         }
         return labelManager;
 

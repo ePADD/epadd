@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
  */
 public class LabelManager implements Serializable{
 
+
+
     private static final Logger log =  LogManager.getLogger(LabelManager.class);
     private final static long serialVersionUID = 1L;
     public final static String LABELID_DNT="0";
@@ -52,10 +54,13 @@ public class LabelManager implements Serializable{
     //Map from Label ID's to Label Information
     private Map<String,Label> labelInfoMap=null;
 
-    public LabelManager(){
+    private String archiveID=null;
+
+    public LabelManager(String archiveID){
         docToLabelID = LinkedHashMultimap.create();
         labelInfoMap = new LinkedHashMap<>();
-        InitialLabelSetup();
+        this.archiveID = archiveID;
+        InitialLabelSetup(archiveID);
     }
 
     /** creates and returns a new label with the given details, assigning it a new, unused labelID */
@@ -72,10 +77,10 @@ public class LabelManager implements Serializable{
     }
     // Some test labels
     //By default we have a few in-built system labels.
-    private void InitialLabelSetup(){
+    private void InitialLabelSetup(String archiveID){
         // these are just for testing
-        Label dnt = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.restrict.no-transfer"),LabType.RESTRICTION, LABELID_DNT,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.restrict.no-transfer.mess"),true);
+        Label dnt = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "label-manager.restrict.no-transfer"),LabType.RESTRICTION, LABELID_DNT,
+                edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "label-manager.restrict.no-transfer.mess"),true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
 
         /*//restricted
@@ -89,31 +94,31 @@ public class LabelManager implements Serializable{
         labelInfoMap.put(gen.getLabelID(),gen);
 */
         //reviewed
-        Label reviewed = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.reviewed"),LabType.GENERAL,LABELID_REVIEWED, edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.reviewed.mess"),false);
+        Label reviewed = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.reviewed"),LabType.GENERAL,LABELID_REVIEWED, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.reviewed.mess"),false);
         labelInfoMap.put(reviewed.getLabelID(),reviewed);
 
         //clearForRelease
-        Label readyForRelease = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.clear-for-release"),LabType.GENERAL,LABELID_CFR,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.clear-for-release.mess"),true);
+        Label readyForRelease = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.clear-for-release"),LabType.GENERAL,LABELID_CFR,
+                edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.clear-for-release.mess"),true);
          labelInfoMap.put(readyForRelease.getLabelID(),readyForRelease);
         //label for messages with no date
-        Label nodate = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.no-date"),LabType.GENERAL,LABELID_NODATE,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.no-date.mess"),true);
+        Label nodate = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.no-date"),LabType.GENERAL,LABELID_NODATE,
+                edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.no-date.mess"),true);
         labelInfoMap.put(nodate.getLabelID(),nodate);
         //label for possibly bad date messages.
-        Label possiblybaddate = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.bad-date"),LabType.GENERAL,LABELID_POSS_BADDATE,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.bad-date.mess"),true);
+        Label possiblybaddate = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.bad-date"),LabType.GENERAL,LABELID_POSS_BADDATE,
+                edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.bad-date.mess"),true);
         labelInfoMap.put(possiblybaddate.getLabelID(),possiblybaddate);
         //label for messages with attachments without filename
-        Label attachmentNoName = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.attach-error"),LabType.GENERAL, LABELID_ATTCH_ERRS,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.attach-error.mess"),true);
+        Label attachmentNoName = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.attach-error"),LabType.GENERAL, LABELID_ATTCH_ERRS,
+                edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.attach-error.mess"),true);
         labelInfoMap.put(attachmentNoName.getLabelID(),attachmentNoName);
         //label for othe errors -parsing the messages.
-        Label otherparsingErrors = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.error-while-parsing"),LabType.GENERAL,LABELID_PARSING_ERRS,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.error-while-parsing.mess"),true);
+        Label otherparsingErrors = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.error-while-parsing"),LabType.GENERAL,LABELID_PARSING_ERRS,
+                edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.error-while-parsing.mess"),true);
         labelInfoMap.put(otherparsingErrors.getLabelID(),otherparsingErrors);
-        Label missingCorrespondentErrors = new Label(edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.error-in-corres"),LabType.GENERAL,LABELID_MISSING_CORRESPONDENT,
-                edu.stanford.muse.util.Messages.getMessage("messages","label-manager.general.error-in-corres.mess"),true);
+        Label missingCorrespondentErrors = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.error-in-corres"),LabType.GENERAL,LABELID_MISSING_CORRESPONDENT,
+                edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.error-in-corres.mess"),true);
         labelInfoMap.put(missingCorrespondentErrors.getLabelID(),missingCorrespondentErrors);
     }
 
@@ -127,11 +132,11 @@ public class LabelManager implements Serializable{
     public Pair<Integer,String> removeLabel(String labid){
         String name = getLabel(labid).labName;
         if(docToLabelID.containsValue(labid)){
-            return new Pair(1,edu.stanford.muse.util.Messages.getMessage("messages","label-manager.label-mess.start") + name + edu.stanford.muse.util.Messages.getMessage("messages","label-manager.label-mess.later") );
+            return new Pair(1,edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.label-mess.start") + name + edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.label-mess.later") );
         }else{
             //means this label isnot present in doctOlABelidmap so just remove it from labelinfo
             labelInfoMap.remove(labid);
-            return new Pair(0, edu.stanford.muse.util.Messages.getMessage("messages","label-manager.remove-label") +name);
+            return new Pair(0, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.remove-label") +name);
         }
 
     }
@@ -250,9 +255,9 @@ public class LabelManager implements Serializable{
 
     }
 
-    public static LabelManager readObjectFromStream(String dirname){
+    public static LabelManager readObjectFromStream(String archiveID,String dirname){
         // reading labelinfo map from json format
-        LabelManager lm = new LabelManager();
+        LabelManager lm = new LabelManager(archiveID);
         FileReader reader = null;
         try {
             String str = dirname+ File.separator+JSONFILENAME;
@@ -297,7 +302,7 @@ public class LabelManager implements Serializable{
     Returns a new labelmanager to capture what all labels and docs are being exported from a module
      */
     public LabelManager getLabelManagerForExport(Set<String> docids, Archive.Export_Mode mode){
-        LabelManager tmp = new LabelManager();
+        LabelManager tmp = new LabelManager(archiveID);
         tmp.labelInfoMap.putAll(labelInfoMap);
         tmp.docToLabelID.putAll(docToLabelID);
         if(mode== Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING){
