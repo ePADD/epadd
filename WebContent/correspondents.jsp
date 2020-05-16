@@ -12,12 +12,12 @@
 
 <head>
 
-<% 	if(archive!=null && request.getParameter("archiveID")==null)
+<% 	if(archive != null && request.getParameter("archiveID")==null)
 	request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
 %>
 	<%@include file="header.jspf"%>
 
-	<title> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.head-correspondents")%> </title>
+	<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.head-correspondents")%> </title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -61,7 +61,7 @@
 	<img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-	<h2>Browse Correspondents</h2>
+	<h2><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.head")%></h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
@@ -70,47 +70,15 @@
 	<div class="search-tips" style="display:block">
 
 	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-		Select the Name, Incoming, Outgoing, or Mentions column headers to reorder the list of correspondents.
-		<br>
-		<br>
+		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.appraisal-processing-delivery")%>
 
-		Click on a correspondent’s name to jump to a set of all messages associated with that individual.
-		<br>
-		<br>
-
-		In cases where there is more than one name or email address associated with an individual, ePADD attempts to resolve these to a single correspondent. Hover your cursor over a correspondent’s name to view all names and email addresses associated with that individual.
-		<br>
-		<br>
-
-		<img  class="helpdrawer-images" src="images/graph.svg">
-			Show graph view of the most active correspondents over time.
-		<br>
-		<br>
-
-			<img  class="helpdrawer-images" src="images/edit_correspondent.svg"> Edit correspondents: Merge or unmerge correspondents, designate email addresses as mailing lists, or modify correspondents’ default names.
-		<br>
-		<br>
-
-		<img  class="helpdrawer-images" src="images/download.svg"> Download correspondents list for offline editing. You can edit the list using any text editor, following the instructions outlined on the Edit Correspondents page. When you are done making changes, upload the edited correspondent list (.txt) via the Correspondents page.
-		<br>
-		<br>
-
-		<img  class="helpdrawer-images" src="images/upload.svg"> Upload correspondents list previously (.txt) downloaded for offline editing.
-		<br>
-		<br>
 	<% } else if (ModeConfig.isDiscoveryMode()) { %>
-		Select the Name, Incoming, Outgoing, or Mentions column headers to reorder the list of correspondents.
-		<br>
-		<br>
-
-		Click on a correspondent’s name to view all messages associated with that individual.
-		<br>
-		<br>
+		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.discovery")%>
 		<% } %>
 	</div>
 </nav>
 
-<% writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.profile-correspondents")); %>
+<% writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.profile-correspondents")); %>
 
 <%--
 <div style="text-align:center;display:inline-block;vertical-align:top;margin: auto; width: 100%">
@@ -130,15 +98,15 @@
 
 <div style="margin:auto; width:1100px">
 	<div class="button_bar_on_datatable">
-	<div title=" <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.graph")%> " class="buttons_on_datatable" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><img class="button_image_on_datatable" src="images/graph.svg"></div>
+	<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.graph")%> " class="buttons_on_datatable" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><img class="button_image_on_datatable" src="images/graph.svg"></div>
 		<%if(!ModeConfig.isDiscoveryMode()){%>
-	<div title=" <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.edit")%> " class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/edit_correspondent.svg"></div>
-		<div title=" <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.upload")%> " class="buttons_on_datatable" onclick="$('#correspondent-upload-modal').modal('show');"><img class="button_image_on_datatable" src="images/upload.svg"></div>
+	<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.edit")%> " class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/edit_correspondent.svg"></div>
+		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload")%> " class="buttons_on_datatable" onclick="$('#correspondent-upload-modal').modal('show');"><img class="button_image_on_datatable" src="images/upload.svg"></div>
 		<%}%>
-		<div title=" <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.download")%> " class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.download")%> " class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
 	</div>
 <table id="people" style="display:none">
-	<thead><tr><th> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.name")%> </th><th> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.sent")%> </th><th> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.received")%> </th><th> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.received-from-owner")%> </th></tr></thead>
+	<thead><tr><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.name")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.sent")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.received")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.received-from-owner")%> </th></tr></thead>
 	<tbody>
 	</tbody>
 </table>
@@ -174,7 +142,7 @@
             data: {archiveID: archiveID, data: "addressbook"},
             dataType: 'json',
             success: function (data) {
-                epadd.info('The file AddressBook.txt will be downloaded to your browser\’s download folder.', function () {
+                epadd.info('<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.download-correspondents-message")%>', function () {
                     window.location = data.downloadurl;
                 });
             },
@@ -230,13 +198,13 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.upload.addr-file")%> </h4>
+					<h4 class="modal-title"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload.addr-file")%> </h4>
 				</div>
 				<div class="modal-body">
 					<form id="uploadcorrespondentform" method="POST" enctype="multipart/form-data" >
 						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 						<div class="form-group **text-left**">
-							<label for="addressbookfile" class="col-sm-2 control-label **text-left**"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.upload.file")%> </label>
+							<label for="addressbookfile" class="col-sm-2 control-label **text-left**"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload.file")%> </label>
 							<div class="col-sm-10">
 								<input type="file" id="addressbookfile" name="addressbookfile" value=""/>
 							</div>
@@ -246,7 +214,7 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadCorrespondentHandler();return false;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","correspondents.upload.upload-button")%> <i class="icon-arrowbutton"></i></button>
+					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadCorrespondentHandler();return false;"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload.upload-button")%> <i class="icon-arrowbutton"></i></button>
 
 
 					<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>

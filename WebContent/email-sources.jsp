@@ -18,7 +18,7 @@
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.head-specify-source")%></title>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.head-specify-source")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 
@@ -65,7 +65,7 @@
 
 <!--sidebar content-->
 <nav class="menu1" role="navigation">
-	<h2><%=edu.stanford.muse.util.Messages.test(archiveID,"help", "email-sources.help.head")%></h2>
+	<h2><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "email-sources.help.head")%></h2>
 
 	<!--close button-->
     <a class="nav-toggle1 show-nav1" href="#">
@@ -74,7 +74,7 @@
 
     <!--phrase-->
     <div class="search-tips">
-		<%=edu.stanford.muse.util.Messages.test(archiveID,"help", "email-sources.help.import-info")%>
+		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "email-sources.help.import-info")%>
 	</div>
 </nav>
 <%
@@ -123,16 +123,16 @@ if (archive != null) {
 <div id="all_fields" style="margin-left:170px; width:900px; padding: 10px">
 	<section>
 		<div class="panel">
-			<div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.about-archive")%> </div>
+			<div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.about-archive")%> </div>
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-user"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.owner-name")%> </div>
+				<div class="input-field-label"><i class="fa fa-user"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.owner-name")%> </div>
 				<br/>
 				<div class="input-field">
 					<input title="Name of archive owner" class="form-control" type="text" name="name" value="<%=bestName%>"/>
 				</div>
 			</div>
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-envelope"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.p-email")%></div>
+				<div class="input-field-label"><i class="fa fa-envelope"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.p-email")%></div>
 				<br/>
 				<div class="input-field">
 					<input class="form-control" type="text" name="alternateEmailAddrs" value="<%=bestEmail%>"/>
@@ -140,7 +140,7 @@ if (archive != null) {
 			</div>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-tag"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.archive-title")%></div>
+				<div class="input-field-label"><i class="fa fa-tag"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.archive-title")%></div>
 				<br/>
 				<div class="input-field">
 					<input class="form-control" type="text" name="archiveTitle" value=""/>
@@ -153,19 +153,19 @@ if (archive != null) {
 	<section>
 	<div id="servers" class="accounts panel">
 		<% /* proper field names and ids will be assigned later, when the form is actually submitted */ %>
-		<div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.public-imap")%></div>
+		<div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.public-imap")%></div>
 
 		<div class="account">
 			<input class="accountType" type="text" style="display:none" id="accountType0" name="accountType0" value="email"/>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-envelope"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.public-imap-email")%></div>
+				<div class="input-field-label"><i class="fa fa-envelope"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.public-imap-email")%></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="text" name="loginName0"/></div>
 			</div>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-key"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.public-imap-pass")%><img class="spinner" id="spinner0" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"></div>
+				<div class="input-field-label"><i class="fa fa-key"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.public-imap-pass")%><img class="spinner" id="spinner0" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="password" name="password0"/></div>
 			</div>
@@ -173,7 +173,7 @@ if (archive != null) {
 		</div>
 		<br/>
 
-		<button style="margin-left:40px" class="btn-default" onclick="add_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.another-public-imap")%></button>
+		<button style="margin-left:40px" class="btn-default" onclick="add_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.another-public-imap")%></button>
 		<br/>
 		<br/>
 	</div> <!--  end servers -->
@@ -182,7 +182,7 @@ if (archive != null) {
 	<section>
 	<div id="private_servers" class="accounts panel">
 		<div class="panel-heading">
-			<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap")%><br/>
+			<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.private-imap")%><br/>
 		</div>
 		<p></p>
 
@@ -191,20 +191,20 @@ if (archive != null) {
 			<input class="accountType" type="text" style="display:none" id="accountType1" name="accountType1" value="email"/>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-server"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap-server")%></div>
+				<div class="input-field-label"><i class="fa fa-server"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.private-imap-server")%></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="text" name="server1"/></div>
 			</div>
 			<br/>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-envelope"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap-email")%></div>
+				<div class="input-field-label"><i class="fa fa-envelope"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.private-imap-email")%></div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="text" name="loginName1"/></div>
 			</div>
 
 			<div class="div-input-field">
-				<div class="input-field-label"><i class="fa fa-key"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.private-imap-pass")%> <img class="spinner" id="spinner1" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"><br/>
+				<div class="input-field-label"><i class="fa fa-key"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.private-imap-pass")%> <img class="spinner" id="spinner1" src="images/spinner3-black.gif" width="15" style="margin-left:10px;visibility:hidden"><br/>
 				</div>
 				<br/>
 				<div class="input-field"><input class="form-control" type="password" name="password1"/></div>
@@ -213,7 +213,7 @@ if (archive != null) {
 
 		</div>
 		<br/>
-		<button style="margin-left:40px" class="btn-default" onclick="add_private_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.another-private-imap")%></button>
+		<button style="margin-left:40px" class="btn-default" onclick="add_private_server(); return false;"><i class="fa fa-plus"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.another-private-imap")%></button>
 		<br/>
 		<br/>
 
@@ -224,14 +224,14 @@ if (archive != null) {
 	<section>
 		<div id="mboxes" class="accounts panel">
 			<div class="panel-heading">
-				<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.mbox-file")%><br/>
+				<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.mbox-file")%><br/>
 			</div>
 
 			<% /* all mboxes folders will be in account divs here */ %>
 			<div class="account">
 				<input class="accountType" type="text" style="display:none" name="accountType2" value="mbox"/>
 				<div class="div-input-field">
-					<div class="input-field-label"><i class="fa fa-folder-o"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.f-location")%></div>
+					<div class="input-field-label"><i class="fa fa-folder-o"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.f-location")%></div>
 					<br/>
 					<div class="input-field" style="width:800px"> <!-- override default 350px width because we need a wider field and need browse button on side-->
                         <div class="form-group col-sm-8">
@@ -239,14 +239,14 @@ if (archive != null) {
                         </div>
                         <div class="form-group col-sm-4">
                             <button style="height:37px" class="browse-button btn-default"><i class="fa fa-file"></i> <!-- special height for this button to make it align perfectly with input box. same height is used in export page as well -->
-                                <span><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.browse")%></span>
+                                <span><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.browse")%></span>
                             </button>
                         </div>
 					</div>
 					<br/>
 				</div>
 				<div class="div-input-field">
-					<div class="input-field-label"><i class="fa fa-bullseye"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.source-name")%></div>
+					<div class="input-field-label"><i class="fa fa-bullseye"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.source-name")%></div>
 					<br/>
 					<div class="input-field">
 						<input class="form-control" type="text" name="emailSource2" value=""/>
@@ -256,14 +256,14 @@ if (archive != null) {
 				<br/>
 			</div> <!--  end account -->
 			<br/>
-			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.add-folder")%></button>
+			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.add-folder")%></button>
 			<br/>
 			<br/>
 		</div>
 	</section>
 
 	<div style="text-align:center;margin-top:20px">
-		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.next")%> <i class="icon-arrowbutton"></i> </button>
+		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.next")%> <i class="icon-arrowbutton"></i> </button>
 	</div>
 </div> <!--  all fields -->
 

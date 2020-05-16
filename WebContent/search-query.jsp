@@ -13,7 +13,7 @@
 
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.head-search")%> </title>
+	<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.head-search")%> </title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -50,13 +50,13 @@
 
 <script>epadd.nav_mark_active('Search');</script>
 
-<%writeProfileBlock(out, false, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.profile-search"), 900);%>
+<%writeProfileBlock(out, false, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.profile-search"), 900);%>
 
 <div class="nav-toggle1 sidebar-icon">
 	<img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-	<h2><b><%=edu.stanford.muse.util.Messages.test(archiveID,"help","search-query.help.head")%></b></h2>
+	<h2><b><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "search-query.help.head")%></b></h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
@@ -65,11 +65,11 @@
 	<div class="search-tips" style="display:block">
 
 		<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","search-query.help.appraisal-processing-delivery")%>
+			<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "search-query.help.appraisal-processing-delivery")%>
 
 
 		<% } else if (ModeConfig.isDiscoveryMode()) { %>
-			<%=edu.stanford.muse.util.Messages.test(archiveID,"help","search-query.help.discovery")%>
+			<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "search-query.help.discovery")%>
 		<% } %>
 	</div>
 </nav>
@@ -79,11 +79,11 @@
 
 <div style="text-align:center; margin:auto; width:900px;">
 	<div style="width:100%;margin-bottom:20px;">
-		<a id="simple-search-header"  class="search-header" > <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.simple-title")%> </a>
-		<a id="query-generator-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-entity-title")%> </a>
+		<a id="simple-search-header"  class="search-header" > <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.simple-title")%> </a>
+		<a id="query-generator-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.multi-entity-title")%> </a>
 		<% if(!ModeConfig.isPublicMode()){%>
-		<a id="term-search-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-term-title")%> </a>
-		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.correspondent-title")%> </a>
+		<a id="term-search-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.multi-term-title")%> </a>
+		<a id="correspondent-list-search-header" class="search-header" style="margin-left:40px;"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.correspondent-title")%> </a>
 		<%}%>
 	</div>
 
@@ -93,7 +93,7 @@
 			//archiveID in all those forms where POST was used to invoke the server page.
 	--%>
 		<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<input style="width:900px" name="term" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.simple-search-description")%>"/>
+			<input style="width:900px" name="term" placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.simple-search-description")%>"/>
 			<div style="display:none">
 				<input type="hidden" name="adv-search"/>
 				<input type="checkbox" name="termBody" checked>
@@ -105,7 +105,7 @@
 			<br/>
 
 
-			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
+			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 		</form>
 	</div>
 <p>
@@ -113,10 +113,10 @@
 	<div style="display:none" id="term-search">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<textarea placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-term-search-description")%>" name="refTextTerms" id="refTextTerms"  style="width:900px"  rows="10"></textarea>
+			<textarea placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.multi-term-search-description")%>" name="refTextTerms" id="refTextTerms" style="width:900px" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
-				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 			</div>
 		</form>
 	</div>
@@ -124,10 +124,10 @@
 	<div style="display:none" id="query-generator">
 		<form method="post" action="query-generator" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<textarea placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.multi-entity-search-description")%>" name="refText" id="refText" style="width:900px"  rows="10"></textarea>
+			<textarea placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.multi-entity-search-description")%>" name="refText" id="refText" style="width:900px" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
-				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 			</div>
 		</form>
 	</div>
@@ -135,16 +135,16 @@
 	<div style="display:none" id="correspondent-list-search">
 		<form method="post" action="browse" accept-charset="UTF-8">
 			<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
-			<textarea placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.correspondent-list-search-description")%>" name="correspondentList" id="correspondentList" style="width:900px" rows="10"></textarea>
+			<textarea placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.correspondent-list-search-description")%>" name="correspondentList" id="correspondentList" style="width:900px" rows="10"></textarea>
 			<br/>
 			<div style="text-align:center">
-				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
+				<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.search")%> <i class="icon-arrowbutton"></i></button>
 			</div>
 		</form>
 	</div>
 
 	<br/>
-	<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.pre-advanced-text")%>  <a href="advanced-search?archiveID=<%=archiveID%>"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "search-query.advanced-search")%></a>.
+	<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.pre-advanced-text")%>  <a href="advanced-search?archiveID=<%=archiveID%>"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.advanced-search")%></a>.
 	<br/>
 	<br/>
 	<br/>

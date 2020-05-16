@@ -2,13 +2,17 @@
 <%@page trimDirectiveWhitespaces="true"%>
 <!DOCTYPE HTML>
 <html>
+
+<script  src="js/jquery-1.12.1.min.js"></script>
+<%@include file="header.jspf"%>
+
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Search</title>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.head-search")%></title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<script  src="js/jquery-1.12.1.min.js"></script>
+	<%-- Jquery was present here earlier--%>
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -20,23 +24,23 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<%@include file="header.jspf"%>
+<%-- Header.jspf file was present here --%>
 <br/>
 <br/>
 
 <div style="text-align:center; margin:auto; width:600px;">
 	<div style="width:100%;margin-bottom:20px;">
-		Cross-collection entity search
+		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.entity-search")%>
 	</div>
 
 	<div id="cross-collection-search" style="text-align:center">
 		<form method="get" action="cross-collection-search">
 
-			<input id="xcoll-search" name="term" size="80" placeholder="search query"/>
+			<input id="xcoll-search" name="term" size="80" placeholder=' <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.search-placeholder")%> '/>
 			<br/>
 			<br/>
 
-			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go">Search <i class="icon-arrowbutton"></i></button>
+			<button class="btn btn-cta" style="margin-top: 5px" type="submit" name="Go"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.search-button")%> <i class="icon-arrowbutton"></i></button>
 
 		</form>
 	</div>

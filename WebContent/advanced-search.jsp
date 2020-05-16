@@ -11,7 +11,7 @@
 <%@include file="header.jspf"%>
 <head>
 	<%--date time picker component used from http://eonasdan.github.io/bootstrap-datetimepicker/--%>
-    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.head-advanced-search")%></title>
+    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.head-advanced-search")%></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8">
@@ -73,7 +73,7 @@
 <body>
 	<%-- The Header.jps was included here --%>
 	<script>epadd.nav_mark_active('Search');</script>
-	<% writeProfileBlock(out, archive,edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.manage-search"));%>
+	<% writeProfileBlock(out, archive,edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.manage-search"));%>
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
@@ -86,7 +86,7 @@
 			<!--row-->
 			<div class="row">
 				<div class="heading-wraper">
-					<h1><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.advanced-search")%></h1>
+					<h1><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.advanced-search")%></h1>
 					<!--sidebar icon-->
 					<div class="nav-toggle1 sidebar-icon">
 						<img src="images/sidebar.png" alt="sidebar">
@@ -165,7 +165,7 @@
 				<!--Text-->
 				<div class="text search-wraper">
 
-					<h4><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.text")%></h4><br/>
+					<h4><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.text")%></h4><br/>
 
 					<div class="row">
 						<!--message-->
@@ -173,7 +173,7 @@
 
 							<!--input form-->
 							<div class="form-group">
-								<label for="term"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.terms")%></label>
+								<label for="term"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.terms")%></label>
 								<input name="term" id="term" type="text" class="form-control">
 							</div>
 
@@ -186,14 +186,14 @@
 									<div class="checkbox-inline">
 										<label>
 											<input type="checkbox" name="termBody" checked>
-											<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.search-body")%></span>
+											<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.search-body")%></span>
 										</label>
 									</div>
 
 									<div class="checkbox-inline">
 										<label>
 											<input type="checkbox" name="termSubject" checked>
-											<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.search-subject")%></span>
+											<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.search-subject")%></span>
 										</label>
 									</div>
 
@@ -201,14 +201,14 @@
                                         <div class="checkbox-inline">
                                             <label>
                                                 <input type="checkbox" name="termAttachments" checked>
-                                                <span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.search-attachments")%></span>
+                                                <span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.search-attachments")%></span>
                                             </label>
                                         </div>
 
                                         <div class="checkbox-inline">
                                             <label>
                                                 <input type="checkbox" name="termOriginalBody" checked>
-                                                <span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.search-original-text")%></span>
+                                                <span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.search-original-text")%></span>
                                             </label>
                                         </div>
                                     <% } %>
@@ -230,13 +230,13 @@
                     <br/>
 					<div class="row">
 						<div class="form-group col-sm-12">
-							<label for="entity"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.entity")%></label>
+							<label for="entity"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.entity")%></label>
 							<input id="entity" name="entity" type="text" class="form-control">
 						</div>
 						<div class="checkbox-inline">
 							<label>
 								<input type="checkbox" name="expanded" checked>
-								<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.expand-to-other-entities")%></span>
+								<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.expand-to-other-entities")%></span>
 							</label>
 						</div>
 					</div>
@@ -253,37 +253,37 @@
 
 				<!--Correspondent-->
 				<div class="correspondent search-wraper">
-					<h4><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.correspondents")%></h4>
+					<h4><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.correspondents")%></h4>
 
 					<!--To-->
 					<div class="row">
 						<div class="form-group col-sm-12">
-							<label for="correspondent"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.name-or-email")%></label>
+							<label for="correspondent"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.name-or-email")%></label>
 							<input id="correspondent" name="correspondent" type="text" class="form-control">
 						</div>
 
 						<div class="checkbox-inline">
 							<label style="margin-left:10px;">
 								<input type="checkbox" name="correspondentTo" checked>
-								<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.to")%></span>
+								<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.to")%></span>
 							</label>
 						</div>
 						<div class="checkbox-inline">
 							<label style="margin-left:10px;">
 								<input type="checkbox" name="correspondentFrom" checked>
-								<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.from")%></span>
+								<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.from")%></span>
 							</label>
 						</div>
 						<div class="checkbox-inline">
 							<label style="margin-left:10px;">
 								<input type="checkbox" name="correspondentCc" checked>
-								<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.cc")%></span>
+								<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.cc")%></span>
 							</label>
 						</div>
 						<div class="checkbox-inline">
 							<label style="margin-left:10px;">
 								<input type="checkbox" name="correspondentBcc" checked>
-								<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.bcc")%></span>
+								<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.bcc")%></span>
 							</label>
 						</div>
 					</div>
@@ -302,24 +302,24 @@
 					<div class="row">
 						<!--mailing list-->
 						<div class="form-group col-sm-6">
-							<label for="mailing-list"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.mailing-list")%></label>
+							<label for="mailing-list"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.mailing-list")%></label>
 
 							<fieldset id="mailing-list" class="comman-radio">
 								<legend class="sr-only">Mailing lists</legend>
 
 								<label class="radio-inline">
 									<input type="radio" name="mailingListState" value="yes">
-									<span class="text-radio"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.yes")%></span>
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.yes")%></span>
 								</label>
 
 								<label class="radio-inline">
 									<input type="radio" name="mailingListState" value="no">
-									<span class="text-radio"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.no")%></span>
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.no")%></span>
 								</label>
 
 								<label class="radio-inline">
 									<input id="mailingListState-either" type="radio" name="mailingListState" value="either" checked>
-									<span class="text-radio"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.either")%></span>
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.either")%></span>
 								</label>
 
 							</fieldset>
@@ -332,7 +332,7 @@
 				<!--Attachment-->
                 <% if (!ModeConfig.isDiscoveryMode()) { %>
 	                <div class="attachments search-wraper clearfix">
-					<h4><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.attachments")%></h4>
+					<h4><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.attachments")%></h4>
 					<!--form-wraper-->
 					<div class="form-wraper clearfix">
 
@@ -342,7 +342,7 @@
 
 								<!--input box-->
 								<div class="form-group">
-									<label for="attachmentFilename"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-name")%></label>
+									<label for="attachmentFilename"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-name")%></label>
 									<input name="attachmentFilename" id="attachmentFilename" type="text" class="form-control">
 								</div>
 
@@ -354,7 +354,7 @@
 										<div class="checkbox-inline">
 											<label>
 												<input id="attachmentFilenameRegex" name="attachmentFilenameRegex" type="checkbox">
-												<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.reg-ex")%></span>
+												<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.reg-ex")%></span>
 											</label>
 										</div>
 
@@ -363,14 +363,14 @@
 							</div>
 							<!--File Size-->
 							<div class="form-group col-sm-6">
-								<label for="attachmentFilesize"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-size")%></label>
+								<label for="attachmentFilesize"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-size")%></label>
 								<select id="attachmentFilesize" name="attachmentFilesize" class="form-control selectpicker">
-									<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
-									<option value="1"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-size.less-than-five-kb")%></option>
-									<option value="2"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-size.five-kb-twenty-kb")%></option>
-									<option value="3"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-size.twenty-kb-hundred-kb")%></option>
-									<option value="4"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-size.hundred-kb-two-mb")%></option>
-									<option value="5"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.file-size.more-than-two-mb")%></option>
+									<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
+									<option value="1"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-size.less-than-five-kb")%></option>
+									<option value="2"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-size.five-kb-twenty-kb")%></option>
+									<option value="3"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-size.twenty-kb-hundred-kb")%></option>
+									<option value="4"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-size.hundred-kb-two-mb")%></option>
+									<option value="5"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.file-size.more-than-two-mb")%></option>
 								</select>
 							</div>
 						</div>
@@ -382,9 +382,9 @@
 						<div class="row">
 
 						<div class="form-group col-sm-6">
-								<label for="attachmentType"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.type")%></label>
+								<label for="attachmentType"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.type")%></label>
 								<select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
-									<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+									<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
 									<%
 										for (Map.Entry<String,String> opt : attachmentTypeOptions.entrySet()){
 											if(opt.getKey().toLowerCase().equals(opt.getValue().toLowerCase())){
@@ -401,7 +401,7 @@
 
 							<!--Extension-->
 							<div class="form-group col-sm-6">
-								<label for="attachmentExtension"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.other-extensions")%></label>
+								<label for="attachmentExtension"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.other-extensions")%></label>
 								<input name="attachmentExtension" id="attachmentExtension" type="text" class="form-control">
 							</div>
 						</div>
@@ -416,7 +416,7 @@
 				<%if(!ModeConfig.isDiscoveryMode()){%>
                 <div class=" actions search-wraper clearfix">
 
-					<h4><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.actions")%></h4>
+					<h4><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.actions")%></h4>
 
 					<!--form-wraper-->
 					<div class="form-wraper clearfix">
@@ -425,14 +425,14 @@
 						<div class="form-group col-sm-6">
 
 							<div class="form-group">
-								<label for="annotation"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.annotation")%></label>
+								<label for="annotation"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.annotation")%></label>
 								<input id="annotation" name="annotation" type="text" class="form-control">
 							</div>
 
 							<div class="checkbox-inline">
 								<label>
 									<input id="anyAnnotationCheck" name="anyAnnotationCheck" type="checkbox">
-									<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.any-annotation")%></span>
+									<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.any-annotation")%></span>
 								</label>
 							</div>
 					    </div>
@@ -442,9 +442,9 @@
 <%	//get general labels
 	Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
 %>
-	<label for="labelIDs"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.labels")%></label>
+	<label for="labelIDs"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.labels")%></label>
 							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
-								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
 								<% if(!ModeConfig.isDeliveryMode()){ %>
 								<optgroup label="Restriction Labels">
 								<%
@@ -462,7 +462,7 @@
 								<%}%>
 								</optgroup>
 								<optgroup label="Expired restrictions (except 'Cleared for release')">
-								<option value="<%=LabelManager.ALL_EXPIRED%>"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.all-restrictions-expired")%></option>
+								<option value="<%=LabelManager.ALL_EXPIRED%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.all-restrictions-expired")%></option>
 								</optgroup>
 							</select>
 
@@ -471,7 +471,7 @@
 							<div class="checkbox-inline">
 								<label>
 									<input id="multiLabelsCheck" name="multiLabelsCheck" type="checkbox">
-									<span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.more-than-one-restriction-label")%></span>
+									<span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.more-than-one-restriction-label")%></span>
 								</label>
 							</div>
 							<%}%>
@@ -483,12 +483,12 @@
                <!--/Actions-->
 				<!--Others-->
 				<div class="others search-wraper">
-					<h4><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.miscellaneous")%></h4>
+					<h4><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.miscellaneous")%></h4>
 					<div class="row">
 
 						<!--Time Range-->
 						<div class="form-group col-sm-6">
-							<label for="time-range"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.time-range")%></label>
+							<label for="time-range"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.time-range")%></label>
 							<div id="time-range" class="date-input-group">
 							<%--	<div class='input-group date' id='startDate'>
 									<input type='text' class="form-control" />
@@ -497,25 +497,25 @@
                     				</span>
 								</div>--%>
 								<input type = "text"  id="startDate" name="startDate" class="form-control" placeholder="YYYY - MM - DD" readonly="true" style="cursor: pointer;background:white;">
-								<label for="endDate"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.time-range-to")%></label>
+								<label for="endDate"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.time-range-to")%></label>
 								<input type = "text"  id="endDate" name="endDate"  class="form-control" placeholder="YYYY - MM - DD" readonly="true" style="cursor:pointer;background:white;">
 							</div>
 						</div>
 
 						<!--Message Senders-->
 						<div class="form-group col-sm-6">
-							<label for="sender"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.message-sender")%></label>
+							<label for="sender"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.message-sender")%></label>
 							<fieldset name="sender" id="sender" class="comman-radio">
 								<legend class="sr-only">Message Sender filters
 								</legend>
 								<label class="radio-inline">
 									<input value="owner" type="radio" name="sender">
-									<span class="text-radio"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.message-sender.owner")%></span>
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.message-sender.owner")%></span>
 								</label>
 
 								<label class="radio-inline">
 									<input id="sender-any" value="any" type="radio" name="sender" checked>
-									<span class="text-radio"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.message-sender.any-one")%></span>
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.message-sender.any-one")%></span>
 								</label>
 <%--
 								<label class="radio-inline">
@@ -529,9 +529,9 @@
 					<!--Email Source-->
 					<div class="row">
 						<div class="form-group col-sm-6">
-							<label for="emailSource"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.email-source")%></label>
+							<label for="emailSource"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.email-source")%></label>
 							<select id="emailSource" name="emailSource" class="form-control selectpicker">
-								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
 								<% Collection<String> emailSources = archive.getAllEmailSources();
 									for (String emailSource : emailSources) { %>
 										<option value="<%=emailSource%>"><%=emailSource%></option>
@@ -541,7 +541,7 @@
 
 						<!--Message Folder-->
 						<div class="form-group col-sm-6">
-							<label for="messageFolder"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.message-folder")%></label>
+							<label for="messageFolder"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.message-folder")%></label>
 							<input name="folder" id="messageFolder" type="text" class="form-control">
 						</div>
 
@@ -550,9 +550,9 @@
                         <div class="row">
                             <!--Lexicons-->
                             <div class="form-group col-sm-6">
-                                <label for="lexiconName"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.lexicons")%></label>
+                                <label for="lexiconName"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.lexicons")%></label>
                                 <select id="lexiconName" name="lexiconName" class="form-control selectpicker">
-                                    <option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+                                    <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
                                     <% Collection<String> lexiconNames = archive.getAvailableLexicons();
                                         for (String lexiconName : lexiconNames) { %>
                                     <option value="<%=lexiconName%>"><%=lexiconName%>
@@ -563,9 +563,9 @@
 
                             <!--Lexicons Category-->
                             <div class="form-group col-sm-6">
-                                <label for="lexiconCategory"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.lexicon-category")%></label>
+                                <label for="lexiconCategory"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.lexicon-category")%></label>
                                 <select id="lexiconCategory" name="lexiconCategory" class="form-control selectpicker">
-                                    <option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+                                    <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
                                 </select>
                             </div>
                         </div>
@@ -574,9 +574,9 @@
 					<div class="row">
 						<!--Lexicons-->
 						<div class="form-group col-sm-6">
-							<label for="entityType"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.entity-type")%></label>
+							<label for="entityType"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.entity-type")%></label>
 							<select id="entityType" name="entityType" class="form-control selectpicker">
-								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
 								<% Set<NEType.Type> entityTypes = archive.getEntityBookManager().getPresentEntityTypesInArchive();
 									for (NEType.Type type : entityTypes) { %>
 										<option value="<%=type.getCode()%>"><%=type.getDisplayName()%></option>
@@ -585,7 +585,7 @@
 						</div>
 
 						<div class="form-group col-sm-6">
-							<label for="uniqueId"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.message-id")%></label>
+							<label for="uniqueId"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.message-id")%></label>
 							<input id="uniqueId" name="uniqueId" type="text" class="form-control">
 							</input>
 						</div>
@@ -595,9 +595,9 @@
 					<div class="row">
 						<!--accessions--, only in modes other than appraisal-->
 						<div class="form-group col-sm-6">
-							<label for="accessionIDs"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.accessions")%></label>
+							<label for="accessionIDs"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.accessions")%></label>
 							<select id="accessionIDs" name="accessionIDs" class="form-control selectpicker">
-								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
+								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
 								<% List<Archive.AccessionMetadata> ams= null;
 								//to avoid the issue of null collecitonmetadata/accessionmetadata when user copies the archive to cprocessing directory
 									//instead of importing it through UI.
@@ -623,12 +623,12 @@
 					<div class="margin-btm  col-sm-6">
 						<!--slect box-->
 						<div class="form-group ">
-							<label for="sortBy"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.sort-results-by")%></label>
+							<label for="sortBy"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.sort-results-by")%></label>
 							<select id="sortBy" class="form-control selectpicker" name="sortBy">
-								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.select")%></option>
-								<option value="relevance"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.most-relevant")%></option>
-								<option value="recent"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.newest-first")%></option>
-								<option value="chronological"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.oldest-first")%></option>
+								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
+								<option value="relevance"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.most-relevant")%></option>
+								<option value="recent"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.newest-first")%></option>
+								<option value="chronological"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.oldest-first")%></option>
 							</select>
 						</div>
 
@@ -655,11 +655,11 @@
 				<!--Search and clear form buttons-->
 				<div class="search-clear-btns">
 
-                    <button class="btn btn-cta" type="submit" id="search-button"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.search")%> <i class="icon-arrowbutton"></i> </button>
+                    <button class="btn btn-cta" type="submit" id="search-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.search")%> <i class="icon-arrowbutton"></i> </button>
 					<!--clear btn-->
 					<button style="margin-left:20px" id="clear-form" class="clear-btn">
 						<img src="images/Clear Form.png" alt="clear-icon">
-						<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "advanced-search.clear-form")%>
+						<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.clear-form")%>
 					</button>
 				</div>
 				<!--/Search and clear form buttons-->

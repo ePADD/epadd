@@ -7,7 +7,7 @@
 <html>
 <head>
     <%@include file="header.jspf"%>
-	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.head-add")%></title>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.head-add")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -47,66 +47,66 @@
                 <div class="panel-heading">Collection: <%=Util.escapeHTML(collectionID)%></div>   <%-- Doubt about change or not --%>
                 <input type="hidden" name="collection" value="<%=Util.escapeHTML(collectionID)%>"/>
             <% } else { %>
-                 <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.new-collection")%></div>
+                 <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.new-collection")%></div>
             <% } %>
 
             <div id="filepicker" >
                 <div class="one-line" id="export-next">
                     <div class="form-group col-sm-10">
-                        <label for="accessionFolder"><i class="fa fa-folder-o"></i> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.accession-folder")%></label>
+                        <label for="accessionFolder"><i class="fa fa-folder-o"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.accession-folder")%></label>
                         <input id="accessionFolder" class="dir form-control" type="text" name="accessionFolder" value=""/>
                     </div>
                     <div class="form-group col-sm-2 picker-buttons">
-                        <button class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.browse-button")%></button>
+                        <button class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.browse-button")%></button>
                     </div>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionID"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.accession-id")%></label>
+                    <label for="accessionID"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.accession-id")%></label>
                     <input id="accessionID" class="dir form-control" type="text" name="accessionID" value=""/>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionTitle"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.accession-title")%></label>
+                    <label for="accessionTitle"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.accession-title")%></label>
                     <input id="accessionTitle" class="dir form-control" type="text" name="accessionTitle" value=""/>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionDate"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.accession-date")%></label>
+                    <label for="accessionDate"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.accession-date")%></label>
                     <input id="accessionDate" class="dir form-control" type="text" name="accessionDate" value=""/>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionScope"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.scope-content")%></label>
+                    <label for="accessionScope"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.scope-content")%></label>
                     <textarea id="accessionScope" style="resize:vertical;height:100px;" class="dir form-control" name="accessionScope"></textarea>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionRights"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.rights-condition")%></label>
+                    <label for="accessionRights"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.rights-condition")%></label>
                     <textarea id="accessionRights" style="resize:vertical;height:100px;" class="dir form-control" name="accessionRights"></textarea>
                 </div>
             </div>
 
             <div class="one-line">
                 <div class="form-group col-sm-12">
-                    <label for="accessionNotes"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.notes")%></label>
+                    <label for="accessionNotes"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.notes")%></label>
                     <textarea id="accessionNotes" style="resize:vertical;height:100px;" class="dir form-control" name="accessionNotes"></textarea>
                 </div>
             </div>
         </div>
         <div style="text-align: center;">
             <div id="spinner-div" style="display:none;text-align:center; position:fixed; left:50%; top:50%"><img style="height:20px" src="images/spinner.gif"/></div>
-            <button class="btn btn-cta" id="gobutton"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "add-accession.import-accession-button")%> <i class="icon-arrowbutton"></i> </button>
+            <button class="btn btn-cta" id="gobutton"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.import-accession-button")%> <i class="icon-arrowbutton"></i> </button>
         </div>
     </section>
     <br/>

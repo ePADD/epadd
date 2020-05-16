@@ -17,7 +17,7 @@
     <%@include file="header.jspf"%>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.head-export")%> </title>
+    <title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.head-export")%> </title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 
@@ -74,7 +74,7 @@
     <img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-    <h2><b>Exporting email</b></h2>
+    <h2><b><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "export.help.head")%></b></h2>
     <!--close button-->
     <a class="nav-toggle1 show-nav1" href="#">
         <img src="images/close.png" class="close" alt="close">
@@ -83,28 +83,12 @@
     <div class="search-tips" style="display:block">
 
         <% if (ModeConfig.isAppraisalMode()) { %>
+            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "export.help.appraisal")%>
 
-        <p>Export to next ePADD module: Export the email archive as a bag for import into the next ePADD module.
+        <% } else if (ModeConfig.isProcessingMode()) { %>
+            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "export.help.processing")%>
 
-        <p>Export attachments: Export all attachments that are not recognized by Apache Tika -- these are the attachments that ePADD does not index or search.  Users may wish to export these attachments to perform further review outside ePADD.
-
-        <p>Export messages: Export all messages, just restricted messages, or just unrestricted messages as an .mbox file.
-
-                <% } else if (ModeConfig.isProcessingMode()) { %>
-        <p>Export to next ePADD module: Export the email archive as a bag for import into the next ePADD module.
-
-        <p>Export attachments: Export all attachments, or just certain attachments. You can also choose to refine the export by just exporting those attachments that are not recognized by Apache Tika -- these are the attachments that ePADD does not index or search.  Users may wish to export these attachments to perform further review outside ePADD.
-
-        <p>Export headers: Export all message headers as a .csv file for network analysis or visualization.
-
-        <p>Export messages: Export all messages, just restricted messages, or just unrestricted messages as an .mbox file.
-
-        <p>Export entities: Export all entities or entities of a particular type as a .csv file for further analysis or visualization.
-
-        <p>Export correspondents: Export confirmed or unconfirmed correspondents as a .csv file. A correspondent can be confirmed as an authorized heading via the Authorities interface.
-
-        <p>Export original text of all non-restricted messages: Export the original text of all non-restricted messages as individual .txt files for further analysis, including topic modeling.
-                <% } %>
+        <% } %>
     </div>
 </nav>
 
@@ -117,7 +101,7 @@
         Set<String> addrs = ab.getOwnAddrs();
         if (addrs.size() > 0)
             bestEmail = addrs.iterator().next();
-        writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages","export.profile-export"));
+        writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.profile-export"));
     }
     if (!ModeConfig.isProcessingMode() && !ModeConfig.isAppraisalMode()) {
 %>
@@ -192,16 +176,16 @@ Error: Export is only available in processing or appraisal modes!
 --%>
     <section>
         <div class="panel">
-            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.next-module")%></div>
+            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.next-module")%></div>
 
             <div class="one-line" id="export-next">
                 <div class="form-group col-sm-8">
-                    <label for="export-next-file"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.specify-location")%></label>
+                    <label for="export-next-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.specify-location")%></label>
                     <input id="export-next-file" class="dir form-control" type="text" name="name" value=""/>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
-                    <button id="export-next-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.browse-button")%></button>
-                    <button id="export-next-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.export-button")%></button>
+                    <button id="export-next-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%></button>
+                    <button id="export-next-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
                 </div>
             </div>
         </div>
@@ -212,7 +196,7 @@ Error: Export is only available in processing or appraisal modes!
 
     <section>
         <div class="panel">
-            <div class="panel-heading"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.export-attachments")%> </div>
+            <div class="panel-heading"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-attachments")%> </div>
 
 
 
@@ -220,7 +204,7 @@ Error: Export is only available in processing or appraisal modes!
                 <div class="checkbox-inline" style="padding:0px 0px 0px 15px">
                     <label>
                         <input type="checkbox" name="unprocessedOption" checked>
-                        <span class="label-text"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.unrecog-by-apache")%></span>
+                        <span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.unrecog-by-apache")%></span>
                     </label>
                 </div>
             </div>
@@ -230,7 +214,7 @@ Error: Export is only available in processing or appraisal modes!
             %>
             <div class="one-line">
                 <div class="advanced-search form-group col-sm-6" style="padding:0px 0px 0px 15px">
-                    <label for="attachmentType"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.file-type")%> </label>
+                    <label for="attachmentType"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.file-type")%> </label>
                     <select name="attachmentType" id="attachmentType" class="form-control multi-select selectpicker" title="Select" multiple>
                         <option value="" selected disabled>Select</option>
                         <%
@@ -249,7 +233,7 @@ Error: Export is only available in processing or appraisal modes!
 
                 <!--Extension-->
                 <div class="form-group col-sm-6">
-                    <label for="attachmentExtension"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.other-extension")%></label>
+                    <label for="attachmentExtension"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.other-extension")%></label>
                     <input id="attachmentExtension" name="attachmentExtension" id="attachmentExtension" type="text" class="form-control">
                 </div>
 
@@ -259,12 +243,12 @@ Error: Export is only available in processing or appraisal modes!
 
             <div class="one-line" id="export-attach">
                 <div class="form-group col-sm-8">
-                    <label for="export-attach-file"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.specify-location")%></label>
+                    <label for="export-attach-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.specify-location")%></label>
                     <input id="export-attach-file" class="dir form-control" type="text" name="name" value=""/>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
-                    <button id="export-attach-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.browse-button")%></button>
-                    <button id="export-attach-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.export-button")%></button>
+                    <button id="export-attach-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%></button>
+                    <button id="export-attach-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
                 </div>
             </div>
 
@@ -336,18 +320,18 @@ Error: Export is only available in processing or appraisal modes!
     <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
     <section>
         <div class="panel" id="export-mbox">
-            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.export-mbox-message")%></div>
+            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-mbox-message")%></div>
             <div class="one-line">
                 <div class="form-group col-sm-8">
                     <select id="export-mbox-options" name="export-mbox-options" class="form-control selectpicker">
-                        <option value="" selected disabled><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.select")%></option>
-                        <option value = "all"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.mess-all")%></option>
-                        <option value = "non-restricted"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.mess-non-restricted")%></option>
-                        <option value = "restricted"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.mess-restricted")%></option>
+                        <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%></option>
+                        <option value = "all"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-all")%></option>
+                        <option value = "non-restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-non-restricted")%></option>
+                        <option value = "restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-restricted")%></option>
                     </select>
                 </div>
                 <div class="form-group col-sm-4">
-                    <button id="export-mbox-do" class="go-button  btn-default"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","export.export-button")%></button>
+                    <button id="export-mbox-do" class="go-button  btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
                 </div>
             </div>
 

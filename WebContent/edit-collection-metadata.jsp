@@ -21,7 +21,7 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/muse.js" type="text/javascript"></script>
 	<script src="js/epadd.js" type="text/javascript"></script>
-	<title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.head-collection-metadata")%></title>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.head-collection-metadata")%></title>
 
 	<style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}
@@ -58,13 +58,13 @@
 	<div style="margin-left: 170px;max-width:850px;">
 	<div class="panel">
         <div class="panel-heading">
-			<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.collection") + Util.escapeHTML(id)%>
+			<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection") + Util.escapeHTML(id)%>
         </div>
 
         <input type="hidden" name="collection" value="<%=Util.escapeHTML(id)%>"/>
 
         <div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.institution")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.institution")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Institution" value="<%=formatMetadataField( cm.institution)%>" class="form-control" type="text" name="institution"/>
@@ -72,7 +72,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.repository")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.repository")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Repository" value="<%=formatMetadataField( cm.repository)%>" class="form-control" type="text" name="repository"/>
@@ -80,7 +80,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.collection-title")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection-title")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Collection title" value="<%=formatMetadataField( cm.collectionTitle)%>" class="form-control" type="text" name="collectionTitle"/>
@@ -88,7 +88,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.short-title")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.short-title")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Short title" value="<%=formatMetadataField( cm.shortTitle)%>" class="form-control" type="text" name="shortTitle"/>
@@ -96,7 +96,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.collection-id")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection-id")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Collection ID" value="<%=formatMetadataField( cm.collectionID)%>" class="form-control" type="text" name="collectionID"/> <!-- this is the institutional collection ID, not ePADD's -->
@@ -104,7 +104,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.aid-link")%>k</div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.aid-link")%>k</div>
 			<br/>
 			<div class="input-field">
 				<input title="Finding aid link" value="<%=formatMetadataField( cm.findingAidLink)%>" class="form-control" type="text" name="findingAidLink"/>
@@ -112,7 +112,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.record-link")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.record-link")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Catalog record link" value="<%=formatMetadataField( cm.catalogRecordLink)%>" class="form-control" type="text" name="catalogRecordLink"/>
@@ -120,7 +120,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.contact-email")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.contact-email")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Contact email" value="<%=formatMetadataField( cm.contactEmail)%>" class="form-control" type="text" name="contactEmail"/>
@@ -130,7 +130,7 @@
 		<br/>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.short-desc")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.short-desc")%></div>
 			<br/>
 			<div class="input-field">
 				<input title="Short description" value="<%=formatMetadataField( cm.shortDescription)%>" class="form-control" type="text" name="shortDescription"/>
@@ -138,7 +138,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.about")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.about")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="About" style="resize:vertical;height:200px;" class="form-control" name="about"><%=formatMetadataField(cm.about)%>
@@ -146,7 +146,7 @@
 			</div>
 		</div>
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.rights-cond")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-cond")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="Rights and conditions" style="resize:vertical;height:200px;" class="form-control" name="rights"><%=formatMetadataField( cm.rights)%>
@@ -154,7 +154,7 @@
 			</div>
 		</div>
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.notes")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.notes")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="Notes" style="resize:vertical;height:200px;" class="form-control" name="notes"><%=formatMetadataField( cm.notes)%>
@@ -163,7 +163,7 @@
 		</div>
 
 		<div class="div-input-field">
-			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.scope-content")%></div>
+			<div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.scope-content")%></div>
 			<br/>
 			<div class="input-field">
 				<textarea title="Scope and Content" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent"><%=formatMetadataField( cm.scopeAndContent)%>
@@ -174,7 +174,7 @@
 		<br/>
 		<br/>
 		<div style="margin-left:40px">
-			<button class="btn btn-cta" id="gobutton"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "edit-collection-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
+			<button class="btn btn-cta" id="gobutton"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
 		</div>
 	</div>
 	</div>

@@ -7,8 +7,12 @@
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
+
+<script src="js/jquery.js"></script>
+<%@include file="header.jspf"%>
+
 <head>
-	<title>Lexicon</title>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.head-lexicon")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -16,7 +20,7 @@
 	<link rel="stylesheet" href="css/sidebar.css">
 	<link rel="stylesheet" href="css/main.css">
 
-	<script src="js/jquery.js"></script>
+<%-- jquery was present here --%>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
@@ -49,10 +53,10 @@
 
 </head>
 <body>
-<%@include file="header.jspf"%>
+<%-- File Header.jspf was present here --%>
 <script>epadd.nav_mark_active('Browse');</script>
 
-<%writeProfileBlock(out, false, archive, "Lexicons", 900);%>
+<%writeProfileBlock(out, false, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.manage-lexicons"), 900);%>
 
 <!--sidebar content-->
 <div class="nav-toggle1 sidebar-icon">
@@ -60,18 +64,13 @@
 </div>
 
 <nav class="menu1" role="navigation">
-	<h2>Lexicon Tips</h2>
+	<h2><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "lexicon-top.help.head")%></h2>
 	<!--close button-->
 	<a class="nav-toggle1 show-nav1" href="#">
 		<img src="images/close.png" class="close" alt="close">
 	</a>
 
-	<p>Lexicons are customizable saved searches containing categories of keywords.
-	<p>Define the default lexicon using the config.properties file.
-	<p>Selecting a lexicon category from this screen will display the messages containing keywords in that category.
-	<p>Select a different lexicon using the Choose Lexicon dropdown.
-	<p>Lexicons can be viewed in detail and edited by selecting the View/Edit Lexicon button.
-	<p>Create a new lexicon by selecting the Create New Lexicon button.
+	<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "lexicon-top.help")%>
 
 </nav>
 <!--/sidebar-->
@@ -91,12 +90,12 @@
 <div style="margin:auto; width:900px">
 	<div class="button_bar_on_datatable">
 		<%if(!ModeConfig.isDiscoveryMode()){%>
-		<div title="Create lexicon" class="buttons_on_datatable" id="create-lexicon"><img class="button_image_on_datatable" src="images/add_lexicon.svg"></div>
-		<div title="Upload lexicon" class="buttons_on_datatable" id="import-lexicon" ><img class="button_image_on_datatable" src="images/upload.svg"></div>
+		<div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.create-lexicon")%>" class="buttons_on_datatable" id="create-lexicon"><img class="button_image_on_datatable" src="images/add_lexicon.svg"></div>
+		<div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.upload-lexicon")%>" class="buttons_on_datatable" id="import-lexicon"><img class="button_image_on_datatable" src="images/upload.svg"></div>
 		<%}%>
 	</div>
 	<table id="table">
-		<thead><th>Lexicon</th><th>Number of Categories</th></thead>
+		<thead><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.lexicon")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.number-of-categories")%></th></thead>
 		<tbody>			
 			<%
 			for (int j=0; j<lexiconsWithCategories.length();j++) {
@@ -117,13 +116,13 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Upload a lexicon file</h4>
+					<h4 class="modal-title"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.upload-head")%></h4>
 				</div>
 				<div class="modal-body">
 					<form id="uploadlexiconform" method="POST" enctype="multipart/form-data" >
 						<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
 						<div class="form-group **text-left**">
-							<label for="lexicon-name" class="col-sm-2 control-label **text-left**">Name</label>
+							<label for="lexicon-name" class="col-sm-2 control-label **text-left**"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.upload-name")%></label>
 							<div class="col-sm-10">
 								<input id="lexicon-name" class="dir form-control" type="text"  value="" name="lexicon-name"/>
 							</div>
@@ -131,7 +130,7 @@
 						&nbsp;&nbsp;
 						<!--
 						<div class="form-group **text-left**">
-							<!-- <label for="lexicon-lang" class="col-sm-2 control-label **text-left**">Language</label>
+							<label for="lexicon-lang" class="col-sm-2 control-label **text-left**">Language</label>
 							<div class="col-sm-10">
 								<input type="hidden" id="lexicon-lang" class="dir form-control" value="english" name="lexicon-lang"/>
 							</div>
@@ -141,7 +140,7 @@
 					<input type="hidden" id="lexicon-lang" class="dir form-control" value="english" name="lexicon-lang"/>
 
 					<div class="form-group">
-							<label for="lexiconfile" class="col-sm-2 control-label **text-left**">File</label>
+							<label for="lexiconfile" class="col-sm-2 control-label **text-left**"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.upload-file")%></label>
 							<div class="col-sm-10">
 								<input type="file" id="lexiconfile" name="lexiconfile" value=""/>
 							</div>
@@ -151,7 +150,7 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadLexiconHandler();return false;">Upload <i class="icon-arrowbutton"></i></button>
+					<button id="upload-lexicon-btn" class="btn btn-cta" onclick="uploadLexiconHandler();return false;"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.upload-button")%> <i class="icon-arrowbutton"></i></button>
 
 
 					<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
@@ -190,7 +189,7 @@
 
 
         $('#create-lexicon').click (function() {
-            var lexiconName = prompt ('Enter the name of the new lexicon:');
+            var lexiconName = prompt ('Enter the name of new lexicon:');
             if (!lexiconName)
                 return;
             window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;

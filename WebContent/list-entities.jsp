@@ -18,8 +18,12 @@ Browse page for entities based on fine types
 %>
 <!DOCTYPE HTML>
 <html>
+
+<script src="js/jquery.js"></script>
+<%@include file="header.jspf"%>
+
 <head>
-    <title><%=entityType%> entities</title>
+    <title><%=entityType%> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.head-entities")%> </title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -27,7 +31,7 @@ Browse page for entities based on fine types
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
 
-    <script src="js/jquery.js"></script>
+   <%-- Jquery was present here earlier --%>
     <script src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/modernizr.min.js"></script>
@@ -39,37 +43,23 @@ Browse page for entities based on fine types
     </style>
 </head>
 <body>
-<%@include file="header.jspf"%>
+<%-- Header.jspf file was included here earlier --%>
     <script>epadd.nav_mark_active('Browse');</script>
-    <%writeProfileBlock(out, archive, "List "+entityType+" entities");%>
+    <%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.manage-list") + entityType + " " + edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.manage-entities") );%>
 
 
     <div class="nav-toggle1 sidebar-icon">
         <img src="images/sidebar.png" alt="sidebar">
     </div>
     <nav class="menu1" role="navigation">
-        <h2><b>Browsing Entities</b></h2>
+        <h2><b> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "list-entities.help.head")%> </b></h2>
         <!--close button-->
         <a class="nav-toggle1 show-nav1" href="#">
             <img src="images/close.png" class="close" alt="close">
         </a>
 
         <div class="search-tips" style="display:block">
-            This screen lists all entities that ePADD has recognized and associated with a particular entity type bootstrapped from DBpedia, along with the number of messages containing that entity.
-            <br/>
-            <br/>
-
-            Entities with a score of 1 have an exact match in DBpedia.
-            <br/>
-            <br/>
-
-            Entities with a score of less than 1 do not have an exact match in DBPedia. ePADD learns from the entities associated with the entity type and guesses that these entities may also be associated with that type.
-            <br/>
-            <br/>
-
-            Select an entity to view the set of all messages containing that entity.
-            <br/>
-            <br/>
+            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "list-entities.help")%>
 
         </div>
     </nav>
@@ -86,14 +76,14 @@ Browse page for entities based on fine types
         %>
 
         <div class="button_bar_on_datatable">
-                <div title="Download all <%=entityType%> entities as CSV" class="buttons_on_datatable" onclick="exportEntityHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+                <div title=' <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.download-all") + entityType + edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.entities-as-csv")%>' class="buttons_on_datatable" onclick="exportEntityHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
             <%if(!ModeConfig.isDiscoveryMode()){%>
                 <div title="Edit entities" class="buttons_on_datatable" onclick="window.location='edit-entities?archiveID=<%=archiveID%>&type=<%=type%>'"><img class="button_image_on_datatable" src="images/edit_lexicon.svg"></div>
             <%}%>
         </div>
 
         <table id="entities" style="display:none">
-            <thead><th>Entity</th><th>Score</th><th>Messages</th></thead>
+            <thead><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.entity")%> </th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.score")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.messages")%></th></thead>
             <tbody>
             </tbody>
         </table>

@@ -14,7 +14,7 @@
 
 <head>
 
-    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.head-collection-details")%></title>
+    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.head-collection-details")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -92,7 +92,7 @@
 %>
 
 <div class="collection-detail">
-    <div class="breadcrumbs"> <%=ModeConfig.getModeForDisplay(archiveID)%> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.about-collection")%> </div>
+    <div class="breadcrumbs"> <%=ModeConfig.getModeForDisplay(archiveID)%> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.about-collection")%> </div>
 
     <p>
     <div class="banner-img" style="background-size: contain; background-repeat:no-repeat; background-position: center center; background-image:url('<%=url%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
@@ -105,22 +105,22 @@
 
     <br/>
     <div class="details">
-        <div class="heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.summary")%>
+        <div class="heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.summary")%>
             <% if (ModeConfig.isProcessingMode()) { %>
                 <a href="edit-collection-metadata?collection=<%=id%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
             <% } %>
         </div>
         <hr/>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.institution")%><br/>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.institution")%><br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.institution) ? "Unassigned" : cm.institution)%> </span></b>
             <hr/>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.repository")%><br/>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.repository")%><br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.repository) ? "Unassigned" : cm.repository)%> </span></b>
             <hr/>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.coll-id")%><br/>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.coll-id")%><br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionID) ? "Unassigned" : cm.collectionID)%> </span></b>
             <hr/>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.coll-title")%><br/>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.coll-title")%><br/>
             <b><span class="detail"><%=(Util.nullOrEmpty(cm.collectionTitle) ? "Unassigned" : cm.collectionTitle)%> </span></b>
             <hr/>
         <% if (!Util.nullOrEmpty(cm.accessionMetadatas)) { %>
@@ -128,37 +128,37 @@
                 <hr/>
         <% } %>
             <% if (cm.firstDate != null && cm.lastDate != null) { %>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.date-range")%><br/>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.date-range")%><br/>
         <span class="detail"><b><%=Util.formatDate(cm.firstDate)%></b> to <b><%=Util.formatDate(cm.lastDate)%></b></span>
                 <% if (cm.nHackyDates > 0) { %>
-                   <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.date-undated")%></b>
+                   <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.date-undated")%></b>
             <hr/>
 
                 <% } %>
             <% } %>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.messages")%> <span class="detail"><%=Util.commatize(cm.nDocs)%></span><br/></b>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.messages")%> <span class="detail"><%=Util.commatize(cm.nDocs)%></span><br/></b>
         <%
             int sentbyowner = cm.nOutgoingMessages;
         %>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.sent-by-owner")%> <span class="detail"><b><%=Util.commatize(sentbyowner)%></b></span><br/></b>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.sent-by-owner")%> <span class="detail"><b><%=Util.commatize(sentbyowner)%></b></span><br/></b>
     <%--<% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
                 Incoming: <span class="detail"><b><%=Util.commatize(cm.nIncomingMessages)%></b></span><br/>
             Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
             <% } %>--%>
         <hr/>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.attachments")%> <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.attachments")%> <span class="detail"><%=Util.commatize(cm.nBlobs)%></span>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                     <br/>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.images")%> <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.documents")%> <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
-        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.others")%> <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.images")%> <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.documents")%> <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.others")%> <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
         <hr/>
 
         <% if (!Util.nullOrEmpty(cm.contactEmail)) { /* show contact email, but only if it actually present */ %>
             <p>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.con-email")%><br/>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.con-email")%><br/>
                 <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
             </p>
         <% }
@@ -178,11 +178,11 @@
         <%
             // not handled: if findingAidLink or catalogRecordLink have a double-quote embedded in them!
             if (!Util.nullOrEmpty(cm.findingAidLink)) { %>
-        <a target="_blank" href="<%=cm.findingAidLink%>"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.finding-aid")%></a>
+        <a target="_blank" href="<%=cm.findingAidLink%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.finding-aid")%></a>
         &nbsp;&nbsp;&nbsp;
         <% } %>
         <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
-        <a target="_blank" href="<%=cm.catalogRecordLink%>"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.catalog-rec")%></a>
+        <a target="_blank" href="<%=cm.catalogRecordLink%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.catalog-rec")%></a>
         <br/>
         <% } %>
     </div>
@@ -194,7 +194,7 @@
                 <div style="display:inline-block;overflow:hidden;width:745px"/>
                 <%=cm.collectionTitle%>
                 </div>
-                <button class="collection-enter btn btn-cta"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.enter-button")%> <i class="icon-arrowbutton"></i> </button>
+                <button class="collection-enter btn btn-cta"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.enter-button")%> <i class="icon-arrowbutton"></i> </button>
                 <hr/>
         </div>
 
@@ -204,13 +204,13 @@
 
             <% if (!Util.nullOrEmpty(cm.scopeAndContent)) { %>
                 <br>
-                <b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.scope-content")%>t</b><br/>
+                <b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.scope-content")%>t</b><br/>
                  <%= Util.escapeHTML(cm.scopeAndContent)%>
                 <div class="epadd-separator"></div>
             <% } %>
 
             <% if (!Util.nullOrEmpty(cm.rights)) { %>
-                <b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.rights-cond")%></b><br/>
+                <b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.rights-cond")%></b><br/>
                  <%= Util.escapeHTML(cm.rights)%>
                 <div class="epadd-separator"></div>
 
@@ -218,7 +218,7 @@
 
             <% if (!Util.nullOrEmpty(cm.notes)) { %>
                 <br>
-                <b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.notes")%></b><br/>
+                <b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.notes")%></b><br/>
                 <%= Util.escapeHTML(cm.notes)%>
                 <%--<div class="epadd-separator"></div>--%>
 
@@ -231,28 +231,28 @@
 
                 for (Archive.AccessionMetadata am: cm.accessionMetadatas) { %>
                     <div class="accession">
-                        <div class="accession-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.acc.acc-id")%> <%=formatMetadataField(am.id)%>
+                        <div class="accession-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.acc.acc-id")%> <%=formatMetadataField(am.id)%>
                             <% if(ModeConfig.isProcessingMode()){%>
                             <a style="margin-left: 30px" class="edit-accession-metadata"  data-accessionID="<%=am.id%>" href="#"><img style="height:25px" src="images/edit_summary.svg"/></a>
                             <%}%>
                         </div>
                         <div class="accession-content">
-                            <b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.acc.acc-title")%></b>: <%=formatMetadataField(am.title)%><br/>
+                            <b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.acc.acc-title")%></b>: <%=formatMetadataField(am.title)%><br/>
                             <%--<div class="epadd-separator"></div>--%>
 
                             <%--<b>Date</b>: <%=formatMetadataField(am.date)%><br/><br/>--%>
                             <%if(!Util.nullOrEmpty(am.scope)){%>
                             <div class="epadd-separator"></div>
-                            <p><b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.acc.scope-content")%></b><br/> <%=formatMetadataField(am.scope)%>
+                            <p><b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.acc.scope-content")%></b><br/> <%=formatMetadataField(am.scope)%>
                             <%}%>
                                     <%if(!Util.nullOrEmpty(am.rights)){%>
 
                             <div class="epadd-separator"></div>
-                            <p><b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.acc.rights-cond")%></b><br/> <%=formatMetadataField(am.rights)%>
+                            <p><b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.acc.rights-cond")%></b><br/> <%=formatMetadataField(am.rights)%>
                             <%}%>
                                     <%if(!Util.nullOrEmpty(am.notes)){%>
                             <div class="epadd-separator"></div>
-                            <p><b><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.acc.notes")%></b><br/> <%=formatMetadataField(am.notes)%>
+                            <p><b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.acc.notes")%></b><br/> <%=formatMetadataField(am.notes)%>
                                 <%}%>
                             <%--<div class="epadd-separator"></div>--%>
                         </div>
@@ -264,7 +264,7 @@
         <% if(ModeConfig.isProcessingMode()){%>
         <div class="accession">
             <div class="accession-heading">
-                <a href="add-accession?collection=<%=id%>"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.acc.add-acc")%></a>
+                <a href="add-accession?collection=<%=id%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.acc.add-acc")%></a>
             </div>
         </div>
         <%}%>
@@ -274,7 +274,7 @@
 
         </div>
         <div style="margin-left: 745px">
-            <button class="collection-enter btn btn-cta"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.enter-button")%> <i class="icon-arrowbutton"></i> </button>
+            <button class="collection-enter btn btn-cta"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.enter-button")%> <i class="icon-arrowbutton"></i> </button>
         </div>
 
         <div id="stats"></div>
@@ -293,13 +293,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.image-upload")%></h4>
+                <h4 class="modal-title"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.image-upload")%></h4>
             </div>
             <div class="modal-body">
                 <form id="uploadBannerImageForm" method="POST" enctype="multipart/form-data" >
                     <input type="hidden" value="<%=id%>" name="collectionID"/>
                     <div class="form-group">
-                        <label for="bannerImage" class="col-sm-2 control-label"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.image-file")%></label>
+                        <label for="bannerImage" class="col-sm-2 control-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.image-file")%></label>
                         <div class="col-sm-10">
                             <input type="file" id="bannerImage" name="bannerImage" value=""/>
                         </div>
@@ -309,7 +309,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="upload-btn" class="btn btn-cta" onclick="uploadBannerImageHandler();return false;"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "collection-detail.upload-button")%> <i class="icon-arrowbutton"></i></button>
+                <button id="upload-btn" class="btn btn-cta" onclick="uploadBannerImageHandler();return false;"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.upload-button")%> <i class="icon-arrowbutton"></i></button>
 
 
                 <%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>

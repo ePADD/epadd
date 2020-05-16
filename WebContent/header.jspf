@@ -5,30 +5,30 @@
 <%@page language="java" %>
 
 <%
-	boolean haveArchive=false;
+	boolean haveArchive = false;
 	String archiveID = null;
 	//The following code means haveArchive is false when either archiveID was not passed to the jsp file
 	//or there is no archive in globalDirArchiveMap for the given archiveID (to avoid improper input handling)
-	if(request.getParameter("archiveID")!= null){
-		if(ArchiveReaderWriter.getArchiveForArchiveID(request.getParameter("archiveID"))!=null)
+	if(request.getParameter("archiveID") != null){
+		if(ArchiveReaderWriter.getArchiveForArchiveID(request.getParameter("archiveID")) != null)
 		{
 			archiveID = request.getParameter("archiveID");
-			haveArchive=true;
+			haveArchive = true;
 		}
-	}else if(request.getAttribute("archiveID")!=null){
+	}else if(request.getAttribute("archiveID") != null){
 		archiveID = (String)request.getAttribute("archiveID");
 		haveArchive = true;
 	}
 %>
 
 <%	/* For tabs on the email-sources and browse-top pages */
-	String imp= edu.stanford.muse.util.Messages.test(archiveID,"messages", "appraisal.email-sources.import");
-	String browse= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-browse");
-	String search= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-search");
-	String export= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-export");
-	String save= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-save");
-	String authorities= edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-authorities");
-	String close=edu.stanford.muse.util.Messages.test(archiveID,"messages", "browse-top.title-close");
+	String imp = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.import");
+	String browse = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse");
+	String search = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-search");
+	String export = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-export");
+	String save = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-save");
+	String authorities = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-authorities");
+	String close = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-close");
 %>
 
 <script type="text/javascript" src="js/muse.js"></script>
@@ -74,11 +74,11 @@
 			} else if(!haveArchive) { //display collection tab only if there is no archive opened currently. Note that the first and second
 				//conditions (if and else part) can be true simultaneously. Therefore the ordering of these two is important because we want
 				//to display import tab in the appraisal mode and collection tab in other modes.
-				out.println("<li style='display:inline'><a href='collections'>"+ edu.stanford.muse.util.Messages.getMessage("messages", "collections.title-collection")+"</a></li>");
+				out.println("<li style='display:inline'><a href='collections'>"+ edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "collections.title-collection")+"</a></li>");
 			}
 
 			if (ModeConfig.isProcessingMode() && !haveArchive) {
-				out.println("<li style='display:inline'><a href='add-accession'>"+edu.stanford.muse.util.Messages.getMessage("messages", "collections.title-add") +"</a></li>");
+				out.println("<li style='display:inline'><a href='add-accession'>"+edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "collections.title-add") +"</a></li>");
 //				out.println("<li style='display:inline'><a href='email-sources'>New</a></li>");
 			}
 
@@ -102,11 +102,11 @@
 			        <li style="display:inline"><a id="close-save-archive" href="#"><%=close%></a></li>
                 <% } %>
 			<% if (ModeConfig.isDiscoveryMode()) { %>
-			<li style="display:inline"><a id="close-only-archive" href="#">Close</a></li>
+			<li style="display:inline"><a id="close-only-archive" href="#"><%=close%></a></li>
 			<% }
 			} else {
 				if (ModeConfig.isDiscoveryMode()) { %>
-					<li style="display:inline"><a href="cross-collection-search-query">Search</a></li>
+					<li style="display:inline"><a href="cross-collection-search-query"><%=search%></a></li>
 				<% }
 			}
 			%>
@@ -159,14 +159,14 @@
 					%>
 					<%}%>
 
-					<li><a target="_blank" href="https://docs.google.com/document/d/1CVIpWK5FNs5KWVHgvtWTa7u0tZjUrFrBHq6_6ZJVfEA/edit"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.documentation")%></a></li>
-					<li><a target="_blank" href="https://epadd.nimeyo.com"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.user-forum")%></a></li>
+					<li><a target="_blank" href="https://docs.google.com/document/d/1CVIpWK5FNs5KWVHgvtWTa7u0tZjUrFrBHq6_6ZJVfEA/edit"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.documentation")%></a></li>
+					<li><a target="_blank" href="https://epadd.nimeyo.com"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.user-forum")%></a></li>
 
 					<% if (!ModeConfig.isDiscoveryMode()) { %>
-						<li><a href="debug?archiveID=<%=archiveID%>"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.report-problem")%></a></li>
+						<li><a href="debug?archiveID=<%=archiveID%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.report-problem")%></a></li>
 					<% } %>
 <!--					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD mode</a></li> -->
-					<li><a id="about" href="about"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","help.about-epadd")%></a></li>
+					<li><a id="about" href="about"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.about-epadd")%></a></li>
 		 		</ul>
 	 		</li>
 		</ul>

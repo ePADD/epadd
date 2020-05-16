@@ -23,8 +23,8 @@
 
             String collectionInfo = "";
             if (!ModeConfig.isAppraisalMode()) {
-                collectionInfo = edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.institution")+ (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
-                collectionInfo += "<br/>" + edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.collection-id") + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
+                collectionInfo = edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.institution")+ (Util.nullOrEmpty(archive.collectionMetadata.institution) ? "Unassigned" : archive.collectionMetadata.institution);
+                collectionInfo += "<br/>" + edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.collection-id") + (Util.nullOrEmpty(archive.collectionMetadata.collectionID) ? "Unassigned" : archive.collectionMetadata.collectionID);
             }
 
             String title = "";
@@ -76,23 +76,23 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.info-about-archive")%></h4>
+                <h4 class="modal-title"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.info-about-archive")%></h4>
             </div>
             <div class="modal-body">
                 <% if (!Util.nullOrEmpty(cm.institution)) { %>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.institution")%><br/>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.institution")%><br/>
                 <b><span class="detail"><%= cm.institution%> </span></b>
                 <hr/>
                 <% } %>
 
                 <% if (!Util.nullOrEmpty(cm.repository)) { %>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.repository")%><br/>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.repository")%><br/>
                 <b><span class="detail"><%= cm.repository%> </span></b>
                 <hr/>
                 <% } %>
 
                 <% if (!Util.nullOrEmpty(cm.collectionID)) { %>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.collection-id")%><br/>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.collection-id")%><br/>
                 <b><span class="detail"><%= cm.collectionID%> </span></b>
                 <hr/>
                 <% } %>
@@ -107,27 +107,27 @@
                     Set<String> archiveOwnerEmails =  ArchiveReaderWriter.getArchiveForArchiveID(archiveID).getAddressBook().getOwnAddrs();
                 %>
                 <% if(archiveOwnerNames.size()!=0){%>
-                    <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.archive-owner-name")%>
+                    <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.archive-owner-name")%>
                 <span class="detail"><b><%=archiveOwnerNames.iterator().next()%></b></span><br>
                 <%}%>
                 <% if(archiveOwnerEmails.size()!=0){%>
-                    <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.archive-owner-email")%>
+                    <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.archive-owner-email")%>
                 <span class="detail"><b><%=archiveOwnerEmails.iterator().next()%></b></span><br>
                 <%}%>
 
                 <% if (cm.firstDate != null && cm.lastDate != null) { %>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.date-range")%><br/>
-                <span class="detail"><b><%=Util.formatDate(cm.firstDate)%></b> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.to")%> <b><%=Util.formatDate(cm.lastDate)%></b></span>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.date-range")%><br/>
+                <span class="detail"><b><%=Util.formatDate(cm.firstDate)%></b> <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.to")%> <b><%=Util.formatDate(cm.lastDate)%></b></span>
                 <% if (cm.nHackyDates > 0) { %>
-                <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.undated")%></b>
+                <br/><b><%=Util.pluralize(cm.nHackyDates, "message")%> <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.undated")%></b>
                 <hr/>
                 <% } %>
                 <% } %>
 <%
     int sentbyowner = ArchiveReaderWriter.getArchiveForArchiveID(archiveID).getAddressBook().getMsgsSentByOwner();
 %>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.messages")%> <span class="detail"><b><%=Util.commatize(cm.nDocs)%></b></span><br/></b>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.sent-by-owner")%> <span class="detail"><b><%=Util.commatize(sentbyowner)%></b></span><br/></b>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.messages")%> <span class="detail"><b><%=Util.commatize(cm.nDocs)%></b></span><br/></b>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.sent-by-owner")%> <span class="detail"><b><%=Util.commatize(sentbyowner)%></b></span><br/></b>
 
             <%-- <% if (cm.nIncomingMessages > 0 || cm.nOutgoingMessages > 0) { %>
                 <br/>
@@ -135,12 +135,12 @@
                 Outgoing: <span class="detail"><b><%=Util.commatize(cm.nOutgoingMessages)%></b></span>
                 <% } %>
                 <hr/>
-    --%>        <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.attachments")%> <span class="detail"><b><%=Util.commatize(cm.nBlobs)%></b></span></b>
+    --%>        <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.attachments")%> <span class="detail"><b><%=Util.commatize(cm.nBlobs)%></b></span></b>
                 <% if (cm.nDocBlobs > 0 || cm.nImageBlobs > 0 || cm.nOtherBlobs > 0) { %>
                 <br/>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.images")%> <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.documents")%> <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
-                <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.others")%> <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.images")%> <b><span class="detail"><%=Util.commatize(cm.nImageBlobs)%></span><br/></b>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.documents")%> <b><span class="detail"><%=Util.commatize(cm.nDocBlobs)%></span><br/></b>
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.others")%> <b><span class="detail"><%=Util.commatize(cm.nOtherBlobs)%></span></b>
                 <% } %>
                 </p>
 
@@ -149,7 +149,7 @@
                 <hr/>
 
                 <p>
-                    <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.contact-email")%><br/>
+                    <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.contact-email")%><br/>
                     <span class="detail"><%=(Util.nullOrEmpty(cm.contactEmail) ? "Unassigned" : cm.contactEmail)%> </span>
                 </p>
                 <% }
@@ -158,9 +158,9 @@
                 <hr/>
                 <p>
                     <% if (cm.renamedFiles != 0 || cm.normalizedFiles != 0) {%>
-                    <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.preservation-actions")%> <br>
-                    <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.renamed-files")%> <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
-                    <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.normalized-files")%> <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
+                    <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.preservation-actions")%> <br>
+                    <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.renamed-files")%> <span class="detail"><%=Util.commatize(cm.renamedFiles)%></span><br/>
+                    <%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.normalized-files")%> <span class="detail"><%=Util.commatize(cm.normalizedFiles)%></span><br/>
                     <%}%>
                 </p>
                 <br/>
@@ -168,7 +168,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="ok-button btn btn-default" data-dismiss="modal"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","profile-block.close")%></button>
+                <button type="button" class="ok-button btn btn-default" data-dismiss="modal"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

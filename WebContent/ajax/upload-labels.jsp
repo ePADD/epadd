@@ -40,7 +40,7 @@
                     //read labelmapper again
                     LabelManager lb = null;
                    try {
-                        lb = LabelManager.readObjectFromStream(labelmapdir);
+                        lb = LabelManager.readObjectFromStream(archiveID,labelmapdir);
                      } catch (Exception e) {
                          Util.print_exception ("Exception in reading label manager from archive, assigning a new label manager", e, JSPHelper.log);
 

@@ -30,7 +30,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Entities</title>
+	<title>Entitiess</title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<script src="js/jquery.js"></script>
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>

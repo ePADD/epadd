@@ -9,7 +9,7 @@
     <%@include file="header.jspf"%>
 
 <head>
-    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.head-epadd-settings")%></title>
+    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.head-epadd-settings")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -32,7 +32,7 @@
 </head>
 <body style="color:gray;">
     <%-- Header.jsp was included here earlier --%>
-<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.manage-settings"));%>
+<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.manage-settings"));%>
 
 <jsp:include page="alert.jspf"/>
 
@@ -44,30 +44,30 @@
             <div id="advanced_options">
 
             <% if (!ModeConfig.isDiscoveryMode()) { %>
-<p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.verify-bag-checksum")%></button></p>
-<p>    <button id="debugaddressbook" onclick="window.location='debugAddressBook?archiveID=<%=archiveID%>'"  class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.debug-address-book")%></button></p>
+<p><button onclick="window.location='verify-bag?archiveID=<%=archiveID%>'" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.verify-bag-checksum")%></button></p>
+<p>    <button id="debugaddressbook" onclick="window.location='debugAddressBook?archiveID=<%=archiveID%>'"  class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.debug-address-book")%></button></p>
 
 <section>
     <div class="panel" id="export-headers">
-        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.trusted-address-computation")%></div>
+        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.trusted-address-computation")%></div>
 
         <div class="one-line">
             <div class="form-group col-sm-4">
                 <%--<label for="trustedaddrsForComputation">Trusted emails addresses</label>--%>
-                <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.trusted-email-addresses")%>" id="trustedaddrsForComputation"></input>
+                <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.trusted-email-addresses")%>" id="trustedaddrsForComputation"></input>
             </div>
             <div class="form-group col-sm-5">
                 <%--<label for="outgoingthreshold">Outgoing messages threshold</label>--%>
-                <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.min-outgoing-messages")%>" id="outgoingthreshold"></input>
+                <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.min-outgoing-messages")%>" id="outgoingthreshold"></input>
             </div>
             <div class="form-group col-sm-2 picker-buttons">
-                <button id="moreComputation" onclick="computeMoreTrustedAddressHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.get-trusted-addresses-button")%></button>
+                <button id="moreComputation" onclick="computeMoreTrustedAddressHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.get-trusted-addresses-button")%></button>
             </div>
         </div>
         <br/>
         <br/>
             <div class="form-group col-sm-4">
-                <input type="text" id="result-more-trusted" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.result")%>" readonly></input>
+                <input type="text" id="result-more-trusted" placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.result")%>" readonly></input>
             </div>
         <br/>
         <br/>
@@ -76,22 +76,22 @@
 
 <section>
     <div class="panel" id="recomputation">
-        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.address-book-recomputation")%></div>
+        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.address-book-recomputation")%></div>
 
 <div class="one-line" >
-    <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.trusted-email-addresses")%>" id="trustedaddrs"></input>
-<button id="recomputebutton" onclick="recomputeAddressBookHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.recompute-address-book-button")%></button>
+    <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.trusted-email-addresses")%>" id="trustedaddrs"></input>
+<button id="recomputebutton" onclick="recomputeAddressBookHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.recompute-address-book-button")%></button>
 </div>
     </div>
 </section>
 
 <section>
     <div class="panel" id="ownersetting">
-        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.set-owners-contact")%></div>
+        <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.set-owners-contact")%></div>
 
 <div class="one-line" >
-    <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.owner-email-id")%>" id="ownermailid"></input>
-    <button id="owenersetting" onclick="setOwnerMailHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "settings.set-as-owner")%></button>
+    <input type="text" placeholder="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.owner-email-id")%>" id="ownermailid"></input>
+    <button id="owenersetting" onclick="setOwnerMailHandler();return false;" class="btn-default" style="cursor:pointer"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.set-as-owner")%></button>
 </div>
     </div>
 </section>

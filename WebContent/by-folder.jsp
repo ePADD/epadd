@@ -14,7 +14,7 @@
     <%@include file="header.jspf"%>
 
 <head>
-    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.head-folders")%></title>
+    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.head-folders")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <%-- Jquery was present here earlier --%>
@@ -44,14 +44,14 @@
     AddressBook ab = archive.addressBook;
 %>
 
-<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.manage-folders") );%>
+<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.manage-folders") );%>
 
 <br/>
 <br/>
 
 <div style="margin:auto; width:1100px">
     <table id="folders" style="display:none">
-        <thead><tr><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.source")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.folder")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.messages-from-owner")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "by-folder.total")%></th></tr></thead>
+        <thead><tr><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.source")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.folder")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.messages-from-owner")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.total")%></th></tr></thead>
         <tbody>
         </tbody>
     </table>

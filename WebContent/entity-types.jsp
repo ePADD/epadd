@@ -17,7 +17,7 @@
 <%@include file="header.jspf"%>
 
 <head>
-    <title><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.head-entities")%></title>
+    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.head-entities")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -48,26 +48,19 @@
     <img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-    <h2><b>Browsing Entity Types</b></h2>
+    <h2><b><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "entity-types.help.head")%></b></h2>
     <!--close button-->
     <a class="nav-toggle1 show-nav1" href="#">
         <img src="images/close.png" class="close" alt="close">
     </a>
 
     <div class="search-tips" style="display:block">
-        ePADD recognizes fine-grained entities within the text message subjects and bodies.
-        <br/><br/>
-
-        This screen lists a selection of entity types bootstrapped from DBpedia, along with the number of entities associated with each type.
-        <br/><br/>
-
-        Select an entity type to view a list of all associated entities.
-        <br/><br/>
+       <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "entity-types.help")%>
 
     </div>
 </nav>
 
-<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.head-entities") );%>
+<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.head-entities") );%>
 
 <%
     Map<Short, String> desc = new LinkedHashMap<>();
@@ -89,13 +82,13 @@
 %>
 <div style="margin:auto; width:1100px;">
     <div class="button_bar_on_datatable">
-        <div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.download-in-csv-file")%>" class="buttons_on_datatable" onclick="exportAllEntitiesHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.download-in-csv-file")%>" class="buttons_on_datatable" onclick="exportAllEntitiesHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
        <%--This second div added just for formatting purposes.. Therefore made it hidden. If we remove this div then the alignment of download buttons goes missing.
        This is because of the way in which class buttons_on_datatable has been defined. It requires at least two divs to be formatted nicely. Fix is later.--%>
-        <div title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.download-as-csv")%>" class="buttons_on_datatable" style="display:none" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
+        <div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.download-as-csv")%>" class="buttons_on_datatable" style="display:none" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
     </div>
     <table id="entities" style="display:none;">
-        <thead><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.entity-type")%></th><th><%=edu.stanford.muse.util.Messages.test(archiveID,"messages", "entity-types.entities")%></th></thead>
+        <thead><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.entity-type")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.entities")%></th></thead>
         <tbody>
         </tbody>
     </table>

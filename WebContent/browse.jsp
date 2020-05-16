@@ -130,7 +130,7 @@
 <img src="images/sidebar.png" alt="sidebar">
 </div>
 <nav class="menu1" role="navigation">
-    <h2>Browsing Messages</h2>
+    <h2> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browse.help.browsing-messages")%> </h2>
     <!--close button-->
     <a class="nav-toggle1 show-nav1" href="#">
         <img src="images/close.png" class="close" alt="close">
@@ -139,164 +139,15 @@
     <div class="search-tips" style="display:block">
 
         <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
-            <br/>
-            <br/>
-
-            Use the search facets on the left of the message pane to further refine your search results.
-            <br/>
-            <br/>
-
-            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
-            <br/>
-            <br/>
-
-            Create annotations to add description to a single message or set of messages. All annotations you add are searchable via Advanced Search. Annotations will export between the Appraisal, Processing, and Delivery modules. Annotations will not export outside of ePADD, including from the Delivery module.
-            <br/>
-            <br/>
-
-            If you do not want annotations to export between modules, you must clear them by first navigating to the set of messages with that annotation using Advanced Search, then selecting the annotation, then overwriting that annotation with a blank annotation, then selecting “Apply to all messages.”
-            <br/>
-            <br/>
-
-            Use general labels (created via the Labels option on the dashboard) to add a brief description to a set of messages, or to mark messages as already reviewed.
-            <br/>
-            <br/>
-
-            General labels will export between the Appraisal, Processing, and Delivery modules. If you do not want general labels to export between these modules, you must clear them by first navigating to the set of messages with that label from the Labels screen, selecting “Label All,” then selecting “Unset for All” for the given label.
-            <br/>
-            <br/>
-
-            Use restriction labels (created via the Labels option on the dashboard) to flag messages for restriction, including for a certain period from the current date, or from the date of creation.
-            <br/>
-            <br/>
-
-            Restricted messages (and associated restriction labels), except for messages assigned the “Do not Transfer” restriction label, will export from the Appraisal module to the Processing module. Restricted messages will not export to the Discovery or Delivery modules, unless they are also assigned the “Cleared for release” label within the Appraisal or Processing modules.
-            <br/>
-            <br/>
-
-            All labels are searchable via Advanced Search.
-            <br/>
-            <br/>
-
-            Default labels applied to all messages can be set from the Dashboard, under the More option.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/download.svg">
-        - Download all messages in a set of results.
-            <br/>
-            <br/>
-
-        <img   style="width:60px; height:32px;" src="images/labels.svg">
-        - Apply labels to all messages in a set of results.
-        <br/>
-        <br/>
-
-        <img  class="helpdrawer-images" src="images/add_annotation.svg">
-        - Annotate this message.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/thread_view.svg">
-        - Show thread view.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/message_id.svg">
-        - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID into your web browser’s address bar. You can also paste the message ID into the appropriate field in Advanced Search.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/attachments.svg">
-        - Show message attachments.
-            <br/>
-            <br/>
+           <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browse.help.appraisal-processing")%>
 
         <% } else if (ModeConfig.isDiscoveryMode()) { %>
+            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browse.help.discovery")%>
 
-            Messages in this view are redacted to protect privacy and copyright. To request access to the full text of any messages, please contact the host institution.
-            <br/>
-            <br/>
-
-            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
-            <br/>
-            <br/>
-
-            Use the search facets on the left of the message pane to further refine your search results.
-            <br/>
-            <br/>
-
-            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
-            <br/>
-            <br/>
-
-            The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
-            <br/>
-            <br/>
 
         <% } else if (ModeConfig.isDeliveryMode()) { %>
-            Navigate between messages using the left and right arrow keys on your keyboard. Hold down the arrow key to move more quickly.
-            <br/>
-            <br/>
+            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browse.help.delivery")%>
 
-            Use the search facets on the left of the message pane to further refine your search results.
-            <br/>
-            <br/>
-
-            Click on a correspondent name or address in the message headers, or an entity in the message subject or body, to jump to a set of all related messages.
-            <br/>
-            <br/>
-
-            Create annotations to add description to a single message or set of messages. All annotations you add are searchable via Advanced Search. If exported messages have been annotated, the annotations will not export.
-            <br/>
-            <br/>
-
-            Use labels (created via the Labels option on the dashboard) to add a brief description to a set of messages, or mark messages as already reviewed.
-            <br/>
-            <br/>
-
-            Labels will not export.
-            <br/>
-            <br/>
-
-            All labels are searchable via Advanced Search.
-            <br/>
-            <br/>
-
-            Set default labels for all messages from the Dashboard, under the More option.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/download.svg">
-        - Download all messages in a set of results.
-            <br/>
-            <br/>
-
-        <img   style="width:60px; height:32px;" src="images/labels.svg">
-        - Apply labels to all messages in a set of results.
-        <br/>
-        <br/>
-
-        <img  class="helpdrawer-images" src="images/add_annotation.svg">
-        - Annotate this message.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/thread_view.svg">
-        - Show thread view.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/message_id.svg">
-        - Copy the message ID for the selected message. The message ID is a unique identifier within the collection that can be used to return to a particular message in the future. To return to a particular message in the future, enter the collection, then paste the link associated with the message ID. You can also paste the message ID into the appropriate field in Advanced Search.
-            <br/>
-            <br/>
-
-        <img  class="helpdrawer-images" src="images/attachments.svg">
-        - Show message attachments.
-            <br/>
-            <br/>
         <% } %>
     </div>
 </nav>
@@ -424,7 +275,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                     String facetTitle = Util.escapeHTML(facet);
                     if ("correspondent".equals(facetTitle))
-                        facetTitle = edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.correspondent") ; /* Change made here */
+                        facetTitle = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.correspondent") ; /* Change made here */
 
                     facetTitle = Util.capitalizeFirstLetter(facetTitle);
                     out.println("<div class=\"facetTitle\">" + facetTitle + "</div>\n");
@@ -523,10 +374,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div style="float:left;padding:5px">
                     <%if(!ModeConfig.isDiscoveryMode()){%>
                     <div class="form-group label-picker" style="display:inline-block">
-                        <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label")%>" multiple>
+                        <select data-selected-text-format="static" name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.label")%>" multiple>
                             <option data-label-class="__dummy" data-label-id="__dummy" data-label="__dummy" value="__dummy">Dummy</option>
 
-                            <optgroup label="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label.restriction")%>">
+                            <optgroup label="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.label.restriction")%>">
                                 <%
                                     Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
                                     //get general labels
@@ -536,7 +387,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                 <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
                                 <%}%>
                             </optgroup>
-                            <optgroup label="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label.general")%>">
+                            <optgroup label="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.label.general")%>">
                                 <%
                                     for (Label opt : genlabels){
                                 %>
@@ -548,12 +399,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <%}%>
                     <div class="form-group label-picker" style="display:inline-block;margin-left:20px">
 
-                        <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort")%>">
+                        <select data-selected-text-format="static" name="sortBy" id="sortBy" class="sortby-selectpicker form-control selectpicker" title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.sort")%>">
                         <%--<select id="sortBy" class="form-control selectpicker" name="sortBy">--%>
                             <option value="" selected disabled> Sort by </option>
-                            <option value="relevance"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort.most-relevant")%> </option>
-                            <option value="recent"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort.newest-first")%> </option>
-                            <option value="chronological"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.sort.oldest-first")%> </option>
+                            <option value="relevance"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.sort.most-relevant")%> </option>
+                            <option value="recent"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.sort.newest-first")%> </option>
+                            <option value="chronological"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.sort.oldest-first")%> </option>
                         </select>
                     </div>
                 </div>
@@ -563,20 +414,20 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <%if(!ModeConfig.isDiscoveryMode()){%>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.label-all-messages")%>" src="images/labels.svg"></a>
+                            <a target="_blank" href="bulk-labels?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.label-all-messages")%>" src="images/labels.svg"></a>
                         </div>
 
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
-                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.download-as-mbox")%>" src="images/download.svg"></a>
+                            <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.download-as-mbox")%>" src="images/download.svg"></a>
                         </div>
                         <%}%>
 
-                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.previous-message")%>" src="images/prev.svg"/></span></div>
+                        <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.previous-message")%>" src="images/prev.svg"/></span></div>
                         <div style="position: relative; top:4px; display:inline-block; padding: 0px 5px">
                             <div style="display:inline; position:relative; " id="pageNumbering"></div> of
                             <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
                         </div>
-                        <div id="page_forward" class="nav-arrow"> <img title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.next-message")%>"  src="images/next.svg"/></div>
+                        <div id="page_forward" class="nav-arrow"> <img title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.next-message")%>" src="images/next.svg"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>
@@ -591,11 +442,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div id="position:relative">
                 <div class="message-menu">
                     <%if(!ModeConfig.isDiscoveryMode()){%>
-                    <a href="#" class="annotation-link" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.message-annotation")%>"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
+                    <a href="#" class="annotation-link" title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.message-annotation")%>"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/add_annotation.svg"/></a>
                     <%}%>
-                    <a href="#" class="id-link" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.get-message-id")%>"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
-                    <a href="#" class="thread-link" target="_blank" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.open-thread")%>"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
-                    <a style="color: inherit" href="#" class="attach-link" title="<%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.scroll-for-attach")%>"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
+
+                    <a href="#" class="id-link" title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.get-message-id")%>"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
+                    <a href="#" class="thread-link" target="_blank" title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.open-thread")%>"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
+                    <a style="color: inherit" href="#" class="attach-link" title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.scroll-for-attach")%>"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
                 </div>
 
                 <script>
@@ -617,7 +469,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     $('.sortby-selectpicker').on('change', function () {
                         var sortoption = $('.sortby-selectpicker').selectpicker('val') || [];
                         if(sortoption){
-                            <% String newurl = JSPHelper.getURLWithParametersFromRequestParam(request,"sortBy");%>
+                            <% String newurl = JSPHelper.getURLWithParametersFromRequestParam(request, "sortBy");%>
                             window.location='<%=newurl%>sortBy='+sortoption;
                         }
                     });
@@ -625,7 +477,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
                 <div class="annotation" title="Click to edit annotation">
                     <div class="annotation-header">
-                        <span><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.head")%></span>
+                        <span><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.annotation.head")%></span>
                         <img title="Edit annotation" id="edit-annotation-icon" style="margin-left: 78px; cursor:pointer" src="images/edit_annotation.svg"/>
                         <img title="Close annotation" id="close-annotation-icon" style="margin-left: 25px; cursor: pointer" src="images/close.svg"/></div>
                     <div class="annotation-area">
@@ -646,7 +498,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 
                 <div id="jog_contents" style="position:relative; border: 1px solid #D4D4D4;min-height:500px;" class="<%=jog_contents_class%>">
-                    <div style="margin-top:150px;text-align:center"><br/><br/><h2><%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.loading") %> <%=Util.commatize(docs.size()) %> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.messages")%> <img style="height:20px" src="images/spinner.gif"/></h2></div>
+                    <div style="margin-top:150px;text-align:center"><br/><br/><h2><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.loading") + " " %> <%=Util.commatize(docs.size()) + " " %> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.messages")%> <img style="height:20px" src="images/spinner.gif"/></h2></div>
                 </div>
             </div>
 
@@ -730,7 +582,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.title-edit")%> </h4>
+                    <h4 class="modal-title"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.annotation.title-edit")%> </h4>
                 </div>
                 <textarea title="annotation" name="annotationField" style="margin: 3%; width: 90%; border: solid 1px gray;" class="modal-body">
 
@@ -738,15 +590,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                 <div class="modal-footer">
                     <label class="radio-inline">
                         <input type="radio" name="overwrite-append-options" value="overwrite" checked>
-                        <span class="text-radio"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.overwrite")%> </span>
+                        <span class="text-radio"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.annotation.overwrite")%> </span>
                     </label>
                     <label class="radio-inline">
                         <input type="radio" name="overwrite-append-options" value="append">
-                        <span class="text-radio"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.append")%> </span>
+                        <span class="text-radio"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.annotation.append")%> </span>
                     </label>
                     <br><br>
-                    <button id='ok-button-annotations' type="button" class="btn btn-default" data-dismiss="modal"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.apply-to-this")%> </button>
-                    <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal"> <%=edu.stanford.muse.util.Messages.test(archiveID,"messages","browse.annotation.apply-to-all")%> </button>
+                    <button id='ok-button-annotations' type="button" class="btn btn-default" data-dismiss="modal"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.annotation.apply-to-this")%> </button>
+                    <button id='apply-all-button' type="button" class="btn btn-default" data-dismiss="modal"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse.annotation.apply-to-all")%> </button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
