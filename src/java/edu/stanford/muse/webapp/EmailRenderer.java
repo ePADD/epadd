@@ -9,6 +9,9 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
@@ -358,26 +361,26 @@ public class EmailRenderer {
 		tilediv.append("<div id=\"attachment-tiles\" style=\"display:none\">");
 		int attachmentIndex=0;
 		//array to keep information about the attachments for display in UI.
-		JSONArray attachmentDetails = new JSONArray();
+		JsonArray attachmentDetails = new JsonArray();
 		boolean isNormalized=false; //a flag to detect if any of the attachment has normalization or cleanup info present because if it is then the
 		//information need to be presented to the user and hence the structure of the ui elements (like number of columns in the table) will change accordingly.
 
 		for (Document d:docAttachmentMap.keySet()) {
 			//don't forget to increase msgIndex at the end of the following inner loop.
 			for (Blob attachment : docAttachmentMap.get(d)) {
-				JSONObject attachmentInfo = getAttachmentDetails(archive,attachmentIndex,attachment, d);
+				JsonObject attachmentInfo = getAttachmentDetails(archive,attachmentIndex,attachment, d);
 				//Insert attachmentInfo in an array of JSONObject (attachmentDetails)
-				attachmentDetails.put(attachmentIndex,attachmentInfo);
-				String info = (String)attachmentInfo.opt("info");
-				if(!Util.nullOrEmpty(info))
+				attachmentDetails.add(attachmentInfo);
+				JsonElement info = attachmentInfo.get("info");
+				if(info!=null)
 					isNormalized=true;//once set it can not be reset.
 
-				String filename = (String)attachmentInfo.get("filename");
+				String filename = attachmentInfo.get("filename").getAsString();
 				tilediv.append("<div  class=\"square\" id=\"square\" onmouseenter=\"hoverin_squarebox(this)\" onmouseleave=\"hoverout_squarebox(this)\" data-index=\""+attachmentIndex+"\" data-filename=\""+filename+"\">");
 				//don't forget to increase attachmentIndex
 				attachmentIndex++;
 				//String attachmentURL = (String)attachmentInfo.get("opts.url");
-				String tileThumbnailURL = (String)attachmentInfo.get("tileThumbnailURL");
+				String tileThumbnailURL = attachmentInfo.get("tileThumbnailURL").getAsString();
 				boolean is_image = Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(attachment));
 
 				/*BlobStore bstore = archive.getBlobStore();
@@ -484,7 +487,8 @@ public class EmailRenderer {
 		}*/
 		if(isNormalized)
 			page.append("isNormalized=true\n"); //to pass this information to the front end we assign it to a JS variable.
-		page.append("attachmentDetails=JSON.parse('"+attachmentDetails.toString()+"');\n");
+		page.append("var attachmentDetailsStr='"+attachmentDetails.toString()+"';\n");
+		page.append("attachmentDetails=eval(attachmentDetailsStr);\n");
 		page.append("loadAttachmentList();\n"); //invoke method to setup datatable with attachmentDetails data.
 		page.append("if(isListView){ $('#attachment-tiles').hide(); $('#attachment-list').show();} else{$('#attachment-list').hide(); $('#attachment-tiles').show() }\n");//hide the list
 		//page.append("$('#attachment-list').hide();\n");//hide the list
@@ -501,12 +505,12 @@ public class EmailRenderer {
 	Method to extract some key details from an attachment that needs to be displayed in a fancybox in the gallery feature.
 	 */
 
-	private static JSONObject getAttachmentDetails(Archive archive, int index, Blob attachment, Document doc) {
+	private static JsonObject getAttachmentDetails(Archive archive, int index, Blob attachment, Document doc) {
 		//prepare json object of the information. The format is
 		//{index:'',href:'', from:'', date:'', subject:'',filename:'',downloadURL:'',tileThumbnailURL:'',msgURL:'',info:''}
 		//here info field is optional and present only for those attachments which were converted or normalized during the ingestion and therefore need
 		//to be notified to the user.
-		JSONObject result = new JSONObject();
+		JsonObject result = new JsonObject();
 		String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
 
 		//Extract mail information
@@ -515,15 +519,13 @@ public class EmailRenderer {
 		String sender = Util.escapeHTML(((InternetAddress)ed.from[0]).getPersonal());//escaping because we might have the name like <jbush@..> in the sender.
 		String date = Util.escapeHTML(ed.dateString());
 		String subject= Util.escapeHTML(ed.description);//replace occurrence of ' because it was causing issue in JSON.parse.
-		subject = Util.escapeJSON(subject);
-		//then replace all occurrences of \t \r \n etc to
 		String docId = ed.getUniqueId();
 		String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
 
-		result.put("from",sender);
-		result.put("date",date);
-		result.put("subject",subject);
-		result.put("msgURL",messageURL);
+		result.addProperty("from",sender);
+		result.addProperty("date",date);
+		result.addProperty("subject",subject);
+		result.addProperty("msgURL",messageURL);
 
 
 
@@ -535,10 +537,10 @@ public class EmailRenderer {
 		BlobStore attachmentStore = archive.getBlobStore();
 		if (attachmentStore != null) {
 			String contentFileDataStoreURL = attachmentStore.get_URL_Normalized(attachment);
-			downloadURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.escapeHTML(Util.URLtail(contentFileDataStoreURL));
+			downloadURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLEncode(Util.URLtail(contentFileDataStoreURL));
 			String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
 			if (tnFileDataStoreURL != null) {
-				thumbnailURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.escapeHTML(Util.URLtail(tnFileDataStoreURL));
+				thumbnailURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLEncode(Util.URLtail(tnFileDataStoreURL));
 				//set tile's thumbnail (on the landing page of gallery) also same.
 				tileThumbnailURL = thumbnailURL;
 			}
@@ -581,7 +583,7 @@ public class EmailRenderer {
 
 		String info="";
 		if(isNormalized || isCleanedName){
-			String completeurl_cleanup ="serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLtail(cleanupurl);
+			String completeurl_cleanup ="serveAttachment.jsp?archiveID="+archiveID+"&file=" + Util.URLEncode(Util.URLtail(cleanupurl));
 
 			if(isNormalized){
 				info="This file was converted during the preservation process. Its original name was "+attachmentStore.full_filename_original(attachment,false)+". Click <a href="+completeurl_cleanup+">here </a> to download the original file";
@@ -592,17 +594,17 @@ public class EmailRenderer {
 		}
 		//{index:'',href:'', from:'', date:'', subject:'',filename:'',downloadURL:'',tileThumbnailURL:'',info:'',size:''}
 
-		result.put("size",attachment.size);
-		result.put("href",thumbnailURL);
-		result.put("downloadURL",downloadURL);
-		result.put("tileThumbnailURL",tileThumbnailURL);
-		result.put("filename",Util.escapeHTML(filename));
+		result.addProperty("size",attachment.size);
+		result.addProperty("href",thumbnailURL);
+		result.addProperty("downloadURL",downloadURL);
+		result.addProperty("tileThumbnailURL",tileThumbnailURL);
+		result.addProperty("filename",Util.escapeHTML(filename));
 		if(!Util.nullOrEmpty(info)) //add this field only if this is non-empty. (That is the beauty of json, non-fixed structure for the data).
-			result.put("info",info);
+			result.addProperty("info",info);
 
 
 
-		result.put("index",index);
+		result.addProperty("index",index);
 
 
 
@@ -824,5 +826,20 @@ public class EmailRenderer {
         public String toString() {
             return types.toString();
         }
+
     }
+    public static void main(String args[]){
+    	/*Test to show that we should use JsonObject instead of JSONObject as it correctly escapes the things needed to create Json object back in JS*/
+		JSONObject result = new JSONObject();
+		result.put("a","my name ");
+		result.put("b","I'am a");
+		Gson g = new Gson();
+		JsonObject res = new JsonObject();
+		JsonArray arr = new JsonArray();
+		res.addProperty("a","<jbush@..>");
+		res.addProperty("b","I'm a");
+		arr.add(res);
+		arr.add(res);
+		System.out.println("var bb = '" + new Gson().toJson(arr)+"'");
+	}
 }

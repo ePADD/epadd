@@ -47,7 +47,7 @@
 
 <section>
     <div class="panel" id="generate-thumbnails">
-        <div class="panel-heading">Generate Thumbnails for Attachmetns</div>
+        <div class="panel-heading">Generate Thumbnails for Attachments</div>
 
         <div class="one-line">
             <div class="form-group col-sm-4">

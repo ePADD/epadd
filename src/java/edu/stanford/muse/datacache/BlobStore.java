@@ -682,7 +682,7 @@ public class BlobStore implements Serializable {
                    Util.run_command(pdfcmd);
                    //check if pdf file was created or not.
                     if(!new File(tmp_filename).exists()){
-                        log.warn("Could not generate pdf. Command "+pdfcmd.toString()+" failed\n");
+                        log.warn("Could not generate pdf. Command "+Arrays.toString(pdfcmd)+" failed\n");
                         noThumb=true;
                     }
                 }
@@ -698,7 +698,7 @@ public class BlobStore implements Serializable {
                 tnFilename = outputImagePath;
                 if(!new File(tnFilename).exists())
                 {
-                    log.warn("Could not generated thumbnail. Command "+convertcmd.toString()+" failed\n");
+                    log.warn("Could not generate thumbnail. Command "+Arrays.toString(convertcmd)+" failed\n");
                     //means something wrong happened during conversion. Can not generate thumbnail.
                     noThumb=true;
                 }

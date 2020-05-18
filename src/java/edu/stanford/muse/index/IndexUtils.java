@@ -674,6 +674,67 @@ public class IndexUtils {
 	}
 
 
+	/*
+				Semantics: <5KB -> Number of attachments in mails of size less than 5KB
+				5-20KB - Number of attachments in mails of size from 5 to 20 KB
+				20-100 KB - Number of attachments in mails of size from 20 to 100 KB
+				100KB - 2MB - Number of attachments in mails of size from 100 KB to 2 MB
+				>2MB - Number of attachments in mails of size greater than 2MB.
+	 */
+
+	private static Map<String, DetailedFacetItem> partitionAttachmentsBySize(Collection<? extends Document> docs)
+	{
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
+		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
+
+		for (Document d : docs)
+		{
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+
+
+				//For each attachment in this mail add a dummy document.
+				for(Blob attachment: ed.attachments) {
+					//get size of the attachment.
+					long size = attachment.size;
+					String facetstr="";
+					String facetstrval="";
+					if(Util.filesizeCheck("1",size)) {
+						facetstr = "<5KB";
+						facetstrval="1";
+					}
+					else if(Util.filesizeCheck("2",size)) {
+						facetstr = "5KB - 20KB";
+						facetstrval="2";
+					}
+					if(Util.filesizeCheck("3",size)) {
+						facetstr = "20KB - 100KB";
+						facetstrval = "3";
+					}
+					if(Util.filesizeCheck("4",size)) {
+						facetstr = "5KB - 20MB";
+						facetstrval="4";
+					}
+					if(Util.filesizeCheck("5",size)) {
+						facetstr = ">20MB";
+						facetstrval="5";
+					}
+					if(result.get(facetstr)==null) {
+						result.put(facetstr,new DetailedFacetItem(facetstr, "Number of attachments in this range of size", "attachmentFilesize", facetstrval));
+					}
+
+					//dfi.addDoc(ed);
+					//create a dummy doc such that no two docs are same.
+					EmailDocument edummy = new EmailDocument(ed.id,ed.emailSource,ed.folderName,ed.to,ed.cc,ed.bcc,ed.from,ed.getSubjectWithoutTitle(),ed.messageID+indexToDifferentiate,ed.date);
+					//add it to f.
+					result.get(facetstr).addDoc(edummy);
+					indexToDifferentiate++;
+				}
+			}
+
+		return result;
+	}
 	private static Map<String, DetailedFacetItem> partitionDocsByFolder(Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<>();
@@ -1093,6 +1154,8 @@ public class IndexUtils {
 			Map<String, DetailedFacetItem> attachmentTypesMap = partitionAttachmentsByAttachmentType(archive,docs);
 			facetMap.put("attachment type", attachmentTypesMap.values());
 		}
+		Map<String,DetailedFacetItem> attachmentSizeMap = partitionAttachmentsBySize(docs);
+		facetMap.put("attachment size",attachmentSizeMap.values());
 		if (addressBook != null) {
 			// people
 			Map<Contact, DetailedFacetItem> peopleMap = partitionAttachmentsByPerson(docs, addressBook);
@@ -1104,6 +1167,7 @@ public class IndexUtils {
 				facetMap.put("sender", directionMap.values());
 
 		}
+
 		if (!ModeConfig.isPublicMode())
 		{
 			Map<String, DetailedFacetItem> folderNameMap = partitionAttachmentsByFolder(docs);

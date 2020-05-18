@@ -741,9 +741,10 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		if (str == null)
 			return null;
 
-		// these are the 5 special xml chars according to
+		//Chinmay: Adding &nbsp for space.
+		// these are the 6 special xml chars according to
 		// http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
-		str = str.replace("&", "&amp;");
+		str = str.replace("&", "&amp;"); //This must be at the starting.
 		str = str.replace("'", "&apos;");
 		str = str.replace("\"", "&quot;");
 		str = str.replace("<", "&lt;");
