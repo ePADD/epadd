@@ -447,7 +447,7 @@ img.attachmenttiles{
 }
 
 .displayname{
-	font-family: open sans regular;
+	font-family: 'Open sans',sans-serif;
 	font-size: 14px;
 	color: #333;
 }
