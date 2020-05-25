@@ -1,3 +1,4 @@
+// @Chinmay, this seems to have a lot of repeated code with browseMessages.js, can we simplify/factor out?
 
 // global vars, used by every module below
 

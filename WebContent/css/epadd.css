@@ -331,6 +331,8 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 
 }
 
+#attachment-table { text-align: left;} /* this is to undo the text-align:center of the attachments container */
+
 .autocomplete-suggestions {
 	background-color: white;
 	color: #999;

@@ -329,7 +329,7 @@ public class EmailRenderer {
 
 		//For list view and tile view buttons..
 		page.append("<div style=\"display:flex\">\n");
-		page.append("<div style=\"width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">"+numAttachments+" attachments for "+year +"</div>\n");
+		page.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">"+numAttachments+" attachments for "+year +"</div>\n");
 		page.append("<div class=\"gallery_viewchangebar\" style=\"justify-content:flex-end\">\n");
 		page.append(  "  <div title=\"List view\" class=\"listView\" onclick=\"showListView()\">\n" +
 				"    <img class=\"fbox_toolbarimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
