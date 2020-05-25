@@ -25,6 +25,7 @@ import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.*;
+import edu.stanford.muse.webapp.EmailRenderer;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 //import org.apache.commons.logging.Log;
@@ -1001,7 +1002,13 @@ public class IndexUtils {
 	private static Map<String, DetailedFacetItem> partitionAttachmentsByAttachmentType(Archive archive, Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
-
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(EmailRenderer.EXCLUDED_EXT);
+		} catch (Exception e) {
+			Util.report_exception(e);
+			return result;
+		}
 		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
 		for (Document d : docs)
 		{
@@ -1016,6 +1023,11 @@ public class IndexUtils {
 					if (ext == null)
 						ext = "none";
 					ext = ext.toLowerCase();
+					//Exclude any attachment whose extension is of the form EXCLUDED_EXT
+
+					if(pattern.matcher(ext).find()){
+						continue;//don't consider any attachment that has extension of the form [0-9]+
+					}
 					DetailedFacetItem dfi = result.get(ext);
 					if (dfi == null)
 					{

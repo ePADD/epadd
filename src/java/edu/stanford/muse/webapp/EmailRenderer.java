@@ -30,6 +30,7 @@ import org.json.JSONObject;
 public class EmailRenderer {
 
 	private static final int TEXT_WRAP_WIDTH = 80;
+	public static String EXCLUDED_EXT = "[0-9]+";
 
 	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
 															 String datasetTitle) {
@@ -374,77 +375,7 @@ public class EmailRenderer {
 				JsonElement info = attachmentInfo.get("info");
 				if(info!=null)
 					isNormalized=true;//once set it can not be reset.
-
-				String filename = attachmentInfo.get("filename").getAsString();
-				tilediv.append("<div  class=\"square\" id=\"square\" onmouseenter=\"hoverin_squarebox(this)\" onmouseleave=\"hoverout_squarebox(this)\" data-index=\""+attachmentIndex+"\" data-filename=\""+filename+"\">");
-				//don't forget to increase attachmentIndex
 				attachmentIndex++;
-				//String attachmentURL = (String)attachmentInfo.get("opts.url");
-				String tileThumbnailURL = attachmentInfo.get("tileThumbnailURL").getAsString();
-				boolean is_image = Util.is_image_filename(archive.getBlobStore().get_URL_Normalized(attachment));
-
-				/*BlobStore bstore = archive.getBlobStore();
-				//if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
-				//origina.notequals(normalized) then only name cleanup happened.(originalfilename)
-				//so the attributes are either only originalfilename or cleanedupfileURL or both.
-				String cleanedupname = bstore.full_filename_cleanedup(attachment);
-				String normalizedname = bstore.full_filename_normalized(attachment);
-				String cleanupurl = bstore.get_URL_Cleanedup(attachment);
-				boolean isNormalized = !cleanedupname.equals(normalizedname);
-				boolean isCleanedName = !cleanedupname.equals(bstore.full_filename_original(attachment));
-				if (isNormalized || isCleanedName) {
-					String completeurl_cleanup = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLtail(cleanupurl);
-
-					page.append("<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" ");
-					if (isNormalized) {
-						page.append("data-originalurl=" + "\"" + completeurl_cleanup + "\" ");
-						page.append("data-originalname=" + "\"" + bstore.full_filename_original(attachment, false) + "\" ");
-					}
-					if (isCleanedName) {
-						page.append("data-originalname=" + "\"" + bstore.full_filename_original(attachment, false) + "\"");
-					}
-					page.append("></span>");
-				}
-*/
-				//attachment icon/preview goes here, inside another square box.
-				tilediv.append("<div class=\"insidesquare\" style=\"overflow:hidden\" >");
-
-				/** Attachment preview related html**/
-				String css_class = "attachmenttiles";// + (is_image ? " img" : "");
-				String leader = "<img class=\"" + css_class + "\"  ";
-				//page.append(leader + "href=\"" + attachmentURL + "\"  src=\"" + thumbnailURL + "\"></img>\n");
-				tilediv.append(leader + "  src=\"" + tileThumbnailURL + "\"></img>\n");
-
-				/*// punt on the thumbnail if the attachment tn or content
-				// URL is not found
-				if (thumbnailURL != null && attachmentURL != null) {
-					// d.hashCode() is just something to identify this
-					// page/message
-					page.append(leader + "href=\"" + attachmentURL + "\"  src=\"" + thumbnailURL + "\"></img>\n");
-					*//*page.append("<a rel=\"page" + d.hashCode() + "\" title=\"" + Util.escapeHTML(url) + "\" href=\"" + attachmentURL + "\">");
-					page.append("<a>\n");*//*
-				} else {
-					page.append(leader + "src=\"images/no-attachment.png\"></img>\n");
-					// page.append
-					// ("&nbsp;<br/>&nbsp;<br/>Not fetched<br/>&nbsp;<br/>&nbsp;&nbsp;&nbsp;");
-					// page.append("<a title=\"" + attachment.filename +
-					// "\" href=\"" + attachmentURL + "\">");
-//					page.append(leader + "src=\"images/no-attachment.png\"></img>\n");
-					// page.append ("<a>\n");
-
-					if (thumbnailURL == null)
-						JSPHelper.log.info("No thumbnail for " + attachment);
-					if (attachmentURL == null)
-						JSPHelper.log.info("No attachment URL for " + attachment);
-				}
-*/
-
-				tilediv.append("</div>");//closing of inside square box.
-
-				tilediv.append("&nbsp;" + "<span id=\"display-name\" name=\"display-name\" class=\"displayname\" title=\"" + Util.escapeHTML(filename) + "\">" + Util.escapeHTML(filename) + "</span>&nbsp;");
-				tilediv.append("<br/>");
-
-				tilediv.append("</div>");
 			}
 		}
 		tilediv.append("</div> <!-- closing of attachment-tile div-->\n");
@@ -489,6 +420,7 @@ public class EmailRenderer {
 			page.append("isNormalized=true\n"); //to pass this information to the front end we assign it to a JS variable.
 		page.append("var attachmentDetailsStr='"+attachmentDetails.toString()+"';\n");
 		page.append("attachmentDetails=eval(attachmentDetailsStr);\n");
+		page.append("loadAttachmentTiles();\n"); //invoke method to setup tiles with attachmentDetails data.
 		page.append("loadAttachmentList();\n"); //invoke method to setup datatable with attachmentDetails data.
 		page.append("if(isListView){ $('#attachment-tiles').hide(); $('#attachment-list').show();} else{$('#attachment-list').hide(); $('#attachment-tiles').show() }\n");//hide the list
 		//page.append("$('#attachment-list').hide();\n");//hide the list
@@ -516,9 +448,21 @@ public class EmailRenderer {
 		//Extract mail information
 		//Extract few details like sender, date, message body (ellipsized upto some length) and put them in result.
 		EmailDocument ed = (EmailDocument)doc;
-		String sender = Util.escapeHTML(((InternetAddress)ed.from[0]).getPersonal());//escaping because we might have the name like <jbush@..> in the sender.
+		//A problematic case when converted json object was throwing error in JS.
+		/*
+		Case 1: {"from":"Δρ. Θεόδωρος Σίμος \r\n\t- Dr. ***** (redacted)","date":"Jan 5, 2005"}
+		Solution: escapeJson will escape these to \\r\\n\\t.
+
+		Case 2: {"from":"李升荧","date":"Dec 19, 2012","subject":"shangwu@jxdyf.com，Please find
+			."}
+			Problem: There is a newline in subject between find and .
+			Solution: escapejson will put \ at the end of find which will make it parsed correctly.
+		 */
+		String sender = Util.escapeHTML(ed.getFromString());//escaping because we might have the name like <jbush@..> in the sender.
+		sender = Util.escapeJSON(sender);
 		String date = Util.escapeHTML(ed.dateString());
-		String subject= Util.escapeHTML(ed.description);//replace occurrence of ' because it was causing issue in JSON.parse.
+		String subject= Util.escapeHTML(ed.description);
+		subject=Util.escapeJSON(subject);
 		String docId = ed.getUniqueId();
 		String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
 
@@ -537,6 +481,8 @@ public class EmailRenderer {
 		BlobStore attachmentStore = archive.getBlobStore();
 		if (attachmentStore != null) {
 			String contentFileDataStoreURL = attachmentStore.get_URL_Normalized(attachment);
+			//IMP: We need to do URLEncode otherwise if filename contains (') then the object creation from json data fails in the frontend.
+			//EX. If file's name is Jim's
 			downloadURL = "serveAttachment.jsp?archiveID=" + archiveID + "&file=" + Util.URLEncode(Util.URLtail(contentFileDataStoreURL));
 			String tnFileDataStoreURL = attachmentStore.getViewURL(attachment, "tn");
 			if (tnFileDataStoreURL != null) {
@@ -836,7 +782,8 @@ public class EmailRenderer {
 		Gson g = new Gson();
 		JsonObject res = new JsonObject();
 		JsonArray arr = new JsonArray();
-		res.addProperty("a","<jbush@..>");
+		res.addProperty("a","<jbush@..>" +
+				".");
 		res.addProperty("b","I'm a");
 		arr.add(res);
 		arr.add(res);

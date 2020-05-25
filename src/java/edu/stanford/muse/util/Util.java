@@ -1808,9 +1808,9 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
     }
 
 	public static String escapeJSON(String subject) {
-		String s = subject.replace("\t","\\t");
-		s = s.replace("\r","\\r");
-		s=s.replace("\n","\\n");
+		String s = subject.replace("\t","\\\t");
+		s = s.replace("\r","\\\r");
+		s=s.replace("\n","\\\n");
 		return s;
 	}
 

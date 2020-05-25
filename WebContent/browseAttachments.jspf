@@ -254,7 +254,7 @@
         //prepare the message in html based on these two values.
         if(origianlURL){
             //if originalURL is not null - This file was converted during the preservation process. Click here to download the original file.
-            msg="This file was converted during the preservation process. Its original name was "+originalName+". Click <a href="+encodeURI(origianlURL)+">here </a> to download the original file";
+            msg="This file was converted during the preservation process. Its original name was "+originalName+". Click <a href="+decodeURI(origianlURL)+">here </a> to download the original file";
         }else {
             //if originalURL is null and original Name is not null- This file was renamed during the preservation process. The name of the original file was -
             msg="This file name was cleaned up during the preservation process. The original file name was "+originalName;
@@ -297,10 +297,10 @@
 
         html="<hr style=\"margin-bottom:5px;\">\n" +
             "<div class=\"fbox_toolbar\">\n" +
-            "  <div title=\"Download attachment\" class=\"fbox_downloadbtn\" onclick=\"window.location='"+encodeURI(downloadURL)+"'\">\n" +
+            "  <div title=\"Download attachment\" class=\"fbox_downloadbtn\" onclick=\"window.location='"+decodeURI(downloadURL)+"'\">\n" +
             "    <img class=\"fbox_toolbarimg\" src=\"images/download.svg\"  ></img>\n" +
             "  </div>\n" +
-            "  <div title=\"Go to message\" class=\"fbox_msgbtn\" onclick=\"(function(){window.open('"+encodeURI(msgURL)+"')})()\">\n" +
+            "  <div title=\"Go to message\" class=\"fbox_msgbtn\" onclick=\"(function(){window.open('"+decodeURI(msgURL)+"')})()\">\n" +
             "    <img class=\"fbox_toolbarimg\" src=\"images/edit_lexicon.svg\" ></img>\n" +
             "  </div>\n" +
             "</div>\n" +
@@ -313,9 +313,11 @@
             "  <div class=\"fbox_metacol2\">\n" +
             "    <div class=\"fbox_sender\" style=\"display:inline-flex\">" +
             "       <div style=\"margin-right:5px; font-weight:bold\">" +sender+" </div>\n" +
-            "       <div> sent this </div>\n" +
             "    </div>\n" +
-            "    <div class=\"fbox_date\">"+dt+"</div>\n" +
+            "    <div style=\"display:inline-flex\"> " +
+            "       <div style=\"font-weight:bold;margin-right: 2px;\"> sent on </div>\n" +
+            "       <div class=\"fbox_date\" style=\"margin:1px\">"+dt+"</div>\n" +
+            "    </div>\n" +
             "  </div>\n" +
             "</div>\n" +
             "<hr class=\"fbox_seperator\">"
@@ -324,11 +326,11 @@
         return html;
     }
     var clickable_message = function ( data, type, full, meta ) {
-        return '<a target="_blank" href="' + encodeURI(full["msgURL"]) + '">' + data + '</a>';
+        return '<a target="_blank" href="' + decodeURI(full["msgURL"]) + '">' + data + '</a>';
     };
     var clickable_attachment = function ( data, type, full, meta ) {
 //	    var moreinfo = "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" </span>";
-        return '<a title="' + full["filename"] + '" target="_blank" href="' + encodeURI(full["downloadURL"]) + '">' + data + '</a>' ;
+        return '<a title="' + full["filename"] + '" target="_blank" href="' + decodeURI(full["downloadURL"]) + '">' + data + '</a>' ;
     };
     var clickable_normalization_info = function(data,type,full,meta){
         if(full["info"]){
@@ -385,11 +387,68 @@
         }
     }
 
+    var loadAttachmentTiles = function(){
+       //read from attachmentDetails object array and set up attachment tiles.
+       //1. Iterate over every element of attachmentDetails.
+       //2. Construct the element to be added
+       //3. append the element as a child under "attachment-tiles" div (this div is on the page returned by EmailRenderer:getHtmlForAttachment method)
+
+        attachmentDetails.forEach(function(attachmentInfo){
+            //tilediv.append("<div  class=\"square\" id=\"square\" onmouseenter=\"hoverin_squarebox(this)\" onmouseleave=\"hoverout_squarebox(this)\" data-index=\""+attachmentIndex+"\" data-filename=\""+filename+"\">");
+
+            elemouter = $('<div></div>');
+            elemouter = $(elemouter).addClass("square").attr("id","square")
+                .attr("onmouseenter","hoverin_squarebox(this)")
+                .attr("onmouseleave","hoverout_squarebox(this)")
+                .attr("data-index",attachmentInfo.index)
+                .attr("data-filename",attachmentInfo.filename)
+
+            //now create another element
+            //tilediv.append("<div class=\"insidesquare\" style=\"overflow:hidden\" >");
+            eleminsidesquare = $('<div></div>');
+            $(eleminsidesquare).addClass("insidesquare").css("overflow","hidden")
+
+            //now create an image tag.
+            /*String css_class = "attachmenttiles";// + (is_image ? " img" : "");
+				String leader = "<img class=\"" + css_class + "\"  ";
+				tilediv.append(leader + "  src=\"" + tileThumbnailURL + "\"></img>\n");*/
+
+            imaget = $('<img></img>').addClass("attachmenttiles").attr("src",decodeURI(attachmentInfo.tileThumbnailURL))
+
+
+            //now create a span tag.
+            // tilediv.append("&nbsp;" + "<span id=\"display-name\" name=\"display-name\" class=\"displayname\" title=\"" + Util.escapeHTML(filename) + "\">" + Util.escapeHTML(filename) + "</span>&nbsp;");
+            // tilediv.append("<br/>");
+
+            spant = $('<span></span>')
+                .attr("id","display-name")
+                .attr("name","display-name")
+                .addClass("displayname")
+                .attr("title",escapeHTML(attachmentInfo.filename))
+                .text(escapeHTML(attachmentInfo.filename))
+
+            $(spant).append("</br>")
+
+            //1. add imaget as a child of eleminsidesquare
+            //2. add eleminsidesquare as a child of elemouter
+            //3. add spant as a child of elemouter
+            //4. add elemouter as a child of attachment-tiles.
+            $('#attachment-tiles').append(
+                $(elemouter).append(
+                    $(eleminsidesquare).append(imaget)
+                    ).append(spant)
+            )
+
+        });
+    }
+
     $('body').on('click','#square',function(e){
         //get data-index attribute of that box.
         var squareindex = $(this).attr('data-index');
         //console.log(squareindex);
 
+        //Befor starting the fancybox make sure that href is decodeURI'ed (means we have called decodeURI on href field of this object array
+        attachmentDetails = attachmentDetails.map(f=>({from:f.from,date:f.date,downloadURL:f.downloadURL,filename:f.filename,href:decodeURI(f.href),index:f.index,msgURL:f.msgURL,size:f.size,subject:f.subject,tileThumbnailURL:f.tileThumbnailURL}));
         var instance = $.fancybox.open(attachmentDetails, {
             beforeLoad: function() {
                 //get this.index and use it to get msgindex.
