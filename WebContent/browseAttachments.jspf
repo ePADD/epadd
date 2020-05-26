@@ -1,6 +1,5 @@
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="java.util.Collection" %>
-<%@ page import="edu.stanford.muse.index.SearchResult" %>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
 
@@ -304,22 +303,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         return html;
     };
 
-    var clickable_message = function ( data, type, full, meta ) {
-        return '<a target="_blank" href="' + decodeURI(full["msgURL"]) + '">' + data + '</a>';
-    };
-    var clickable_attachment = function ( data, type, full, meta ) {
-//	    var moreinfo = "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" </span>";
-        return '<a title="' + full["filename"] + '" target="_blank" href="' + decodeURI(full["downloadURL"]) + '">' + data + '</a>' ;
-    };
-    var clickable_normalization_info = function(data,type,full,meta){
-        if(full["info"]){
-            return "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" data-normalization-info=\""+full["info"]+"\"</span>";
-        }else
-            return '';
-    };
-    var sortable_size = function(data, type, full, meta) {
-        return Math.floor(full["size"]/1024) + " KB";
-    };
 
     $.fn.dataTableExt.oSort['sort-kb-asc']  = function(x,y) {
         console.log('x =' + x + ' y = ' + y);
@@ -332,6 +315,23 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     $.fn.dataTableExt.oSort['sort-kb-desc']  = function(x,y) { return -1 * $.fn.dataTableExt.oSort['sort-kb-asc'](x,y); };
 
     var loadAttachmentList = function(){
+        var clickable_message = function ( data, type, full, meta ) {
+            return '<a target="_blank" href="' + decodeURI(full["msgURL"]) + '">' + data + '</a>';
+        };
+        var clickable_attachment = function ( data, type, full, meta ) {
+//	    var moreinfo = "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" </span>";
+            return '<a title="' + full["filename"] + '" target="_blank" href="' + decodeURI(full["downloadURL"]) + '">' + data + '</a>' ;
+        };
+        var clickable_normalization_info = function(data,type,full,meta){
+            if(full["info"]){
+                return "<span class=\"glyphicon glyphicon-info-sign\" id=\"normalizationInfo\" data-normalization-info=\""+full["info"]+"\"</span>";
+            }else
+                return '';
+        };
+        var sortable_size = function(data, type, full, meta) {
+            return Math.floor(full["size"]/1024) + " KB";
+        };
+
         if(isNormalized){
             $('#attachments').dataTable({
                 data: attachmentDetails,
