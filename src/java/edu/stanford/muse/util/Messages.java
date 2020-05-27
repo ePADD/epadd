@@ -61,7 +61,7 @@ public class Messages {
 
 		//Locale ingest= new Locale("France", "French");
 
-		log.info("currentLocale = " + locale.toString());		//Used to know current locale
+		//log.info("currentLocale = " + locale.toString());		//Used to know current locale
 
 		ResourceBundle messages = ResourceBundle.getBundle(bundleName, locale);
 
@@ -79,4 +79,4 @@ public class Messages {
 		System.out.println(getMessage(Locale.getDefault(),"messages", "browse-top.title-labels",null));
 		//System.out.println(getMessage(Locale.GERMANY, "Messages", "template", new Object[]{ "Mars", " Param1", 7, new Date()}));
 	}
-} 
+}
