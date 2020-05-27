@@ -321,10 +321,10 @@ public class EmailRenderer {
 			html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments in " + year + "</div>\n");
 			html.append("<div class=\"gallery_viewchangebar\" style=\"justify-content:flex-end\">\n");
 			html.append("  <div title=\"List view\" class=\"listView\" onclick=\"showListView()\">\n" +
-					"    <img class=\"fbox_toolbarimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
+					"    <img class=\"fbox_toolbarimg\" id=\"listviewimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
 					"  </div>\n" +
 					"  <div title=\"Tile view\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
-					"    <img class=\"fbox_toolbarimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
+					"    <img class=\"fbox_toolbarimg\" id=\"tileviewimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
 					"  </div>\n");
 			html.append("</div>");
 			html.append("</div>");
@@ -363,7 +363,7 @@ public class EmailRenderer {
 		// create HTML for list view and append to page
 		{
 			StringBuilder listdiv = new StringBuilder();
-			listdiv.append("<div id=\"attachment-list\">");
+			listdiv.append("<div id=\"attachment-list\" style=\"display:none\">");
 			listdiv.append("<table id=\"attachment-table\">\n");
 			listdiv.append("<thead>\n");
 			listdiv.append("<tr>\n");
@@ -396,10 +396,10 @@ public class EmailRenderer {
 				js.append("isNormalized=true\n"); //to pass this information to the front end we assign it to a JS variable.
 			js.append("var attachmentDetails=" + attachmentDetails.toString() + ";\n"); // note: no quotes should be present around attachmentDetails - it is simply a JS object in json notation
 			// js.append("attachmentDetails=eval(attachmentDetailsStr);\n");
-			js.append("loadAttachmentTiles();\n"); //invoke method to setup tiles with attachmentDetails data.
+		/*	js.append("loadAttachmentTiles();\n"); //invoke method to setup tiles with attachmentDetails data.
 			js.append("loadAttachmentList();\n"); //invoke method to setup datatable with attachmentDetails data.
 			js.append("if(isListView){ $('#attachment-tiles').hide(); $('#attachment-list').show();} else{$('#attachment-list').hide(); $('#attachment-tiles').show() }\n");//hide the list
-			//page.append("$('#attachment-list').hide();\n");//hide the list
+*/			//page.append("$('#attachment-list').hide();\n");//hide the list
 		}
 
 		return new Pair<>(html.toString(), js.toString());
@@ -604,7 +604,7 @@ public class EmailRenderer {
 
 	/**
 	 * returns a HTML table string for the doc header
-	 * 
+	 *
 	 * @throws IOException
 	 */
     private static StringBuilder getHTMLForHeader(EmailDocument ed, SearchResult searchResult,

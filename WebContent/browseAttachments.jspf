@@ -76,19 +76,6 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <script>
 
-    function showTileView(){
-        //hide list view and show tile view.
-        $('#attachment-list').hide();
-        $('#attachment-tiles').show();
-        isListView=false;
-    }
-
-    function showListView(){
-        //hide tile view and show list view.
-        $('#attachment-tiles').hide();
-        $('#attachment-list').show();
-        isListView=true;
-    }
 
     $('body').on('click','#normalizationInfo', function(e){
         // get the attribute's values - originalURL and originalName.

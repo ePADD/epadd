@@ -31,6 +31,7 @@ var Navigation = function(){
                 window_size_fwd: 1
             },
             page_change_callback: page_change_callback,
+            page_load_callback: attachment_page_loaded_callback,
             logger: epadd.log,
             width: 180,
             /* enable this to enable jog dial
@@ -56,6 +57,42 @@ var Navigation = function(){
         enableCursorKeys: enableCursorKeys
     };
 }();
+
+
+var attachment_page_loaded_callback = function(){
+    loadAttachmentTiles(); //invoke method to setup tiles with attachmentDetails data.
+    loadAttachmentList(); //invoke method to setup datatable with attachmentDetails data.
+    if(isListView){
+        showListView();
+    } else{
+       showTileView();
+    }
+
+}
+function showTileView(){
+    //hide list view and show tile view.
+    $('#attachment-list').hide();
+    $('#attachment-tiles').show();
+    isListView=false;
+    setSelected('#tileviewimg');
+    unsetSelected('#listviewimg');
+}
+
+function showListView(){
+    //hide tile view and show list view.
+    $('#attachment-tiles').hide();
+    $('#attachment-list').show();
+    isListView=true;
+    setSelected('#listviewimg');
+    unsetSelected('#tileviewimg');
+}
+
+var setSelected = function(id){
+    $(id).css("filter","invert(42%) sepia(93%) saturate(1352%) hue-rotate(190deg) brightness(80%) contrast(200%)")
+}
+var unsetSelected = function(id){
+    $(id).css("filter","")
+}
 
 // interacts with #annotation-modal and .annotation-area on screen
 // posts to applyLabelsAnnotations.jsp on updates
