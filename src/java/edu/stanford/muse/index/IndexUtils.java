@@ -25,6 +25,7 @@ import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.*;
+import edu.stanford.muse.webapp.EmailRenderer;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 //import org.apache.commons.logging.Log;
@@ -674,6 +675,67 @@ public class IndexUtils {
 	}
 
 
+	/*
+				Semantics: <5KB -> Number of attachments in mails of size less than 5KB
+				5-20KB - Number of attachments in mails of size from 5 to 20 KB
+				20-100 KB - Number of attachments in mails of size from 20 to 100 KB
+				100KB - 2MB - Number of attachments in mails of size from 100 KB to 2 MB
+				>2MB - Number of attachments in mails of size greater than 2MB.
+	 */
+
+	private static Map<String, DetailedFacetItem> partitionAttachmentsBySize(Collection<? extends Document> docs)
+	{
+		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
+		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
+
+		for (Document d : docs)
+		{
+			if (!(d instanceof EmailDocument))
+				continue;
+			EmailDocument ed = (EmailDocument) d;
+
+
+				//For each attachment in this mail add a dummy document.
+				for(Blob attachment: ed.attachments) {
+					//get size of the attachment.
+					long size = attachment.size;
+					String facetstr="";
+					String facetstrval="";
+					if(Util.filesizeCheck("1",size)) {
+						facetstr = "<5KB";
+						facetstrval="1";
+					}
+					else if(Util.filesizeCheck("2",size)) {
+						facetstr = "5KB - 20KB";
+						facetstrval="2";
+					}
+					if(Util.filesizeCheck("3",size)) {
+						facetstr = "20KB - 100KB";
+						facetstrval = "3";
+					}
+					if(Util.filesizeCheck("4",size)) {
+						facetstr = "5KB - 20MB";
+						facetstrval="4";
+					}
+					if(Util.filesizeCheck("5",size)) {
+						facetstr = ">20MB";
+						facetstrval="5";
+					}
+					if(result.get(facetstr)==null) {
+						result.put(facetstr,new DetailedFacetItem(facetstr, "Number of attachments in this range of size", "attachmentFilesize", facetstrval));
+					}
+
+					//dfi.addDoc(ed);
+					//create a dummy doc such that no two docs are same.
+					EmailDocument edummy = new EmailDocument(ed.id,ed.emailSource,ed.folderName,ed.to,ed.cc,ed.bcc,ed.from,ed.getSubjectWithoutTitle(),ed.messageID+indexToDifferentiate,ed.date);
+					//add it to f.
+					result.get(facetstr).addDoc(edummy);
+					indexToDifferentiate++;
+				}
+			}
+
+		return result;
+	}
 	private static Map<String, DetailedFacetItem> partitionDocsByFolder(Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> folderNameMap = new LinkedHashMap<>();
@@ -940,7 +1002,13 @@ public class IndexUtils {
 	private static Map<String, DetailedFacetItem> partitionAttachmentsByAttachmentType(Archive archive, Collection<? extends Document> docs)
 	{
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
-
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(EmailRenderer.EXCLUDED_EXT);
+		} catch (Exception e) {
+			Util.report_exception(e);
+			return result;
+		}
 		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
 		for (Document d : docs)
 		{
@@ -955,6 +1023,11 @@ public class IndexUtils {
 					if (ext == null)
 						ext = "none";
 					ext = ext.toLowerCase();
+					//Exclude any attachment whose extension is of the form EXCLUDED_EXT
+
+					if(pattern.matcher(ext).find()){
+						continue;//don't consider any attachment that has extension of the form [0-9]+
+					}
 					DetailedFacetItem dfi = result.get(ext);
 					if (dfi == null)
 					{
@@ -1093,6 +1166,8 @@ public class IndexUtils {
 			Map<String, DetailedFacetItem> attachmentTypesMap = partitionAttachmentsByAttachmentType(archive,docs);
 			facetMap.put("attachment type", attachmentTypesMap.values());
 		}
+		Map<String,DetailedFacetItem> attachmentSizeMap = partitionAttachmentsBySize(docs);
+		facetMap.put("attachment size",attachmentSizeMap.values());
 		if (addressBook != null) {
 			// people
 			Map<Contact, DetailedFacetItem> peopleMap = partitionAttachmentsByPerson(docs, addressBook);
@@ -1104,6 +1179,7 @@ public class IndexUtils {
 				facetMap.put("sender", directionMap.values());
 
 		}
+
 		if (!ModeConfig.isPublicMode())
 		{
 			Map<String, DetailedFacetItem> folderNameMap = partitionAttachmentsByFolder(docs);

@@ -50,16 +50,16 @@
 
 <section>
     <div class="panel" id="generate-thumbnails">
-        <div class="panel-heading">Generate Thumbnails for Attachmetns</div>
+        <div class="panel-heading">Generate Thumbnails for Attachments</div>
 
         <div class="one-line">
             <div class="form-group col-sm-4">
                 <%--<label for="trustedaddrsForComputation">Trusted emails addresses</label>--%>
-                <input type="text" placeholder="Path to soffice executable (from Libreoffice) /Applications/LibreOffice.app/Contents/MacOS/soffice" id="libreofficpath"></input>
+                <input type="text" placeholder="Path to soffice executable (from LibreOffice) /Applications/LibreOffice.app/Contents/MacOS/soffice" id="libreofficpath"></input>
             </div>
             <div class="form-group col-sm-5">
                 <%--<label for="outgoingthreshold">Outgoing messages threshold</label>--%>
-                <input type="text" placeholder="Path to convert (from ImageMagik) /usr/local/bin/convert" id="convertpath"></input>
+                <input type="text" placeholder="Path to convert executable (from ImageMagick) /usr/local/bin/convert" id="convertpath"></input>
             </div>
             <div class="form-group col-sm-2 picker-buttons">
                 <button id="createThumbnails" onclick="createThumbnailsAddressHandler();return false;" class="btn-default" style="cursor:pointer">Create Thumbnails</button>

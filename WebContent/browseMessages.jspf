@@ -233,8 +233,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     out.println ("</span><br/>\n");
                 }
                 //<editor-fold desc="Facet-rendering" input="facets" output="html:out">
+                boolean noAttachments=true;//to denote if this set of messages has any attachments or not.
                 for (String facet: facets.keySet())
                 {
+                    if(facet.toLowerCase().equals("attachment type")){
+                        //if it has non-zero attachments then set this variable as true. It will be later used to decide if 'attachment view' button
+                        //needs to be greyed out or not.
+                        if(facets.get(facet).size()!=0)
+                            noAttachments=false;
+                    }
                     List<DetailedFacetItem> items = new ArrayList<>(facets.get(facet));
                     if (items.size() == 0)
                         continue; // don't show facet if it has no items.
@@ -387,8 +394,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             <option value="chronological">Oldest first</option>
                         </select>
                     </div>
+                    <%--Present attachment view button only if this set of messages has non-zero attachments, else grey that out??--%>
+                    <%if(noAttachments){%>
+                    <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" disabled onclick="window.location='<%=attachmentBrowsingURL%>'">Attachment View</button>
+                    <%}else{%>
                     <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" onclick="window.location='<%=attachmentBrowsingURL%>'">Attachment View</button>
-
+                    <%}%>
                 </div>
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">
@@ -409,7 +420,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             <div style="display:inline; position:relative; " id="pageNumbering"></div> of
                             <div style="display:inline; position:relative; " id="totalPages"><%=docs.size()%></div>
                         </div>
-                        <div id="page_forward" class="nav-arrow"> <img title="Next message"  src="images/next.svg"/></div>
+                        <div id="page_forward" class="nav-arrow"> <img title="Next message"  src="images/next.svg" style="margin-top:5px;"/></div>
                     </div>
                 </div>
                 <div style="clear:both"></div>

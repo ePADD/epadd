@@ -310,7 +310,7 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 #manualassign { padding: 20px }
 #manualassign, #manualassign .aa { font-size: 12px; }
 #manualassign .header { font-size: 20px; }
-.fancybox-skin { background-color: white; }
+.fancybox-skin { background-color: white; paddng: 0px; }
 
 .attachments img { max-width:200px; margin: 10px; box-shadow: 3px 3px 2px #888888}
 
@@ -330,6 +330,8 @@ ul.jqueryFileTree li.directory, ul.jqueryFileTree li.file { margin-top: 10px;}
 	border: solid 1px rgba(0,0,0,0.2);
 
 }
+
+#attachment-table { text-align: left;} /* this is to undo the text-align:center of the attachments container */
 
 .autocomplete-suggestions {
 	background-color: white;
@@ -447,15 +449,17 @@ img.attachmenttiles{
 }
 
 .displayname{
-	font-family: open sans regular;
+	font-family: 'Open Sans',sans-serif;
 	font-size: 14px;
 	color: #333;
 }
 
 .fbox_toolbar{
-       text-align:right;
+	text-align:right;
     width:inherit;
 }
+
+.fancybox-title-inside-wrap { padding: 0px; }
 
 .fbox_metabar{
     display: flex;

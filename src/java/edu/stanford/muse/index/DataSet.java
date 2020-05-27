@@ -114,7 +114,7 @@ public class DataSet {
     /* returns attachment browsing html for year.
     Caches the html once computed (Removed during refactoring. It was done in variable called pages).
      In the front end jog plugin also does caching so removed server sided caching for simplicity*/
-    public String getPageForAttachments(int year, boolean IA_links, boolean inFull, boolean debug, String archiveID) {
+    public String getPageForAttachments(int year, String archiveID) {
 //		if (authorisedEntities == null && !ModeConfig.isPublicMode()) {
 //			String filename = archive.baseDir + java.io.File.separator + edu.stanford.muse.Config.AUTHORITIES_FILENAME;
 //			try {
@@ -127,35 +127,20 @@ public class DataSet {
 //			}
 //		}
         try {
-            String pageContent = "";
-            //if (inFull ) // inFull==true now means it
-            // previously was inFull==false
-            // and needs refresh
             {
-                // we are assuming one page per doc for now. (true for
-                // emails)
-                Pair<String, Boolean> htmlResult = EmailRenderer.htmlForAttachments(docs,year, searchResult, datasetTitle,
-                        authorisedEntities, IA_links, inFull, debug,archiveID);
-                boolean overflow = htmlResult.second;
-                Util.ASSERT(!(inFull && overflow));
-                pageContent = htmlResult.first
-                        +
-                        (overflow ? "<br><span class='nojog' style='color:#500050;text-decoration:underline;font-size:12px' onclick=\"$('#more_spinner').show(); $.fn.jog_page_reload("
-                                + year
-                                + ", '&inFull=1');\">More<img id='more_spinner' src='/muse/images/spinner3-greenie.gif' style='width:16px;display:none;'/></span><br/>\n"
-                                : "");
-                //pages.set(i, pageContent);
+                // htmlForAttachments returns us 2 components: the html and the js to be injected on the page
+                Pair<String, String> htmlAndJs = EmailRenderer.htmlAndJSForAttachments(docs, year, searchResult);
+                String pageContent = htmlAndJs.first + "\n<script>" + htmlAndJs.second + "</script>";
+                return pageContent;
             }
-            //return pages.get(i);
-            return pageContent;
         } catch (Exception e) {
             StringBuilder debugString = new StringBuilder();
             debugString.append ("Problem information: archiveID " + archiveID);
             debugString.append (" dataset " + datasetTitle);
             debugString.append (" has " + ((docs == null) ? "(null)" : docs.size()) + " messages");
             debugString.append (" requested year " + year);
-            Util.print_exception("Exception getting page in dataset " + debugString.toString(), e, JSPHelper.log);
-            return "Message unavailable, please try to reload this page.<br/>" + debugString.toString(); // also reflect this back to the user
+            Util.print_exception("Exception getting page/year in dataset " + debugString.toString(), e, JSPHelper.log);
+            return "Message (attachments) unavailable, please try to reload this page.<br/>" + debugString.toString(); // also reflect this back to the user
         }
     }
 

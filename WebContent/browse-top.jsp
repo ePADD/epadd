@@ -222,7 +222,8 @@
 		<br/>
 
 		<div class="cta-box  margin30">
-				<a href="image-attachments?archiveID=<%=archiveID%>> &attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">
+				<%--<a href="image-attachments?archiveID=<%=archiveID%>&attachmentExtension=jpg&attachmentExtension=png&attachmentExtension=gif&attachmentExtension=bmp&attachmentExtension=jpeg&attachmentExtension=svg&attachmentExtension=tif&startDate=&endDate=">--%>
+					<a href="browse?archiveID=<%=archiveID%>&attachmentType=jpg;jpeg;svg;png;gif;bmp;tif&browseType=attachments">
 					<img class="icon-images" src="images/image_attachments.svg">
 					<h1 id="nImageAttachments"><%=Util.commatize(nImageAttachments)%></h1>
 					<h2><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-image-attach")%></h2>
@@ -235,10 +236,13 @@
 
 
 		<div class="cta-box  margin30">
-			<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=pdf&attachmentType=others&startDate=&endDate=">
+			<%--<a href="attachments?archiveID=<%=archiveID%>&attachmentType=doc%3Bdocx%3Bpages&attachmentType=ppt%3Bpptx%3Bkey&attachmentType=xls%3Bxlsx%3Bnumbers&attachmentType=htm%3Bhtml%3Bcss%3Bjs&attachmentType=zip%3B7z%3Btar%3Btgz&attachmentType=mp3%3Bogg&attachmentType=avi%3Bmp4&attachmentType=fmp%3Bdb%3Bmdb%3Baccdb&attachmentType=pdf&attachmentType=others&startDate=&endDate=">--%>
+				<a href="browse?archiveID=<%=archiveID%>&browseType=attachments">
 				<img class="icon-images" src="images/other_attachments.svg">
-				<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>
-				<h2><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-other-attach")%></h2>
+				<%--<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>--%>
+					<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments)%></h1>
+
+					<h2>All attachments</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>--%>
 				<%--<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>--%>

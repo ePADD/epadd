@@ -116,6 +116,7 @@
 				<includes>
 					<include>browse-top.jsp</include>
 					<include>browse.jsp</include>
+					<include>browseMessages.jspf</include>
 					<include>search-query.jsp</include>
 					<include>advanced-search.jsp</include>
 					<include>version.jsp</include>
