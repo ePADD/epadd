@@ -6,11 +6,7 @@
 <!DOCTYPE HTML>
 <html>
 
-<script src="js/jquery.js"></script>
-<%@include file="header.jspf"%>
-
 <head>
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "labels.head-labels")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
@@ -22,6 +18,7 @@
 	<link rel="stylesheet" href="css/main.css">
 
 	<%-- Jquery was present here earlier --%>
+	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
@@ -29,12 +26,15 @@
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	
+
 
 
 </head>
 <body>
 	<%-- The header.jspf file was included here --%>
+
+	<%@include file="header.jspf"%>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "labels.head-labels")%></title>
 
 <script>epadd.nav_mark_active('Browse');</script>
 

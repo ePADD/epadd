@@ -11,13 +11,6 @@
 <script src="js/jquery.js"></script>
 
 <head>
-
-<% 	if(archive != null && request.getParameter("archiveID")==null)
-	request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
-%>
-	<%@include file="header.jspf"%>
-
-	<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.head-correspondents")%> </title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -38,7 +31,7 @@
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
-	
+
 	<style type="text/css">
       .js #people {display: none;}
 	   .modal-body {
@@ -48,12 +41,19 @@
 	   }
 
 	</style>
-		
+
 	<script type="text/javascript" charset="utf-8">
 
 	</script>
 </head>
 <body>
+
+<% 	if(archive != null && request.getParameter("archiveID")==null)
+	request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
+%>
+<%@include file="header.jspf"%>
+
+<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.head-correspondents")%> </title>
 
 <%-- The header.jspf file was included here --%>
 

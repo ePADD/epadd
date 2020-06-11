@@ -27,8 +27,17 @@
     String facetColTitle = titles.second;
     //Create a random docsetID to store the resultset in session object so that it can be used later for downloading or labeling the messages.
     String docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
+
+    //IMP: If the query string has both parameters, attachmentType and attachmentExtension then remove attachmentType from the query string
+    //Otherwise clicking on facet (in attachment browse screen) will always show all attachments because that is how SearchResult::selectAttachments
+    //has been written.
+    // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
+    Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+    if(params.containsKey("attachmentType") && params.containsKey("attachmentExtension")){
+        params.removeAll("attachmentType");
+    }
     //collect search result
-    Pair<Collection<Document>, SearchResult> result = JSPHelper.getSearchResultDocs(request,archive);
+    Pair<Collection<Document>, SearchResult> result = JSPHelper.getSearchResultDocs(params,archive);
     Collection<Document> docs = result.first;
     SearchResult outputSet = result.second;
 

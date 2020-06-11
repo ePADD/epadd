@@ -13,11 +13,8 @@
 <html>
 <head>
 
-    <script src="js/jquery.js"></script>
-    <%@include file="header.jspf"%>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.head-export")%> </title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 
@@ -28,7 +25,8 @@
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
 
-<%-- jquery was present here earlier --%>
+    <script src="js/jquery.js"></script>
+
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="jqueryFileTree/jqueryFileTree.js"></script>
     <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
@@ -63,7 +61,8 @@
 </head>
 <body style="background-color:white;">
 
-<%-- The header.jspf file was included here --%>
+<%@include file="header.jspf"%>
+<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.head-export")%> </title>
 
 <jsp:include page="div_filepicker.jspf"/>
 

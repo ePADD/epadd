@@ -7,13 +7,11 @@
 <html>
 
 <script src="js/jquery.js"></script>
-<%@include file="header.jspf"%>
 
 <head>
 
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.head-search")%> </title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -22,7 +20,7 @@
 	<link rel="stylesheet" href="css/main.css">
 
 <%-- jquery was present here earlier--%>
-	
+
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
@@ -47,6 +45,8 @@
 <body>
 
 <%-- The file header.jspf was present here --%>
+<%@include file="header.jspf"%>
+<title> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "search-query.head-search")%> </title>
 
 <script>epadd.nav_mark_active('Search');</script>
 

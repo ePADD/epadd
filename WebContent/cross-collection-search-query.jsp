@@ -3,16 +3,14 @@
 <!DOCTYPE HTML>
 <html>
 
-<script  src="js/jquery-1.12.1.min.js"></script>
-<%@include file="header.jspf"%>
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.head-search")%></title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-	<%-- Jquery was present here earlier--%>
+	<script  src="js/jquery-1.12.1.min.js"></script>
+
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -24,7 +22,9 @@
 	<script src="js/epadd.js"></script>
 </head>
 <body>
-<%-- Header.jspf file was present here --%>
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.head-search")%></title>
+
 <br/>
 <br/>
 

@@ -8,22 +8,48 @@
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE html>
 
+
+<html>
+
+<%-- Jquery was present here last time--%>
+<head>
+	<link rel="icon" type="image/png" href="images/epadd-favicon.png"/>
+
+	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css"/>
+	<jsp:include page="css/css.jsp"/>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
+    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
+
+	<%-- Jquery was present here earlier --%>
+	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui/jquery-ui.js"></script>
+
+    <script src="js/selectpicker.js"></script>
+	<script src="js/modernizr.min.js"></script>
+	<script src="js/sidebar.js"></script>
+	<script type="text/javascript" src="js/muse.js"></script>
+	<script src="js/epadd.js"></script>
+</head>
+<body>
+<%-- Header.jspf was present here earlier --%>
 <%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-label.head-edit-label")%></title>
 <script src="js/jquery.js"></script>
 
 <%
     // labelId = null or empty => tis is a new label
 
-	// which lexicon? first check if url param is present, then check if url param is specified
-	String labelID = request.getParameter("labelID");
-	String labelName = "", labelDescription = "", labelType = "";
-	String restrictionType = LabelManager.RestrictionType.OTHER.toString();
-	String restrictionUntilTime = "";
-	String restrictedForYears = "";
-	String labelAppliesToMessageText= "";
+    // which lexicon? first check if url param is present, then check if url param is specified
+    String labelID = request.getParameter("labelID");
+    String labelName = "", labelDescription = "", labelType = "";
+    String restrictionType = LabelManager.RestrictionType.OTHER.toString();
+    String restrictionUntilTime = "";
+    String restrictedForYears = "";
+    String labelAppliesToMessageText= "";
 
     Label label = null;
-	if (!Util.nullOrEmpty(labelID)) {
+    if (!Util.nullOrEmpty(labelID)) {
         label = archive.getLabelManager().getLabel(labelID);
         if (label != null) {
             labelName = label.getLabelName();
@@ -46,32 +72,6 @@
         }
     }
 %>
-<html>
-
-<%-- Jquery was present here last time--%>
-<head>
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-label.head-edit-label")%></title>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png"/>
-
-	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css"/>
-	<jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
-    <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
-
-	<%-- Jquery was present here earlier --%>
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="js/jquery-ui/jquery-ui.js"></script>
-
-    <script src="js/selectpicker.js"></script>
-	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
-	<script type="text/javascript" src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
-</head>
-<body>
-<%-- Header.jspf was present here earlier --%>
-
 <% writeProfileBlock(out, archive, (Util.nullOrEmpty(labelID) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label.create-label") : edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-label.edit-label") + labelName)); %>
 <br/>
 <br/>

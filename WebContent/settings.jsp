@@ -5,11 +5,8 @@
 
 <!DOCTYPE HTML>
 <html lang="en">
-    <script src="js/jquery.js"></script>
-    <%@include file="header.jspf"%>
 
 <head>
-    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.head-epadd-settings")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -20,7 +17,8 @@
 	<%-- Jscript was included here --%>
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="js/modernizr.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 
 	<script src="js/epadd.js"></script>
@@ -32,7 +30,10 @@
 </head>
 <body style="color:gray;">
     <%-- Header.jsp was included here earlier --%>
-<%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.manage-settings"));%>
+    <%@include file="header.jspf"%>
+    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.head-epadd-settings")%></title>
+
+    <%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "settings.manage-settings"));%>
 
 <jsp:include page="alert.jspf"/>
 <div id="spinner-div" style="text-align:center;display:none"> <img style="height:20px" src="images/spinner.gif"/></div>

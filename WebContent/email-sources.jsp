@@ -14,11 +14,9 @@
 <!DOCTYPE HTML>
 <html>
 
-<%@include file="header.jspf" %>
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.head-specify-source")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 
@@ -50,6 +48,8 @@
 
 
 <%-- header.jspf was here --%>
+<%@include file="header.jspf" %>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.head-specify-source")%></title>
 
 <jsp:include page="div_filepicker.jspf"/>
 

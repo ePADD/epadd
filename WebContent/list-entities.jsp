@@ -19,11 +19,8 @@ Browse page for entities based on fine types
 <!DOCTYPE HTML>
 <html>
 
-<script src="js/jquery.js"></script>
-<%@include file="header.jspf"%>
 
 <head>
-    <title><%=entityType%> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.head-entities")%> </title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -31,7 +28,7 @@ Browse page for entities based on fine types
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
 
-   <%-- Jquery was present here earlier --%>
+    <script src="js/jquery.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/modernizr.min.js"></script>
@@ -43,7 +40,8 @@ Browse page for entities based on fine types
     </style>
 </head>
 <body>
-<%-- Header.jspf file was included here earlier --%>
+<%@include file="header.jspf"%>
+<title><%=entityType%> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.head-entities")%> </title>
     <script>epadd.nav_mark_active('Browse');</script>
     <%writeProfileBlock(out, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.manage-list") + entityType + " " + edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "list-entities.manage-entities") );%>
 

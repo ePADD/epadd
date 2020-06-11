@@ -6,9 +6,7 @@
 
 <html>
 <head>
-    <%@include file="header.jspf"%>
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.head-add")%></title>
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+  	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
@@ -30,6 +28,9 @@
 		.form-group { margin-bottom: 25px;}
 	</style>
 </head>
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "add-accession.head-add")%></title>
+
 <%
     String collectionID = request.getParameter("collection");
 %>

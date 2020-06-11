@@ -19,26 +19,10 @@
 <script src="js/jquery.js"></script>
 
 
-<%
-	//ArchiveID part is added here so that the test() can be used for the title of page too.
-
-	//This is to handle the scenario when appraisal mode browse-top is being invoked without archiveID. As
-	//a default behaviour archive is loaded by reading from epadd-appraisal directory. However as no archiveID
-	//is present in the request the headers are not rendered properly. Now we set archiveID from the archive object
-	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
-	//not passed from the request) and used for rendering the header properly.
-	if(archive != null && request.getParameter("archiveID")==null)
-		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
-%>
-<%@include file="header.jspf"%>
-
-
 <head>
 <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>
-		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.head-archive-info")%>
-	</title>
+
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
@@ -79,6 +63,22 @@
 </head>
 <body>
 
+<%
+	//ArchiveID part is added here so that the test() can be used for the title of page too.
+
+	//This is to handle the scenario when appraisal mode browse-top is being invoked without archiveID. As
+	//a default behaviour archive is loaded by reading from epadd-appraisal directory. However as no archiveID
+	//is present in the request the headers are not rendered properly. Now we set archiveID from the archive object
+	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
+	//not passed from the request) and used for rendering the header properly.
+	if(archive != null && request.getParameter("archiveID")==null)
+		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
+%>
+
+<%@include file="header.jspf"%>
+<title>
+	<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.head-archive-info")%>
+</title>
 
 <%-- The archive ID section that is moved to the head tag was present here --%>
 

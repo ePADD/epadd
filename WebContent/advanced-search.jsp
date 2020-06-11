@@ -7,11 +7,8 @@
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
-<script  src="js/jquery-1.12.1.min.js"></script>
-<%@include file="header.jspf"%>
 <head>
 	<%--date time picker component used from http://eonasdan.github.io/bootstrap-datetimepicker/--%>
-    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.head-advanced-search")%></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8">
@@ -56,6 +53,7 @@
     <!--scripts-->
 
 	<%-- Jquery was present here earlier --%>
+		<script  src="js/jquery-1.12.1.min.js"></script>
 
 	<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
@@ -72,6 +70,9 @@
 </head>
 <body>
 	<%-- The Header.jps was included here --%>
+	<%@include file="header.jspf"%>
+	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.head-advanced-search")%></title>
+
 	<script>epadd.nav_mark_active('Search');</script>
 	<% writeProfileBlock(out, archive,edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.manage-search"));%>
 

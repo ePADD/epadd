@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -160,7 +160,7 @@ public class JSPHelper {
 			}
 
 			session.setAttribute("userKey", userKey); // this is needed for the root dir for piclens
-			// now we have the user key				
+			// now we have the user key
 			baseDir = SimpleSessions.getDefaultRootDir() + File.separator + getUserKey(session);
 			log.info("base dir set to " + baseDir);
 			return baseDir;
@@ -228,7 +228,7 @@ public class JSPHelper {
 		//		try {
 		//			s = Sessions.getGlobalSession(session);
 		//		} catch (Exception e) { Util.print_exception(e, log); }
-		//		
+		//
 		//		if (s != null) return s.get(attr_name);
 		//
 		//		return null;
@@ -311,15 +311,15 @@ public class JSPHelper {
 	//
 	//	public static boolean fetchEmailsDefaultFolders(HttpServletRequest request, HttpSession session, boolean downloadMessageText, boolean downloadAttachments) throws Exception
 	//	{
-	//		try { 
+	//		try {
 	//			fetchEmails(request, session, downloadMessageText, downloadAttachments, true);
 	//		} catch (Exception e) {
 	//			return false;
 	//		}
 	//		return true;
 	//	}
-	//	
-	//	public static Triple<Collection<EmailDocument>, AddressBook, BlobStore> fetchEmails(HttpServletRequest request, HttpSession session, boolean downloadMessageText, boolean downloadAttachments, boolean useDefaultFolders) 
+	//
+	//	public static Triple<Collection<EmailDocument>, AddressBook, BlobStore> fetchEmails(HttpServletRequest request, HttpSession session, boolean downloadMessageText, boolean downloadAttachments, boolean useDefaultFolders)
 	//			throws UnsupportedEncodingException, MessagingException, InterruptedException, IOException, JSONException, NoDefaultFolderException, CancelledException
 	//	{
 	//		return fetchEmails(request, session, downloadMessageText, downloadAttachments, useDefaultFolders, null);
@@ -331,7 +331,7 @@ public class JSPHelper {
 	 * useDefaultFolders: use the default folder for that fetcher if there are
 	 * no explicit folders in that fetcher.
 	 * throws out of memory error if it runs out of memory.
-	 * 
+	 *
 	 * @throws JSONException
 	 * @throws IOException
 	 * @throws InterruptedException
@@ -1131,11 +1131,10 @@ public class JSPHelper {
 	}
 
 
-	public static Pair<Collection<Document>,SearchResult> getSearchResultDocs(HttpServletRequest request, Archive archive) throws UnsupportedEncodingException {
+	public static Pair<Collection<Document>,SearchResult> getSearchResultDocs(Multimap<String,String> params, Archive archive) throws UnsupportedEncodingException {
 		//<editor-fold desc="Search archive based on request parameters and return the result" input="archive;request"
 		// output="collection:docs;collection:attachments(highlightAttachments) name="search-archive">
-			// convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
-			Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
+
 			SearchResult inputSet = new SearchResult(archive,params);
 			Pair<Collection<Document>,SearchResult> search_result = SearchResult.selectDocsAndBlobs(inputSet);
 

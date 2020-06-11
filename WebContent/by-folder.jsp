@@ -10,14 +10,11 @@
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE HTML>
 <html>
-    <script src="js/jquery.js"></script>
-    <%@include file="header.jspf"%>
 
 <head>
-    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.head-folders")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
-    <%-- Jquery was present here earlier --%>
+    <script src="js/jquery.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -37,7 +34,9 @@
     </script>
 </head>
 <body>
-    <%-- Header.jsp file was included here earlier --%>
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "by-folder.head-folders")%></title>
+
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%

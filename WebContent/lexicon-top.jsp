@@ -8,11 +8,8 @@
 <!DOCTYPE HTML>
 <html>
 
-<script src="js/jquery.js"></script>
-<%@include file="header.jspf"%>
 
 <head>
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.head-lexicon")%></title>
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -20,7 +17,7 @@
 	<link rel="stylesheet" href="css/sidebar.css">
 	<link rel="stylesheet" href="css/main.css">
 
-<%-- jquery was present here --%>
+	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
@@ -29,7 +26,7 @@
 	<script src="js/muse.js"></script>
 
 	<script src="js/epadd.js"></script>
-	
+
 	<style type="text/css">
      /*.js #table  {display: none;}*/
       .search {cursor:pointer;}
@@ -53,7 +50,9 @@
 
 </head>
 <body>
-<%-- File Header.jspf was present here --%>
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.head-lexicon")%></title>
+
 <script>epadd.nav_mark_active('Browse');</script>
 
 <%writeProfileBlock(out, false, archive, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.manage-lexicons"), 900);%>
@@ -85,7 +84,7 @@
 */
 
 %>
-			
+
 
 <div style="margin:auto; width:900px">
 	<div class="button_bar_on_datatable">
@@ -96,7 +95,7 @@
 	</div>
 	<table id="table">
 		<thead><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.lexicon")%></th><th><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "lexicon-top.number-of-categories")%></th></thead>
-		<tbody>			
+		<tbody>
 			<%
 			for (int j=0; j<lexiconsWithCategories.length();j++) {
 				%>

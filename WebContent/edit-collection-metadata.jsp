@@ -10,7 +10,6 @@
 
 <html>
 <head>
-	<%@include file="header.jspf"%>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -21,7 +20,6 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/muse.js" type="text/javascript"></script>
 	<script src="js/epadd.js" type="text/javascript"></script>
-	<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.head-collection-metadata")%></title>
 
 	<style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}
@@ -32,6 +30,10 @@
 <body style="background-color: white">
 
 <%-- The header.jspf file was included here --%>
+
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.head-collection-metadata")%></title>
+
 
 <script>epadd.nav_mark_active('Collections');</script>
 
@@ -215,6 +217,6 @@
 </script>
 
  <jsp:include page="footer.jsp"/>
- 
+
 </body>
 </html>

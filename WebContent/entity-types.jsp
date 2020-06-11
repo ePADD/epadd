@@ -14,10 +14,8 @@
 <html>
 
 <script src="js/jquery.js"></script>
-<%@include file="header.jspf"%>
 
 <head>
-    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.head-entities")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -42,6 +40,8 @@
 </head>
 <body>
 <%-- The file header.jspf was present here --%>
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "entity-types.head-entities")%></title>
 
 
 <div class="nav-toggle1 sidebar-icon">

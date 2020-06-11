@@ -463,8 +463,17 @@ public class EmailRenderer {
 			}
 			else {
 				if (archive.getBlobStore().is_image(attachment)) {
-					thumbnailURL = downloadURL;
-					tileThumbnailURL=thumbnailURL;//may be we need to reduce it's size.@TODO
+					//We need special handling for tif images. Because they are not being
+					//rendered by chrome or firefox but are supported only by safari. However, we are not going to add browser specific code here
+					//and may be wait for the day when both chrome and firefox start supporting them.
+					if(Util.getExtension(contentFileDataStoreURL).equals("tif")){
+						//handle it like non-previewable file.
+						thumbnailURL="images/large_sorry_img.svg";
+						tileThumbnailURL="images/large_sorry_img.svg";
+					}else {
+						thumbnailURL = downloadURL;
+						tileThumbnailURL = thumbnailURL;//may be we need to reduce it's size.@TODO
+					}
 				}
 				else if(Util.is_pdf_filename(contentFileDataStoreURL)){  //because pdfs are treated as doc so better to keep it first.
 					thumbnailURL="images/pdf_icon.svg";//thumbnailURL of a pdf can be a pdf image @TODO

@@ -10,9 +10,6 @@
 <head>
 
     <script src="js/jquery.js"></script>
-    <%@include file="header.jspf"%>
-
-    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.head-collections")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
@@ -28,6 +25,9 @@
 <body>
 <%-- The headder.jspf file was included here --%>
 
+<%@include file="header.jspf"%>
+
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.head-collections")%></title>
 
 <script>epadd.nav_mark_active('Collections');</script>
 

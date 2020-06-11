@@ -9,18 +9,15 @@
 <%@page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 
 <html>
-<script src="js/jquery.js"></script>
-<%@include file="header.jspf"%>
 
 <head>
 
-    <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.head-collection-details")%></title>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <jsp:include page="css/css.jsp"/>
 
-
+    <script src="js/jquery.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
@@ -47,7 +44,8 @@
 </head>
 <body>
 
-<%-- The header.jspf file was originally here --%>
+<%@include file="header.jspf"%>
+<title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.head-collection-details")%></title>
 
 <%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 
