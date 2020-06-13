@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -194,7 +194,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * // comment out unused constructors, so it's cleaner/easier to trace the
 	 * setting member fields.
 	 * public EmailFetcherThread() { super(); }
-	 * 
+	 *
 	 * public EmailFetcherThread(EmailStore store, String folder_name)
 	 * {
 	 * this.emailStore = store;
@@ -573,6 +573,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     //decode it.
                     byte decoded[] = Base64.decodeBase64(b);
                     content = new String(decoded);
+                    content = p.getContent().toString();
                 }else{
                     //Encoding is something else (maybe "binary") just read it in the conent without decoding.
                     byte b[] = Util.getBytesFromStream(p.getInputStream());
@@ -1562,17 +1563,17 @@ public class EmailFetcherThread implements Runnable, Serializable {
 	 * lastReceivedHeader = v;
 	 * }
 	 * }
-	 * 
+	 *
 	 * // sometimes the headers have an extra ctrl-m at the end, strip it if
 	 * this is the case.
 	 * if (lastReceivedHeader != null && lastReceivedHeader.endsWith("\r"))
 	 * lastReceivedHeader = lastReceivedHeader.substring(0,
 	 * lastReceivedHeader.length()-1);
-	 * 
+	 *
 	 * ci.addLastReceivedHeader(lastReceivedHeader);
-	 * 
+	 *
 	 * String from = froms[0].toString();
-	 * 
+	 *
 	 * log.info (from + " lastReceived " + lastReceivedHeader);
 	 * if (lastReceivedHeader == null)
 	 * log.warn ("WARNING: " + from + " --> no received header!?");
