@@ -132,7 +132,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             "  <div title=\"Download attachment\" class=\"fbox_downloadbtn\" onclick=\"window.location='"+decodeURI(downloadURL)+"'\">\n" +
             "    <img class=\"fbox_toolbarimg\" src=\"images/download.svg\"  ></img>\n" +
             "  </div>\n" +
-            "  <div title=\"Go to message\" class=\"fbox_msgbtn\" onclick=\"(function(){window.open('"+decodeURI(msgURL)+"')})()\">\n" +
+            "  <div title=\"Go to message(s) associated with this attachment\" class=\"fbox_msgbtn\" onclick=\"(function(){window.open('"+decodeURI(msgURL)+"')})()\">\n" +
             "    <img class=\"fbox_toolbarimg\" src=\"images/edit_lexicon.svg\" ></img>\n" +
             "  </div>\n" +
             "</div>\n" +
@@ -151,7 +151,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             "       <div class=\"fbox_date\" style=\"margin:1px\">"+dt+"</div>\n";
          //If number of messages in which this attachment appears is greater than 1 then present that information as well.
             if(numMessages>1){
-                html = html +  "<a title=\"+ More\" target='_blank' href=\""+decodeURI(msgURL)+"\")})()\">\n" +
+                html = html +  "<a title=\"Go to all "+numMessages+" messages associated with this attachment\" target='_blank' href=\""+decodeURI(msgURL)+"\")})()\">\n" +
                 "  ("+numMessages + " More Messages)\n" +
                 "  </a>\n"
             }
