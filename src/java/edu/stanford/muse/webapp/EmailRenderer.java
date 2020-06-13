@@ -320,10 +320,10 @@ public class EmailRenderer {
 			html.append("<div style=\"display:flex\">\n");
 			html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments in " + year + "</div>\n");
 			html.append("<div class=\"gallery_viewchangebar\" style=\"justify-content:flex-end\">\n");
-			html.append("  <div title=\"List view\" class=\"listView\" onclick=\"showListView()\">\n" +
+			html.append("  <div title=\"List View\" class=\"listView\" onclick=\"showListView()\">\n" +
 					"    <img class=\"fbox_toolbarimg\" id=\"listviewimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
 					"  </div>\n" +
-					"  <div title=\"Tile view\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
+					"  <div title=\"Grid View\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
 					"    <img class=\"fbox_toolbarimg\" id=\"tileviewimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
 					"  </div>\n");
 			html.append("</div>");
@@ -342,18 +342,36 @@ public class EmailRenderer {
 			int attachmentIndex = 0;
 			//array to keep information about the attachments for display in UI.
 			//information need to be presented to the user and hence the structure of the ui elements (like number of columns in the table) will change accordingly.
-
+			//A variable to store number of messages in which an attachment appears. It also stores one of the attachments if it appears multiple times across messages.
+			Map<String,Pair<JsonObject,Integer>> countMessagesMap = new LinkedHashMap<>();
 			for (Document d : docAttachmentMap.keySet()) {
 				//don't forget to increase msgIndex at the end of the following inner loop.
 				for (Blob attachment : docAttachmentMap.get(d)) {
-					JsonObject attachmentInfo = getAttachmentDetails(archive, attachmentIndex, attachment, d);
-					//Insert attachmentInfo in an array of JSONObject (attachmentDetails)
-					attachmentDetails.add(attachmentInfo);
-					JsonElement info = attachmentInfo.get("info");
-					if (info != null)
-						isNormalized = true;//once set it can not be reset.
-					attachmentIndex++;
+					JsonObject attachmentInfo = getAttachmentDetails(archive, attachment, d);
+					//Insert attachmentInfo in an array of JSONObject (attachmentDetails) only if it is not seen previously.
+					//If it already exists then increase the count of seen messages by 1.
+					JsonElement attachmentName = attachmentInfo.get("filenameWithIndex");
+					Pair<JsonObject,Integer> info;
+					if(countMessagesMap.containsKey(attachmentName.toString())){
+						info = countMessagesMap.get(attachmentName.toString());
+					}else{
+					 	info = new Pair(attachmentInfo,0);
+					}
+					//increment count by 1.
+					info.second = info.second+1;
+					countMessagesMap.put(attachmentName.toString(),info);
 				}
+			}
+			//Now iterate over countMessagesMap to put JsonElement in the array.
+			for (Pair<JsonObject,Integer> info: countMessagesMap.values()) {
+				JsonObject attachmentInfo = info.first;
+				attachmentInfo.addProperty("numMessages",info.second);
+				attachmentInfo.addProperty("index",attachmentIndex);
+				attachmentIndex++; //This index is used when selecting a specific tile that user clicks on the grid view.
+				attachmentInfo.remove("filenameWithIndex");//no need to send it to the front end as it is only used to decide if two attachments were same or not.
+				attachmentDetails.add(attachmentInfo);
+				if (attachmentInfo.get("info") != null)
+					isNormalized = true;//once set it can not be reset.
 			}
 			tilediv.append("</div> <!-- closing of attachment-tile div-->\n");
 			//add tilediv to page.
@@ -409,7 +427,7 @@ public class EmailRenderer {
 		Method to extract some key details from an attachment that needs to be displayed in a fancybox in the gallery feature.
 		@chinmay, can we get rid of these escapeHTML and escapeJSON and URLEncode?
 	 */
-	private static JsonObject getAttachmentDetails(Archive archive, int index, Blob attachment, Document doc) {
+	private static JsonObject getAttachmentDetails(Archive archive, Blob attachment, Document doc) {
 		//prepare json object of the information. The format is
 		//{index:'',href:'', from:'', date:'', subject:'',filename:'',downloadURL:'',tileThumbnailURL:'',msgURL:'',info:''}
 		//here info field is optional and present only for those attachments which were converted or normalized during the ingestion and therefore need
@@ -437,7 +455,17 @@ public class EmailRenderer {
 		String subject= Util.escapeHTML(ed.description);
 		subject=Util.escapeJSON(subject);
 		String docId = ed.getUniqueId();
-		String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
+		//for caption of the assignment
+		BlobStore attachmentStore = archive.getBlobStore();
+		String filename = attachmentStore.full_filename_normalized(attachment, false);
+
+		//IMP: We want to open set of all those messages which have this attachment. Therefore we don't use docID to open the message.
+		//String messageURL = "browse?archiveID="+archiveID+"&docId=" + docId;
+		//Use browse?archiveID=...&adv-search=1&attachmentFilename= as the msgurl.
+		result.addProperty("filename",Util.escapeHTML(filename));
+		String numberedFileName = attachmentStore.full_filename_normalized(attachment,true);
+		String messageURL = "browse?archiveID="+archiveID+"&adv-search=1&attachmentFileWithNumber="+Util.URLEncode(numberedFileName);
+		result.addProperty("filenameWithIndex",numberedFileName);
 
 		result.addProperty("from",sender);
 		result.addProperty("date",date);
@@ -449,7 +477,6 @@ public class EmailRenderer {
 		//thumbnailURL is the url of the image displayed in the gallery mode (inside fancybox). For now both are same but they can be made different
 		//later therefore the distinction here.
 		String thumbnailURL = null, downloadURL = null, tileThumbnailURL=null;
-		BlobStore attachmentStore = archive.getBlobStore();
 		if (attachmentStore != null) {
 			String contentFileDataStoreURL = attachmentStore.get_URL_Normalized(attachment);
 			//IMP: We need to do URLEncode otherwise if filename contains (') then the object creation from json data fails in the frontend.
@@ -468,8 +495,8 @@ public class EmailRenderer {
 					//and may be wait for the day when both chrome and firefox start supporting them.
 					if(Util.getExtension(contentFileDataStoreURL).equals("tif")){
 						//handle it like non-previewable file.
-						thumbnailURL="images/large_sorry_img.svg";
-						tileThumbnailURL="images/large_sorry_img.svg";
+						thumbnailURL="images/tiff_icon.svg";
+						tileThumbnailURL="images/tiff_icon.svg";
 					}else {
 						thumbnailURL = downloadURL;
 						tileThumbnailURL = thumbnailURL;//may be we need to reduce it's size.@TODO
@@ -495,8 +522,6 @@ public class EmailRenderer {
 		} else
 			JSPHelper.log.warn("attachments store is null!");
 
-		//for caption of the assignment
-		String filename = attachmentStore.full_filename_normalized(attachment, false);
 
 		if(thumbnailURL==null)
 			thumbnailURL = "images/large_sorry_img.svg";
@@ -521,11 +546,9 @@ public class EmailRenderer {
 		result.addProperty("href",thumbnailURL);
 		result.addProperty("downloadURL",downloadURL);
 		result.addProperty("tileThumbnailURL",tileThumbnailURL);
-		result.addProperty("filename",Util.escapeHTML(filename));
 		if(!Util.nullOrEmpty(info)) //add this field only if this is non-empty. (That is the beauty of json, non-fixed structure for the data).
 			result.addProperty("info",info);
 
-		result.addProperty("index",index);
 		return result;
 	}
 
