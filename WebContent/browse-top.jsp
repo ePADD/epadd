@@ -242,7 +242,7 @@
 				<%--<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments - nImageAttachments)%></h1>--%>
 					<h1 id="nOtherAttachments"><%=Util.commatize(nAttachments)%></h1>
 
-					<h2>All attachments</h2>
+					<h2>All Attachments</h2>
 				<%--<i class="icon-browsetoparrow"></i>--%>
 				<%--<i class="fa fa-files-o" style="color:brown" aria-hidden="true"></i>--%>
 				<%--<p class="cta-text-1">Other attachments (<span id="nOtherAttachments"><%=(nAttachments - nImageAttachments)%></span>)</p>--%>

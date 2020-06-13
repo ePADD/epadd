@@ -125,6 +125,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         subject = obj["subject"];
         downloadURL=obj["downloadURL"];
         msgURL = obj["msgURL"];
+        numMessages =obj["numMessages"];
 
         html="<hr style=\"margin-bottom:5px;\">\n" +
             "<div class=\"fbox_toolbar\">\n" +
@@ -142,13 +143,19 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             "    <div class=\"fbox_subject\">"+subject+"</div>\n" +
             "  </div>\n" +
             "  <div class=\"fbox_metacol2\">\n" +
-            "    <div class=\"fbox_sender\" style=\"display:inline-flex\">" +
+            "    <div class=\"fbox_sender\" >\n" +
             "       <div style=\"margin-right:5px; font-weight:bold\">" +sender+" </div>\n" +
             "    </div>\n" +
             "    <div style=\"display:inline-flex\"> " +
             "       <div style=\"font-weight:bold;margin-right: 2px;\"> sent on </div>\n" +
-            "       <div class=\"fbox_date\" style=\"margin:1px\">"+dt+"</div>\n" +
-            "    </div>\n" +
+            "       <div class=\"fbox_date\" style=\"margin:1px\">"+dt+"</div>\n";
+         //If number of messages in which this attachment appears is greater than 1 then present that information as well.
+            if(numMessages>1){
+                html = html +  "<a title=\"+ More\" target='_blank' href=\""+decodeURI(msgURL)+"\")})()\">\n" +
+                "  ("+numMessages + " More Messages)\n" +
+                "  </a>\n"
+            }
+            html = html + "    </div>\n" +
             "  </div>\n" +
             "</div>\n" +
             "<hr class=\"fbox_seperator\">";
@@ -276,7 +283,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //console.log(squareindex);
 
         //Befor starting the fancybox make sure that href is decodeURI'ed (means we have called decodeURI on href field of this object array
-        attachmentDetails = attachmentDetails.map(f=>({from:f.from,date:f.date,downloadURL:f.downloadURL,filename:f.filename,href:decodeURI(f.href),index:f.index,msgURL:f.msgURL,size:f.size,subject:f.subject,tileThumbnailURL:f.tileThumbnailURL}));
+        attachmentDetails = attachmentDetails.map(f=>({from:f.from,date:f.date,downloadURL:f.downloadURL,filename:f.filename,href:decodeURI(f.href),index:f.index,msgURL:f.msgURL,numMessages:f.numMessages, size:f.size,subject:f.subject,tileThumbnailURL:f.tileThumbnailURL}));
         var instance = $.fancybox.open(attachmentDetails, {
             beforeLoad: function() {
                 //get this.index and use it to get msgindex.
@@ -447,7 +454,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             <div class="breadcrumbs"> Attachments &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;<%=totalAttachments%> from <%=startYear%> to <%=endYear%> </div><br/> <!-- @chinmay should we find a way to say image attachments in the breadcrumb -->
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
-                    <button id="switchMsgView" name="switchMsgView" type="button" class="btn btn-default" onclick="window.location='<%=msgBrowsingURL%>'">Message View</button>
+                    <button id="switchMsgView" name="switchMsgView" type="button" class="btn btn-default" onclick="window.location='<%=msgBrowsingURL%>'" title="Message View">Message View</button>
                 </div>
                     <%--<div class="message-label general-label" id="attachmentMsg"></div>--%>
 

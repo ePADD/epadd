@@ -243,9 +243,9 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     </div>
                     <%--Present attachment view button only if this set of messages has non-zero attachments, else grey that out??--%>
                     <%if(noAttachments){%>
-                    <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" disabled onclick="window.location='<%=attachmentBrowsingURL%>'">Attachment View</button>
+                    <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" disabled onclick="window.location='<%=attachmentBrowsingURL%>'" title="Attachment View">Attachment View</button>
                     <%}else{%>
-                    <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" onclick="window.location='<%=attachmentBrowsingURL%>'">Attachment View</button>
+                    <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" onclick="window.location='<%=attachmentBrowsingURL%>'" title="Attachment View">Attachment View</button>
                     <%}%>
                 </div>
 
