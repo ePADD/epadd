@@ -1184,20 +1184,31 @@ Archive archive = inputSet.archive;
         String neededFilename = JSPHelper.getParam(inputSet.queryParams, "attachmentFilename");
         Collection<String> neededTypeStr = JSPHelper.getParams(inputSet.queryParams, "attachmentType"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
         String neededExtensionStr = JSPHelper.getParam(inputSet.queryParams, "attachmentExtension");
+        //adding support for searching by indexed file name. For example if the file name is image00.png then ePADD adds a unique number before it
+        //to distinguish with other files of the same name. If the same attachment appears in more than one message (same as in content and filename)
+        //then the same numbered file is linked to both messages. This support of searching by numbered filename is to support the case when user wants
+        //to search for a specific image00.png (identified by the number prefix in its name).
+        String numberedFileNames = JSPHelper.getParam(inputSet.queryParams,"attachmentFileWithNumber");
 
-        if (Util.nullOrEmpty(neededFilesize) && Util.nullOrEmpty(neededFilename) && Util.nullOrEmpty(neededTypeStr) && Util.nullOrEmpty(neededExtensionStr)) {
+        if (Util.nullOrEmpty(numberedFileNames) && Util.nullOrEmpty(neededFilesize) && Util.nullOrEmpty(neededFilename) && Util.nullOrEmpty(neededTypeStr) && Util.nullOrEmpty(neededExtensionStr)) {
             return inputSet;
         }
 
         // set up the file names incl. regex pattern if applicable
         String neededFilenameRegex = JSPHelper.getParam(inputSet.queryParams, "attachmentFilenameRegex");
         Set<String> neededFilenames = null;
+        Set<String> neededNumberedFilenames = null;
         Pattern filenameRegexPattern = null;
         if ("on".equals(neededFilenameRegex) && !Util.nullOrEmpty(neededFilename)) {
             filenameRegexPattern = Pattern.compile(neededFilename);
         } else {
             if (!Util.nullOrEmpty(neededFilename)) // will be in lower case
                 neededFilenames = Util.splitFieldForOr(neededFilename);
+        }
+
+        //parse numberedFileNames if present
+        if (!Util.nullOrEmpty(numberedFileNames)) {
+            neededNumberedFilenames = Util.splitFieldForOr(numberedFileNames);
         }
 
         // set up the extensions
@@ -1239,6 +1250,12 @@ Archive archive = inputSet.archive;
                     // non-regex check
                     if (neededFilenames != null && (url == null || !(url.contains(neededFilename))))
                         continue;
+                    else if (neededNumberedFilenames !=null){
+                        //check if the numbered name of the file is in the set of neededNumberedFilenames set. if no then continue
+                        String numberedurl = archive.getBlobStore().full_filename_normalized(b,true);
+                        if(!neededNumberedFilenames.contains(numberedurl.toLowerCase()))
+                            continue;
+                    }
                 } else {
                     // regex check
                     if (!Util.nullOrEmpty(neededFilename)) {
