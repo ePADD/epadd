@@ -42,6 +42,7 @@ import javax.activation.DataSource;
 import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.util.*;
@@ -481,6 +482,11 @@ public class EmailFetcherThread implements Runnable, Serializable {
         }
 
         if (p.isMimeType("text/plain")) {
+            //IMP: CHECK - The part p should be an instance of MimeBodyPart
+            MimeBodyPart bodyPart = ((MimeBodyPart) p);
+            if(bodyPart==null){
+                log.warn("WARN!! Expected MimeBodyPart but did not get any... Some invariant about the structure of mbox file is broken. Please contact the developers.");
+            }
             String encoding = "quoted-printable";
             String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
@@ -553,7 +559,15 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 ///1      quoted-printable
                 ///2      base64
                 if (encoding.toLowerCase().equals("quoted-printable")) {
-                    byte b[] = Util.getBytesFromStream(p.getInputStream());
+
+                    byte b[] = null;
+                    ///Following code handles if by chance this part was not an instance of MimeBodyPart (which it should be) then fallback upon getting
+                    //inputstream instead of getRawInputStream.
+                    if(bodyPart!=null)
+                       b  = Util.getBytesFromStream(bodyPart.getRawInputStream());
+                    else
+                        b  = Util.getBytesFromStream(p.getInputStream());
+
                     try {
                         b = QuotedPrintableCodec.decodeQuotedPrintable(b);
                     } catch (DecoderException e) {
@@ -568,12 +582,16 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     content = new String(b, charset);
                 } else if(encoding.equals("base64")){
                     //Encoding is base64 so perform proper decoding.
-                    //get the content
-                    byte b[] = Util.getBytesFromStream(p.getInputStream());
+                    ///Following code handles if by chance this part was not an instance of MimeBodyPart (which it should be) then fallback upon getting
+                    //inputstream instead of getRawInputStream.
+                    byte b[] = null;
+                    if(bodyPart!=null)
+                        b = Util.getBytesFromStream(bodyPart.getRawInputStream());
+                    else
+                        b = Util.getBytesFromStream(p.getInputStream());
                     //decode it.
                     byte decoded[] = Base64.decodeBase64(b);
-                    content = new String(decoded);
-                    content = p.getContent().toString();
+                    content = new String(decoded,charset);
                 }else{
                     //Encoding is something else (maybe "binary") just read it in the conent without decoding.
                     byte b[] = Util.getBytesFromStream(p.getInputStream());
@@ -624,6 +642,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     for (int i = 0; i < allParts.getCount(); i++) {
                         Part thisPart = parts[i];
                         if (thisPart.isMimeType("text/html")) {
+
                             // common case, return quickly
                             String html = (String) thisPart.getContent();
                             String text = Util.unescapeHTML(html);
