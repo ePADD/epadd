@@ -482,8 +482,10 @@ public class EmailFetcherThread implements Runnable, Serializable {
         }
 
         if (p.isMimeType("text/plain")) {
+            MimeBodyPart bodyPart=null;
             //IMP: CHECK - The part p should be an instance of MimeBodyPart
-            MimeBodyPart bodyPart = ((MimeBodyPart) p);
+            if(p instanceof  MimeBodyPart)
+                bodyPart = ((MimeBodyPart) p);
             if(bodyPart==null){
                 log.warn("WARN!! Expected MimeBodyPart but did not get any... Some invariant about the structure of mbox file is broken. Please contact the developers.");
             }

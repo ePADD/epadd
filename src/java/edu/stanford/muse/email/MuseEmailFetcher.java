@@ -64,14 +64,14 @@ public class MuseEmailFetcher {
 	public transient List<EmailStore> emailStores = new ArrayList<>();
 
 	/////////////////////////// account setup stuff
-	
+
 	/** clear current emailstores */
 	public synchronized void clearAccounts()
 	{
 		emailStores = new ArrayList<>();
 		fetchers = new ArrayList<>();
 	}
-	
+
 	private synchronized void addEmailStore(EmailStore stores) // should we call this addAccount
 	{
 		int initialSize = emailStores.size();
@@ -79,7 +79,7 @@ public class MuseEmailFetcher {
 		emailStores.add(stores);
 		log.info("Email fetcher went from " + initialSize + " stores to " + emailStores.size());
 	}
-	
+
 	/** sets up fetchers for the emailstores */
 	public void setupFetchers(int last_N_msgs)
 	{
@@ -91,7 +91,7 @@ public class MuseEmailFetcher {
 	    	fetchers.add (f); // # of threads
 	    }
 	}
-	
+
 	public int totalMessagesInSelectedFolders()
 	{
 		int n = 0;
@@ -101,7 +101,7 @@ public class MuseEmailFetcher {
 	}
 
 	/////////////////////////////////////
-	
+
 	public int getNAccounts()
 	{
 		if (Util.nullOrEmpty(emailStores))
@@ -147,7 +147,7 @@ public class MuseEmailFetcher {
 	 * c) <email addr, password> for an a/c whose info is known to Thunderbird
 	 * Note: emailAddress is slightly overloaded (can be a plain login name also in case server is specified)
 	 * imapServer is ignored (and can be null) for a well-known email address like Gmail/Y/H/Stanford etc.
-	 * @throws JSONException 
+	 * @throws JSONException
 	 * returns true if the a/c was actually created.
 	 */
 	public synchronized JSONObject addServerAccount(String server, String protocol, String defaultFolderName, String emailAddress, String password, boolean sentOnly) throws JSONException
@@ -169,7 +169,7 @@ public class MuseEmailFetcher {
 			defaultFolderName = "Sent items";
 			protocol = "imaps";
 		}
-		
+
 		// guess the server if we have a null server
 		if (Util.nullOrEmpty(server) && !Util.nullOrEmpty(emailAddress))
 		{
@@ -202,16 +202,16 @@ public class MuseEmailFetcher {
 				defaultFolderName = "Sent";
 			}
 		}
-				
+
 		// saw some logs that people just typed in server name as "gmail"
 		// so help them out a bit
 		if ("gmail".equalsIgnoreCase(server))
 			server = "imap.gmail.com";
-		else if ("yahoo".equalsIgnoreCase(server) || "ymail".equalsIgnoreCase(server)) 
+		else if ("yahoo".equalsIgnoreCase(server) || "ymail".equalsIgnoreCase(server))
 			server = "imap.mail.yahoo.com";
 		else if ("hotmail".equalsIgnoreCase(server) || "microsoft".equalsIgnoreCase(server) || "live".equalsIgnoreCase(server))
 			server = "pop3.live.com";
-		
+
 		JSONObject result = new JSONObject();
 
 		// if still no server, we don't know what do
@@ -221,9 +221,9 @@ public class MuseEmailFetcher {
 			result.put("errorMessage", "No server found");
 			return result;
 		}
-		
+
 		// set up the server
-		
+
 		// only imap/pop
 		// we don't want to support plain imap/pop and get into explaining the security implications to end-users
 		if (Util.nullOrEmpty(protocol))
@@ -231,8 +231,8 @@ public class MuseEmailFetcher {
 		    protocol = "imaps";
 		    if (server.startsWith("pop"))
 		        protocol = "pop3s";
-		}	
-		
+		}
+
 	    ImapPopConnectionOptions connection = new ImapPopConnectionOptions(protocol, server, -1, loginName, password);
 	    emailStore = new ImapPopEmailStore(connection, emailAddress);
 	    if (!Util.nullOrEmpty(defaultFolderName))
@@ -262,9 +262,9 @@ public class MuseEmailFetcher {
 			result.put("status", 0);
 		return result;
 	}
-	
-	/** add mbox stores, given comma separated email directories. 
-	 * if localFolders, sets the display name of the store to "Local Folders" instead of the full path 
+
+	/** add mbox stores, given comma separated email directories.
+	 * if localFolders, sets the display name of the store to "Local Folders" instead of the full path
 	 * @throws MboxFolderNotReadableException */
 	public synchronized String addMboxAccount(String accountKey, String mailDirs, boolean localFolders) throws IOException {
 		if (Util.nullOrEmpty(mailDirs))
@@ -288,9 +288,9 @@ public class MuseEmailFetcher {
 			return getUserDisplayableMessageForException(emailStore, e);
 		}
 
-		return "";		
+		return "";
 	}
-	
+
 	/** utility method for converting an exception encountered in this fetcher to something that can be shown to the user */
 	private static String getUserDisplayableMessageForException(EmailStore store, Exception e)
 	{
@@ -336,7 +336,7 @@ public class MuseEmailFetcher {
 		}
 		return failMessage;
 	}
-	
+
 	/** sets up folderInfo's for each fetcher based on the given request params in allFolders (or using default if useDefaultFolders)
 	 * selectedFolders folders are in the <account name>^-^<folder name> format from folders.jsp
 	 * if using default folders, selectedFolders can be null
@@ -418,20 +418,20 @@ public class MuseEmailFetcher {
 	}
 
 	/** ensures passwords do not get saved with serialization */
-	public void wipePasswords() 
+	public void wipePasswords()
 	{
 		if (emailStores == null)
 			return;
 		for (EmailStore store: emailStores)
 			store.wipePasswords();
 	}
-	
+
 	/** returns the effective userKey we should use -- usually just the key of the first email store. might have more sophisticated mapping policies in the future.  */
 	public String getEffectiveUserKey()
 	{
 		if (Util.nullOrEmpty(emailStores))
 			return "";
-		
+
 		String userKey = "";
 		// go through the stores till we have a non-empty key
 		for (EmailStore store: emailStores)
@@ -445,19 +445,19 @@ public class MuseEmailFetcher {
 		}
 		return userKey;
 	}
-	
+
     /** key method to fetch actual email messages. can take a long time.
      * @param session is used only to set the status provider object. callers who do not need to track status can leave it as null
      * @param selectedFolders is in the format <account name>^-^<folder name>
      * @param session is used only to put a status object in. can be null in which case status object is not set.
      * emailDocs, addressBook and blobstore
-     * @throws NoDefaultFolderException 
+     * @throws NoDefaultFolderException
      * */
 	public void fetchAndIndexEmails(Archive archive, String[] selectedFolders, boolean useDefaultFolders, FetchConfig fetchConfig, HttpSession session, Consumer<StatusProvider> setStatusProvider)
 				throws InterruptedException, JSONException, NoDefaultFolderException, CancelledException
 	{
 		setupFetchers(-1);
-		
+
 		long startTime = System.currentTimeMillis();
 
 		setStatusProvider.accept(new StaticStatusProvider("Starting to process messages..."));
@@ -465,7 +465,7 @@ public class MuseEmailFetcher {
 			//session.setAttribute("statusProvider", new StaticStatusProvider("Starting to process messages..."));
 
 		boolean op_cancelled = false, out_of_mem = false;
-		
+
 		BlobStore attachmentsStore = archive.getBlobStore();
 		fetchConfig.downloadAttachments = fetchConfig.downloadAttachments && attachmentsStore != null;
 
@@ -474,11 +474,11 @@ public class MuseEmailFetcher {
 			log.warn ("Trying to fetch email with no fetchers, setup not called ?");
 			return;
 		}
-		
+
 	    setupFoldersForFetchers(fetchers, selectedFolders, useDefaultFolders);
-	    
+
 	    List<FolderInfo> fetchedFolderInfos = new ArrayList<>();
-	    
+
 	    // one fetcher will aggregate everything
 		FetchStats stats = new FetchStats();
 		MTEmailFetcher aggregatingFetcher = null;
@@ -508,7 +508,7 @@ public class MuseEmailFetcher {
 				op_cancelled = true;
 				break;
 			}
-			
+
 			if (fetcher.mayHaveRunOutOfMemory())
 			{
 				log.warn ("Fetcher operation ran out of memory " + fetcher);
@@ -556,7 +556,7 @@ public class MuseEmailFetcher {
 
 		//EmailUtils.cleanDates(allEmailDocs);
 
-		// create a new address book	
+		// create a new address book
 		//if (session != null)
 			//session.setAttribute("statusProvider", new StaticStatusProvider("Building address book..."));
 		setStatusProvider.accept(new StaticStatusProvider("Building address book..."));
@@ -570,7 +570,7 @@ public class MuseEmailFetcher {
 		archive.setAddressBook(addressBook);
 
 		// we shouldn't really have dups now because the archive ensures that only unique docs are added
-		// move sorting to archive.postprocess? 
+		// move sorting to archive.postprocess?
 	    EmailUtils.removeDupsAndSort(allEmailDocs);
 
 	    // report stats
@@ -627,8 +627,8 @@ public class MuseEmailFetcher {
 		if (allEmailDocs.size() > 0)
 		{
 			Pair<Date, Date> p = EmailUtils.getFirstLast(allEmailDocs);
-			stats.firstMessageDate = p.getFirst().getTime();
-			stats.lastMessageDate = p.getSecond().getTime();
+			stats.firstMessageDate = p.getFirst()==null? 0: p.getFirst().getTime();
+			stats.lastMessageDate = p.getSecond()==null? 0: p.getSecond().getTime();
 		}
 		//add stat for the duplicate messages that is stored in dupMessageInfo field of archive and is filled by MuseEmailFetcher while fetching messages..
 		//the errors of duplicates need to be properly formatted using the map dupmessageinfo
