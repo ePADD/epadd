@@ -252,11 +252,11 @@ public class CalendarUtil {
 
     private static Date convertYYMMDDToDate(int y, int m, int d, boolean beginning_of_day)
     {
-        // if m is out of range, its equiv to 0
+        /*// if m is out of range, its equiv to 0
         if (m < 0 || m > 11)
             m = 0;
-        if (d<0 || d>30)
-            d = 0;
+        if (d<0 || d>=30)
+            d = 0;*/
         GregorianCalendar c = new GregorianCalendar();
         c.set(Calendar.YEAR, y);
         c.set(Calendar.MONTH, m);
@@ -275,7 +275,7 @@ public class CalendarUtil {
         }
         return c.getTime();
     }
-	
+
     private static Pair<Date, Date> getDateRange(int startY, int startM, int endY, int endM){
 		return getDateRange(startY, startM, -1, endY, endM, -1);
     }
@@ -358,9 +358,9 @@ public class CalendarUtil {
 	/** the quarter beginning just before this d */
 	public static Date quarterBeginning(Date d)
 	{
-		Calendar c = new GregorianCalendar();		
+		Calendar c = new GregorianCalendar();
 		c.setTime(d);
-		
+
 		int m = c.get(Calendar.MONTH);
 		int qrtrBegin = 3 * (m/3);
 		c.set(Calendar.MONTH, qrtrBegin);
@@ -371,7 +371,7 @@ public class CalendarUtil {
 		c.set(Calendar.MILLISECOND, 0);
 		return c.getTime();
 	}
-	
+
 	public static void main (String args[])
 	{
 		// tests for get date range
