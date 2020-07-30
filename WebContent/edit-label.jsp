@@ -22,7 +22,8 @@
     <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
 
 	<%-- Jquery was present here earlier --%>
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/jquery-ui/jquery-ui.js"></script>
 
     <script src="js/selectpicker.js"></script>
@@ -35,7 +36,6 @@
 <%-- Header.jspf was present here earlier --%>
 <%@include file="header.jspf"%>
 <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-label.head-edit-label")%></title>
-<script src="js/jquery.js"></script>
 
 <%
     // labelId = null or empty => tis is a new label

@@ -6,7 +6,6 @@
 <!DOCTYPE HTML>
 <html>
 
-<script src="js/jquery.js"></script>
 
 <head>
 
@@ -20,6 +19,7 @@
 	<link rel="stylesheet" href="css/main.css">
 
 <%-- jquery was present here earlier--%>
+	<script src="js/jquery.js"></script>
 
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>

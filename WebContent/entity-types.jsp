@@ -13,7 +13,6 @@
 <!DOCTYPE HTML>
 <html>
 
-<script src="js/jquery.js"></script>
 
 <head>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
@@ -24,6 +23,7 @@
     <link rel="stylesheet" href="css/main.css">
 
     <%-- jquery was present here earlier --%>
+    <script src="js/jquery.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
 
     <!-- Optional theme -->

@@ -9,13 +9,14 @@
 <html>
 <head>
 
-    <script src="js/jquery.js"></script>
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <jsp:include page="css/css.jsp"/>
 
 <%-- The jquery was present here earlier --%>
+    <script src="js/jquery.js"></script>
+
     <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
