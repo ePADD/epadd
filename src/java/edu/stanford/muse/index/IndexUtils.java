@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package edu.stanford.muse.index;
 
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeComparator;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -292,7 +294,7 @@ public class IndexUtils {
 	 * if the input is "a b c", return a list containing "a" "b" and "c"
 	 * if input is "a" a list containing just "a" is returned.
 	 * input must have at least one token.
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -331,7 +333,7 @@ public class IndexUtils {
 	 * if input is "a" a list containing just "a" is returned.
 	 * if input is "a b", a list containing just "a b" is returned.
 	 * input must have at least one token.
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -367,7 +369,7 @@ public class IndexUtils {
 	/**
 	 * splits the input search query string into indiv. words.
 	 * e.g. a b|"c d"|e returns a list of length 4: a, b, "c d", e
-	 * 
+	 *
 	 * @return
 	 */
 	public static List<String> getAllWordsInQuery(String s)
@@ -495,12 +497,12 @@ public class IndexUtils {
 	 * {
 	 * Map<String, Collection<FacetItem>> facetMap = new LinkedHashMap<String,
 	 * Collection<FacetItem>>();
-	 * 
+	 *
 	 * // sentiments
 	 * if (indexer != null)
 	 * {
 	 * List<FacetItem> sentimentItems = new ArrayList<FacetItem>();
-	 * 
+	 *
 	 * // rather brute-force, compute docs for all sentiments and then
 	 * intersect...
 	 * // a better way might be to process the selected messages and see which
@@ -517,7 +519,7 @@ public class IndexUtils {
 	 * }
 	 * facetMap.put("Sentiments", sentimentItems);
 	 * }
-	 * 
+	 *
 	 * if (addressBook != null)
 	 * {
 	 * // groups
@@ -542,10 +544,10 @@ public class IndexUtils {
 	 * else
 	 * f.count++;
 	 * }
-	 * 
+	 *
 	 * facetMap.put("Groups", groupMap.values());
 	 * }
-	 * 
+	 *
 	 * // people
 	 * Map<Contact, FacetItem> peopleMap = new LinkedHashMap<Contact,
 	 * FacetItem>();
@@ -570,9 +572,9 @@ public class IndexUtils {
 	 * }
 	 * facetMap.put("People", peopleMap.values());
 	 * }
-	 * 
+	 *
 	 * // can do time also... locations?
-	 * 
+	 *
 	 * return facetMap;
 	 * }
 	 */
@@ -676,6 +678,8 @@ public class IndexUtils {
 
 
 	/*
+	After getting the attachment types of interest and removing the extensions present in the excluded set (malformed extensions) partition the set of
+	remaining attachments based on the following size ranges.
 				Semantics: <5KB -> Number of attachments in mails of size less than 5KB
 				5-20KB - Number of attachments in mails of size from 5 to 20 KB
 				20-100 KB - Number of attachments in mails of size from 20 to 100 KB
@@ -683,9 +687,16 @@ public class IndexUtils {
 				>2MB - Number of attachments in mails of size greater than 2MB.
 	 */
 
-	private static Map<String, DetailedFacetItem> partitionAttachmentsBySize(Collection<? extends Document> docs)
+	private static Map<String, DetailedFacetItem> partitionAttachmentsBySize(Archive archive, Collection<? extends Document> docs, Set<String> attachmentExtensionsOfInterest)
 	{
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(EmailRenderer.EXCLUDED_EXT);
+		} catch (Exception e) {
+			Util.report_exception(e);
+			return result;
+		}
 		int indexToDifferentiate=0; //this index is used to create dummy email doc. Here for each attachment we should create one document
 
 		for (Document d : docs)
@@ -697,6 +708,20 @@ public class IndexUtils {
 
 				//For each attachment in this mail add a dummy document.
 				for(Blob attachment: ed.attachments) {
+					String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(attachment));
+					if (ext == null)
+						ext = "none";
+					ext = ext.toLowerCase();
+					//Exclude any attachment whose extension is of the form EXCLUDED_EXT
+					//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]
+
+					if(pattern.matcher(ext).find()){
+						continue;//don't consider any attachment that has extension of the form [0-9]+
+					}
+
+					if(!attachmentExtensionsOfInterest.contains(ext))
+						continue;
+					//
 					//get size of the attachment.
 					long size = attachment.size;
 					String facetstr="";
@@ -999,7 +1024,7 @@ public class IndexUtils {
 	 * Attachment type 1 -> Number of attachmets of that type,
 	 * Attachment type 2 -> Number of attachments of that type
 	 */
-	private static Map<String, DetailedFacetItem> partitionAttachmentsByAttachmentType(Archive archive, Collection<? extends Document> docs)
+	private static Map<String, DetailedFacetItem> partitionAttachmentsByAttachmentType(Archive archive, Collection<? extends Document> docs, Set<String> attachmentExtensionsOfInterest)
 	{
 		Map<String, DetailedFacetItem> result = new LinkedHashMap<>();
 		Pattern pattern = null;
@@ -1024,10 +1049,15 @@ public class IndexUtils {
 						ext = "none";
 					ext = ext.toLowerCase();
 					//Exclude any attachment whose extension is of the form EXCLUDED_EXT
+					//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]
 
 					if(pattern.matcher(ext).find()){
 						continue;//don't consider any attachment that has extension of the form [0-9]+
 					}
+
+					if(!attachmentExtensionsOfInterest.contains(ext))
+						continue;
+
 					DetailedFacetItem dfi = result.get(ext);
 					if (dfi == null)
 					{
@@ -1153,20 +1183,54 @@ public class IndexUtils {
 	}
 
 
+	//It returns the set of attachment extensions present in the input query. This is used by computeDetaileFacetsForAttachmentBrowsing to return only
+	//those attachment types which were of interest
+	private static Set<String> getAttachmentExtensionsOfInterest(Multimap<String, String> request  ){
+
+		Collection<String> neededTypeStr = JSPHelper.getParams(request, "attachmentType"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
+		String neededExtensionStr = JSPHelper.getParam(request, "attachmentExtension");
+		Set<String> neededExtensions = new LinkedHashSet<>(); // will be in lower case
+
+		if (!Util.nullOrEmpty(neededTypeStr) || !Util.nullOrEmpty(neededExtensionStr))
+		{
+			// compile the list of all extensions from type (audio/video, etc) and explicitly provided extensions
+			if (!Util.nullOrEmpty(neededTypeStr)) {
+				// will be something like "mp3;ogg,avi;mp4" multiselect picker gives us , separated between types, convert it to ;
+				for (String s: neededTypeStr)
+					neededExtensions.addAll(Util.splitFieldForOr(s));
+			}
+			if (!Util.nullOrEmpty(neededExtensionStr)) {
+				neededExtensions.addAll(Util.splitFieldForOr(neededExtensionStr));
+			}
+		}
+		return  neededExtensions;
+	}
 	/*
-	Comput facet list for attachment browsing screen.
+	Compute facet list for attachment browsing screen.
+	NOTE: We want attachment browsing screen to follow natural behaviour which it was not following so far. For example, if a user wanted to see only pdf files
+	(and therefore clicked on attachmentType facet as pdf then it is possible that some non-pdf files will also get displayed. It is because the granularity of the
+	search set is messages not attachments. So if a message has a pdf as well as jpg file as attachments then that message is selected as a results set. And when
+	displaying the attachments of this set of messages the user will be able to see the jpg file as well.
+
+	To get back the natural behavior (that is showing only those types of files in the attachment views which are expected by the user, we need to pass the
+	requested file types from the front end to all those places in the backend where the attachment set impacts user experience. In this function we compute
+	the facet details for the set of attachments present in set resultset of messages. However, we need to discount those attachments (although they are present in
+	the resultset of messages) which were not requested by the user. It will impact 'partitionAttachmentByAttachmentType' and 'partitionAttachmentBySize' methods.
+	It will not impact other facet computations like partitionAttachmentByPerson, direction or folder (Guess why?) because these attributes are message specific not
+	attachment specific.
 	 */
-	public static Map<String, Collection<DetailedFacetItem>> computeDetailedFacetsForAttachmentBrowsing(Collection<Document> docs, Archive archive)
+	public static Map<String, Collection<DetailedFacetItem>> computeDetailedFacetsForAttachmentBrowsing(Multimap<String, String> request, Collection<Document> docs, Archive archive)
 	{
 		AddressBook addressBook = archive.addressBook;
 
+		Set<String> attachmentExtensionsOfInterest = getAttachmentExtensionsOfInterest(request);
 		Map<String, Collection<DetailedFacetItem>> facetMap = new LinkedHashMap<>();
 		if (!ModeConfig.isPublicMode())
 		{
-			Map<String, DetailedFacetItem> attachmentTypesMap = partitionAttachmentsByAttachmentType(archive,docs);
+			Map<String, DetailedFacetItem> attachmentTypesMap = partitionAttachmentsByAttachmentType(archive,docs,attachmentExtensionsOfInterest);
 			facetMap.put("attachment type", attachmentTypesMap.values());
 		}
-		Map<String,DetailedFacetItem> attachmentSizeMap = partitionAttachmentsBySize(docs);
+		Map<String,DetailedFacetItem> attachmentSizeMap = partitionAttachmentsBySize(archive,docs,attachmentExtensionsOfInterest);
 		facetMap.put("attachment size",attachmentSizeMap.values());
 		if (addressBook != null) {
 			// people
@@ -1578,11 +1642,11 @@ public class IndexUtils {
 	//		Map<String, List<String>> numMap = new LinkedHashMap<String, List<String>>();
 	//
 	//		Map<Integer, Collection<Collection<String>>> namesMap = new LinkedHashMap<Integer, Collection<Collection<String>>>();
-	//		
+	//
 	//		for (EmailDocument ed: docs)
 	//		{
 	//			System.out.println ("D" + ed.docId);
-	//		
+	//
 	//			String contents = "";
 	//			try { ed.getContents(); }
 	//			catch (ReadContentsException e) { Util.print_exception(e, log); }
@@ -1592,23 +1656,23 @@ public class IndexUtils {
 	//			while (m.find())
 	//			{
 	//				String num = m.group();
-	//				
-	//				try { 
+	//
+	//				try {
 	//					Integer.parseInt(num);  // just to check for exception
 	//					nums.add(num);
 	//				} catch (Exception e) {
-	//					try { 
+	//					try {
 	//						Double.parseDouble(num); // just to check for exception
 	//						nums.add(num);
 	//					}
 	//					catch (Exception e1) { Util.report_exception(e1); }
-	//				}			
+	//				}
 	//			}
-	//	
+	//
 	//			numMap.put(ed.docID, nums);
 	//			Collection<String> paras = Util.breakIntoParas(contents);
 	//			Collection<Collection<String>> docNames = new ArrayList<Collection<String>>();
-	//	
+	//
 	//			for (String para: paras)
 	//			{
 	//				List<Pair<String, Float>> names = openNLPNER.namesFromText(para);
@@ -1623,7 +1687,7 @@ public class IndexUtils {
 	//			}
 	//			namesMap.put(ed.getUniqueId(), docNames);
 	//		}
-	//		
+	//
 	//		return namesMap;
 	//	}
 

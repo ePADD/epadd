@@ -55,7 +55,7 @@
         facets = JSPHelper.getFacetItemsForMessageBrowsing(request,docs,archive);
     else
         //get Facet Information for Attachment browsing screen.
-        facets = JSPHelper.getFacetItemsForAttachmentBrowsing(request,docs,archive);
+        facets = JSPHelper.getFacetItemsForAttachmentBrowsing(params,docs,archive);
 
     String murl = request.getRequestURI();
 

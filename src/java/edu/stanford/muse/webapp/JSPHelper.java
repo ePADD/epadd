@@ -1163,12 +1163,12 @@ public class JSPHelper {
 	Return facets information obtained from the docs for attachment browsing screen.
 	 */
 
-	public static Map<String, Collection<DetailedFacetItem>> getFacetItemsForAttachmentBrowsing(HttpServletRequest request, Collection<Document> docs, Archive archive){
+	public static Map<String, Collection<DetailedFacetItem>> getFacetItemsForAttachmentBrowsing(Multimap<String, String> request, Collection<Document> docs, Archive archive){
 		Map<String, Collection<DetailedFacetItem>> facets;
 		//<editor-fold desc="Create facets(categories) based on the search data" input="docs;archive"
 		// output="facets" name="search-create-facets">
 		{
-			facets = IndexUtils.computeDetailedFacetsForAttachmentBrowsing(docs, archive);
+			facets = IndexUtils.computeDetailedFacetsForAttachmentBrowsing(request, docs, archive);
 		}
 		//</editor-fold>
 
