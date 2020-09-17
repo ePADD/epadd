@@ -15,12 +15,14 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     boolean isHacky = yearwiseAttachments.first;
     int attachmentsInUndatedMessages = 0;
     int startYear = yearwiseAttachments.second.get(0).first; //Becuase the list is already in sorted order so the first one is the start year (unless it corresponds to undated messages)
-    int endYear = yearwiseAttachments.second.get(yearwiseAttachments.second.size()-1).first; //last element in this sorted list corresponds to the last year of the range.
+    int lastIndex = yearwiseAttachments.second.size()-1;
+    int endYear = yearwiseAttachments.second.get(lastIndex).first; //last element in this sorted list corresponds to the last year of the range.
     if(isHacky){
-        attachmentsInUndatedMessages = yearwiseAttachments.second.get(0).second; //Here the assumption is that the undated year will always be the smallest of all and hence
+
+        attachmentsInUndatedMessages = yearwiseAttachments.second.get(lastIndex).second; //Here the assumption is that the undated year will always be the at the end of the list yearwsieAttachments.second
         //it will be the first one.
-        if(startYear!=endYear) //means there is another year apart from the no-dated year (1960) which should be made the start year.
-            startYear = yearwiseAttachments.second.get(1).first; //Becuase the list is already in sorted order so pick the second year as the start year (actual)
+        if(startYear!=endYear) //means there is another year apart from the no-dated year (1960) which should be made the end year.
+            endYear = yearwiseAttachments.second.get(lastIndex-1).first; //Becuase the list is already in sorted order so pick the second year as the start year (actual)
     }
 
     //calculate total number of attachments to be displayed on the loading screen.

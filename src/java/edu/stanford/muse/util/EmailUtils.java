@@ -789,7 +789,9 @@ public class EmailUtils {
 	}
 
 	/*
-	Returns a list of pairs (in sorted order) listing for each year the number of attachments
+	Returns a list of pairs (in sorted order) listing for each year the number of attachments. There is a catch though to support putting the undated attachments at the end
+	on attachment viewer window. If one of the year in the returned list corresponds to 1960 (undated messages) then put it at the end of the list (second returned argument of the
+	following function).
 	 */
 	public static Pair<Boolean,List<Pair<Integer,Integer>>> getStartEndYearOfAttachments(Multimap<String, String> params, Collection<Document> docs){
 		Pair<Boolean,Map<Integer,Integer>> yearWiseAttachments = EmailUtils.getYearWiseAttachments(docs,params);
@@ -819,9 +821,15 @@ public class EmailUtils {
 		}
 		List<Pair<Integer,Integer>> result = new LinkedList<>();
 		for(int j=startYear;j<=endYear;j++){
-			if(yearWiseAttachments.second.get(j)!=null)
+			if(isHacky && j==1960){
+				//don't put it in result right now. Add it at the end after finishing this loop.
+				continue;
+			}
+			if(yearWiseAttachments.second.get(j)!=null && yearWiseAttachments.second.get(j)!=0)
 				result.add(new Pair(j,yearWiseAttachments.second.get(j)));
 		}
+		//Now put the data for 1960 year at the end.
+		result.add(new Pair(1960,yearWiseAttachments.second.get(1960)));
     	return new Pair(isHacky,result);
 	}
 
