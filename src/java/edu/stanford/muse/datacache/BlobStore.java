@@ -367,8 +367,8 @@ public class BlobStore implements Serializable {
             if (uniqueBlobs.contains(blob)) {
                 tmpFile.delete();
                 //blob already exists.. record it in the data report.
-                int curcount = dupBlobCount.getOrDefault(blob,0);
-                dupBlobCount.put(blob,curcount+1);
+                int curcount = getDupBlobCount().getOrDefault(blob,0);
+                getDupBlobCount().put(blob,curcount+1);
                 return nBytes;
             }
 
