@@ -365,11 +365,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             // note: we currently do not support clustering for "recent" type, only for the chronological type.
             // might be easy to fix if needed in the future.
             if ("recent".equals(sortBy) || "relevance".equals(sortBy) || "chronological".equals(sortBy))
-                pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID, MultiDoc.ClusteringType.NONE);
+                pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID, MultiDoc.ClusteringType.NONE,params);
             else {
                 // this path should not be used as it sorts the docs in some order
                 // (old code meant to handle clustered docs, so that tab can jump from cluster to cluster. not used now)
-                pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID);
+                pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID,params);
             }
         }catch(Exception e){
             Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);

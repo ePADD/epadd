@@ -719,7 +719,7 @@ public class IndexUtils {
 						continue;//don't consider any attachment that has extension of the form [0-9]+
 					}
 
-					if(!attachmentExtensionsOfInterest.contains(ext))
+					if(attachmentExtensionsOfInterest!=null && !attachmentExtensionsOfInterest.contains(ext))
 						continue;
 					//
 					//get size of the attachment.
@@ -1040,6 +1040,7 @@ public class IndexUtils {
 			if (!(d instanceof EmailDocument))
 				continue;
 			EmailDocument ed = (EmailDocument) d;
+
 			List<Blob> attachments = ed.attachments;
 			if (attachments != null)
 				for (Blob b : attachments)
@@ -1055,7 +1056,7 @@ public class IndexUtils {
 						continue;//don't consider any attachment that has extension of the form [0-9]+
 					}
 
-					if(!attachmentExtensionsOfInterest.contains(ext))
+					if(attachmentExtensionsOfInterest!=null && !attachmentExtensionsOfInterest.contains(ext))
 						continue;
 
 					DetailedFacetItem dfi = result.get(ext);
@@ -1185,14 +1186,14 @@ public class IndexUtils {
 
 	//It returns the set of attachment extensions present in the input query. This is used by computeDetaileFacetsForAttachmentBrowsing to return only
 	//those attachment types which were of interest
-	private static Set<String> getAttachmentExtensionsOfInterest(Multimap<String, String> request  ){
+	public static Set<String> getAttachmentExtensionsOfInterest(Multimap<String, String> request  ){
 
 		Collection<String> neededTypeStr = JSPHelper.getParams(request, "attachmentType"); // this can come in as a single parameter with multiple values (in case of multiple selections by the user)
 		String neededExtensionStr = JSPHelper.getParam(request, "attachmentExtension");
-		Set<String> neededExtensions = new LinkedHashSet<>(); // will be in lower case
-
+		Set<String> neededExtensions = null;
 		if (!Util.nullOrEmpty(neededTypeStr) || !Util.nullOrEmpty(neededExtensionStr))
 		{
+			neededExtensions = new LinkedHashSet<>(); // will be in lower case
 			// compile the list of all extensions from type (audio/video, etc) and explicitly provided extensions
 			if (!Util.nullOrEmpty(neededTypeStr)) {
 				// will be something like "mp3;ogg,avi;mp4" multiselect picker gives us , separated between types, convert it to ;
@@ -1203,7 +1204,7 @@ public class IndexUtils {
 				neededExtensions.addAll(Util.splitFieldForOr(neededExtensionStr));
 			}
 		}
-		return  neededExtensions;
+		return  neededExtensions; //null if not present.
 	}
 	/*
 	Compute facet list for attachment browsing screen.

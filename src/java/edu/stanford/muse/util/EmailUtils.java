@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package edu.stanford.muse.util;
 
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.LabelManager.LabelManager;
@@ -26,7 +27,8 @@ import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ie.variants.Variants;
 
-import org.apache.commons.codec.DecoderException;
+import edu.stanford.muse.webapp.EmailRenderer;
+import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -152,7 +154,7 @@ public class EmailUtils {
 	public static void cleanDates(Collection<? extends Document> docs)
 	{
 		Date now = new Date();
-		long time = now.getTime() + 1000 * 24 * 60 * 60L; // allow 1 day after current time 
+		long time = now.getTime() + 1000 * 24 * 60 * 60L; // allow 1 day after current time
 		Date cutoff = new Date(time);
 
 		Date earliestDate = new Date();
@@ -415,7 +417,7 @@ public class EmailUtils {
 		{
 			/*
 			 * This is a multi-part message in MIME format.
-			 * 
+			 *
 			 * ------=_Part_
 			 * Content-Type: text/plain;
 			 * charset="iso-8859-1"
@@ -789,17 +791,19 @@ public class EmailUtils {
 	/*
 	Returns a list of pairs (in sorted order) listing for each year the number of attachments
 	 */
-	public static List<Pair<Integer,Integer>> getStartEndYearOfAttachments(Collection<Document> docs){
-		Map<Integer,Integer> yearWiseAttachments = EmailUtils.getYearWiseAttachments(docs);
+	public static Pair<Boolean,List<Pair<Integer,Integer>>> getStartEndYearOfAttachments(Multimap<String, String> params, Collection<Document> docs){
+		Pair<Boolean,Map<Integer,Integer>> yearWiseAttachments = EmailUtils.getYearWiseAttachments(docs,params);
+		boolean isHacky = yearWiseAttachments.first;
+
 		//Iterate over map and make the start year as the oldest year with non-zero attachments.
 		//Similarly make the end year as the latest year with non-zero attachments.
 		//get the years in sorted order.
-		List<Integer> years = new ArrayList<>(yearWiseAttachments.keySet());
+		List<Integer> years = new ArrayList<>(yearWiseAttachments.second.keySet());
 		Collections.sort(years);
 		int startYear = -1;
 		int endYear = -1;
 		for(Integer year: years){
-			if(yearWiseAttachments.get(year)!=0) {
+			if(yearWiseAttachments.second.get(year)!=0) {
 
 				startYear = year;
 				break;
@@ -808,33 +812,47 @@ public class EmailUtils {
 		//Now iterate in reverse order to remove years with zero attachments from the end.
 		Collections.reverse(years);
 		for(Integer year: years){
-			if(yearWiseAttachments.get(year)!=0) {
+			if(yearWiseAttachments.second.get(year)!=0) {
 				endYear = year;
 				break;
 			}
 		}
 		List<Pair<Integer,Integer>> result = new LinkedList<>();
 		for(int j=startYear;j<=endYear;j++){
-			if(yearWiseAttachments.get(j)!=null)
-				result.add(new Pair(j,yearWiseAttachments.get(j)));
+			if(yearWiseAttachments.second.get(j)!=null)
+				result.add(new Pair(j,yearWiseAttachments.second.get(j)));
 		}
-    	return result;
+    	return new Pair(isHacky,result);
 	}
 
 	/**
-	 * This method returns the Year wise attachment counts for all the emails in the set docs.
+	 * This method returns the Year wise attachment counts for all the emails in the set docs provided that the attachment type is of interest (as passed
+	 * by the front end in the query parameter params). If params is null then this information is passed for all the attachments present in docs.
 	 *
 	 * @param docs
-	 * @return a map of year and the count of attachments in that year.
+	 * @param params
+	 * @return two entries. Second variable is map of year and the count of attachments in that year and the first boolean variable denotes if in that map there is an year (1960)
+	 * which corresponds to the notion of hacky date (1 January 1960)
 	 */
-	public static Map<Integer, Integer> getYearWiseAttachments(Collection<Document> docs) {
+	public static Pair<Boolean,Map<Integer, Integer>> getYearWiseAttachments(Collection<Document> docs, Multimap<String, String> params) {
+		String archiveID = JSPHelper.getParam(params, "archiveID");
+		Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+		boolean isHacky=false;
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(EmailRenderer.EXCLUDED_EXT);
+		} catch (Exception e) {
+			Util.report_exception(e);
+		}
+		Set<String> attachmentTypes = null;
+		if(params!=null)
+			attachmentTypes = IndexUtils.getAttachmentExtensionsOfInterest(params);
 		Map<Integer,Integer> result = new LinkedHashMap<>();
 		for (Document d : docs) {
 			EmailDocument ed = (EmailDocument)d;
-			//Do not add hacky dates..
-			if(!ed.hackyDate) {
 				//if ed has nonzero attachments then update that number for the year of this email.
 				if(ed.attachments.size()!=0){
+
 					//get year of the email.
 					Calendar calendear = Calendar.getInstance();
 					calendear.setTime(ed.date);//to get the starting year
@@ -842,13 +860,40 @@ public class EmailUtils {
 					if(!result.containsKey(startYear)){
 						result.put(startYear,0);
 					}
-					int updatedval = result.get(startYear)+ed.attachments.size();
+					//Don't put the count of all attachments but only those whose extension type is present in the set attachmentTypes (if it is non-null)
+					List<Blob> attachments = ed.attachments;
+					int count=0;
+					if (attachments != null)
+						for (Blob b : attachments)
+						{
+							String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
+							if (ext == null)
+								ext = "none";
+							ext = ext.toLowerCase();
+							//Exclude any attachment whose extension is of the form EXCLUDED_EXT
+							//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]
+
+							if(pattern.matcher(ext).find()){
+								continue;//don't consider any attachment that has extension of the form [0-9]+
+							}
+
+							if(attachmentTypes!=null && !attachmentTypes.contains(ext))
+								continue;
+
+							count++;
+
+						}
+					//add count to the map.
+					int updatedval = result.get(startYear)+count;
+						//if count is nonzero and this message has hacky date then set the variable isHacky to true.
+					if(count!=0 && ed.hackyDate)
+						isHacky=true;
 					result.put(startYear,updatedval);
-				}
+
 			}
 
 		}
-		return result;
+		return new Pair(isHacky,result);
 	}
 
 	public static List<Date> datesForDocs(Collection<? extends DatedDocument> c)
@@ -960,7 +1005,7 @@ public class EmailUtils {
 			String effectiveLine = originalLine.trim();
 
 			// nuke everything after >. this is the only modification to the original line
-			originalLine = originalLine.replaceAll("^\\s*>.*$", stopper); // 
+			originalLine = originalLine.replaceAll("^\\s*>.*$", stopper); //
 
 			// now a series of checks to stop copying of the input to result
 			if (effectiveLine.length() > 20 && Util.hasOnlyOneChar(effectiveLine, '_') && nextLine != null && nextLine.indexOf(":") > 0)
@@ -1086,7 +1131,7 @@ public class EmailUtils {
 			// compute a canonical thread id, based on the cleaned up subject line (removing re: fwd: etc) and the description.
 			// in the future, could consider date ranges too, e.g. don't consider messages more than N days apart as the same thread
 			// even if they have the same subject and recipients
-			// for gmail only -- there is a thread id directly in gmail which can potentially be used 
+			// for gmail only -- there is a thread id directly in gmail which can potentially be used
 			String canonicalSubject = cleanupSubjectLine(ed.description);
 			// we prob. don't care about canonical case for subject
 

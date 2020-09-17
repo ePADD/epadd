@@ -1,5 +1,6 @@
 package edu.stanford.muse.webapp;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,6 +22,7 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /** This class has util methods to display an email message in an html page */
@@ -31,8 +33,8 @@ public class EmailRenderer {
 	public static String EXCLUDED_EXT = "[0-9]+";
 
 	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
-															 String datasetTitle) {
-		return pagesForDocuments(docs, result, datasetTitle, MultiDoc.ClusteringType.MONTHLY);
+															 String datasetTitle, Multimap<String,String> queryparams) {
+		return pagesForDocuments(docs, result, datasetTitle, MultiDoc.ClusteringType.MONTHLY,queryparams);
 	}
 
 	/**
@@ -288,10 +290,17 @@ public class EmailRenderer {
 	 * this method returns html and js to be injected when a particular year is reached in browseAttachments.jspf
 	 * These variables are then used to setup fancy box for attachment browsing process.
 	 */
-	public static Pair<String, String> htmlAndJSForAttachments(List<Document> docs, int year, SearchResult searchResult) {
+	public static Pair<String, String> htmlAndJSForAttachments(List<Document> docs, int year, boolean isHackyYearPresent, SearchResult searchResult, Multimap<String, String> queryparams) {
 		JSPHelper.log.debug("Generating HTML for attachments in year: " + year);
+		Pattern pattern = null;
+		try {
+			pattern = Pattern.compile(EmailRenderer.EXCLUDED_EXT);
+		} catch (Exception e) {
+			Util.report_exception(e);
+		}
 		Archive archive = searchResult.getArchive();
-
+		//get the set of attachments types that the user is interested in.
+		Set<String> attachmentTypesOfInterest = IndexUtils.getAttachmentExtensionsOfInterest(queryparams);
 		Map<Document, List<Blob>> docAttachmentMap = new LinkedHashMap<>();
 		int numAttachments = 0;
 		//step 1: get the set of attachments and their number for docs in year.
@@ -304,9 +313,34 @@ public class EmailRenderer {
 				calendar.setTime(ed.date);
 				if (calendar.get(Calendar.YEAR) == year) {
 					//prepare a list of attachments (not set) keeping possible repetition but also count unique attachments here.
-					docAttachmentMap.put(ed, ed.attachments);
-					//attachments.addAll(ed.attachments);
-					numAttachments += ed.attachments.size();
+					//docAttachmentMap.put(ed, ed.attachments);
+					//NOTE: Don't put all attachments present here. We want to display only the attachments of interest to the user otherwise user will see all
+					//the attachments present in a message that had at least one attachment type of interest. This was causing confusion to the users.
+					List<Blob> attachments = ed.attachments;
+					List<Blob> attachmentsOfInterest = new LinkedList<>();
+					if (attachments != null)
+						for (Blob b : attachments) {
+							String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
+							if (ext == null)
+								ext = "none";
+							ext = ext.toLowerCase();
+							//Exclude any attachment whose extension is of the form EXCLUDED_EXT
+							//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]
+
+							if (pattern.matcher(ext).find()) {
+								continue;//don't consider any attachment that has extension of the form [0-9]+
+							}
+
+							if (attachmentTypesOfInterest != null && !attachmentTypesOfInterest.contains(ext))
+								continue;
+
+							//else add it in the set of attachments to display for this doc.
+							attachmentsOfInterest.add(b);
+
+						}
+					docAttachmentMap.put(ed, attachmentsOfInterest);
+
+					numAttachments += attachmentsOfInterest.size();
 				}
 			}
 		}
@@ -315,30 +349,14 @@ public class EmailRenderer {
 
 		html.append("<div class=\"muse-doc\">\n");
 
-		//For list view and tile view buttons..
-		{
-			html.append("<div style=\"display:flex\">\n");
-			html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments in " + year + "</div>\n");
-			html.append("<div class=\"gallery_viewchangebar\" style=\"justify-content:flex-end\">\n");
-			html.append("  <div title=\"List View\" class=\"listView\" onclick=\"showListView()\">\n" +
-					"    <img class=\"fbox_toolbarimg\" id=\"listviewimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
-					"  </div>\n" +
-					"  <div title=\"Grid View\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
-					"    <img class=\"fbox_toolbarimg\" id=\"tileviewimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
-					"  </div>\n");
-			html.append("</div>");
-			html.append("</div>");
-		}
 
-		html.append("<hr/>\n<div class=\"attachments\">\n");
 
 		JsonArray attachmentDetails = new JsonArray(); // this will be injected into the page directly, so fancybox js has access to it
 
 		// create HTML for tiles view and append to page, also populate attachmentDetails
 		boolean isNormalized = false; //a flag to detect if any of the attachment has normalization or cleanup info present because if it is then the
+		int dupCount = 0;// Number of duplicate attachments (we just count the number of messages in which one attachment appears - we assume that one attachment can not be duplicated in one message)
 		{
-			StringBuilder tilediv = new StringBuilder();
-			tilediv.append("<div id=\"attachment-tiles\" style=\"display:none\">");
 			int attachmentIndex = 0;
 			//array to keep information about the attachments for display in UI.
 			//information need to be presented to the user and hence the structure of the ui elements (like number of columns in the table) will change accordingly.
@@ -354,6 +372,7 @@ public class EmailRenderer {
 					Pair<JsonObject,Integer> info;
 					if(countMessagesMap.containsKey(attachmentName.toString())){
 						info = countMessagesMap.get(attachmentName.toString());
+						dupCount++;
 					}else{
 					 	info = new Pair(attachmentInfo,0);
 					}
@@ -373,11 +392,44 @@ public class EmailRenderer {
 				if (attachmentInfo.get("info") != null)
 					isNormalized = true;//once set it can not be reset.
 			}
-			tilediv.append("</div> <!-- closing of attachment-tile div-->\n");
-			//add tilediv to page.
-			html.append(tilediv);
+
 		}
 
+
+		//For list view and tile view buttons..
+		{
+			html.append("<div style=\"display:flex\">\n");
+			if(dupCount!=0){
+			    if(isHackyYearPresent && year==1960)
+                    html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments ("+dupCount+" duplicates) in undated messages </div>\n");
+                else
+                    html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments ("+dupCount+" duplicates) in " + year + "</div>\n");
+
+            }else{
+                if(isHackyYearPresent && year==1960)
+                    html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments in undated messages </div>\n");
+                else
+                    html.append("<div style=\"text-align:left;width:87%;margin-top:10px;font-family:\"Open Sans\",sans-serif;color:#666;font-size:16px;\">" + numAttachments + " attachments in " + year + "</div>\n");
+            }
+
+			html.append("<div class=\"gallery_viewchangebar\" style=\"justify-content:flex-end\">\n");
+			html.append("  <div title=\"List View\" class=\"listView\" onclick=\"showListView()\">\n" +
+					"    <img class=\"fbox_toolbarimg\" id=\"listviewimg\" style=\"border-right:none;padding-left:10px;\" src=\"images/list_view.svg\"></img>\n" +
+					"  </div>\n" +
+					"  <div title=\"Grid View\"  class=\"tileView\" onclick=\"showTileView()\">\n" +
+					"    <img class=\"fbox_toolbarimg\" id=\"tileviewimg\" style=\"height:28px;\" src=\"images/tile_view.svg\" ></img>\n" +
+					"  </div>\n");
+			html.append("</div>");
+			html.append("</div>");
+		}
+
+		html.append("<hr/>\n<div class=\"attachments\">\n");
+		StringBuilder tilediv = new StringBuilder();
+
+		tilediv.append("<div id=\"attachment-tiles\" style=\"display:none\">");
+		tilediv.append("</div> <!-- closing of attachment-tile div-->\n");
+		//add tilediv to page.
+		html.append(tilediv);
 		// create HTML for list view and append to page
 		{
 			StringBuilder listdiv = new StringBuilder();
@@ -564,7 +616,7 @@ public class EmailRenderer {
 	 */
 	public static Pair<DataSet, JSONArray> pagesForDocuments(Collection<Document> docs, SearchResult result,
 															 String datasetTitle,
-															 MultiDoc.ClusteringType coptions) {
+															 MultiDoc.ClusteringType coptions, Multimap<String,String> queryparams) {
 
 		// need clusters which map to sections in the browsing interface
 		List<MultiDoc> clusters;
@@ -630,7 +682,7 @@ public class EmailRenderer {
 			}
 		}
 
-		DataSet dataset = new DataSet(datasetDocs, result, datasetTitle);
+		DataSet dataset = new DataSet(datasetDocs, result, datasetTitle,queryparams);
 		return new Pair<>(dataset, resultObj);
 	}
 

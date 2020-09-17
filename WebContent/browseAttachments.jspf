@@ -9,13 +9,24 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <script src="js/browseAttachments.js" type="text/javascript"></script>
 <%
-    List<Pair<Integer,Integer>> yearwiseAttachments = EmailUtils.getStartEndYearOfAttachments(docs);
-    int startYear = yearwiseAttachments.get(0).first; //Becuase the list is already in sorted order.
-    int endYear = yearwiseAttachments.get(yearwiseAttachments.size()-1).first; //last element in this sorted list corresponds to the last year of the range.
+    Pair<Boolean,List<Pair<Integer,Integer>>> yearwiseAttachments = EmailUtils.getStartEndYearOfAttachments(params,docs);
+    //Based on this variable a few UI components change their behavior.
+    //Following variable denotes if the list of years and attachments has a year corresponding to hacky date or not (1st January 1960)
+    boolean isHacky = yearwiseAttachments.first;
+    int attachmentsInUndatedMessages = 0;
+    int startYear = yearwiseAttachments.second.get(0).first; //Becuase the list is already in sorted order so the first one is the start year (unless it corresponds to undated messages)
+    int endYear = yearwiseAttachments.second.get(yearwiseAttachments.second.size()-1).first; //last element in this sorted list corresponds to the last year of the range.
+    if(isHacky){
+        attachmentsInUndatedMessages = yearwiseAttachments.second.get(0).second; //Here the assumption is that the undated year will always be the smallest of all and hence
+        //it will be the first one.
+        if(startYear!=endYear) //means there is another year apart from the no-dated year (1960) which should be made the start year.
+            startYear = yearwiseAttachments.second.get(1).first; //Becuase the list is already in sorted order so pick the second year as the start year (actual)
+    }
+
     //calculate total number of attachments to be displayed on the loading screen.
     int totalAttachments=0;
     int totalDocs = docs.size();
-    for(Pair<Integer,Integer> yearinfo: yearwiseAttachments){
+    for(Pair<Integer,Integer> yearinfo: yearwiseAttachments.second){
         totalAttachments+=yearinfo.second;
     }
 
@@ -24,14 +35,19 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 <script>
     var archiveID = '<%=archiveID%>';
     var docsetID = '<%=docsetID%>';
-    //for attachment section total_pages will be equal to number of years spanning the docset docs.
+    //for attachment section total_pages will be equal to total number of years where non-zero attachments are present. This is same as the size of yearwiseAttachments map
 
-    var TOTAL_PAGES = <%=endYear-startYear+1%>;
-    //for attachment section we also need start year for the purpose of displaying the year.
-    var START_YEAR= <%=startYear%>;
+    var TOTAL_PAGES = <%=yearwiseAttachments.second.size()%>; //<%=endYear-startYear+1%>;
+
 
     var isNormalized=false;
-
+    //Iterate over yearwiseAttachment list and fill the years in a javascript array which will be used by the jog plugin to display the years on clicking the next button.
+    <%for(Pair<Integer,Integer> yearinfo: yearwiseAttachments.second){
+        if(yearinfo.first==1960){%>
+            YEAR_LIST.push("Undated");
+            <%}else{%>
+            YEAR_LIST.push(<%=yearinfo.first%>);
+    <%}}%>
     /*An array of json objects containing src, opts[index,thumb] and a few attachment specific parameters which need to be used while displaying fancybox*/
     var attachmentDetails;
     /*=[
@@ -451,7 +467,15 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     %>
     <div style="display:inline-block;vertical-align:top;">
         <div class="browse_message_area rounded shadow" style="width:1020px;min-height:600px">
-            <div class="breadcrumbs"> Attachments &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;<%=totalAttachments%> from <%=startYear%> to <%=endYear%> </div><br/> <!-- @chinmay should we find a way to say image attachments in the breadcrumb -->
+            <%if(isHacky && attachmentsInUndatedMessages!=0){
+                if(startYear==endYear)/*Means there is only one year and that is hacky year so change the message accordingly*/{%>
+                    <div class="breadcrumbs"> Image Attachments &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;<%=attachmentsInUndatedMessages%> in undated messages</div><br/> <!-- @chinmay should we find a way to say image attachments in the breadcrumb -->
+                <%}else{%>
+                    <div class="breadcrumbs"> Image Attachments &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;<%=totalAttachments-attachmentsInUndatedMessages%> from <%=startYear%> to <%=endYear%> (<%=attachmentsInUndatedMessages%> in undated messages)</div><br/> <!-- @chinmay should we find a way to say image attachments in the breadcrumb -->
+                <%}
+            }else{%>
+                <div class="breadcrumbs"> Image Attachments &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;<%=totalAttachments%> from <%=startYear%> to <%=endYear%> </div><br/> <!-- @chinmay should we find a way to say image attachments in the breadcrumb -->
+            <%}%>
             <div class="controls" style="position:relative;width:100%; border: 1px solid #D4D4D4;">
                 <div style="float:left;padding:5px">
                     <button id="switchMsgView" name="switchMsgView" type="button" class="btn btn-default" onclick="window.location='<%=msgBrowsingURL%>'" title="Message View">Message View</button>
@@ -503,7 +527,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
         Pair<DataSet, JSONArray> pair = null;
         try {
-            pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID);
+            pair = EmailRenderer.pagesForDocuments(docs,outputSet, docsetID,params);
         } catch(Exception e) {
             Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
         }

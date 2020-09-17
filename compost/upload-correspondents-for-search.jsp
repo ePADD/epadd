@@ -65,7 +65,7 @@
                     //create a docsetid and store the resultset in it
                     docsetID = String.format("docset-%08x", EmailUtils.rng.nextInt());// "dataset-1";
 
-                    DataSet dset = new DataSet(search_result.getDocumentSet(), search_result, "Correspondents");
+                    DataSet dset = new DataSet(search_result.getDocumentSet(), search_result, "Correspondents", queryparams);
                     session.setAttribute(docsetID, dset);
                     //now invoke windows.location="bulk-labels?archiveID=<\%=archiveID%\>&docsetID=<\%=docsetID%\>"
                     //at the time of loading of this page (in javascript)

@@ -5,7 +5,7 @@
 var docIDs = []; //Not used now for attachment page. this is required for posting the docid of the message to which the label/annotation change should be applied.
 var PAGE_ON_SCREEN = -1; // current page displayed on screen
 var TOTAL_PAGES = 0;
-var START_YEAR=0;
+var YEAR_LIST=[];
 // interacts with #page_forward, #page_back, and #pageNumbering on screen
 var Navigation = function(){
 
@@ -14,7 +14,8 @@ var Navigation = function(){
     var page_change_callback = function(oldPage, currentPage) {
         // todo : add loadAttachmentTiles and loadAttacmentList here
         PAGE_ON_SCREEN = currentPage;
-        $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : START_YEAR+currentPage));
+
+        $('#pageNumbering').html(((TOTAL_PAGES === 0) ? 0 : YEAR_LIST[currentPage]));
     };
 
     var setupEvents = function() {
@@ -28,7 +29,7 @@ var Navigation = function(){
             paging_info: {
                 url: 'ajax/jogPageInAttachments.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
                 window_size_back: 1,
-                window_size_fwd: 1
+                window_size_fwd: 0
             },
             page_change_callback: page_change_callback,
             page_load_callback: attachment_page_loaded_callback,

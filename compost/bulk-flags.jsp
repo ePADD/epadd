@@ -67,7 +67,7 @@
       //  request.setAttribute("selectDocs", matchedDocs);
 
         // create a dataset out of the matched docs
-        DataSet dataset = new DataSet(matchedDocs, outputSet, datasetName);
+        DataSet dataset = new DataSet(matchedDocs, outputSet, datasetName, queryparams);
         session.setAttribute(datasetName, dataset);
 
     %>

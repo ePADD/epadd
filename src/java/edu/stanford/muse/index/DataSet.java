@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package edu.stanford.muse.index;
 
+import com.google.common.collect.Multimap;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.EmailRenderer;
@@ -32,16 +33,18 @@ public class DataSet {
     private final List<Document> docs = new ArrayList<>();
     private final String datasetTitle;
     private final SearchResult searchResult;
+    private final Multimap<String,String> queryParams; //We will also store the query params obtained from the query that resulted in this dataset.
     //String -> <dbId -> dbType>
     private Map<String, Map<String, Short>> authorisedEntities;
 
-    public DataSet(Collection<Document> docs, SearchResult result, String datasetTitle) {
+    public DataSet(Collection<Document> docs, SearchResult result, String datasetTitle, Multimap<String, String> queryparams) {
         if(docs!=null) {
             //calling assigning new ArrayList<>(docs) is calling sort on docs by default
             this.docs.addAll(docs);
         }
         this.searchResult = result;
         this.datasetTitle = datasetTitle;
+        this.queryParams=queryparams;
 
     }
 
@@ -50,6 +53,9 @@ public class DataSet {
         docs.clear();
     }
 
+    public Multimap<String,String> getQueryParams(){
+        return queryParams;
+    }
     public int size() {
         return docs.size();
     }
@@ -114,7 +120,7 @@ public class DataSet {
     /* returns attachment browsing html for year.
     Caches the html once computed (Removed during refactoring. It was done in variable called pages).
      In the front end jog plugin also does caching so removed server sided caching for simplicity*/
-    public String getPageForAttachments(int year, String archiveID) {
+    public String getPageForAttachments(int year, boolean isHackyYearPresent, String archiveID, Multimap<String, String> queryparams) {
 //		if (authorisedEntities == null && !ModeConfig.isPublicMode()) {
 //			String filename = archive.baseDir + java.io.File.separator + edu.stanford.muse.Config.AUTHORITIES_FILENAME;
 //			try {
@@ -128,8 +134,9 @@ public class DataSet {
 //		}
         try {
             {
+
                 // htmlForAttachments returns us 2 components: the html and the js to be injected on the page
-                Pair<String, String> htmlAndJs = EmailRenderer.htmlAndJSForAttachments(docs, year, searchResult);
+                Pair<String, String> htmlAndJs = EmailRenderer.htmlAndJSForAttachments(docs, year, isHackyYearPresent, searchResult,queryparams);
                 String pageContent = htmlAndJs.first + "\n<script>" + htmlAndJs.second + "</script>";
                 return pageContent;
             }
