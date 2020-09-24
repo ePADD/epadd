@@ -21,6 +21,7 @@
 
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
+    <script src="js/collections.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -55,6 +56,8 @@
   <br/>
   <div>
 
+
+
     <%
       String modeBaseDir = "";
       if (ModeConfig.isProcessingMode())
@@ -69,107 +72,21 @@
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + modeBaseDir);
         }  else {
-          File[] files = topFile.listFiles();
-          if (files != null) {
-              for (File f : files) {
-                  if (!f.isDirectory())
-                      continue;
-
-                  String id = f.getName();
-                  String archiveFile = f.getAbsolutePath() + File.separator + Archive.BAG_DATA_FOLDER + File.separator +  Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
-
-                  if (!new File(archiveFile).exists())
-                      continue;
-
-                  Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
-                  if (cm != null) {
-                      String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto"; // always forward slashes please
-                      String url = "serveImage.jsp?file=" + fileParam;
-
-                      out.println("<div data-dir=\"" + id + "\" class=\"archive-card\">");
-                      %>
-
-                      <%--warning: url might be fragile w.r.t. brackets or quotes--%>
-                      <div class="landing-img" style="    background-color: #e0e4e6; background-size: contain; background-repeat:no-repeat; background-position: center center; background-image:url('<%=url%>')"> <!-- https://stackoverflow.com/questions/2643305/centering-a-background-image-using-css -->
-                      <% if(ModeConfig.isProcessingMode()){%>
-                          <div class="landing-photo-edit" style="text-align: right; top: 10px; right: 10px; position: relative;">
-                              <img src="images/edit_summary.svg"/>
-                          </div>
-                      <% } %>
-                      </div>
-
-                      <div class="landing-img-text">
-                          <span style="font-size:20px;font-weight:600;color:#0175BC"><%=Util.nullOrEmpty(cm.shortTitle) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-title") : Util.escapeHTML(cm.shortTitle)%></span>
-                          <div class="epadd-separator"></div>
-                          <%=Util.nullOrEmpty(cm.shortDescription) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description") : Util.escapeHTML(cm.shortDescription)%>
-                      </div>
-                      </div>
-      <%
-                  }
-              }
-          }
+            //Don't do anything. collections.js will query and load the collections.
       }
     %>
   </div>
   <br/>
 
-    <script>
-    $(document).ready(function() {
-      $('.archive-card').click(function(e) {
-        var dir = $(e.target).closest('.archive-card').attr('data-dir');
-        window.location = 'collection-detail?collection=' + encodeURIComponent(dir); // worried about single quotes in dir
-      });
-
-      <% if (ModeConfig.isProcessingMode()) { %>
-        $('.upload-btn').click(function(e) {
-            //collect archiveID,and addressbookfile field. If  empty return false;
-            var filePath = $('#landingPhoto').val();
-            if (!filePath) {
-                alert("<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.landing-page-image-request")%>");
-                return false;
-            }
-
-            var form = $('#uploadLandingPhotoForm')[0];
-
-            // Create an FormData object
-            var data = new FormData(form);
-
-            //hide the modal.
-            $('#landingPhoto-upload-modal').modal('hide');
-            //now send to the backend.. on it's success reload the same page. On failure display the error message.
-
-            $.ajax({
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                url: "ajax/upload-images.jsp",
-                contentType: false,
-                cache: false,
-                data: data,
-                success: function (data) {
-                    if (data && data.status === 0) {
-                        window.location.reload();
-                    } else {
-                        epadd.error("<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.error-in-image")%> + '(' + data.error + ')'");
-                    }
-                },
-                error: function (jq, textStatus, errorThrown) {
-                    epadd.error("<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.error-in-image")%>" + " (status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown + ')');
-                }
-            });
-        });
-
-        $('.landing-photo-edit').click (function(e) {
-            var collectionID = $(e.target).closest('.archive-card').attr('data-dir');
-            $('input[name="collectionID"]').val(collectionID);
-            $('#landingPhoto-upload-modal').modal();
-            return false;
-        });
-    <% } %>
-    });
-  </script>
 
   <br/>
+
+<script>
+    var invalidPathMessage =  '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
+    var uploadImageErrorMessage = '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
+</script>
+<%--Following div will be filled by the code in collections.js after fetching the collection details from the backend.--%>
+<div id="collectionsInfo"></div>
 
   <div id="landingPhoto-upload-modal" class="info-modal modal fade" style="z-index:99999">
       <div class="modal-dialog">

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app 
+<web-app
     xmlns="http://java.sun.com/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
@@ -54,7 +54,7 @@
 	        <param-value>This parameter is for testing.</param-value>
 	    </init-param>
 	</filter>
-	
+
 	<filter-mapping>
 	    <filter-name>LoggingFilter</filter-name>
 	    <url-pattern>/*</url-pattern>
@@ -165,7 +165,7 @@
 		<servlet-name>add-accession</servlet-name>
 		<url-pattern>/add-accession</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>assign-authorities</servlet-name>
 		<jsp-file>/assign-authorities.jsp</jsp-file>
@@ -174,7 +174,7 @@
 		<servlet-name>assign-authorities</servlet-name>
 		<url-pattern>/assign-authorities</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>email-sources</servlet-name>
 		<jsp-file>/email-sources.jsp</jsp-file>
@@ -211,7 +211,7 @@
 		<servlet-name>home</servlet-name>
 		<url-pattern>/home</url-pattern>
 	</servlet-mapping>
- 
+
  	<servlet>
 		<servlet-name>folders</servlet-name>
 		<jsp-file>/folders.jsp</jsp-file>
@@ -220,7 +220,7 @@
 		<servlet-name>folders</servlet-name>
 		<url-pattern>/folders</url-pattern>
 	</servlet-mapping>
- 
+
  	<servlet>
 		<servlet-name>browse</servlet-name>
 		<jsp-file>/browse.jsp</jsp-file>
@@ -238,7 +238,7 @@
 		<servlet-name>browse-top</servlet-name>
 		<url-pattern>/browse-top</url-pattern>
 	</servlet-mapping>
- 
+
  	<servlet>
 		<servlet-name>correspondents</servlet-name>
 		<jsp-file>/correspondents.jsp</jsp-file>
@@ -247,7 +247,7 @@
 		<servlet-name>correspondents</servlet-name>
 		<url-pattern>/correspondents</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>entities</servlet-name>
 		<jsp-file>/entities.jsp</jsp-file>
@@ -385,7 +385,7 @@
 		<servlet-name>attachments</servlet-name>
 		<url-pattern>/attachments</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>graph</servlet-name>
 		<jsp-file>/graph.jsp</jsp-file>
@@ -475,7 +475,7 @@
 		<servlet-name>query-generator</servlet-name>
 		<url-pattern>/query-generator</url-pattern>
 	</servlet-mapping>
-	
+
  	<servlet>
 		<servlet-name>status</servlet-name>
 		<jsp-file>/ajax/getStatus.jsp</jsp-file>
@@ -483,6 +483,15 @@
 	<servlet-mapping>
 		<servlet-name>status</servlet-name>
 		<url-pattern>/status</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>getCollectionDetails</servlet-name>
+		<jsp-file>/ajax/getCollectionDetails.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>getCollectionDetails</servlet-name>
+		<url-pattern>/getCollectionDetails</url-pattern>
 	</servlet-mapping>
 
     <servlet>
@@ -558,7 +567,7 @@
 		<servlet-name>export-from-processing</servlet-name>
 		<url-pattern>/export-from-processing</url-pattern>
 	</servlet-mapping>
- 
+
 	<servlet>
 		<servlet-name>review-cart</servlet-name>
 		<jsp-file>/review-cart.jsp</jsp-file>
