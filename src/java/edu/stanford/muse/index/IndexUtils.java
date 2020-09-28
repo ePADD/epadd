@@ -710,7 +710,7 @@ public class IndexUtils {
 				for(Blob attachment: ed.attachments) {
 					String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(attachment));
 					if (ext == null)
-						ext = "none";
+						ext = "Unidentified";
 					ext = ext.toLowerCase();
 					//Exclude any attachment whose extension is of the form EXCLUDED_EXT
 					//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]
@@ -1004,7 +1004,7 @@ public class IndexUtils {
 				{
 					String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
 					if (ext == null)
-						ext = "none";
+						ext = "Unidentified";
 					ext = ext.toLowerCase();
 					DetailedFacetItem dfi = result.get(ext);
 					if (dfi == null)
@@ -1047,7 +1047,7 @@ public class IndexUtils {
 				{
 					String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
 					if (ext == null)
-						ext = "none";
+						ext = "Unidentified";
 					ext = ext.toLowerCase();
 					//Exclude any attachment whose extension is of the form EXCLUDED_EXT
 					//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]

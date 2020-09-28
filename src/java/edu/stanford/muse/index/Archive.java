@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -456,7 +456,7 @@ int errortype=0;
         //To make the first date and last date format agnostic we store them in unix timestamp format (using Date.getTime() method).
         public long firstDateTS, lastDateTS;
         //To keep track of the locale where this ingestion took place.
-        public String ingestionLocaleTag;
+        private String ingestionLocaleTag;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
         //Since v7, nOutgoing messages in this class will be treated as the number of messages sent by the owner.
         public int nBlobs, nUniqueBlobs, nImageBlobs, nDocBlobs, nOtherBlobs; // this is just a cache so we don't have to read the archive
@@ -471,6 +471,13 @@ int errortype=0;
         public int renamedFiles=0;//to record number of files that were renamed /cleanedup as a result of Amatica integration
         public int normalizedFiles=0;//to record number of files that were normalized (format change) as a result of Amatica integration.
 
+        public String getIngestionLocaleTag(){
+            if(!Util.nullOrEmpty(ingestionLocaleTag))
+            {
+                return ingestionLocaleTag;
+            }else
+                return Locale.getDefault().toLanguageTag();
+        }
         public String toJSON() {
             return new Gson().toJson(this);
         }
@@ -497,6 +504,10 @@ int errortype=0;
             mergeField(this.rights, other.rights);
             mergeField(this.notes, other.notes);
             // mergeField(this.tz, other.tz);
+        }
+
+        public void setIngestionLocaleTag(String toLanguageTag) {
+            ingestionLocaleTag = toLanguageTag;
         }
     }
 
@@ -1023,16 +1034,16 @@ int errortype=0;
 	 * public boolean trimArchive(Collection<EmailDocument> docsToRetain) throws
 	 * Exception { if (docsToRetain == null) return true; // return without
 	 * doing anything
-	 * 
+	 *
 	 * // exports messages in current filter (allEmailDocs) //HttpSession
 	 * session = request.getSession(); Collection<Document> fullEmailDocs =
 	 * this.getAllDocs(); Indexer indexer = sthis.indexer;
-	 * 
+	 *
 	 * // compute which docs to remove vs. keep Set<Document> docsToKeep = new
 	 * LinkedHashSet<Document>(docsToRetain); Set<Document> docsToRemove = new
 	 * LinkedHashSet<Document>(); for (Document d: fullEmailDocs) if
 	 * (!docsToKeep.contains(d)) docsToRemove.add(d);
-	 * 
+	 *
 	 * // remove unneeded docs from the index
 	 * indexer.removeEmailDocs(docsToRemove); // CAUTION: permanently change the
 	 * index! this.setAllDocs(new ArrayList<Document>(docsToRetain)); return

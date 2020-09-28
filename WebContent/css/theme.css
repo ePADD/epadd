@@ -24,7 +24,10 @@ html {
 	-webkit-tap-highlight-color: rgba(0,0,0,0)
 }
 
-
+.inner-landing-image-text {
+	min-height: 30px;
+	display: inline-flex;
+}
 
 @media (min-width:768px) {
 .lead {
@@ -1009,8 +1012,8 @@ textarea {
 
 .margin30{
 	margin:30px;
-	
-	
+
+
 }
 
 input:invalid, input:-moz-ui-invalid {
@@ -1019,7 +1022,7 @@ input:invalid, input:-moz-ui-invalid {
     box-shadow:none;
     -moz-box-shadow:none;
     -webkit-box-shadow:none;
-	
+
 }
 input[type="email"]:invalid ~ .input-validation::before {
     content: "\f12a";
@@ -1128,7 +1131,7 @@ input[type="email"]:invalid ~ .input-validation::before {
 	padding-top: 10px;
  /*	width:120px; */
 }
-.btn-cta i{ opacity:0.5 
+.btn-cta i{ opacity:0.5
 }
 /* line 154,  */
 .btn-cta:hover, .btn-cta:focus {
@@ -1152,7 +1155,7 @@ input[type="email"]:invalid ~ .input-validation::before {
   opacity:0.7;
   color: #4e6495;
   border-radius:3px;
-  
+
 }
 
 /** CTA BOX STUFF (ON /browse-top page) */
@@ -1303,7 +1306,7 @@ input[type="email"]:invalid ~ .input-validation::before {
     border-color: #05AE0E;
 }
 .has-error .form-control:focus{
-    border-color: #FF3B30; 
+    border-color: #FF3B30;
 }
 .input-group-addon {
     background-color: #FFFFFF;
@@ -1344,30 +1347,30 @@ body {
 
 
 
-/* sgh 
+/* sgh
 	input[type=radio], input[type=checkbox] {
 	    display:none;
 	}
 	*/
 	input[type=radio] + label:before {
-	    content: "";  
-	    display: inline-block;  
-	    width: 20px;  
-	    height: 20px;  
+	    content: "";
+	    display: inline-block;
+	    width: 20px;
+	    height: 20px;
 	    vertical-align:middle;
-	    margin-right: 8px;  
-	    background-color: #fff;  
+	    margin-right: 8px;
+	    background-color: #fff;
 	    box-shadow: inset 0px 2px 2px rgba(0, 0, 0, .3);
-	    border-radius: 3px;  
+	    border-radius: 3px;
 	}
 	input[type=checkbox] + label:before {
-	    content: "";  
-	    display: inline-block;  
-	    width: 20px;  
-	    height: 20px;  
+	    content: "";
+	    display: inline-block;
+	    width: 20px;
+	    height: 20px;
 	    vertical-align:middle;
-	    margin-right: 8px;  
-	    background-color: #fff;  
+	    margin-right: 8px;
+	    background-color: #fff;
 	   // box-shadow: inset 0px 2px 2px rgba(0, 0, 0, 0);
 	    border-radius: 3px;
 		border:1px solid #bbb;
@@ -1376,7 +1379,7 @@ body {
 	input[type=radio]:checked + label:before {
 		content: "\2022";
 		color:white;
-	    background-color: #09c; 
+	    background-color: #09c;
 		font-size:1.8em;
 		text-align:center;
 		line-height:14px;
@@ -1385,14 +1388,14 @@ body {
 	input[type=checkbox]:checked + label:before {
 		content:"\2714";
 		color:white;
-	    //background-color: #666; 
+	    //background-color: #666;
 		text-align:center;
 		line-height:18px;
 		font-size:11px;
 	   // text-shadow:0px 0px 3px #eee;
 		background-color:#0274bd;
 	}
-    
+
 .padding-tb{ padding:20px}
 .paginationlist li{ display:inline; list-style-type:none}
 .blue-rounded{

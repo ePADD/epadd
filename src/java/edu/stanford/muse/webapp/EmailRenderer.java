@@ -322,7 +322,7 @@ public class EmailRenderer {
 						for (Blob b : attachments) {
 							String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
 							if (ext == null)
-								ext = "none";
+								ext = "Unidentified";
 							ext = ext.toLowerCase();
 							//Exclude any attachment whose extension is of the form EXCLUDED_EXT
 							//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]

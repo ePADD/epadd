@@ -828,8 +828,9 @@ public class EmailUtils {
 			if(yearWiseAttachments.second.get(j)!=null && yearWiseAttachments.second.get(j)!=0)
 				result.add(new Pair(j,yearWiseAttachments.second.get(j)));
 		}
-		//Now put the data for 1960 year at the end.
-		result.add(new Pair(1960,yearWiseAttachments.second.get(1960)));
+		//Now put the data for 1960 year at the end (only if such an year was present in the list earlier - which means isHacky is true)
+		if(isHacky)
+			result.add(new Pair(1960,yearWiseAttachments.second.get(1960)));
     	return new Pair(isHacky,result);
 	}
 
@@ -876,7 +877,7 @@ public class EmailUtils {
 						{
 							String ext = Util.getExtension(archive.getBlobStore().get_URL_Normalized(b));
 							if (ext == null)
-								ext = "none";
+								ext = "Unidentified";
 							ext = ext.toLowerCase();
 							//Exclude any attachment whose extension is of the form EXCLUDED_EXT
 							//or whose extension is not of interest.. [because it was not passed in attachmentType or attachmentExtension query on input.]

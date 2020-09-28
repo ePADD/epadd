@@ -2,12 +2,8 @@
 
 
 
+var isProcessingMode=false;
 
-//Code to invoke the collection detail page when clicking on a collection card.
-$('.archive-card').click(function(e) {
-    var dir = $(e.target).closest('.archive-card').attr('data-dir');
-    window.location = 'collection-detail?collection=' + encodeURIComponent(dir); // worried about single quotes in dir
-});
 
 var loadCollectionTiles = function(collectionDetails){
     //read from collectionDetails object array and set up collection tiles.
@@ -37,23 +33,86 @@ var loadCollectionTiles = function(collectionDetails){
 			landingEditImage.append(
                 $('<img></img').attr("src","images/edit_summary.svg")
 			)
+        //     <div class="landing-img-text">
+        //     <span style="font-size:20px;font-weight:600;color:#0175BC"><%=Util.nullOrEmpty(cm.shortTitle) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-title") : Util.escapeHTML(cm.shortTitle)%></span>
+        //     <div class="epadd-separator"></div>
+        // <%=Util.nullOrEmpty(cm.shortDescription) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description") : Util.escapeHTML(cm.shortDescription)%>
+        //     </div>
+        var landingImageText = $('<div></div>').addClass("landing-img-text").append(
+            $('<span></span>').addClass("inner-landing-image-text").text(collectionInfo.shortDescription)
+        );
 
-        var innerLandingImageText = $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
-            .text(collectionInfo.shortTitle);
-		var landingImageText = $('<div></div>')
-				.addClass("landing-img-text")
-			    .text(collectionInfo.shortDescription);
-
-        landingImageText.append(
-            innerLandingImageText
-        ).append(
+        landingImageText = $(landingImageText).prepend(
             $('<div></div>').addClass("epadd-separator")
-        )
+        ).prepend(
+            $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
+                .text(collectionInfo.shortTitle)
+        );
 
-        //add landingImage and landingImageText under archiveCard as children which is appended to collectionsInfo div.
-        $('#collectionsInfo').append(
-			archivecard.append(landingImage).append(landingImageText)
-		);
+        //landingImageText = $(landingImageText)
+
+
+        //add landingImage and landingImageText under archiveCard as children which is appended to collectionsInfo div. (If processing mode then add edit image button as well)
+        if(isProcessingMode)
+            $('#collectionsInfo').append(
+                archivecard.append(landingImage.append(landingEditImage)).append(landingImageText)
+            );
+        else
+            $('#collectionsInfo').append(
+                archivecard.append(landingImage).append(landingImageText)
+            );
+
+        if(isProcessingMode){//Have this function only if it is processing mode.
+            $('.upload-btn').click(function (e) {
+                //collect archiveID,and addressbookfile field. If  empty return false;
+                var filePath = $('#landingPhoto').val();
+                if (!filePath) {
+                    alert(invalidPathMessage);
+                    return false;
+                }
+
+                var form = $('#uploadLandingPhotoForm')[0];
+
+                // Create an FormData object
+                var data = new FormData(form);
+
+                //hide the modal.
+                $('#landingPhoto-upload-modal').modal('hide');
+                //now send to the backend.. on it's success reload the same page. On failure display the error message.
+
+                $.ajax({
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    url: "ajax/upload-images.jsp",
+                    contentType: false,
+                    cache: false,
+                    data: data,
+                    success: function (data) {
+                        if (data && data.status === 0) {
+                            window.location.reload();
+                        } else {
+                            epadd.error(uploadImageErrorMessage);
+                        }
+                    },
+                    error: function (jq, textStatus, errorThrown) {
+                        epadd.error(uploadImageErrorMessage, 'status =  '+ textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown );
+                    }
+                });
+            });
+
+            $('.landing-photo-edit').click(function (e) {
+                var collectionID = $(e.target).closest('.archive-card').attr('data-dir');
+                $('input[name="collectionID"]').val(collectionID);
+                $('#landingPhoto-upload-modal').modal();
+                return false;
+            });
+        }
+    });
+    //Code to invoke the collection detail page when clicking on a collection card.
+    $('.archive-card').click(function(e) {
+        var dir = $(e.target).closest('.archive-card').attr('data-dir');
+        window.location = 'collection-detail?collection=' + encodeURIComponent(dir); // worried about single quotes in dir
     });
 };
 
@@ -83,50 +142,5 @@ $(document).ready(function() {
 
 
 
-    {//Have this function only if it is processing mode.
-        $('.upload-btn').click(function (e) {
-            //collect archiveID,and addressbookfile field. If  empty return false;
-            var filePath = $('#landingPhoto').val();
-            if (!filePath) {
-                alert(invalidPathMessage);
-                return false;
-            }
 
-            var form = $('#uploadLandingPhotoForm')[0];
-
-            // Create an FormData object
-            var data = new FormData(form);
-
-            //hide the modal.
-            $('#landingPhoto-upload-modal').modal('hide');
-            //now send to the backend.. on it's success reload the same page. On failure display the error message.
-
-            $.ajax({
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                url: "ajax/upload-images.jsp",
-                contentType: false,
-                cache: false,
-                data: data,
-                success: function (data) {
-                    if (data && data.status === 0) {
-                        window.location.reload();
-                    } else {
-                        epadd.error(uploadImageErrorMessage);
-                    }
-                },
-                error: function (jq, textStatus, errorThrown) {
-                    epadd.error(uploadImageErrorMessage, 'status =  '+ textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown );
-                }
-            });
-        });
-
-        $('.landing-photo-edit').click(function (e) {
-            var collectionID = $(e.target).closest('.archive-card').attr('data-dir');
-            $('input[name="collectionID"]').val(collectionID);
-            $('#landingPhoto-upload-modal').modal();
-            return false;
-        });
-    }
 });

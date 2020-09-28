@@ -36,7 +36,7 @@ public class Messages {
 	/* Use collection specifice language/locale only in the discovery mode - for now. For other modes just use system's default locale*/
 	if(ModeConfig.isDiscoveryMode()) {
 		if (ar != null)
-			locale = Locale.forLanguageTag(ar.collectionMetadata.ingestionLocaleTag);
+			locale = Locale.forLanguageTag(ar.collectionMetadata.getIngestionLocaleTag());
 		else /*For the case when archive isn't loaded yet in the discovery mode. In that case continue to use system's default locale*/
 			locale = Locale.getDefault();
 	}

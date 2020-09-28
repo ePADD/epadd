@@ -465,7 +465,7 @@ public class ArchiveReaderWriter{
         archive.collectionMetadata.lastDate = lastDate;
         //Fill in the current locale and unix timestamp values for firstDate and lastDate. For more information on these variables refer to the
         //class definition of CollectionMetaData.
-        archive.collectionMetadata.ingestionLocaleTag = Locale.getDefault().toLanguageTag();
+        archive.collectionMetadata.setIngestionLocaleTag(Locale.getDefault().toLanguageTag());
         if(firstDate!=null)
             archive.collectionMetadata.firstDateTS = firstDate.getTime();
         if(lastDate!=null)

@@ -1277,8 +1277,10 @@ Archive archive = inputSet.archive;
                     if (url == null)
                         continue; // just over-defensive, if no name, effectively doesn't match
                     String extension = Util.getExtension(url);
-                    if (extension == null)
-                        continue;
+                    if (extension == null) {
+                        //It means that this file doesn't have extension. In this case match this only if the needed extension is "unidentified" type.
+                        extension="Unidentified";
+                    }
                     extension = extension.toLowerCase();
                     //Proceed to add this attachment only if either
                     //1. other is selected and this extension is not present in the list attachmentOptionType, or

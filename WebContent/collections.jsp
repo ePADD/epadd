@@ -84,6 +84,7 @@
 <script>
     var invalidPathMessage =  '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
     var uploadImageErrorMessage = '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
+    isProcessingMode = <%=ModeConfig.isProcessingMode()%>;
 </script>
 <%--Following div will be filled by the code in collections.js after fetching the collection details from the backend.--%>
 <div id="collectionsInfo"></div>
