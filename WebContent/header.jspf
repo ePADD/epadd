@@ -25,6 +25,8 @@
 	String imp = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.import");
 	String browse = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse");
 	String search = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-search");
+	String browseCollection = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse-collection");
+	String browseInstitution = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse-institution");
 	String export = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-export");
 	String save = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-save");
 	String authorities = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-authorities");
@@ -71,7 +73,7 @@
 
 			<% if (ModeConfig.isAppraisalMode()) {
 				out.println("<li style='display:inline'><a href='email-sources'>"+imp+"</a></li>");
-			} else if(!haveArchive) { //display collection tab only if there is no archive opened currently. Note that the first and second
+			} else if(!haveArchive && ModeConfig.isProcessingMode()) { //display collection tab only if there is no archive opened currently. Note that the first and second
 				//conditions (if and else part) can be true simultaneously. Therefore the ordering of these two is important because we want
 				//to display import tab in the appraisal mode and collection tab in other modes.
 				out.println("<li style='display:inline'><a href='collections'>"+ edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "collections.title-collection")+"</a></li>");
@@ -106,13 +108,15 @@
 			<% }
 			} else {
 				if (ModeConfig.isDiscoveryMode()) { %>
+					<li style="display:inline"><a href="cross-collection-search-query"><%=browseCollection%></a></li>
+					<li style="display:inline"><a href="cross-collection-search-query"><%=browseInstitution%></a></li>
 					<li style="display:inline"><a href="cross-collection-search-query"><%=search%></a></li>
 				<% }
 			}
 			%>
 
 			<!--  <li style="display:inline"><a href="delivery">Delivery</a></li>  -->
-<!-- 		<li style="display:inline"><a target="_blank" href="http://library.stanford.edu/spc/more-about-us/projects-and-initiatives/epadd-project">About</a></li>  -->	
+<!-- 		<li style="display:inline"><a target="_blank" href="http://library.stanford.edu/spc/more-about-us/projects-and-initiatives/epadd-project">About</a></li>  -->
 		</ul>
         <script>
 			var archiveID = '<%=archiveID%>';
@@ -171,7 +175,7 @@
 	 		</li>
 		</ul>
 	</div>
-</div>	
+</div>
 </nav>
 </div>
 </header>
