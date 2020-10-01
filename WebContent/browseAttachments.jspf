@@ -164,9 +164,13 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             "    <div class=\"fbox_sender\" >\n" +
             "       <div style=\"margin-right:5px; font-weight:bold\">" +sender+" </div>\n" +
             "    </div>\n" +
-            "    <div style=\"display:inline-flex\"> " +
-            "       <div style=\"font-weight:bold;margin-right: 2px;\"> sent on </div>\n" +
-            "       <div class=\"fbox_date\" style=\"margin:1px\">"+dt+"</div>\n";
+            "    <div style=\"display:inline-flex\"> ";
+        if(dt.toLowerCase()==="undated"){
+            html = html + "       <div style=\"font-weight:bold;margin-right: 2px;\"> Undated </div>\n";
+        }else {
+            html = html +   "       <div style=\"font-weight:bold;margin-right: 2px;\"> sent on </div>\n" +
+            "       <div class=\"fbox_date\" style=\"margin:1px\">" + dt + "</div>\n";
+        }
          //If number of messages in which this attachment appears is greater than 1 then present that information as well.
             if(numMessages>1){
                 html = html +  "<a title=\"Go to all "+numMessages+" messages associated with this attachment\" target='_blank' href=\""+decodeURI(msgURL)+"\")})()\">\n" +

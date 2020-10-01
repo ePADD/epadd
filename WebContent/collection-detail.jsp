@@ -202,7 +202,7 @@
 
             <% if (!Util.nullOrEmpty(cm.scopeAndContent)) { %>
                 <br>
-                <b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.scope-content")%>t</b><br/>
+                <b><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.scope-content")%></b><br/>
                  <%= Util.escapeHTML(cm.scopeAndContent)%>
                 <div class="epadd-separator"></div>
             <% } %>
