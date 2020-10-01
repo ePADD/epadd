@@ -242,11 +242,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         </select>
                     </div>
                     <%--Present attachment view button only if this set of messages has non-zero attachments, else grey that out??--%>
-                    <%if(noAttachments){%>
+                    <%if(!ModeConfig.isDiscoveryMode()){ if(noAttachments){%>
                     <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" disabled onclick="window.location='<%=attachmentBrowsingURL%>'" title="Attachment View">Attachment View</button>
                     <%}else{%>
                     <button id="switchAttachView" name="switchAttachView" type="button" class="btn btn-default" onclick="window.location='<%=attachmentBrowsingURL%>'" title="Attachment View">Attachment View</button>
-                    <%}%>
+                    <%}}%>
                 </div>
 
                 <div style="user-select: none; float:right;position:relative;top:8px; padding-right: 10px;">

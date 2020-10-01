@@ -45,13 +45,13 @@
       <artifactId>commons-io</artifactId>
       <version>2.0.1</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.3.2</version>
     </dependency>
-    
+
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -62,7 +62,7 @@
       <artifactId>log4j</artifactId>
       <version>1.2.16</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -117,6 +117,7 @@
 					<include>browse-top.jsp</include>
 					<include>browse.jsp</include>
 					<include>browseMessages.jspf</include>
+					<include>browseAttachments.jspf</include>
 					<include>search-query.jsp</include>
 					<include>advanced-search.jsp</include>
 					<include>version.jsp</include>
@@ -149,6 +150,7 @@
 					<include>css/**</include>
 					<include>images/**</include>
 					<include>ajax/getStatus.jsp</include>
+					<include>ajax/getCollectionDetails.jsp</include>
 					<include>ajax/cancel.jsp</include>
 					<include>ajax/expandname.jsp</include>
 					<include>ajax/getHitTermDetails.jsp</include>
