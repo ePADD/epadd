@@ -501,6 +501,7 @@ public class EmailRenderer {
 			Solution: escapejson will put \ at the end of find which will make it parsed correctly.
 		 */
 
+
 		String sender = Util.escapeHTML(ed.getFromString());//escaping because we might have the name like <jbush@..> in the sender.
 		sender = Util.escapeJSON(sender);
 		String date = Util.escapeHTML(ed.dateString());
@@ -520,7 +521,10 @@ public class EmailRenderer {
 		result.addProperty("filenameWithIndex",numberedFileName);
 
 		result.addProperty("from",sender);
-		result.addProperty("date",date);
+		if(ed.hackyDate)
+			result.addProperty("date","Undated");
+		else
+			result.addProperty("date",date);
 		result.addProperty("subject",subject);
 		result.addProperty("msgURL",messageURL);
 
