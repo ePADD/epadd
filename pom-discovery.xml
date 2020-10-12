@@ -130,6 +130,7 @@
 					<include>entity-types.jsp</include>
 					<include>list-entities.jsp</include>
 					<include>serveImage.jsp</include>
+					<include>serveTemp.jsp</include>
 					<include>graph.jsp</include>
 					<include>header.jspf</include>
 					<include>cross-collection-search-query.jsp</include>
@@ -153,6 +154,7 @@
 					<include>ajax/getCollectionDetails.jsp</include>
 					<include>ajax/cancel.jsp</include>
 					<include>ajax/expandname.jsp</include>
+					<include>ajax/downloadData.jsp</include>
 					<include>ajax/getHitTermDetails.jsp</include>
 					<include>ajax/jogPageInMessages.jsp</include>
 					<include>ajax/jogPageInAttachments.jsp</include>

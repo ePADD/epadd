@@ -149,7 +149,7 @@ public class Contact extends UnionFindObject {
 	{
 		// look for s in any name for any contact.. but only if it occurs as whole word, e.g. chi shouldn't match chinmay
 		s = s.toLowerCase();
-		for (String name: this.names) 
+		for (String name: this.names)
 			if (Util.occursOnlyAsWholeWord(name,  s))
 				return true;
 		return false;
@@ -167,11 +167,16 @@ public class Contact extends UnionFindObject {
 		//masking names too (if they contain email address). This came up while fixing issue #370
 		Set<String> maskedEmailsInNames = new LinkedHashSet<>();
 		for (String e : names) {
-			maskedEmailsInNames.add(ab.getMaskedEmail(e));
+			if(e.contains("@")) //Mask it only if contains @
+				maskedEmailsInNames.add(ab.getMaskedEmail(e));
+			else
+				maskedEmailsInNames.add(e); //else simply add the unchanged one.
 		}
 		names = maskedEmailsInNames;
 
-		bestName = ab.getMaskedEmail(bestName);
+		//Similarly mask the bestname only if the bestname is like email (contains @)
+		if(bestName.contains("@"))
+			bestName = ab.getMaskedEmail(bestName);
 
 	}
 
