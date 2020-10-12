@@ -24,6 +24,7 @@
 <body>
 <%@include file="header.jspf"%>
 <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.head-search")%></title>
+<script>epadd.nav_mark_active('<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "cross-collection-search-query.head-search")%>');</script>
 
 <br/>
 <br/>

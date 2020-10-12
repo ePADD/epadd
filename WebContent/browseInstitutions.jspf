@@ -1,0 +1,18 @@
+
+
+
+<%
+    //Check if the institution name was also passed as an argument.
+    //If yes then set the institutionType JS variable as well.
+    String institutionName = request.getParameter("institutionID");
+
+%>
+<script>
+    //enable browse-by-institution as nav-active
+    browseType='institution';
+    <% if(!Util.nullOrEmpty(institutionName)){%>
+        institutionName='<%=institutionName%>';
+    <%}%>
+    epadd.nav_mark_active('<%=browseInstitution%>');
+</script>
+

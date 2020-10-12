@@ -485,6 +485,16 @@
 		<url-pattern>/status</url-pattern>
 	</servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>getInstitutionDetails</servlet-name>
+		<jsp-file>/ajax/getInstitutionDetails.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>getInstitutionDetails</servlet-name>
+		<url-pattern>/getInstitutionDetails</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>getCollectionDetails</servlet-name>
 		<jsp-file>/ajax/getCollectionDetails.jsp</jsp-file>

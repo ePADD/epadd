@@ -108,9 +108,9 @@
 			<% }
 			} else {
 				if (ModeConfig.isDiscoveryMode()) { %>
-					<li style="display:inline"><a href="cross-collection-search-query"><%=browseCollection%></a></li>
-					<li style="display:inline"><a href="cross-collection-search-query"><%=browseInstitution%></a></li>
-					<li style="display:inline"><a href="cross-collection-search-query"><%=search%></a></li>
+					<li id="browse-collection-tab" style="display:inline" ><a href="collections?browse-type=collection"><%=browseCollection%></a></li>
+					<li id="browse-institution-tab" style="display:inline"><a href="collections?browse-type=institution"><%=browseInstitution%></a></li>
+					<li id="cross-collection-search" style="display:inline"><a href="cross-collection-search-query"><%=search%></a></li>
 				<% }
 			}
 			%>

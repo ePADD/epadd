@@ -1,0 +1,5 @@
+<script>
+    //enable browse-by-collection as nav-active
+    browseType='collection';
+    epadd.nav_mark_active('<%=browseCollection%>');
+</script>
