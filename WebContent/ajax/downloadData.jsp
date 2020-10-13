@@ -10,13 +10,14 @@
 
 
     Multimap<String,String> paramMap = JSPHelper.convertRequestToMap(request);
-     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+     //String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+     String appURL="";
 String opID = request.getParameter("opID");
 
 if(opID==null){
     //invoke this as normal ajax call without using operation Info object.
     JSONObject result = new JSONObject();
-    downloadData(paramMap,null,session,result,appURL);
+    downloadData(paramMap,null,session,result);
     out.println(result);
 }else{
     //means it is being invoked as a long running operation using fetch_page_progress api in js. use OperationInfo protocol to invoke it.
@@ -35,7 +36,7 @@ if(opID==null){
             //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
             //operationinfo object
             Consumer<StatusProvider> setStatusProvider = statusProvider->this.setStatusProvider(statusProvider);
-            downloadData(this.getParametersMap(),setStatusProvider,fsession,resultJSON,appURL);
+            downloadData(this.getParametersMap(),setStatusProvider,fsession,resultJSON);
         }@Override
         public void onCancel() {
             //creating a lambda expression that will be used by functions to set the statusprovider without knowing the
@@ -69,7 +70,7 @@ if(opID==null){
 
 
 <%!
-public void downloadData(Multimap<String,String> params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultJSON, String appURL){
+public void downloadData(Multimap<String,String> params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultJSON){
     if(setStatusProvider!=null)
         setStatusProvider.accept(new StaticStatusProvider("Downloading data..."));
     String query = JSPHelper.getParam(params,"data");
@@ -111,7 +112,7 @@ try{
 			Util.copy_file(fname.getAbsolutePath(),destdir+File.separator+fname.getName());
 			//prepare a URL with this file
     	    String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=" + fname.getName() ;
-            downloadURL = appURL + "/" +  contentURL;
+            downloadURL = /*appURL + "/" +*/  contentURL;
 		}else{
 		    error="Lexicon file not found";
 		}
@@ -126,7 +127,7 @@ try{
 	        Util.copy_file(addressbookpath,destdir+File.separator+Archive.ADDRESSBOOK_SUFFIX+".txt");
 			//prepare a URL with this file
     	    String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=" + Archive.ADDRESSBOOK_SUFFIX+".txt" ;
-            downloadURL = appURL + "/" +  contentURL;
+            downloadURL = /*appURL + "/" +*/  contentURL;
 	    }else{
 	        error="Addressbook not found";
 	    }
@@ -144,7 +145,7 @@ try{
 	        Util.copy_file(labeinfopath,destdir+File.separator+"label-info.json");
 			//prepare a URL with this file
     	    String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=label-info.json" ;
-            downloadURL = appURL + "/" +  contentURL;
+            downloadURL = /*appURL + "/" +*/  contentURL;
 	    }else{
 	        error="Label description file not found";
 	    }
@@ -159,7 +160,7 @@ try{
             pw.println(csv);
             pw.close();
             String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=epadd-authorities.csv" ;
-            downloadURL = appURL + "/" +  contentURL;
+            downloadURL = /*appURL + "/" +*/  contentURL;
         } catch(Exception e){
             //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
             e.printStackTrace();
@@ -189,7 +190,7 @@ try{
 
             //return it's URL to download
             String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=all-messages-as-text.zip" ;
-            downloadURL = appURL + "/" +  contentURL;
+            downloadURL = /*appURL + "/" +*/  contentURL;
         } catch(Exception e){
             //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
             e.printStackTrace();
@@ -234,7 +235,7 @@ try{
 
          //return it's URL to download
         String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+fnameprefix+".mbox" ;
-        downloadURL = appURL + "/" +  contentURL;
+        downloadURL = /*appURL + "/" + */ contentURL;
         } catch(Exception e){
             //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
            e.printStackTrace();
@@ -282,7 +283,7 @@ try{
          csvwriter.close();
          fw.close();
          String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file=unconfirmedCorrespondents.csv" ;
-         downloadURL = appURL + "/" +  contentURL;
+         downloadURL = /*appURL + "/" +*/  contentURL;
     }//////////////////////////////////////Download entity information file//////////////////////////////////////////////////////////////////////
 	else if(query.equals("entities")){
         //get entitytype
@@ -366,7 +367,7 @@ if(entitytype==Short.MAX_VALUE){
 
 
          String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+fnameprefix+"_entitiesInfo.csv" ;
-         downloadURL = appURL + "/" +  contentURL;
+         downloadURL = /*appURL + "/" +*/  contentURL;
 
     }
     }catch (IOException e){
