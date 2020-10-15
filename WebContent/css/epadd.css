@@ -27,7 +27,7 @@ hr {
 a {color: #3682bb;}
 /* #nav1 { font-size: 120%;}
 #nav1 a, #nav2 a, #nav3 a { padding: 3px;  color: #6f6f6f; text-decoration: none}
-#nav1 a.selected, #nav1 a:hover, #nav2 a.selected, #nav2 a:hover, #nav3 a.selected, #nav3 a:hover { color: yellow; background-color: #3682bb; transition: background-color 0.5s, color 0.5s;} */ 
+#nav1 a.selected, #nav1 a:hover, #nav2 a.selected, #nav2 a:hover, #nav3 a.selected, #nav3 a:hover { color: yellow; background-color: #3682bb; transition: background-color 0.5s, color 0.5s;} */
 /* color picked from testflightapp.com */
 /* #nav1 a.selected, #nav1 a:hover, #nav2 a.selected, #nav2 a:hover { color: #3682bb; border-bottom: solid 1px #3682bb} */
 /* #nav2, #nav3 { padding-left:190px;} */
@@ -39,9 +39,9 @@ a {color: #3682bb;}
 	-khtml-opacity: 0.9;
 	opacity: 0.9;
 	color: #000000;
-    background-color: white; 
+    background-color: white;
     border-color: black;
-	
+
 	z-index:1000;min-height:180px;height:180px;padding:30px;position:fixed;width:500px;box-shadow:0 4px 23px 5px rgba(25,25,25, 0.2), 0 2px 6px rgba(255,255,255,0.15);
 }
 
@@ -51,7 +51,7 @@ div.progress_bar {
 	background-color: #0175bc;
 	border-radius: 5%;
 	padding:0;width:0;height:12px;
-/*        background-color: navy; /* hotpink; #40f040; */ 
+/*        background-color: navy; /* hotpink; #40f040; */
 }
 th{
 	text-align: left;
@@ -170,7 +170,7 @@ div.message-menu img { height: 32px;}
 .docheader {
 	border-width: 0px 0px 1px 0px;
 	border-style: solid;
-	width: 98%; 	
+	width: 98%;
 }
 
 table.docheader td {padding: 2px;}
@@ -530,4 +530,50 @@ table.dataTable td {
 	height: 36px;
 	cursor: pointer;
 	z-index: 8040;
+}
+
+.instinfo-container{
+	border-style: solid;
+	border-width: 1px;
+	border-color: rgb(204,204,204);
+	height: 200px;
+	width: 1100px;
+	background-color: white;
+
+}
+
+.row {
+	width: 1100px;
+	height: 150px;
+	margin: 20px;
+}
+
+.col-sm-3  {
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-right-color: rgb(204,204,204);
+	/*align-items: center;*/
+}
+
+
+
+.inst-heading{
+	text-alignment: center;
+	font-weight: bold;
+	font-family: 'Open Sans', regular;
+}
+
+.inst-address{
+	text-alignment: center;
+	font-weight: normal;
+	font-family: 'Open Sans', regular;
+	font-size: 14px;
+	color: #999999;
+}
+.inst-information{
+	text-alignment: center;
+	font-weight: normal;
+	font-family: 'Open Sans', regular;
+	font-size: 14px;
+	color: #999999;
 }

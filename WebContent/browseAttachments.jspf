@@ -346,7 +346,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
 <%
     if (Util.nullOrEmpty(docs)) { %>
-<div style="margin-top:2em;font-size:200%;text-align:center;">No matching messages.</div>
+<div style="margin-top:2em;font-size:200%;text-align:center;">No matching attachments.</div>
 <%} else { %>
 <div class="browsepage" style="min-width:1220px">
 

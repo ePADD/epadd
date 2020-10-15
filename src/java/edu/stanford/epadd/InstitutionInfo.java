@@ -10,5 +10,6 @@ public class InstitutionInfo {
     public InstitutionInfo(String institutionName){
         this.institutionName=new String(institutionName);
         this.numberOfCollections=0;
+
     }
 }

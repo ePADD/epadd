@@ -90,11 +90,9 @@
       }
     %>
   </div>
+  <%--<br/>
   <br/>
-
-
-  <br/>
-
+--%>
 <script>
     var invalidPathMessage =  '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
     var uploadImageErrorMessage = '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
@@ -107,7 +105,9 @@
 
 <div id="back-to-institution-browse" style="margin:auto;width:1100px;"></div>
 <div id="institutionInfo" style="margin:auto;width:1100px;"></div>
-<div id="collectionsInfo" style="margin:auto;width:1100px;"></div>
+<div id="collectionsInfo-header" style="margin:auto;width:1100px;"></div>
+<div id="collectionsInfo-details" style="margin:auto;width:1100px;"></div>
+
 
 
   <div id="landingPhoto-upload-modal" class="info-modal modal fade" style="z-index:99999">

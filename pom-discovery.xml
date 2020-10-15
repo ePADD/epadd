@@ -118,6 +118,8 @@
 					<include>browse.jsp</include>
 					<include>browseMessages.jspf</include>
 					<include>browseAttachments.jspf</include>
+					<include>browseCollections.jspf</include>
+					<include>browseInstitutions.jspf</include>
 					<include>search-query.jsp</include>
 					<include>advanced-search.jsp</include>
 					<include>version.jsp</include>
@@ -149,8 +151,9 @@
 					<include>bootstrap/**</include>
 					<include>css/**</include>
 					<include>images/**</include>
-					<include>ajax/getStatus.jsp</include>
+					<include>ajax/getInstitutionsDetails.jsp</include>
 					<include>ajax/getCollectionDetails.jsp</include>
+					<include>ajax/getStatus.jsp</include>
 					<include>ajax/cancel.jsp</include>
 					<include>ajax/expandname.jsp</include>
 					<include>ajax/getHitTermDetails.jsp</include>

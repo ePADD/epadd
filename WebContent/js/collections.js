@@ -3,48 +3,58 @@
 
 
 var isProcessingMode=false;
-//var collectionDetails;
+var _collectionDetails;
 var browseType; //either collection or institution.
 var institutionName;
 
 /*This method renders the page when user clicks on 'Browse collections' tab on navbar. It renders a header with search bar and the
 collection details in form of tiles. The collection information is stored in variable collectionDetails.
 the first argument of this method. The headername to display is passed as the second argument.
+redrawComplete is a boolean argument which controls if the header (header string + search box) should also get redrawn.
+This is used to control the redrawing of collection tiles when user search something in the searchbox.
  */
-var renderBrowseCollection = function(collectionDetails, headerstring){
+var renderBrowseCollection = function(collectionDetails, headerstring, redrawComplete){
     //read from collectionDetails object array and set up collection tiles.
     //1. Iterate over every element of collectionDetails.
     //2. Construct the element to be added
-    //3. append the element as a child under "collectionsInfo" div (this div is on the page collections.jsp)
-    $('#collectionsInfo').empty();
-    //Add div code as the first element to have search box and the header. Header name is passed as an argument here.
-    var searchbox_header = '<div style="margin:auto;width:1100px;">\n' +
-        '    <div class="container">\n' +
-        '        <div class="row">\n' +
-        '            <div class="col-sm-4 text-left">\n' +
-        '                <h1 class="text-left">'+headerstring+'</h1>\n' +
-        '            </div>\n' +
-        '            <div class="col-sm-8 inner-addon right-addon">\n' +
-        '                <input name="search-collection" id="search-collection" type="text" class="form-control" placeholder="Search collection">\n' +
-        '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '    </div>\n' +
-        '    <hr>\n' +
-        '</div>';
-    $('#collectionsInfo').append(searchbox_header);
-
+    if(redrawComplete) {
+        //3. append the element as a child under "collectionsInfo" div (this div is on the page collections.jsp)
+        $('#collectionsInfo-header').empty();
+        $('#collectionsInfo-details').empty();
+        //Add div code as the first element to have search box and the header. Header name is passed as an argument here.
+        var searchbox_header = '<div style="margin:auto;width:1100px;">\n' +
+            '    <div class="container">\n' +
+            '        <div class="row" style="height:10px;margin-left:-1px;">\n' +
+            '            <div class="col-sm-4" ">\n' +
+            '                <h1 class="text-left" style="margin-left:-30px;">' + headerstring + '</h1>\n' +
+            '            </div>\n' +
+            '            <div class="col-sm-8 inner-addon right-addon">\n' +
+            '                <input name="search-collection" id="search-collection" type="text" class="form-control" placeholder="Search collection">\n' +
+            '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
+            '            </div>\n' +
+            '        </div>\n' +
+            '    </div>\n' +
+            '    <hr>\n' +
+            '</div>';
+        $('#collectionsInfo-header').append(searchbox_header);
+    }else{
+        $('#collectionsInfo-details').empty();
+    }
     collectionDetails.forEach(function(collectionInfo){
 
+        var shortDescription= collectionInfo.shortDescription;
+        var shortTitle = collectionInfo.shortTitle;
+        var dataDir =  collectionInfo.dataDir;
+        var landingImageURL = collectionInfo.landingImageURL;
         var archivecard = $('<div></div>');
-        archivecard = $(archivecard).addClass("archive-card").attr("data-dir",collectionInfo.dataDir);
+        archivecard = $(archivecard).addClass("archive-card").attr("data-dir",dataDir);
         var landingImage = $('<div></div>');
         landingImage = $(landingImage).addClass("landing-img")
 			.css("background-color","#e0e4e6")
 			.css("background-size","contain")
 			.css("background-repeat","no-repeat")
 			.css("background-position","center center")
-			.css("background-image", 'url("' + collectionInfo.landingImageURL + '")')
+			.css("background-image", 'url("' + landingImageURL + '")')
 
 		var landingEditImage = $('<div></div>');
         landingEditImage = $(landingEditImage).addClass("landing-photo-edit")
@@ -62,26 +72,25 @@ var renderBrowseCollection = function(collectionDetails, headerstring){
         // <%=Util.nullOrEmpty(cm.shortDescription) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description") : Util.escapeHTML(cm.shortDescription)%>
         //     </div>
         var landingImageText = $('<div></div>').addClass("landing-img-text").append(
-            $('<span></span>').addClass("inner-landing-image-text").text(collectionInfo.shortDescription)
+            $('<span></span>').addClass("inner-landing-image-text").text(shortDescription)
         );
 
         landingImageText = $(landingImageText).prepend(
             $('<div></div>').addClass("epadd-separator")
         ).prepend(
             $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
-                .text(collectionInfo.shortTitle)
+                .text(shortTitle)
         );
 
         //landingImageText = $(landingImageText)
 
-
         //add landingImage and landingImageText under archiveCard as children which is appended to collectionsInfo div. (If processing mode then add edit image button as well)
         if(isProcessingMode)
-            $('#collectionsInfo').append(
+            $('#collectionsInfo-details').append(
                 archivecard.append(landingImage.append(landingEditImage)).append(landingImageText)
             );
         else
-            $('#collectionsInfo').append(
+            $('#collectionsInfo-details').append(
                 archivecard.append(landingImage).append(landingImageText)
             );
 
@@ -137,22 +146,45 @@ var renderBrowseCollection = function(collectionDetails, headerstring){
         var dir = $(e.target).closest('.archive-card').attr('data-dir');
         window.location = 'collection-detail?collection=' + encodeURIComponent(dir); // worried about single quotes in dir
     });
+
+
+
 };
 
+//Register method for search box..
+$('body').on('keyup','#search-collection', function(e){
 
+    var extractCollectionData = function(collection){
+        //Return a canonical (string)representation of the collection information. This will include everything that will be
+        //present in the collection metadata of a collection so that the filtering can be done easily on this data.
+        return collection.shortDescription+"___"+collection.shortTitle;
+    }
+    // get the content of the #search-collection text box.
+    var term = $(e.target).val();
+    // if term is not already quoted, quote it now
+    term = term.trim();
+    if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
+        //filter collectionDetails json data for the content written in this text box..
+        var modCollectionDetails = _collectionDetails.filter(collection=>(extractCollectionData(collection).toLowerCase().includes(term.toLowerCase())));
+        //Render renderBoxCollection() with this modified data and headerstring variable..
+        renderBrowseCollection(modCollectionDetails,"Browse Collections",false);
+    }
+});
 /*This method renders the page when user clicks on 'Browse institutions' tab on navbar. It renders a header with search bar and the
 institution details in form of a table.
+redrawComplete is a boolean variable that controls if the search header should also get redrawn or not. This is used to
  */
-var renderBrowseInstitutions = function(institutionDetails){
+var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
     //clear the div.
-    $('#collectionsInfo').empty();
+    $('#collectionsInfo-header').empty();
+    $('#collectionsInfo-details').empty();
 
     //Add the header string and the search bar first .
     var header_search = '<div style="margin:auto;width:1100px;">\n' +
         '    <div class="container">\n' +
-        '        <div class="row">\n' +
-        '            <div class="col-sm-4 text-left">\n' +
-        '                <h1 class="text-left">Browse Institutions</h1>\n' +
+        '        <div class="row" style="height: 10px;margin-left:-1px;">\n' +
+        '            <div class="col-sm-4" >\n' +
+        '                <h1 class="text-left" style="margin-left:-30px;">Browse Institutions</h1>\n' +
         '            </div>\n' +
         '            <div class="col-sm-8 inner-addon right-addon">\n' +
         '                <input name="search-institution" id="search-institution" type="text" class="form-control" placeholder="Search institutions">\n' +
@@ -162,11 +194,11 @@ var renderBrowseInstitutions = function(institutionDetails){
         '    </div>\n' +
         '    <hr>\n' +
         '</div>';
-    $('#collectionsInfo').append(header_search);
+    $('#collectionsInfo-header').append(header_search);
 
     //Now add table along with headers.
     var table= $('<table></table>').attr("id","institution-table").css("margin","auto").css("width","1100px");
-    $('#collectionsInfo').append(
+    $('#collectionsInfo-details').append(
         table
     );
     table = document.getElementById("institution-table");
@@ -177,7 +209,7 @@ var renderBrowseInstitutions = function(institutionDetails){
 
 
     var clickable_institution = function ( data, type, full, meta ) {
-        return '<a target="_blank" href="collections?browse-type=institution&institutionID=' + encodeURI(full["institution"]) + '">' + full["institution"] + '</a>';
+        return '<a target="_self" href="collections?browse-type=institution&institutionID=' + encodeURI(full["institution"]) + '">' + full["institution"] + '</a>';
     };
     var render_collection_count = function ( data, type, full, meta ) {
         return full["numCollections"];
@@ -214,8 +246,53 @@ The second one is a broad header presenting the information/logo about the insti
  */
 var renderInstitutionInfoHeader = function(institutionDetails){
 
-    //Extract institution detail and put it in the div appropriately.
+    var logoURL="https://toppng.com/uploads/preview/stanford-university-logo-stanford-logo-11563198738mb4vawsk4c.png";
+    var instName="Green Library";
+    var instAddressLine1="Green Library";
+    var instAddressLine2="Stanford California 94305-6004";
+    var instPhone="(650) 725-1161";
+    var instFax="(650) 723-8690";
+    var instMail="library@stanford.edu";
+    var instURL="www.library.stanford.edu";
+    var instInformation= 'Materials from other libraries, including Green Library, ' +
+        '    can now be picked up at the East Asia Library.  Additionally, patrons are now able to borrow materials ' +
+        '    from other libraries through Interlibrary Loan. On Tuesday September 01, the Stanford Libraries Science and ' +
+        '    Engineering Group hosted a one-hour information session for new graduate students in the STEM disciplines. ' +
+        '    ';
 
+
+    //Extract institution detail and put it in the div appropriately.
+    var header_skelton= $('<div class="instinfo-container">\n' +
+        '  <div class="row">\n' +
+        '    <div class="col-sm-3 d-flex">\n' +
+        ' <img alt="Qries" src="'+ logoURL +'"\n' +
+        '     style="object-fit:scale-down;margin:auto;height:150px;padding-right:50px;">\n' +
+        '     </div>\n' +
+        '    <div class="col-sm-3">\n' +
+        '      <span class="inst-heading"> '+ instName+'</span><br>\n' +
+        '      <span class="inst-address">'+instAddressLine1+'</span><br>\n' +
+        '      <span class="inst-address">'+instAddressLine2+'</span><br>\n' +
+        '<b class=inst-address style="font-weight:bold;color:black;">Phone:</b> <span class="inst-address">'+instPhone+'</span><br>\n' +
+        '     <b class=inst-address style="font-weight:bold;color:black;">Fax:</b>  <span class="inst-address">'+instFax+'</span><br>\n' +
+        '      <b class=inst-address style="font-weight:bold;color:black;">Email:</b> <span class="inst-address">'+instMail+'</span><br>\n' +
+        '      <a class="inst-address" href="www.library.stanford.edu">'+instURL+'</a><br>\n' +
+        '    </div>\n' +
+        '    <div class="col-sm-6  d-flex ">\n' +
+        '      <span class="inst-heading">Information about the institution  <span><br>\n' +
+        '  <p class="inst-address" style="text-align:justify;margin-right:10px">\n' +instInformation +
+        '  </p>\n' +
+        '  \n' +
+        '  </div>\n' +
+        '  </div>\n' +
+        '</div>');
+
+
+    //Add this div fragment as a child to institutionInfo
+    $('#institutionInfo').empty();
+    $('#institutionInfo').append(header_skelton);
+    //add a new line after this.
+    $('#institutionInfo').append('<br>');
+    //Also add 'Back to Browse Institution arrow button' under div back-to-institution-browse
 
 }
 
@@ -239,7 +316,8 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST', url: 'getCollectionDetails', datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 // fade_spinner_with_delay($spinner);
-                renderBrowseCollection(data, "Browse collections");
+                _collectionDetails=data;
+                renderBrowseCollection(data, "Browse collections",true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
     }else if(browseType=="institution" && institutionName && institutionName.trim() ){
@@ -255,7 +333,8 @@ $(document).ready(function() {
         //Second ajax call: For getting collection information for that institution
         $.ajax({
             type: 'POST', url: 'getCollectionDetails?institutionName='+institutionName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
-                renderBrowseCollection(data, "Collection details");
+                _collectionDetails=data;
+                renderBrowseCollection(data, "Collection details",true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
     }else if(browseType=="institution"){
