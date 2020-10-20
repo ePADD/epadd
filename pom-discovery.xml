@@ -150,6 +150,7 @@
 					<include>bootstrap/**</include>
 					<include>css/**</include>
 					<include>images/**</include>
+					<include>ajax/getCollectionDetails.jsp</include>
 					<include>ajax/getStatus.jsp</include>
 					<include>ajax/getCollectionDetails.jsp</include>
 					<include>ajax/cancel.jsp</include>
