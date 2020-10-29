@@ -153,7 +153,7 @@
 					<include>ajax/getStatus.jsp</include>
 					<include>ajax/getCollectionDetails.jsp</include>
 					<include>ajax/cancel.jsp</include>
-					<include>ajax/expandname.jsp</include>
+					<include>ajax/expand-name-new.jsp</include>
 					<include>ajax/downloadData.jsp</include>
 					<include>ajax/getHitTermDetails.jsp</include>
 					<include>ajax/jogPageInMessages.jsp</include>
