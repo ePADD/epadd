@@ -1428,6 +1428,10 @@ after maskEmailDomain.
             entitiesWithId.put(acr,new EmailRenderer.Entity(acr, authorisedEntities==null?null:authorisedEntities.get(acr),types));
         });
 
+        //Mask any email address present in the content of the message
+        if (ModeConfig.isPublicMode())
+            contents = Util.maskEmailDomain(contents);
+
         //don't want "more" button anymore
         String htmlContents;
         if (contents.length() > Config.MAX_TEXT_SIZE_TO_ANNOTATE) // don't try to annotate extraordinarily long messages, probably bad data, as discovered on RF archive
@@ -1435,8 +1439,6 @@ after maskEmailDomain.
         else
             htmlContents = annotate(ldoc, contents, date, docId, regexToHighlight, highlightTerms, entitiesWithId, IA_links, showDebugInfo);
 
-        if (ModeConfig.isPublicMode())
-            htmlContents = Util.maskEmailDomain(htmlContents);
 
         StringBuilder sb = new StringBuilder();
         sb.append(htmlContents);

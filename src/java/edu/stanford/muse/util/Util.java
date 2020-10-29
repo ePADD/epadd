@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@
  * a general set of utils by Sudheendra... don't introduce dependencies in this
  * file on ANY other libs
  * because it is used by multiple projects.
- * 
+ *
  * @author hangal
  */
 // warning: do not introduce package dependencies other than java.* classes in
@@ -50,7 +50,7 @@ import java.util.zip.ZipOutputStream;
  * a general set of utils by Sudheendra... don't introduce dependencies in this
  * file on ANY other libs
  * because it is used by multiple projects.
- * 
+ *
  * @author hangal
  */
 public class Util
@@ -67,6 +67,10 @@ public class Util
 	private static Pattern	emptyP	= null;
 	static {
 		emptyP = Pattern.compile("\\W*?\\w+.*");
+	}
+	private static Pattern maskEmailDomainP = null;
+	static {
+	        maskEmailDomainP = Pattern.compile("\\b([^@]*)@([\\S]*)\\b");
 	}
 
 	// truncates given string to max len, adding ellipsis or padding if
@@ -1469,25 +1473,25 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		return null;
 		/*
 		 * List<Pair<Date,Date>> intervals = new ArrayList<Pair<Date,Date>>();
-		 * 
+		 *
 		 * if (start.after(end)) // error
 		 * {
 		 * softAssert(false);
 		 * return intervals;
 		 * }
-		 * 
+		 *
 		 * if (start == null || end == null)
 		 * return intervals;
-		 * 
+		 *
 		 * Date windowEnd = end;
 		 * int windowEndMonth = end.get(Calendar.MONTH);
 		 * int windowEndYear = end.get(Calendar.YEAR);
-		 * 
+		 *
 		 * while (true)
 		 * {
 		 * if (windowEnd.before(start))
 		 * break;
-		 * 
+		 *
 		 * int windowStartMonth = windowEndMonth - windowSizeInMonths;
 		 * int windowStartYear = windowEndYear;
 		 * if (windowStartMonth < 0)
@@ -1496,16 +1500,16 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		 * month to 7. (windowStartMonth/12 is 0)
 		 * // e.g. if windowStartMonth is -15, we need to adjust year by 2 and
 		 * month to 9.
-		 * 
+		 *
 		 * int yearsToAdjust = 1+(windowStartMonth/12);
 		 * windowStartYear -= yearsToAdjust;
 		 * windowStartMonth += 12*yearsToAdjust;
 		 * }
-		 * 
+		 *
 		 * Calendar windowStart = new GregorianCalendar(windowStartYear,
 		 * windowStartMonth, 1, 0, 0, 0);
 		 * intervals.add(new Pair<Date, Date>(windowStart, windowEnd));
-		 * 
+		 *
 		 * // step window start
 		 * windowEndMonth -= stepSizeInMonths;
 		 * if (windowEndMonth < 0)
@@ -1515,7 +1519,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		 * windowEndYear -= yearsToAdjust;
 		 * windowEndMonth += 12*yearsToAdjust;
 		 * }
-		 * 
+		 *
 		 * windowEnd = new GregorianCalendar(windowEndYear, windowEndMonth, 1,
 		 * 0, 0, 0);
 		 * }
@@ -2451,7 +2455,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 			 * long secs = x % 60;
 			 * if (hours > 0)
 			 * formatter.format("%dh:", hours);
-			 * 
+			 *
 			 * formatter.format( "%02dm:", mins);
 			 * if (hours == 0 && mins == 0 && secs == 0)
 			 * secs = 1; // its embarassing to show 00:00s and then make people
@@ -2771,8 +2775,8 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 
 	public static String maskEmailDomain(String s)
 	{
-		//return s.replaceAll("\\b([A-Za-z0-9][A-Za-z0-9\\-_\\.]*)@[A-Za-z0-9][A-Za-z\\-0-9_]*(\\.[A-Za-z0-9][A-Za-z\\-0-9_]*)*\\.[A-Za-z]{2,4}\\b", "$1@...");
-		return s.replaceAll("\\b([^@]*)@([\\S]*)\\b", "$1@...");
+		return maskEmailDomainP.matcher(s).replaceAll("$1@...");
+		//return s.replaceAll("\\b([^@]*)@([\\S]*)\\b", "$1@...");
 
 	}
 
@@ -2797,7 +2801,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 
 	/**
 	 * Return list1 - list2. require that the elements must be sortable.
-	 * 
+	 *
 	 * @param list1
 	 * @param list2
 	 * @return
