@@ -4,6 +4,7 @@
 
 var isProcessingMode=false;
 var _collectionDetails;
+var _institutionDetails;
 var browseType; //either collection or institution.
 var institutionName;
 
@@ -151,7 +152,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
 
 };
 
-//Register method for search box..
+//Register method for search box..(search collection)
 $('body').on('keyup','#search-collection', function(e){
 
     var extractCollectionData = function(collection){
@@ -170,31 +171,55 @@ $('body').on('keyup','#search-collection', function(e){
         renderBrowseCollection(modCollectionDetails,"Browse Collections",false);
     }
 });
+//Register method for search box..(search Institution)
+$('body').on('keyup','#search-institution', function(e){
+
+    var extractInstitutionData = function(institution){
+        //Return a canonical (string)representation of the collection information. This will include everything that will be
+        //present in the collection metadata of a collection so that the filtering can be done easily on this data.
+        return institution.institution+"___"+institution.numCollections;
+    }
+    // get the content of the #search-institution text box.
+    var term = $(e.target).val();
+    // if term is not already quoted, quote it now
+    term = term.trim();
+    if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
+        //filter institutionDetails json data for the content written in this text box..
+        var modInstitutionDetails = _institutionDetails.filter(institution=>(extractInstitutionData(institution).toLowerCase().includes(term.toLowerCase())));
+        //Call renderBrwoseInstitution() with this modified data ..
+        renderBrowseInstitutions(modInstitutionDetails,false);
+    }
+});
 /*This method renders the page when user clicks on 'Browse institutions' tab on navbar. It renders a header with search bar and the
 institution details in form of a table.
-redrawComplete is a boolean variable that controls if the search header should also get redrawn or not. This is used to
+redrawComplete is a boolean variable that controls if the search header should also get redrawn or not. This is used in redrawing the
+table when user writes something in the search-institution box.
  */
 var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
-    //clear the div.
-    $('#collectionsInfo-header').empty();
-    $('#collectionsInfo-details').empty();
-
-    //Add the header string and the search bar first .
-    var header_search = '<div style="margin:auto;width:1100px;">\n' +
-        '    <div class="container">\n' +
-        '        <div class="row" style="height: 10px;margin-left:-1px;">\n' +
-        '            <div class="col-sm-4" >\n' +
-        '                <h1 class="text-left" style="margin-left:-30px;">Browse Institutions</h1>\n' +
-        '            </div>\n' +
-        '            <div class="col-sm-8 inner-addon right-addon">\n' +
-        '                <input name="search-institution" id="search-institution" type="text" class="form-control" placeholder="Search institutions">\n' +
-        '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '    </div>\n' +
-        '    <hr>\n' +
-        '</div>';
-    $('#collectionsInfo-header').append(header_search);
+    if(redrawComplete) {
+        //clear the div.
+        // append the element as a child under "collectionsInfo" div (this div is on the page collections.jsp)
+        $('#collectionsInfo-header').empty();
+        $('#collectionsInfo-details').empty();
+        //Add the header string and the search bar first .
+        var header_search = '<div style="margin:auto;width:1100px;">\n' +
+            '    <div class="container">\n' +
+            '        <div class="row" style="height: 10px;margin-left:-1px;">\n' +
+            '            <div class="col-sm-4" >\n' +
+            '                <h1 class="text-left" style="margin-left:-30px;">Browse Institutions</h1>\n' +
+            '            </div>\n' +
+            '            <div class="col-sm-8 inner-addon right-addon">\n' +
+            '                <input name="search-institution" id="search-institution" type="text" class="form-control" placeholder="Search institutions">\n' +
+            '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
+            '            </div>\n' +
+            '        </div>\n' +
+            '    </div>\n' +
+            '    <hr>\n' +
+            '</div>';
+        $('#collectionsInfo-header').append(header_search);
+    }else{
+        $('#collectionsInfo-details').empty();
+    }
 
     //Now add table along with headers.
     var table= $('<table></table>').attr("id","institution-table").css("margin","auto").css("width","1100px");
@@ -203,9 +228,9 @@ var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
     );
     table = document.getElementById("institution-table");
     var row = table.createTHead().insertRow(0);
-    row.insertCell(0).innerText = "";
-    row.insertCell(1).innerText = "Institution name";
-    row.insertCell(2).innerText = "No. of collections";
+    // row.insertCell(0).innerText = "";
+    row.insertCell(0).innerText = "Institution name";
+    row.insertCell(1).innerText = "No. of collections";
 
 
     var clickable_institution = function ( data, type, full, meta ) {
@@ -221,27 +246,28 @@ var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
             data: institutionDetails,
             pagingType: 'simple',
             searching: false, paging: false, info: false,
-            columns: [{data: 'id', defaultContent:''},
+            columns: [/*{data: 'id', defaultContent:''},*/
                 { data: 'institution' },
                 { data: 'numCollections' }
             ],
-            columnDefs: [{targets: 0,searchable: false, orderable: false},
-                {targets:1, searchable: false,orderable: false,render:clickable_institution},
-                {targets:2, searchable: false, orderable: false,render: render_collection_count,className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
+            columnDefs: [/*{targets: 0,searchable: false, orderable: false},*/
+                {targets:0, width:"200px", searchable: false,orderable: true,render:clickable_institution,className: "dt-left"},
+                {targets:1,  searchable: false, orderable: true,render: render_collection_count,className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
             //order:[[1, 'asc']], // col 1 (date), ascending
             //fnInitComplete: function() { $('#attachments').fadeIn();}
         });
-        t.on( 'order.dt search.dt', function () {
+        /*t.on( 'order.dt search.dt', function () {
             t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
                 cell.innerHTML = i+1;
                 t.cell(cell).invalidate('dom');
             } );
-        } ).draw();
+        } ).draw();*/
+        t.draw();
 
 }
 
-/*This method renders 2 ui elements when user clicks on a particular institution to browse the collections corresponding to that institution.
-The first one is "Back to browse institution page which, when click, leads to collectiosn.jsp?browsetype=institution.
+/*This method renders 2 ui elements when user clicks on a particular repository to browse the collections corresponding to that repository.
+The first one is "Back to browse repository page which, when click, leads to collectiosn.jsp?browsetype=repository.
 The second one is a broad header presenting the information/logo about the institution.
  */
 var renderInstitutionInfoHeader = function(institutionDetails){
@@ -342,7 +368,8 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST', url: 'getInstitutionDetails', datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 // fade_spinner_with_delay($spinner);
-                renderBrowseInstitutions(data);
+                _institutionDetails=data;
+                renderBrowseInstitutions(data,true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
     }
