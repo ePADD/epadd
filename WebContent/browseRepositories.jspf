@@ -2,15 +2,21 @@
 
 
 <%
-    //Check if the institution name was also passed as an argument.
-    //If yes then set the institutionType JS variable as well.
+    //Check if the repository name was also passed as an argument.
+    //If yes then set the browseType JS variable as well.
+    String repositoryName = request.getParameter("repositoryID");
+    //Check if institution name is also given, if yes then the table should display repositories of only those institutions.
     String institutionName = request.getParameter("institutionID");
+
 
 %>
 <script>
     //enable browse-by-institution as nav-active
-    browseType='institution';
-    <% if(!Util.nullOrEmpty(institutionName)){%>
+    browseType='repository';
+    <% if(!Util.nullOrEmpty(repositoryName)){%>
+        repositoryName='<%=repositoryName%>';
+    <%}
+    if(!Util.nullOrEmpty(institutionName)){%>
         institutionName='<%=institutionName%>';
     <%}%>
     epadd.nav_mark_active('<%=browseRepository%>');

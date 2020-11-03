@@ -11,12 +11,12 @@
 
 
 
-String institutionName= request.getParameter("institutionName");
-if(!Util.nullOrEmpty(institutionName)){
+String repositoryName= request.getParameter("repositoryName");
+if(!Util.nullOrEmpty(repositoryName)){
     //Return only the information related to this institution.
-    //Fill the fields.. institutionName, logo url, address, information, phone, fax, email, website
+    //Fill the fields.. repositoryName, logo url, address, information, phone, fax, email, website
     JSONObject collectionInfo = new JSONObject();
-    collectionInfo.put("institutionName",institutionName);
+    collectionInfo.put("repositoryName",repositoryName);
     collectionInfo.put("logoURL","https://toppng.com/uploads/preview/stanford-university-logo-stanford-logo-11563198738mb4vawsk4c.png");
     collectionInfo.put("email","jschne@stanford.edu");
     collectionInfo.put("addressLine1","Green Library");
@@ -31,9 +31,10 @@ if(!Util.nullOrEmpty(institutionName)){
     //and return;
     return;
 }
-
-//else return the information about all institutions..For now we only return institution name and the number of collection for each institution.
-    JSONArray institutions = new JSONArray();
+//If institution name is given then return all repositories related to this institution.
+String institutionName = request.getParameter("institutionName");
+//else return the information about all repositories..
+    JSONArray repositories = new JSONArray();
 	 String modeBaseDir = "";
       if (ModeConfig.isProcessingMode())
           modeBaseDir = Config.REPO_DIR_PROCESSING;
@@ -70,6 +71,12 @@ Map<String,RepositoryInfo> repositoryInfoMap = new LinkedHashMap<>();
 
                   Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   if (cm != null) {
+                      //if institution name is non null then process this collection only if it belongs to the given institution.
+                      if(!Util.nullOrEmpty(institutionName)){
+                          if(!cm.institution.toLowerCase().equals(institutionName.toLowerCase())){
+                              continue; //skip this collection
+                          }
+                      }
                        if(!Util.nullOrEmpty(cm.repository)){
                             if(!repositoryInfoMap.containsKey(cm.repository)){
                                repositoryInfoMap.put(cm.repository,new RepositoryInfo(cm.repository,cm.institution));
@@ -88,12 +95,12 @@ Map<String,RepositoryInfo> repositoryInfoMap = new LinkedHashMap<>();
         collectionInfo.put("repository",repositoryInfoMap.get(institution).repositoryName);
         collectionInfo.put("numMessages",repositoryInfoMap.get(institution).numberOfMessages);
         collectionInfo.put("numCollections",repositoryInfoMap.get(institution).numberOfCollections);
-        institutions.put(collectionInfo);
+        repositories.put(collectionInfo);
 
     }
 
 }
 
-response.getWriter().write(institutions.toString());
+response.getWriter().write(repositories.toString());
 
 %>
