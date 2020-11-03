@@ -6,7 +6,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig"%>
 <%@ page import="edu.stanford.muse.Config"%>
 <%@ page import="java.io.File"%>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.util.Util"%><%@ page import="edu.stanford.epadd.InstitutionInfo"%><%@ page import="java.util.LinkedHashMap"%><%@ page import="java.util.Map"%>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.util.Util"%><%@ page import="edu.stanford.epadd.RepositoryInfo"%><%@ page import="java.util.LinkedHashMap"%><%@ page import="java.util.Map"%>
 <%
 
 
@@ -44,7 +44,7 @@ if(!Util.nullOrEmpty(institutionName)){
 /*
 Read all collections and crerate a map of institution name, count of archives from that institution, institution address, Information about the institution.
  */
-Map<String,InstitutionInfo> institutionInfoMap = new LinkedHashMap<>();
+Map<String,RepositoryInfo> repositoryInfoMap = new LinkedHashMap<>();
       File topFile = new File(modeBaseDir);
         JSPHelper.log.info("Reading collections from: " + modeBaseDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
@@ -70,22 +70,24 @@ Map<String,InstitutionInfo> institutionInfoMap = new LinkedHashMap<>();
 
                   Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   if (cm != null) {
-                       if(!Util.nullOrEmpty(cm.institution)){
-                            if(!institutionInfoMap.containsKey(cm.institution)){
-                               institutionInfoMap.put(cm.institution,new InstitutionInfo(cm.institution));
+                       if(!Util.nullOrEmpty(cm.repository)){
+                            if(!repositoryInfoMap.containsKey(cm.repository)){
+                               repositoryInfoMap.put(cm.repository,new RepositoryInfo(cm.repository,cm.institution));
                             }
-                            institutionInfoMap.get(cm.institution).numberOfCollections+=1;
-
+                            repositoryInfoMap.get(cm.repository).numberOfCollections+=1;
+                            repositoryInfoMap.get(cm.repository).numberOfMessages+=cm.nIncomingMessages+cm.nOutgoingMessages;
                        }
 
                   }
         }
     }
-    //Now iterate over institutionInfoMap and fill in the json object with the information about institution and their collections.
-    for(String institution: institutionInfoMap.keySet()){
+    //Now iterate over repositoryInfoMap and fill in the json object with the information about institution and their collections.
+    for(String institution: repositoryInfoMap.keySet()){
         JSONObject collectionInfo = new JSONObject();
-        collectionInfo.put("institution",institutionInfoMap.get(institution).institutionName);
-        collectionInfo.put("numCollections",institutionInfoMap.get(institution).numberOfCollections);
+        collectionInfo.put("institution",repositoryInfoMap.get(institution).institutionName);
+        collectionInfo.put("repository",repositoryInfoMap.get(institution).repositoryName);
+        collectionInfo.put("numMessages",repositoryInfoMap.get(institution).numberOfMessages);
+        collectionInfo.put("numCollections",repositoryInfoMap.get(institution).numberOfCollections);
         institutions.put(collectionInfo);
 
     }

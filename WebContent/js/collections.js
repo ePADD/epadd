@@ -4,8 +4,9 @@
 
 var isProcessingMode=false;
 var _collectionDetails;
-var _institutionDetails;
-var browseType; //either collection or institution.
+var _repositoryDetails;
+var browseType; //either collection or repository.
+var repositoryName;
 var institutionName;
 
 /*This method renders the page when user clicks on 'Browse collections' tab on navbar. It renders a header with search bar and the
@@ -47,6 +48,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         var shortTitle = collectionInfo.shortTitle;
         var dataDir =  collectionInfo.dataDir;
         var landingImageURL = collectionInfo.landingImageURL;
+        var institution = collectionInfo.institutionName;
         var archivecard = $('<div></div>');
         archivecard = $(archivecard).addClass("archive-card").attr("data-dir",dataDir);
         var landingImage = $('<div></div>');
@@ -77,8 +79,10 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         );
 
         landingImageText = $(landingImageText).prepend(
-            $('<div></div>').addClass("epadd-separator")
+            $('<div></div>').addClass("epadd-separator").css("margin","5px 0px")
         ).prepend(
+            $('<a></a>').addClass("inner-landing-image-text-institution").attr("href","collections?browse-type=repository&institutionName="+institution).text("("+institution+")")
+        ).prepend($('<br>')).prepend(
             $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
                 .text(shortTitle)
         );
@@ -158,7 +162,7 @@ $('body').on('keyup','#search-collection', function(e){
     var extractCollectionData = function(collection){
         //Return a canonical (string)representation of the collection information. This will include everything that will be
         //present in the collection metadata of a collection so that the filtering can be done easily on this data.
-        return collection.shortDescription+"___"+collection.shortTitle;
+        return collection.shortDescription+"___"+collection.shortTitle+"___"+collection.institutionName;
     }
     // get the content of the #search-collection text box.
     var term = $(e.target).val();
@@ -177,7 +181,7 @@ $('body').on('keyup','#search-institution', function(e){
     var extractInstitutionData = function(institution){
         //Return a canonical (string)representation of the collection information. This will include everything that will be
         //present in the collection metadata of a collection so that the filtering can be done easily on this data.
-        return institution.institution+"___"+institution.numCollections;
+        return institution.institution+"___"+institution.repository;
     }
     // get the content of the #search-institution text box.
     var term = $(e.target).val();
@@ -185,9 +189,9 @@ $('body').on('keyup','#search-institution', function(e){
     term = term.trim();
     if (!(term && term.length > 2 && term.charAt(0) == '"' && term.charAt(term.length-1) == '"')) {
         //filter institutionDetails json data for the content written in this text box..
-        var modInstitutionDetails = _institutionDetails.filter(institution=>(extractInstitutionData(institution).toLowerCase().includes(term.toLowerCase())));
+        var modInstitutionDetails = _repositoryDetails.filter(repository=>(extractInstitutionData(repository).toLowerCase().includes(term.toLowerCase())));
         //Call renderBrwoseInstitution() with this modified data ..
-        renderBrowseInstitutions(modInstitutionDetails,false);
+        renderBrowseRepositories(modInstitutionDetails,false);
     }
 });
 /*This method renders the page when user clicks on 'Browse institutions' tab on navbar. It renders a header with search bar and the
@@ -195,7 +199,7 @@ institution details in form of a table.
 redrawComplete is a boolean variable that controls if the search header should also get redrawn or not. This is used in redrawing the
 table when user writes something in the search-institution box.
  */
-var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
+var renderBrowseRepositories = function(institutionDetails, redrawComplete){
     if(redrawComplete) {
         //clear the div.
         // append the element as a child under "collectionsInfo" div (this div is on the page collections.jsp)
@@ -206,10 +210,10 @@ var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
             '    <div class="container">\n' +
             '        <div class="row" style="height: 10px;margin-left:-1px;">\n' +
             '            <div class="col-sm-4" >\n' +
-            '                <h1 class="text-left" style="margin-left:-30px;">Browse Institutions</h1>\n' +
+            '                <h1 class="text-left" style="margin-left:-30px;">Browse Repositories</h1>\n' +
             '            </div>\n' +
             '            <div class="col-sm-8 inner-addon right-addon">\n' +
-            '                <input name="search-institution" id="search-institution" type="text" class="form-control" placeholder="Search institutions">\n' +
+            '                <input name="search-institution" id="search-institution" type="text" class="form-control" placeholder="Search repositories">\n' +
             '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
             '            </div>\n' +
             '        </div>\n' +
@@ -229,15 +233,24 @@ var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
     table = document.getElementById("institution-table");
     var row = table.createTHead().insertRow(0);
     // row.insertCell(0).innerText = "";
-    row.insertCell(0).innerText = "Institution name";
-    row.insertCell(1).innerText = "No. of collections";
+    row.insertCell(0).innerText = "Repository name";
+    row.insertCell(1).innerText = "Institution name";
+    row.insertCell(2).innerText = "# collections";
+    row.insertCell(3).innerText = "# total messages";
 
+    var clickable_repository = function ( data, type, full, meta ) {
+        return '<a target="_self" href="collections?browse-type=repository&repositoryID=' + encodeURI(full["repository"]) + '">' + full["repository"] + '</a>';
+    };
+    var nonclickable_institution = function ( data, type, full, meta ) {
+        //return '<a target="_self" href="collections?browse-type=institution&institutionID=' + encodeURI(full["institution"]) + '">' + full["institution"] + '</a>';
+        return full["institution"];
 
-    var clickable_institution = function ( data, type, full, meta ) {
-        return '<a target="_self" href="collections?browse-type=institution&institutionID=' + encodeURI(full["institution"]) + '">' + full["institution"] + '</a>';
     };
     var render_collection_count = function ( data, type, full, meta ) {
         return full["numCollections"];
+    };
+    var render_msg_count = function ( data, type, full, meta ) {
+        return full["numMessages"];
     };
 
 
@@ -247,13 +260,17 @@ var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
             pagingType: 'simple',
             searching: false, paging: false, info: false,
             columns: [/*{data: 'id', defaultContent:''},*/
+                { data: 'repository' },
                 { data: 'institution' },
-                { data: 'numCollections' }
+                { data: 'numCollections' },
+                { data: 'numMessages' }
             ],
             columnDefs: [/*{targets: 0,searchable: false, orderable: false},*/
-                {targets:0, width:"200px", searchable: false,orderable: true,render:clickable_institution,className: "dt-left"},
-                {targets:1,  searchable: false, orderable: true,render: render_collection_count,className: "dt-right"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
-            //order:[[1, 'asc']], // col 1 (date), ascending
+                {targets:0, width:"200px", searchable: false,orderable: true,render:clickable_repository,className: "dt-left"},
+                {targets:1,  searchable: false, orderable: true,render: nonclickable_institution,className: "dt-center"}, // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
+    {targets:2, width:"200px", searchable: false,orderable: true,render:render_collection_count,className: "dt-center"},
+    {targets:3,  searchable: false, orderable: true,render: render_msg_count,className: "dt-center"}], // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)
+    //order:[[1, 'asc']], // col 1 (date), ascending
             //fnInitComplete: function() { $('#attachments').fadeIn();}
         });
         /*t.on( 'order.dt search.dt', function () {
@@ -270,7 +287,7 @@ var renderBrowseInstitutions = function(institutionDetails, redrawComplete){
 The first one is "Back to browse repository page which, when click, leads to collectiosn.jsp?browsetype=repository.
 The second one is a broad header presenting the information/logo about the institution.
  */
-var renderInstitutionInfoHeader = function(institutionDetails){
+var renderRepositoryInfoHeader = function(repositoryDetails){
 
     var logoURL="https://toppng.com/uploads/preview/stanford-university-logo-stanford-logo-11563198738mb4vawsk4c.png";
     var instName="Green Library";
@@ -346,30 +363,39 @@ $(document).ready(function() {
                 renderBrowseCollection(data, "Browse collections",true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
-    }else if(browseType=="institution" && institutionName && institutionName.trim() ){
-        // Case 2: "InstitutionSpecificCollectiosn": If browseType="institution" and institutionName=nonempty then get all collections for this particular institution. -- render both, institution information and the collection details
-        // using renderBrowseCollectionByInstitution method)
-        //First ajax call: For getting institution information
+    }else if(browseType=="repository" && repositoryName && repositoryName.trim() ){
+        // Case 2: "RepositorySpecificCollections": If browseType="repository" and repositoryName=nonempty then get all collections for this particular repository. -- render both, repository information and the collection details
+        // using renderBrowseCollectionByRepository method)
+        //First ajax call: For getting repository information
         $.ajax({
-            type: 'POST', url: 'getInstitutionDetails?institutionName='+institutionName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
+            type: 'POST', url: 'getRepositoryDetails?repositoryName='+repositoryName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 // fade_spinner_with_delay($spinner);
-                renderInstitutionInfoHeader(data);
+                renderRepositoryInfoHeader(data);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
-        //Second ajax call: For getting collection information for that institution
+        //Second ajax call: For getting collection information for that repository
         $.ajax({
-            type: 'POST', url: 'getCollectionDetails?institutionName='+institutionName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
+            type: 'POST', url: 'getCollectionDetails?repositoryName='+repositoryName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 _collectionDetails=data;
                 renderBrowseCollection(data, "Collection details",true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
-    }else if(browseType=="institution"){
-        // Case 3: "AllInstitutions": If browseType="institution" and institutionName=null then get all institutions' details. - render as table (using renderBrowseInstitutions method)
+    }else if(browseType=="repository" && institutionName && institutionName.trim() ){
+        // Case 3: "InstitutionSpecificRepositories": If browseType="repository" and institutionName=non null then get all repositories for the given institution. - render as table (using renderBrowseRepositories method)
         $.ajax({
-            type: 'POST', url: 'getInstitutionDetails', datatype: 'json',  success: function (data, textStatus, jqxhr) {
+            type: 'POST', url: 'getRepositoryDetails?institutionName='+institutionName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 // fade_spinner_with_delay($spinner);
-                _institutionDetails=data;
-                renderBrowseInstitutions(data,true);
+                _repositoryDetails=data;
+                renderBrowseRepositories(data,true);
+            }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
+        });
+    }else if(browseType=="repository"){
+        // Case 4: "All repositories": If browseType="repository" and repositoryName=null then get all repositories' details. - render as table (using renderBrowseRepositories method)
+        $.ajax({
+            type: 'POST', url: 'getRepositoryDetails', datatype: 'json',  success: function (data, textStatus, jqxhr) {
+                // fade_spinner_with_delay($spinner);
+                _repositoryDetails=data;
+                renderBrowseRepositories(data,true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
     }

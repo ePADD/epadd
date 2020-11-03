@@ -29,6 +29,14 @@ html {
 	display: inline-flex;
 }
 
+.inner-landing-image-text-institution {
+	min-height: 30px;
+	display: inline-flex;
+	font-size: 15px;
+	font-weight: 600;
+	color: firebrick;
+}
+
 @media (min-width:768px) {
 .lead {
 	font-size: 21px

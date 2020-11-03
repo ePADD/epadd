@@ -13,6 +13,6 @@
     <% if(!Util.nullOrEmpty(institutionName)){%>
         institutionName='<%=institutionName%>';
     <%}%>
-    epadd.nav_mark_active('<%=browseInstitution%>');
+    epadd.nav_mark_active('<%=browseRepository%>');
 </script>
 

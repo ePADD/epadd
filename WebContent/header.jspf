@@ -26,7 +26,7 @@
 	String browse = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse");
 	String search = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-search");
 	String browseCollection = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse-collection");
-	String browseInstitution = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse-institution");
+	String browseRepository = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-browse-repository");
 	String export = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-export");
 	String save = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-save");
 	String authorities = edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "browse-top.title-authorities");
@@ -109,7 +109,7 @@
 			} else {
 				if (ModeConfig.isDiscoveryMode()) { %>
 					<li id="browse-collection-tab" style="display:inline" ><a href="collections?browse-type=collection"><%=browseCollection%></a></li>
-					<li id="browse-institution-tab" style="display:inline"><a href="collections?browse-type=institution"><%=browseInstitution%></a></li>
+					<li id="browse-repository-tab" style="display:inline"><a href="collections?browse-type=repository"><%=browseRepository%></a></li>
 					<li id="cross-collection-search" style="display:inline"><a href="cross-collection-search-query"><%=search%></a></li>
 				<% }
 			}

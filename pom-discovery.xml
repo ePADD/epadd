@@ -119,7 +119,7 @@
 					<include>browseMessages.jspf</include>
 					<include>browseAttachments.jspf</include>
 					<include>browseCollections.jspf</include>
-					<include>browseInstitutions.jspf</include>
+					<include>browseRepositories.jspf</include>
 					<include>search-query.jsp</include>
 					<include>advanced-search.jsp</include>
 					<include>version.jsp</include>
@@ -152,7 +152,7 @@
 					<include>bootstrap/**</include>
 					<include>css/**</include>
 					<include>images/**</include>
-					<include>ajax/getInstitutionDetails.jsp</include>
+					<include>ajax/getRepositoryDetails.jsp</include>
 					<include>ajax/getCollectionDetails.jsp</include>
 					<include>ajax/getStatus.jsp</include>
 					<include>ajax/cancel.jsp</include>

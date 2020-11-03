@@ -70,7 +70,7 @@
         if(browseType.toLowerCase().equals("collection")){%>
                 <%@include file="browseCollections.jspf"%>
         <%}else{%>
-                <%@include file="browseInstitutions.jspf"%>
+                <%@include file="browseRepositories.jspf"%>
         <%}
 
       String modeBaseDir = "";

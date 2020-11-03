@@ -487,12 +487,12 @@
 
 
 	<servlet>
-		<servlet-name>getInstitutionDetails</servlet-name>
-		<jsp-file>/ajax/getInstitutionDetails.jsp</jsp-file>
+		<servlet-name>getRepositoryDetails</servlet-name>
+		<jsp-file>/ajax/getRepositoryDetails.jsp</jsp-file>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>getInstitutionDetails</servlet-name>
-		<url-pattern>/getInstitutionDetails</url-pattern>
+		<servlet-name>getRepositoryDetails</servlet-name>
+		<url-pattern>/getRepositoryDetails</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
