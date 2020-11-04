@@ -6,7 +6,7 @@
     //If yes then set the browseType JS variable as well.
     String repositoryName = request.getParameter("repositoryID");
     //Check if institution name is also given, if yes then the table should display repositories of only those institutions.
-    String institutionName = request.getParameter("institutionID");
+    String institutionName = request.getParameter("institutionName");
 
 
 %>
