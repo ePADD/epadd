@@ -34,7 +34,7 @@ html {
 	display: inline-flex;
 	font-size: 15px;
 	font-weight: 600;
-	color: firebrick;
+	color: black;
 }
 
 @media (min-width:768px) {

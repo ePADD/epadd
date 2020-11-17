@@ -171,7 +171,9 @@
 					<% } %>
 <!--					<li><a target="_blank" href="epadd-settings"><i class="menu-icon fa fa-asterisk"></i>ePADD mode</a></li> -->
 					<li><a id="about" href="about"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.about-epadd")%></a></li>
-		 		</ul>
+					<li><a id="contactus" href="contactus"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.contactus-epadd")%></a></li>
+
+				</ul>
 	 		</li>
 		</ul>
 	</div>

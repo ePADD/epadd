@@ -636,6 +636,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>contactus</servlet-name>
+		<jsp-file>/contactus.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>contactus</servlet-name>
+		<url-pattern>/contactus</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>report</servlet-name>
 		<jsp-file>/report.jsp</jsp-file>
 	</servlet>

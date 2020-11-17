@@ -16,6 +16,15 @@ redrawComplete is a boolean argument which controls if the header (header string
 This is used to control the redrawing of collection tiles when user search something in the searchbox.
  */
 var renderBrowseCollection = function(collectionDetails, headerstring, redrawComplete){
+    //First, sort collectionDetails based on the lastname, shortname of shorttitle. Although we don't yet enforce that the shortTitle
+    //should be in the format of first name last name still we are adding it as a feature should someone want to use it for ordering of
+    //collection tiles.
+    collectionDetails = collectionDetails.sort(function(a,b) {
+        var shortTitle1 = a.shortTitle.trim().split(" ").splice(-1);
+        var shortTitle2 = b.shortTitle.trim().split(" ").splice(-1);
+        (shortTitle1 < shortTitle2) ? -1 : ((shortTitle1 > shortTitle2) ? 1 : 0)
+    });
+
     //read from collectionDetails object array and set up collection tiles.
     //1. Iterate over every element of collectionDetails.
     //2. Construct the element to be added
@@ -81,7 +90,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         landingImageText = $(landingImageText).prepend(
             $('<div></div>').addClass("epadd-separator").css("margin","5px 0px")
         ).prepend(
-            $('<a></a>').addClass("inner-landing-image-text-institution").attr("href","collections?browse-type=repository&institutionName="+institution).text("("+institution+")")
+            $('<a></a>').addClass("inner-landing-image-text-institution").attr("href","collections?browse-type=repository&institutionName="+institution).text(institution)
         ).prepend($('<br>')).prepend(
             $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
                 .text(shortTitle)

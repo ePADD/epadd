@@ -146,6 +146,7 @@
 					<include>getArchive.jspf</include>
 					<include>index.jsp</include>
 					<include>about.jsp</include>
+					<include>contactus.jsp</include>
 					<include>LICENSES.txt</include>
 					<include>WEB-INF/**</include>
 					<include>js/**</include>
