@@ -89,8 +89,6 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
 
         landingImageText = $(landingImageText).prepend(
             $('<div></div>').addClass("epadd-separator").css("margin","5px 0px")
-        ).prepend(
-            $('<a></a>').addClass("inner-landing-image-text-institution").attr("href","collections?browse-type=repository&institutionName="+institution).text(institution)
         ).prepend($('<br>')).prepend(
             $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
                 .text(shortTitle)
@@ -98,14 +96,26 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
 
         //landingImageText = $(landingImageText)
 
+        var institutionNameDiv = $('<div></div>').append(
+            '<span class="icon" style="font-size: 20px;color: brown;margin-left: 10px;"><i class="fa fa-university"></i></span>'
+        ).append(
+            $('<a></a>')
+                .addClass("inner-landing-image-text-institution")
+                .attr("href","collections?browse-type=repository&institutionName="+institution)
+                .append(
+                    $('<div></div>').text(institution)
+                )
+        );
         //add landingImage and landingImageText under archiveCard as children which is appended to collectionsInfo div. (If processing mode then add edit image button as well)
         if(isProcessingMode)
             $('#collectionsInfo-details').append(
-                archivecard.append(landingImage.append(landingEditImage)).append(landingImageText)
+                archivecard.append(landingImage.append(landingEditImage)).append(landingImageText).append(institutionNameDiv)
             );
         else
             $('#collectionsInfo-details').append(
-                archivecard.append(landingImage).append(landingImageText)
+                archivecard.append(landingImage).append(landingImageText).append(
+                    institutionNameDiv
+                )
             );
 
         if(isProcessingMode){//Have this function only if it is processing mode.
