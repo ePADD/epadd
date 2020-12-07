@@ -29,8 +29,8 @@ import edu.stanford.muse.exceptions.NoDefaultFolderException;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.DummyNERModel;
+import edu.stanford.muse.ner.model.NBModel;
 import edu.stanford.muse.ner.model.NERModel;
-import edu.stanford.muse.ner.model.SequenceModel;
 import edu.stanford.muse.util.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -394,7 +394,7 @@ public class JSPHelper {
 
         //perform entity IE related tasks only if the message text is available
         if (downloadMessageText) {
-            String modelFile = SequenceModel.MODEL_FILENAME;
+            String modelFile = NBModel.MODEL_FILENAME;
             NERModel nerModel=null;
             //=(SequenceModel) session.getAttribute("ner");
             //session.setAttribute("statusProvider", new StaticStatusProvider("Loading openNLPNER sequence model from resource: " + modelFile + "..."));
@@ -405,7 +405,7 @@ public class JSPHelper {
                     nerModel = new DummyNERModel();
                 } else {
                     log.info("Loading openNLPNER sequence model from: " + modelFile + " ...");
-                    nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
+                    nerModel = NBModel.loadModelFromRules(NBModel.MODEL_FILENAME);
                 }
             }
             if (nerModel == null) {

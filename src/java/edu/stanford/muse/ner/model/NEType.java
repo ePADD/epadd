@@ -148,6 +148,13 @@ public class NEType {
             return type.parent();
     }
 
+    public static NEType.Type getTypeForDisplayCode(String display){
+        for(Type etype : NEType.dbpediaTypesMap.keySet()){
+            if(etype.getDisplayName().toLowerCase().equals(display.toLowerCase()))
+                return etype;
+        }
+        return null;
+    }
     public static NEType.Type getCoarseType(Short ct){
         return getCoarseType(getTypeForCode(ct));
     }

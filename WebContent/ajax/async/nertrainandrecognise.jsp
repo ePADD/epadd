@@ -12,7 +12,6 @@
 
 <%@page language="java" import="org.json.*"%>
 <%@ page import="java.io.File" %>
-<%@ page import="edu.stanford.muse.ner.model.SequenceModel" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.Config" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
@@ -20,6 +19,8 @@
 <%@ page import="com.google.common.collect.Multimap" %>
 <%@ page import="edu.stanford.epadd.util.OperationInfo" %>
 <%@ page import="java.util.function.Consumer" %>
+<%@ page import="edu.stanford.muse.ner.model.NBModel" %>
+<%@ page import="edu.stanford.muse.ner.model.NERModel" %>
 
 <%
 
@@ -86,12 +87,12 @@
         if (archive != null) {
             try {
                 String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
-                String modelFile = SequenceModel.RULES_DIRNAME;
-                SequenceModel nerModel = null;
+                String modelFile = NBModel.MODEL_FILENAME;
+                NERModel nerModel = null;
 //        = (SequenceModel) session.getAttribute("ner");
                 session.setAttribute("statusProvider", new StaticStatusProvider("Loading openNLPNER sequence model from: " + modelFile + "..."));
                 JSPHelper.log.info("Loading openNLPNER sequence model from: " + modelFile + " ...");
-                nerModel = SequenceModel.loadModelFromRules(SequenceModel.RULES_DIRNAME);
+                nerModel = NBModel.loadModelFromRules(NBModel.MODEL_FILENAME);
 
                 if (nerModel == null) {
                     JSPHelper.log.error("Could not load openNLPNER model from: " + modelFile);

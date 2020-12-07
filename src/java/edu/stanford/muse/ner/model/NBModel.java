@@ -49,7 +49,7 @@ import java.util.zip.GZIPOutputStream;
  */
 
 public class NBModel implements NERModel, Serializable {
-    public static String MODEL_FILENAME = "SeqModel.ser.gz";
+    public static String MODEL_FILENAME = "NBModel.txt";
     private static final String GAZETTE_FILE = "gazettes.ser.gz";
     public static final String RULES_DIRNAME = "rules";
     private static final long serialVersionUID = 1L;
@@ -57,9 +57,14 @@ public class NBModel implements NERModel, Serializable {
     //public static final int MIN_NAME_LENGTH = 3, MAX_NAME_LENGTH = 100;
     private static FileWriter fdw = null;
     private static Tokenizer tokenizer = new CICTokenizer();
-
+    private static String PROBABILITY_CLASS_SEPARATOR="##############################";
     private static final boolean DEBUG = false;
     static final short UNKNOWN_TYPE = -10;
+
+    //Variables to hold P(x/C) and P(C).
+    public Map<String, Map<NEType.Type,Float>> conditionalProb = new LinkedHashMap<>();
+    public Map<NEType.Type, Float> classProb = new LinkedHashMap<>();
+
 
     private static final Random rand = new Random(1);
 
@@ -88,465 +93,6 @@ public class NBModel implements NERModel, Serializable {
     @Override
     public void setTokenizer(Tokenizer tokenizer){
         NBModel.tokenizer = tokenizer;
-    }
-
-    private static void writeModelAsRules(NBModel model) {
-        try {
-            NEType.Type[] ats = NEType.getAllTypes();
-            //make cache dir if it does not exist
-            String rulesDir = Config.SETTINGS_DIR + File.separator + "rules";
-            if (!new File(rulesDir).exists()) {
-                boolean mkdir = new File(rulesDir).mkdir();
-                if (!mkdir) {
-                    log.fatal("Cannot create rules dir. " + rulesDir + "\n" +
-                            "Please make sure you have access rights and enough disk space\n" +
-                            "Cannot proceed, exiting....");
-                    return;
-                }
-            }
-            writeObjectAsSerGZ(model.gazettes, rulesDir+File.separator+ NBModel.GAZETTE_FILE);
-            Map<String, MU> features = model.mixtures;
-            for (NEType.Type et: ats) {
-                short type = et.getCode();
-                //FileWriter fw = new FileWriter(cacheDir + File.separator + "em.dump." + type + "." + i);
-                Writer ffw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(rulesDir + File.separator + et + ".txt")));
-                Map<String, Double> scoreForSort = new LinkedHashMap<>();
-                Map<String, Double> scores = new LinkedHashMap<>();
-                for (String w : features.keySet()) {
-                    MU mu = features.get(w);
-                    double v1 = mu.getLikelihoodWithType(type) * (mu.numMixture / mu.numSeen);
-                    double v = v1 * Math.log(mu.numSeen);
-                    if (Double.isNaN(v)) {
-                        scoreForSort.put(w, 0.0);
-                        scores.put(w, v1);
-                    } else {
-                        scoreForSort.put(w, v);
-                        scores.put(w, v1);
-                    }
-                }
-                List<Pair<String, Double>> ps = Util.sortMapByValue(scoreForSort);
-                for (Pair<String, Double> p : ps) {
-                    MU mu = features.get(p.getFirst());
-                    Short maxT = -1;
-                    double maxV = -1;
-                    for (NEType.Type et1: ats) {
-                        short t = et1.getCode();
-                        double d = mu.getLikelihoodWithType(t);
-                        if (d > maxV) {
-                            maxT = t;
-                            maxV = d;
-                        }
-                    }
-                    //only if both the below conditions are satisfied, this template will ever be seen in action
-                    //some mixtures may have very low evidence that their "numMixture" is 0, there is just no point dumping them
-                    if (maxT.equals(type) && mu.numMixture>0) { //&& scores.get(p.getFirst()) >= 0.001) {
-                        ffw.write(mu.prettyPrint());
-                        ffw.write("========================\n");
-                    }
-                }
-                ffw.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //A training helper function for better organization, won't be serialized
-    static class Trainer {
-        Map<String, MU> mixtures;
-        Map<String,Map<String,Float>> muPriors;
-        Map<String,String> gazettes;
-
-        static  List<String> ignoreDBpediaTypes = new ArrayList<>();
-        static{
-            //Consider this, the type dist. of person-like types with the stop word _of_ is
-            //10005 Person|Agent
-            //4765 BritishRoyalty|Royalty|Person|Agent
-            //2628 Noble|Person|Agent
-            //1150 Saint|Cleric|Person|Agent
-            //669 Monarch|Person|Agent
-            //668 OfficeHolder|Person|Agent
-            //627 ChristianBishop|Cleric|Person|Agent
-            //525 MilitaryPerson|Person|Agent
-            //249 SportsTeamMember|OrganisationMember|Person|Agent
-            //247 SoapCharacter|FictionalCharacter|Person|Agent
-            //158 FictionalCharacter|Person|Agent
-            //114 Pope|Cleric|Person|Agent
-            ignoreDBpediaTypes = Arrays.asList(
-                    "RecordLabel|Company|Organisation",
-                    "Band|Organisation",
-                    "Band|Group|Organisation",
-                    //Tokyo appears in 94 Album|MusicalWork|Work, 58 Film|Work, 57 City|Settlement|PopulatedPlace|Place
-                    //London appears in 192 Album|MusicalWork|Work, 123 Settlement|PopulatedPlace|Place
-                    //Pair in 130 Film|Work, 109 Album|MusicalWork|Work
-                    //Can you believe this?!
-                    "Album|MusicalWork|Work",
-                    "Film|Work",
-                    //This type is too noisy and contain titles like
-                    //Cincinatti Kids, FA_Youth_Cup_Finals, The Strongest (and other such team names)
-                    "OrganisationMember|Person",
-                    "PersonFunction",
-                    "GivenName",
-                    "Royalty|Person",
-                    //the following type has entities like "Cox_Broadcasting_Corp._v._Cohn", that may assign wrong type to tokens like corp., co., ltd.
-                    "SupremeCourtOfTheUnitedStatesCase|LegalCase|Case|UnitOfWork",
-                    //should be careful about Agent type, though it contains personal names it can also contain many non-personal entities
-                    "ComicsCharacter|FictionalCharacter|Person"
-            );
-        }
-
-        Trainer(Map<String, String> gazettes, Map<String, Map<String, Float>> tokenPriors, int iter) {
-            this.mixtures = new LinkedHashMap<>();
-            this.muPriors = new LinkedHashMap<>();
-            log.info("Initializing the model with gazettes");
-            log.info(Util.getMemoryStats());
-            addGazz(gazettes, tokenPriors);
-            log.info("Starting EM on gazettes");
-            log.info(Util.getMemoryStats());
-            EM(gazettes, iter);
-        }
-
-        NBModel getModel(){
-            return new NBModel(mixtures, gazettes);
-        }
-
-        //initialize the mixtures
-        private void addGazz(Map<String, String> gazettes, Map<String, Map<String, Float>> tokenPriors) {
-            long start_time = System.currentTimeMillis();
-            long timeToComputeFeatures = 0, tms;
-            log.info("Analysing gazettes");
-
-            int g = 0, nume = 0;
-            final int gs = gazettes.size();
-            int gi = 0;
-            log.info(Util.getMemoryStats());
-            //The number of times a word appeared in a phrase of certain type
-            Map<String, Map<Short, Integer>> words = new LinkedHashMap<>();
-            log.info("Done loading DBpedia");
-            log.info(Util.getMemoryStats());
-            Map<String, Integer> wordFreqs = new LinkedHashMap<>();
-
-            for (String str : gazettes.keySet()) {
-                tms = System.currentTimeMillis();
-
-                String entityType = gazettes.get(str);
-                Short ct = NEType.parseDBpediaType(entityType).getCode();
-                if (ignoreDBpediaTypes.contains(entityType)) {
-                    continue;
-                }
-
-                String[] patts = FeatureUtils.getPatts(str);
-                for (String patt : patts) {
-                    if (!words.containsKey(patt))
-                        words.put(patt, new LinkedHashMap<>());
-                    words.get(patt).put(ct, words.get(patt).getOrDefault(ct, 0) + 1);
-
-                    wordFreqs.put(patt, wordFreqs.getOrDefault(patt, 0) + 1);
-                }
-
-                timeToComputeFeatures += System.currentTimeMillis() - tms;
-
-                if ((++gi) % 10000 == 0) {
-                    log.info("Analysed " + (gi) + " records of " + gs + " percent: " + (gi * 100 / gs) + "% in gazette: " + g);
-                    log.info("Time spent in computing mixtures: " + timeToComputeFeatures);
-                }
-                nume++;
-            }
-            log.info("Done analyzing gazettes for frequencies");
-            log.info(Util.getMemoryStats());
-
-            /*
-            * Here is the histogram of frequencies of words from the 2014 dump of DBpedia
-            * To read -- there are 861K words that are seen just once.
-            * By ignoring words that are only seen once or twice we can reduce the number of mixtures by a factor of ~ 10
-            * PAIR<1 -- 861698>
-            * PAIR<2 -- 146458>
-            * PAIR<3 -- 60264>
-            * PAIR<4 -- 32683>
-            * PAIR<5 -- 21006>
-            * PAIR<6 -- 14361>
-            * PAIR<7 -- 10512>
-            * PAIR<8 -- 7865>
-            * PAIR<9 -- 6480>
-            * PAIR<10 -- 5327>
-            *
-            * Also, single character words, words with numbers (like jos%c3%a9), numbers (like 2008, 2014), empty tokens are ignored
-            */
-            log.info("Considered " + nume + " entities in " + gazettes.size() + " total entities");
-            log.info("Done analysing gazettes in: " + (System.currentTimeMillis() - start_time));
-            log.info("Initialising MUs");
-
-            int initAlpha = 0;
-            int wi = 0, ws = words.size();
-            int numIgnored = 0, numConsidered = 0;
-            for (String str : words.keySet()) {
-                float wordFreq = wordFreqs.get(str);
-                if (wordFreq < 3 || str.length() <= 1) {
-                    numIgnored++;
-                    continue;
-                }
-                boolean hasNumber = false;
-                for (char c : str.toCharArray())
-                    if (Character.isDigit(c)) {
-                        hasNumber = true;
-                        numIgnored++;
-                        break;
-                    }
-                if (hasNumber)
-                    continue;
-
-                numConsidered++;
-                if (mixtures.containsKey(str))
-                    continue;
-                Map<Short, Pair<Float, Float>> priors = new LinkedHashMap<>();
-                for (Short type : NEType.getAllTypeCodes()) {
-                    if (words.get(str).containsKey(type))
-                        priors.put(type, new Pair<>((float) words.get(str).get(type), wordFreq));
-                    else
-                        priors.put(type, new Pair<>(0f, wordFreq));
-                }
-
-                if (DEBUG) {
-                    String ds = "";
-                    for (Short t : priors.keySet())
-                        ds += t + "<" + priors.get(t).first + "," + priors.get(t).second + "> ";
-                    log.info("Initialising: " + str + " with " + ds);
-                }
-                Map<String, Float> alpha = new LinkedHashMap<>();
-                if (str.length() > 2 && tokenPriors.containsKey(str)) {
-                    Map<String, Float> tps = tokenPriors.get(str);
-                    for (String gt : tps.keySet()) {
-                        //Music bands especially are noisy
-                        if (gt != null && !(ignoreDBpediaTypes.contains(gt) || gt.equals("Agent"))) {
-                            NEType.Type type = NEType.parseDBpediaType(gt);
-                            if(type==null) type = NEType.Type.OTHER;
-                            //all the albums, films etc.
-                            if (type == NEType.Type.OTHER && gt.endsWith("|Work"))
-                                continue;
-                            String[] features = new String[]{"T:" + type.getCode(), "L:NULL", "R:NULL", "SW:NULL"};
-                            for (String f : features) {
-                                alpha.put(f, alpha.getOrDefault(f, 0f) + tps.get(gt));
-                            }
-                        }
-                    }
-                }
-                if (alpha.size() > 0)
-                    initAlpha++;
-                //initializing teh mixture with this world knowledge can help the mixture assign itself the right types and move in right direction
-                mixtures.put(str, new MU(str,alpha));
-                muPriors.put(str, alpha);
-                if (wi++ % 1000 == 0) {
-                    log.info("Done: " + wi + "/" + ws);
-                    if (wi % 10000 == 0)
-                        log.info(Util.getMemoryStats());
-                }
-            }
-            log.info("Considered: " + numConsidered + " mixtures and ignored " + numIgnored);
-            log.info("Initialised alpha for " + initAlpha + "/" + ws + " entries.");
-
-            this.gazettes = gazettes;
-        }
-
-        //just cleans up trailing numbers in the string
-        private static String cleanRoad(String title){
-            String[] words = title.split(" ");
-            String lw = words[words.length-1];
-            String ct = "";
-            boolean hasNumber = false;
-            for(Character c: lw.toCharArray())
-                if(c>='0' && c<='9') {
-                    hasNumber = true;
-                    break;
-                }
-            if(words.length == 1 || !hasNumber)
-                ct = title;
-            else{
-                for(int i=0;i<words.length-1;i++) {
-                    ct += words[i];
-                    if(i<words.length-2)
-                        ct += " ";
-                }
-            }
-            return ct;
-        }
-
-        /**
-         * We put phrases through some filters in order to avoid very noisy types
-         * These are the checks
-         * 1. Remove stuff in the brackets to get rid of disambiguation stuff
-         * 2. If the type is road, then we clean up trailing numbers
-         * 3. If the type is settlement then the title is written as "Berkeley,_California" which actually mean Berkeley_(California); so cleaning these too
-         * 4. We ignore certain noisy types. see ignoreDBpediaTypes
-         * 5. Ignores any single word names
-         * 6. If the type is person like but the phrase contains either "and" or "of", we filter this out.
-         * returns either the cleaned phrase or null if the phrase cannot be cleaned.
-         */
-        private String filterTitle(String phrase, String type) {
-            int cbi = phrase.indexOf(" (");
-            if (cbi >= 0)
-                phrase = phrase.substring(0, cbi);
-
-            if (type.equals("Road|RouteOfTransportation|Infrastructure|ArchitecturalStructure|Place"))
-                phrase = cleanRoad(phrase);
-
-            //in places there are things like: Shaikh_Ibrahim,_Iraq
-            int idx;
-            if (type.endsWith("Settlement|PopulatedPlace|Place") && (idx = phrase.indexOf(", ")) >= 0)
-                phrase = phrase.substring(0, idx);
-
-            boolean allowed = true;
-            for (String it : ignoreDBpediaTypes)
-                if (type.contains(it)) {
-                    allowed = false;
-                    break;
-                }
-            if (!allowed)
-                return null;
-
-            //Do not consider single word names for training, the model has to be more complex than it is right now to handle these
-            if (!phrase.contains(" "))
-                return null;
-
-            if ((type.endsWith("Person") || type.equals("Agent")) && (phrase.contains(" and ") || phrase.contains(" of ") || phrase.contains(" on ") || phrase.contains(" in ")))
-                return null;
-            return phrase;
-        }
-
-        Map<String,List<String>> genFeatures(String phrase, short type){
-            Map<String,List<String>> features = FeatureUtils.generateFeatures2(phrase,type);
-            return typeFeatures(features, mixtures);
-        }
-
-        //an approximate measure for sigma(P(x;theta)) over all the observations
-        double getIncompleteDataLogLikelihood(){
-            return gazettes.entrySet().stream()
-                    //.parallel()
-                    .filter(e->rand.nextInt(10)==1)
-                    .mapToDouble(e->{
-                        String phrase = e.getKey();
-                        short type = NEType.parseDBpediaType(e.getValue()).getCode();
-                        Map<String,List<String>> midFeatures = genFeatures(phrase,type);
-                        double llv = midFeatures.entrySet().stream().mapToDouble(mf->{
-                            MU mu = mixtures.get(mf.getKey());
-                            if(mu!=null){
-                                return mu.getLikelihood(mf.getValue())* NBModel.getPrior(mu, mixtures);
-                            }
-                            return 0;
-                        }).sum();
-                        if(llv<=0)
-                            return 0;
-                        else
-                            return Math.log(llv);
-                    }).average().orElse(0);
-        }
-
-        //the argument alpha fraction is required only for naming of the dumped model size
-        void EM(Map<String, String> gazettes, int iter) {
-            log.info("Performing EM on: #" + mixtures.size() + " words");
-            double ll = getIncompleteDataLogLikelihood();
-            log.info("Start Data Log Likelihood: " + ll);
-            System.out.println("Start Data Log Likelihood: " + ll);
-            Map<String, MU> revisedMixtures = new LinkedHashMap<>();
-            int N = gazettes.size();
-            int wi;
-            for (int i = 0; i < iter; i++) {
-                log.info(Util.getMemoryStats());
-                wi = 0;
-                for (Map.Entry e : gazettes.entrySet()) {
-                    String phrase = (String) e.getKey();
-                    String dbpediaType = (String) e.getValue();
-                    phrase = filterTitle(phrase, dbpediaType);
-                    if (phrase == null)
-                        continue;
-
-                    if (wi++ % 1000 == 0)
-                        log.info("EM iteration: " + i + ", " + wi + "/" + N);
-
-                    NEType.Type type = NEType.parseDBpediaType(dbpediaType);
-                    float z = 0;
-                    //responsibilities
-                    Map<String, Float> gamma = new LinkedHashMap<>();
-                    //Word (sort of mixture identity) -> Features
-                    Map<String, List<String>> wfeatures = genFeatures(phrase, type.getCode());
-
-                    if (type != NEType.Type.OTHER) {
-                        for (String mi : wfeatures.keySet()) {
-                            if (wfeatures.get(mi) == null) {
-                                continue;
-                            }
-                            MU mu = mixtures.get(mi);
-                            if (mu == null) {
-                                //log.warn("!!FATAL!! MU null for: " + mi + ", " + mixtures.size());
-                                continue;
-                            }
-                            double d = mu.getLikelihood(wfeatures.get(mi)) * NBModel.getPrior(mu, mixtures);
-                            if (Double.isNaN(d))
-                                log.warn("score for: " + mi + " " + wfeatures.get(mi) + " is NaN");
-                            gamma.put(mi, (float) d);
-                            z += d;
-                        }
-                        if (z == 0) {
-                            if (DEBUG)
-                                log.info("!!!FATAL!!! Skipping: " + phrase + " as none took responsibility");
-                            continue;
-                        }
-
-                        for (String g : gamma.keySet()) {
-                            gamma.put(g, gamma.get(g) / z);
-                        }
-                    } else {
-                        for (String mi : wfeatures.keySet())
-                            gamma.put(mi, 1.0f / wfeatures.size());
-                    }
-
-                    if (DEBUG) {
-                        for (String mi : wfeatures.keySet()) {
-                            log.info("MI:" + mi + ", " + gamma.get(mi) + ", " + wfeatures.get(mi));
-                            log.info(mixtures.get(mi).toString());
-                        }
-                        log.info("EM iter: " + i + ", " + phrase + ", " + type + ", ct: " + type);
-                        log.info("-----");
-                    }
-
-                    for (String g : gamma.keySet()) {
-                        MU mu = mixtures.get(g);
-                        //ignore this mixture if the effective number of times it is seen is less than 1 even with good evidence
-                        if (mu == null)//|| (mu.numSeen > 0 && (mu.numMixture + mu.alpha_pi) < 1))
-                            continue;
-                        if (!revisedMixtures.containsKey(g))
-                            revisedMixtures.put(g, new MU(g, muPriors.get(g)));
-
-                        if (Double.isNaN(gamma.get(g)))
-                            log.error("Gamma NaN for MID: " + g);
-                        if (DEBUG)
-                            if (gamma.get(g) == 0)
-                                log.warn("!! Resp: " + 0 + " for " + g + " in " + phrase + ", " + type);
-                        //don't even update if the value is so low, that just adds meek affiliation with unrelated mixtures
-                        if (gamma.get(g) > 1E-7)
-                            revisedMixtures.get(g).add(gamma.get(g), wfeatures.get(g), muPriors.get(g));
-
-                    }
-                }
-                double change = 0;
-                for (String mi : mixtures.keySet())
-                    if (revisedMixtures.containsKey(mi))
-                        change += revisedMixtures.get(mi).difference(mixtures.get(mi));
-                change /= revisedMixtures.size();
-                log.info("Iter: " + i + ", change: " + change);
-                System.out.println("EM Iteration: " + i + ", change: " + change);
-                //incomplete data log likelihood is better measure than just the change in parameters
-                //i.e. P(X/\theta) = \sum\limits_{z}P(X,Z/\theta)
-                mixtures = revisedMixtures;
-                ll = getIncompleteDataLogLikelihood();
-                log.info("Iter: " + i + ", Data Log Likelihood: " + ll);
-                System.out.println("EM Iteration: " + i + ", Data Log Likelihood: " + ll);
-
-                revisedMixtures = new LinkedHashMap<>();
-
-                if(i==iter-1)
-                    writeModelAsRules(getModel());
-            }
-        }
     }
 
     //Input is a token and returns the best type assignment for token
@@ -938,86 +484,78 @@ public class NBModel implements NERModel, Serializable {
         return spans.toArray(new Span[spans.size()]);
     }
 
-    public synchronized void writeModel(String fileName) throws IOException{
-        writeObjectAsSerGZ(this, fileName);
-    }
-
-    //writes a .ser.gz file to the file passed in args.
-    private static void writeObjectAsSerGZ(Object o, String fileName) throws IOException{
-        FileOutputStream fos = new FileOutputStream(new File(fileName));
-        GZIPOutputStream gos = new GZIPOutputStream(fos);
-        ObjectOutputStream oos = new ObjectOutputStream(gos);
-        oos.writeObject(o);
-        oos.close();
-    }
-
-    public static synchronized NBModel loadModelFromRules(String rulesDirName) {
-        String rulesDir = Config.DEFAULT_SETTINGS_DIR+File.separator+rulesDirName;
-        if (!new File(rulesDir).exists()) {
-            log.fatal("The supplied directory: " + rulesDirName + " does not exist!\n" +
+    public static synchronized NBModel loadModelFromRules(String rulesFileName) {
+        NBModel nbModel = new NBModel(null,null);
+        String rulesFile = Config.DEFAULT_SETTINGS_DIR+File.separator+rulesFileName;
+        if (!new File(rulesFile).exists()) {
+            log.fatal("The supplied file: " + rulesFile + " does not exist!\n" +
                     "Cannot continue, exiting....");
             return null;
         }
-        List<String> files = Arrays.asList(new File(rulesDir).list());
-        NEType.Type[] alltypes = NEType.getAllTypes();
-         List<NEType.Type> notFound = Stream.of(alltypes).filter(t -> !files.contains(t.name()+".txt")).collect(Collectors.toList());
-        if (notFound.size()>0) {
-            notFound.forEach(t -> log.warn("Did not find " + t.name() + " in the rules dir: " + rulesDirName));
-            log.warn("Some types not found in the directory supplied.\n" +
-                    "Perhaps a version mismatch or the folder is corrupt!\n" +
-                    "Be warned, I will see what I can do.");
-        }
-        Map<String, String> gazette = loadGazette(rulesDirName);
-        Map<String, MU> mixtures = new LinkedHashMap<>();
-        List<String> classes = Stream.of(NEType.Type.values()).map(NEType.Type::toString).collect(Collectors.toList());
-        files.stream().filter(f->f.endsWith(".txt") && classes.contains(f.substring(0, f.length()-4))).forEach(f -> {
-            try {
-                LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(rulesDir + File.separator + f)));
-                String line;
-                List<String> lines_MU = new ArrayList<>();
-                while ((line = lnr.readLine()) != null) {
-                    //This marks the end of one MU block in the rules file
-                    if (line.startsWith("==")) {
-                        MU mu = MU.parseFromText(lines_MU.toArray(new String[lines_MU.size()]));
-                        if (mu != null)
-                            mixtures.put(mu.id, mu);
-                        lines_MU.clear();
-                    } else
-                        lines_MU.add(line);
+        //READ the content of the file line by line. The structure of the file is as following
+        /*
+        CICToken,EntityType,P(CICToken/EntityType)
+        ...
+        ..
+        #########
+        EntityType, P(EntityType)
+        ...
+        ...
+         */
+        int type=1;//Variable to keep track of which part of the file we are reading. The first part is for CICToken/EntityType probability
+        //and the second type (after PROBABILITY_CLASS_SEPARATOR is encountered in the file) is for P(EntityType).
+        try(LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(rulesFile)))) {
+            while (true) {
+                String line = lnr.readLine();
+                if (line == null)
+                    break;
+                else if(line.trim().equals(PROBABILITY_CLASS_SEPARATOR)){
+                    //Means now onwards we are going to read P(EntityType) and store it in classProb variable of NBModel
+                    type=2;
+                    continue;
                 }
-            } catch (IOException ie) {
-                log.warn("Could not read file: " + f + " from " + rulesDirName, ie);
+
+                line = line.trim();
+                if(type==1){
+                    //The line is of the form CICToekn,EntityType,float
+                    String info[] = line.split(",");
+                    String cictoken = info[0].trim();
+                    NEType.Type etype = NEType.getTypeForDisplayCode(info[1].trim());
+                    System.out.println(cictoken);
+                    System.out.println(info[2]) ;
+                    float prob = Float.parseFloat(info[2].trim());
+                    nbModel.setConditionalProbability(cictoken,etype,prob);
+                }else{
+                    //The line is of the form EntityType,float
+                    String info[] = line.split(",");
+                    NEType.Type etype = NEType.getTypeForDisplayCode(info[0].trim());
+                    float prob = Float.parseFloat(info[1].trim());
+                    nbModel.setEntityProbability(etype,prob);
+                }
+
             }
-        });
-        return new NBModel(mixtures, gazette);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return nbModel;
     }
 
-    private static synchronized Map<String,String> loadGazette(String modelDirName){
-        ObjectInputStream ois;
-        try {
-            ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
-            Map<String,String> model = (Map<String, String>) ois.readObject();
-            ois.close();
-            return model;
-        } catch (Exception e) {
-            Util.print_exception("Exception while trying to load gazette from: " + modelDirName, e, log);
-            return null;
-        }
+    public void setEntityProbability(NEType.Type etype, float prob) {
+        classProb.put(etype,prob);
     }
 
-    public static synchronized NBModel loadModel(String modelPath) {
-        ObjectInputStream ois;
-        try {
-            //the buffer size can be much higher than default 512 for GZIPInputStream
-            ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelPath)));
-            NBModel model = (NBModel) ois.readObject();
-            ois.close();
-            return model;
-        } catch (Exception e) {
-            Util.print_exception("Exception while trying to load model from: " + modelPath, e, log);
-            return null;
-        }
+    public void setConditionalProbability(String cictoken, NEType.Type etype, float prob) {
+        if(!conditionalProb.containsKey(cictoken)){
+            Map<NEType.Type, Float> typeinfo = new LinkedHashMap<>();
+            typeinfo.put(etype,prob);
+            conditionalProb.put(cictoken,typeinfo);
+        }else if(!conditionalProb.get(cictoken).containsKey(etype)){
+            conditionalProb.get(cictoken).put(etype,prob);
+        }else
+            conditionalProb.get(cictoken).put(etype,prob);
     }
+
 
     //returns token -> {redirect (can be the same as token), page length of the page it redirects to}
     private static Map<String,Map<String,Integer>> getTokenTypePriors(){
@@ -1148,75 +686,7 @@ public class NBModel implements NERModel, Serializable {
         return content;
     }
 
-    /**
-     * A low level train interface for experimentation and extension over the default model.
-     * Use this method for training the default model
-     * Training data should be a list of phrases and their types, the type should follow DBpedia ontology; specifically http://downloads.dbpedia.org/2015-04/dbpedia_2015-04.nt.bz2
-     * See epadd-settings/instance_types to understand the format better
-     * It is possible to relax the ontology constraint by changing the aTypes and ignoreDBpediaTypes fields in FeatureDictionary appropriately
-     * With tokenPriors it is possible to set initial beliefs, for example "Nokia" is a popular company; the first key in the map should be a single word token, the second map is the types and its affiliation for various types (DBpedia ontology again)
-     * iter param is the number of EM iterations, any value >5 is observed to have no effect on performance with DBpedia as training data
-     *  */
-    private static NBModel train(Map<String,String> trainData, Map<String,Map<String,Float>> tokenPriors, int iter){
-        log.info("Initializing trainer");
-        log.info(Util.getMemoryStats());
-        Trainer trainer = new Trainer(trainData, tokenPriors, iter);
-        return trainer.getModel();
-    }
-
-    public static NBModel train(Map<String,String> tdata){
-        log.info(Util.getMemoryStats());
-
-        float alpha = 0.2f;
-        //page lengths from wikipedia
-        Map<String,Map<String,Integer>> pageLens = getTokenTypePriors();
-        //getTokenPriors returns Map<String, Map<String,Integer>> where the first key is the single word DBpedia title and second keys are the titles it redirects to and its page length
-        Map<String,Map<String,Float>> tokenPriors = new LinkedHashMap<>();
-        //The Dir. prior related param alpha is empirically found to be performing at the value of 0.2f
-        for(String tok: pageLens.keySet()) {
-            Map<String,Float> tmp =  new LinkedHashMap<>();
-            Map<String,Integer> tpls = pageLens.get(tok);
-            for(String page: tpls.keySet()) {
-                String type = tdata.get(page.toLowerCase());
-                tmp.put(type, tpls.get(page)*alpha/1000f);
-            }
-            tokenPriors.put(tok, tmp);
-        }
-        log.info("Initialized "+tokenPriors.size()+" token priors.");
-        Trainer trainer = new Trainer(tdata, tokenPriors, 5);
-        return trainer.getModel();
-    }
-
-    public static NBModel train(float alpha, int emIter){
-        Map<String,String> tdata = EmailUtils.readDBpedia();
-        //also include CONLL lists
-        String resources[] = Config.NER_RESOURCE_FILES;
-        for(String rsrc: resources) {
-            //DBpedia has a finer type, respect it.
-            Map<String,String> map = readEntityList(rsrc);
-            for(Map.Entry<String,String> e: map.entrySet())
-                    tdata.putIfAbsent(e.getKey(),e.getValue());
-        }
-
-        //page lengths from wikipedia
-        Map<String,Map<String,Integer>> pageLens = getTokenTypePriors();
-        //getTokenPriors returns Map<String, Map<String,Integer>> where the first key is the single word DBpedia title and second keys are the titles it redirects to and its page length
-        Map<String,Map<String,Float>> tokenPriors = new LinkedHashMap<>();
-        //The Dir. prior related param alpha is empirically found to be performing at the value of 0.2f
-        for(String tok: pageLens.keySet()) {
-            Map<String,Float> tmp =  new LinkedHashMap<>();
-            Map<String,Integer> tpls = pageLens.get(tok);
-            for(String page: tpls.keySet()) {
-                String type = tdata.get(page.toLowerCase());
-                tmp.put(type, tpls.get(page)*alpha/1000f);
-            }
-            tokenPriors.put(tok, tmp);
-        }
-	    log.info("Initialized "+tokenPriors.size()+" token priors.");
-        return train(tdata, tokenPriors, emIter);
-    }
-
-    public static void train(int dummy) {
+    public static void train() {
         //Map to contain a mapping of CICToken, EntityType -> Count (number of entities containing CIC token out of total entities of type entitytype)
         Map<String, Map<NEType.Type,Integer>> conditionalCount = new LinkedHashMap<>();
         //Map to contain a mapping of EntityType -> Count (number of total entities of type entity type)
@@ -1254,6 +724,8 @@ public class NBModel implements NERModel, Serializable {
                 //For every entity_name_token check if it is a stop word. If not then increment the value of [token][type] by 1 (if not present then set to 1).
                 //Also, do it for only entity types of interest.
                 for(String entity_name_token: entity_name_tokens){
+                    //Clean comma from entity_name_token if present
+                    entity_name_token = entity_name_token.replaceAll(",","");
                     if(!nbmodel.stopWords.contains(entity_name_token.toLowerCase())){ //Proceed only for non-stop words present here.
                         if(!conditionalCount.containsKey(entity_name_token.toLowerCase())) {
                             Map<NEType.Type, Integer> entityCnt = new LinkedHashMap<>();
@@ -1277,53 +749,22 @@ public class NBModel implements NERModel, Serializable {
                     nbModelWriter.write(cicToken+","+entityType+","+(cicTokenConditionalCount/entityTypeCount)+"\n");
                 }
             }
+            nbModelWriter.write(PROBABILITY_CLASS_SEPARATOR+"\n");
+            //Once we are done with putting individual probabilities now we will put P(C) for every class type C
+            for(NEType.Type entityType: categoryTypeCount.keySet()){
+                float entityCnt = categoryTypeCount.get(entityType);
+                nbModelWriter.write(entityType+","+entityCnt/totalEntities+"\n");
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-        /**
-     * Trains a SequenceModel with default parameters*/
-    private static NBModel train() {
-        long st = System.currentTimeMillis();
-        NBModel model = train(0.2f, 3);
-        try {
-            model.writeModel(Config.SETTINGS_DIR+File.separator+ MODEL_FILENAME);
-        } catch(IOException e){
-            log.warn("Unable to write model to disk");
-            e.printStackTrace();
-        }
-        long et = System.currentTimeMillis();
-        log.info("Trained and dumped model in "+((et-st)/60000)+" minutes.");
-        return model;
-    }
-
-    private static void loadAndTestNERModel(){
-        if (fdw == null) {
-            try {
-                fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        System.err.println("Loading model...");
-        NBModel nerModel;
-        log.info(Util.getMemoryStats());
-        {
-            nerModel = NBModel.loadModelFromRules("rules");
-            if(nerModel==null)
-                nerModel = train();
-
-            log.info(Util.getMemoryStats());
-            SequenceModelTest.ParamsCONLL params = new SequenceModelTest.ParamsCONLL();
-            //SequenceModelTest.testCONLL(nerModel, false, params);
-            log.info(Util.getMemoryStats());
-        }
-    }
 
     public static void main(String[] args){
-        train(3);
+        //train();
+        NBModel nbModel = NBModel.loadModelFromRules("NBModel.txt");
     }
     public static void mainn(String[] args) {
         Options options = new Options();
@@ -1355,7 +796,7 @@ public class NBModel implements NERModel, Serializable {
         String inputFilePath = cmd.getOptionValue("input");
         boolean isTest = Boolean.parseBoolean(cmd.getOptionValue("test"));
         if(isTest)
-            loadAndTestNERModel();
+            train();
         else
         {
             //output option must be given if the control reaches here.
@@ -1373,7 +814,7 @@ public class NBModel implements NERModel, Serializable {
             {
                 nerModel = NBModel.loadModelFromRules("rules");
                 if (nerModel == null)
-                    nerModel = train();
+                    train();//nerModel = train();
                 Span[] entities = nerModel.findEntitiesFromCICFile(inputFilePath);
                      //write entities in a csv file specified by the output path.. filename should be entities_seq_model.csv
                     try{
