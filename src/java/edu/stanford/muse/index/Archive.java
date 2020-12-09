@@ -1025,6 +1025,25 @@ int errortype=0;
         }
     }
 
+    // Redact the attachment information present in EmailDocument objects
+    private static void redactAttachmentDetailsFromDocs(Collection<? extends Document> allDocs, Archive archive) throws Exception {
+        for (Document d : allDocs) {
+            EmailDocument ed = (EmailDocument)d;
+            List<Blob> redactedList = new LinkedList<>();
+            if(ed.attachments.size()!=0){
+                for(Blob b: ed.attachments){
+                    String fname = archive.getBlobStore().full_filename_original(b,false);
+                    String ext = Util.getExtension(fname);
+                    //Get its name ellipsized. leaving extension as it is.
+                    fname = Util.ellipsize(fname,5);
+                    fname = fname+"."+ext;
+                    redactedList.add(new EmailAttachmentBlob(fname,0,null));//Create a dummy blob object and add it to email doc at the end.
+                }
+            }
+            ed.attachments=redactedList;
+        }
+    }
+
     /**
      * export archive with just the given docs to prepare for public mode.
      * docsToExport should be a subset of what's already in the archive. returns
@@ -1197,6 +1216,8 @@ int errortype=0;
             //replace description with names;
             allDocs = new ArrayList<>(retainedDocs);
             replaceDescriptionWithNames(allDocs, this);
+            //Also replace the attachment information present in EmailDocument Object
+            redactAttachmentDetailsFromDocs(allDocs,this);
         }else{
             allDocs = new ArrayList<>(retainedDocs);
         }

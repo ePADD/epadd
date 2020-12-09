@@ -138,6 +138,8 @@ Archive archive = JSPHelper.getArchive(params);
 	// NOW EXPORT FOR DISCOVERY
 	//Read archive from folderPublic directory and operate on that.
 	//Archive forDeliveryPublic = SimpleSessions.readArchiveIfPresent(folderPublic);
+	//With the introduction of 'Transfer only to Delivery' label, the set of docs exported to Delivery will not be same for Discovery.
+	docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY);
 	JSPHelper.log.info("Exporting for discovery");
 	/*v6- why were we exporting correspondent authority file separately? Removed now.
 		try {
