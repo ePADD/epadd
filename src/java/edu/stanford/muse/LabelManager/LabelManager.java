@@ -28,6 +28,7 @@ public class LabelManager implements Serializable{
 
     private static final Logger log =  LogManager.getLogger(LabelManager.class);
     private final static long serialVersionUID = 1L;
+    public final static String LABELID_TTDONLY="-1";
     public final static String LABELID_DNT="0";
     private final static String LABELID_REVIEWED="1";
     public final static String LABELID_CFR="2";
@@ -82,6 +83,11 @@ public class LabelManager implements Serializable{
         Label dnt = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "label-manager.restrict.no-transfer"),LabType.RESTRICTION, LABELID_DNT,
                 edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "label-manager.restrict.no-transfer.mess"),true);
         labelInfoMap.put(dnt.getLabelID(),dnt);
+
+
+        Label transferToDeliveryOnly = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "label-manager.restrict.transfer-to-delivery-only"),LabType.RESTRICTION, LABELID_TTDONLY,
+                edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "label-manager.restrict.transfer-to-delivery-only.mess"),true);
+        labelInfoMap.put(transferToDeliveryOnly.getLabelID(),transferToDeliveryOnly);
 
         /*//restricted
         Label twr = new Label("Restricted",LabType.RESTRICTION,"1",

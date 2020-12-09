@@ -1077,9 +1077,18 @@ int errortype=0;
                 boolean genfine = true;
                 boolean timefine =true;
                 if (Util.setIntersection(getLabelIDs(ed), genRestriction).size() != 0) {
-                    //if gen restriction then it must contain cfr label for export (unless timed restriction stops it)
-                    if(!getLabelIDs(ed).contains(LabelManager.LABELID_CFR))
+                    //if gen restriction - DNT then it must contain cfr label for export (unless timed restriction stops it)
+                    boolean isDNT = getLabelIDs(ed).contains(LabelManager.LABELID_DNT);
+                    //check if this doc should be transferred to Delivery only.
+                    boolean isTTD_ONLY = getLabelIDs(ed).contains(LabelManager.LABELID_TTDONLY);
+
+                    //CATCH: What if a document has DNT label along with CFR?
+                    if(isDNT && !getLabelIDs(ed).contains(LabelManager.LABELID_CFR))
                         genfine=false;
+                    //if gen restriction - Transfer only to delivery then skip the CFR label check but export this doc only to delivery mode.
+                    //If this should be transferred only to Delivery and the export is happening for Discovery then also do not transfer.
+                    if(isTTD_ONLY && mode == Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY)
+                        genfine = false;
                 }
                 if(!genfine)
                     continue;
