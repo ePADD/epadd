@@ -220,6 +220,15 @@ public class ArchiveReaderWriter{
         return result;
     }
 
+
+    /*
+    This method reads the lable-info.json file and fills the data structure of the label manager. Note that in future more and more system labels
+    might get added to ePADD. However, to make those labels visible for the collections which were ingested using earlier version of ePADD we need to
+    do some trick here. Once labels get loaded the system should check if all the system labels are present in label-info.json file or not. If not then
+    that label should be added in LabelManager so that the label becomes visible to the archivist. First time we encountered this situation when we
+    added a label 'Transfer-only-to-delivery' to transfer a message from processing to delivery mode but not to discovery mode (a restriction on 'do-not-transfer'
+    label).
+     */
     private static LabelManager readLabelManager(String archiveID, String labMapDirPath) {
         LabelManager labelManager = null;
         try {
@@ -228,6 +237,8 @@ public class ArchiveReaderWriter{
             Util.print_exception ("Exception in reading label manager from archive, assigning a new label manager", e, log);
             labelManager = new LabelManager(archiveID);
         }
+        //Now fill in the system labels which are absent in labelManager object (read from the file).
+        labelManager.syncWithSystemLabels();
         return labelManager;
 
     }
