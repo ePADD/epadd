@@ -246,17 +246,43 @@ public class NBModel implements NERModel, Serializable {
         return null;
     }
 
-    /**
-     * Does sequence labeling of a phrase with type -- a dynamic programming approach
-     * The complexity of this method has quadratic dependence on number of words in the phrase, hence should be careful with the length (a phrase with more than 7 words is rejected)
-     * O(T*W^2) where W is number of tokens in the phrase and T is number of possible types
-     * Note: This method only returns the entities from the best labeled sequence.
-     * @param phrase - String that is to be sequence labelled, keep this short; The string will be rejected if it contains more than 9 words
-     * @return all the entities along with their types and quality score found in the phrase
-    */
+
+
+    public Span[] find (String content){
+        List<Span> spans = new ArrayList<>();
+
+        opennlp.tools.util.Span[] sentSpans = NLPUtils.tokenizeSentenceAsSpan(content);
+        assert sentSpans!=null;
+        for(opennlp.tools.util.Span sentSpan: sentSpans) {
+            String sent = sentSpan.getCoveredText(content).toString();
+            int sstart = sentSpan.getStart();
+
+            List<Triple<String, Integer, Integer>> toks = tokenizer.tokenize(sent);
+            for (Triple<String, Integer, Integer> t : toks) {
+                //this should never happen
+                if(t==null || t.first == null)
+                    continue;
+
+                Map<String,Pair<Short,Double>> entities = seqLabel(t.getFirst());
+                for(String e: entities.keySet()){
+                    Pair<Short,Double> p = entities.get(e);
+                    //A new type is assigned to some words, which is of value -2
+                    if(p.first<0)
+                        continue;
+
+                    if(!p.first.equals(NEType.Type.OTHER.getCode()) && p.second>0) {
+                        Span chunk = new Span(e, sstart + t.second + t.first.indexOf(e), sstart + t.second + t.first.indexOf(e) + e.length());
+                        chunk.setType(p.first, new Float(p.second));
+                        spans.add(chunk);
+                    }
+                }
+            }
+        }
+        return spans.toArray(new Span[spans.size()]);
+    }
     private Map<String, Pair<Short, Double>> seqLabel(String phrase) {
         Map<String, Pair<Short, Double>> segments = new LinkedHashMap<>();
-        {
+        /*{
             String dbpediaType = lookup(phrase);
             NEType.Type type = NEType.parseDBpediaType(dbpediaType);
 
@@ -264,7 +290,7 @@ public class NBModel implements NERModel, Serializable {
                 segments.put(phrase, new Pair<>(type.getCode(), 1.0));
                 return segments;
             }
-        }
+        }*/
 
         //This step of uncanonicalizing phrases helps merging things that have different capitalization and in lookup
         phrase = EmailUtils.uncanonicaliseName(phrase);
@@ -299,193 +325,46 @@ public class NBModel implements NERModel, Serializable {
         //see the complexity of the method
         Set<Short> cands = new LinkedHashSet<>();
         for (String token : tokens) {
+            //For each token B1
             Map<Short, Double> candTypes = new LinkedHashMap<>();
             if (token.length() != 2 || token.charAt(1) != '.')
                 token = token.replaceAll("^\\W+|\\W+$", "");
             token = token.toLowerCase();
-            MU mu = mixtures.get(token);
-            if (token.length() < 2 || mu == null || mu.numMixture == 0) {
-                //System.out.println("Skipping: "+token+" due to mu "+mu==null);
+            if (token.length() < 2 ) {
+                //System.out.println("Skipping: "+token+" due to very small size");
                 continue;
             }
             for (Short candType : NEType.getAllTypeCodes()) {
-                double val = mu.getLikelihoodWithType(candType);
-                candTypes.put(candType, candTypes.getOrDefault(candType, 0.0) + val);
+
             }
-            List<Pair<Short, Double>> scands = Util.sortMapByValue(candTypes);
-            int si = 0, MAX = 5;
-            for (Pair<Short, Double> p : scands)
-                if (si++ < MAX)
-                    cands.add(p.getFirst());
         }
-        //This is just a standard dynamic programming algo. used in HMMs, with the difference that
-        //at every word we are checking for the every possible segment (or chunk)
-        short NON_NOUN = -2;
-        cands.add(NON_NOUN);
-        Map<Integer, Triple<Double, Integer, Short>> tracks = new LinkedHashMap<>();
-        Map<Integer,Integer> numSegmenation = new LinkedHashMap<>();
-        //System.out.println("Cand types for: "+phrase+" "+cands);
 
-        for (int ti = 0; ti < tokens.length; ti++) {
-            double max = -1, bestValue = -1;
-            int bi = -1;
-            short bt = -10;
-            for (short t : cands) {
-                int tj = Math.max(ti - 6, 0);
-                //don't allow multi word phrases with these types
-                if (t == NON_NOUN || t == NEType.Type.OTHER.getCode())
-                    tj = ti;
-                for (; tj <= ti; tj++) {
-                    double val = 1;
-                    if (tj > 0)
-                        val *= tracks.get(tj - 1).first;
-                    String segment = "";
-                    for (int k = tj; k < ti + 1; k++) {
-                        segment += tokens[k];
-                        if (k != ti)
-                            segment += " ";
-                    }
-
-                    if (NON_NOUN != t)
-                        val *= getConditional(segment, t) * getNounLikelihood(segment, false);
-                    else
-                        val *= getNounLikelihood(segment, true);
-
-                    double ov = val;
-                    int numSeg = 1;
-                    if(tj>0)
-                        numSeg += numSegmenation.get(tj-1);
-                    val = Math.pow(val, 1f/numSeg);
-                    if (val > max) {
-                        max = val;
-                        bestValue = ov;
-                        bi = tj - 1;
-                        bt = t;
-                    }
-                    //System.out.println("Segment: "+segment+" type: "+t+" val: "+ov+" bi:"+bi+" bv: "+bestValue+" bt: "+bt);
-                }
-            }
-            numSegmenation.put(ti, ((bi>=0)?numSegmenation.get(bi):0)+1);
-            tracks.put(ti, new Triple<>(bestValue, bi, bt));
-        }
-        //System.out.println("Tracks: "+tracks);
-
-        //the backtracking step
-        int start = tokens.length - 1;
-        while (true) {
-            Triple<Double, Integer, Short> t = tracks.get(start);
-            String seg = "";
-            for (int ti = t.second + 1; ti <= start; ti++)
-                seg += tokens[ti] + " ";
-            seg = seg.substring(0,seg.length()-1);
-
-            double val;
-            if(NON_NOUN != t.getThird())
-                val = getConditional(seg, t.getThird()) * getNounLikelihood(seg, false);
-            else
-                val = getNounLikelihood(seg, true);
-
-            //if is a single word and a dictionary word or word with less than 4 chars and not acronym, then skip the segment
-            if (seg.contains(" ") ||
-                    (seg.length() >= 3 &&
-                            (seg.length() >= 4 || FeatureGeneratorUtil.tokenFeature(seg).equals("ac")) &&
-                            !DictUtils.commonDictWords.contains(EnglishDictionary.getSingular(seg.toLowerCase()))
-                    ))
-                segments.put(seg, new Pair<>(t.getThird(), val));
-
-            start = t.second;
-            if (t.second == -1)
-                break;
-        }
         return segments;
     }
 
-    private double getConditional(String phrase, Short type) {
-        Map<String, List<String>> tokenFeatures = FeatureUtils.generateFeatures2(phrase, type);
-        tokenFeatures = typeFeatures(tokenFeatures, mixtures);
-        String[] tokens = phrase.split("\\s+");
-        if(FeatureUtils.sws.contains(tokens[0]) || FeatureUtils.sws.contains(tokens[tokens.length-1]))
-            return 0;
+    /*
+    This method computes P() [ probablity of a string containing token B1 given that it is of
+     */
+    private double getConditionalProb(String token, Short type){
 
-        double sorg = 0;
-        String dbpediaType = lookup(phrase);
-        short ct = NEType.parseDBpediaType(dbpediaType).getCode();
-
-        if(dbpediaType!=null && ct==type){
-            if(dbpediaType.endsWith("Country|PopulatedPlace|Place"))
-                return 1;
-            else if (phrase.contains(" "))
-                return 1;
-        }
-
-        for (String mid : tokenFeatures.keySet()) {
-            Double d;
-            MU mu = mixtures.get(mid);
-            //Do not even consider the contribution from this mixture if it does not have a good affinity with this type
-            if(mu!=null && mu.getLikelihoodWithType(type)<0.1)
-                continue;
-
-            int THRESH = 0;
-            //imposing the frequency constraint on numMixture instead of numSeen can benefit in weeding out terms that are ambiguous,
-            // which could have appeared many times, but does not appear to have common template
-            //the check for "new" token is to reduce the noise coming from lowercase words starting with the word "new"
-            if (mu != null &&
-                    ((!type.equals(NEType.Type.PERSON.getCode()) && mu.numMixture>THRESH)||(type.equals(NEType.Type.PERSON.getCode()) && mu.numMixture>0)) &&
-                    !mid.equals("new") && !mid.equals("first") && !mid.equals("open"))
-                d = mu.getLikelihood(tokenFeatures.get(mid));
-            else
-                //a likelihood that assumes nothing
-                d = MU.getMaxEntProb();
-            double val = d;
-
-            double freq = 0;
-            if (d > 0) {
-                if (mixtures.get(mid) != null)
-                    freq = getPrior(mixtures.get(mid));
-                val *= freq;
-                //System.out.println("phrase:"+phrase+" type: "+type+" mid: "+mid+" val: "+val+":::mixtures: "+mixtures.get(mid));
-            }
-            //Should actually use logs here, not sure how to handle sums with logarithms
-            sorg += val;
-        }
-        return sorg;
     }
-
-    public Span[] find (String content){
-        List<Span> spans = new ArrayList<>();
-
-        opennlp.tools.util.Span[] sentSpans = NLPUtils.tokenizeSentenceAsSpan(content);
-        assert sentSpans!=null;
-        for(opennlp.tools.util.Span sentSpan: sentSpans) {
-            String sent = sentSpan.getCoveredText(content).toString();
-            int sstart = sentSpan.getStart();
-
-            List<Triple<String, Integer, Integer>> toks = tokenizer.tokenize(sent);
-            for (Triple<String, Integer, Integer> t : toks) {
-                //this should never happen
-                if(t==null || t.first == null)
-                    continue;
-
-                Map<String,Pair<Short,Double>> entities = seqLabel(t.getFirst());
-                for(String e: entities.keySet()){
-                    Pair<Short,Double> p = entities.get(e);
-                    //A new type is assigned to some words, which is of value -2
-                    if(p.first<0)
-                        continue;
-
-                    if(!p.first.equals(NEType.Type.OTHER.getCode()) && p.second>0) {
-                        Span chunk = new Span(e, sstart + t.second + t.first.indexOf(e), sstart + t.second + t.first.indexOf(e) + e.length());
-                        chunk.setType(p.first, new Float(p.second));
-                        spans.add(chunk);
-                    }
-                }
-            }
+    private static synchronized Map<String,String>  loadGazette(String modelDirName){
+        ObjectInputStream ois;
+        try {
+            ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
+            Map<String,String> model = (Map<String, String>) ois.readObject();
+            ois.close();
+            return model;
+        } catch (Exception e) {
+            Util.print_exception("Exception while trying to load gazette from: " + modelDirName, e, log);
+            return null;
         }
-        return spans.toArray(new Span[spans.size()]);
     }
 
     public static synchronized NBModel loadModelFromRules(String rulesFileName) {
-        NBModel nbModel = new NBModel(null,null);
+        Map<String, String> gazette = loadGazette(NBModel.RULES_DIRNAME);
+
+        NBModel nbModel = new NBModel(null,gazette);
         String rulesFile = Config.DEFAULT_SETTINGS_DIR+File.separator+rulesFileName;
         if (!new File(rulesFile).exists()) {
             log.fatal("The supplied file: " + rulesFile + " does not exist!\n" +
@@ -521,8 +400,8 @@ public class NBModel implements NERModel, Serializable {
                     String info[] = line.split(",");
                     String cictoken = info[0].trim();
                     NEType.Type etype = NEType.getTypeForDisplayCode(info[1].trim());
-                    System.out.println(cictoken);
-                    System.out.println(info[2]) ;
+                    //System.out.println(cictoken);
+                    //System.out.println(info[2]) ;
                     float prob = Float.parseFloat(info[2].trim());
                     nbModel.setConditionalProbability(cictoken,etype,prob);
                 }else{

@@ -965,7 +965,7 @@ public class SequenceModel implements NERModel, Serializable {
         return new SequenceModel(mixtures, gazette);
     }
 
-    private static synchronized Map<String,String> loadGazette(String modelDirName){
+    private static synchronized Map<String,String>  loadGazette(String modelDirName){
         ObjectInputStream ois;
         try {
             ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
