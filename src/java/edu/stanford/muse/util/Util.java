@@ -69,9 +69,9 @@ public class Util
 		emptyP = Pattern.compile("\\W*?\\w+.*");
 	}
 	private static Pattern maskEmailDomainP = null;
-	static {
-	        maskEmailDomainP = Pattern.compile("\\b([^@]*)@([\\S]*)\\b");
-	}
+    static {
+        maskEmailDomainP = Pattern.compile("\\b([^@]*)@([\\S]*)\\b");
+    }
 
 	// truncates given string to max len, adding ellipsis or padding if
 	// necessary
@@ -2775,8 +2775,8 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 
 	public static String maskEmailDomain(String s)
 	{
-		return maskEmailDomainP.matcher(s).replaceAll("$1@...");
-		//return s.replaceAll("\\b([^@]*)@([\\S]*)\\b", "$1@...");
+		//return s.replaceAll("\\b([A-Za-z0-9][A-Za-z0-9\\-_\\.]*)@[A-Za-z0-9][A-Za-z\\-0-9_]*(\\.[A-Za-z0-9][A-Za-z\\-0-9_]*)*\\.[A-Za-z]{2,4}\\b", "$1@...");
+        return maskEmailDomainP.matcher(s).replaceAll("$1@...");
 
 	}
 
