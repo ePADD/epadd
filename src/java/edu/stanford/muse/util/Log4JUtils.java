@@ -50,7 +50,7 @@ public class Log4JUtils {
 			LOG_FILE = newLogFile;
 
 		File parent = new File(LOG_FILE).getParentFile();
-		
+
 	   	// check the parent directory of the log file first...
 		// if the directory does not exist, create it
     	if (!parent.exists()) {
@@ -147,11 +147,23 @@ public class Log4JUtils {
 					.addComponent(triggeringPolicy);
 			builder.add(appenderBuilder);
 
+			//file=entityRecognition
+			appenderBuilder = builder.newAppender("entityRecognition", "RollingFile")
+					.addAttribute("fileName", filename+"-EntityRecognition.log")
+					.addAttribute("filePattern", filename+"-%d{MM-dd-yy}.log.ER.gz")
+					.add(layoutBuilder)
+					.addComponent(triggeringPolicy);
+			builder.add(appenderBuilder);
+
 			//All level messages will be written to stdout and filename
 			builder.add(builder.newRootLogger( org.apache.logging.log4j.Level.ALL).
 					add(builder.newAppenderRef("Stdout")).
 					add(builder.newAppenderRef("rollingAll").addAttribute("level", org.apache.logging.log4j.Level.ALL)).
 					add(builder.newAppenderRef("rollingWarning").addAttribute("level", org.apache.logging.log4j.Level.WARN)));
+
+			builder.add(builder.newLogger("edu.stanford.muse.ner.model.NBModel",org.apache.logging.log4j.Level.ALL).
+					add(builder.newAppenderRef("entityRecognition").addAttribute("level",org.apache.logging.log4j.Level.ALL))
+					);
 					//addAttribute("additivity",false));
 			//addAttribute("additivity", false));
 			LoggerContext lc = Configurator.initialize(builder.build());
@@ -159,6 +171,7 @@ public class Log4JUtils {
 			Configurator.shutdown(lc);
 			lc = Configurator.initialize(builder.build());
 			lc.start();
+
 			} catch(Exception e) {
  	        log.error("Failed creating log appender in " + filename);
  	        System.err.println("Failed creating log appender in " + filename);
@@ -226,7 +239,7 @@ public class Log4JUtils {
 	    	logger.setLevel(Level.TRACE);
 	    else
 	    	log.warn ("Unknown logging level: for " + logger + " to " + level);
- 		
+
  		log.info ("Effective logging level for " + logger.getName() + " is " + logger.getEffectiveLevel());
 	}
 */

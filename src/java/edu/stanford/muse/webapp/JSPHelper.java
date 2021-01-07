@@ -398,18 +398,18 @@ public class JSPHelper {
             NERModel nerModel=null;
             //=(SequenceModel) session.getAttribute("ner");
             //session.setAttribute("statusProvider", new StaticStatusProvider("Loading openNLPNER sequence model from resource: " + modelFile + "..."));
-            setStatusProvider.accept(new StaticStatusProvider("Loading openNLPNER sequence model from resource: " + modelFile + "..."));
+            setStatusProvider.accept(new StaticStatusProvider("Loading Bayesian classifier from resource: " + modelFile + "..."));
             {
                 if (System.getProperty("muse.dummy.ner") != null) {
                     log.info("Using dummy openNLPNER model, all CIC patterns will be treated as valid entities");
                     nerModel = new DummyNERModel();
                 } else {
-                    log.info("Loading openNLPNER sequence model from: " + modelFile + " ...");
+                    log.info("Loading Bayesian classifier from: " + modelFile + " ...");
                     nerModel = NBModel.loadModelFromRules(NBModel.MODEL_FILENAME);
                 }
             }
             if (nerModel == null) {
-                log.error("Could not load openNLPNER model from: " + modelFile);
+                log.error("Could not load Bayesian classifier model from: " + modelFile);
             } else {
                 NER ner = new NER(archive, nerModel);
                 //session.setAttribute("statusProvider", ner);

@@ -61,6 +61,8 @@ public class NBModel implements NERModel, Serializable {
     private static final boolean DEBUG = false;
     static final short UNKNOWN_TYPE = -10;
 
+    static final double MIN_PROB = 0.00001f;
+
     //Variables to hold P(x/C) and P(C).
     public Map<String, Map<NEType.Type,Float>> conditionalProb = new LinkedHashMap<>();
     public Map<NEType.Type, Float> classProb = new LinkedHashMap<>();
@@ -320,34 +322,69 @@ public class NBModel implements NERModel, Serializable {
         if (tokens.length > 9) {
             return new LinkedHashMap<>();
         }
-        //since there can be large number of types every token can take
-        //we restrict the number of possible types we consider to top 5
-        //see the complexity of the method
-        Set<Short> cands = new LinkedHashSet<>();
+
+        StringBuilder modifiedPhrase = new StringBuilder();
+        //We need to work on Phrase not on individual tokens. But we still iterate over tokens to remove those tokens which are very small.
+        //and build a modifiedPhrase by concatenating the remaining tokens.
         for (String token : tokens) {
             //For each token B1
-            Map<Short, Double> candTypes = new LinkedHashMap<>();
             if (token.length() != 2 || token.charAt(1) != '.')
                 token = token.replaceAll("^\\W+|\\W+$", "");
             token = token.toLowerCase();
-            if (token.length() < 2 ) {
+            if (token.length() < 2) {
                 //System.out.println("Skipping: "+token+" due to very small size");
                 continue;
             }
-            for (Short candType : NEType.getAllTypeCodes()) {
+            modifiedPhrase.append(token);
+            modifiedPhrase.append(" ");
+        }
+        String modifiedPhraseStr = modifiedPhrase.toString().trim();
+        Pair<NEType.Type, Double> candidate = new Pair(NEType.Type.OTHER, 0D);
 
+        //Now we iterate over all types to see the type for which the likelihood is maximum.
+        for (NEType.Type candType : NEType.getAllTypes()) {
+            double likelihood = getConditionalProb(modifiedPhraseStr, candType);
+            if (likelihood - candidate.second > 1e-25) {
+                //means likelihood is greater than old value of likelihood.
+                candidate.first = candType;
+                candidate.second = likelihood;
             }
         }
-
+        //At the end put candidate information in segment map.
+        segments.put(phrase, new Pair(candidate.first.getCode(), candidate.second));
         return segments;
     }
 
     /*
-    This method computes P() [ probablity of a string containing token B1 given that it is of
+    This method computes P() [ probablity of a phrase containing tokesn B1, B2, etc.
      */
-    private double getConditionalProb(String token, Short type){
+    private double getConditionalProb(String phrase, NEType.Type type){
+        double likelihood=1D;
 
+        String[] tokens = phrase.split("\\s+");
+
+        //Get the Probability(Token/type) by looking at the map conditionalProb
+        for(String origtoken: tokens) {
+            String token = origtoken.toLowerCase().trim();
+            if (conditionalProb.get(token) != null) {
+                if (conditionalProb.get(token).get(type) != null) {
+                    likelihood = likelihood * conditionalProb.get(token).get(type);
+                } else {
+                    //means the token is present but the probability of this token wrt the given type is not present.
+                    likelihood = likelihood * MIN_PROB;
+                }
+            } else {
+                //means no information about this token, just add a minimum amount.
+                likelihood = likelihood * MIN_PROB;
+            }
+        }
+        //once done multiply by the probability of this class by reading from classProb
+        likelihood=likelihood*classProb.get(type);
+
+        return likelihood;
     }
+
+
     private static synchronized Map<String,String>  loadGazette(String modelDirName){
         ObjectInputStream ois;
         try {
@@ -625,14 +662,14 @@ public class NBModel implements NERModel, Serializable {
                     float entityTypeCount = categoryTypeCount.get(entityType);
                     float cicTokenConditionalCount = conditionalCount.get(cicToken).get(entityType);
                     //Dumpe a line cictoken, entityType, P(cictoken/entityType)=cictokenConditionaCount/entityTypeCount in the file.
-                    nbModelWriter.write(cicToken+","+entityType+","+(cicTokenConditionalCount/entityTypeCount)+"\n");
+                    nbModelWriter.write(cicToken+","+entityType.getDisplayName()+","+(cicTokenConditionalCount/entityTypeCount)+"\n");
                 }
             }
             nbModelWriter.write(PROBABILITY_CLASS_SEPARATOR+"\n");
             //Once we are done with putting individual probabilities now we will put P(C) for every class type C
             for(NEType.Type entityType: categoryTypeCount.keySet()){
                 float entityCnt = categoryTypeCount.get(entityType);
-                nbModelWriter.write(entityType+","+entityCnt/totalEntities+"\n");
+                nbModelWriter.write(entityType.getDisplayName()+","+entityCnt/totalEntities+"\n");
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -642,8 +679,8 @@ public class NBModel implements NERModel, Serializable {
     }
 
     public static void main(String[] args){
-        //train();
-        NBModel nbModel = NBModel.loadModelFromRules("NBModel.txt");
+        train();
+        //NBModel nbModel = NBModel.loadModelFromRules("NBModel.txt");
     }
     public static void mainn(String[] args) {
         Options options = new Options();

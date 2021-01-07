@@ -28,7 +28,7 @@ public class NEType {
             BUILDING(2, PLACE, "Building"),RIVER(4, PLACE, "River"),ROAD(5, PLACE, "Road"),
             MOUNTAIN(9, PLACE, "Mountain"),AIRPORT(10, PLACE, "Airport"),ISLAND(17, PLACE, "Island"),
             MUSEUM(18, PLACE, "Museum"), BRIDGE(19, PLACE, "Bridge"), HOSPITAL(25, PLACE, "Hospital"),
-            THEATRE(31, PLACE, "Theater"),LIBRARY(33, PLACE, "Library"),MONUMENT(35, PLACE, "Monument"),
+            THEATRE(31, PLACE, "Theatre"),LIBRARY(33, PLACE, "Library"),MONUMENT(35, PLACE, "Monument"),
         ORGANISATION(11, null, "Organisation"),
             COMPANY(1, ORGANISATION, "Company"),UNIVERSITY(7, ORGANISATION, "University"),
             PERIODICAL_LITERATURE(13, ORGANISATION, "Periodical Literature"),AIRLINE(20, ORGANISATION, "Airline"),
@@ -87,6 +87,7 @@ public class NEType {
         dbpediaTypesMap.put(Type.MONUMENT, new String[]{"Monument|Place"});
         dbpediaTypesMap.put(Type.DISEASE, new String[]{"Disease|Medicine"});
         dbpediaTypesMap.put(Type.EVENT, new String[]{"SocietalEvent|Event"});
+
     }
 
     public static Type[] getAllTypes(){
@@ -153,6 +154,10 @@ public class NEType {
             if(etype.getDisplayName().toLowerCase().equals(display.toLowerCase()))
                 return etype;
         }
+        //If not found in dbpediaTypesMap then it must be other.
+        if(display.toLowerCase().equals("other"))
+            return Type.OTHER;
+        //else none found, so return null.
         return null;
     }
     public static NEType.Type getCoarseType(Short ct){
