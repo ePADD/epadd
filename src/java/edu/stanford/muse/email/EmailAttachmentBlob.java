@@ -44,7 +44,7 @@ public EmailAttachmentBlob (String name, long size, Date date) {
 public EmailAttachmentBlob (String name, long size, MimeMessage m, Part p) throws MessagingException
 {
     this.filename = (name == null) ? "NONAME" : name;
-    	
+
     this.size = size;
  //   this.messageID = m.getMessageID();
   //  this.folderName = "dummy"; // m.getFolder().getFullName();
@@ -74,20 +74,25 @@ private String compute_long_form()
     type = Util.truncate(type, 10);
     sb.append(type);
      */
-    
+
     String f = (filename != null) ? filename : "NONAME";
     String short_name = Util.ellipsizeKeepingExtension(f, 30);
     sb.append(" " + Util.padWidth(short_name, 30));
 
-    String datestr = (modifiedDate != null) ? modifiedDate.toString() : "Unknown Date";
-    StringTokenizer st = new StringTokenizer(datestr, " ");
-    st.nextToken();
-    String mon = st.nextToken();
-    String date = st.nextToken();
-    st.nextToken();
-    st.nextToken();
-    String year = st.nextToken();
-    String full_date = mon + " " + date + " " + year;
+    String datestr = (modifiedDate != null) ? modifiedDate.toString() : "Unknown Date Found";
+    String full_date="";
+    if(modifiedDate==null){
+        full_date=datestr;
+    }else {
+        StringTokenizer st = new StringTokenizer(datestr, " ");
+        st.nextToken();
+        String mon = st.nextToken();
+        String date = st.nextToken();
+        st.nextToken();
+        st.nextToken();
+        String year = st.nextToken();
+        full_date = mon + " " + date + " " + year;
+    }
 
     sb.append (" | " + Util.padWidth(full_date, 12));
 
