@@ -308,19 +308,15 @@ The second one is a broad header presenting the information/logo about the insti
  */
 var renderRepositoryInfoHeader = function(repositoryDetails){
 
-    var logoURL="https://toppng.com/uploads/preview/stanford-university-logo-stanford-logo-11563198738mb4vawsk4c.png";
-    var instName="Green Library";
-    var instAddressLine1="Green Library";
-    var instAddressLine2="Stanford California 94305-6004";
-    var instPhone="(650) 725-1161";
-    var instFax="(650) 723-8690";
-    var instMail="library@stanford.edu";
-    var instURL="www.library.stanford.edu";
-    var instInformation= 'Materials from other libraries, including Green Library, ' +
-        '    can now be picked up at the East Asia Library.  Additionally, patrons are now able to borrow materials ' +
-        '    from other libraries through Interlibrary Loan. On Tuesday September 01, the Stanford Libraries Science and ' +
-        '    Engineering Group hosted a one-hour information session for new graduate students in the STEM disciplines. ' +
-        '    ';
+    var logoURL= repositoryDetails["logoURL"];//"https://toppng.com/uploads/preview/stanford-university-logo-stanford-logo-11563198738mb4vawsk4c.png";
+    var instName=repositoryDetails["instituteName"];//"Green Library";
+    var instAddressLine1=repositoryDetails["addressLine1"];//"Green Library";
+    var instAddressLine2=repositoryDetails["addressLine2"];///"Stanford California 94305-6004";
+    var instPhone=repositoryDetails["phone"];//"(650) 725-1161";
+    var instFax=repositoryDetails["fax"];//"(650) 723-8690";
+    var instMail=repositoryDetails["email"];//"library@stanford.edu";
+    var instURL=repositoryDetails["website"];//"www.library.stanford.edu";
+    var instInformation= repositoryDetails["instituteInfo"];
 
 
     //Extract institution detail and put it in the div appropriately.

@@ -13,18 +13,37 @@
 
 String repositoryName= request.getParameter("repositoryName");
 if(!Util.nullOrEmpty(repositoryName)){
+        JSONObject collectionInfo = new JSONObject();
+
+        String logoURL="", email="", instituteName = "", addressLine1="", addressLine2="", addressLine3="", phone="", fax="", website="", instituteInfo = "";
     //Return only the information related to this institution.
+    Map<String,String> repoDetails = Config.getRepoDetails(repositoryName);
+    if(repoDetails!=null){
     //Fill the fields.. repositoryName, logo url, address, information, phone, fax, email, website
-    JSONObject collectionInfo = new JSONObject();
+    //This data is stored in a file called epaddRepoDetails.txt in the home folder.
+    logoURL = repoDetails.get("logoURL");
+    email = repoDetails.get("email");
+    addressLine1 = repoDetails.get("addressLine1");
+    addressLine2 = repoDetails.get("addressLine2");
+    instituteName = repoDetails.get("instituteName");
+    phone = repoDetails.get("phone");
+    fax  = repoDetails.get("fax");
+    website = repoDetails.get("website");
+    instituteInfo = repoDetails.get("instituteInfo");
+    }
+
+    //Now write all details in json object and return
+
     collectionInfo.put("repositoryName",repositoryName);
-    collectionInfo.put("logoURL","https://toppng.com/uploads/preview/stanford-university-logo-stanford-logo-11563198738mb4vawsk4c.png");
-    collectionInfo.put("email","jschne@stanford.edu");
-    collectionInfo.put("addressLine1","Green Library");
-    collectionInfo.put("addressLine2","Green Library");
-    collectionInfo.put("addressLine3","Stanford California 94305-6004");
-    collectionInfo.put("phone","(650) 725-1161");
-    collectionInfo.put("fax","(650) 723-8690");
-    collectionInfo.put("website","http://library.stanford.edu/spc");
+    collectionInfo.put("logoURL",logoURL);
+    collectionInfo.put("email",email);
+    collectionInfo.put("addressLine1",addressLine1);
+    collectionInfo.put("addressLine2",addressLine2);
+    collectionInfo.put("instituteName",instituteName);
+    collectionInfo.put("phone",phone);
+    collectionInfo.put("fax",fax);
+    collectionInfo.put("website",website);
+    collectionInfo.put("instituteInfo",instituteInfo);
 
     response.getWriter().write(collectionInfo.toString());
 

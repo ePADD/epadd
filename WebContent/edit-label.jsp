@@ -81,13 +81,13 @@
 <form id="save-label-form">
     <div class="container">
     <!--row-->
-    <div class="row">
+    <div class="one-line">
         <!--form-wraper-->
         <div class="form-wraper clearfix panel">
             <input name="labelID" type="hidden" value="<%=(labelID == null) ? "": labelID  %>" class="form-control"/>
             <input name="archiveID" type="hidden" value="<%=archiveID%>" class="form-control"/>
 
-        <div class="row">
+        <div class="one-line">
             <h4><%=(Util.nullOrEmpty(labelID) ? edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label.create-label") : edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-label.edit-label") )%></h4>
             <br/>
             <br/>
@@ -114,7 +114,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="one-line">
             <!--Type-->
             <div class="form-group col-sm-12">
 
@@ -129,7 +129,7 @@
         </div>
 
         <!-- below div is shown only if it's a restriction label -->
-        <div style="" class="restriction-details row">
+        <div style="" class="restriction-details one-line">
             <br/>
             <div class="form-group col-sm-6">
                 <label for="restrictionType"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label.restriction-type")%></label>
