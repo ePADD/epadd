@@ -321,21 +321,21 @@ var renderRepositoryInfoHeader = function(repositoryDetails){
 
     //Extract institution detail and put it in the div appropriately.
     var header_skelton= $('<div class="instinfo-container">\n' +
-        '  <div class="row">\n' +
-        '    <div class="col-sm-3 d-flex">\n' +
-        ' <img alt="Qries" src="'+ logoURL +'"\n' +
+        '  <div class="row" style="height: auto;display: flex; flex-flow: row;">\n' +
+        '    <div class="col-sm-3 d-flex" style="margin-top:auto;margin-bottom:auto;">\n' +
+        ' <img alt="Qries" class="img-responsive" src="'+ logoURL +'"\n' +
         '     style="object-fit:scale-down;margin:auto;height:150px;padding-right:50px;">\n' +
         '     </div>\n' +
-        '    <div class="col-sm-3">\n' +
+        '    <div class="col-sm-3" style="width:auto;margin-top:auto;margin-bottom:auto;">\n' +
         '      <span class="inst-heading"> '+ instName+'</span><br>\n' +
         '      <span class="inst-address">'+instAddressLine1+'</span><br>\n' +
         '      <span class="inst-address">'+instAddressLine2+'</span><br>\n' +
         '<b class=inst-address style="font-weight:bold;color:black;">Phone:</b> <span class="inst-address">'+instPhone+'</span><br>\n' +
         '     <b class=inst-address style="font-weight:bold;color:black;">Fax:</b>  <span class="inst-address">'+instFax+'</span><br>\n' +
         '      <b class=inst-address style="font-weight:bold;color:black;">Email:</b> <span class="inst-address">'+instMail+'</span><br>\n' +
-        '      <a class="inst-address" href="www.library.stanford.edu">'+instURL+'</a><br>\n' +
+        '      <a class="inst-address" href="'+instURL+'">'+instURL+'</a><br>\n' +
         '    </div>\n' +
-        '    <div class="col-sm-6  d-flex ">\n' +
+        '    <div class="col-sm-5  d-flex " style="margin-top:auto;margin-bottom:auto;">\n' +
         '      <span class="inst-heading">Information about the institution  <span><br>\n' +
         '  <p class="inst-address" style="text-align:justify;margin-right:10px">\n' +instInformation +
         '  </p>\n' +

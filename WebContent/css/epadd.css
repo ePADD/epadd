@@ -536,9 +536,10 @@ table.dataTable td {
 	border-style: solid;
 	border-width: 1px;
 	border-color: rgb(204,204,204);
-	height: 200px;
+	/*height: 200px;*/
 	width: 1100px;
 	background-color: white;
+	display:inline-flex;
 
 }
 

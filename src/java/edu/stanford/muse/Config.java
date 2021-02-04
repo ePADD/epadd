@@ -54,7 +54,7 @@ public class Config {
     public static   Boolean 	OPENNLP_NER = false;
     public static   String DEFAULT_SETTINGS_DIR = System.getProperty("user.home") + File.separator + "epadd-settings";
     private static   String DEFAULT_BASE_DIR = System.getProperty("user.home");
-    private static final String REPO_DETAIL_FNAME = DEFAULT_BASE_DIR + File.separator + "epaddRepoDetails.txt";
+    private static final String REPO_DETAIL_FNAME = DEFAULT_SETTINGS_DIR + File.separator + "epaddRepoDetails.txt";
     public static   String DEFAULT_LEXICON = "general";
     public static   Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>(); // must be lower case
     public static   Set<String> allAttachmentExtensions = new LinkedHashSet<>(); // all attachment extensions.
@@ -240,8 +240,10 @@ public class Config {
         //If load is successful then repoDetails map should be non-null. If null then return null else return corresponding info.
         if(repoDetails==null)
             return  null;
-        else
+        else if (repoDetails.containsKey(repoName))
             return repoDetails.get(repoName);
+        else
+            return repoDetails.get("Not found");//this is a default info that will be returned to the user if no information found for the requested repo.
     }
 
     // return properties set from epadd.properties file and/or system properties
@@ -303,5 +305,6 @@ public class Config {
 
 	public static void main(String args[]){
 	    loadRepositoryDetails();
+	    Map<String,String> details = getRepoDetails("fff");
     }
 }
