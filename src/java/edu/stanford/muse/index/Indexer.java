@@ -100,7 +100,6 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
     private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
-	private transient Map<>
 	transient private Directory directory;
 	transient private Directory	directory_blob;																// for attachments
 	transient private Analyzer analyzer;
