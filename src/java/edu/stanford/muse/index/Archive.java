@@ -119,6 +119,16 @@ public class Archive implements Serializable {
         return dupMessageInfo;
     }
 
+    public List<org.apache.lucene.document.Document> getAllLuceneDocs() {
+        List<org.apache.lucene.document.Document> docs = null;
+        try {
+             docs = indexer.getAllDocsWithFields(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return docs;
+    }
+
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{

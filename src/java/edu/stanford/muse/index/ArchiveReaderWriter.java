@@ -87,6 +87,7 @@ public class ArchiveReaderWriter{
         log.info("Loading session from file " + filename + " size: " + Util.commatize(new File(filename).length() / 1024) + " KB");
 
         ObjectInputStream ois = null;
+        long startTime = System.currentTimeMillis();
 
         // keep reading till eof exception
         Map<String, Object> result = new LinkedHashMap<>();
@@ -132,6 +133,9 @@ public class ArchiveReaderWriter{
         // no groups in public mode
         if (archive != null)
         {
+            long deserializationTime = System.currentTimeMillis();
+            log.info("Time taken to read and deserialize archive object: " + (deserializationTime-startTime) + " milliseconds");
+
             /*
                 Read other three modules of Archive object which were set as transient and hence did not serialize.
                 */
@@ -154,7 +158,8 @@ public class ArchiveReaderWriter{
 
             log.info("Setting up post-deserialization action");
             archive.postDeserialized(baseDir, readOnly);
-            log.info("Post-deserialization action completed");
+            long postDeserializationDuration = System.currentTimeMillis();
+            log.info("Post-deserialization action completed in "+ (postDeserializationDuration - deserializationTime) + " milliseconds");
             ///////////////Processing metadata////////////////////////////////////////////////
             //Read collection metadata first because some of the collection's information might be used while loading other modules. Like first date and last date of an archive
             //is used when doc's dates are found corrupted.
@@ -167,32 +172,46 @@ public class ArchiveReaderWriter{
             } catch (Exception e) {
                 Util.print_exception ("Error trying to read processing metadata file", e, log);
             }
-            if(archive.collectionMetadata!=null)
-                log.info("Collection metadata loaded successfully");
+            long collectionMetadataDuration = System.currentTimeMillis();
+            if(archive.collectionMetadata!=null) {
+                log.info("Collection metadata loaded successfully in " + (collectionMetadataDuration - postDeserializationDuration) + " milliseconds");
+            }
             /////////////////AddressBook////////////////////////////////////////////
             log.info("Loading address book");
             archive.addressBook = readAddressBook(addressBookPath,archive.getAllDocs());
-            log.info("Addressbook loaded successfully");
+            long addressBookLoading = System.currentTimeMillis();
+            log.info("Addressbook loaded successfully in "+(addressBookLoading - collectionMetadataDuration)+" milliseconds");
 
             ////////////////EntityBook/////////////////////////////////////
             log.info("Loading EntityBook Manager");
+
             EntityBookManager eb = readEntityBookManager(archive,entityBookPath);
+            long entityBookLoading = System.currentTimeMillis();
             archive.setEntityBookManager(eb);
-            log.info("EntityBook Manager loaded successfully");
+            log.info("EntityBook Manager loaded successfully in "+(entityBookLoading-addressBookLoading) + " milliseconds");
             ///////////////CorrespondentAuthorityMapper/////////////////////////////
+            long correspondentAuthorityLoading, labelManagerLoading, annotationManagerLoading, blobLoading;
             if(mode!= ModeConfig.Mode.DISCOVERY) {
                 CorrespondentAuthorityMapper cmapper = null;
                 log.info("Loading Correspondent authority mapper");
+
                 cmapper = CorrespondentAuthorityMapper.readObjectFromStream(cAuthorityPath);
-                log.info("Correspondent authority mapper loaded successfully");
+                correspondentAuthorityLoading = System.currentTimeMillis();
+                log.info("Correspondent authority mapper loaded successfully in "+(correspondentAuthorityLoading-entityBookLoading) + " milliseconds");
                 archive.correspondentAuthorityMapper = cmapper;
+            }else{
+                correspondentAuthorityLoading = entityBookLoading;
             }
             /////////////////Label Mapper/////////////////////////////////////////////////////
             if(mode!= ModeConfig.Mode.DISCOVERY) {
                 log.info("Loading Label Manager");
+
                 LabelManager labelManager = readLabelManager(ArchiveReaderWriter.getArchiveIDForArchive(archive),labMapDirPath);
                 archive.setLabelManager(labelManager);
-                log.info("Label Manager loaded successfully");
+                labelManagerLoading = System.currentTimeMillis();
+                log.info("Label Manager loaded successfully in "+(labelManagerLoading-correspondentAuthorityLoading) + " milliseconds");
+            }else{
+                labelManagerLoading = correspondentAuthorityLoading;
             }
             ///////////////Annotation Manager///////////////////////////////////////////////////////
             if(mode!= ModeConfig.Mode.DISCOVERY) {
@@ -200,14 +219,20 @@ public class ArchiveReaderWriter{
                 log.info("Loading Annotation Manager");
                 AnnotationManager annotationManager = AnnotationManager.readObjectFromStream(annotationMapPath);
                 archive.setAnnotationManager(annotationManager);
-                log.info("Annotation Manager loaded successfully");
+                annotationManagerLoading = System.currentTimeMillis();
+                log.info("Annotation Manager loaded successfully in "+(annotationManagerLoading-labelManagerLoading));
+            }else{
+                annotationManagerLoading = labelManagerLoading;
             }
 
             /////////////////////Blob Normalization map (IF exists)//////////////////////////////////////////////////////
             if(new File(blobNormalizationMapPath).exists()) {
                 log.info("Computing blob normalization map (An artifact of AMatica tool)");
                 archive.getBlobStore().setNormalizationMap(blobNormalizationMapPath);
-                log.info("Blob normalization map computed successfully");
+                blobLoading = System.currentTimeMillis();
+                log.info("Blob normalization map computed successfully in "+(blobLoading-annotationManagerLoading) + " milliseconds");
+            }else{
+                blobLoading = annotationManagerLoading;
             }
             /////////////////////////////Done reading//////////////////////////////////////////////////////
             // most of this code should probably move inside Archive, maybe a function called "postDeserialized()"
@@ -763,7 +788,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 if(mode!= ModeConfig.Mode.DISCOVERY) {
                     //now intialize the cache for lexicon
                     JSPHelper.log.info("Computing summary of Lexicons");
-                    Lexicon.fillL1_Summary_all(a, false);
+                    //Lexicon.fillL1_Summary_all(a, false);
                     JSPHelper.log.info("Lexicons summary computed successfully");
 
                 }

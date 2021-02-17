@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,7 +56,7 @@ import java.util.*;
  * this class is pretty closely tied with the summarizer (which generates cards  - Muse only.).
  * the function of the indexer is to perform indexing, and provide a query
  * interface to the index.
- * 
+ *
  * This index has 2-levels: Docs and MultiDocs (that themselves contain entire
  * documents as subdocs) against each other. MultiDocs are docs for a particular month, a concept rarely used now.
  * The index can be looked up with specific terms, and returns subdocs that contain the term.
@@ -96,10 +96,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
     //I dont see why the presetQueries cannot be static. As we read these from a file, there cannot be two set of preset queries for two (or more) archives in session
 	static String[]		presetQueries				= null;
 
-	private final Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// docId -> EmailDoc
+	private final Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// email docId -> EmailDoc
 	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
     private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
+	private transient Map<>
 	transient private Directory directory;
 	transient private Directory	directory_blob;																// for attachments
 	transient private Analyzer analyzer;
@@ -109,7 +110,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	transient private IndexWriter iwriter;
 	transient private IndexWriter iwriter_blob;
 	transient Map<Integer,String> blobDocIds;
-	private transient Map<Integer,String> contentDocIds;														// these are fieldCaches of ldoc -> docId for the docIds (for performance)
+	public transient Map<Integer,String> contentDocIds;														// these are fieldCaches of ldoc -> docId for the docIds (for performance)
 
 	transient private String baseDir = null;												// where the file-based directories should be stored (under "indexes" dir)
 
@@ -569,7 +570,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * docs.size() + " documents"); try { indexDocumentCollection(mDocs, docs,
 	 * blobStore); } catch (OutOfMemoryError oome) { log.error
 	 * ("Sorry, out of memory, results may be incomplete!"); clear(); } }
-	 * 
+	 *
 	 * /** preprocessed and indexes the docs.
 	 */
 	/*
@@ -578,48 +579,48 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * currentJobStartTimeMillis = System.currentTimeMillis();
 	 * currentJobDocsetSize = allDocs.size(); currentJobDocsProcessed =
 	 * currentJobErrors = 0;
-	 * 
+	 *
 	 * System.gc(); String stat1 = "Memory status before indexing " +
 	 * allDocs.size() + " documents: " + Util.getMemoryStats(); log.info
 	 * (stat1); docClusters = mDocs;
-	 * 
+	 *
 	 * if (io.do_NER) openNLPNER.printAllTypes();
-	 * 
+	 *
 	 * computeClusterStats(mDocs); log.info ("Indexing " + allDocs.size() +
 	 * " documents in " + docClusters.size() + " clusters"); int clusterCount =
 	 * -1; int docsIndexed = 0, multiDocsIndexed = 0; Posting.nPostingsAllocated
 	 * = 0; docClusters = mDocs;
-	 * 
+	 *
 	 * try { for (MultiDoc md: docClusters) { clusterCount++; log.info
 	 * ("-----------------------------"); log.info ("Indexing " + md.docs.size()
 	 * + " documents in document cluster #" + clusterCount + ": " +
 	 * md.description);
-	 * 
+	 *
 	 * for (Document d: md.docs) { if (cancel) throw new CancelledException();
-	 * 
+	 *
 	 * String contents = ""; if (!io.ignoreDocumentBody) { try { contents =
 	 * d.getContents(); } catch (Exception e) { markDataError
 	 * ("Exception trying to read " + d + ": " + e); } }
-	 * 
+	 *
 	 * if (contents.length() > MAX_DOCUMENT_SIZE) { markDataError
 	 * ("Document too long, size " + Util.commatize(contents.length()) +
 	 * " bytes, dropping it. Begins with: " + d + Util.ellipsize(contents, 80));
 	 * contents = ""; }
-	 * 
+	 *
 	 * String subject = d.getSubjectWithoutTitle(); subject =
 	 * EmailUtils.cleanupSubjectLine(subject);
-	 * 
+	 *
 	 * indexSubdoc(subject, contents, d, blobStore);
-	 * 
+	 *
 	 * docsIndexed++; currentJobDocsProcessed++; } // end cluster
-	 * 
+	 *
 	 * log.info ("Finished indexing multi doc " + md); if (md.docs.size() > 0)
 	 * log.info ("Current stats:" + computeStats());
-	 * 
+	 *
 	 * multiDocsIndexed++; // IndexUtils.dumpDocument(clusterPrefix,
 	 * clusterText); // i don't think we need to do this except for debugging
 	 * System.out.toString("."); // goes to console, that's ok...
-	 * 
+	 *
 	 * if (md.docs.size() > 0) { String stat2 = ("Memory status after indexing "
 	 * + docsIndexed + " of " + allDocs.size() + " documents in " +
 	 * multiDocsIndexed + " (non-zero) multi-docs, total text length " +
@@ -629,13 +630,13 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * "REAL WARNING! SEVERE WARNING! Out of memory during indexing. Please retry with more memory!"
 	 * + oome; s += "\n"; log.error (s); // option: heroically soldier on and
 	 * try to work with partial results }
-	 * 
+	 *
 	 * // imp: do this at the end to save memory. doesn't save memory during
 	 * indexing but saves mem later, when the index is being used. // esp.
 	 * important for lens. openNLPNER.release_classifier(); // release memory for
 	 * classifier log.info ("Memory status after releasing classifier: " +
 	 * Util.getMemoryStats()); packIndex();
-	 * 
+	 *
 	 * return; }
 	 */
 
@@ -1181,7 +1182,7 @@ is what we want.
 		return result;
 	}
 
-	private List<org.apache.lucene.document.Document> getAllDocsWithFields(Boolean attachmentType) throws IOException
+	public List<org.apache.lucene.document.Document> getAllDocsWithFields(Boolean attachmentType) throws IOException
 	{
 		List<org.apache.lucene.document.Document> result = new ArrayList<>();
 
@@ -1223,7 +1224,7 @@ is what we want.
 		return result;
 	}
 
-	EmailDocument docForId(String id) {
+	public EmailDocument docForId(String id) {
 		return docIdToEmailDoc.get(id);
 	}
 
@@ -1247,7 +1248,7 @@ is what we want.
         int cluster = options.getCluster();
         int threshold = options.getThreshold();
 		//doesn't need term for preset regex
-		
+
 		Set<edu.stanford.muse.index.Document> docs_in_cluster = null;
 		if (cluster != -1)
 			docs_in_cluster = new LinkedHashSet<>((Collection) getDocsInCluster(cluster));
