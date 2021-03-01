@@ -66,6 +66,8 @@
 
 		//After lexicon is saved, invalidate the cache for the result of getCountsAsJson
 		//should we force recomputation here only??Yes
+		//Before doing the recomputation delete the file Lexicon_summary.data from the basedir.
+		archive.getLexicon(lexiconName).invalidateLexiconSummary(archive,lexiconName);
 		archive.getLexicon(lexiconName).fillL1_Summary(lexiconName,archive,false);
 		//Archive..cacheLexiconListing(lexiconName,ArchiveReaderWriter.getArchiveIDForArchive(archive));
 

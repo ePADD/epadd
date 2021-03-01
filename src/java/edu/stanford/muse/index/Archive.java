@@ -119,10 +119,10 @@ public class Archive implements Serializable {
         return dupMessageInfo;
     }
 
-    public List<org.apache.lucene.document.Document> getAllLuceneDocs() {
-        List<org.apache.lucene.document.Document> docs = null;
+    public Map<String,Span[]> getAllEntities(int maxdocs) {
+        Map<String,Span[]> docs = null;
         try {
-             docs = indexer.getAllDocsWithFields(false);
+             docs = indexer.getAllEntitiesInDocs(maxdocs);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -2117,14 +2117,14 @@ after maskEmailDomain.
         return indexer.contentDocIds.get(ldocId);
     }*/
 
-    public Integer getLDocIdForBlobDocId(String docId){
+    /*public Integer getLDocIdForBlobDocId(String docId){
         return indexer.blobDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(Map.Entry::getKey).orElse(0);
-    }
+    }*/
 
-    public String getDocIdForBlobLDocId(Integer ldocId) {
+    /*public String getDocIdForBlobLDocId(Integer ldocId) {
         return indexer.blobDocIds.get(ldocId);
     }
-
+*/
     //input is a bag present in userdir
     public static Bag readArchiveBag(String userdir) {
         Path rootDir = Paths.get(userdir);

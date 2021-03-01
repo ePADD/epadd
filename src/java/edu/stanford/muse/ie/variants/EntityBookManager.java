@@ -1,11 +1,8 @@
 package edu.stanford.muse.ie.variants;
 
-import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
-import edu.stanford.muse.index.Indexer;
-import edu.stanford.muse.ner.Entity;
-import edu.stanford.muse.ner.NER;
+import edu.stanford.muse.index.EmailDocument;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
@@ -16,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;import org.apache.poi.util.ArrayUtil;
 
-import javax.print.Doc;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,102 +52,12 @@ public class EntityBookManager {
         }
     }
 
-    /*
-    This method recalculates cache for entitybook of given type. If type is given as Max, it does it for all at once. This method was carved out mainly to reduce the recalculation of
-    individual type entitybook (which involves expensive operation of lucene search for each doc).
-     */
-    private void recalculateCache(Short giventype){
-
-        log.info("Computing EntityBook Cache");
-        long start = System.currentTimeMillis();
-        //a subtle issue: If type is Short.MAX_VALUE then we need to have docsetmap one for each type.
-        //so create a map of this map.
-        Map<Short, Map<MappedEntity,Pair<Double,Set<Document>>>> alldocsetmap = new LinkedHashMap<>();
-        // now fill this map.
-        if(giventype==Short.MAX_VALUE){
-            for(NEType.Type t: NEType.Type.values()) {
-                Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
-                alldocsetmap.put(t.getCode(),docsetmap);
-            }
-        }else{
-            Map<MappedEntity,Pair<Double,Set<Document>>> docsetmap = new LinkedHashMap<>();
-            alldocsetmap.put(giventype,docsetmap);
-        }
-        //iterate over
-            //iterate over lucene doc to recalculate the count and other summaries of the modified
-            //fill cache summary for ebook in other fields of ebook.
-            double theta = 0.001;
-
-        long luceneduration1=0;
-        long luceneduration2=0;
-        long additionduration=0;
-            for (Document doc : mArchive.getAllDocs())
-
-            {
-
-                continue;
-                /*long t1 = System.currentTimeMillis();
-                Span[] spansbody = getEntitiesInDocFromLucene(doc, true);
-                luceneduration1 = (System.currentTimeMillis() - t1) + luceneduration1;
-                t1 = System.currentTimeMillis();
-                Span[] spans = getEntitiesInDocFromLucene(doc, false);
-                luceneduration2 = (System.currentTimeMillis() - t1) + luceneduration2;
-                t1 = System.currentTimeMillis();
-                Span[] allspans = ArrayUtils.addAll(spans,spansbody);
-                additionduration = additionduration + (System.currentTimeMillis() - t1);
-                Set<String> seenInThisDoc = new LinkedHashSet<>();
-
-                for (Span span : allspans) {
-                    continue;
-                    // bail out if not of entity type that we're looking for, or not enough confidence, but don't bail out if we have to do it for all types, i.e. type is Short.MAX_TYPE
-                    *//*if (giventype!=Short.MAX_VALUE && (span.type != giventype || span.typeScore < theta))
-                        continue;
-                    Short type = span.type;//if type is Short.Max_Type then set the type as the current type, if not this is like a NOP.
-                    Double score = new Double(span.typeScore);
-                    String name = span.getText();
-                    String canonicalizedname = EntityBook.canonicalize(name);
-
-                    //  map the name to its display name. if no mapping, we should get the same name back as its displayName
-                    MappedEntity mappedEntity = (mTypeToEntityBook.get(type).nameToMappedEntity.get(canonicalizedname));
-                    if(mappedEntity==null){
-                        continue; //It implies that we have erased some names from the entitybook so no need to consider them.
-                    }
-                    //add this doc in the docsetmap for the mappedEntity.
-                    Double oldscore= Double.valueOf(0);
-                    if(alldocsetmap.get(type).get(mappedEntity)!=null)
-                        oldscore = alldocsetmap.get(type).get(mappedEntity).first;
-                    Double finalscore = Double.max(oldscore,score);
-                    Set<Document> docset  = new LinkedHashSet<>();
-                    if(alldocsetmap.get(type).get(mappedEntity)!=null)
-                        docset=alldocsetmap.get(type).get(mappedEntity).second;
-                    docset.add(doc);
-                    alldocsetmap.get(type).put(mappedEntity,new Pair(finalscore,docset));*//*
-
-                }*/
-            }
-            //fill cache summary for ebook in other fields of ebook.
-        //Beware!! what happens if type is MAX (means we need to do this for all types).
-        long end = System.currentTimeMillis();
-        log.info("Finished computing entitybook cache in "+ (end-start)+" milliseconds");
-        if(giventype== Short.MAX_VALUE) {
-            for(NEType.Type t: NEType.Type.values()) {
-                mTypeToEntityBook.get(t.getCode()).fillSummaryFields(alldocsetmap.get(t.getCode()),mArchive);
-            }
-        }else
-            mTypeToEntityBook.get(giventype).fillSummaryFields(alldocsetmap.get(giventype),mArchive);
-
-        log.info("Luceneduration 1 = "+luceneduration1+" milliseconds, Luceneduration 2 = "+luceneduration2 + " milliseconds, addition duration = "+additionduration+ " milliseconds");
-        log.info("Finished filling summary of entitybook cache in "+ (System.currentTimeMillis()-end)+" milliseconds");
-
-        log.info("EntityBook Cache computed successfully");
-        }
-
 
     /*
 This method recalculates cache for entitybook of given type. If type is given as Max, it does it for all at once. This method was carved out mainly to reduce the recalculation of
 individual type entitybook (which involves expensive operation of lucene search for each doc).
  */
-    private void recalculateCache2(Short giventype){
+    private void recalculateCache(Short giventype){
 
         log.info("Computing EntityBook Cache");
         long start = System.currentTimeMillis();
@@ -176,22 +82,14 @@ individual type entitybook (which involves expensive operation of lucene search 
         long luceneduration1=0;
         long luceneduration2=0;
         long additionduration=0;
-        List<org.apache.lucene.document.Document> luceneDocs = mArchive.getAllLuceneDocs();
+        Map<String, Span[]> docEntitiesMap = mArchive.getAllEntities(mArchive.getAllDocs().size());
 
-        for (org.apache.lucene.document.Document doc : luceneDocs)
+
+        for (String docid:docEntitiesMap.keySet())
         {
 
-                long t1 = System.currentTimeMillis();
-                Span[] spansbody = NER.getNames(doc,true);//getEntitiesInDocFromLucene(doc, true);
-                luceneduration1 = (System.currentTimeMillis() - t1) + luceneduration1;
-                t1 = System.currentTimeMillis();
-                Span[] spans = NER.getNames(doc,false);//getEntitiesInDocFromLucene(doc, false);
-                luceneduration2 = (System.currentTimeMillis() - t1) + luceneduration2;
-                t1 = System.currentTimeMillis();
-                Span[] allspans = ArrayUtils.addAll(spans,spansbody);
-                additionduration = additionduration + (System.currentTimeMillis() - t1);
-                Set<String> seenInThisDoc = new LinkedHashSet<>();
-
+                Span[] allspans = docEntitiesMap.get(docid);
+                EmailDocument edoc = mArchive.indexer.docForId(docid);
                 for (Span span : allspans) {
                     // bail out if not of entity type that we're looking for, or not enough confidence, but don't bail out if we have to do it for all types, i.e. type is Short.MAX_TYPE
                     if (giventype!=Short.MAX_VALUE && (span.type != giventype || span.typeScore < theta))
@@ -214,8 +112,7 @@ individual type entitybook (which involves expensive operation of lucene search 
                     Set<Document> docset  = new LinkedHashSet<>();
                     if(alldocsetmap.get(type).get(mappedEntity)!=null)
                         docset=alldocsetmap.get(type).get(mappedEntity).second;
-                    String ldocid = doc.get("docId");
-                    docset.add(mArchive.indexer.docForId(ldocid));
+                    docset.add(edoc);
                     //docset.add(doc);
                     alldocsetmap.get(type).put(mappedEntity,new Pair(finalscore,docset));
 
@@ -232,8 +129,8 @@ individual type entitybook (which involves expensive operation of lucene search 
         }else
             mTypeToEntityBook.get(giventype).fillSummaryFields(alldocsetmap.get(giventype),mArchive);
 
-        log.info("Luceneduration 1 = "+luceneduration1+" milliseconds, Luceneduration 2 = "+luceneduration2 + " milliseconds, addition duration = "+additionduration+ " milliseconds");
-        log.info("Finished filling summary of entitybook cache in "+ (System.currentTimeMillis()-end)+" milliseconds");
+//        log.info("Luceneduration 1 = "+luceneduration1+" milliseconds, Luceneduration 2 = "+luceneduration2 + " milliseconds, addition duration = "+additionduration+ " milliseconds");
+//        log.info("Finished filling summary of entitybook cache in "+ (System.currentTimeMillis()-end)+" milliseconds");
 
         log.info("EntityBook Cache computed successfully");
     }
@@ -288,7 +185,7 @@ individual type entitybook (which involves expensive operation of lucene search 
 
         }
         if(filledFromFiles){
-            entityBookManager.recalculateCache2(Short.MAX_VALUE);
+            entityBookManager.recalculateCache(Short.MAX_VALUE);
         }
 
         return entityBookManager;
@@ -507,7 +404,7 @@ individual type entitybook (which involves expensive operation of lucene search 
             EntityBook entityBook = EntityBook.readObjectFromStream(br,type);
             mTypeToEntityBook.put(type,entityBook);
             if(recalculateCache)
-                recalculateCache2(type);
+                recalculateCache(type);
 
 
         } catch (IOException e) {

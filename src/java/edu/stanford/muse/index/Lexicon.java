@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 public class Lexicon implements Serializable {
-	
+
 	private static final Logger log =  LogManager.getLogger(Lexicon.class);
 	public static final String LEXICON_SUFFIX = ".lex.txt";
 	public static final String REGEX_LEXICON_NAME = "regex"; // this is a special lexicon name, to which regex search is applied
@@ -58,6 +58,7 @@ public class Lexicon implements Serializable {
 
 	private static final long serialVersionUID = 1377456163104266479L;//1L;
 
+	public static String lexiconsummarysuffix = "_lexicon_summary.data";
 	public static Map<String, Lexicon> lexiconMap = new LinkedHashMap<>(); // directory of lexicons // not used but still need when deserialized old archives
 	public final String name;
 	private final Map<String, Lexicon1Lang> languageToLexicon = new LinkedHashMap<>();
@@ -81,7 +82,7 @@ public class Lexicon implements Serializable {
 		private static final long serialVersionUID = 70739504277864045L;//1L;
 
 		/** there are 2 caption -> query maps. the expanded query is the actual query made to the index.
-		 * the rawquery is what the user specified (in the <name>.<lang>.lex.txt file 
+		 * the rawquery is what the user specified (in the <name>.<lang>.lex.txt file
 		 */
 		public Map<String, String> captionToExpandedQuery = new LinkedHashMap<>();
 		Map<String, String> captionToRawQuery = new LinkedHashMap<>();
@@ -108,23 +109,23 @@ public class Lexicon implements Serializable {
 					log.warn ("line ignored: " + line);
 					continue;
 				}
-				
+
 				String caption = st.nextToken().trim();
 				String query = st.nextToken().trim();
 				String existingQuery = captionToRawQuery.get(caption);
 				if (!Util.nullOrEmpty(existingQuery))
 					query = existingQuery + "|" + query;
-				captionToRawQuery.put(caption, query);				
+				captionToRawQuery.put(caption, query);
 			}
 			expandQueries();
 		}
-		
+
 		void setRawQueryMap(Map<String, String> map)
 		{
 			captionToRawQuery = map;
 			expandQueries();
 		}
-		
+
 		private void expandQueries()
 		{
 			captionToExpandedQuery.clear(); // clear the expanded query map first, we don't want any residue from the previous state
@@ -162,7 +163,7 @@ public class Lexicon implements Serializable {
                     if (i < orTerms.size()-1)
 						expandedQuery += "|";
 				}
-				
+
 				if (caption.length() > 0 && expandedQuery.length() > 0)
 				{
 					// if caption already exists, just add to it
@@ -172,12 +173,12 @@ public class Lexicon implements Serializable {
 					captionToExpandedQuery.put(caption, expandedQuery);
 				}
 			}
-			
+
 			// remove the non top-level captions
 			for (String caption: usedInOtherCaptions)
 				captionToExpandedQuery.remove(caption);
 		}
-		
+
 		void save(String filename) throws Exception
 		{
 			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8));
@@ -190,8 +191,8 @@ public class Lexicon implements Serializable {
 
 
 
-		/** main entry point: returns a category -> docs map for each (non-zero) category in the current captionToQueryMap. 
-		 * @indexer must already have run 
+		/** main entry point: returns a category -> docs map for each (non-zero) category in the current captionToQueryMap.
+		 * @indexer must already have run
 		 * @docs results are restrictes to these docs. assumes all docs if docs is null or empty.
 		 * @captions (null/none = all)
          *
@@ -243,7 +244,7 @@ public class Lexicon implements Serializable {
 			}
 			return result;
 		}
-		
+
 		/** NOTA = None of the above. like getEmotions but also returns a category called None for docs that don't match any sentiment.
 		 */
 		Map<String, Collection<Document>> getEmotionsWithNOTA(Indexer indexer, Collection<Document> docs, boolean originalContentOnly)
@@ -253,7 +254,7 @@ public class Lexicon implements Serializable {
 				allDocs = indexer.docs;
 			else
 				allDocs = docs;
-			
+
 			Map<String, Collection<Document>> map = getEmotions (indexer, docs, originalContentOnly);
 
 			// collects docs with any sentiments
@@ -269,7 +270,7 @@ public class Lexicon implements Serializable {
 			map.put("None", docsWithNoSentiment);
 			return map;
 		}
-		
+
 		/** returns docs that don't match any sentiment. */
 		public Set<Document> getDocsWithNoEmotions (Indexer indexer, Set<Document> docs, boolean originalContentOnly)
 		{
@@ -278,7 +279,7 @@ public class Lexicon implements Serializable {
 				allDocs = indexer.docs;
 			else
 				allDocs = docs;
-			
+
 			Map<String, Collection<Document>> map = getEmotions (indexer, docs, originalContentOnly);
 
 			// collects docs with any sentiments
@@ -294,7 +295,7 @@ public class Lexicon implements Serializable {
 			return docsWithNoSentiment;
 		}
 
-		
+
 		public String toString()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -353,16 +354,16 @@ public class Lexicon implements Serializable {
 
 	}
 	public Set<String> getAvailableLanguages()	{ return Collections.unmodifiableSet(languageToLexicon.keySet()); }
-	
+
 	// identify all the langs in the docs, and the corresponding lexicons
 	public Collection<Lexicon1Lang> getRelevantLexicon1Langs(Collection<Document> docs)
 	{
 		if (docs == null)
 			return languageToLexicon.values(); // just return all lexicons
-		
+
 		Set<String> languages = IndexUtils.allLanguagesInDocs(docs);
 		Set<Lexicon1Lang> lexicons = new LinkedHashSet<>();
-		for (String lang: languages)				
+		for (String lang: languages)
 		{
 			Lexicon1Lang lex = languageToLexicon.get(lang);
 			if (lex != null)
@@ -385,13 +386,99 @@ public class Lexicon implements Serializable {
 
 	}
 
+	/**
+	 * This method reads the lexicon summary data from the disc and fills the structure.
+	 * @param archive
+	 * @return -1 if summary file doesn't exist or the summary is empty, otherwise returns 1.
+	 * @throws IOException
+	 */
+	private int readLexiconSummaryFromFile(Archive archive, String lexiconName) throws IOException {
+		String lexiconsubdir = archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR;
+		String lexicon_summary_file = lexiconsubdir + File.separator+ lexiconName+lexiconsummarysuffix;
+			File f =  new File(lexicon_summary_file);
+			if(f.exists()){
+				//read from this file and fill the L1_Summary_category object.
+				StringBuilder sb = new StringBuilder();
+				LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(f)));
+				while (true)
+				{
+					String line = lnr.readLine();
+					if (line == null)
+						break;
+					line = line.trim();
+					//split the line on separator ## the format of  the line is
+					//lexicon name##count
+					String[] words = line.split("##");
+					//assert that the length of words should be 2.
+					if(words.length!=2) {
+						log.warn("Some problem with the data in the lexicon summary file - " + line);
+						continue;
+					}
+					//convert word[1] to integer
+					int count = Integer.parseInt(words[1]);
+					L1_Summary_category_count.put(words[0],count);
+				}
+				if(L1_Summary_category_count.size()>0)
+					return 1;
+				else
+					return -1;
+			}else{
+				return -1;
+			}
+
+	}
+
+	/**
+	 * This function reads the content of the lexicon summary structure and stores it in the disc in the form of
+	 * lexiconname##count
+	 */
+	private void writeLexiconSummaryToFile(Archive archive, String lexiconName) throws IOException {
+		String lexiconsubdir = archive.baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR;
+		String lexicon_summary_file = lexiconsubdir + File.separator+ lexiconName+lexiconsummarysuffix;
+
+		try (BufferedWriter br = new BufferedWriter(new FileWriter(lexicon_summary_file))) {
+
+			//Iterate over L1_Summary_category_count and put the lexicon name and count in the format
+			//name##count
+			for (String lexicon : L1_Summary_category_count.keySet()) {
+				int cnt = L1_Summary_category_count.get(lexicon);
+				String data = lexicon + "##" + Integer.toString(cnt);
+				br.append(data);
+				br.append("\n");
+			}
+
+		}
+	}
+
+	public void invalidateLexiconSummary(Archive archive,String lexiconName){
+		//delete the lexicon summary persistence file if it exists so that fillL1_Summary method, when executed, will refill the summary object
+		//by querying the index again.
+		String lexiconsubdir = archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR;
+		String lexicon_summary_file = lexiconsubdir + File.separator+ lexiconName+lexiconsummarysuffix;
+		File f =  new File(lexicon_summary_file);
+		if(f.exists()){
+			f.delete();
+		}
+
+	}
 	/*
 	This method fills the summary object for a particular lexicon
 	 */
 	public void fillL1_Summary(String lexiconName, Archive archive, boolean originalContentOnly){
 		//clear summary objects
 		L1_Summary_category_count.clear();
-	//call searchresult from here...
+		//If the file Lexicon_summary.data is present then read that file and fill in the map L1_Summary_category_count
+		//else fill in by reading index and at the end save this file in the disk with name Lexicon_summary.data
+		try {
+			int res = readLexiconSummaryFromFile(archive, lexiconName);
+			if(res!=-1)
+				return; //means the file was read successfully and the structure was filled.
+		} catch (IOException e) {
+			log.info("Lexicon summary disc file is not readable or present. Please check. Now going to build the summary by querying the index");
+		}
+
+		//If control reaches here then construct the L1_Summary_category_count object by querying the index.
+		//call searchresult from here...
 		List<Document> docs = archive.indexer.docs;
 
 		//Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs); INSTEAD of getting only relevant lexicons get all because for now we are not using the language layer.
@@ -417,6 +504,13 @@ public class Lexicon implements Serializable {
 				L1_Summary_category_count.put(category,output.getDocumentSet().size());
 			}
 		}
+		//Once done, save this structure in the disc.
+		try {
+			writeLexiconSummaryToFile(archive,lexiconName);
+		} catch (IOException e) {
+			log.warn("Unable to store lexicon summary object in the disc. Please check as it will impact the loading time of this archive by constructing the summary using index query");
+			e.printStackTrace();
+		}
 
 	}
 	/*
@@ -439,10 +533,10 @@ public class Lexicon implements Serializable {
 
     }
 
-	/** Core sentiment detection method. doNota = none of the above 
+	/** Core sentiment detection method. doNota = none of the above
 	 * @param captions (null/none = all) */
 	public Map<String, Collection<Document>> getEmotions (Indexer indexer, Collection<Document> docs, boolean doNota, boolean originalContentOnly, String... captions)
-	{	
+	{
 		//Collection<Lexicon1Lang> lexicons  = getRelevantLexicon1Langs(docs); For now just get all language lexicons because we are not using the language layer.
 		Collection<Lexicon1Lang> lexicons = languageToLexicon.values();
 		Map<String, Collection<Document>> result = new LinkedHashMap<>();
@@ -463,12 +557,12 @@ public class Lexicon implements Serializable {
 					result.put(caption, resultDocsThisLang);
 				else
 					resultDocs.addAll(resultDocsThisLang);
-			}				
+			}
 		}
 		// TODO: the result can be cached at server to avoid redundant computation (by concurrent users, which are few for now)
 		return result;
 	}
-	
+
 	private Set<Document> getDocsWithAnyEmotions(Indexer indexer, Collection<Document> docs, boolean originalContentOnly)
 	{
 		Set<Document> result = new LinkedHashSet<>();
@@ -485,10 +579,10 @@ public class Lexicon implements Serializable {
 		result.removeAll(getDocsWithAnyEmotions(indexer, docs, originalContentOnly));
 		return result;
 	}
-	
+
 	/** returns docs with ALL given sentiments.
 	 * special cases: sentiments can be an array of length 1 and be "None", in which case all documents with no sentiments are returned.
-	 * special cases: sentiments can be an array of length 1 and be "all", in which case all documents with any sentiments are returned. 
+	 * special cases: sentiments can be an array of length 1 and be "all", in which case all documents with any sentiments are returned.
 	 * @param captions */
 	public Collection<Document> getDocsWithSentiments (String sentiments[], Indexer indexer, Collection<Document> docs, int cluster, boolean originalContentOnly, String... captions)
 	{
@@ -518,14 +612,14 @@ public class Lexicon implements Serializable {
 		//result.retainAll(docs);
 		return Util.setIntersection(result, docs_set);
 	}
-	
+
 	/** gets map for all languages */
     private Map<String, String> getCaptionToQueryMap(Collection<Document> docs)
 	{
 		// identify all the langs in the docs, and the corresponding lexicons
 		Set<String> languages = IndexUtils.allLanguagesInDocs(docs);
 		Set<Lexicon1Lang> lexicons = new LinkedHashSet<>();
-		for (String lang: languages)				
+		for (String lang: languages)
 		{
 			Lexicon1Lang lex = languageToLexicon.get(lang);
 			if (lex != null)
@@ -534,24 +628,24 @@ public class Lexicon implements Serializable {
 			else
 				log.warn ("Warning: no support for " + lang + " in lexicon " + name);
 		}
-		
+
 		Map<String, String> result = new LinkedHashMap<>();
 		// aggregate results for each lang into result
 		for (Lexicon1Lang lex: lexicons)
 		{
 			Map<String, String> resultsForThisLang = lex.captionToExpandedQuery;
-			
+
 			for (String caption: resultsForThisLang.keySet())
 			{
 				String queryThisLang = resultsForThisLang.get(caption);
                 // if caption doesn't exist already, create a new entry, or else add to the existing set of docs that match this caption
                 result.merge(caption, queryThisLang, (a, b) -> a + "|" + b);
-			}				
+			}
 		}
 		return result;
 	}
-	
-	/** returns whether it succeeded 
+
+	/** returns whether it succeeded
 	 * @throws Exception */
 	public boolean save(String dir, String language,Archive archive) throws Exception
 	{
@@ -566,8 +660,8 @@ public class Lexicon implements Serializable {
 		return true;
 	}
 
-	/** updates the map for a given language 
-	 * @throws IOException 
+	/** updates the map for a given language
+	 * @throws IOException
 	 * @throws FileNotFoundException */
 	public boolean update(String language, Map<String, String> map) {
 		language = language.toLowerCase();
@@ -582,10 +676,10 @@ public class Lexicon implements Serializable {
 		Lexicon1Lang lex = languageToLexicon.get(language);
 		if (lex == null)
 			return null;
-		
+
 		return Collections.unmodifiableMap(lex.captionToRawQuery);
 	}
-	
+
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -618,7 +712,7 @@ public class Lexicon implements Serializable {
 	public Set<String> wordsForSentiments (Indexer indexer, Collection<Document> docs, String sentiments[])
 	{
 		Map<String, String> captionToQueryMap = getCaptionToQueryMap(docs);
-		
+
 		if (sentiments == null)
 			return null;
 		Set<String> result = new LinkedHashSet<>();

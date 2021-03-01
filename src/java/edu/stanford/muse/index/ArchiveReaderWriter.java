@@ -240,6 +240,7 @@ public class ArchiveReaderWriter{
             log.info("Assigning thread IDs");
             archive.assignThreadIds();
             log.info("Thread IDs assigned successfully");
+            log.info("Total time spent in archive loading is "+(System.currentTimeMillis()-startTime)+" milliseconds");
         }
 
         return result;
@@ -707,6 +708,7 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 }
             }
         }
+        log.info("The time spent in calculating metadata is "+ System.currentTimeMillis());
 
 
         //if this was an incremental update in collection metadata, we need to update the bag's metadata as well..
@@ -788,8 +790,11 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 if(mode!= ModeConfig.Mode.DISCOVERY) {
                     //now intialize the cache for lexicon
                     JSPHelper.log.info("Computing summary of Lexicons");
-                    //Lexicon.fillL1_Summary_all(a, false);
-                    JSPHelper.log.info("Lexicons summary computed successfully");
+                    //To reduce the load time that is spent in this summary calculation we first check if there is a file named 'lexicon-summary'
+                    //in the basedir. If it is present then the summary datastructure is filled using that file. If not then the load
+                    long startTime = System.currentTimeMillis();
+                    Lexicon.fillL1_Summary_all(a, false);
+                    JSPHelper.log.info("Lexicons summary computed successfully in "+ (System.currentTimeMillis()-startTime) + " milliseconds");
 
                 }
                 return a;
