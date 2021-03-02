@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012 The Stanford MobiSocial Laboratory
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import edu.stanford.muse.lang.Languages;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.util.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -51,12 +52,13 @@ import java.io.*;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * this class is pretty closely tied with the summarizer (which generates cards  - Muse only.).
  * the function of the indexer is to perform indexing, and provide a query
  * interface to the index.
- * 
+ *
  * This index has 2-levels: Docs and MultiDocs (that themselves contain entire
  * documents as subdocs) against each other. MultiDocs are docs for a particular month, a concept rarely used now.
  * The index can be looked up with specific terms, and returns subdocs that contain the term.
@@ -96,7 +98,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
     //I dont see why the presetQueries cannot be static. As we read these from a file, there cannot be two set of preset queries for two (or more) archives in session
 	static String[]		presetQueries				= null;
 
-	private final Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// docId -> EmailDoc
+	private final Map<String, EmailDocument>				docIdToEmailDoc			= new LinkedHashMap<>();			// email docId -> EmailDoc
 	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
     private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
@@ -105,11 +107,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	transient private Analyzer analyzer;
 	transient private IndexSearcher isearcher;
 	transient private IndexSearcher	isearcher_blob;
-	transient private QueryParser parser, parserOriginal, parserSubject, parserCorrespondents, parserRegex, parserMeta;		// parserOriginal searches the original content (non quoted parts) of a message
+	transient private QueryParser parser, parserEntityFields, parserOriginal, parserSubject, parserCorrespondents, parserRegex, parserMeta;		// parserOriginal searches the original content (non quoted parts) of a message
 	transient private IndexWriter iwriter;
 	transient private IndexWriter iwriter_blob;
 	transient Map<Integer,String> blobDocIds;
-	private transient Map<Integer,String> contentDocIds;														// these are fieldCaches of ldoc -> docId for the docIds (for performance)
+	public transient Map<Integer,String> contentDocIds;														// these are fieldCaches of ldoc -> docId for the docIds (for performance)
 
 	transient private String baseDir = null;												// where the file-based directories should be stored (under "indexes" dir)
 
@@ -569,7 +571,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * docs.size() + " documents"); try { indexDocumentCollection(mDocs, docs,
 	 * blobStore); } catch (OutOfMemoryError oome) { log.error
 	 * ("Sorry, out of memory, results may be incomplete!"); clear(); } }
-	 * 
+	 *
 	 * /** preprocessed and indexes the docs.
 	 */
 	/*
@@ -578,48 +580,48 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * currentJobStartTimeMillis = System.currentTimeMillis();
 	 * currentJobDocsetSize = allDocs.size(); currentJobDocsProcessed =
 	 * currentJobErrors = 0;
-	 * 
+	 *
 	 * System.gc(); String stat1 = "Memory status before indexing " +
 	 * allDocs.size() + " documents: " + Util.getMemoryStats(); log.info
 	 * (stat1); docClusters = mDocs;
-	 * 
+	 *
 	 * if (io.do_NER) openNLPNER.printAllTypes();
-	 * 
+	 *
 	 * computeClusterStats(mDocs); log.info ("Indexing " + allDocs.size() +
 	 * " documents in " + docClusters.size() + " clusters"); int clusterCount =
 	 * -1; int docsIndexed = 0, multiDocsIndexed = 0; Posting.nPostingsAllocated
 	 * = 0; docClusters = mDocs;
-	 * 
+	 *
 	 * try { for (MultiDoc md: docClusters) { clusterCount++; log.info
 	 * ("-----------------------------"); log.info ("Indexing " + md.docs.size()
 	 * + " documents in document cluster #" + clusterCount + ": " +
 	 * md.description);
-	 * 
+	 *
 	 * for (Document d: md.docs) { if (cancel) throw new CancelledException();
-	 * 
+	 *
 	 * String contents = ""; if (!io.ignoreDocumentBody) { try { contents =
 	 * d.getContents(); } catch (Exception e) { markDataError
 	 * ("Exception trying to read " + d + ": " + e); } }
-	 * 
+	 *
 	 * if (contents.length() > MAX_DOCUMENT_SIZE) { markDataError
 	 * ("Document too long, size " + Util.commatize(contents.length()) +
 	 * " bytes, dropping it. Begins with: " + d + Util.ellipsize(contents, 80));
 	 * contents = ""; }
-	 * 
+	 *
 	 * String subject = d.getSubjectWithoutTitle(); subject =
 	 * EmailUtils.cleanupSubjectLine(subject);
-	 * 
+	 *
 	 * indexSubdoc(subject, contents, d, blobStore);
-	 * 
+	 *
 	 * docsIndexed++; currentJobDocsProcessed++; } // end cluster
-	 * 
+	 *
 	 * log.info ("Finished indexing multi doc " + md); if (md.docs.size() > 0)
 	 * log.info ("Current stats:" + computeStats());
-	 * 
+	 *
 	 * multiDocsIndexed++; // IndexUtils.dumpDocument(clusterPrefix,
 	 * clusterText); // i don't think we need to do this except for debugging
 	 * System.out.toString("."); // goes to console, that's ok...
-	 * 
+	 *
 	 * if (md.docs.size() > 0) { String stat2 = ("Memory status after indexing "
 	 * + docsIndexed + " of " + allDocs.size() + " documents in " +
 	 * multiDocsIndexed + " (non-zero) multi-docs, total text length " +
@@ -629,13 +631,13 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	 * "REAL WARNING! SEVERE WARNING! Out of memory during indexing. Please retry with more memory!"
 	 * + oome; s += "\n"; log.error (s); // option: heroically soldier on and
 	 * try to work with partial results }
-	 * 
+	 *
 	 * // imp: do this at the end to save memory. doesn't save memory during
 	 * indexing but saves mem later, when the index is being used. // esp.
 	 * important for lens. openNLPNER.release_classifier(); // release memory for
 	 * classifier log.info ("Memory status after releasing classifier: " +
 	 * Util.getMemoryStats()); packIndex();
-	 * 
+	 *
 	 * return; }
 	 */
 
@@ -733,6 +735,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			String[] defaultSearchFields, defaultSearchFieldsOriginal;
 			String[] defaultSearchFieldSubject = new String[] { "title" }; // for subject only search
 			String[] defaultSearchFieldCorrespondents;
+			String[] defaultSearchFieldEntities = new String[] {"names","en_names_title"};//For searching in the entity field of the document.
             //body field should be there, as the content of the attachment lies in this field, should also include meta field?
             //why the search over en-names and en-names-original when body/body_original is included in the search fields?
             defaultSearchFields = new String[] { "body", "title", "to_names", "from_names", "cc_names", "bcc_names", "to_emails", "from_emails", "cc_emails", "bcc_emails" };
@@ -750,6 +753,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 			if (parser == null) {
 				//parser = new QueryParser(MUSE_LUCENE_VERSION, defaultSearchField, analyzer);
 				parser = new MultiFieldQueryParser(defaultSearchFields, analyzer);
+				//parserEntityFields = new MultiFieldQueryParser(defaultSearchFieldEntities);
 				parserOriginal = new MultiFieldQueryParser( defaultSearchFieldsOriginal, analyzer);
 				parserSubject = new MultiFieldQueryParser(defaultSearchFieldSubject, analyzer);
 				parserCorrespondents = new MultiFieldQueryParser(defaultSearchFieldCorrespondents, analyzer);
@@ -775,7 +779,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
                 Bits liveDocs = MultiFields.getLiveDocs(ireader);
                 Set<String> fieldsToLoad = new HashSet<>();
                 fieldsToLoad.add("docId");
-                for(int i=0;i<ireader.maxDoc();i++){
+                /*for(int i=0;i<ireader.maxDoc();i++){
 					org.apache.lucene.document.Document doc = ireader.document(i,fieldsToLoad);
                     if(liveDocs!=null && !liveDocs.get(i))
                         continue;
@@ -783,7 +787,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
                     if(doc == null || doc.get("docId") == null)
 						continue;
 					contentDocIds.put(i, doc.get("docId"));
-				}
+				}*/
 				log.info("Loaded: "+contentDocIds.size()+" content docs");
 			}
 
@@ -799,7 +803,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
                 Bits liveDocs = MultiFields.getLiveDocs(ireader_blob);
                 Set<String> fieldsToLoad = new HashSet<>();
 				fieldsToLoad.add("docId");
-				for(int i=0;i<ireader_blob.maxDoc();i++){
+				/*for(int i=0;i<ireader_blob.maxDoc();i++){
 					org.apache.lucene.document.Document doc = ireader_blob.document(i,fieldsToLoad);
                     if(liveDocs!=null && !liveDocs.get(i))
                         continue;
@@ -807,7 +811,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 					if(doc == null || doc.get("docId") == null)
 						continue;
 					blobDocIds.put(i,doc.get("docId"));
-                }
+                }*/
 				log.info("Loaded: "+blobDocIds.size()+" attachment docs");
             }
 
@@ -1181,49 +1185,97 @@ is what we want.
 		return result;
 	}
 
-	private List<org.apache.lucene.document.Document> getAllDocsWithFields(Boolean attachmentType) throws IOException
-	{
-		List<org.apache.lucene.document.Document> result = new ArrayList<>();
+    public List<org.apache.lucene.document.Document> getAllDocsWithFields(Boolean attachmentType) throws IOException
+    {
+        List<org.apache.lucene.document.Document> result = new ArrayList<>();
 
-		// read all the docs in the leaf readers. omit deleted docs.
-		DirectoryReader r;
-		if(attachmentType)
-			r = DirectoryReader.open(directory_blob);
-		else
-			r = DirectoryReader.open(directory);
+        // read all the docs in the leaf readers. omit deleted docs.
+        DirectoryReader r;
+        if(attachmentType)
+            r = DirectoryReader.open(directory_blob);
+        else
+            r = DirectoryReader.open(directory);
 
-		Bits liveDocs = MultiFields.getLiveDocs(r);
+        Bits liveDocs = MultiFields.getLiveDocs(r);
 //IMP: The fields of email index and attachment index are different. We need to extract appropriate field otherwis we will be missing some fields
-		//after exporting the archive index.
+        //after exporting the archive index.
 
-		String fieldsArray[] = null;
-		if(attachmentType)
-			fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
-		else
-			fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
-					"cc_names","bcc_names","languages","names","names_original","en_names_title"};
+        String fieldsArray[] = null;
+        if(attachmentType)
+            fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
+        else
+            fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+                    "cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
-		Set<String> fieldsToLoad = new HashSet<String>();
+        Set<String> fieldsToLoad = new HashSet<String>();
 
         for(String s: fieldsArray){
             fieldsToLoad.add(s);
         }
 
-		for(int i=0;i<r.maxDoc();i++){
-			org.apache.lucene.document.Document doc = r.document(i,fieldsToLoad);
-			if(liveDocs!=null && !liveDocs.get(i))
-				continue;
+        for(int i=0;i<r.maxDoc();i++){
+            org.apache.lucene.document.Document doc = r.document(i,fieldsToLoad);
+            if(liveDocs!=null && !liveDocs.get(i))
+                continue;
 
-			if(doc == null || doc.get("docId") == null)
-				continue;
-			result.add(doc);
-			//contentDocIds.put(i, doc.get("docId"));
-		}
-		r.close();
+            if(doc == null || doc.get("docId") == null)
+                continue;
+            result.add(doc);
+            //contentDocIds.put(i, doc.get("docId"));
+        }
+        r.close();
+        return result;
+    }
+
+    public Map<String,Span[]> getAllEntitiesInDocs(int maxdocs) throws IOException
+	{
+        Map<String,Span[]> result = new ConcurrentHashMap<>();
+		Query query = new MatchAllDocsQuery();
+        TopDocs hits = isearcher.search(query, Integer.max(Config.MAX_DOCS_PER_QUERY,maxdocs));
+        ScoreDoc[] scoreDocs = hits.scoreDocs;
+
+        //Tried to use parallel streams for speedup.
+        Arrays.asList(scoreDocs).parallelStream().forEach(hit ->{
+            int ldocId = hit.doc; // this is the lucene doc id, we need to map it to our doc id.
+
+            String docId; // this will be our doc id
+            org.apache.lucene.document.Document ldoc = null;
+            try {
+                ldoc = isearcher.doc(ldocId);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            //Now get emaildoc id stored in this doc.
+            if(ldoc == null || ldoc.get("docId") == null)
+                return;
+            docId = ldoc.get("docId");
+            //Now get entities stored in fields NER.NAMES and NER.NAMES_TITLE
+            String val = ldoc.get(NER.NAMES);
+
+            String[] plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
+            // remove kill phrases here itself
+
+            Span[] bodyentities = Arrays.stream(plainSpans).map(Span::parse).filter(s -> s != null /*&& !KillPhrases.isKillPhrase(s.getText())*/).toArray(Span[]::new);
+
+            val = ldoc.get(NER.NAMES_TITLE);
+            //Split the value and convert to span and then add to result map.
+
+            plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
+
+            Span[] titleentities = Arrays.stream(plainSpans).map(Span::parse).filter(s -> s != null /*&& !KillPhrases.isKillPhrase(s.getText())*/).toArray(Span[]::new);
+
+            Span[] allspans = ArrayUtils.addAll(bodyentities,titleentities);
+
+            result.put(docId,allspans);
+        });
+
 		return result;
 	}
 
-	EmailDocument docForId(String id) {
+
+	public EmailDocument docForId(String id) {
 		return docIdToEmailDoc.get(id);
 	}
 
@@ -1247,7 +1299,7 @@ is what we want.
         int cluster = options.getCluster();
         int threshold = options.getThreshold();
 		//doesn't need term for preset regex
-		
+
 		Set<edu.stanford.muse.index.Document> docs_in_cluster = null;
 		if (cluster != -1)
 			docs_in_cluster = new LinkedHashSet<>((Collection) getDocsInCluster(cluster));
@@ -1544,15 +1596,16 @@ is what we want.
 			int ldocId = hit.doc; // this is the lucene doc id, we need to map it to our doc id.
 
 			String docId; // this will be our doc id
-
+			org.apache.lucene.document.Document ldoc = searcher.doc(ldocId);
+			docId = ldoc.get("docId");
 			// try to use the new fieldcache id's
 			// if this works, we can get rid of the dirNameToDocIdMap
-			try {
+			/*try {
 				docId = (searcher == isearcher) ? contentDocIds.get(ldocId) : blobDocIds.get(ldocId);
 			} catch (Exception e) {
 				Util.print_exception(e, log);
 				continue;
-			}
+			}*/
 
 			if (threshold <= 1) {
 				// common case: threshold is 1.

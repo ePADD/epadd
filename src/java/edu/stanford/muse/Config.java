@@ -4,12 +4,12 @@ import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 /*
@@ -37,14 +37,14 @@ public class Config {
     public static String AUTHORITIES_FILENAME;
     private static String AUTHORITIES_CSV_FILENAME;
     public static String AUTHORITY_ASSIGNER_FILENAME;
-    
+
     //List of resource file that the openNLPNER model is trained on
     public static   String[] NER_RESOURCE_FILES = new String[0];
     public static   String DBPEDIA_INSTANCE_FILE;
-    
+
     public static   String	FEATURES_INDEX;
     public static   String TABOO_FILE = "kill.txt";
-    
+
     //this is the folder name that contains the cache for internal authority assignment
     public static   int		MAX_ENTITY_FEATURES			= 200;
     public static   int		MAX_TRY_TO_RESOLVE_NAMES	= 10;
@@ -54,12 +54,13 @@ public class Config {
     public static   Boolean 	OPENNLP_NER = false;
     public static   String DEFAULT_SETTINGS_DIR = System.getProperty("user.home") + File.separator + "epadd-settings";
     private static   String DEFAULT_BASE_DIR = System.getProperty("user.home");
+    private static final String REPO_DETAIL_FNAME = DEFAULT_SETTINGS_DIR + File.separator + "epaddRepoDetails.txt";
     public static   String DEFAULT_LEXICON = "general";
     public static   Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>(); // must be lower case
     public static   Set<String> allAttachmentExtensions = new LinkedHashSet<>(); // all attachment extensions.
 
     private static String EPADD_PROPS_FILE = System.getProperty("user.home") + File.separator + "epadd.properties"; // this need not be visible to the rest of ePADD
-
+    private static Map<String, Map<String,String>> repoDetails = null;
     static {
         Properties props = readProperties();
 
@@ -177,6 +178,74 @@ public class Config {
         }
     }
 
+    /**
+     * This method laods the repository information from the repository file. This is a json file containing an array of repository information.
+     * Each element here is of the form below,
+     *
+     * [{"repositoryName":"...","logoURL":"....","email":"....","addressLine1":"....","addressLine2":".....","addressLine3":"....","phone":"....",
+     * "fax":"....","website":"...."}]
+     */
+    public static void loadRepositoryDetails(){
+        String repoDetailFname = REPO_DETAIL_FNAME;
+        //read it and parse its data as json format. In case of successful parsing the structure repoDetails will be filled.
+        JSONParser parser = new JSONParser();
+        if(repoDetails!=null)
+            return; //Means this structure is already filled so return.
+        repoDetails = new LinkedHashMap<>();
+        try {
+            Object obj = parser.parse(new FileReader(repoDetailFname));
+
+
+            // A JSON array. JSONObject supports java.util.List interface.
+            JSONArray repoList = (JSONArray) obj;
+
+            Iterator<JSONObject> iterator = repoList.iterator();
+            while (iterator.hasNext()) {
+                JSONObject repoinfo = iterator.next();
+                String repoName = (String)repoinfo.get("repositoryName");
+                String logoURL = (String)repoinfo.get("logoURL");
+                String email = (String)repoinfo.get("email");
+                String addressLine1 = (String)repoinfo.get("addressLine1");
+                String addressLine2 = (String)repoinfo.get("addressLine2");
+                String instName = (String)repoinfo.get("instituteName");
+                String phone = (String)repoinfo.get("phone");
+                String fax = (String)repoinfo.get("fax");
+                String website = (String)repoinfo.get("website");
+                String instInfo = (String)repoinfo.get("instituteInfo");
+
+                Map<String, String> repoInformation = new LinkedHashMap<>();
+                repoInformation.put("repoName",repoName);
+                repoInformation.put("logoURL",logoURL);
+                repoInformation.put("email",email);
+                repoInformation.put("addressLine1",addressLine1);
+                repoInformation.put("addressLine2",addressLine2);
+                repoInformation.put("instituteName",instName);
+                repoInformation.put("phone",phone);
+                repoInformation.put("fax",fax);
+                repoInformation.put("website",website);
+                repoInformation.put("instituteInfo",instInfo);
+
+                repoDetails.put(repoName,repoInformation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            //If parsing failed at any point set repoDetails as null;
+            repoDetails = null;
+        }
+    }
+
+
+    public static Map<String,String> getRepoDetails(String repoName){
+        loadRepositoryDetails();
+        //If load is successful then repoDetails map should be non-null. If null then return null else return corresponding info.
+        if(repoDetails==null)
+            return  null;
+        else if (repoDetails.containsKey(repoName))
+            return repoDetails.get(repoName);
+        else
+            return repoDetails.get("Not found");//this is a default info that will be returned to the user if no information found for the requested repo.
+    }
+
     // return properties set from epadd.properties file and/or system properties
     private static Properties readProperties() {
         Properties props = new Properties();
@@ -233,4 +302,9 @@ public class Config {
 			log.warn ("UNABLE TO READ RESOURCE FILE: " + path);
 		return is;
 	}
+
+	public static void main(String args[]){
+	    loadRepositoryDetails();
+	    Map<String,String> details = getRepoDetails("fff");
+    }
 }

@@ -234,11 +234,8 @@ public class SearchResult {
         // go in the order subject, body, attachment
         Set<Document> docsForTerm = new LinkedHashSet<>();
         SearchResult outputSet;
-        if ("on".equals(JSPHelper.getParam(inputSet.queryParams, "termSubject"))) {
-            Indexer.QueryOptions options = new Indexer.QueryOptions();
-            options.setQueryType(Indexer.QueryType.SUBJECT);
-            docsForTerm.addAll(inputSet.archive.docsForQuery(term, options));
-        }
+        //IMP: If queryparams has both, termSubject and termBody and just bypass the termSubject as termBody will do a full search anyway.
+
 
         if ("on".equals(JSPHelper.getParam(inputSet.queryParams, "termBody"))) {
             Indexer.QueryOptions options = new Indexer.QueryOptions();
@@ -247,6 +244,10 @@ public class SearchResult {
         } else if ("on".equals(JSPHelper.getParam(inputSet.queryParams, "termOriginalBody"))) { // this is an else because we don't want to look at both body and body original
             Indexer.QueryOptions options = new Indexer.QueryOptions();
             options.setQueryType(Indexer.QueryType.ORIGINAL);
+            docsForTerm.addAll(inputSet.archive.docsForQuery(term, options));
+        }else if ("on".equals(JSPHelper.getParam(inputSet.queryParams, "termSubject"))) {
+            Indexer.QueryOptions options = new Indexer.QueryOptions();
+            options.setQueryType(Indexer.QueryType.SUBJECT);
             docsForTerm.addAll(inputSet.archive.docsForQuery(term, options));
         }
 

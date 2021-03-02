@@ -20,6 +20,36 @@
 </head>
 <body>
 <%@include file="header.jspf"%>
+<h1>About ePADD</h1>
+<div style="margin-left:160px;margin-right:160px">
+
+<p>
+    ePADD is free and open source software developed by Stanford University's Special Collections & University Archives
+    that supports the appraisal, processing, preservation, discovery, and delivery of historical email archives. ePADD
+    incorporates techniques from computer science and computational linguistics, including machine learning, natural
+    language processing, and named entity recognition to help users access and search email collections of historical
+    and cultural value.
+
+    The ePADD project has received funding from the National Historical Publications & Records Commission from 2012-2015
+    to develop the first full version of the software package. From 2015-2018, the project received funding from the
+    Institute of Museum and Library Services to develop a further six versions of ePADD. In 2020, the ePADD project
+    received funding from the Andrew W. Mellon Foundation to continue development on the software for one year.
+
+</p>
+</div>
+
+<h1>ePADD Software</h1>
+<div style="margin-left:160px;margin-right:160px">
+<p>
+    The ePADD software client is browser-based and compatible with Chrome and Firefox. It is optimized for Windows 10,
+    OS X 10.13, and Ubuntu 16.04 machines, using Java 8.
+
+    <%--[note on link to user manual]--%>
+
+    <a target="_blank" href="https://github.com/ePADD/epadd/releases/latest">Download the latest version of the software on GitHub.</a>
+</p>
+</div>
+<h1>Technical Information</h1>
 
   <div style="margin-left:160px;margin-right:160px">
       <p>

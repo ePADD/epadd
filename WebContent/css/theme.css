@@ -29,6 +29,17 @@ html {
 	display: inline-flex;
 }
 
+.inner-landing-image-text-institution {
+	min-height: 30px;
+	display: inline-flex;
+	font-size: 15px;
+	font-weight: 600;
+	color: black;
+	margin-left:20px;
+	text-align:center;
+	width:inherit;
+}
+
 @media (min-width:768px) {
 .lead {
 	font-size: 21px
@@ -1524,8 +1535,9 @@ body {
 	text-align:left;
 	padding-left: 20px;
 	padding-left: 20px;
-	height: 150px;
+	height: 100px;
 	padding-top:20px;
+	margin-bottom:10px;
 }
 
 

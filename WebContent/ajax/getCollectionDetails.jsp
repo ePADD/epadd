@@ -6,10 +6,11 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig"%>
 <%@ page import="edu.stanford.muse.Config"%>
 <%@ page import="java.io.File"%>
-<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.util.Util"%>
 <%
 
-
+String repositoryName= request.getParameter("repositoryName");
+//If repository name is non null then return the information only for this repository else return the collection details for all repositories.
     JSONArray collections = new JSONArray();
 	 String modeBaseDir = "";
       if (ModeConfig.isProcessingMode())
@@ -45,11 +46,15 @@
                   Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   JSONObject collectionInfo = null;
                   if (cm != null) {
+                      if(!Util.nullOrEmpty(repositoryName) && !repositoryName.toLowerCase().equals(cm.repository.toLowerCase()))
+                          continue; //Means this repository is of no interest. Continue to query the next repository.
                        collectionInfo = new JSONObject();
 
                       String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto"; // always forward slashes please
                       String url = "serveImage.jsp?file=" + fileParam;
 
+                      collectionInfo.put("repositoryName",cm.repository);
+                      collectionInfo.put("institutionName",cm.institution);
                       collectionInfo.put("dataDir",id);
                       collectionInfo.put("landingImageURL",url);
                       collectionInfo.put("shortTitle",cm.shortTitle);

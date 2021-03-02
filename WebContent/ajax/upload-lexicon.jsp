@@ -5,7 +5,7 @@
 <%@ page import="org.json.JSONArray"%>
 <%@ page import="org.json.JSONObject"%>
 <%@ page import="java.util.Set"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="java.util.Map"%><%@ page import="java.io.FileReader"%><%@ page import="au.com.bytecode.opencsv.CSVReader"%><%@ page import="java.io.IOException"%><%@ page import="com.google.common.collect.LinkedHashMultimap"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.muse.webapp.SimpleSessions"%><%@ page import="edu.stanford.muse.LabelManager.LabelManager"%><%@ page import="edu.stanford.muse.index.*"%>
-<% 
+<%
 	   session.setAttribute("statusProvider", new StaticStatusProvider("Uploading files"));
    JSONObject result = new JSONObject();
 
@@ -41,6 +41,8 @@
                     }
 
                     //caclulate the count cache for this lexicon.
+                    //Before recomputing the summary delete the file Lexicon_summary.data  from the basedir.
+                     archive.getLexicon(lexiconname).invalidateLexiconSummary(archive,lexiconname);
                     archive.getLexicon(lexiconname).fillL1_Summary(lexiconname,archive,false);
                     //Archive.cacheManager.cacheLexiconListing(lexiconname,archiveID);
             }

@@ -119,6 +119,16 @@ public class Archive implements Serializable {
         return dupMessageInfo;
     }
 
+    public Map<String,Span[]> getAllEntities(int maxdocs) {
+        Map<String,Span[]> docs = null;
+        try {
+             docs = indexer.getAllEntitiesInDocs(maxdocs);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return docs;
+    }
+
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
     public static String[] LEXICONS =  new String[]{
@@ -2107,14 +2117,14 @@ after maskEmailDomain.
         return indexer.contentDocIds.get(ldocId);
     }*/
 
-    public Integer getLDocIdForBlobDocId(String docId){
+    /*public Integer getLDocIdForBlobDocId(String docId){
         return indexer.blobDocIds.entrySet().stream().filter(e->docId.equals(e.getValue())).findAny().map(Map.Entry::getKey).orElse(0);
-    }
+    }*/
 
-    public String getDocIdForBlobLDocId(Integer ldocId) {
+    /*public String getDocIdForBlobLDocId(Integer ldocId) {
         return indexer.blobDocIds.get(ldocId);
     }
-
+*/
     //input is a bag present in userdir
     public static Bag readArchiveBag(String userdir) {
         Path rootDir = Paths.get(userdir);

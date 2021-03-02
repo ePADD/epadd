@@ -485,6 +485,16 @@
 		<url-pattern>/status</url-pattern>
 	</servlet-mapping>
 
+
+	<servlet>
+		<servlet-name>getRepositoryDetails</servlet-name>
+		<jsp-file>/ajax/getRepositoryDetails.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>getRepositoryDetails</servlet-name>
+		<url-pattern>/getRepositoryDetails</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>getCollectionDetails</servlet-name>
 		<jsp-file>/ajax/getCollectionDetails.jsp</jsp-file>
@@ -625,6 +635,15 @@
 		<url-pattern>/about</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>contactus</servlet-name>
+		<jsp-file>/contactus.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>contactus</servlet-name>
+		<url-pattern>/contactus</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>report</servlet-name>
 		<jsp-file>/report.jsp</jsp-file>

@@ -10,6 +10,8 @@
 <head>
 
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="css/jquery.qtip.min.css">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <jsp:include page="css/css.jsp"/>
@@ -17,11 +19,12 @@
 <%-- The jquery was present here earlier --%>
     <script src="js/jquery.js"></script>
 
-    <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
     <script src="js/epadd.js" type="text/javascript"></script>
-    <script src="js/collections.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -31,9 +34,9 @@
 
 <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.head-collections")%></title>
 
-<script>epadd.nav_mark_active('Collections');</script>
+<script src="js/collections.js" type="text/javascript"></script>
 
-<div style="width:1100px; margin:auto">
+<%--<div style="width:1100px; margin:auto">
     <% if (ModeConfig.isProcessingMode()) { %>
         <h1><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.welcome-processing")%></h1>
   <% } else if (ModeConfig.isDeliveryMode()) { %>
@@ -46,19 +49,30 @@
         <% return;
     }
   %>
-</div>
+</div>--%>
 
-  <div style="margin:auto;text-align:center">
+  <%--<div style="margin:auto;text-align:center">
   <div style="width:100%;text-align:left;">
 
     <br/>
   </div>
   <br/>
-  <div>
+  <div>--%>
 
 
 
     <%
+      //Check if the request is made for browsing collection or browsing institution via the query parameter.
+        String browseType = request.getParameter("browse-type");
+        if(Util.nullOrEmpty(browseType)){
+            browseType="collection";//set it as default
+        }
+        if(browseType.toLowerCase().equals("collection")){%>
+                <%@include file="browseCollections.jspf"%>
+        <%}else{%>
+                <%@include file="browseRepositories.jspf"%>
+        <%}
+
       String modeBaseDir = "";
       if (ModeConfig.isProcessingMode())
           modeBaseDir = Config.REPO_DIR_PROCESSING;
@@ -76,18 +90,25 @@
       }
     %>
   </div>
+  <%--<br/>
   <br/>
-
-
-  <br/>
-
+--%>
 <script>
     var invalidPathMessage =  '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
     var uploadImageErrorMessage = '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection.no-description")%>';
     isProcessingMode = <%=ModeConfig.isProcessingMode()%>;
 </script>
-<%--Following div will be filled by the code in collections.js after fetching the collection details from the backend.--%>
-<div id="collectionsInfo"></div>
+<%--Following three div swill be filled by the code in collections.js after fetching the collection details from the backend.
+1. First one is for adding back-to-institution browse page when user clicks on an institution to browse collections by institutions.
+2. Second one is for adding institutions's information.
+3. Third one is for adding collection details (either tabular form - if browse by institution or tile form - if browse by collection)--%>
+
+<div id="back-to-institution-browse" style="margin:auto;width:1100px;"></div>
+<div id="institutionInfo" style="margin:auto;width:1100px;"></div>
+<div id="collectionsInfo-header" style="margin:auto;width:1100px;"></div>
+<div id="collectionsInfo-details" style="margin:auto;width:1100px;"></div>
+
+
 
   <div id="landingPhoto-upload-modal" class="info-modal modal fade" style="z-index:99999">
       <div class="modal-dialog">
