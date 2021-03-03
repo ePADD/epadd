@@ -40,7 +40,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
             '                <h1 class="text-left" style="margin-left:-30px;">' + headerstring + '</h1>\n' +
             '            </div>\n' +
             '            <div class="col-sm-8 inner-addon right-addon">\n' +
-            '                <input name="search-collection" id="search-collection" type="text" class="form-control" placeholder="Search collection">\n' +
+            '                <input name="search-collection" id="search-collection" type="text" class="form-control" placeholder="Search collection metadata">\n' +
             '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
             '            </div>\n' +
             '        </div>\n' +
@@ -90,7 +90,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         landingImageText = $(landingImageText).prepend(
             $('<div></div>').addClass("epadd-separator").css("margin","5px 0px")
         ).prepend($('<br>')).prepend(
-            $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175BC")
+            $('<span></span>').css("font-size","20px").css("font-weight","600").css("color","#0175AA")
                 .text(shortTitle)
         );
 
@@ -252,10 +252,10 @@ var renderBrowseRepositories = function(institutionDetails, redrawComplete){
     table = document.getElementById("institution-table");
     var row = table.createTHead().insertRow(0);
     // row.insertCell(0).innerText = "";
-    row.insertCell(0).innerText = "Repository name";
-    row.insertCell(1).innerText = "Institution name";
-    row.insertCell(2).innerText = "# collections";
-    row.insertCell(3).innerText = "# total messages";
+    row.insertCell(0).innerText = "Repository";
+    row.insertCell(1).innerText = "Institution";
+    row.insertCell(2).innerText = "Number of collections";
+    row.insertCell(3).innerText = "Total messages";
 
     var clickable_repository = function ( data, type, full, meta ) {
         return '<a target="_self" href="collections?browse-type=repository&repositoryID=' + encodeURI(full["repository"]) + '">' + full["repository"] + '</a>';
@@ -327,7 +327,7 @@ var renderRepositoryInfoHeader = function(repositoryDetails){
         '     style="object-fit:scale-down;margin:auto;height:150px;padding-right:50px;">\n' +
         '     </div>\n' +
         '    <div class="col-sm-3" style="width:auto;margin-top:auto;margin-bottom:auto;">\n' +
-        '      <span class="inst-heading"> '+ instName+'</span><br>\n' +
+        '      <span class="inst-heading"> '+ repositoryName +'</span><div style="margin-bottom:5px;"></div>\n' +
         '      <span class="inst-address">'+instAddressLine1+'</span><br>\n' +
         '      <span class="inst-address">'+instAddressLine2+'</span><br>\n' +
         '<b class=inst-address style="font-weight:bold;color:black;">Phone:</b> <span class="inst-address">'+instPhone+'</span><br>\n' +
@@ -336,7 +336,7 @@ var renderRepositoryInfoHeader = function(repositoryDetails){
         '      <a class="inst-address" href="'+instURL+'">'+instURL+'</a><br>\n' +
         '    </div>\n' +
         '    <div class="col-sm-5  d-flex " style="margin-top:auto;margin-bottom:auto;">\n' +
-        '      <span class="inst-heading">Information about the institution  <span><br>\n' +
+        '      <span class="inst-heading">About this institution  </span><div style="margin-bottom:5px;"></div>\n' +
         '  <p class="inst-address" style="text-align:justify;margin-right:10px">\n' +instInformation +
         '  </p>\n' +
         '  \n' +
@@ -392,7 +392,7 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST', url: 'getCollectionDetails?repositoryName='+repositoryName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 _collectionDetails=data;
-                renderBrowseCollection(data, "Collection details",true);
+                renderBrowseCollection(data, "Collections",true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
     }else if(browseType=="repository" && institutionName && institutionName.trim() ){

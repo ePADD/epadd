@@ -30,10 +30,21 @@
     language processing, and named entity recognition to help users access and search email collections of historical
     and cultural value.
 
-    The ePADD project has received funding from the National Historical Publications & Records Commission from 2012-2015
-    to develop the first full version of the software package. From 2015-2018, the project received funding from the
-    Institute of Museum and Library Services to develop a further six versions of ePADD. In 2020, the ePADD project
-    received funding from the Andrew W. Mellon Foundation to continue development on the software for one year.
+    The ePADD Discovery Module is a multi-institutional email discovery platform that allows contributing institutions
+    to publish their email collection metadata. If you use ePADD to process email collections and would like to publish
+    your email collection metadata, please contact the ePADD team for more information at epadd_project@stanford.edu or
+    consult the ePADD Discovery Module Contributor Guide
+
+    Email messages in the ePADD Discovery Module have been redacted to ensure the privacy of donors and other
+    correspondents. Please contact the host repository if you would like to request access to full messages, including
+    any attachments.
+
+    The ePADD Project has received funding from Stanford University Libraries Treat and Weber Grants in 2012, 2015, and
+    2019. From 2012-2015, The ePADD project has received funding from the National Historical Publications & Records
+    Commission to develop the first full version of the software package. From 2015-2018, the project received funding
+    from the Institute of Museum and Library Services to develop a further six versions of ePADD. In 2020, the ePADD
+    project received funding from the Andrew W. Mellon Foundation to continue development on the software for one year.
+
 
 </p>
 </div>
@@ -59,12 +70,19 @@
 
           © Stanford University
       <p>
-      The ePADD logo, project documentation (including installation and user guide), and other non-software products of the ePADD team are subject to the Creative Commons Attribution 2.0 Generic license (CC By 2.0).
+      The ePADD logo, project documentation (including installation and user guide), and other non-software products of
+      the ePADD team are subject to the Creative Commons Attribution 2.0 Generic license (CC By 2.0).
         <p>
-      Unless otherwise indicated, software items in this repository are distributed under the terms of the Apache License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+      Unless otherwise indicated, software items in this repository are distributed under the terms of the Apache
+      License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. You may
+      obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or
+      agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+      WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+      governing permissions and limitations under the License.
       <p>
-      For more information about ePADD, including links to an installation and user guide, mailing list registration, and community forum support, please visit <a href="https://library.stanford.edu/projects/epadd">this page</a>.
-</p>
+      For more information about ePADD, including links to an installation and user guide, mailing list registration,
+      and community forum support, please visit <a href="https://library.stanford.edu/projects/epadd">this page</a>.
+  </p>
 <h1>Credits</h1>
 For a full list of credits, please <a href="https://library.stanford.edu/projects/epadd/about">click here</a>.
       <!--

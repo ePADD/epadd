@@ -46,12 +46,16 @@ Please contact us by sending an email to <a href="epadd_project@stanford.edu">ep
           (HIPAA), General Data Protection Regulation (GDPR) in or Family Educational Rights and Privacy Act (FERPA), or
           in cases of significant risks to privacy (for example, exposed Social Security numbers), or convincing
           evidence of a clear and imminent threat to personal safety and well-being.
+
       </p>
 
       <h1>Interested in contributing an email collection?</h1>
      <p>
-      If your institution has processed an email collection using ePADD and would like to publish it to this site,
-      please submit an issue to our <a target="_blank" href="https://github.com/ePADD/epadd/issues">Github repository</a>.
+         If your institution has processed an email collection using ePADD and would like to publish it to this site,
+         please contact us at <a href="mailto:epadd_project@stanford.edu">epadd_project@stanford.edu</a> or consult the
+         ePADD Discovery Module Contributor Guide for
+         more information.
+
      </p>
 
 </div>

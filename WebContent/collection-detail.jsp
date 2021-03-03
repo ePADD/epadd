@@ -279,8 +279,10 @@
     </div>
 
     <% if (ModeConfig.isDiscoveryMode()) { %>
+        <p style="margin-top: 15px">
         Email messages in the ePADD Discovery Module have been redacted to ensure the privacy of donors and other correspondents.
         Please contact the host repository if you would like to request access to full messages, including any attachments.
+        </p>
     <% } %>
 
     <br/>

@@ -33,7 +33,7 @@ html {
 	min-height: 30px;
 	display: inline-flex;
 	font-size: 15px;
-	font-weight: 600;
+	font-weight: 400;
 	color: black;
 	margin-left:20px;
 	text-align:center;
@@ -1541,7 +1541,7 @@ body {
 }
 
 
-.landing-img-text:hover {
+.archive-card:hover {
 	border-bottom: solid 3px #0175BC;
 	box-sizing: border-box;
 }
