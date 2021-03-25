@@ -284,7 +284,7 @@ public class NBModel implements NERModel, Serializable {
     }
     private Map<String, Pair<Short, Double>> seqLabel(String phrase) {
         Map<String, Pair<Short, Double>> segments = new LinkedHashMap<>();
-        /*{
+        {
             String dbpediaType = lookup(phrase);
             NEType.Type type = NEType.parseDBpediaType(dbpediaType);
 
@@ -292,7 +292,7 @@ public class NBModel implements NERModel, Serializable {
                 segments.put(phrase, new Pair<>(type.getCode(), 1.0));
                 return segments;
             }
-        }*/
+        }
 
         //This step of uncanonicalizing phrases helps merging things that have different capitalization and in lookup
         phrase = EmailUtils.uncanonicaliseName(phrase);
@@ -350,6 +350,7 @@ public class NBModel implements NERModel, Serializable {
                 candidate.second = likelihood;
             }
         }
+
         //At the end put candidate information in segment map.
         segments.put(phrase, new Pair(candidate.first.getCode(), candidate.second));
         return segments;
@@ -368,7 +369,11 @@ public class NBModel implements NERModel, Serializable {
             String token = origtoken.toLowerCase().trim();
             if (conditionalProb.get(token) != null) {
                 if (conditionalProb.get(token).get(type) != null) {
-                    likelihood = likelihood * conditionalProb.get(token).get(type);
+                   /* if(type==NEType.Type.PERSON && conditionalProb.get(token).get(type)==1.0D ){
+                        likelihood=1D;
+                        return likelihood;
+                    }*/
+                    likelihood = likelihood *(conditionalProb.get(token).get(type));
                 } else {
                     //means the token is present but the probability of this token wrt the given type is not present.
                     likelihood = likelihood * MIN_PROB;
@@ -379,7 +384,7 @@ public class NBModel implements NERModel, Serializable {
             }
         }
         //once done multiply by the probability of this class by reading from classProb
-        likelihood=likelihood*classProb.get(type);
+        likelihood=likelihood *(classProb.get(type));
 
         return likelihood;
     }
@@ -656,8 +661,23 @@ public class NBModel implements NERModel, Serializable {
                     }
                 }
             }
+
+            //If for a token there exists non-zero counts only for one entity type then it means we only found the evidence for that token
+            //to be of one type only. We can bump up the probability of that token being of that only type. This will give sufficient weightage
+            //to a CIC that contains this especial token. One example to support such bumping up the probability is person types.
+
+
             //While loop complete.. Now calculate P(x/C) and P(C) by iterating over maps condtionalCount and categoryTypeCount.
             for(String cicToken: conditionalCount.keySet()){
+               /* Here I was checking a hack to bump up the probability of a phrase being person type if it doesn't appear in other types a lot.
+               //Check if conditionalCount.get(cicToken).keySet() is of size 1 and that too is Person type.
+                //If yes then set the count in conditionalCount.get(cicToken).get(entityType) to categoryTypeCount.get(entityType)
+                if( conditionalCount.get(cicToken).keySet().contains(NEType.Type.PERSON) && conditionalCount.get(cicToken).keySet().size()<3){
+                    NEType.Type entityType = NEType.Type.PERSON;
+                    Integer entityTypeCount = categoryTypeCount.get(entityType);
+                    conditionalCount.get(cicToken).put(entityType,entityTypeCount);
+                }*/
+                //Now calculate P(x/C) and P(C).
                 for (NEType.Type entityType: conditionalCount.get(cicToken).keySet()){
                     float entityTypeCount = categoryTypeCount.get(entityType);
                     float cicTokenConditionalCount = conditionalCount.get(cicToken).get(entityType);
