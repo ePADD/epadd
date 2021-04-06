@@ -49,7 +49,14 @@ Please contact us by sending an email to <a href="epadd_project@stanford.edu">ep
 
       </p>
 
-      <h1>Interested in contributing an email collection?</h1>
+    <h1>Terms of Use</h1>
+    <p>
+        Please review the Terms of Service <a href="https://drive.google.com/file/d/1Nmv8UZfHPYj-eMvQQKdV_TcSEFxxZHMG/view?usp=sharing
+">here</a> for the ePADD Discovery Module before contributing email collection metadata.
+
+    </p>
+
+    <h1><a href = "https://docs.google.com/document/d/10U9Hxh9MS9C9bS8M7uYuXk5m7EBFpgd0yiwCcOSM6Dk/edit?usp=sharing" >Interested in contributing an email collection?</a></h1>
      <p>
          If your institution has processed an email collection using ePADD and would like to publish it to this site,
          please contact us at <a href="mailto:epadd_project@stanford.edu">epadd_project@stanford.edu</a> or consult the
