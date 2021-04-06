@@ -54,7 +54,8 @@ public class Config {
     public static   Boolean 	OPENNLP_NER = false;
     public static   String DEFAULT_SETTINGS_DIR = System.getProperty("user.home") + File.separator + "epadd-settings";
     private static   String DEFAULT_BASE_DIR = System.getProperty("user.home");
-    private static final String REPO_DETAIL_FNAME = DEFAULT_SETTINGS_DIR + File.separator + "epaddRepoDetails.txt";
+    private static final String REPO_DETAIL_FNAME =  "epaddRepoDetails.txt";
+
     public static   String DEFAULT_LEXICON = "general";
     public static   Map<String, String> attachmentTypeToExtensions = new LinkedHashMap<>(); // must be lower case
     public static   Set<String> allAttachmentExtensions = new LinkedHashSet<>(); // all attachment extensions.
@@ -186,7 +187,13 @@ public class Config {
      * "fax":"....","website":"...."}]
      */
     public static void loadRepositoryDetails(){
-        String repoDetailFname = REPO_DETAIL_FNAME;
+        String repoDetailFname_Default = DEFAULT_SETTINGS_DIR + File.separator + REPO_DETAIL_FNAME;
+        String repoDetailFname_Overriding = System.getProperty("user.home") + File.separator + REPO_DETAIL_FNAME; //If this file is present then it will
+        //take precedence over the one present in the settings folder.
+        String repoDetailFname = repoDetailFname_Default;
+        if(new File(repoDetailFname_Overriding).exists()){
+            repoDetailFname = repoDetailFname_Overriding;
+        }
         //read it and parse its data as json format. In case of successful parsing the structure repoDetails will be filled.
         JSONParser parser = new JSONParser();
         if(repoDetails!=null)
