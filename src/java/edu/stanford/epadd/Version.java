@@ -1,4 +1,4 @@
 package edu.stanford.epadd;
-public class Version {  public static final String version = "Release 8.0-alpha";
-public static final String buildInfo = "Built by tech at Mar 03, 2021 11:53 AM on Mac OS X 10.15 x86_64 ";
+public class Version {  public static final String version = "Release 8.0";
+public static final String buildInfo = "Built by tech at Apr 06, 2021 10:11 PM on Mac OS X 10.15 x86_64 ";
 }

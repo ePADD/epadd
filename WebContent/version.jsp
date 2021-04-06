@@ -1,1 +1,1 @@
-ePADD version Release 8.0-alpha
+ePADD version Release 8.0
