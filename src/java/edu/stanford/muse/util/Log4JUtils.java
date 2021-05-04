@@ -16,6 +16,7 @@
 package edu.stanford.muse.util;
 
 
+import edu.stanford.muse.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -44,8 +45,9 @@ public class Log4JUtils {
 			return;
 
 		// LOG FILE will be set only once, either to <home>/.muse/muse.log (default) or overwritten with the help of muse.dirname and muse.log system props, typically to <home>/ePADD/epadd.log
-		LOG_FILE = System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "muse.log";
-		String newLogFile = System.getProperty("muse.log"); // for epadd this will be epadd.log, set in EpaddInitializer
+		LOG_FILE = Config.SETTINGS_DIR + File.separator + "epadd.log";
+		//System.getProperty("user.home") + File.separatorChar + ".muse" + File.separatorChar + "muse.log";
+		String newLogFile = System.getProperty("epadd.log"); // for epadd this will be epadd.log, set in EpaddInitializer
 		if (!Util.nullOrEmpty(newLogFile))
 			LOG_FILE = newLogFile;
 
