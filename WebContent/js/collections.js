@@ -383,14 +383,14 @@ $(document).ready(function() {
         // using renderBrowseCollectionByRepository method)
         //First ajax call: For getting repository information
         $.ajax({
-            type: 'POST', url: 'getRepositoryDetails?repositoryName='+repositoryName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
+            type: 'POST', url: 'getRepositoryDetails?repositoryName='+encodeURIComponent(repositoryName), datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 // fade_spinner_with_delay($spinner);
                 renderRepositoryInfoHeader(data);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
         });
         //Second ajax call: For getting collection information for that repository
         $.ajax({
-            type: 'POST', url: 'getCollectionDetails?repositoryName='+repositoryName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
+            type: 'POST', url: 'getCollectionDetails?repositoryName='+encodeURIComponent(repositoryName), datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 _collectionDetails=data;
                 renderBrowseCollection(data, "Collections",true);
             }, error : error("Error setting flags. Please try again, and if the error persists, report it to epadd_project@stanford.edu.")
@@ -398,7 +398,7 @@ $(document).ready(function() {
     }else if(browseType=="repository" && institutionName && institutionName.trim() ){
         // Case 3: "InstitutionSpecificRepositories": If browseType="repository" and institutionName=non null then get all repositories for the given institution. - render as table (using renderBrowseRepositories method)
         $.ajax({
-            type: 'POST', url: 'getRepositoryDetails?institutionName='+institutionName, datatype: 'json',  success: function (data, textStatus, jqxhr) {
+            type: 'POST', url: 'getRepositoryDetails?institutionName='+encodeURIComponent(institutionName), datatype: 'json',  success: function (data, textStatus, jqxhr) {
                 // fade_spinner_with_delay($spinner);
                 _repositoryDetails=data;
                 renderBrowseRepositories(data,true);
