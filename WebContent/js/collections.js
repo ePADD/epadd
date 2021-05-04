@@ -258,7 +258,7 @@ var renderBrowseRepositories = function(institutionDetails, redrawComplete){
     row.insertCell(3).innerText = "Total messages";
 
     var clickable_repository = function ( data, type, full, meta ) {
-        return '<a target="_self" href="collections?browse-type=repository&repositoryID=' + encodeURI(full["repository"]) + '">' + full["repository"] + '</a>';
+        return '<a target="_self" href="collections?browse-type=repository&repositoryID=' + encodeURIComponent(full["repository"]) + '">' + full["repository"] + '</a>';
     };
     var nonclickable_institution = function ( data, type, full, meta ) {
         //return '<a target="_self" href="collections?browse-type=institution&institutionID=' + encodeURI(full["institution"]) + '">' + full["institution"] + '</a>';
