@@ -320,7 +320,7 @@ var renderRepositoryInfoHeader = function(repositoryDetails){
 
 
     //Extract institution detail and put it in the div appropriately.
-    var header_skelton= $('<div class="instinfo-container">\n' +
+    var header_skelton= '<div class="instinfo-container">\n' +
         '  <div class="row" style="height: auto;display: flex; flex-flow: row;">\n' +
         '    <div class="col-sm-3 d-flex" style="margin-top:auto;margin-bottom:auto;">\n' +
         ' <img alt="Qries" class="img-responsive" src="'+ logoURL +'"\n' +
@@ -330,8 +330,13 @@ var renderRepositoryInfoHeader = function(repositoryDetails){
         '      <span class="inst-heading"> '+ repositoryName +'</span><div style="margin-bottom:5px;"></div>\n' +
         '      <span class="inst-address">'+instAddressLine1+'</span><br>\n' +
         '      <span class="inst-address">'+instAddressLine2+'</span><br>\n' +
-        '<b class=inst-address style="font-weight:bold;color:black;">Phone:</b> <span class="inst-address">'+instPhone+'</span><br>\n' +
-        '     <b class=inst-address style="font-weight:bold;color:black;">Fax:</b>  <span class="inst-address">'+instFax+'</span><br>\n' +
+        '<b class=inst-address style="font-weight:bold;color:black;">Phone:</b> <span class="inst-address">'+instPhone+'</span><br>\n';
+
+    if(instFax!=null){
+        header_skelton = header_skelton +
+            '     <b class=inst-address style="font-weight:bold;color:black;">Fax:</b>  <span class="inst-address">'+instFax+'</span><br>\n';
+    }
+    header_skelton = header_skelton +
         '      <b class=inst-address style="font-weight:bold;color:black;">Email:</b> <span class="inst-address">'+instMail+'</span><br>\n' +
         '      <a class="inst-address" href="'+instURL+'">'+instURL+'</a><br>\n' +
         '    </div>\n' +
@@ -342,7 +347,9 @@ var renderRepositoryInfoHeader = function(repositoryDetails){
         '  \n' +
         '  </div>\n' +
         '  </div>\n' +
-        '</div>');
+        '</div>';
+
+    header_skelton = $(header_skelton);
 
 
     //Add this div fragment as a child to institutionInfo
