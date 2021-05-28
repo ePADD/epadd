@@ -470,7 +470,7 @@ int errortype=0;
         public int nDocs, nIncomingMessages, nOutgoingMessages, nHackyDates; // note a message can be both incoming and outgoing.
         //Since v7, nOutgoing messages in this class will be treated as the number of messages sent by the owner.
         public int nBlobs, nUniqueBlobs, nImageBlobs, nDocBlobs, nOtherBlobs; // this is just a cache so we don't have to read the archive
-        String ownerName;
+        public String ownerName;
         public String about;
         //will be set by method that computes epadd-ner
         public Map<Short, Integer> entityCounts;

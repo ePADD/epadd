@@ -53,13 +53,40 @@ String repositoryName= request.getParameter("repositoryName");
                       String fileParam = id + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "landingPhoto"; // always forward slashes please
                       String url = "serveImage.jsp?file=" + fileParam;
 
-                      collectionInfo.put("repositoryName",cm.repository);
-                      collectionInfo.put("institutionName",cm.institution);
-                      collectionInfo.put("dataDir",id);
-                      collectionInfo.put("landingImageURL",url);
-                      collectionInfo.put("shortTitle",cm.shortTitle);
-                      collectionInfo.put("shortDescription",cm.shortDescription);
-                  }
+                      //NOTE:When this ajax is called for processing mode home page display then some of these fields will not be available
+                      //for those collections which were just exported from appraisal to processing mode. To display the tiles for those
+                      //collections correctly we just add placeholder values for some of these fields after nullcheck.
+                      if(cm.repository==null)
+                          collectionInfo.put("repositoryName","Not Added");
+                      else
+                          collectionInfo.put("repositoryName",cm.repository);
+                      if(cm.institution==null)
+                          collectionInfo.put("institutionName","Please Add Institution Name");
+                      else
+                          collectionInfo.put("institutionName",cm.institution);
+                      collectionInfo.put("dataDir",id); //This will always be present in the colleciotn metadata (even when the collection has just been exported from appraisal to processing)
+                      collectionInfo.put("landingImageURL",url); //This will always be present in the colleciotn metadata (even when the collection has just been exported from appraisal to processing)
+
+                      if(cm.shortTitle==null){//if short title is null then put ownername if that is non-null else just put "Not added" string.
+                          if(cm.ownerName==null)
+                              collectionInfo.put("shortTitle","Not Added");
+                          else
+                              collectionInfo.put("shortTitle",cm.ownerName);
+                          }
+                      else
+                          collectionInfo.put("shortTitle",cm.shortTitle);
+
+                      if(cm.shortDescription==null)
+                          {
+                               if(cm.ownerName==null)
+                                    collectionInfo.put("shortDescription","Not Added");
+                               else
+                                    collectionInfo.put("shortDescription",cm.ownerName);
+                          }
+                          }
+                      else
+                        collectionInfo.put("shortDescription",cm.shortDescription);
+
                   if(collectionInfo!=null)
                               collections.put(collectionInfo);
         }
