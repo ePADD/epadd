@@ -303,7 +303,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
             Calendar c = new GregorianCalendar();
             c.setTime(d);
             int yy = c.get(Calendar.YEAR);
-            if (yy < 1960 || yy > 2020) {
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            if (yy < 1960 || yy > currentYear) {
                 dataErrors.add("Probably bad date: " + Util.formatDate(c) + " message: " + EmailUtils.formatMessageHeader(m));
                 probablyWrongDate = true;
 
