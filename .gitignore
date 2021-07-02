@@ -9,7 +9,6 @@
 *.ser
 *.model
 *.bin
-*.iml
 *~
 \#*\#
 /src/resources/models/
@@ -24,4 +23,3 @@
 *.swp
 *.swo
 workspace.xml
-/pom.xml
