@@ -23,7 +23,7 @@ public class StandaloneIngestionTest {
     private StandaloneIngestion ingester = new StandaloneIngestion();
     private String validName = "Some Valid Name";
     private String validPath = "src/test/resources/StandaloneIngestionTest/sample.mbox";
-    private String successMessage = "\"shortName\":\"sample.mbox\",\"messageCount\":12,\"timestamp\":1626288229800,\"fileSize\":20172";
+    private String successMessage = "\"shortName\":\"sample.mbox\",\"messageCount\":12";
 
     @Before
     public void setUpStreams() {
