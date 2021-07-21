@@ -20,6 +20,7 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
+import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -30,6 +31,7 @@ import java.util.*;
 
 /** email store in mbox format. caches message counts in folders.
  */
+@Data
 public class MboxEmailStore extends EmailStore implements Serializable {
 	private final static long serialVersionUID = 1L;
 
@@ -70,7 +72,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	}
 
 	public String getRootPath() { return rootPath; }
-	
+
+	// Placebo method? Stub?
 	public Store connect() throws MessagingException
 	{
 		// Get a Session object
@@ -79,9 +82,12 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		Session session = Session.getInstance(mstorProps, null);
 		session.setDebug(DEBUG);
 
-		// Get a Store object
-		Store store = session.getStore(new URLName("mstor:" + Util.devNullPath())); // although "store" is irrelevant with mbox, connect/close may still be attempted on it. thus, use /dev/null rather than leaving it at / or unspecified path (which may trigger file io error).
+		// Get a dummy Store object
+		// Although "store" is irrelevant with mbox, connect/close may still be attempted on it.
+		// Thus, use /dev/null rather than leaving it at / or unspecified path (which may trigger file io error).
+		Store store = session.getStore(new URLName("mstor:" + Util.devNullPath()));
 
+		// Connect to the dummy store?
 		store.connect();
 		return store;
 	}
