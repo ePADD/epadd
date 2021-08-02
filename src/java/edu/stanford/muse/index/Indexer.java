@@ -102,6 +102,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
     private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
+	private File baseDirFile;
+	private File indexBaseDirFile;
 	transient private Directory directory;
 	transient private Directory	directory_blob;																// for attachments
 	transient private Analyzer analyzer;
@@ -128,6 +130,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		storeOnly_ft.freeze();
 
 		ft = new FieldType();
+
 		ft.setStored(true);
 		//@TODO: Check if from lucene 7.2 by default this field is indexed.
 		//ft.setIndexed(true);
@@ -930,6 +933,46 @@ is what we want.
 		}
 	}
 
+	/***
+	 * Deletes and cleans up index docs and residual files and directories
+	 * Unsure why this hasn't existed until now, but using primarily for cleaning up unit tests
+	 * Explicitly closing each level to make sure basePath directory isn't shared with something else
+	 * @throws IOException
+	 */
+	void deleteAndCleanupFiles() throws IOException {
+		if (iwriter == null || iwriter_blob == null) {
+			setupForWrite();
+		}
+		iwriter.deleteAll();
+		iwriter.commit();
+		iwriter_blob.deleteAll();
+		iwriter_blob.commit();
+		Arrays.stream(directory.listAll()).forEach(f -> {
+			try {
+				directory.deleteFile(f);
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+		Arrays.stream(directory_blob.listAll()).forEach(f -> {
+			try {
+				directory_blob.deleteFile(f);
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+		close();
+		File baseDirFile = new File(baseDir);
+		File indexesFile = new File(baseDir + File.separator + INDEX_BASE_DIR_NAME);
+		File attachmentFile = new File(baseDir + File.separator + INDEX_BASE_DIR_NAME + File.separator + INDEX_NAME_ATTACHMENTS);
+		File emailsFile = new File(baseDir + File.separator + INDEX_BASE_DIR_NAME + File.separator + INDEX_NAME_EMAILS);
+
+		emailsFile.delete();
+		attachmentFile.delete();
+		indexesFile.delete();
+		baseDirFile.delete();
+	}
+
 	private Map<String, EmailDocument> getDocMap() {
 		return docIdToEmailDoc;
 	}
@@ -1435,7 +1478,7 @@ is what we want.
         return getNamesForLuceneDoc(docForThisId, qt);
     }
 
-    private Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
+    protected Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
         Pair<Collection<String>,Integer> p;
         if (!isAttachments)
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher, qt, 1);

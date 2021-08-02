@@ -2,6 +2,7 @@ package edu.stanford.muse.email;
 
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.*;
@@ -9,6 +10,7 @@ import java.util.*;
 /**
  * This is a (partial) archive stats object. it includes import stats, as well as the first/last message date, etc.
  */
+@ToString
 public class FetchStats implements Serializable {
     private final static long serialVersionUID = 1L;
 
@@ -28,32 +30,6 @@ public class FetchStats implements Serializable {
     public String primaryEmailInput;
     public String archiveTitleInput;
     public Set<String> emailSourcesInput;
-
-    public String toString() {
-        // do not use html special chars here!
-        Calendar c = new GregorianCalendar();
-        c.setTime(new Date(lastUpdate));
-        String s = "Import date: " + Util.formatDateLong(c) + "\n";
-
-        s += "message_filter: " + messageFilter + "\n";
-
-//        s += "selected_messages: " + importStats.nTotalMessages +  " filtered: " + importStats.nMessagesFiltered + " imported: " + importStats.nMessagesAdded +" duplicates: " + importStats.nMessagesAlreadyPresent + "\n";
-        s += "imported: " + Util.commatize(importStats.nMessagesAdded) + " duplicates: " + Util.commatize(importStats.nMessagesAlreadyPresent) + "\n";
-        //	s += "sent_messages: " + nMessagesSent + " received_messages: " + nMessagesReceived + "\n";
-        s += "first_date: " + Util.formatDate(new Date(firstMessageDate)) + " last_date: " + Util.formatDate(new Date(lastMessageDate)) + " span_in_months: " + spanInMonths + "\n";
-        s += "fetch_time_in_secs: " + fetchAndIndexTimeMillis / 1000 + "\n";
-//		s += "user_key: " + userKey + "\n";
-        //		s += "total_folders: " + nFolders + "\n";
-        if (selectedFolders == null)
-            s += "selected_folders: null";
-        else {
-            s += "selected_folders: " + selectedFolders.size();
-            for (Pair<String, FolderInfo> p : selectedFolders)
-                s += " - " + p.getFirst() + " (" + p.getSecond() + ")";
-        }
-        s += "\n";
-        return s;
-    }
 
     /** returns an HTML version of the stats; used in ePADD */
     public String toHTML() {
@@ -93,10 +69,5 @@ public class FetchStats implements Serializable {
 
         }
         return s;
-    }
-
-    public static void main(String args[]) {
-        FetchStats as = new FetchStats();
-        System.out.println(Util.fieldsToString(as));
     }
 }
