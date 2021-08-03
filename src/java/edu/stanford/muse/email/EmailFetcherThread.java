@@ -265,7 +265,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * Key method for importing email: converts a javamail obj. to our own data structure (EmailDocument)
      */
     //public EmailDocument convertToEmailDocument(MimeMessage m, int num, String url) throws MessagingException, IOException
-    private EmailDocument convertToEmailDocument(MimeMessage m, String id) throws MessagingException, IOException {
+    protected EmailDocument convertToEmailDocument(MimeMessage m, String id) throws MessagingException, IOException {
         // get the date.
 
 
@@ -1360,7 +1360,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * The params begin idx and end idx are used for both uid filtering and Mbox message indexing.
      * does not make sense
      */
-    private Message[] openFolderAndGetMessages() throws MessagingException {
+    protected Message[] openFolderAndGetMessages() throws MessagingException {
+        // If folder has not been assigned yet, get it from the email store.
         if (folder == null)
             openFolderAndGetMessageCount();
 
@@ -1374,12 +1375,16 @@ public class EmailFetcherThread implements Runnable, Serializable {
         boolean use_uid_if_available = (begin_msg_index == 1 && end_msg_index == count + 1);
         log.info("use_uid_if_available is set to " + use_uid_if_available);
 
+        // Filter will be populated if user is searching for messages matching email addresses, keywords, etc.
         if (fetchConfig.filter != null && fetchConfig.filter.isActive()) {
             log.info("Issuing server side filters for " + fetchConfig.filter);
             boolean useReceivedDateTerms = descr.contains("yahoo.com");
             messages = folder.search(fetchConfig.filter.convertToSearchTerm(useReceivedDateTerms));
-        } else {
-            // mbox provider claims to provide UIDFolder but the uids are bogus so we treat mboemailstore folders as not uidfolders
+        }
+
+        // Filter is null, so just return all messages
+        else {
+            // mbox provider claims to provide UIDFolder but the uids are bogus so we treat mboxemailstore folders as not uidfolders
             boolean is_uid_folder = (folder instanceof UIDFolder) && !(emailStore instanceof MboxEmailStore);
 
             if (use_uid_if_available && is_uid_folder) {
