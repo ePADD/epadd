@@ -115,7 +115,9 @@ public class Archive implements Serializable {
 
     public Multimap<Document, Tuple2<String,String>> getDupMessageInfo() {
         if(dupMessageInfo==null)
-            return LinkedHashMultimap.create();
+        {
+            dupMessageInfo = LinkedHashMultimap.create();
+        }
         return dupMessageInfo;
     }
 
