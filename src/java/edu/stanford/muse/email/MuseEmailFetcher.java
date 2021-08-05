@@ -643,14 +643,14 @@ public class MuseEmailFetcher {
 
 			int numofduplicates =  archive.getDupMessageInfo().get(doc).size();//number of duplicates found for this emaildocument
 			//get the size of attachments
-			sb.append("Duplicate message:"+" Following messages were found as duplicates of message id #"+edoc.getUniqueId()+"("+edoc.folderName+"):\n");
+			sb.append("Duplicate message:"+" Following messages were found as duplicates of\n    message id #"+edoc.getUniqueId()+" ("+edoc.folderName+"):\n");
 			for(Blob b : edoc.attachments){
 				totalsize+=b.size;
 			}
 			sizesaved = (numofduplicates) * totalsize;
 			int count =1;
 			for (Tuple2 s :  archive.getDupMessageInfo().get(doc)) {
-				sb.append("   "+count+"."+"Message in "+s.getFirst()+"-"+s.getSecond()+"\n");
+				sb.append("      "+count+". "+"Message id # "+s.getSecond()+" ("+s.getFirst()+")\n");
 				count++;
 			}
 			if (sizesaved != 0) {

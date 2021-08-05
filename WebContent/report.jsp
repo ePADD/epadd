@@ -125,7 +125,12 @@
         out.println ("<h2>" + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "</h2>"); // errorTypes[t][1] is the description of the error
         out.println ("</a>");
         for (String s : errorsByType[t])
-            out.println(++i + ". " + Util.escapeHTML(s) + "<br/>\n");
+        {
+            String escapedString = Util.escapeHTML(s);
+            escapedString = escapedString.replace("\n", "<br/>");
+            escapedString = escapedString.replace(" ", "&nbsp");
+            out.println(++i + ". " + escapedString + "<br/>\n");
+        }
         out.println ("<br/><br/><hr/><br/>\n");
     }
 %>
