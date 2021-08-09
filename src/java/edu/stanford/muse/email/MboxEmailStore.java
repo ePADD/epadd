@@ -43,6 +43,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	private FolderCache folderCache;
 	private String rootPath;
 	private String accountKey;
+	private File cacheDir;
 
 	static {
         //http://sourceforge.net/projects/mstor/files/mstor/0.9.13/
@@ -230,7 +231,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	public void computeFoldersAndCounts(String foldersAndCountsDir) {
 		doneReadingFolderCounts = false;
 		
-		new File(foldersAndCountsDir).mkdirs(); // ensure cacheDir exists
+		cacheDir = new File(foldersAndCountsDir);
+		cacheDir.mkdirs(); // ensure cacheDir exists
 
 		// convert the root path to a filename
 		String cacheFilePath = foldersAndCountsDir + File.separatorChar + CACHE_FILENAME + "." + rootPath.replaceAll("/", "--").replaceAll("\\\\", "--");
@@ -347,5 +349,17 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 				ioe.printStackTrace(System.err);
 			}
 		}
+	}
+
+	public void deleteAndCleanupFiles() throws IOException {
+        // Clear out the compute directory.
+		Arrays.stream(cacheDir.listFiles()).forEach(f -> {
+			try {
+				f.delete();
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+		cacheDir.delete();
 	}
 }

@@ -4,7 +4,6 @@ import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.Document;
 import edu.stanford.muse.index.EmailDocument;
-import net.didion.jwnl.data.Exc;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,6 @@ import org.junit.runners.JUnit4;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
-import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,7 +52,8 @@ public class EmailFetcherThreadTest {
 
     @After
     public void afterEach() throws Exception {
-        archive.indexer.deleteAndCleanupFiles();
+        emailStore.deleteAndCleanupFiles();
+        archive.deleteAndCleanupFiles();
         archive.clear();
         archive.close();
         fetcherThread.finish();
@@ -83,15 +82,15 @@ public class EmailFetcherThreadTest {
         String contents = archive.getContents(docs.get(7), true);
 
         List<String> headerStrings = Arrays.asList(
-            "From: Dmitriy Blinov <bda@mnsspb.ru>",
-            "To: navy-patches@dinar.mns.mnsspb.ru",
-            "Date: Wed, 12 Nov 2008 17:54:41 +0300",
-            "Message-Id: <1226501681-24923-1-git-send-email-bda@mnsspb.ru>",
-            "X-Mailer: git-send-email 1.5.6.5",
-            "MIME-Version: 1.0",
-            "Content-Type: text/plain;",
-            "charset=utf-8",
-            "Content-Transfer-Encoding: 8bit"
+                "From: Dmitriy Blinov <bda@mnsspb.ru>",
+                "To: navy-patches@dinar.mns.mnsspb.ru",
+                "Date: Wed, 12 Nov 2008 17:54:41 +0300",
+                "Message-Id: <1226501681-24923-1-git-send-email-bda@mnsspb.ru>",
+                "X-Mailer: git-send-email 1.5.6.5",
+                "MIME-Version: 1.0",
+                "Content-Type: text/plain;",
+                "charset=utf-8",
+                "Content-Transfer-Encoding: 8bit"
         );
 
         headerStrings.parallelStream().forEach(s -> assertThat("Fetcher should index all headers", contents, containsString(s)));

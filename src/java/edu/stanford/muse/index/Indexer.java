@@ -946,6 +946,7 @@ is what we want.
 		if (iwriter == null || iwriter_blob == null) {
 			setupForWrite();
 		}
+		analyzer.close();
 		iwriter.deleteAll();
 		iwriter.commit();
 		iwriter_blob.deleteAll();

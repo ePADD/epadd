@@ -369,7 +369,8 @@ int errortype=0;
      * archive moves.
      */
     public String baseDir;
-
+    public File lexiconsDir;
+    public File computeDir;
 
     public SentimentStats stats = new SentimentStats();
 
@@ -683,11 +684,10 @@ int errortype=0;
     /**
      * This should be the only place that creates the cache dir.
      */
-    private static void prepareBaseDir(String dir) {
+    private void prepareBaseDir(String dir) {
         dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar+ LEXICONS_SUBDIR;
-        File f_dir = new File(dir);
-
-        f_dir.mkdirs();
+        lexiconsDir = new File(dir);
+        lexiconsDir.mkdirs();
 
         // copy lexicons over to the muse dir
         // unfortunately, hard-coded because we are loading as a ClassLoader resource and not as a file, so we can't use Util.filesWithSuffix()
@@ -1199,7 +1199,7 @@ int errortype=0;
         boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY;
         setStatusProvider.accept(new StaticStatusProvider(statusmsg+":"+"Preparing base directory.."));
 
-        Archive.prepareBaseDir(out_dir);
+        prepareBaseDir(out_dir);
         if (!exportInPublicMode && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR).exists())
             FileUtils.copyDirectory(new File(baseDir +  File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR),
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR));
@@ -2507,5 +2507,19 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void deleteAndCleanupFiles() throws IOException {
+        // Clear out the lexicons directory.
+		Arrays.stream(lexiconsDir.listFiles()).forEach(f -> {
+			try {
+			    f.delete();
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+        lexiconsDir.delete();
+
+        indexer.deleteAndCleanupFiles();
     }
 }
