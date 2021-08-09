@@ -59,6 +59,7 @@ import gov.loc.repository.bagit.util.PathUtils;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
 import groovy.lang.Tuple2;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,6 +92,7 @@ import java.util.stream.Collectors;
  * per-session state.
  *
  */
+@Getter
 public class Archive implements Serializable {
     private static final Logger log =  LogManager.getLogger(Archive.class);
     private static final long serialVersionUID = 1L;

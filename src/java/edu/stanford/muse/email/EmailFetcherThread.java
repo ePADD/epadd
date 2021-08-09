@@ -40,12 +40,10 @@ import org.jsoup.Jsoup;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.*;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.*;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class EmailFetcherStats implements Cloneable, Serializable {
     private final static long serialVersionUID = 1L;
@@ -455,7 +453,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * also sets up names of attachments (though it will not download the
      * attachment unless downloadAttachments is true)
      */
-    private List<String> processMessagePart(EmailDocument ed, int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
+    protected List<String> processMessagePart(EmailDocument ed, int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
         List<String> list = new ArrayList<>(); // return list
         if (p == null) {
             dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
@@ -493,7 +491,11 @@ public class EmailFetcherThread implements Runnable, Serializable {
             String encoding = "quoted-printable";
             String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
-            Enumeration headers = p.getAllHeaders();
+            Enumeration<Header> headers = p.getAllHeaders();
+
+            // Index all original headers.
+            list.add(headersToString(headers));
+
             boolean dirty = false;
             if (headers != null)
                 while (headers.hasMoreElements()) {
@@ -1048,7 +1050,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 if (archive.containsDoc(ed)) {
                     //get more info about the already present message (duplicate)
                     Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
-                    archive.getDupMessageInfo().put(alreadypresent,new Tuple2(ed.folderName,ed.messageID));
+                    archive.getDupMessageInfo().put(alreadypresent,new Tuple2<>(ed.folderName,ed.messageID));
 
                     stats.nMessagesAlreadyPresent++;
                     //dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this exact string
@@ -1097,7 +1099,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      *               for proper assignment of unique id or doc Id
      */
     //private void fetchUncachedMessages(String sanitizedFName, Folder folder, DocCache cache, List<Integer> msgIdxs) throws MessagingException, FileNotFoundException, IOException, GeneralSecurityException {
-    private void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) {
+    protected void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) {
         //mark the processing of new batch
         if (offset == 0)
             fetchStartTime = System.currentTimeMillis();
@@ -1189,7 +1191,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         stats.nMessagesAlreadyPresent++;
                         //get more info about the already present message (duplicate)
                         Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
-                        archive.getDupMessageInfo().put(alreadypresent,new Tuple2(ed.folderName,ed.messageID));
+                        archive.getDupMessageInfo().put(alreadypresent,new Tuple2<>(ed.folderName,ed.messageID));
 
 
                         //dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this specific string
@@ -1623,5 +1625,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
     public String toString() {
         return Util.fieldsToString(this);
+    }
+
+    private String headersToString(Enumeration<Header> headers) {
+        List<Header> headersList = Collections.list(headers);
+        return headersList
+                .stream()
+                .map(item -> item.getName() + ": " + item.getValue())
+                .collect(Collectors.joining("; ", "", ""));
     }
 }

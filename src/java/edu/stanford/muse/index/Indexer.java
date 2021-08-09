@@ -22,6 +22,7 @@ import edu.stanford.muse.email.StatusProvider;
 import edu.stanford.muse.lang.Languages;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.util.*;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,6 +73,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * cluster numbers mentioned here are for MultiDocs -- (earlier used for months, now rarely used.)
  */
+@Getter
 public class Indexer implements StatusProvider, java.io.Serializable {
 
 	static final Logger					log					= LogManager.getLogger(Indexer.class);
@@ -181,21 +183,22 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	// Collection<String> dataErrors = new LinkedHashSet<String>();
 
+	@Getter
 	public static class IndexStats implements java.io.Serializable {
 		private static final long	serialVersionUID		= 1L;
 		// int nTokens = 0, nStopTokens = 0, nDictTokens = 0;
         //total # of messages indexed
-		int							nDocuments				= 0;
+		int				nDocuments				= 0;
         //#chars indexed
-		long						indexedTextSize			= 0;
+		long				indexedTextSize			= 0;
         //#chars indexed in original content
-		long						indexedTextSizeOriginal	= 0;
-		long						indexedTextLength_blob	= 0, nIndexedNames_blob = 0;	// attachments indexed
+		long				indexedTextSizeOriginal	= 0;
+		long				indexedTextLength_blob	= 0, nIndexedNames_blob = 0;	// attachments indexed
 
 		// original => only in original content, i.e. not quoted parts of
 		// messages
         //total # of occurances i.e. each name will be counted as many times as it occurs
-		int							nNames					= 0, nOriginalNames = 0;
+		int				nNames					= 0, nOriginalNames = 0;
         //# of unique names in entire corpus, # of unique names in original content
 		public int					nUniqueNames			= 0, nUniqueNamesOriginal = 0;
 	}
@@ -939,7 +942,7 @@ is what we want.
 	 * Explicitly closing each level to make sure basePath directory isn't shared with something else
 	 * @throws IOException
 	 */
-	void deleteAndCleanupFiles() throws IOException {
+	public void deleteAndCleanupFiles() throws IOException {
 		if (iwriter == null || iwriter_blob == null) {
 			setupForWrite();
 		}
