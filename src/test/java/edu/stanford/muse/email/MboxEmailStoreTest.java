@@ -1,6 +1,8 @@
 package edu.stanford.muse.email;
 
 import net.fortuna.mstor.MStorStore;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +11,7 @@ import org.junit.runners.JUnit4;
 import javax.mail.MessagingException;
 import javax.mail.Store;
 import java.io.IOException;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
 public class MboxEmailStoreTest {
@@ -53,8 +56,10 @@ public class MboxEmailStoreTest {
 		assert folderCache != null;
 
 		int messageCount = folderCache.cacheMap.get(mboxPath + "/sample.mbox").messageCount;
-		assert messageCount == 12;
+		assertEquals(12, messageCount);
 
-		// TODO: Clear out folder cache.
+		me.deleteAndCleanupFiles();
+		assertEquals("Cache directory should be deleted", false, me.getCacheDir().exists());
     }
+
 }

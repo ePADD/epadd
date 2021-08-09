@@ -351,6 +351,10 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		}
 	}
 
+	/***
+	 * Deletes and cleans up compute files & directory. Used primarily for cleaning up unit tests.
+	 * @throws IOException
+	 */
 	public void deleteAndCleanupFiles() throws IOException {
         // Clear out the compute directory.
 		Arrays.stream(cacheDir.listFiles()).forEach(f -> {

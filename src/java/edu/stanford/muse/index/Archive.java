@@ -2509,6 +2509,11 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
         }
     }
 
+	/***
+	 * Deletes and cleans up lexicons files & directory, as well as indexer cache files.
+     * Used primarily for cleaning up unit tests.
+	 * @throws IOException
+	 */
     public void deleteAndCleanupFiles() throws IOException {
         // Clear out the lexicons directory.
 		Arrays.stream(lexiconsDir.listFiles()).forEach(f -> {
