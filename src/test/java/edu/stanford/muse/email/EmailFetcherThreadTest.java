@@ -63,9 +63,12 @@ public class EmailFetcherThreadTest {
     public void testFetchAndIndexMessages() throws Exception {
         Message[] mimeMessages = folder.getMessages();
         int numMessagesBefore = fetcherThread.stats.nMessagesAdded;
+        int numMessagesInFolder = mimeMessages.length;
+        assertEquals(12, numMessagesInFolder);
         assertEquals(0, numMessagesBefore);
 
         fetcherThread.fetchAndIndexMessages(folder, mimeMessages, 0, 12);
+
         int numMessagesAdded = fetcherThread.stats.nMessagesAdded;
         int numMessagesAlreadyPresent = fetcherThread.stats.nMessagesAlreadyPresent;
         assertEquals(12, numMessagesAdded + numMessagesAlreadyPresent);
