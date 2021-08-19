@@ -1101,6 +1101,8 @@ is what we want.
 			String bcc_names = Util.join(EmailUtils.personalNames(ed.bcc), " ");
 			doc.add(new Field("bcc_names", bcc_names, full_ft));
 
+			// TODO: Index original headers here. Pull the the original headers out of the body. Store as full_ft.
+
 			//IMP: Field body sometimes wrongly include the attachment binary resulting in large size of this term. This further results in throwing an
 			//exception when adding this document in the index. Therefore truncate the size of body upto 32766.
 			int len = body.length()>32766?32766:body.length();

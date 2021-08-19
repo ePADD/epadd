@@ -494,6 +494,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             Enumeration<Header> headers = p.getAllHeaders();
 
             // Index all original headers.
+            // TODO: Wrap the headers in a known string delimiter so we can extract it later.
             list.add(headersToString(headers));
 
             boolean dirty = false;
