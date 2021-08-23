@@ -1041,6 +1041,16 @@ is what we want.
 		}
 	}
 
+	protected String[] extractContentAndHeaders(String content) {
+		// Separate the original headers from the body.
+		boolean hasHeaders = StringUtils.contains(content, HEADER_START_DELIMITER) &&
+				StringUtils.contains(content, HEADER_END_DELIMITER);
+		String body = hasHeaders ? StringUtils.substringAfter(content, HEADER_END_DELIMITER) : content;
+		String headers = hasHeaders ?
+				StringUtils.substringBetween(content, HEADER_START_DELIMITER, HEADER_END_DELIMITER) : "";
+		return new String[]{headers, body};
+	}
+
 	/**
 	 * internal method, core method for adding a doc to the index.
 	 * adds body, title, people, places, orgs. assumes the index, iwriter etc
@@ -1051,9 +1061,9 @@ is what we want.
 	 */
 	private synchronized void add1DocToIndex(String title, String content, Document d, IndexStats stats) throws Exception
 	{
-		// Separate the original headers from the body.
-		String body = StringUtils.substringAfter(content, HEADER_END_DELIMITER);
-		String headers = StringUtils.substringBetween(content, HEADER_START_DELIMITER, HEADER_END_DELIMITER);
+		String[] contentList = extractContentAndHeaders(content);
+		String body = contentList[1];
+		String headers = contentList[0];
 
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
 
@@ -1118,7 +1128,7 @@ is what we want.
 			    //mark dataerror to record this truncation.@TODO
             }
 
-			// TODO: Index original headers here. Store as full_ft.
+			// Index original headers. Store as full_ft.
 			doc.add(new Field("headers_original", headers, full_ft)); // save raw before preprocessed
 			doc.add(new Field("body", body, full_ft)); // save raw before preprocessed
 		}
