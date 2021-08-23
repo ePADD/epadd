@@ -45,6 +45,9 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static edu.stanford.muse.index.Indexer.HEADER_END_DELIMITER;
+import static edu.stanford.muse.index.Indexer.HEADER_START_DELIMITER;
+
 class EmailFetcherStats implements Cloneable, Serializable {
     private final static long serialVersionUID = 1L;
 
@@ -493,9 +496,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
             //make sure, p is not wrongly labelled as plain text.
             Enumeration<Header> headers = p.getAllHeaders();
 
-            // Index all original headers.
-            // TODO: Wrap the headers in a known string delimiter so we can extract it later.
-            list.add(headersToString(headers));
+            // Index all original headers. Wrap the headers in a known string delimiter so we can extract them later.
+            list.add(HEADER_START_DELIMITER + headersToString(headers) + HEADER_END_DELIMITER);
 
             boolean dirty = false;
             if (headers != null)

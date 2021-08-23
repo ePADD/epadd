@@ -25,6 +25,7 @@ import edu.stanford.muse.util.*;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -54,6 +55,8 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * this class is pretty closely tied with the summarizer (which generates cards  - Muse only.).
@@ -75,6 +78,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Getter
 public class Indexer implements StatusProvider, java.io.Serializable {
+	public static final String HEADER_START_DELIMITER = "__EPADD_HEADER_START__";
+	public static final String HEADER_END_DELIMITER = "__EPADD_HEADER_END__";
 
 	static final Logger					log					= LogManager.getLogger(Indexer.class);
 	private static final long	serialVersionUID	= 1L;
@@ -1044,8 +1049,12 @@ is what we want.
 	 *
 	 * @param stats
 	 */
-	private synchronized void add1DocToIndex(String title, String body, Document d, IndexStats stats) throws Exception
+	private synchronized void add1DocToIndex(String title, String content, Document d, IndexStats stats) throws Exception
 	{
+		// Separate the original headers from the body.
+		String body = StringUtils.substringAfter(content, HEADER_END_DELIMITER);
+		String headers = StringUtils.substringBetween(content, HEADER_START_DELIMITER, HEADER_END_DELIMITER);
+
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
 
 		String id = d.getUniqueId();
@@ -1101,8 +1110,6 @@ is what we want.
 			String bcc_names = Util.join(EmailUtils.personalNames(ed.bcc), " ");
 			doc.add(new Field("bcc_names", bcc_names, full_ft));
 
-			// TODO: Index original headers here. Pull the the original headers out of the body. Store as full_ft.
-
 			//IMP: Field body sometimes wrongly include the attachment binary resulting in large size of this term. This further results in throwing an
 			//exception when adding this document in the index. Therefore truncate the size of body upto 32766.
 			int len = body.length()>32766?32766:body.length();
@@ -1110,6 +1117,9 @@ is what we want.
 			if(len!=body.length()){
 			    //mark dataerror to record this truncation.@TODO
             }
+
+			// TODO: Index original headers here. Store as full_ft.
+			doc.add(new Field("headers_original", headers, full_ft)); // save raw before preprocessed
 			doc.add(new Field("body", body, full_ft)); // save raw before preprocessed
 		}
 
@@ -2127,6 +2137,47 @@ is what we want.
         }
 
         return contents;
+    }
+
+	String getHeaders(edu.stanford.muse.index.Document d)
+	{
+		org.apache.lucene.document.Document doc;
+		try {
+			doc = getDoc(d);
+		} catch (IOException e) {
+			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
+			e.printStackTrace();
+			return null;
+		}
+
+		return getHeaders(doc);
+	}
+
+	String getHeaders(org.apache.lucene.document.Document doc) {
+        String headers;
+        try {
+			headers = doc.get("headers_original");
+        } catch (Exception e) {
+            log.warn("Exception " + e + " trying to read field 'headers_original': " + Util.ellipsize(Util.stackTrace(e), 350));
+			Util.print_exception("Exception Trying to read field headers_original",e,log);
+            headers = null;
+        }
+
+
+        if (headers == null) { // fall back to 'names' (or in public mode)
+            try {
+                List<String> names = getNamesForLuceneDoc(doc, QueryType.ORIGINAL);
+                headers = Util.joinSort(Util.scrubNames(names), "\n"); // it seems <br> will get automatically added downstream
+            } catch (Exception e) {
+                log.warn("Exception " + e + " trying to read extracted names of " + this.toString());
+                headers = null;
+            }
+
+            if (headers == null)
+                headers = "\n\nHeaders not available.\n\n";
+        }
+
+        return headers;
     }
 
     protected org.apache.lucene.document.Document getLDoc(Integer ldocId, Set<String> fieldsToLoad) {

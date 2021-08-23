@@ -815,6 +815,17 @@ int errortype=0;
         return indexer.getContents(ldoc, originalContentOnly);
     }
 
+    /**
+     * gets original headers only!
+     */
+    public String getHeaders(Document d) {
+        return indexer.getHeaders(d);
+    }
+
+    public String getHeaders(org.apache.lucene.document.Document ldoc){
+        return indexer.getHeaders(ldoc);
+    }
+
     /*
     private void setupAddressBook(List<Document> docs) {
         // in this case, we don't care whether email addrs are incoming or

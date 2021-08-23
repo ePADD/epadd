@@ -82,7 +82,7 @@ public class EmailFetcherThreadTest {
         assertEquals("Archive should contain all messages added", numMessagesAdded, docs.size());
 
         // Check that the index contains all header info
-        String contents = archive.getContents(docs.get(7), true);
+        String contents = archive.getHeaders(docs.get(7));
 
         List<String> headerStrings = Arrays.asList(
                 "From: Dmitriy Blinov <bda@mnsspb.ru>",
