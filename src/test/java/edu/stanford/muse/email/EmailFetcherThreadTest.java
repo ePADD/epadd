@@ -11,11 +11,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import javax.mail.Folder;
+import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 
+import static edu.stanford.muse.index.Indexer.HEADER_END_DELIMITER;
+import static edu.stanford.muse.index.Indexer.HEADER_START_DELIMITER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -116,6 +121,20 @@ public class EmailFetcherThreadTest {
         assertEquals("Email document ID should match given ID", expectedId, emailDocument.getId());
         assertNotNull("Email document should have a unique ID", emailDocument.getUniqueId());
         assertNotNull("Email document should have a date", emailDocument.date);
+    }
+
+    @Test
+    public void testConvertHeadersToString() {
+        Vector<Header> headersVector = new Vector<Header>();
+        headersVector.add(new Header("0", "a"));
+        headersVector.add(new Header("1", "b"));
+        headersVector.add(new Header("2", "c"));
+        headersVector.add(new Header("3", "d"));
+        headersVector.add(new Header("4", "e"));
+        Enumeration<Header> headers;
+        headers = headersVector.elements();
+        String output = fetcherThread.headersToString(headers);
+        assertEquals(output, HEADER_START_DELIMITER + "0: a; 1: b; 2: c; 3: d; 4: e" + HEADER_END_DELIMITER);
     }
 }
 

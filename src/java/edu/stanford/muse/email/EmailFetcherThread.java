@@ -497,7 +497,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             Enumeration<Header> headers = p.getAllHeaders();
 
             // Index all original headers. Wrap the headers in a known string delimiter so we can extract them later.
-            list.add(HEADER_START_DELIMITER + headersToString(headers) + HEADER_END_DELIMITER);
+            list.add(headersToString(headers));
 
             boolean dirty = false;
             if (headers != null)
@@ -1630,11 +1630,17 @@ public class EmailFetcherThread implements Runnable, Serializable {
         return Util.fieldsToString(this);
     }
 
-    private String headersToString(Enumeration<Header> headers) {
+    /**
+     * Returns the given headers as a string, wrapped in starting and ending delimiters
+     * @param headers
+     * @return
+     */
+    protected String headersToString(Enumeration<Header> headers) {
         List<Header> headersList = Collections.list(headers);
-        return headersList
+        String headersString = headersList
                 .stream()
                 .map(item -> item.getName() + ": " + item.getValue())
                 .collect(Collectors.joining("; ", "", ""));
+        return HEADER_START_DELIMITER + headersString + HEADER_END_DELIMITER;
     }
 }
