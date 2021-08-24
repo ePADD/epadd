@@ -127,60 +127,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	// these are field type configs for all the fields to be stored in the email and attachment index.
 	// most fields will use ft (stored and analyzed), and only the body fields will have a full_ft which is stored, analyzed (with stemming) and also keeps term vector offsets and positions for highlights
 	// some fields like name_offsets absolutely don't need to be indexed and can be kept as storeOnly_ft
-	final transient private static FieldType storeOnly_ft;
-	private static final transient FieldType ft;
-	static final transient FieldType full_ft;
+	final transient private static FieldType storeOnly_ft = new FieldTypeStoredOnly();
+	private static final transient FieldTypeStoredAnalyzed ft = new FieldTypeStoredAnalyzed();
+	static final transient FieldType full_ft = new FieldTypeStoredAnalysedTokenized();
 	static transient FieldType unanalyzed_full_ft;													// unanalyzed_full_ft for regex search
-	static {
-		storeOnly_ft = new FieldType();
-		storeOnly_ft.setStored(true);
-		storeOnly_ft.freeze();
-
-		ft = new FieldType();
-
-		ft.setStored(true);
-		//@TODO: Check if from lucene 7.2 by default this field is indexed.
-		//ft.setIndexed(true);
-		//Since lucene 7.2, a field is indexed if its indexoptions is set anything else than None.
-		ft.setIndexOptions(org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS);
-		ft.setTokenized(false);
-		ft.freeze();
-
-		full_ft = new FieldType();
-		full_ft.setStored(true);
-		//@TODO: Check if from lucene 7.2 by default this field is indexed.
-		//full_ft.setIndexed(true);
-		full_ft.setIndexOptions(org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
-		full_ft.freeze();
-
-        //use this field for spanning regular expression, also tokenises text
-//		unanalyzed_full_ft = new FieldType();
-//		unanalyzed_full_ft.setStored(true);
-//		unanalyzed_full_ft.setIndexed(true);
-//		unanalyzed_full_ft.setTokenized(false);
-//		unanalyzed_full_ft.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
-//		unanalyzed_full_ft.freeze();
-	}
-
-	private static final CharArraySet MUSE_STOP_WORDS_SET;
-
-	static {
-		// Warning: changes in this list requires re-indexing of all existing archives.
-		final List<String> stopWords = Arrays.asList(
-				"a", "an", "and", "are", "as", "at", "be", "but", "by",
-				"for", "if", "in", "into", "is", "it",
-				"no", /*
-					 * "not"
-					 * ,
-					 */"of", "on", "or", "such",
-				"that", "the", "their", "then", "there", "these",
-				"they", "this", "to", "was", "will", "with"
-		);
-		final CharArraySet stopSet = new CharArraySet(stopWords.size(), false);
-		stopSet.addAll(stopWords);
-		MUSE_STOP_WORDS_SET = CharArraySet.unmodifiableSet(stopSet);
-	}
-
+	private static final CharArraySet MUSE_STOP_WORDS_SET = StopWords.getCharArraySet();
 
 	private IndexOptions				io;
 	private boolean				cancel							= false;
@@ -656,7 +607,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	private Analyzer newAnalyzer() {
         // we can use LimitTokenCountAnalyzer to limit the #tokens
 
-        EnglishAnalyzer stemmingAnalyzer = new EnglishAnalyzer( MUSE_STOP_WORDS_SET);
+        EnglishAnalyzer stemmingAnalyzer = new EnglishAnalyzer(MUSE_STOP_WORDS_SET);
         EnglishNumberAnalyzer snAnalyzer = new EnglishNumberAnalyzer(MUSE_STOP_WORDS_SET);
 
         // these are the 3 fields for stemming, everything else uses StandardAnalyzer
@@ -1273,7 +1224,7 @@ is what we want.
         if(attachmentType)
             fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
         else
-            fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+            fieldsArray = new String[]{"body","headers_original","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
                     "cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
         Set<String> fieldsToLoad = new HashSet<String>();
@@ -1465,9 +1416,7 @@ is what we want.
 					parserToUse = this.parser;
 			}
 			Query query = parserToUse.parse(q);
-			//			query = convertRegex(query); // to mimic built-in regex support
-			ScoreDoc[] hits = isearcher.search(query, edu.stanford.muse.Config.MAX_DOCS_PER_QUERY,Sort.RELEVANCE).scoreDocs;
-			return hits.length;
+			return (int) isearcher.search(query, Config.MAX_DOCS_PER_QUERY,Sort.RELEVANCE).totalHits;
 		} catch (Exception e) {
 			Util.print_exception(e);
 		}
@@ -1852,7 +1801,7 @@ is what we want.
 		if(attachmentType)
 			fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
 		else
-			fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+			fieldsArray = new String[]{"body","headers_original","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
 					"cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
 		Set<String> fieldsToLoad = new HashSet<String>();
@@ -2256,102 +2205,6 @@ is what we want.
         }
 	}
 
-	private static void testQueries() throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException
-	{
-		Indexer li = new Indexer("/tmp", new IndexOptions());
-
-		// public EmailDocument(String id, String folderName, Address[] to, Address[] cc, Address[] bcc, Address[] from, String subject, String messageID, Date date)
-		EmailDocument ed = new EmailDocument("1", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123-45 6789 ", "name 1 is John Smith.  credit card # 1234 5678 9012 3456 ", ed, null);
-		ed = new EmailDocument("2", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card not ending with a non-digit # 1234 5678 9012 345612 ", ed, null);
-		ed = new EmailDocument("3", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card # 111234 5678 9012 3456 ", ed, null);
-		ed = new EmailDocument("4", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123 45 6789", "\nmy \nfirst \n book is \n something ", ed, null);
-        ed = new EmailDocument("5", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc("passport number k4190893", "\nmy \nfirst \n book is \n something ", ed, null);
-
-        li.close();
-
-		li.setupForRead();
-		String q = "john";
-		Collection<EmailDocument> docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "/j..n/\\\\*";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "\"john\"";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "\"john smith\"";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "john*smith";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "title:john";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "title:subject";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "body:johns";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "title:johns";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "joh*";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "/j..n/";
-		//		q = "/\\b(\\d{9}|\\d{3}-\\d{2}-\\d{4})\\b/";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		// look for sequence of 4-4-4-4 . the .* at the beginning and end is needed.
-		q = "[0-9]{3}[\\- ]*[0-9]{2}[ \\-]*[0-9]{4}";
-		docs = li.lookupDocs(q, QueryType.REGEX);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		// look for sequence of 3-2-4
-		//q = "[0-9]{3}[ \\-]*[0-9]{2}[ \\-]*[0-9]{4}";
-		q = "123-45[ \\-]*[0-9]{4}";
-		System.out.println("hits for: " + q + " = " + li.lookupDocs(q, QueryType.REGEX).size());
-
-		// look for sequence of 3-2-4
-		q = "first\\sbook";
-		docs = li.lookupDocs(q, QueryType.REGEX);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-        q = "ssn";
-        int numHits = li.getNumHits(q, false, QueryType.FULL);
-        System.err.println("Number of hits for: " + q + " is " + numHits);
-
-        q = "[A-Za-z][0-9]{7}";
-		docs = li.lookupDocs(q, QueryType.REGEX);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		li.analyzer = null;
-		li.isearcher = null;
-		li.parser = null;
-		li.parserOriginal = null;
-		li.parserSubject = null;
-		li.parserCorrespondents = null;
-		Util.writeObjectToFile("/tmp/1", li);
-		li = (Indexer) Util.readObjectFromFile("/tmp/1");
-	}
 	public String toString()
 	{
 		return computeStats();

@@ -3,6 +3,7 @@ package edu.stanford.muse.ner.tokenize.test;
 import edu.stanford.muse.ner.tokenize.CICTokenizer;
 import edu.stanford.muse.ner.tokenize.Tokenizer;
 import edu.stanford.muse.util.Triple;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import static org.junit.Assert.*;
 
 public class TokenizerTest {
 
+    @Ignore
     @Test
     public void testCICTokenizer() {
         Tokenizer tokenizer = new CICTokenizer();

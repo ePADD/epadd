@@ -1,5 +1,6 @@
 package edu.stanford.muse.index;
 
+import org.apache.lucene.document.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,9 +8,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(JUnit4.class)
 public class IndexerTest {
@@ -46,6 +52,17 @@ public class IndexerTest {
         li.setupForRead();
     }
 
+    /***
+     * Adssumes the test index has been setup for Read
+     * @param ed
+     */
+    public void addAnotherDoc(EmailDocument ed, String title, String documentText) throws Exception {
+        li.setupForWrite();
+        li.indexSubdoc(title, documentText, ed, null);
+        li.close();
+        li.setupForRead();
+    }
+
     @After
     public void breakDown() throws Exception {
         li.deleteAndCleanupFiles();
@@ -54,6 +71,7 @@ public class IndexerTest {
     @Test
     public void testGetNumHits() throws Exception {
         runAndTestGetNumHits("ssn", Indexer.QueryType.FULL, 4);
+        runAndTestGetNumHits("\"john*smith\"", Indexer.QueryType.FULL, 3);
     }
 
     @Test
@@ -75,5 +93,32 @@ public class IndexerTest {
         runAndTestLookupDocs("123-45[ \\-]*[0-9]{4}", Indexer.QueryType.REGEX, 1);
         runAndTestLookupDocs("first\\sbook", Indexer.QueryType.REGEX, 0);
         runAndTestLookupDocs("[A-Za-z][0-9]{7}", Indexer.QueryType.REGEX, 1);
+    }
+
+    @Test
+    public void testGetAllDocsWithFields() throws Exception {
+        List<org.apache.lucene.document.Document> allDocsLive = li.getAllDocsWithFields(false);
+        assertEquals("Number of docs returned by getAllDocsWithFields is not correct.", 5, allDocsLive.size());
+    }
+
+    @Test
+    public void testHeadersFieldReturnedAndIsNotSearchable() throws Exception {
+        EmailDocument ed = new EmailDocument("6", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[]{ new InternetAddress("a.u.thor@example.com")}, "", "", new Date());
+        String title = "another patch";
+        String documentTest = "__EPADD_HEADER_START__From: A U Thor <a.u.thor@example.com>; Date: Fri, 9 Jun 2006 00:44:16 -0700; Garbage: uuuuuuuuu; Subject: [PATCH] another patch__EPADD_HEADER_END__\n" +
+                "Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b\n";
+        addAnotherDoc(ed, title, documentTest);
+        List<org.apache.lucene.document.Document> allDocsLive = li.getAllDocsWithFields(false);
+        assertEquals("Number of docs returned by getAllDocsWithFields is not correct.", 6, allDocsLive.size());
+        allDocsLive.stream().forEach(d -> {
+            assertThat(d.getField("headers_original"), is(notNullValue()));
+        });
+        assertEquals("Complete header returned with doc.", allDocsLive.get(5).get("headers_original"), "From: A U Thor <a.u.thor@example.com>; Date: Fri, 9 Jun 2006 00:44:16 -0700; Garbage: uuuuuuuuu; Subject: [PATCH] another patch");
+
+        runAndTestGetNumHits("A U Thor", Indexer.QueryType.FULL, 1);
+        runAndTestGetNumHits("Garbage", Indexer.QueryType.FULL, 0);
+
+        assertEquals("Try another way to query, should return.", 0, li.docsForQuery("Garbage",new Indexer.QueryOptions()).size());
+        assertEquals("Try another way to query, should return.", 1, li.docsForQuery("nitpicker",new Indexer.QueryOptions()).size());
     }
 }
