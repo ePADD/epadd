@@ -27,6 +27,7 @@ import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -227,8 +228,11 @@ public class EmailDocument extends DatedDocument implements Serializable
 			//read lucene doc for this message to get the original body of the message.
 			org.apache.lucene.document.Document doc = archive.indexer.getLDoc(this.getUniqueId());
 			String messagebody=null;
-			if(doc!=null)
+			String headersOriginal = null;
+			if(doc!=null) {
 				messagebody = doc.get("body_original");
+				headersOriginal = doc.get("headers_original");
+			}
 			else
 				messagebody = "Message body not found!!";
 			//write subject at the top with SUBJECT: Heading
@@ -244,6 +248,11 @@ public class EmailDocument extends DatedDocument implements Serializable
 			br.append("MESSAGEID: ");
 			br.append(this.getUniqueId());
 			br.append("\n");
+			if (StringUtils.isNotEmpty(headersOriginal)) {
+				br.append("HEADERS: ");
+				br.append(headersOriginal);
+				br.append("\n");
+			}
 			//write the original text of the message with MESSAGE:Heading
 			br.append("MESSAGE: ");
 			br.append(messagebody);
