@@ -413,13 +413,19 @@ public class Contact extends UnionFindObject {
 		boolean isFirst = true;
 		//int state  = 0;
 		//0=name_reading,1= email_reading,2=state_reading
+		boolean foundEmail = false;
 		while(inp!=null){
 			if(inp.trim().startsWith(AddressBook.CONTACT_START_PREFIX)) {
+				if (!foundEmail)
+				{
+					tmp.getEmails().add(Util.escapeHTML(tmp.bestName));
+				}
 				//reset to the marked position
 				in.reset();
 				return tmp;
 			}
 			else if(inp.trim().contains("@")) {
+				foundEmail = true;
 				if(isFirst) {
 					tmp.setBestName(Util.escapeHTML(inp.trim()));
 					isFirst = false;
@@ -436,7 +442,8 @@ public class Contact extends UnionFindObject {
 			in.mark(1000);//here readAheadLimit tells how many characters stream can read
 			//without losing the mark. In this case we assume that one line of contact can not be more than 1000 characters.
 			//which is a realistic assumption.
-				inp = in.readLine();
+			inp = in.readLine();
+
 			/*
 			if(inp.trim().compareTo("###Names###")==0){
 				inp = in.readLine();
@@ -461,7 +468,13 @@ public class Contact extends UnionFindObject {
 			}*/
 
 		}
+		
+		if (tmp.getEmails().isEmpty())
+		{
+			tmp.emails.add(tmp.bestName);
+		}
 		//Util.warnIf(true,"Control should not reach here while reading a contact object", JSPHelper.log);
+		//(But the last contact doesn't end with --, so we end up here.)
 		return tmp;
 	}
 
