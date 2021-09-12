@@ -21,6 +21,10 @@ public class EmailDocumentTest {
     @Test
     public void testEmailDocumentExport() throws Exception {
         // setup index for EmailDocument to print export files
+        File testDir = new File("src/test/resources/EmailDocumentTest");
+        if (! testDir.exists()) {
+            testDir.mkdir();
+        }
         li = new Indexer("src/test/resources/EmailDocumentTest/Index", new IndexOptions());
         String file1 = "src/test/resources/EmailDocumentTest/test1.txt";
         String file2 = "src/test/resources/EmailDocumentTest/test2.txt";
