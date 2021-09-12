@@ -45,9 +45,6 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static edu.stanford.muse.index.Indexer.HEADER_END_DELIMITER;
-import static edu.stanford.muse.index.Indexer.HEADER_START_DELIMITER;
-
 class EmailFetcherStats implements Cloneable, Serializable {
     private final static long serialVersionUID = 1L;
 
@@ -495,9 +492,6 @@ public class EmailFetcherThread implements Runnable, Serializable {
             String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
             Enumeration<Header> headers = p.getAllHeaders();
-
-            // Index all original headers. Wrap the headers in a known string delimiter so we can extract them later.
-            list.add(headersToString(headers));
 
             boolean dirty = false;
             if (headers != null)
@@ -1248,6 +1242,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         prefetchedMessages.set(i - first_i_prefetched, null); // null out to save memory
                     }
 
+                    Enumeration<Header> headers = originalMessage.getAllHeaders();
                     if (contents == null)
                         contents = processMessagePart(ed,messageNum, originalMessage, mm, attachmentsList);
 
@@ -1291,7 +1286,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
                     contentStr = IndexUtils.normalizeNewlines(contentStr); // just get rid of \r's
 
-                    archive.addDoc(ed, contentStr);
+                    archive.addDoc(ed, contentStr, headersToString(headers));
 
                     List<LinkInfo> linkList = new ArrayList<>();
                     // linkList might be used only for slant
@@ -1637,10 +1632,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
      */
     protected String headersToString(Enumeration<Header> headers) {
         List<Header> headersList = Collections.list(headers);
-        String headersString = headersList
+        return headersList
                 .stream()
                 .map(item -> item.getName() + ": " + item.getValue())
                 .collect(Collectors.joining("; ", "", ""));
-        return HEADER_START_DELIMITER + headersString + HEADER_END_DELIMITER;
     }
 }

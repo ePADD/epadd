@@ -888,7 +888,7 @@ int errortype=0;
 
         String subject = "", contents = "";
 
-        indexer.indexSubdoc(subject, contents, doc, blobStore);
+        indexer.indexSubdoc(subject, contents, "", doc, blobStore);
 
         if (getAllDocs().size() % 100 == 0)
             log.info("Memory status after " + getAllDocs().size() + " emails: " + Util.getMemoryStats());
@@ -908,11 +908,15 @@ int errortype=0;
         return getLinks();
     }
 
-    /**
-     * core method, adds a single doc to the archive. remember to call
-     * postProcess at the end of any series of calls to add docs
-     */
     public synchronized boolean addDoc(Document doc, String contents) {
+        return addDoc(doc, contents, "");
+
+    }
+        /**
+         * core method, adds a single doc to the archive. remember to call
+         * postProcess at the end of any series of calls to add docs
+         */
+    public synchronized boolean addDoc(Document doc, String contents, String header) {
         if (containsDoc(doc))
             return false;
 
@@ -924,7 +928,7 @@ int errortype=0;
         String subject = doc.getSubjectWithoutTitle();
         subject = EmailUtils.cleanupSubjectLine(subject);
 
-        indexer.indexSubdoc(subject, contents, doc, blobStore);
+        indexer.indexSubdoc(subject, contents, header, doc, blobStore);
 
         if (getAllDocs().size() % 100 == 0)
             log.info("Memory status after " + getAllDocs().size() + " emails: " + Util.getMemoryStats());

@@ -78,9 +78,6 @@ import java.util.regex.Pattern;
  */
 @Getter
 public class Indexer implements StatusProvider, java.io.Serializable {
-	public static final String HEADER_START_DELIMITER = "__EPADD_HEADER_START__";
-	public static final String HEADER_END_DELIMITER = "__EPADD_HEADER_END__";
-
 	static final Logger					log					= LogManager.getLogger(Indexer.class);
 	private static final long	serialVersionUID	= 1L;
 
@@ -992,16 +989,6 @@ is what we want.
 		}
 	}
 
-	protected String[] extractContentAndHeaders(String content) {
-		// Separate the original headers from the body.
-		boolean hasHeaders = StringUtils.contains(content, HEADER_START_DELIMITER) &&
-				StringUtils.contains(content, HEADER_END_DELIMITER);
-		String body = hasHeaders ? StringUtils.substringAfter(content, HEADER_END_DELIMITER) : content;
-		String headers = hasHeaders ?
-				StringUtils.substringBetween(content, HEADER_START_DELIMITER, HEADER_END_DELIMITER) : "";
-		return new String[]{headers, body};
-	}
-
 	/**
 	 * internal method, core method for adding a doc to the index.
 	 * adds body, title, people, places, orgs. assumes the index, iwriter etc
@@ -1010,11 +997,8 @@ is what we want.
 	 *
 	 * @param stats
 	 */
-	private synchronized void add1DocToIndex(String title, String content, Document d, IndexStats stats) throws Exception
+	private synchronized void add1DocToIndex(String title, String content, String header, Document d, IndexStats stats) throws Exception
 	{
-		String[] contentList = extractContentAndHeaders(content);
-		String body = contentList[1];
-		String headers = contentList[0];
 
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
 
@@ -1025,7 +1009,7 @@ is what we want.
 		doc.add(new Field("docId", id, ft));
 
 		// we'll store all languages detected in the doc as a field in the index
-		Set<String> languages = Languages.getAllLanguages(body);
+		Set<String> languages = Languages.getAllLanguages(content);
 		d.languages = languages;
 		String lang_str = Util.join(languages, LANGUAGE_FIELD_DELIMITER);
 		doc.add(new Field("languages", lang_str, ft));
@@ -1073,15 +1057,15 @@ is what we want.
 
 			//IMP: Field body sometimes wrongly include the attachment binary resulting in large size of this term. This further results in throwing an
 			//exception when adding this document in the index. Therefore truncate the size of body upto 32766.
-			int len = body.length()>32766?32766:body.length();
-			body = body.substring(0,len);
-			if(len!=body.length()){
+			int len = content.length()>32766?32766:content.length();
+			content = content.substring(0,len);
+			if(len!=content.length()){
 			    //mark dataerror to record this truncation.@TODO
             }
 
 			// Index original headers. Store as full_ft.
-			doc.add(new Field("headers_original", headers, full_ft)); // save raw before preprocessed
-			doc.add(new Field("body", body, full_ft)); // save raw before preprocessed
+			doc.add(new Field("headers_original", header, full_ft)); // save raw before preprocessed
+			doc.add(new Field("body", content, full_ft)); // save raw before preprocessed
 		}
 
 		// the body field is what is used for searching. almost the same as body_raw, but in some cases, we expect
@@ -1090,7 +1074,7 @@ is what we want.
 		// doc.add(new Field("body", body, Field.Store.YES, Field.Index.ANALYZED));
 
 		// body original is the original content in the message. (i.e. non-quoted, non-forwarded, etc.)
-		String bodyOriginal = EmailUtils.getOriginalContent(body);
+		String bodyOriginal = EmailUtils.getOriginalContent(content);
 		doc.add(new Field("body_original", bodyOriginal, full_ft));
 		int originalTextLength = bodyOriginal.length();
 		Set<String> namesOriginal;
@@ -1098,7 +1082,7 @@ is what we want.
 		int ns = 0;
 
 		if(edu.stanford.muse.Config.OPENNLP_NER) {
-            String textForNameExtraction = body + ". " + effectiveSubject; // Sit says put body first so
+            String textForNameExtraction = content + ". " + effectiveSubject; // Sit says put body first so
 			// that the extracted openNLPNER offsets can be used without further adjustment for epadd redaction
             Set<String> allNames = setNameFieldsOpenNLP(textForNameExtraction, doc);
 
@@ -1110,7 +1094,7 @@ is what we want.
 			doc.add(new Field("names", names, full_ft));
 
 			// just reuse names for the common case of body = bodyOriginal
-			if (bodyOriginal.equals(body))
+			if (bodyOriginal.equals(content))
 				namesOriginal = allNames;
 			else {
 				String originalTextForNameExtraction = bodyOriginal + ". " + effectiveSubject;
@@ -1138,7 +1122,7 @@ is what we want.
 		docIdToEmailDoc.put(id, (EmailDocument) d);
 		if (stats != null) {
 			stats.nDocuments++;
-			stats.indexedTextSize += title.length() + body.length();
+			stats.indexedTextSize += title.length() + content.length();
 			stats.indexedTextSizeOriginal += originalTextLength;
 		}
 	}
@@ -1153,7 +1137,7 @@ is what we want.
 	}
 
 	/* note sync. because we want only one writer to be going at it, at one time */
-	synchronized void indexSubdoc(String title, String documentText, edu.stanford.muse.index.Document d, BlobStore blobStore)
+	synchronized void indexSubdoc(String title, String documentText, String headers, edu.stanford.muse.index.Document d, BlobStore blobStore)
 	{
 		if (d == null)
 			return;
@@ -1162,7 +1146,7 @@ is what we want.
 			documentText = "";
 
 		try {
-			add1DocToIndex(title, documentText, d, stats);
+			add1DocToIndex(title, documentText, headers, d, stats);
 			if (blobStore != null && d instanceof EmailDocument && io.indexAttachments)
 				indexAttachments((EmailDocument) d, blobStore, null, stats);
 		} catch (Throwable e) {

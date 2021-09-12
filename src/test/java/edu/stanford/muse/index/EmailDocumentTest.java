@@ -28,12 +28,12 @@ public class EmailDocumentTest {
         archive.indexer = li;
 
         EmailDocument ed1 = new EmailDocument("1", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc(" ssn 123-45 6789 ", "name 1 is John Smith.  credit card # 1234 5678 9012 3456 ", ed1, null);
+        li.indexSubdoc(" ssn 123-45 6789 ", "name 1 is John Smith.  credit card # 1234 5678 9012 3456 ", "", ed1, null);
         EmailDocument ed2 = new EmailDocument("6", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[]{new InternetAddress("a.u.thor@example.com")}, "", "", new Date());
         String title = "another patch";
-        String documentTest = "__EPADD_HEADER_START__From: A U Thor <a.u.thor@example.com>; Date: Fri, 9 Jun 2006 00:44:16 -0700; Garbage: uuuuuuuuu; Subject: [PATCH] another patch__EPADD_HEADER_END__\n" +
-                "Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b\n";
-        li.indexSubdoc(title, documentTest, ed2, null);
+        String documentText = "Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b\n";
+        String documentHeaders = "From: A U Thor <a.u.thor@example.com>; Date: Fri, 9 Jun 2006 00:44:16 -0700; Garbage: uuuuuuuuu; Subject: [PATCH] another patch";
+        li.indexSubdoc(title, documentText, documentHeaders, ed2, null);
 
         li.close();
         li.setupForRead();
@@ -58,8 +58,7 @@ public class EmailDocumentTest {
         System.out.println("========\n" + testFile2String);
         assertThat("testFile2 does not contain expected message.",
                 testFile2String,
-                containsString("MESSAGE: \n" +
-                        "Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b")
+                containsString("MESSAGE: Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b")
         );
         assertThat("testFile2 does not contain expected HEADER.",
                 testFile2String,

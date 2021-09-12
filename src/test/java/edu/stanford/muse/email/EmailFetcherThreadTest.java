@@ -19,8 +19,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import static edu.stanford.muse.index.Indexer.HEADER_END_DELIMITER;
-import static edu.stanford.muse.index.Indexer.HEADER_START_DELIMITER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -78,7 +76,7 @@ public class EmailFetcherThreadTest {
         int numMessagesAlreadyPresent = fetcherThread.stats.nMessagesAlreadyPresent;
         assertEquals(12, numMessagesAdded + numMessagesAlreadyPresent);
 
-        assertEquals("Should record number of messages with errors", 4, fetcherThread.dataErrors.size());
+        assertEquals("Should record number of messages with errors", 3, fetcherThread.dataErrors.size());
         assertEquals("Should record number of messages added", numMessagesAdded, archive.indexer.getStats().getNDocuments());
 
         // Check that all the docs are stored in the archive
@@ -134,7 +132,7 @@ public class EmailFetcherThreadTest {
         Enumeration<Header> headers;
         headers = headersVector.elements();
         String output = fetcherThread.headersToString(headers);
-        assertEquals(output, HEADER_START_DELIMITER + "0: a; 1: b; 2: c; 3: d; 4: e" + HEADER_END_DELIMITER);
+        assertEquals(output, "0: a; 1: b; 2: c; 3: d; 4: e");
     }
 }
 

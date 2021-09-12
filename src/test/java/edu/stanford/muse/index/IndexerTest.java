@@ -39,15 +39,15 @@ public class IndexerTest {
 
         // public EmailDocument(String id, String folderName, Address[] to, Address[] cc, Address[] bcc, Address[] from, String subject, String messageID, Date date)
         EmailDocument ed1 = new EmailDocument("1", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc(" ssn 123-45 6789 ", "name 1 is John Smith.  credit card # 1234 5678 9012 3456 ", ed1, null);
+        li.indexSubdoc(" ssn 123-45 6789 ", "name 1 is John Smith.  credit card # 1234 5678 9012 3456 ", "headers", ed1, null);
         EmailDocument ed2 = new EmailDocument("2", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card not ending with a non-digit # 1234 5678 9012 345612 ", ed2, null);
+        li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card not ending with a non-digit # 1234 5678 9012 345612 ", "headers", ed2, null);
         EmailDocument ed3 = new EmailDocument("3", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card # 111234 5678 9012 3456 ", ed3, null);
+        li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card # 111234 5678 9012 3456 ","headers", ed3, null);
         EmailDocument ed4 = new EmailDocument("4", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc(" ssn 123 45 6789", "\nmy \nfirst \n book is \n something ", ed4, null);
+        li.indexSubdoc(" ssn 123 45 6789", "\nmy \nfirst \n book is \n something ","headers", ed4, null);
         EmailDocument ed5 = new EmailDocument("5", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc("passport number k4190893", "\nmy \nfirst \n book is \n something ", ed5, null);
+        li.indexSubdoc("passport number k4190893", "\nmy \nfirst \n book is \n something ","headers", ed5, null);
         li.close();
         li.setupForRead();
     }
@@ -56,9 +56,9 @@ public class IndexerTest {
      * Adssumes the test index has been setup for Read
      * @param ed
      */
-    public void addAnotherDoc(EmailDocument ed, String title, String documentText) throws Exception {
+    public void addAnotherDoc(EmailDocument ed, String title, String documentText, String headers) throws Exception {
         li.setupForWrite();
-        li.indexSubdoc(title, documentText, ed, null);
+        li.indexSubdoc(title, documentText, headers, ed,null);
         li.close();
         li.setupForRead();
     }
@@ -105,9 +105,8 @@ public class IndexerTest {
     public void testHeadersFieldReturnedAndIsNotSearchable() throws Exception {
         EmailDocument ed = new EmailDocument("6", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[]{ new InternetAddress("a.u.thor@example.com")}, "", "", new Date());
         String title = "another patch";
-        String documentTest = "__EPADD_HEADER_START__From: A U Thor <a.u.thor@example.com>; Date: Fri, 9 Jun 2006 00:44:16 -0700; Garbage: uuuuuuuuu; Subject: [PATCH] another patch__EPADD_HEADER_END__\n" +
-                "Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b\n";
-        addAnotherDoc(ed, title, documentTest);
+        String documentTest = "Here is a patch from A U Thor.  This addresses the issue raised in themessage:From: Nit Picker <nit.picker@example.net>Subject: foo is too oldMessage-Id: <nitpicker.12121212@example.net>Hopefully this would fix the problem stated there.I have included an extra blank line above, but it does not have to bestripped away here, along with the               \t\t   whitespaces at the end of the above line.  They are expected to be squashedwhen the message is made into a commit log by stripspace,Also, there are three blank lines after this paragraph,two truly blank and another full of spaces in between.            Hope this helps.--- foo |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)diff --git a/foo b/fooindex 9123cdc..918dcf8 100644--- a/foo+++ b/foo@@ -1 +1 @@-Fri Jun  9 00:44:04 PDT 2006+Fri Jun  9 00:44:13 PDT 2006-- 1.4.0.g6f2b\n";
+        addAnotherDoc(ed, title, documentTest, "From: A U Thor <a.u.thor@example.com>; Date: Fri, 9 Jun 2006 00:44:16 -0700; Garbage: uuuuuuuuu; Subject: [PATCH] another patch");
         List<org.apache.lucene.document.Document> allDocsLive = li.getAllDocsWithFields(false);
         assertEquals("Number of docs returned by getAllDocsWithFields is not correct.", 6, allDocsLive.size());
         allDocsLive.stream().forEach(d -> {
