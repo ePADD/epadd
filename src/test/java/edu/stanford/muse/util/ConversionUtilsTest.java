@@ -60,9 +60,7 @@ public class ConversionUtilsTest {
                 actualCount);
 
         assertThat(folderText,
-                startsWith("From: A U Thor <a.u.thor@example.com>\n" +
-                        "Date: Fri, 9 Jun 2006 00:44:16 -0700\n" +
-                        "Subject: [PATCH] another patch") );
+                startsWith("From: A U Thor <a.u.thor@example.com>") );
     }
 
     @Test
@@ -83,20 +81,16 @@ public class ConversionUtilsTest {
         assertEquals("Number of expected messages in mbox file", 4, actualCount );
 
         assertThat(folderText,
-                containsString("Date: Thu, 3 Oct 2019 11:43:52 -0600 (MDT)\n" +
-                "From: Janette Martin <janette.martin@manchester.ac.uk>\n" +
+                containsString("From: Janette Martin <janette.martin@manchester.ac.uk>\n" +
                 "To: Gareth Lloyd <gareth.lloyd@manchester.ac.uk>") );
         assertThat(folderText,
-                containsString("Date: Thu, 18 Jul 2019 05:35:30 -0600 (MDT)\n" +
-                        "From: Jane Gallagher <jane.gallagher@manchester.ac.uk>\n" +
+                containsString("From: Jane Gallagher <jane.gallagher@manchester.ac.uk>\n" +
                         "To: Elizabeth Gow <elizabeth.gow@manchester.ac.uk>") );
         assertThat(folderText,
-                containsString("Date: Thu, 3 Oct 2019 11:43:52 -0600 (MDT)\n" +
-                        "From: Janette Martin <janette.martin@manchester.ac.uk>\n" +
+                containsString("From: Janette Martin <janette.martin@manchester.ac.uk>\n" +
                         "To: Gareth Lloyd <gareth.lloyd@manchester.ac.uk>") );
         assertThat(folderText,
-                containsString("Date: Mon, 30 Sep 2019 06:47:33 -0600 (MDT)\n" +
-                        "From: Liza Leonard <liza.leonard@manchester.ac.uk>\n" +
+                containsString("From: Liza Leonard <liza.leonard@manchester.ac.uk>\n" +
                         "To: Jane Gallagher <jane.gallagher@manchester.ac.uk>") );
     }
 }
