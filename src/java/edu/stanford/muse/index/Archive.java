@@ -161,7 +161,7 @@ public class Archive implements Serializable {
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
     transient private Map<Document,Document> allUniqueDocsMap=null;
-    private final transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
+    private transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
     private transient Map<Long,List<Document>> threadIDToDocs = new LinkedHashMap<>();
 
     private final Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
