@@ -361,7 +361,10 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         //we need to pass that ordered set to getHTML* method below. This fixed the issue.
         Pair<DataSet, JSONArray> pair = null;
         try {
-
+			if (sortBy == null)
+			{
+					sortBy = "recent";
+			}
             // note: we currently do not support clustering for "recent" type, only for the chronological type.
             // might be easy to fix if needed in the future.
             if ("recent".equals(sortBy) || "relevance".equals(sortBy) || "chronological".equals(sortBy))
