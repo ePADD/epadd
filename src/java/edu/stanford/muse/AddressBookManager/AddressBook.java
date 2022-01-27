@@ -344,7 +344,7 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
     /**
      * returns the number of contacts in this address book
      */
-    private int size() {
+    protected int size() {
         return allContacts().size();
     }
 
@@ -1640,51 +1640,6 @@ mergeResult.newContacts.put(C2,savedC2)
             }*/
         }
 
-
-    }
-
-    public static void main(String args[]) {
-        List<String> list = EmailUtils.parsePossibleNamesFromEmailAddress("mickey.mouse@disney.com");
-        System.out.println(Util.join(list, " "));
-        list = EmailUtils.parsePossibleNamesFromEmailAddress("donald_duck@disney.com");
-        System.out.println(Util.join(list, " "));
-        list = EmailUtils.parsePossibleNamesFromEmailAddress("70451.2444@compuserve.com");
-        System.out.println(Util.join(list, " "));
-
-        String ownerName = "Owner Name";
-        String ownerEmail = "owner@example.com";
-        {
-            AddressBook ab = new AddressBook(new String[]{ownerEmail}, new String[]{ownerName});
-            EmailDocument ed = new EmailDocument();
-            try {
-                ed.to = new Address[]{new InternetAddress("from@email.com", "From Last")};
-                ed.cc = new Address[]{new InternetAddress("cc@email.com", "CC Last")};
-                ed.to = new Address[]{new InternetAddress("to@example.com", "To Last")};
-                ed.from = new Address[]{new InternetAddress("from@example.com", "From Last")};
-            } catch (Exception e) {
-                Util.print_exception(e, log);
-            }
-            ab.processContactsFromMessage(ed, new LinkedHashSet<>());
-            Util.ASSERT(ab.size() == 5); // 4 addresses should be added + owner
-        }
-
-        {
-            AddressBook ab = new AddressBook(new String[]{ownerEmail}, new String[]{ownerName});
-            EmailDocument ed1 = new EmailDocument(), ed2 = new EmailDocument();
-            try {
-                ed1.to = new Address[]{new InternetAddress("Merge Name", "mergename@example.com")};
-                ed1.from = new Address[]{new InternetAddress("Merge Name2", "mergename@example.com")};
-
-                ed2.to = new Address[]{new InternetAddress("Merge X Name", "mergeemail1@example.com")};
-                ed2.from = new Address[]{new InternetAddress("Merge X Name", "mergeemail2@example.com")};
-            } catch (Exception e) {
-                ab.processContactsFromMessage(ed1, new LinkedHashSet<>());
-                ab.processContactsFromMessage(ed2, new LinkedHashSet<>());
-                Util.ASSERT(ab.size() == 3);
-            }
-
-            Util.ASSERT(ab.lookupByEmail("mergename@example.com").getNames().size() == 2); // 2 names for this email address
-        }
 
     }
 }

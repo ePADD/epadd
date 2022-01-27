@@ -45,6 +45,8 @@ public class Document implements Serializable, Comparable<Document> {
 		this.description = s;
 	}
 
+	public String getId() { return id; }
+
 	public String getUniqueId() { return id; }
 
 	public void setComment(String s)

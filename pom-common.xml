@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
-			<version>5.0.0-modified</version>
+			<version>5.2.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/gov.loc/bagit -->
@@ -123,6 +123,13 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.20</version>
+			<scope>provided</scope>
 		</dependency>
 
 <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
@@ -288,7 +295,19 @@
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/org.simplejavamail/simple-java-mail -->
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>simple-java-mail</artifactId>
+			<version>6.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>outlook-module</artifactId>
+			<version>6.6.1</version>
+		</dependency>
+
+
 		<!--<dependency>
 		    <groupId>edu.stanford.nlp</groupId>
 		    <artifactId>stanford-corenlp</artifactId>

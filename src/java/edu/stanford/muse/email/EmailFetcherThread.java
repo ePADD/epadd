@@ -40,12 +40,10 @@ import org.jsoup.Jsoup;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.*;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.*;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class EmailFetcherStats implements Cloneable, Serializable {
     private final static long serialVersionUID = 1L;
@@ -265,7 +263,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * Key method for importing email: converts a javamail obj. to our own data structure (EmailDocument)
      */
     //public EmailDocument convertToEmailDocument(MimeMessage m, int num, String url) throws MessagingException, IOException
-    private EmailDocument convertToEmailDocument(MimeMessage m, String id) throws MessagingException, IOException {
+    protected EmailDocument convertToEmailDocument(MimeMessage m, String id) throws MessagingException, IOException {
         // get the date.
 
 
@@ -455,7 +453,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * also sets up names of attachments (though it will not download the
      * attachment unless downloadAttachments is true)
      */
-    private List<String> processMessagePart(EmailDocument ed, int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
+    protected List<String> processMessagePart(EmailDocument ed, int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
         List<String> list = new ArrayList<>(); // return list
         if (p == null) {
             dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
@@ -493,7 +491,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
             String encoding = "quoted-printable";
             String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
-            Enumeration headers = p.getAllHeaders();
+            Enumeration<Header> headers = p.getAllHeaders();
+
             boolean dirty = false;
             if (headers != null)
                 while (headers.hasMoreElements()) {
@@ -1048,7 +1047,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 if (archive.containsDoc(ed)) {
                     //get more info about the already present message (duplicate)
                     Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
-                    archive.getDupMessageInfo().put(alreadypresent,new Tuple2(ed.folderName,ed.messageID));
+                    archive.getDupMessageInfo().put(alreadypresent,new Tuple2<>(ed.folderName,ed.messageID));
 
                     stats.nMessagesAlreadyPresent++;
                     //dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this exact string
@@ -1097,7 +1096,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      *               for proper assignment of unique id or doc Id
      */
     //private void fetchUncachedMessages(String sanitizedFName, Folder folder, DocCache cache, List<Integer> msgIdxs) throws MessagingException, FileNotFoundException, IOException, GeneralSecurityException {
-    private void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) {
+    protected void fetchAndIndexMessages(Folder folder, Message[] messages, int offset, int totalMessages) {
         //mark the processing of new batch
         if (offset == 0)
             fetchStartTime = System.currentTimeMillis();
@@ -1189,7 +1188,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         stats.nMessagesAlreadyPresent++;
                         //get more info about the already present message (duplicate)
                         Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
-                        archive.getDupMessageInfo().put(alreadypresent,new Tuple2(ed.folderName,ed.messageID));
+                        archive.getDupMessageInfo().put(alreadypresent,new Tuple2<>(ed.folderName,ed.messageID));
 
 
                         //dataErrors.add("Duplicate message: " + ed); // note: report.jsp depends on this specific string
@@ -1243,6 +1242,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         prefetchedMessages.set(i - first_i_prefetched, null); // null out to save memory
                     }
 
+                    Enumeration<Header> headers = originalMessage.getAllHeaders();
                     if (contents == null)
                         contents = processMessagePart(ed,messageNum, originalMessage, mm, attachmentsList);
 
@@ -1286,7 +1286,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
                     contentStr = IndexUtils.normalizeNewlines(contentStr); // just get rid of \r's
 
-                    archive.addDoc(ed, contentStr);
+                    archive.addDoc(ed, contentStr, headersToString(headers));
 
                     List<LinkInfo> linkList = new ArrayList<>();
                     // linkList might be used only for slant
@@ -1360,7 +1360,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * The params begin idx and end idx are used for both uid filtering and Mbox message indexing.
      * does not make sense
      */
-    private Message[] openFolderAndGetMessages() throws MessagingException {
+    protected Message[] openFolderAndGetMessages() throws MessagingException {
+        // If folder has not been assigned yet, get it from the email store.
         if (folder == null)
             openFolderAndGetMessageCount();
 
@@ -1374,12 +1375,16 @@ public class EmailFetcherThread implements Runnable, Serializable {
         boolean use_uid_if_available = (begin_msg_index == 1 && end_msg_index == count + 1);
         log.info("use_uid_if_available is set to " + use_uid_if_available);
 
+        // Filter will be populated if user is searching for messages matching email addresses, keywords, etc.
         if (fetchConfig.filter != null && fetchConfig.filter.isActive()) {
             log.info("Issuing server side filters for " + fetchConfig.filter);
             boolean useReceivedDateTerms = descr.contains("yahoo.com");
             messages = folder.search(fetchConfig.filter.convertToSearchTerm(useReceivedDateTerms));
-        } else {
-            // mbox provider claims to provide UIDFolder but the uids are bogus so we treat mboemailstore folders as not uidfolders
+        }
+
+        // Filter is null, so just return all messages
+        else {
+            // mbox provider claims to provide UIDFolder but the uids are bogus so we treat mboxemailstore folders as not uidfolders
             boolean is_uid_folder = (folder instanceof UIDFolder) && !(emailStore instanceof MboxEmailStore);
 
             if (use_uid_if_available && is_uid_folder) {
@@ -1618,5 +1623,18 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
     public String toString() {
         return Util.fieldsToString(this);
+    }
+
+    /**
+     * Returns the given headers as a string, wrapped in starting and ending delimiters
+     * @param headers
+     * @return
+     */
+    protected String headersToString(Enumeration<Header> headers) {
+        List<Header> headersList = Collections.list(headers);
+        return headersList
+                .stream()
+                .map(item -> item.getName() + ": " + item.getValue())
+                .collect(Collectors.joining("; ", "", ""));
     }
 }

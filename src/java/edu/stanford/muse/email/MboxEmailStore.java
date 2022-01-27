@@ -20,6 +20,7 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
+import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -30,6 +31,7 @@ import java.util.*;
 
 /** email store in mbox format. caches message counts in folders.
  */
+@Data
 public class MboxEmailStore extends EmailStore implements Serializable {
 	private final static long serialVersionUID = 1L;
 
@@ -41,6 +43,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	private FolderCache folderCache;
 	private String rootPath;
 	private String accountKey;
+	private File cacheDir;
 
 	static {
         //http://sourceforge.net/projects/mstor/files/mstor/0.9.13/
@@ -70,7 +73,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	}
 
 	public String getRootPath() { return rootPath; }
-	
+
+	// Placebo method? Stub?
 	public Store connect() throws MessagingException
 	{
 		// Get a Session object
@@ -79,9 +83,12 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		Session session = Session.getInstance(mstorProps, null);
 		session.setDebug(DEBUG);
 
-		// Get a Store object
-		Store store = session.getStore(new URLName("mstor:" + Util.devNullPath())); // although "store" is irrelevant with mbox, connect/close may still be attempted on it. thus, use /dev/null rather than leaving it at / or unspecified path (which may trigger file io error).
+		// Get a dummy Store object
+		// Although "store" is irrelevant with mbox, connect/close may still be attempted on it.
+		// Thus, use /dev/null rather than leaving it at / or unspecified path (which may trigger file io error).
+		Store store = session.getStore(new URLName("mstor:" + Util.devNullPath()));
 
+		// Connect to the dummy store?
 		store.connect();
 		return store;
 	}
@@ -224,7 +231,8 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 	public void computeFoldersAndCounts(String foldersAndCountsDir) {
 		doneReadingFolderCounts = false;
 		
-		new File(foldersAndCountsDir).mkdirs(); // ensure cacheDir exists
+		cacheDir = new File(foldersAndCountsDir);
+		cacheDir.mkdirs(); // ensure cacheDir exists
 
 		// convert the root path to a filename
 		String cacheFilePath = foldersAndCountsDir + File.separatorChar + CACHE_FILENAME + "." + rootPath.replaceAll("/", "--").replaceAll("\\\\", "--");
@@ -341,5 +349,21 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 				ioe.printStackTrace(System.err);
 			}
 		}
+	}
+
+	/***
+	 * Deletes and cleans up compute files & directory. Used primarily for cleaning up unit tests.
+	 * @throws IOException
+	 */
+	public void deleteAndCleanupFiles() throws IOException {
+        // Clear out the compute directory.
+		Arrays.stream(cacheDir.listFiles()).forEach(f -> {
+			try {
+				f.delete();
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+		cacheDir.delete();
 	}
 }

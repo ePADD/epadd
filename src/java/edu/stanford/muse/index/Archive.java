@@ -59,6 +59,7 @@ import gov.loc.repository.bagit.util.PathUtils;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
 import groovy.lang.Tuple2;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,6 +92,7 @@ import java.util.stream.Collectors;
  * per-session state.
  *
  */
+@Getter
 public class Archive implements Serializable {
     private static final Logger log =  LogManager.getLogger(Archive.class);
     private static final long serialVersionUID = 1L;
@@ -369,7 +371,8 @@ int errortype=0;
      * archive moves.
      */
     public String baseDir;
-
+    public File lexiconsDir;
+    public File computeDir;
 
     public SentimentStats stats = new SentimentStats();
 
@@ -683,11 +686,10 @@ int errortype=0;
     /**
      * This should be the only place that creates the cache dir.
      */
-    private static void prepareBaseDir(String dir) {
+    private void prepareBaseDir(String dir) {
         dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar+ LEXICONS_SUBDIR;
-        File f_dir = new File(dir);
-
-        f_dir.mkdirs();
+        lexiconsDir = new File(dir);
+        lexiconsDir.mkdirs();
 
         // copy lexicons over to the muse dir
         // unfortunately, hard-coded because we are loading as a ClassLoader resource and not as a file, so we can't use Util.filesWithSuffix()
@@ -815,6 +817,17 @@ int errortype=0;
         return indexer.getContents(ldoc, originalContentOnly);
     }
 
+    /**
+     * gets original headers only!
+     */
+    public String getHeaders(Document d) {
+        return indexer.getHeaders(d);
+    }
+
+    public String getHeaders(org.apache.lucene.document.Document ldoc){
+        return indexer.getHeaders(ldoc);
+    }
+
     /*
     private void setupAddressBook(List<Document> docs) {
         // in this case, we don't care whether email addrs are incoming or
@@ -877,7 +890,7 @@ int errortype=0;
 
         String subject = "", contents = "";
 
-        indexer.indexSubdoc(subject, contents, doc, blobStore);
+        indexer.indexSubdoc(subject, contents, "", doc, blobStore);
 
         if (getAllDocs().size() % 100 == 0)
             log.info("Memory status after " + getAllDocs().size() + " emails: " + Util.getMemoryStats());
@@ -897,11 +910,15 @@ int errortype=0;
         return getLinks();
     }
 
-    /**
-     * core method, adds a single doc to the archive. remember to call
-     * postProcess at the end of any series of calls to add docs
-     */
     public synchronized boolean addDoc(Document doc, String contents) {
+        return addDoc(doc, contents, "");
+
+    }
+        /**
+         * core method, adds a single doc to the archive. remember to call
+         * postProcess at the end of any series of calls to add docs
+         */
+    public synchronized boolean addDoc(Document doc, String contents, String header) {
         if (containsDoc(doc))
             return false;
 
@@ -913,7 +930,7 @@ int errortype=0;
         String subject = doc.getSubjectWithoutTitle();
         subject = EmailUtils.cleanupSubjectLine(subject);
 
-        indexer.indexSubdoc(subject, contents, doc, blobStore);
+        indexer.indexSubdoc(subject, contents, header, doc, blobStore);
 
         if (getAllDocs().size() % 100 == 0)
             log.info("Memory status after " + getAllDocs().size() + " emails: " + Util.getMemoryStats());
@@ -1199,7 +1216,7 @@ int errortype=0;
         boolean exportInPublicMode = export_mode==Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY;
         setStatusProvider.accept(new StaticStatusProvider(statusmsg+":"+"Preparing base directory.."));
 
-        Archive.prepareBaseDir(out_dir);
+        prepareBaseDir(out_dir);
         if (!exportInPublicMode && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR).exists())
             FileUtils.copyDirectory(new File(baseDir +  File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR),
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR));
@@ -2507,5 +2524,24 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+	/***
+	 * Deletes and cleans up lexicons files & directory, as well as indexer cache files.
+     * Used primarily for cleaning up unit tests.
+	 * @throws IOException
+	 */
+    public void deleteAndCleanupFiles() throws IOException {
+        // Clear out the lexicons directory.
+		Arrays.stream(lexiconsDir.listFiles()).forEach(f -> {
+			try {
+			    f.delete();
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+        lexiconsDir.delete();
+
+        indexer.deleteAndCleanupFiles();
     }
 }

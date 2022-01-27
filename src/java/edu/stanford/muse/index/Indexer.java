@@ -22,8 +22,10 @@ import edu.stanford.muse.email.StatusProvider;
 import edu.stanford.muse.lang.Languages;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.util.*;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -53,6 +55,8 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * this class is pretty closely tied with the summarizer (which generates cards  - Muse only.).
@@ -72,8 +76,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * cluster numbers mentioned here are for MultiDocs -- (earlier used for months, now rarely used.)
  */
+@Getter
 public class Indexer implements StatusProvider, java.io.Serializable {
-
 	static final Logger					log					= LogManager.getLogger(Indexer.class);
 	private static final long	serialVersionUID	= 1L;
 
@@ -102,6 +106,8 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	private Map<String, Blob>						attachmentDocIdToBlob	= new LinkedHashMap<>();					// attachment's docid -> Blob
     private HashMap<String, Map<Integer, String>>	dirNameToDocIdMap		= new LinkedHashMap<>();	// just stores 2 maps, one for content and one for attachment Lucene doc ID -> docId
 
+	private File baseDirFile;
+	private File indexBaseDirFile;
 	transient private Directory directory;
 	transient private Directory	directory_blob;																// for attachments
 	transient private Analyzer analyzer;
@@ -118,59 +124,11 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	// these are field type configs for all the fields to be stored in the email and attachment index.
 	// most fields will use ft (stored and analyzed), and only the body fields will have a full_ft which is stored, analyzed (with stemming) and also keeps term vector offsets and positions for highlights
 	// some fields like name_offsets absolutely don't need to be indexed and can be kept as storeOnly_ft
-	final transient private static FieldType storeOnly_ft;
-	private static final transient FieldType ft;
-	static final transient FieldType full_ft;
+	final transient private static FieldType storeOnly_ft = new FieldTypeStoredOnly();
+	private static final transient FieldTypeStoredAnalyzed ft = new FieldTypeStoredAnalyzed();
+	static final transient FieldType full_ft = new FieldTypeStoredAnalysedTokenized();
 	static transient FieldType unanalyzed_full_ft;													// unanalyzed_full_ft for regex search
-	static {
-		storeOnly_ft = new FieldType();
-		storeOnly_ft.setStored(true);
-		storeOnly_ft.freeze();
-
-		ft = new FieldType();
-		ft.setStored(true);
-		//@TODO: Check if from lucene 7.2 by default this field is indexed.
-		//ft.setIndexed(true);
-		//Since lucene 7.2, a field is indexed if its indexoptions is set anything else than None.
-		ft.setIndexOptions(org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS);
-		ft.setTokenized(false);
-		ft.freeze();
-
-		full_ft = new FieldType();
-		full_ft.setStored(true);
-		//@TODO: Check if from lucene 7.2 by default this field is indexed.
-		//full_ft.setIndexed(true);
-		full_ft.setIndexOptions(org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
-		full_ft.freeze();
-
-        //use this field for spanning regular expression, also tokenises text
-//		unanalyzed_full_ft = new FieldType();
-//		unanalyzed_full_ft.setStored(true);
-//		unanalyzed_full_ft.setIndexed(true);
-//		unanalyzed_full_ft.setTokenized(false);
-//		unanalyzed_full_ft.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
-//		unanalyzed_full_ft.freeze();
-	}
-
-	private static final CharArraySet MUSE_STOP_WORDS_SET;
-
-	static {
-		// Warning: changes in this list requires re-indexing of all existing archives.
-		final List<String> stopWords = Arrays.asList(
-				"a", "an", "and", "are", "as", "at", "be", "but", "by",
-				"for", "if", "in", "into", "is", "it",
-				"no", /*
-					 * "not"
-					 * ,
-					 */"of", "on", "or", "such",
-				"that", "the", "their", "then", "there", "these",
-				"they", "this", "to", "was", "will", "with"
-		);
-		final CharArraySet stopSet = new CharArraySet(stopWords.size(), false);
-		stopSet.addAll(stopWords);
-		MUSE_STOP_WORDS_SET = CharArraySet.unmodifiableSet(stopSet);
-	}
-
+	private static final CharArraySet MUSE_STOP_WORDS_SET = StopWords.getCharArraySet();
 
 	private IndexOptions				io;
 	private boolean				cancel							= false;
@@ -178,21 +136,22 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 
 	// Collection<String> dataErrors = new LinkedHashSet<String>();
 
+	@Getter
 	public static class IndexStats implements java.io.Serializable {
 		private static final long	serialVersionUID		= 1L;
 		// int nTokens = 0, nStopTokens = 0, nDictTokens = 0;
         //total # of messages indexed
-		int							nDocuments				= 0;
+		int				nDocuments				= 0;
         //#chars indexed
-		long						indexedTextSize			= 0;
+		long				indexedTextSize			= 0;
         //#chars indexed in original content
-		long						indexedTextSizeOriginal	= 0;
-		long						indexedTextLength_blob	= 0, nIndexedNames_blob = 0;	// attachments indexed
+		long				indexedTextSizeOriginal	= 0;
+		long				indexedTextLength_blob	= 0, nIndexedNames_blob = 0;	// attachments indexed
 
 		// original => only in original content, i.e. not quoted parts of
 		// messages
         //total # of occurances i.e. each name will be counted as many times as it occurs
-		int							nNames					= 0, nOriginalNames = 0;
+		int				nNames					= 0, nOriginalNames = 0;
         //# of unique names in entire corpus, # of unique names in original content
 		public int					nUniqueNames			= 0, nUniqueNamesOriginal = 0;
 	}
@@ -645,7 +604,7 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	private Analyzer newAnalyzer() {
         // we can use LimitTokenCountAnalyzer to limit the #tokens
 
-        EnglishAnalyzer stemmingAnalyzer = new EnglishAnalyzer( MUSE_STOP_WORDS_SET);
+        EnglishAnalyzer stemmingAnalyzer = new EnglishAnalyzer(MUSE_STOP_WORDS_SET);
         EnglishNumberAnalyzer snAnalyzer = new EnglishNumberAnalyzer(MUSE_STOP_WORDS_SET);
 
         // these are the 3 fields for stemming, everything else uses StandardAnalyzer
@@ -930,6 +889,47 @@ is what we want.
 		}
 	}
 
+	/***
+	 * Deletes and cleans up index docs and residual files and directories
+	 * Unsure why this hasn't existed until now, but using primarily for cleaning up unit tests
+	 * Explicitly closing each level to make sure basePath directory isn't shared with something else
+	 * @throws IOException
+	 */
+	public void deleteAndCleanupFiles() throws IOException {
+		if (iwriter == null || iwriter_blob == null) {
+			setupForWrite();
+		}
+		analyzer.close();
+		iwriter.deleteAll();
+		iwriter.commit();
+		iwriter_blob.deleteAll();
+		iwriter_blob.commit();
+		Arrays.stream(directory.listAll()).forEach(f -> {
+			try {
+				directory.deleteFile(f);
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+		Arrays.stream(directory_blob.listAll()).forEach(f -> {
+			try {
+				directory_blob.deleteFile(f);
+			} catch (Exception e) {
+				System.out.println("Unable to delete" + f);
+			}
+		});
+		close();
+		File baseDirFile = new File(baseDir);
+		File indexesFile = new File(baseDir + File.separator + INDEX_BASE_DIR_NAME);
+		File attachmentFile = new File(baseDir + File.separator + INDEX_BASE_DIR_NAME + File.separator + INDEX_NAME_ATTACHMENTS);
+		File emailsFile = new File(baseDir + File.separator + INDEX_BASE_DIR_NAME + File.separator + INDEX_NAME_EMAILS);
+
+		emailsFile.delete();
+		attachmentFile.delete();
+		indexesFile.delete();
+		baseDirFile.delete();
+	}
+
 	private Map<String, EmailDocument> getDocMap() {
 		return docIdToEmailDoc;
 	}
@@ -997,8 +997,9 @@ is what we want.
 	 *
 	 * @param stats
 	 */
-	private synchronized void add1DocToIndex(String title, String body, Document d, IndexStats stats) throws Exception
+	private synchronized void add1DocToIndex(String title, String content, String header, Document d, IndexStats stats) throws Exception
 	{
+
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
 
 		String id = d.getUniqueId();
@@ -1008,7 +1009,7 @@ is what we want.
 		doc.add(new Field("docId", id, ft));
 
 		// we'll store all languages detected in the doc as a field in the index
-		Set<String> languages = Languages.getAllLanguages(body);
+		Set<String> languages = Languages.getAllLanguages(content);
 		d.languages = languages;
 		String lang_str = Util.join(languages, LANGUAGE_FIELD_DELIMITER);
 		doc.add(new Field("languages", lang_str, ft));
@@ -1056,12 +1057,15 @@ is what we want.
 
 			//IMP: Field body sometimes wrongly include the attachment binary resulting in large size of this term. This further results in throwing an
 			//exception when adding this document in the index. Therefore truncate the size of body upto 32766.
-			int len = body.length()>32766?32766:body.length();
-			body = body.substring(0,len);
-			if(len!=body.length()){
+			int len = content.length()>32766?32766:content.length();
+			content = content.substring(0,len);
+			if(len!=content.length()){
 			    //mark dataerror to record this truncation.@TODO
             }
-			doc.add(new Field("body", body, full_ft)); // save raw before preprocessed
+
+			// Index original headers. Store as full_ft.
+			doc.add(new Field("headers_original", header, full_ft)); // save raw before preprocessed
+			doc.add(new Field("body", content, full_ft)); // save raw before preprocessed
 		}
 
 		// the body field is what is used for searching. almost the same as body_raw, but in some cases, we expect
@@ -1070,7 +1074,7 @@ is what we want.
 		// doc.add(new Field("body", body, Field.Store.YES, Field.Index.ANALYZED));
 
 		// body original is the original content in the message. (i.e. non-quoted, non-forwarded, etc.)
-		String bodyOriginal = EmailUtils.getOriginalContent(body);
+		String bodyOriginal = EmailUtils.getOriginalContent(content);
 		doc.add(new Field("body_original", bodyOriginal, full_ft));
 		int originalTextLength = bodyOriginal.length();
 		Set<String> namesOriginal;
@@ -1078,7 +1082,7 @@ is what we want.
 		int ns = 0;
 
 		if(edu.stanford.muse.Config.OPENNLP_NER) {
-            String textForNameExtraction = body + ". " + effectiveSubject; // Sit says put body first so
+            String textForNameExtraction = content + ". " + effectiveSubject; // Sit says put body first so
 			// that the extracted openNLPNER offsets can be used without further adjustment for epadd redaction
             Set<String> allNames = setNameFieldsOpenNLP(textForNameExtraction, doc);
 
@@ -1090,7 +1094,7 @@ is what we want.
 			doc.add(new Field("names", names, full_ft));
 
 			// just reuse names for the common case of body = bodyOriginal
-			if (bodyOriginal.equals(body))
+			if (bodyOriginal.equals(content))
 				namesOriginal = allNames;
 			else {
 				String originalTextForNameExtraction = bodyOriginal + ". " + effectiveSubject;
@@ -1118,7 +1122,7 @@ is what we want.
 		docIdToEmailDoc.put(id, (EmailDocument) d);
 		if (stats != null) {
 			stats.nDocuments++;
-			stats.indexedTextSize += title.length() + body.length();
+			stats.indexedTextSize += title.length() + content.length();
 			stats.indexedTextSizeOriginal += originalTextLength;
 		}
 	}
@@ -1133,7 +1137,7 @@ is what we want.
 	}
 
 	/* note sync. because we want only one writer to be going at it, at one time */
-	synchronized void indexSubdoc(String title, String documentText, edu.stanford.muse.index.Document d, BlobStore blobStore)
+	synchronized void indexSubdoc(String title, String documentText, String headers, edu.stanford.muse.index.Document d, BlobStore blobStore)
 	{
 		if (d == null)
 			return;
@@ -1142,7 +1146,7 @@ is what we want.
 			documentText = "";
 
 		try {
-			add1DocToIndex(title, documentText, d, stats);
+			add1DocToIndex(title, documentText, headers, d, stats);
 			if (blobStore != null && d instanceof EmailDocument && io.indexAttachments)
 				indexAttachments((EmailDocument) d, blobStore, null, stats);
 		} catch (Throwable e) {
@@ -1204,7 +1208,7 @@ is what we want.
         if(attachmentType)
             fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
         else
-            fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+            fieldsArray = new String[]{"body","headers_original","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
                     "cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
         Set<String> fieldsToLoad = new HashSet<String>();
@@ -1396,9 +1400,7 @@ is what we want.
 					parserToUse = this.parser;
 			}
 			Query query = parserToUse.parse(q);
-			//			query = convertRegex(query); // to mimic built-in regex support
-			ScoreDoc[] hits = isearcher.search(query, edu.stanford.muse.Config.MAX_DOCS_PER_QUERY,Sort.RELEVANCE).scoreDocs;
-			return hits.length;
+			return (int) isearcher.search(query, Config.MAX_DOCS_PER_QUERY,Sort.RELEVANCE).totalHits;
 		} catch (Exception e) {
 			Util.print_exception(e);
 		}
@@ -1435,7 +1437,7 @@ is what we want.
         return getNamesForLuceneDoc(docForThisId, qt);
     }
 
-    private Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
+    protected Integer getNumHits(String q, boolean isAttachments, QueryType qt) throws IOException, ParseException {
         Pair<Collection<String>,Integer> p;
         if (!isAttachments)
             p = luceneLookupAsDocIdsWithTotalHits(q, 1, isearcher, qt, 1);
@@ -1783,7 +1785,7 @@ is what we want.
 		if(attachmentType)
 			fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
 		else
-			fieldsArray = new String[]{"body","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+			fieldsArray = new String[]{"body","headers_original","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
 					"cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
 		Set<String> fieldsToLoad = new HashSet<String>();
@@ -2080,6 +2082,47 @@ is what we want.
         return contents;
     }
 
+	String getHeaders(edu.stanford.muse.index.Document d)
+	{
+		org.apache.lucene.document.Document doc;
+		try {
+			doc = getDoc(d);
+		} catch (IOException e) {
+			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
+			e.printStackTrace();
+			return null;
+		}
+
+		return getHeaders(doc);
+	}
+
+	String getHeaders(org.apache.lucene.document.Document doc) {
+        String headers;
+        try {
+			headers = doc.get("headers_original");
+        } catch (Exception e) {
+            log.warn("Exception " + e + " trying to read field 'headers_original': " + Util.ellipsize(Util.stackTrace(e), 350));
+			Util.print_exception("Exception Trying to read field headers_original",e,log);
+            headers = null;
+        }
+
+
+        if (headers == null) { // fall back to 'names' (or in public mode)
+            try {
+                List<String> names = getNamesForLuceneDoc(doc, QueryType.ORIGINAL);
+                headers = Util.joinSort(Util.scrubNames(names), "\n"); // it seems <br> will get automatically added downstream
+            } catch (Exception e) {
+                log.warn("Exception " + e + " trying to read extracted names of " + this.toString());
+                headers = null;
+            }
+
+            if (headers == null)
+                headers = "\n\nHeaders not available.\n\n";
+        }
+
+        return headers;
+    }
+
     protected org.apache.lucene.document.Document getLDoc(Integer ldocId, Set<String> fieldsToLoad) {
         try {
             if (isearcher == null) {
@@ -2146,102 +2189,6 @@ is what we want.
         }
 	}
 
-	private static void testQueries() throws IOException, ParseException, GeneralSecurityException, ClassNotFoundException
-	{
-		Indexer li = new Indexer("/tmp", new IndexOptions());
-
-		// public EmailDocument(String id, String folderName, Address[] to, Address[] cc, Address[] bcc, Address[] from, String subject, String messageID, Date date)
-		EmailDocument ed = new EmailDocument("1", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123-45 6789 ", "name 1 is John Smith.  credit card # 1234 5678 9012 3456 ", ed, null);
-		ed = new EmailDocument("2", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card not ending with a non-digit # 1234 5678 9012 345612 ", ed, null);
-		ed = new EmailDocument("3", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123 45 6789", "name 1 is John Smith.  credit card # 111234 5678 9012 3456 ", ed, null);
-		ed = new EmailDocument("4", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-		li.indexSubdoc(" ssn 123 45 6789", "\nmy \nfirst \n book is \n something ", ed, null);
-        ed = new EmailDocument("5", "dummy", "dummy", new Address[0], new Address[0], new Address[0], new Address[0], "", "", new Date());
-        li.indexSubdoc("passport number k4190893", "\nmy \nfirst \n book is \n something ", ed, null);
-
-        li.close();
-
-		li.setupForRead();
-		String q = "john";
-		Collection<EmailDocument> docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "/j..n/\\\\*";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "\"john\"";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "\"john smith\"";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "john*smith";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "title:john";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "title:subject";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "body:johns";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "title:johns";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "joh*";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		q = "/j..n/";
-		//		q = "/\\b(\\d{9}|\\d{3}-\\d{2}-\\d{4})\\b/";
-		docs = li.lookupDocs(q, QueryType.FULL);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		// look for sequence of 4-4-4-4 . the .* at the beginning and end is needed.
-		q = "[0-9]{3}[\\- ]*[0-9]{2}[ \\-]*[0-9]{4}";
-		docs = li.lookupDocs(q, QueryType.REGEX);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		// look for sequence of 3-2-4
-		//q = "[0-9]{3}[ \\-]*[0-9]{2}[ \\-]*[0-9]{4}";
-		q = "123-45[ \\-]*[0-9]{4}";
-		System.out.println("hits for: " + q + " = " + li.lookupDocs(q, QueryType.REGEX).size());
-
-		// look for sequence of 3-2-4
-		q = "first\\sbook";
-		docs = li.lookupDocs(q, QueryType.REGEX);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-        q = "ssn";
-        int numHits = li.getNumHits(q, false, QueryType.FULL);
-        System.err.println("Number of hits for: " + q + " is " + numHits);
-
-        q = "[A-Za-z][0-9]{7}";
-		docs = li.lookupDocs(q, QueryType.REGEX);
-		System.out.println("hits for: " + q + " = " + docs.size());
-
-		li.analyzer = null;
-		li.isearcher = null;
-		li.parser = null;
-		li.parserOriginal = null;
-		li.parserSubject = null;
-		li.parserCorrespondents = null;
-		Util.writeObjectToFile("/tmp/1", li);
-		li = (Indexer) Util.readObjectFromFile("/tmp/1");
-	}
 	public String toString()
 	{
 		return computeStats();
