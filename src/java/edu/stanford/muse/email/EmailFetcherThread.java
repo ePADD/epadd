@@ -42,6 +42,7 @@ import javax.activation.DataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -452,49 +453,57 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * // p is the specific part that we are processing (p could be == m)
      * also sets up names of attachments (though it will not download the
      * attachment unless downloadAttachments is true)
+     *
+     * The returned Tuple2.getSecond() contains the text/html part from multipart/alternative or text/html
+     * from a single part, only html message.
+     * @return
      */
-    protected List<String> processMessagePart(EmailDocument ed, int messageNum, Message m, Part p, List<Blob> attachmentsList) throws MessagingException, IOException {
-        List<String> list = new ArrayList<>(); // return list
-        if (p == null) {
+    protected Tuple2<List<String>, String> processMessagePart(EmailDocument emailDocument, int messageNum, Message topLevelMessage, Part messagePart, List<Blob> attachmentsList, String textHtmlPart) throws MessagingException, IOException {
+
+        List<String> list = new ArrayList<>(); // content list
+        if (messagePart == null) {
             dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
             Set<String> label = new LinkedHashSet<>();
             label.add(LabelManager.LABELID_PARSING_ERRS);
-            archive.getLabelManager().setLabels(ed.getUniqueId(),label);
-            return list;
+            archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
+            return new Tuple2<List<String>, String>(list, "");
         }
 
-        if (p == m && p.isMimeType("text/html")) {
+        if (messagePart == topLevelMessage && messagePart.isMimeType("text/html")) {
             /*
             String s = "top level part is html! message:" + m.getSubject() + " " + m.getDescription();
             dataErrors.add(s);
             */
             // we don't normally expect the top-level part to have content-type text/html
             // but we saw this happen on some sample archives pst -> emailchemy. so allow it and handle it by parsing the html
-            String html = (String) p.getContent();
+            String html = (String) messagePart.getContent();
             String text = Util.unescapeHTML(html);
             org.jsoup.nodes.Document doc = Jsoup.parse(text);
 
             StringBuilder sb = new StringBuilder();
             HTMLUtils.extractTextFromHTML(doc.body(), sb);
             list.add(sb.toString());
-            return list;
+            Tuple2<List<String>, String> returnTuple = new Tuple2<List<String>, String>(list, html);
+            return returnTuple;
         }
 
-        if (p.isMimeType("text/plain")) {
+        if (messagePart.isMimeType("text/plain")) {
             MimeBodyPart bodyPart=null;
             //IMP: CHECK - The part p should be an instance of MimeBodyPart
-            if(p instanceof  MimeBodyPart)
-                bodyPart = ((MimeBodyPart) p);
+            if(messagePart instanceof  MimeBodyPart)
+            {
+                bodyPart = ((MimeBodyPart) messagePart);
+            }
             if(bodyPart==null){
                 log.warn("WARN!! Expected MimeBodyPart but did not get any... Some invariant about the structure of mbox file is broken. Please contact the developers.");
             }
             String encoding = "quoted-printable";
             String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
-            Enumeration<Header> headers = p.getAllHeaders();
-
+            Enumeration<Header> headers = messagePart.getAllHeaders();
             boolean dirty = false;
             if (headers != null)
+            {
                 while (headers.hasMoreElements()) {
                     Header h = (Header) headers.nextElement();
                     String name = h.getName();
@@ -529,7 +538,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         }
                     }*/
                 }
-            String fname = p.getFileName();
+            }
+            String fname = messagePart.getFileName();
             if (fname != null) {
                 int idx = fname.lastIndexOf('.');
                 if ((idx < fname.length()) && (idx >= 0)) {
@@ -543,13 +553,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 dataErrors.add("Dirty message part, has conflicting message part headers."  + folder_name() + " Message# " + messageNum);
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_PARSING_ERRS);
-                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
-                return list;
+                archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
+                return new Tuple2<List<String>, String>(list, textHtmlPart);
             }
 
             log.debug("Message part with content type text/plain");
             String content;
-            String type = p.getContentType(); // new InputStreamReader(p.getInputStream(), "UTF-8");
+            String type = messagePart.getContentType(); // new InputStreamReader(p.getInputStream(), "UTF-8");
             try {
                 // if forced encoding is set, we read the string with that encoding, otherwise we just use whatever p.getContent gives us
                 /*if (FORCED_ENCODING != null) {
@@ -568,7 +578,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     if(bodyPart!=null)
                        b  = Util.getBytesFromStream(bodyPart.getRawInputStream());
                     else
-                        b  = Util.getBytesFromStream(p.getInputStream());
+                        b  = Util.getBytesFromStream(messagePart.getInputStream());
 
                     try {
                         b = QuotedPrintableCodec.decodeQuotedPrintable(b);
@@ -578,7 +588,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         dataErrors.add("Unable to decode quoted printable encoded message in  " + folder_name() + " Message #" + messageNum + " type " + type );
                         Set<String> label = new LinkedHashSet<>();
                         label.add(LabelManager.LABELID_PARSING_ERRS);
-                        archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                        archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
                         //return list; //If decoding fails at least try to create content by new String(b,charset) using default encoding.
                     }
                     content = new String(b, charset);
@@ -590,20 +600,20 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     if(bodyPart!=null)
                         b = Util.getBytesFromStream(bodyPart.getRawInputStream());
                     else
-                        b = Util.getBytesFromStream(p.getInputStream());
+                        b = Util.getBytesFromStream(messagePart.getInputStream());
                     //decode it.
                     byte decoded[] = Base64.decodeBase64(b);
                     content = new String(decoded,charset);
                 }else{
                     //Encoding is something else (maybe "binary") just read it in the conent without decoding.
-                    byte b[] = Util.getBytesFromStream(p.getInputStream());
+                    byte b[] = Util.getBytesFromStream(messagePart.getInputStream());
                     content = new String(b);
                 }
             } catch (UnsupportedEncodingException uee) {
                 dataErrors.add("Unsupported encoding: " + folder_name() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_PARSING_ERRS);
-                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
                 // a particularly nasty issue:javamail can't handle utf-7 encoding which is common with hotmail and exchange servers.
                 // we're using the workaround suggested on this page: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4304013
                 // though it may be better to consider official support for utf-7 or other encodings.
@@ -612,17 +622,17 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 // Unsupported encoding: gmail-sent Message #10477 type text/plain; charset=x-utf8utf8; name="newyorker.txt",
                 // the hack below doesn't work for it.
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                p.writeTo(bao);
+                messagePart.writeTo(bao);
                 content = bao.toString();
             }
             list.add(content);
-        } else if (p.isMimeType("multipart/*") || p.isMimeType("message/rfc822")) {
+        } else if (messagePart.isMimeType("multipart/*")){// || messagePart.isMimeType("message/rfc822")) {
             // rfc822 mime type is for embedded mbox format or some such (appears for things like
             // forwarded messages). the content appears to be just a multipart.
-            Object o = p.getContent();
+            Object o = messagePart.getContent();
             if (o instanceof Multipart) {
                 Multipart allParts = (Multipart) o;
-                if (p.isMimeType("multipart/alternative")) {
+                if (messagePart.isMimeType("multipart/alternative")) {
                     // this is an alternative mime type. v common case to have text and html alternatives
                     // so just process the text part if there is one, and avoid fetching the alternatives.
                     // useful esp. because many ordinary messages are alternative: text and html and we don't want to fetch the html.
@@ -630,16 +640,47 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     Part[] parts = new Part[allParts.getCount()];
                     for (int i = 0; i < parts.length; i++)
                         parts[i] = allParts.getBodyPart(i);
-
+                    boolean foundPlain = false;
+                    boolean foundHtml = false;
                     for (Part thisPart : parts) {
                         if (thisPart.isMimeType("text/plain")) {
                             // common case, return quickly
                             list.add((String) thisPart.getContent());
                             log.debug("Multipart/alternative with content type text/plain");
-                            return list;
+                            foundPlain = true;
+                    }
+                        else if (thisPart.isMimeType("text/html")) {
+                            MimeBodyPart mimeBodyPart = (MimeBodyPart)thisPart;
+                            // Store html bit and save it, so it can be included when exporting to Mbox.
+                            //
+
+                            //byte[] b = null;
+                           // b  = Util.getBytesFromStream(mimeBodyPart.getRawInputStream());
+
+                            String s = (String) thisPart.getContent();
+                            textHtmlPart = (String) thisPart.getContent();
+                            //textHtmlPart = new String(b, "utf-8");
+                            // textHtmlPart = ((String) thisPart.getContent());
+                            log.debug("Multipart/alternative with content type text/html");
+                            foundHtml = true;
+                            if (!foundPlain) {
+                                // text/plain is supposed to come before text/html so there is probably not text/plain
+                                // for this message. Extract the text from the HTML part and use that for displaying the email
+                                // in ePADD.
+                                String html = (String) thisPart.getContent();
+                                String text = Util.unescapeHTML(html);
+                                org.jsoup.nodes.Document doc = Jsoup.parse(text);
+
+                                StringBuilder sb = new StringBuilder();
+                                HTMLUtils.extractTextFromHTML(doc.body(), sb);
+                                list.add(sb.toString());
+                            }
                         }
                     }
-
+                    if (foundPlain || foundHtml)
+                    {
+                        return new Tuple2<List<String>, String>(list, textHtmlPart);
+                    }
                     // no text part, let's look for an html part. this happens for html parts.
                     for (int i = 0; i < allParts.getCount(); i++) {
                         Part thisPart = parts[i];
@@ -655,59 +696,67 @@ public class EmailFetcherThread implements Runnable, Serializable {
                             list.add(sb.toString());
 
                             log.debug("Multipart/alternative with content type text/html");
-                            return list;
+                            return new Tuple2<List<String>, String>(list, textHtmlPart);
                         }
                     }
 
                     // no text or html part. hmmm... blindly process the first part only
                     if (allParts.getCount() >= 1)
-                        list.addAll(processMessagePart(ed,messageNum, m, allParts.getBodyPart(0), attachmentsList));
+                        list.addAll(processMessagePart(emailDocument,messageNum, topLevelMessage, allParts.getBodyPart(0), attachmentsList, textHtmlPart).getFirst());
                 } else {
                     // process it like a regular multipart
                     for (int i = 0; i < allParts.getCount(); i++) {
                         BodyPart bp = allParts.getBodyPart(i);
-                        list.addAll(processMessagePart(ed, messageNum, m, bp, attachmentsList));
+                        Tuple2<List<String>, String> returnedTuple = processMessagePart(emailDocument, messageNum, topLevelMessage, bp, attachmentsList, textHtmlPart);
+                        textHtmlPart = returnedTuple.getSecond();
+                        list.addAll(returnedTuple.getFirst());
                     }
                 }
             } else if (o instanceof Part)
-                list.addAll(processMessagePart(ed,messageNum, m, (Part) o, attachmentsList));
+                list.addAll(processMessagePart(emailDocument,messageNum, topLevelMessage, (Part) o, attachmentsList, textHtmlPart).getFirst());
             else {
-                dataErrors.add("Unhandled part content, " + folder_name() + " Message #" + messageNum + "Java type: " + o.getClass() + " Content-Type: " + p.getContentType());
+                dataErrors.add("Unhandled part content, " + folder_name() + " Message #" + messageNum + "Java type: " + o.getClass() + " Content-Type: " + messagePart.getContentType());
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_PARSING_ERRS);
-                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
             }
         } else {
             try {
                 // do attachments only if downloadAttachments is set.
                 // some apps do not need attachments, so this saves some time.
                 // however, it seems like a lot of time is taken in imap prefetch, which gets attachments too?
-                if (fetchConfig.downloadAttachments)
-                    handleAttachments(ed,messageNum, m, p, list, attachmentsList);
+                if (fetchConfig.downloadAttachments) {
+                    String htmlPart = handleAttachments(emailDocument, messageNum, topLevelMessage, messagePart, list, attachmentsList);
+                    if (htmlPart != null) {
+                        textHtmlPart = htmlPart;
+                    }
+                }
             } catch (Exception e) {
                 dataErrors.add("Ignoring attachment for " + folder_name() + " Message #" + messageNum + ": " + Util.stackTrace(e));
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_ATTCH_ERRS);
-                archive.getLabelManager().setLabels(ed.getUniqueId(),label);
+                archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
             }
         }
 
-        return list;
+        return new Tuple2<List<String>, String>(list, textHtmlPart);
     }
 
     /**
      * recursively processes attachments, fetching and saving it if needed
      * parses the given part p, and adds it to hte attachmentsList.
      * in some cases, like a text/html type without a filename, we instead append it to the textlist
+     * If this is not an attachment but the text/html part of the message than the html string is returned
+     * otherwise null is returned.
      * @throws MessagingException
      */
-    private void handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
+    private String handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
         String ct = null;
         if (!(m instanceof MimeMessage)) {
             Exception e = new IllegalArgumentException("Not a MIME message!");
             e.fillInStackTrace();
             log.warn(Util.stackTrace(e));
-            return;
+            return null;
         }
 
         String filename = null;
@@ -722,7 +771,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             Set<String> label = new LinkedHashSet<>();
             label.add(LabelManager.LABELID_ATTCH_ERRS);
             archive.getLabelManager().setLabels(ed.getUniqueId(),label);
-            return;
+            return null;
         }
 
         String sanitizedFName = Util.sanitizeFolderName(emailStore.getAccountID() + "." + folder_name());
@@ -743,10 +792,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     StringBuilder sb = new StringBuilder();
                     HTMLUtils.extractTextFromHTML(doc.body(), sb);
                     textList.add(sb.toString());
-                    return;
+                    ed.setNoPlainText();
+                    // Return the html bit so it can be saved as part of the email.
+                    return (String) html;
                 } catch (Exception e) {
                     Util.print_exception("Error reading contents of text/html multipart without a filename!", e, log);
-                    return;
+                    return null;
                 }
             }
             filename = tempFname;
@@ -807,7 +858,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             log.info("Attachment content type: " + ct + " filename = " + Util.blurKeepingExtension(filename));
         } catch (Exception pex) {
             dataErrors.add("Can't read CONTENT-TYPE: " + ct + " filename:" + filename + " size = " + p.getSize() + " subject: " + m.getSubject() + " Date : " + m.getSentDate().toString() + "\n Exception: " + pex + "\n" + Util.stackTrace(pex));
-            return;
+            return null;
         }
 
         //	    if (filename == null && !p.isMimeType("text/html") && !p.isMimeType("message/partial")) // expected not to have a filename with mime type text/html
@@ -864,6 +915,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 }*/
             }
         }
+        return null;
     }
 
     @SuppressWarnings("unused")
@@ -1215,7 +1267,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                                     if (p0 instanceof com.sun.mail.imap.IMAPBodyPart) {
                                         String encoding = ((com.sun.mail.imap.IMAPBodyPart) p0).getEncoding();
                                         if ("quoted-printable".equals(encoding)) {
-                                            content = new String(Util.getBytesFromStream(javax.mail.internet.MimeUtility.decode(new java.io.ByteArrayInputStream(content.getBytes()), "quoted-printable")));
+                                            content = new String(Util.getBytesFromStream(javax.mail.internet.MimeUtility.decode(new java.io.ByteArrayInputStream(content.getBytes()), "quoted-printable")),StandardCharsets.UTF_8);
                                         }
                                     }
                                 }
@@ -1241,10 +1293,20 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         }
                         prefetchedMessages.set(i - first_i_prefetched, null); // null out to save memory
                     }
+                    List<Header> headers = Collections.list(originalMessage.getAllHeaders());
+                    //Enumeration<Header> headers = originalMessage.getAllHeaders();
+                    String textHtmlPart = "";
+                    Tuple2<List<String>,String> contentTuple = null;
 
-                    Enumeration<Header> headers = originalMessage.getAllHeaders();
-                    if (contents == null)
-                        contents = processMessagePart(ed,messageNum, originalMessage, mm, attachmentsList);
+                    if (contents == null) {
+                        contentTuple = processMessagePart(ed, messageNum, originalMessage, mm, attachmentsList, textHtmlPart);
+                        if (contentTuple != null)
+                        {
+                            contents = contentTuple.getFirst();
+                            textHtmlPart = contentTuple.getSecond();
+                        }
+
+                    }
 
                     // if mm is not prefetched, it is the same as original_mm
                     // will also work, but will be slow as javamail accesses and fetches each mm separately, instead of using the bulk prefetched version
@@ -1286,7 +1348,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
                     contentStr = IndexUtils.normalizeNewlines(contentStr); // just get rid of \r's
 
-                    archive.addDoc(ed, contentStr, headersToString(headers));
+                    archive.addDoc(ed, contentStr, headers, textHtmlPart);
 
                     List<LinkInfo> linkList = new ArrayList<>();
                     // linkList might be used only for slant
@@ -1627,14 +1689,13 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
     /**
      * Returns the given headers as a string, wrapped in starting and ending delimiters
-     * @param headers
+     * @param headersList
      * @return
      */
-    protected String headersToString(Enumeration<Header> headers) {
-        List<Header> headersList = Collections.list(headers);
+    protected String headersToString(List<Header> headersList) {
         return headersList
                 .stream()
                 .map(item -> item.getName() + ": " + item.getValue())
-                .collect(Collectors.joining("; ", "", ""));
+                .collect(Collectors.joining("\0 ", "", ""));
     }
 }

@@ -53,6 +53,7 @@ public class EmailDocument extends DatedDocument implements Serializable
     public static final int SENT_MASK = 1;
     public static final int RECEIVED_MASK = 2;
 
+    private boolean noPlainText = false;
 	public String folderName, emailSource;
 	public Set<String> folderNames = new LinkedHashSet<>(), emailSources = new LinkedHashSet<>(); // email can now belong to multiple folders, folderName field also maintained for backward compatibility
 	public Address[] to, from, cc, bcc; // note: for some reason from[] is an array in JavaMail, because it was supposed to be possible for a message to have multiple senders.
@@ -89,6 +90,8 @@ public class EmailDocument extends DatedDocument implements Serializable
 		this.uniqueID = Util.hash(getSignature());
 	}
 
+	public void setNoPlainText() {noPlainText = true;}
+	public boolean hasPlainTextPart() {return !noPlainText;}
 	public boolean hasError() { return errorString != null; }
 	public String getErrorString() { return errorString; }
 	public void setErrorString(String errorString) { this.errorString = errorString; }

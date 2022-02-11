@@ -80,6 +80,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.mail.Header;
+
 /**
  * Core data structure that represents an archive. Conceptually, an archive is a
  * collection of indexed messages (which can be incrementally updated), along
@@ -890,7 +892,7 @@ int errortype=0;
 
         String subject = "", contents = "";
 
-        indexer.indexSubdoc(subject, contents, "", doc, blobStore);
+        indexer.indexSubdoc(subject, contents, new ArrayList<Header>(), doc, blobStore, "");
 
         if (getAllDocs().size() % 100 == 0)
             log.info("Memory status after " + getAllDocs().size() + " emails: " + Util.getMemoryStats());
@@ -911,14 +913,14 @@ int errortype=0;
     }
 
     public synchronized boolean addDoc(Document doc, String contents) {
-        return addDoc(doc, contents, "");
+        return addDoc(doc, contents, new ArrayList<Header>(), "");
 
     }
         /**
          * core method, adds a single doc to the archive. remember to call
          * postProcess at the end of any series of calls to add docs
          */
-    public synchronized boolean addDoc(Document doc, String contents, String header) {
+    public synchronized boolean addDoc(Document doc, String contents, List<Header> header, String textHtmlPart) {
         if (containsDoc(doc))
             return false;
 
@@ -929,8 +931,7 @@ int errortype=0;
 
         String subject = doc.getSubjectWithoutTitle();
         subject = EmailUtils.cleanupSubjectLine(subject);
-
-        indexer.indexSubdoc(subject, contents, header, doc, blobStore);
+        indexer.indexSubdoc(subject, contents, header, doc, blobStore, textHtmlPart);
 
         if (getAllDocs().size() % 100 == 0)
             log.info("Memory status after " + getAllDocs().size() + " emails: " + Util.getMemoryStats());
