@@ -78,7 +78,7 @@
     boolean noAttachments = "on".equals(noAttach);
     boolean stripQuoted = "on".equals(request.getParameter("stripQuoted"));
     for (Document ed: selectedDocs)
-        EmailUtils.printToMbox(archive, (EmailDocument) ed, pw, noAttachments ? null: bs, stripQuoted);
+        EmailUtils.printToMbox(archive, (EmailDocument) ed, pw, noAttachments ? null: bs, false);
     pw.close();
     String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     String contentURL = "serveTemp.jsp?archiveID="+archiveID+"&file=" + fname ;

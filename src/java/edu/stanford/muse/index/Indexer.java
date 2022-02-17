@@ -46,10 +46,13 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.automaton.RegExp;
 
 import javax.mail.Address;
+import javax.mail.Header;
+
 import java.io.*;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -989,6 +992,45 @@ is what we want.
 		}
 	}
 
+	
+	private void storeHeaders(org.apache.lucene.document.Document doc, List<Header> headers)
+	{
+		ByteArrayOutputStream bs = new ByteArrayOutputStream();
+		List<String> headerString = new ArrayList<>();
+		for (Header h : headers)
+		{
+			headerString.add(h.getName() + ": " + h.getValue());
+		}
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(bs);
+			oos.writeObject(headerString);
+			oos.close();
+			bs.close();
+			
+			doc.add(new Field("headers_original", bs.toByteArray(), storeOnly_ft));
+			System.out.println("xxx stored headers");
+		} catch (IOException e) {
+			log.warn("Failed to serialize headers");
+			e.printStackTrace();
+		}
+		
+		java.io.ObjectInputStream ois;
+		try {
+			ois = new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(bs.toByteArray()));
+			java.util.List<String> sp = (java.util.List<String>) ois.readObject();
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void storeTextHtmlPart(org.apache.lucene.document.Document doc, String textHtmlPart)
+	{
+		doc.add(new Field("text_html_part", textHtmlPart, storeOnly_ft));
+	}
+
 	/**
 	 * internal method, core method for adding a doc to the index.
 	 * adds body, title, people, places, orgs. assumes the index, iwriter etc
@@ -997,7 +1039,7 @@ is what we want.
 	 *
 	 * @param stats
 	 */
-	private synchronized void add1DocToIndex(String title, String content, String header, Document d, IndexStats stats) throws Exception
+	private synchronized void add1DocToIndex(String title, String content, List<Header> headerList, Document d, IndexStats stats, String textHtmlPart) throws Exception
 	{
 
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(); // not to be confused with edu.stanford.muse.index.Document
@@ -1063,8 +1105,10 @@ is what we want.
 			    //mark dataerror to record this truncation.@TODO
             }
 
+			storeHeaders(doc, headerList);
+			storeTextHtmlPart(doc, textHtmlPart);
 			// Index original headers. Store as full_ft.
-			doc.add(new Field("headers_original", header, full_ft)); // save raw before preprocessed
+			//doc.add(new Field("headers_original", header, full_ft)); // save raw before preprocessed
 			doc.add(new Field("body", content, full_ft)); // save raw before preprocessed
 		}
 
@@ -1137,7 +1181,7 @@ is what we want.
 	}
 
 	/* note sync. because we want only one writer to be going at it, at one time */
-	synchronized void indexSubdoc(String title, String documentText, String headers, edu.stanford.muse.index.Document d, BlobStore blobStore)
+	synchronized void indexSubdoc(String title, String documentText, List<Header> headers, edu.stanford.muse.index.Document d, BlobStore blobStore, String textHtmlPart)
 	{
 		if (d == null)
 			return;
@@ -1146,7 +1190,7 @@ is what we want.
 			documentText = "";
 
 		try {
-			add1DocToIndex(title, documentText, headers, d, stats);
+			add1DocToIndex(title, documentText, headers, d, stats, textHtmlPart);
 			if (blobStore != null && d instanceof EmailDocument && io.indexAttachments)
 				indexAttachments((EmailDocument) d, blobStore, null, stats);
 		} catch (Throwable e) {
@@ -2081,6 +2125,49 @@ is what we want.
 
         return contents;
     }
+	public String getTextHtml(edu.stanford.muse.index.Document d) {
+		org.apache.lucene.document.Document doc;
+		try {
+			doc = getDoc(d);
+		} catch (IOException e) {
+			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
+			e.printStackTrace();
+			return "";
+		}
+		return doc.get("text_html_part");
+	}
+
+	public List<String> getOriginalHeaders(edu.stanford.muse.index.Document d)
+	{
+		org.apache.lucene.document.Document doc;
+		java.util.List<String> headerList = new ArrayList<String>();
+		try {
+			doc = getDoc(d);
+		} catch (IOException e) {
+			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
+			e.printStackTrace();
+			return headerList;
+		}
+		BytesRef bin1ref = doc.getBinaryValue("headers_original");
+		if (bin1ref == null)
+		{
+			//No headers_original in Lucene. Maybe the original Mbox file has
+			//been created with an old version of ePADD?
+			return new ArrayList<String>();
+		}
+		byte[] bin1bytes = bin1ref.bytes;
+
+		java.io.ObjectInputStream ois;
+		try {
+			ois = new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(bin1bytes));
+			headerList = (java.util.List<String>) ois.readObject();
+		} catch (ClassNotFoundException | IOException e) {
+			log.warn("Unable to get original headers for " + d.getUniqueId());
+			e.printStackTrace();
+			return headerList;
+		}
+		return headerList;
+	}
 
 	String getHeaders(edu.stanford.muse.index.Document d)
 	{

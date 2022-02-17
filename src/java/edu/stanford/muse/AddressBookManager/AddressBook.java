@@ -32,7 +32,6 @@ import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
-import sun.awt.image.ImageWatched;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;

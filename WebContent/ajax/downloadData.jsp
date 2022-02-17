@@ -227,7 +227,7 @@ try{
     PrintWriter pw = null;
     try {
         pw = new PrintWriter(pathToFile, "UTF-8");
-        boolean stripQuoted = true;
+        boolean stripQuoted = false;
         for (Document ed: docset)
             EmailUtils.printToMbox(archive, (EmailDocument) ed, pw,archive.getBlobStore(), stripQuoted);
 

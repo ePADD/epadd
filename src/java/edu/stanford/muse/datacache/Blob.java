@@ -32,6 +32,73 @@ public long size = -1;
 protected String filename;
 public String contentType;
 
+
+public enum ContentTransferEncoding
+{
+	// MISSING means there was no content-transfer-encoding of 7bit, 8bit, base64 or binary in the read file. NA is for backward
+	// compatibility. If we deserialize a Blob object which doesn't have the field contentTransferEncoding then
+	// we use NA.
+	BIT7("7bit"), BIT8("8bit"), BINARY("binary"), BASE64("base64"), MISSING("" +
+		"missing"), NA("NA");
+
+	private final String encodingCode;
+
+	public String toString()
+	{
+		return encodingCode;
+	}
+	ContentTransferEncoding(String encodingCode) {
+		this.encodingCode = encodingCode;
+	}
+
+	public static ContentTransferEncoding fromString(String text) {
+		for (ContentTransferEncoding c : ContentTransferEncoding.values()) {
+			if (c.encodingCode.equalsIgnoreCase(text)) {
+				return c;
+			}
+		}
+		return MISSING;
+	}
+}
+
+public Blob()
+{
+	this.contentTransferEncoding = ContentTransferEncoding.NA;
+}
+
+private ContentTransferEncoding contentTransferEncoding;
+
+public ContentTransferEncoding getContentTransferEncoding() {
+	if (contentTransferEncoding == null)
+	{
+		this.contentTransferEncoding = ContentTransferEncoding.NA;
+	}
+	return contentTransferEncoding;
+}
+
+public void setContentTransferEncoding(String contentTransferEncodingString) {
+	if (contentTransferEncodingString != null) {
+		contentTransferEncodingString = contentTransferEncodingString.toLowerCase();
+	}
+
+	this.contentTransferEncoding = ContentTransferEncoding.fromString(contentTransferEncodingString);
+
+	if (this.contentTransferEncoding == null)
+	{
+		// We were not able to translate contentTransferEncodingString to a contentTransferEncoding, so we set
+		// it as MISSING.
+		this.contentTransferEncoding = ContentTransferEncoding.MISSING;
+	}
+}
+
+public boolean isRfc822()
+{
+	if (contentType != null)
+	{
+		return contentType.toLowerCase().contains("rfc822");
+	}
+	else return false;
+}
 public boolean processedSuccessfully = false;
 
 	public void setContentHash(byte[] contentHash) {

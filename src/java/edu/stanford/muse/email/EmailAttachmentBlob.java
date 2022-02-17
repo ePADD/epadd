@@ -49,6 +49,25 @@ public EmailAttachmentBlob (String name, long size, MimeMessage m, Part p) throw
  //   this.messageID = m.getMessageID();
   //  this.folderName = "dummy"; // m.getFolder().getFullName();
     this.contentType = p.getContentType();
+    if (p != null)
+    {
+        if (p.getHeader("Content-transfer-Encoding") != null)
+        {
+            try {
+                this.setContentTransferEncoding(p.getHeader("Content-transfer-Encoding")[0]);
+            }
+            catch (Exception e)
+            {
+                this.setContentTransferEncoding("missing");
+            }
+        }
+        else
+        {
+            // There is no header "Content-transfer-Encoding"
+            this.setContentTransferEncoding("missing");
+        }
+	}
+
   //  sentDate = m.getSentDate();
     modifiedDate = m.getSentDate();
     if (modifiedDate == null)
