@@ -1,4 +1,4 @@
-<!-- runs on server side -->
+<%--<!-- runs on server side -->--%>
 <%@page language="java" import="edu.stanford.muse.email.*"%>
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page import="edu.stanford.epadd.util.OperationInfo" %>

@@ -174,6 +174,28 @@ Error: Export is only available in processing or appraisal modes!
     <br/>
 --%>
     <section>
+            <div class="panel" id="export-preservation">
+                <div class="panel-heading">Export to Preservation</div>
+                <div class="one-line">
+                    <div class="form-group col-sm-8">
+                        <select id="export-preservation-options" name="export-preservation-options" class="form-control selectpicker">
+                            <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%></option>
+                            <% if (ModeConfig.isAppraisalMode()) { %>
+                                <option value = "exportAppraised">exportAppraised</option>
+                            <% } else if (ModeConfig.isProcessingMode()) { %>
+                                <option value = "exportProcessed">exportProcessed</option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <button id="export-mbox-do" class="go-button  btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </section>
+
+    <section>
         <div class="panel">
             <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.next-module")%></div>
 
@@ -341,6 +363,17 @@ Error: Export is only available in processing or appraisal modes!
 
 
     <script>
+        $('#export-preservation .go-button').click (function(e) {
+            var exportoptions= $('#export-preservation-options').val();
+            if(!exportoptions){
+                alert("Please select at least one option!");
+                return false;
+            }
+            var post_params={archiveID:archiveID, exportableAssets:exportoptions};
+            var params = epadd.convertParamsToAmpersandSep(post_params);
+            fetch_page_with_progress("ajax/async/setExportableAssets.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params);
+        });
+
         $('#export-mbox .go-button').click (function(e) {
             var exportoptions= $('#export-mbox-options').val();
             if(!exportoptions){
@@ -349,7 +382,10 @@ Error: Export is only available in processing or appraisal modes!
             }
             var post_params={archiveID:archiveID, data:"to-mbox", type:exportoptions};
             var params = epadd.convertParamsToAmpersandSep(post_params);
-            fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params);
+
+           
+            var premisData = {eventType: "mbox export", eventDetailInformation: exportoptions};
+             fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params, null, null, premisData);
             /*
              $.ajax({
              type: 'POST',
@@ -545,7 +581,8 @@ Error: Export is only available in processing or appraisal modes!
                 //window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
                 var post_params = {archiveID: archiveID, dir: dir};
                 var params = epadd.convertParamsToAmpersandSep(post_params);
-                fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod);
+                var premisData = {eventType: "transfer to processing", eventDetailInformation: "Exported to " + post_params.dir};
+                fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod, null, premisData);
             }else{
                 epadd.error("Please enter the directory path where the exported archive will be stored!");
             }

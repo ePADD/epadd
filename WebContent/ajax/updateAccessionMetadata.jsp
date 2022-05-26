@@ -11,7 +11,7 @@
 	JSONObject result = new JSONObject();
 	if (!ModeConfig.isProcessingMode()) {
 		result.put ("status", 1);
-		result.put ("errorMessage", "Updating collection metadata is allowed only in ePADD's Processing mode.");
+		result.put ("errorMessage", "Updating accession metadata is allowed only in ePADD's Processing mode.");
 		out.println (result.toString(4));
 		return;
 	}
@@ -71,7 +71,7 @@ try {
 	    }
 	else{
 	    //we only need to write the collection metadata without loading the archive. so it's fresh creation.
-    	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
+    	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir, null);
     	 //for updating the checksum we need to first read the bag from the basedir..
         Bag archiveBag=Archive.readArchiveBag(archiveBaseDir);
         if(archiveBag==null)

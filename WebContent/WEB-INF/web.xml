@@ -140,6 +140,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>edit-metadata</servlet-name>
+		<jsp-file>/edit-metadata.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>edit-metadata</servlet-name>
+		<url-pattern>/edit-metadata</url-pattern>
+	</servlet-mapping>
+
+	<!--servlet>
 		<servlet-name>edit-collection-metadata</servlet-name>
 		<jsp-file>/edit-collection-metadata.jsp</jsp-file>
 	</servlet>
@@ -155,7 +164,7 @@
 	<servlet-mapping>
 		<servlet-name>edit-accession-metadata</servlet-name>
 		<url-pattern>/edit-accession-metadata</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping-->
 
 	<servlet>
 		<servlet-name>add-accession</servlet-name>

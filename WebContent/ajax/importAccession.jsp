@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="java.util.Enumeration"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.email.FetchStats"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.email.FolderInfo"%><%@ page import="edu.stanford.muse.util.Pair"%><%@ page import="org.apache.commons.lang.StringUtils"%>
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
 JSONObject result = new JSONObject();
@@ -60,6 +60,8 @@ if (!collectionDir.equals(baseDir))
 	    //the report when a call to displaymergeReport.jsp is made with archiveID.
 	    String accessionID=request.getParameter("accessionID");
 	    Archive collection;
+        List<FetchStats> accessionAllStats = new ArrayList<FetchStats>();
+
 	    if(new File(collectionDir).listFiles().length==0)//means collection directory is empty
 	        {
     	    // delete the existing directory -- Q: should we give user a warning??
@@ -75,8 +77,11 @@ if (!collectionDir.equals(baseDir))
             //This information is present in blobstore so just get it from there.
             collection.collectionMetadata.normalizedFiles=collection.getBlobStore().getNormalizedFilesCount();
             collection.collectionMetadata.renamedFiles=collection.getBlobStore().getCleanedFilesCount();
+            accessionAllStats = collection.allStats;     // for file metadata creation later
+            collection.collectionMetadata.fileMetadatas = null; // Erase all existing file metadatas as we will add back them into accession later
+
             //IMP to write collection metadata back..
-            ArchiveReaderWriter.saveCollectionMetadata(collection.collectionMetadata,collection.baseDir);
+            ArchiveReaderWriter.saveCollectionMetadata(collection.collectionMetadata,collection.baseDir, null);
             //accession id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
 		    result.put ("message", "Import accession completed.");
@@ -86,6 +91,9 @@ if (!collectionDir.equals(baseDir))
             //read archives present in basedir and collection dir.
             collection = ArchiveReaderWriter.readArchiveIfPresent(collectionDir);
             Archive accession = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
+
+            accessionAllStats = accession.allStats;     // Cache accession's allStatus before it is merged for file metadata creation later
+
             //call merge on these archives..
             Util.ASSERT(request.getParameter("accessionID")!=null);
             //Merge result will be stored in a field of collection archive object. It will be used
@@ -136,6 +144,41 @@ if (!collectionDir.equals(baseDir))
                 Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata (collectionDir);
                 if (cm == null)
                     cm = new Archive.CollectionMetadata();
+
+                Archive accession = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
+                Archive.CollectionMetadata accession_cm = ArchiveReaderWriter.readCollectionMetadata (baseDir);
+                List<Archive.FileMetadata> accession_fms = accession_cm.fileMetadatas;
+
+                List<Archive.FileMetadata> fms = new ArrayList<Archive.FileMetadata>();
+
+                {
+                   // we add the following code to support file metada requirement in epadd+ project
+                   // All file metadatas in accession_fms would be copied into FileMetadatas fms, which is then stored in collection.
+
+                    Archive.FileMetadata fm = new Archive.FileMetadata();;
+
+                    int count = 0;
+                    if (accession_fms!=null) {
+                        for (Archive.FileMetadata accessionFM : accession_fms) {
+                            fm = new Archive.FileMetadata();
+                            fm.fileID = "" + am.id + "/File/" + StringUtils.leftPad(""+count, 4, "0");
+                            fm.fileFormat = "MBOX";
+                            fm.notes="";
+
+//                            if (fm.selectedFolders != null) {
+//                                for (Pair<String, FolderInfo> p : fs.selectedFolders){
+//                                    fm.filename = Util.escapeHTML(p.getFirst());
+//                                    break;
+//                                }
+//                            }
+
+                            count ++;
+                            fms.add(fm);
+                        } // end for
+                    }   //end if (fetchStats!=null)
+                }
+                am.fileMetadatas = fms;
+
                 if (cm.accessionMetadatas == null)
                     cm.accessionMetadatas = new ArrayList<>();
                 cm.accessionMetadatas.add(am);
@@ -146,7 +189,7 @@ if (!collectionDir.equals(baseDir))
                 //the updated metadata on disc will be out of sync. It manifests when saving this archive which
                 //overwrites the latest on-disc PM data with stale in-memory data.
             }
-            JSPHelper.log.info ("Accession metadata updated");
+            JSPHelper.log.info ("Accession metadata updated with imported file metadata");
         }
 
 	} catch (Exception e) {

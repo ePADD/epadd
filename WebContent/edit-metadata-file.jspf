@@ -1,0 +1,252 @@
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.index.Archive" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+
+<%
+    String collectionFolder = request.getParameter("collection");
+    String archiveID = request.getParameter("archiveID");
+
+    // This restriction is not available now. User is allowed to prepare metadatas in Appriasal module
+    /*
+    if (!ModeConfig.isProcessingMode()) {
+        out.println ("Updating collection metadata is allowed only in ePADD's Processing mode.");
+        return;
+    }
+     */
+%>
+
+<div id="mbox-tabs" style="display: none; vertical-align: top; display: inline-block; margin-left: 0px; width: 640px;">
+    <ul>
+        <li><a href="#fragment-7"><span>File</span></a></li>
+        <li><a href="#fragment-8"><span>PREMIS</span></a></li>
+    </ul>
+    <form id="file-metadata-form">
+        <input type="hidden" name="collection" value="<%=Util.escapeHTML(collectionFolder)%>"/>
+    <div id="fragment-7" visibility="none">
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.file-id")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.file-id.title")%>" value="" class="form-control" type="text" name="fileID" id="fileID" readonly/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.filename")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.filename.title")%>" value="" class="form-control" type="text" name="filename" id="filename" readonly/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.file-format")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.file-format.title")%>" value="" class="form-control" type="text" name="fileFormat" id="fileFormat" readonly/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.notes")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.notes.title")%>" style="resize:vertical;height:200px;" class="form-control" name="fileNotes" id="fileNotes"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left:40px">
+            <button class="btn btn-cta" id="file-gobutton1"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
+        </div>
+    </div>
+
+    <div id="fragment-8" visibility="none">
+
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.title")%>" id="file-preservationLevelRole" name="file-preservationLevelRole" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.requirement.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.requirement.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.intention.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.intention.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.capability.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-role.capability.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-rationale")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-rationale.title")%>" id="file-preservationLevelRationale" name="file-preservationLevelRationale" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-rationale.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-rationale.user-payed.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.user-payed.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-rationale.legislation.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.legislation.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-rationale.preservation-policy.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.preservation-policy.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-date-assigned")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.preservation-level-date-assigned.title")%>" value="" class="form-control" type="text" id="preservationLevelDateAssigned" name="preservationLevelDateAssigned"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel.title")%>" id="compositionLevel" name="compositionLevel" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel.unchanged.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel.unchanged.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel.changed.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.compositionLevel.changed.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.title")%>" id="messageDigestAlgorithm" name="messageDigestAlgorithm" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.md5.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.md5.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.sha3.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.sha3.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.sha2.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-algorithm.sha2.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest.title")%>" value="" class="form-control" type="text" name="messageDigest"  id="messageDigest"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-orginator")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.message-digest-orginator.title")%>" value="" class="form-control" type="text" name="messageDigestOrginator" id="messageDigestOrginator"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.format-name")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.format-name.title")%>" value="" class="form-control" type="text" name="formatName" id="formatName"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.format-version")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.format-version.title")%>" value="" class="form-control" type="text" name="formatVersion" id="formatVersion"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.creating-application-name")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.creating-application-name.title")%>" value="" class="form-control" type="text" name="creatingApplicationName" id="creatingApplicationName"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.creating-application-version")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.creating-application-version.title")%>" value="" class="form-control" type="text" name="creatingApplicationVersion" id="creatingApplicationVersion"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.date-created-by-application")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.date-created-by-application")%>" value="" class="form-control" type="text" id="dateCreatedByApplication" name="dateCreatedByApplication"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.title")%>" id="file-environmentCharacteristic" name="file-environmentCharacteristic" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.unspecified.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.unspecified.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.known-to-work.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.known-to-work.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.minimum.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.minimum.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.recommended.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-characteristic.recommended.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.title")%>" id="file-relatedEnvironmentPurpose" name="file-relatedEnvironmentPurpose" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.render.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.render.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.edit.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.edit.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.print.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.print.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.search.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-purpose.search.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-note")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.environment-note.title")%>" style="resize:vertical;height:200px;" class="form-control" name="file-environmentNote" id="file-environmentNote"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.software-name")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.software-name.title")%>" style="resize:vertical;height:200px;" class="form-control" name="file-softwareName" id="file-softwareName"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.software-version")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.software-version.title")%>" style="resize:vertical;height:200px;" class="form-control" name="file-softwareVersion" id="file-softwareVersion"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left:40px">
+            <button class="btn btn-cta" id="file-gobutton2"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-file-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
+        </div>
+    </div>
+    </form>
+</div> <!-- end div of File tabs -->
+
+<script type="text/javascript">
+    var saveFile = function(e){
+        //alert("Button: "+e.currentTarget.id);
+        var updateFileData =  $('#file-metadata-form').find(':input').serialize();
+        console.log("updateFileData="+updateFileData);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/updateFileMetadata.jsp',
+            data: updateFileData,
+            success: function (response) {
+                if (response && response.status === 0){
+                    updateFileNodeWithMetadata();
+                    epadd.success('File metadata is saved.', function () {});
+                } else {
+                    epadd.error ("There was an error updating file metadata. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: " + (response && response.errorMessage ? response.errorMessage : ""));
+                }
+            },
+            error: function (jqxhr, status, ex) {
+                epadd.error("There was an error updating file metadata. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: status=" + status + ". Exception: " + ex);
+            }
+        });
+        return false;
+    }
+
+    $('#file-gobutton1').on('click', saveFile);
+    $('#file-gobutton2').on('click', saveFile);
+</script>

@@ -10,7 +10,7 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.email.MuseEmailFetcher;
-import edu.stanford.muse.ie.variants.EntityBook;
+import edu.stanford.muse.epaddpremis.EpaddPremis;
 import edu.stanford.muse.ie.variants.EntityBookManager;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.Util;
@@ -434,6 +434,11 @@ public class ArchiveReaderWriter{
     A smarter way will be to save only those parts which changed. This will require some flag to track unchanged data.-- @TODO
      */
     public static void saveMutable_Incremental(Archive archive){
+        saveMutable_Incremental(archive, null);
+    }
+
+
+        public static void saveMutable_Incremental(Archive archive, String fileID){
         saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
         saveEntityBookManager(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
@@ -446,7 +451,7 @@ public class ArchiveReaderWriter{
         saveAnnotations(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         //should we recalculate collection metadata as well??
         recalculateCollectionMetadata(archive);
-        saveCollectionMetadata(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+        saveCollectionMetadata(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE, fileID);
 
     }
 
@@ -655,6 +660,55 @@ public class ArchiveReaderWriter{
      * v5- Instead of serializing now this data gets stored in json format.
 */
     public static void saveCollectionMetadata(Archive.CollectionMetadata cm, String basedir){
+        saveCollectionMetadata(cm, basedir,null);
+    }
+        public static void saveCollectionMetadata(Archive.CollectionMetadata cm, String basedir, Archive archive){
+        saveCollectionMetadata(cm, basedir,  archive, null);
+    }
+    public static void saveCollectionMetadata(Archive.CollectionMetadata cm, String basedir, Archive archive, String fileID){
+        EpaddPremis epaddPremis = null;
+        if (archive != null) {
+            epaddPremis = archive.getEpaddPremis();
+        }
+        if (epaddPremis == null)
+        {
+            log.warn("epaddPremis null in ArchiveReaderWriter.saveCollectionMetadata()");
+        }
+        else {
+            if (cm.preservationLevelRationale != null)
+                epaddPremis.setPreservationLevelRationale(cm.preservationLevelRationale);
+            if (cm.preservationLevelRole != null) epaddPremis.setPreservationLevelRole(cm.preservationLevelRole);
+            if (cm.rightsStatementIdentifierType != null)
+                epaddPremis.setRightsStatementIdentifierType(cm.rightsStatementIdentifierType);
+            if (cm.rightsStatementIdentifierValue != null)
+                epaddPremis.setRightsStatementIdentifierValue(cm.rightsStatementIdentifierValue);
+            if (cm.statuteDocumentationIdentifierType != null)
+                epaddPremis.setStatuteDocumentationIdentifierType(cm.statuteDocumentationIdentifierType);
+            if (cm.statuteDocumentationIdentifierValue != null)
+                epaddPremis.setStatuteDocumentationIdentifierValue(cm.statuteDocumentationIdentifierValue);
+            if (cm.statuteDocumentationRole != null) epaddPremis.setStatuteDocumentationRole(cm.statuteDocumentationRole);
+            if (cm.environmentCharacteristic != null)
+                epaddPremis.setIntellectualEntityObjectEnvironmentCharacteristics(cm.environmentCharacteristic);
+            if (cm.environmentNote != null) epaddPremis.setIntellectualEntityObjectEnvironmentNote(cm.environmentNote);
+            if (cm.relatedEnvironmentPurpose != null)
+                epaddPremis.setIntellectualEntityObjectEnvironmentPurpose(cm.relatedEnvironmentPurpose);
+            if (cm.softwareName != null) epaddPremis.setIntellectualEntityObjectEnvironmentSoftwareName(cm.softwareName);
+            if (cm.softwareVersion != null)
+                epaddPremis.setIntellectualEntityObjectEnvironmentSoftwareVersion(cm.softwareVersion);
+            if (cm.statuteJurisdiction != null) epaddPremis.setStatutestatuteJurisdiction(cm.statuteJurisdiction);
+
+            if (fileID != null)
+            {
+            for (Archive.FileMetadata fm : cm.fileMetadatas) {
+                if (fm.fileID != null && fm.fileID.equals(fileID)) {
+                    epaddPremis.setFileMetadata(fm.fileID, fm);
+                }
+            }
+            }
+
+            archive.printEpaddPremis();
+        }
+
         String dir = basedir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
         String processingFilename = dir + File.separatorChar + Config.COLLECTION_METADATA_FILE;
 
@@ -685,7 +739,50 @@ at the top) or an update in the file present in the archive bag.
 */
 public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_Mode mode)
 {
+        saveCollectionMetadata(archive, mode, null);
+    }
+
+    public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_Mode mode, String fileID)
+    {
+
         Archive.CollectionMetadata cm = archive.collectionMetadata;
+
+    EpaddPremis epaddPremis = archive.getEpaddPremis();
+    if (epaddPremis == null)
+    {
+        log.warn("epaddPremis null in ArchiveReaderWriter.saveCollectionMetadata()");
+    }
+    else {
+        if (cm.preservationLevelRationale != null)
+            epaddPremis.setPreservationLevelRationale(cm.preservationLevelRationale);
+        if (cm.preservationLevelRole != null) epaddPremis.setPreservationLevelRole(cm.preservationLevelRole);
+        if (cm.rightsStatementIdentifierType != null)
+            epaddPremis.setRightsStatementIdentifierType(cm.rightsStatementIdentifierType);
+        if (cm.rightsStatementIdentifierValue != null)
+            epaddPremis.setRightsStatementIdentifierValue(cm.rightsStatementIdentifierValue);
+        if (cm.statuteDocumentationIdentifierType != null)
+            epaddPremis.setStatuteDocumentationIdentifierType(cm.statuteDocumentationIdentifierType);
+        if (cm.statuteDocumentationIdentifierValue != null)
+            epaddPremis.setStatuteDocumentationIdentifierValue(cm.statuteDocumentationIdentifierValue);
+        if (cm.statuteDocumentationRole != null) epaddPremis.setStatuteDocumentationRole(cm.statuteDocumentationRole);
+        if (cm.environmentCharacteristic != null)
+            epaddPremis.setIntellectualEntityObjectEnvironmentCharacteristics(cm.environmentCharacteristic);
+        if (cm.environmentNote != null) epaddPremis.setIntellectualEntityObjectEnvironmentNote(cm.environmentNote);
+        if (cm.relatedEnvironmentPurpose != null)
+            epaddPremis.setIntellectualEntityObjectEnvironmentPurpose(cm.relatedEnvironmentPurpose);
+        if (cm.softwareName != null) epaddPremis.setIntellectualEntityObjectEnvironmentSoftwareName(cm.softwareName);
+        if (cm.softwareVersion != null)
+            epaddPremis.setIntellectualEntityObjectEnvironmentSoftwareVersion(cm.softwareVersion);
+        if (cm.statuteJurisdiction != null) epaddPremis.setStatutestatuteJurisdiction(cm.statuteJurisdiction);
+
+        for (Archive.FileMetadata fm : cm.fileMetadatas) {
+            if (fm.fileID != null && fm.fileID.equals(fileID)) {
+                epaddPremis.setFileMetadata(fm.fileID, fm);
+            }
+        }
+
+        archive.printEpaddPremis();
+    }
         String baseDir = archive.baseDir;
         String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
         String processingFilename = dir + File.separatorChar + Config.COLLECTION_METADATA_FILE;

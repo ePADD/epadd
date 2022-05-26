@@ -17,6 +17,8 @@ package edu.stanford.muse.datacache;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.collect.Multimap;
+import edu.stanford.muse.epaddpremis.EpaddPremis;
+import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -327,6 +329,10 @@ public class BlobStore implements Serializable {
      * returns # of bytes in inputstream
      */
     public long add(Blob blob, InputStream is) throws IOException {
+        return add(blob, is, null, false);
+    }
+
+        public long add(Blob blob, InputStream is, Archive archive, boolean addMimeTypeToPremisIfNoDuplicate) throws IOException {
         long nBytes = -1;
         /* we no longer assume that if 2 blobs have the same name and file size, their contents must be the same!
         synchronized (this) {
@@ -375,6 +381,11 @@ public class BlobStore implements Serializable {
             // blob doesn't already exist, add it, and move it from the temp dir to its actual place in the blobstore
 
             add(blob);
+            if (archive != null && addMimeTypeToPremisIfNoDuplicate)
+            {
+                String mime = blob.contentType.substring(0, blob.contentType.indexOf(";"));
+                archive.getEpaddPremis().addToSignificantProperty(mime, 1);
+            }
             // move it from the temp file to the blobs dir. don't do this before add(blob), because full_filename_normalized will not be set up correctly until the blob object can be lookedup
             String destination = dir + File.separatorChar + full_filename_normalized(blob);
             Files.move (tmpPath, new File(destination).toPath());

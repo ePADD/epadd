@@ -1,0 +1,422 @@
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+
+<%
+    String collectionFolder = request.getParameter("collection");
+    String archiveID = request.getParameter("archiveID");
+    // This restriction is not available now. User is allowed to prepare metadatas in Appriasal module
+    /*
+    if (!ModeConfig.isProcessingMode()) {
+        out.println ("Updating collection metadata is allowed only in ePADD's Processing mode.");
+        return;
+    }
+    */
+%>
+
+<div id="collection-tabs" style="display: inline-block; vertical-align: top; margin-left: 0px; width: 640px;">
+    <ul>
+        <li><a href="#fragment-1"><span>Collection</span></a></li>
+        <li><a href="#fragment-2"><span>EAD</span></a></li>
+        <li><a href="#fragment-3"><span>PREMIS</span></a></li>
+    </ul>
+
+    <form id="metadata-form">
+        <input type="hidden" name="collection" value="<%=Util.escapeHTML(collectionFolder)%>"/>
+    <div id="fragment-1" visibility="none">
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.institution")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.institution.title")%>" value="" class="form-control" type="text" name="institution" id="institution"/>
+            </div>
+        </div>
+
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.repository")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.repository.title")%>" value="" class="form-control" type="text" name="repository" id="repository"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection-title")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection-title.title")%>" value="" class="form-control" type="text" name="collectionTitle" id="collectionTitle"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.short-title")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.short-title.title")%>" value="" class="form-control" type="text" name="shortTitle" id="shortTitle"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection-id")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.collection-id.title")%>" value="" class="form-control" type="text" name="collectionID" id="collectionID"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.aid-link")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.aid-link.title")%>" value="" class="form-control" type="text" name="findingAidLink" id="findingAidLink"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.record-link")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.record-link.title")%>" value="" class="form-control" type="text" name="catalogRecordLink" id="catalogRecordLink"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.contact-email")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.contact-email.title")%>" value="" class="form-control" type="text" name="contactEmail" id="contactEmail"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.short-desc")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.short-desc.title")%>" value="" class="form-control" type="text" name="shortDescription" id="shortDescription"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.about")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.about.title")%>" style="resize:vertical;height:200px;" class="form-control" name="about" id="collectionAbout"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-cond")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-cond.title")%>" style="resize:vertical;height:200px;" class="form-control" name="rights" id="rights"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.notes")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.notes.title")%>" style="resize:vertical;height:200px;" class="form-control" name="notes" id="notes"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.scope-content")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.scope-content.title")%>" style="resize:vertical;height:200px;" class="form-control" name="scopeAndContent" id="scopeAndContent"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left:40px">
+            <button class="btn btn-cta" id="collection-gobutton1"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
+        </div>
+    </div> <!-- end fragment-1-->
+
+    <div id="fragment-2" visibility="none">
+
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.archival-history")%></div>
+            <br/>
+            <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.archival-history.title")%>" style="resize:vertical;height:200px;" class="form-control" name="archivalHistory" id="archivalHistory"></textarea>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.description")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.description.title")%>" style="resize:vertical;height:200px;" class="form-control" name="description" id="description"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.title")%>" id="access" name="access" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.not-accessible.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.not-accessible.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.accessible.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.accessible.label")%></option>
+            </select>
+        </div>
+        <br/>
+
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-review-date")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-review-date.title")%>" value="" class="form-control" type="text" name="embargoReviewDate" id="embargoReviewDate"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-start-date")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-start-date.title")%>" value="" class="form-control" type="text" name="embargoStartDate" id="embargoStartDate"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-duration")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-duration.title")%>" value="" class="form-control" type="text" name="embargoDuration" id="embargoDuration"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-end-date")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-end-date.title")%>" value="" class="form-control" type="text" name="embargoEndDate" id="embargoEndDate"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review.title")%>" id="sensitivityReview" name="sensitivityReview" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review.reviewed.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review.reviewed.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review.not-reviewed.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review.not-reviewed.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.processing-note")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.processing-note.title")%>" style="resize:vertical;height:200px;" class="form-control" name="processingNote" id="processingNote"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left:40px">
+            <button class="btn btn-cta" id="collection-gobutton2"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
+        </div>
+    </div> <!-- end fragment-2-->
+
+    <div id="fragment-3">
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.title")%>" id="preservationLevelRole" name="preservationLevelRole" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.requirement.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.requirement.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.intention.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.intention.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.capability.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-role.capability.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.title")%>" id="preservationLevelRationale" name="preservationLevelRationale" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.user-payed.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.user-payed.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.legislation.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.legislation.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.preservation-policy.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.preservation-level-rationale.preservation-policy.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.title")%>" id="environmentCharacteristic" name="environmentCharacteristic" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.unspecified.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.unspecified.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.known-to-work.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.known-to-work.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.minimum.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.minimum.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.recommended.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-characteristic.recommended.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose")%></label>
+            <select title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.title")%>" id="relatedEnvironmentPurpose" name="relatedEnvironmentPurpose" class="form-control selectpicker">
+                <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.select-one.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.render.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.render.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.edit.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.edit.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.print.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.print.label")%></option>
+                <option value="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.search.value")%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-purpose.search.label")%></option>
+            </select>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-note")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.environment-note.title")%>" style="resize:vertical;height:200px;" class="form-control" name="environmentNote" id="environmentNote"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.software-name")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.software-name.title")%>" style="resize:vertical;height:200px;" class="form-control" name="softwareName" id="softwareName"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.software-version")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.software-version.title")%>" style="resize:vertical;height:200px;" class="form-control" name="softwareVersion" id="softwareVersion"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-statement-identifier-type")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-statement-identifier-type.title")%>" style="resize:vertical;height:200px;" class="form-control" name="rightsStatementIdentifierType" id="rightsStatementIdentifierType"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-statement-identifier-value")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.rights-statement-identifier-value.title")%>" style="resize:vertical;height:200px;" class="form-control" name="rightsStatementIdentifierValue" id="rightsStatementIdentifierValue"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-jurisdiction")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-jurisdiction.title")%>" style="resize:vertical;height:200px;" class="form-control" name="statuteJurisdiction" id="statuteJurisdiction"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-documentation-identifier-type")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-documentation-identifier-type.title")%>" style="resize:vertical;height:200px;" class="form-control" name="statuteDocumentationIdentifierType" id="statuteDocumentationIdentifierType"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-documentation-identifier-value")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-documentation-identifier-value.title")%>" style="resize:vertical;height:200px;" class="form-control" name="statuteDocumentationIdentifierValue" id="statuteDocumentationIdentifierValue"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-documentation-role")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.statute-documentation-role.title")%>" style="resize:vertical;height:200px;" class="form-control" name="statuteDocumentationRole"  id="statuteDocumentationRole"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left:40px">
+            <button class="btn btn-cta" id="collection-gobutton3"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.save-button")%> <i class="icon-arrowbutton"></i></button><br/><br/>
+        </div>
+    </div> <!-- end fragment-3-->
+    </form> <!-- end of form -->
+</div>
+
+<script type="text/javascript">
+
+    var saveCollection = function(e){
+        //alert("Button: "+e.currentTarget.id);
+        var updateCollectionData =  $('#metadata-form').find(':input').serialize()
+
+        var collectionID = $('#collectionID').val();
+        if (collectionID == null || collectionID.length == 0) {
+            console.log("Please provide a collection ID for this collection");
+            epadd.error("Please provide a collection ID for this collection");
+            return false;
+        }
+
+/*
+        var access = $('#access').val();
+        if (access == null || access == "") {
+            console.log("Please select a value for Access");
+            epadd.error("Please select a value for Access");
+            return false;
+        }
+
+        var sensitivityReview = $('#sensitivityReview').val();
+        if (sensitivityReview == null || sensitivityReview == "") {
+            console.log("Please select a value for Sensitivity Review");
+            epadd.error("Please select a value for Sensitivity Review");
+            return false;
+        }
+*/
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/updateCollectionMetadata.jsp',
+            data: updateCollectionData,
+            success: function (response) {
+                if (response && response.status === 0){
+                    updateCollectionNodeWithMetadata();
+                    epadd.success('Collection metadata is saved.', function () {});
+                } else {
+                    epadd.error ("There was an error updating collection metadata. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: " + (response && response.errorMessage ? response.errorMessage : ""));
+                }
+            },
+            error: function (jqxhr, status, ex) {
+                epadd.error("There was an error updating collection metadata. Please try again, and if the error persists, report it to epadd_project@stanford.edu. Details: status=" + status + ". Exception: " + ex);
+            }
+        });
+
+        return false;
+    }
+
+    $('#collection-gobutton1').on('click', saveCollection);
+    $('#collection-gobutton2').on('click', saveCollection);
+    $('#collection-gobutton3').on('click', saveCollection);
+
+    var toggleEmbargoFieldEditable = function(mode){
+        if (mode) {
+            // remove readonly property from all embargo fields
+            $('#embargoReviewDate').prop('readonly', false);
+            $('#embargoStartDate').prop('readonly', false);
+            $('#embargoDuration').prop('readonly', false);
+            $('#embargoEndDate').prop('readonly', false);
+
+        } else {
+            // wipe all existing values and add readonly property to all embargo fields
+            $('#embargoReviewDate').val('');
+            $('#embargoReviewDate').prop('readonly', true);
+
+            $('#embargoStartDate').val('');
+            $('#embargoStartDate').prop('readonly', true);
+
+            $('#embargoDuration').val('');
+            $('#embargoDuration').prop('readonly', true);
+
+            $('#embargoEndDate').val('');
+            $('#embargoEndDate').prop('readonly', true);
+        }
+    }
+
+    $('#access').on('change', function() {
+        if (this.value == '<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.access.not-accessible.value")%>') {
+            toggleEmbargoFieldEditable(true);
+        } else {
+            toggleEmbargoFieldEditable(false);
+        }
+    });
+</script>

@@ -24,6 +24,7 @@ import edu.stanford.muse.email.*;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.LabelManager.LabelManager;
+import edu.stanford.muse.epaddpremis.EpaddEvent;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
 import edu.stanford.muse.index.*;
@@ -450,6 +451,10 @@ public class JSPHelper {
             }
         }
         // add the new stores
+
+		// we add the following code to support file metada requirement in epadd+ project
+		archive.collectionMetadata.setFileMetadatas(archive, allFolders);
+        archive.printEpaddPremis();
     }
 
 	/*
@@ -858,11 +863,16 @@ public class JSPHelper {
 		// could check if user is authorized here... or get the userKey directly from session
 
 		String filePath = Archive.TEMP_SUBDIR + File.separator + filename;
-		writeFileToResponse(session, response, filePath, true /* asAttachment */);
+		writeFileToResponse(session, response, filePath, true /* asAttachment */, archive);
 	}
 
 
 	public static void writeFileToResponse(HttpSession session, HttpServletResponse response, String filePath, boolean asAttachment) throws IOException
+	{
+		writeFileToResponse(session, response, filePath, asAttachment, null);
+	}
+
+	public static void writeFileToResponse(HttpSession session, HttpServletResponse response, String filePath, boolean asAttachment, Archive archive) throws IOException
 	{
 		// Decode the file name (might contain spaces and on) and prepare file object.
 		File file = new File(filePath);
@@ -919,6 +929,40 @@ public class JSPHelper {
 			int length;
 			while ((length = input.read(buffer)) > 0) {
 				output.write(buffer, 0, length);
+			}
+			//If exception is thrown before then this will not be reached
+			if (archive != null)
+			{
+				File f = new File(filePath);
+				String fileName = f.getName();
+				String suffix = fileName.substring(fileName.length()-5);
+				boolean isMboxFile = ".mbox".equals(suffix);
+				boolean isMboxExportFromMainMenu = ("all-messages.mbox").equals(fileName) || ("non-restricted-messages.mbox").equals(fileName) || ("restricted-messages.mbox").equals(fileName);
+
+				// Mbox export from main menue is dealt with in statusUpdate.js
+				boolean mboxWeDealWithHere = isMboxFile && !isMboxExportFromMainMenu;
+				if (mboxWeDealWithHere)
+				{
+					archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_EXPORT, "Exported a subset of the collection", "success");
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			if (archive != null)
+			{
+				File f = new File(filePath);
+				String fileName = f.getName();
+				String suffix = fileName.substring(fileName.length()-5);
+				boolean isMboxFile = ".mbox".equals(suffix);
+				boolean isMboxExportFromMainMenu = ("all-messages.mbox").equals(fileName) || ("non-restricted-messages.mbox").equals(fileName) || ("restricted-messages.mbox").equals(fileName);
+
+				// Mbox export from main menue is dealt with in statusUpdate.js
+				boolean mboxWeDealWithHere = isMboxFile && !isMboxExportFromMainMenu;
+				if (mboxWeDealWithHere)
+				{
+					archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_EXPORT, "Exported a subset of the collection", "Error");
+				}
 			}
 		} finally {
 			// Gently close streams.

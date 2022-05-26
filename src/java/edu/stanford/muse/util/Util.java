@@ -493,6 +493,41 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		copy_stream_to_file(new FileInputStream(from_filename), to_filename);
 	}
 
+	public static ArrayList<String> getFilenameListFromDir(String fromDir){
+		ArrayList<String> filenameList = null;
+
+		if (fromDir != null ){
+			final Path fromDirFilePath = new File(fromDir).toPath();
+			if (Files.isDirectory(fromDirFilePath)){
+				filenameList = new ArrayList<String>();
+				File folder = new File(fromDir);
+				File[] listOfFiles = folder.listFiles();
+
+				for (int i = 0; i < listOfFiles.length; i++) {
+					if (listOfFiles[i].isFile()) {
+						System.out.println("File " + listOfFiles[i].getName());
+						filenameList.add(filePathTail(listOfFiles[i].getName()));
+					}
+					/* We assume there is no sub-folders
+					else if (listOfFiles[i].isDirectory()) {
+						System.out.println("Directory " + listOfFiles[i].getName());
+					} */
+				}
+			}
+		}
+		return filenameList;
+	}
+
+	public static void copyDirectoryFilesIfFilesDoesntExist(String fromDir,String toDir) throws IOException {
+		ArrayList<String> sourceFilenameList = getFilenameListFromDir(fromDir);
+
+		if ( sourceFilenameList != null) {
+			for (String filename : sourceFilenameList) {
+				copyFileIfItDoesntExist(fromDir, toDir, filename);
+			}
+		}
+	}
+
 	/** returns whether copy was successful */
 	public static boolean copyFileIfItDoesntExist(String fromDir, String toDir, String filename) throws IOException
 	{

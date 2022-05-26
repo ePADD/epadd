@@ -19,6 +19,7 @@ import com.sun.mail.imap.IMAPFolder;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
+import edu.stanford.muse.epaddpremis.EpaddEvent;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.JSONUtils;
@@ -884,7 +885,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     // stream will be closed by callee
 
                     long start = System.currentTimeMillis();
-                    long nBytes = archive.getBlobStore().add(b, new BufferedInputStream(p.getInputStream(), 256 * 1024));
+                    long nBytes = archive.getBlobStore().add(b, new BufferedInputStream(p.getInputStream(), 256 * 1024), archive, true);
                     long end = System.currentTimeMillis();
                     if (nBytes != -1) {
                         long diff = end - start;
@@ -1513,6 +1514,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 //With this size we could read mbox files upto 15 GB in size.
                 int nbatches = nMessages / BATCH;
                 nMessagesProcessedSuccess = 0;
+                int nImages = 0;
+                int nNonImages = 0;
                 long st = System.currentTimeMillis();
                 int b;
                 for (b = 0; b < nbatches + 1; b++) {
@@ -1547,6 +1550,19 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
                     log.info("Fetch stats for this fetcher thread: " + stats);
                 }
+
+                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_INGEST,  nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "file name", folder_name());
+                archive.getEpaddPremis().createFileObject(folder_name(),new File(folder_name()).length());
+                archive.getEpaddPremis().addToSignificantProperty("mbox file count", 1);
+                archive.getEpaddPremis().addToSignificantProperty("overall message_count", nMessages);
+                archive.getEpaddPremis().addToSignificantProperty("overall unique message_count", nMessages - stats.nMessagesAlreadyPresent);
+                archive.getEpaddPremis().setSignificantProperty("overall unique attachment count", archive.blobStore.uniqueBlobs.size());
+                //archive.getEpaddPremis().updateSignificantProperty("overall attachment count",);
+                archive.getEpaddPremis().setSignificantProperty("overall unique image count", archive.getNImageAttachments());
+//                archive.getEpaddPremis().setSignificantProperty("overall unique attached email count", archive.getNAttachedEmails());
+//                archive.getEpaddPremis().setSignificantProperty("overall unique word attachment count", archive.getNAttachmentsForSuffix("doc", "docx"));
+//                archive.getEpaddPremis().setSignificantProperty("overall unique ppt attachment count", archive.getNAttachmentsForSuffix("ppt", "pptx"));
+
                 log.info("Read #" + nMessages + " messages in #" + b + " batches of size: " + BATCH + " in " + (System.currentTimeMillis() - st) + "ms");
             } else {
                 // IMAP etc are pretty efficient with lazily populating message objects, so unlike mbox, its ok to use openFolderAndGetMessages() on the entire folder.

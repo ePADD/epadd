@@ -29,12 +29,14 @@ import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper;
 import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
+import edu.stanford.muse.epaddpremis.EpaddPremis;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBookManager;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.EmailRenderer;
+import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 /*
 import gov.loc.repository.bagit.creator.BagCreator;
@@ -61,6 +63,7 @@ import gov.loc.repository.bagit.writer.MetadataWriter;
 import groovy.lang.Tuple2;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -69,6 +72,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 
@@ -81,6 +85,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.mail.Header;
+import javax.xml.bind.JAXBException;
+import static edu.stanford.muse.index.Archive.Exportable_Assets.*;
 
 /**
  * Core data structure that represents an archive. Conceptually, an archive is a
@@ -108,6 +114,12 @@ public class Archive implements Serializable {
     public static final String LEXICONS_SUBDIR = "lexicons";
     private static final String FEATURES_SUBDIR = "mixtures";
     public static final String IMAGES_SUBDIR = "images";
+    public static final String EXPORTABLE_ASSETS_SUBDIR = "exportableAssets";
+    public static final String EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR = "AppraisalCanonicalAcquisitioned";
+    public static final String EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR = "AppraisalNormalizedAcquisitioned";
+    public static final String EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR = "AppraisalNormalizedAppraised";
+    public static final String EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_SUBDIR = "ProcessingNormalized";
+    public static final String EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_PROCESSED_SUBDIR = "ProcessingNormalizedProcessed";
     public static final String ADDRESSBOOK_SUFFIX = "AddressBook";
     public static final String ENTITYBOOKMANAGER_SUFFIX = "EntityBooks";
     public static final String ENTITYBOOK_SUFFIX = "EntityBook";
@@ -116,6 +128,51 @@ public class Archive implements Serializable {
     public static final String LABELMAPDIR= "LabelMapper";
     public static final String BLOBLNORMALIZATIONFILE_SUFFIX="NormalizationInfo.csv";
     public transient  static ResultCache cacheManager = new ResultCache();//making it static so that it becomes visible for all archives.
+
+    // We read the xml text file, so no serialization
+    private transient EpaddPremis epaddPremis;
+
+    public int getNImageAttachments() {
+        int nImages = 0;
+        for (Blob b : blobStore.uniqueBlobs) {
+            if (blobStore.is_image(b)) {
+                nImages++;
+            }
+        }
+        return nImages;
+    }
+
+    public int getNAttachedEmails() {
+        int nEmails = 0;
+        for (Document d : getAllDocs()) {
+            EmailDocument ed = (EmailDocument) d;
+            for (Blob blob : ed.attachments) {
+                if (blob.isRfc822()) {
+                    nEmails++;
+                }
+            }
+        }
+        return nEmails;
+    }
+
+    public int getNAttachmentsForSuffix(String... suffix) {
+        for (int i = 0; i < suffix.length; i++) {
+            suffix[i] = suffix[i].toLowerCase();
+        }
+        int nAttachments = 0;
+        for (Document d : getAllDocs()) {
+            EmailDocument ed = (EmailDocument) d;
+            for (Blob blob : ed.attachments) {
+                for (String s : suffix) {
+                    if (blob.getFilename().toLowerCase().endsWith("." + s)) {
+                        nAttachments++;
+                        break;
+                    }
+                }
+            }
+        }
+        return nAttachments;
+    }
 
     public Multimap<Document, Tuple2<String,String>> getDupMessageInfo() {
         if(dupMessageInfo==null)
@@ -137,6 +194,7 @@ public class Archive implements Serializable {
 
 
     public enum Export_Mode {EXPORT_APPRAISAL_TO_PROCESSING,EXPORT_PROCESSING_TO_DELIVERY,EXPORT_PROCESSING_TO_DISCOVERY}
+    public enum Exportable_Assets {EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED, EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED, EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED, EXPORTABLE_PROCESSING_NORMALIZED, EXPORTABLE_PROCESSING_NORMALIZED_PROCESSED}
     public static String[] LEXICONS =  new String[]{
                                                     "default.english.lex.txt","Persona.academic.administrator.sensitive.duke.english.lex.txt",
                                                     "Persona.author.princeton.english.lex.txt","Persona.composer.NYPL.english.lex.txt",
@@ -375,6 +433,7 @@ int errortype=0;
     public String baseDir;
     public File lexiconsDir;
     public File computeDir;
+    public File exportableAssetsDir;
 
     public SentimentStats stats = new SentimentStats();
 
@@ -461,7 +520,44 @@ int errortype=0;
     static public class AccessionMetadata implements java.io.Serializable {
         private final static long serialVersionUID = 1L; // compatibility
         public String id, title, date, scope, rights, notes;
+        public List<FileMetadata> fileMetadatas;
+    }
 
+    // We define new serializable object for epadd+ project file metadata requirement.
+    // It may be part of collection directly (if no accession) or part of an accession.
+    static public class FileMetadata implements java.io.Serializable {
+        private final static long serialVersionUID = 1L; // compatibility
+        public String fileID, filename, fileFormat, notes;
+        public String preservationLevelRole, preservationLevelRationale, preservationLevelDateAssigned, compositionLevel;
+        public String messageDigestAlgorithm, messageDigest, messageDigestOrginator;
+        public String formatName, formatVersion;
+        public String creatingApplicationName, creatingApplicationVersion, dateCreatedByApplication;
+        public String environmentCharacteristic, relatedEnvironmentPurpose, relatedEnvironmentNote;
+        public String softwareName, softwareVersion;
+
+        public void clone(FileMetadata target) {
+            fileID = target.fileID;
+            filename = target.filename;
+            fileFormat = target.fileFormat;
+            notes = target.notes;
+            preservationLevelRole = target.preservationLevelRole;
+            preservationLevelRationale = target.preservationLevelRationale;
+            preservationLevelDateAssigned = target.preservationLevelDateAssigned;
+            compositionLevel = target.compositionLevel;
+            messageDigestAlgorithm = target.messageDigestAlgorithm;
+            messageDigest = target.messageDigest;
+            messageDigestOrginator = target.messageDigestOrginator;
+            formatName = target.formatName;
+            formatVersion = target.formatVersion;
+            creatingApplicationName = target.creatingApplicationName;
+            creatingApplicationVersion = target.creatingApplicationVersion;
+            dateCreatedByApplication = target.dateCreatedByApplication;
+            environmentCharacteristic = target.environmentCharacteristic;
+            relatedEnvironmentPurpose = target.relatedEnvironmentPurpose;
+            relatedEnvironmentNote = target.relatedEnvironmentNote;
+            softwareName = target.softwareName;
+            softwareVersion = target.softwareVersion;
+        }
     }
 
     // these fields are used in the library setting
@@ -485,8 +581,18 @@ int errortype=0;
         //Following two fields have been set as transient to avoid their serialization and deserialization by Gson library.
         transient public Date firstDate, lastDate;
         public List<AccessionMetadata> accessionMetadatas;
+        public List<FileMetadata> fileMetadatas;
         public int renamedFiles=0;//to record number of files that were renamed /cleanedup as a result of Amatica integration
         public int normalizedFiles=0;//to record number of files that were normalized (format change) as a result of Amatica integration.
+        //Following fields have been defined for ePADD+ metadata
+        public String archivalHistory, description, access;
+        public String embargoReviewDate, embargoStartDate, embargoDuration, embargoEndDate;
+        public String sensitivityReview, processingNote;
+        public String preservationLevelRole, preservationLevelRationale;
+        public String environmentCharacteristic, relatedEnvironmentPurpose, environmentNote;
+        public String softwareName, softwareVersion;
+        public String rightsStatementIdentifierType, rightsStatementIdentifierValue;
+        public String statuteJurisdiction, statuteDocumentationIdentifierType, statuteDocumentationIdentifierValue, statuteDocumentationRole;
 
         public String getIngestionLocaleTag(){
             if(!Util.nullOrEmpty(ingestionLocaleTag))
@@ -525,6 +631,54 @@ int errortype=0;
 
         public void setIngestionLocaleTag(String toLanguageTag) {
             ingestionLocaleTag = toLanguageTag;
+        }
+
+        public void setFileMetadatas(Archive archive, String[] importedFiles) {
+
+            EpaddPremis epaddPremis = archive.getEpaddPremis();
+            final String STORE_FOLDER_SEPARATOR = "^-^";
+
+            CollectionMetadata cm = archive.collectionMetadata;
+            List<Archive.FileMetadata> fms;
+            int count = 0;
+
+            if (cm.fileMetadatas != null) {
+                count = cm.fileMetadatas.size();
+                fms = cm.fileMetadatas;
+            } else {
+                fms = new ArrayList<Archive.FileMetadata>();
+            }
+
+            Archive.FileMetadata fm = new Archive.FileMetadata();
+
+            if (importedFiles != null) {
+                for (String fs : importedFiles) {
+
+                    int idx = fs.indexOf(STORE_FOLDER_SEPARATOR);
+                    if (idx == -1) {
+                        // Bad folder name received. Content not parsed
+                        continue;
+                    }
+                    //String accountName = fs.substring (0, idx); // example: GMail
+                    String folderName = fs.substring(idx + STORE_FOLDER_SEPARATOR.length()); // example: MyFolder
+
+                    fm = new Archive.FileMetadata();
+                    fm.fileID = "Collection/File/" + StringUtils.leftPad("" + count, 4, "0");
+                    fm.filename = folderName;
+                    if (epaddPremis != null)
+                    {
+                        epaddPremis.setFileID(fm.fileID, folderName);
+                    }
+                    fm.fileFormat = "MBOX";
+                    fm.notes = "";
+
+                    count++;
+                    fms.add(fm);
+                } // end for
+            }   //end if (importedFiles!=null)
+
+            cm.fileMetadatas = fms;
+            archive.collectionMetadata = cm;
         }
     }
 
@@ -583,6 +737,26 @@ int errortype=0;
         return archive;
     }
 
+    public void printEpaddPremis() {
+        if (epaddPremis != null) {
+            epaddPremis.printToFile();
+        }
+    }
+
+
+    public EpaddPremis getEpaddPremis()
+    {
+//        if (epaddPremis == null)
+//        {
+//            epaddPremis = EpaddPremis.createFromFile(baseDir, )
+//        }#
+        if (epaddPremis == null)
+        {
+            log.warn("epaddPremis null in Archive.getEpaddPremise()");
+        }
+        return epaddPremis;
+    }
+
     public synchronized void openForRead() {
         log.info("Opening archive read only");
         indexer.setupForRead();
@@ -634,6 +808,11 @@ int errortype=0;
         indexer = new Indexer(baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER, indexOptions);
         if(blobStore!=null)
             setBlobStore(blobStore);
+        try {
+            epaddPremis = new EpaddPremis(baseDir, Archive.BAG_DATA_FOLDER, this);
+        } catch (JAXBException e) {
+            Util.print_exception("Exception creating new EpaddPremis object", e, LogManager.getLogger(EpaddPremis.class));
+        }
     }
 
     /**
@@ -689,6 +868,11 @@ int errortype=0;
      * This should be the only place that creates the cache dir.
      */
     private void prepareBaseDir(String dir) {
+        prepareLexiconsDir(dir);
+        prepareExportableAssetsDir(dir);
+    }
+
+    private void prepareLexiconsDir(String dir) {
         dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar+ LEXICONS_SUBDIR;
         lexiconsDir = new File(dir);
         lexiconsDir.mkdirs();
@@ -720,6 +904,12 @@ int errortype=0;
                 Util.print_exception(e, log);
             }
         }
+    }
+
+    private void prepareExportableAssetsDir(String dir) {
+        dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.EXPORTABLE_ASSETS_SUBDIR;
+        exportableAssetsDir = new File(dir);
+        exportableAssetsDir.mkdirs();
     }
 
     /** adds alternateEmailAddrs if specified in the request to the session. alternateEmailAddrs are simply appended to. */
@@ -1237,6 +1427,11 @@ int errortype=0;
             FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME),
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME));
 
+
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.FILE_NAME).exists())
+            FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.FILE_NAME),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.FILE_NAME));
+
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
         LabelManager oldLabelManager= getLabelManager();
@@ -1703,6 +1898,7 @@ after maskEmailDomain.
 
     public void postDeserialized(String baseDir, boolean readOnly) throws IOException {
 
+        epaddPremis = EpaddPremis.createFromFile(baseDir, Archive.BAG_DATA_FOLDER, this);
         log.info(indexer.computeStats());
 
         indexer.setBaseDir(baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER+ File.separatorChar);
@@ -2392,6 +2588,341 @@ after maskEmailDomain.
 
     }
 
+    public JSONObject generateExportableAssetsNormalizedMbox(String targetExportableAssetsFolder, String normalizedFormat, boolean includeRestricted, boolean includeDuplicated){
+        JSONObject result = new JSONObject();
+        String returnCode = "0";
+        String returnMessage = "";
+
+        // identify total ingested email stores
+        Collection<EmailDocument> docs = (Collection) getAllDocs();
+        ArrayList<String> folders = new ArrayList<String>();
+
+        for (EmailDocument ed: docs) {
+            String folder = ed.folderName;
+            if (!folders.contains(folder))
+                folders.add(folder);
+        }
+
+        String aSourceFolder;
+        SearchResult ASearchResult;
+
+        Multimap<String, String> params = LinkedHashMultimap.create();
+
+        // for each store, filter out the emailDocument set
+        for (int i=0; i<folders.size(); i++){
+            aSourceFolder = folders.get(i);
+            System.out.println("generateExportableAssetsNormalizedMbox: This email folder = "+ aSourceFolder);
+
+            // prepare SearchResult object
+            params = LinkedHashMultimap.create();
+
+            try {
+                params.put("folder", JSPHelper.convertRequestParamToUTF8(aSourceFolder));
+            } catch (UnsupportedEncodingException uee){
+                returnCode = "1";
+                returnMessage = "Unexpect error is found" + uee.toString();
+            }
+
+            ASearchResult = new SearchResult(this, params);
+
+            Pair<Collection<Document>, SearchResult> searchResult = SearchResult.selectDocsAndBlobs(ASearchResult);
+
+            if ("MBOX".equals(normalizedFormat)) {
+                // MBOX files would be reproduced with the same filenames of imported raw files
+                String pathToFile = targetExportableAssetsFolder + File.separatorChar + Util.filePathTail(aSourceFolder);
+
+                PrintWriter pw = null;
+                try {
+                    pw = new PrintWriter(pathToFile, "UTF-8");
+
+                    for (Document d : searchResult.first) {
+                        EmailDocument ed = (EmailDocument) d;
+                        // if includeRestricted is set to false, need filter out those labelled with DNT labels
+                        if (includeRestricted || !getLabelIDs(ed).contains(LabelManager.LABELID_DNT))
+                            EmailUtils.printToMbox(this, ed, pw, getBlobStore(), true);
+
+                    }
+                    // if includeDuplicated is set to true, need perform deduplication
+                    if (includeDuplicated){
+                        for (Map.Entry<Document, Tuple2<String, String>>  entry: dupMessageInfo.entries()) {
+                            Document deduplicate = entry.getKey();
+                            Tuple2<String, String> s = entry.getValue();
+
+                            if (aSourceFolder.equals(s.getFirst())){
+                                System.out.println("generateExportableAssetsNormalizedMbox: Deduplicate for this email document: "+ deduplicate.getUniqueId());
+                                EmailUtils.printToMbox(this, (EmailDocument) deduplicate, pw, getBlobStore(), true);
+                            }
+                        }
+                    }
+
+                    pw.close();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    returnCode = "1";
+                    returnMessage = "Unexpect error is found" + e.toString();
+                }
+            } else {
+                //TODO: more codings are required here to support non-MBOX normalization formats.
+                returnCode = "1";
+                returnMessage = "Unsupported normalization format: " + normalizedFormat;
+            }
+
+        }
+        result.put ("status", returnCode);
+        result.put ("errorMessage", returnMessage);
+
+        return result;
+    }
+
+    public JSONObject setExportableAssets(Archive.Exportable_Assets exportableAssets){
+        return setExportableAssets(exportableAssets, "MBOX", false, true, null);
+    }
+
+    public JSONObject setExportableAssets(Archive.Exportable_Assets exportableAssets, ArrayList<String> sourceAssetsLocations){
+        return setExportableAssets(exportableAssets, "MBOX", false, true, sourceAssetsLocations);
+    }
+
+    public JSONObject setExportableAssets(Archive.Exportable_Assets exportableAssets, String normalizedFormat, boolean includeRestricted, boolean includeDuplicated, ArrayList<String> sourceAssetsLocations) {
+        JSONObject result = new JSONObject();
+        String returnCode = "0";
+        String returnMessage = "";
+
+        String archiveBaseDir = "";
+
+        if (exportableAssets == EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED || exportableAssets == EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED || exportableAssets == EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED)
+            archiveBaseDir = Config.REPO_DIR_APPRAISAL + File.separatorChar + "user" + File.separatorChar;
+        else {
+            String bestName = addressBook.getBestNameForSelf().trim();
+            archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + "ePADD archive of " + bestName + File.separatorChar;
+//            archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + File.separatorChar + "user" + File.separatorChar;
+
+        }
+
+        //for updating the checksum we need to first read the bag from the basedir..
+        Bag archiveBag=Archive.readArchiveBag(archiveBaseDir);
+
+        String targetExportableAssetsFolder = archiveBaseDir;
+        String targetExportableAssetsFilename;
+
+        switch (exportableAssets) {
+            case EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED:
+                targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR;
+                new File(targetExportableAssetsFolder).mkdir();
+
+                try {
+                    for (String sourceAssetsFile : sourceAssetsLocations) {
+                        // We use the same filenames for canonical acquisitioned assets
+                        targetExportableAssetsFilename = Util.filePathTail(sourceAssetsFile);
+                        Util.copy_file(sourceAssetsFile, targetExportableAssetsFolder + File.separatorChar + targetExportableAssetsFilename);
+                    }
+                } catch (IOException ioe) {
+                    returnCode = "4";
+                    returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                }
+
+                break;
+
+            case EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED:
+                targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR;
+                new File(targetExportableAssetsFolder).mkdir();
+
+                try {
+                    for (String sourceAssetFolder : sourceAssetsLocations) {
+                        targetExportableAssetsFilename = Util.filePathTail(sourceAssetFolder);
+                        Util.copy_file(sourceAssetFolder, targetExportableAssetsFolder + File.separatorChar + targetExportableAssetsFilename);
+                    }
+                } catch (IOException ioe) {
+                    returnCode = "4";
+                    returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                }
+
+                break;
+
+            case EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED:
+                // Existence of normalized acquisition MBOX is mandatory for creating normalized appraised
+                final Path normalizedAcquisitionFile = new File(targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR).toPath();
+
+                if (Files.isDirectory(normalizedAcquisitionFile)){
+                    // Continue only when normalized acquisition MBOX exists
+
+                    targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR;
+                    new File(targetExportableAssetsFolder).mkdir();
+
+                    // generate normalized MBOX email store
+                    generateExportableAssetsNormalizedMbox(targetExportableAssetsFolder, normalizedFormat, includeRestricted, includeDuplicated);
+                } else {
+                    returnCode = "1";
+                    returnMessage = "Missing Appraisal Normalized assets folder / files";
+                }
+                break;
+
+            case EXPORTABLE_PROCESSING_NORMALIZED:
+
+                String sourceExportableAssetFolder;
+
+                // There are 2 scenarios to be handled. First one is for imported archive collection with default accession.
+                // Second one is for accessioned collection with explicitly inputted folder path of sourceAssetFolder.
+                if (sourceAssetsLocations == null) {
+                    // This case is for imported archive collection with default accession
+                    System.out.println("imported archive collection with default accession");
+                    sourceExportableAssetFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR;
+                    //sourceExportableAssetFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_PROCESSED_SUBDIR;
+                    targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_SUBDIR;
+                    final Path sourceFilePath = new File(sourceExportableAssetFolder).toPath();
+                    final Path targetFilePath = new File(targetExportableAssetsFolder).toPath();
+
+                    System.out.println("source: " + sourceExportableAssetFolder);
+                    System.out.println("destination: " + targetExportableAssetsFolder);
+
+                    if (Files.isDirectory(sourceFilePath)) {
+                        new File(targetExportableAssetsFolder).mkdir();
+                        try {
+                            Util.copyDirectoryFilesIfFilesDoesntExist(sourceExportableAssetFolder, targetExportableAssetsFolder);
+                        } catch (IOException ioe) {
+                            returnCode = "4";
+                            returnMessage = "EXPORTABLE_PROCESSING_NORMALIZED: Unexpected error is found during copying files";
+                        }
+                    }else {
+                        System.out.println("source destination NOT exists - 1!!! " + sourceExportableAssetFolder);
+                        returnCode = "2";
+                        returnMessage = "Missing Appraisal Normalized Appraised assets folder / file";
+                    }
+
+                } else {
+                    // This case is for accessioned collection
+                    System.out.println("import from accession");
+                    // For each of accession folders, we have to copy:
+                    // 1. accession's normalized appraised -> collection's processing normalized
+                    // 2. accession's canonical acquisitioned -> collection's canonical acquisitioned
+                    // 3. accession's normalized acquisitioned -> collection's normalized acquisitioned
+                    // 4. accession's normalized appraised -> collection's normalized appraised
+
+                    targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_SUBDIR;
+                    new File(targetExportableAssetsFolder).mkdir();
+
+                    // The following target folders are used only by importing new accession
+                    String targetExportableAssetsFolder2 = "";
+                    String targetExportableAssetsFolder3 = "";
+                    String targetExportableAssetsFolder4 = "";
+
+                    for (String sourceAssetFolder : sourceAssetsLocations) {
+                        // 1. accession's normalized appraised -> collection's processing normalized
+                        sourceExportableAssetFolder = sourceAssetFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR;
+                        System.out.println("source: " + sourceExportableAssetFolder);
+                        System.out.println("destination: " + targetExportableAssetsFolder);
+                        final Path sourceFilePath = new File(sourceExportableAssetFolder).toPath();
+
+                        if (Files.isDirectory(sourceFilePath)) {
+                            try {
+                                Util.copy_directory(sourceExportableAssetFolder, targetExportableAssetsFolder);
+                            } catch (IOException ioe) {
+                                returnCode = "4";
+                                returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                            }
+                        } else {
+                            System.out.println("source destination NOT exists - 2 !!! " + sourceExportableAssetFolder);
+                            returnCode = "2";
+                            returnMessage = "Missing Appraisal Normalized Appraised assets folder / files";
+                        }
+
+                        // 2. accession's canonical acquisitioned -> collection's canonical acquisitioned
+                        targetExportableAssetsFolder2 = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR;
+                        new File(targetExportableAssetsFolder2).mkdir();
+                        sourceExportableAssetFolder = sourceAssetFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR;
+                        System.out.println("source: " + sourceExportableAssetFolder);
+                        System.out.println("destination: " + targetExportableAssetsFolder2);
+                        final Path sourceFilePath2 = new File(sourceExportableAssetFolder).toPath();
+
+                        if (Files.isDirectory(sourceFilePath2)) {
+                            try {
+                                Util.copy_directory(sourceExportableAssetFolder, targetExportableAssetsFolder2);
+                            } catch (IOException ioe) {
+                                returnCode = "4";
+                                returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                            }
+                        } else {
+                            System.out.println("source destination NOT exists + 3!!! " + sourceExportableAssetFolder);
+                            returnCode = "5";
+                            returnMessage = "Missing Canonical Acquisitioned assets folder / files";
+                        }
+
+                        // 3. accession's normalized acquisitioned -> collection's normalized acquisitioned
+                        targetExportableAssetsFolder3 = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR;
+                        new File(targetExportableAssetsFolder3).mkdir();
+                        sourceExportableAssetFolder = sourceAssetFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR;
+                        System.out.println("source: " + sourceExportableAssetFolder);
+                        System.out.println("destination: " + targetExportableAssetsFolder3);
+                        final Path sourceFilePath3 = new File(sourceExportableAssetFolder).toPath();
+
+                        if (Files.isDirectory(sourceFilePath3)) {
+                            try {
+                                Util.copy_directory(sourceExportableAssetFolder, targetExportableAssetsFolder3);
+                            } catch (IOException ioe) {
+                                returnCode = "4";
+                                returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                            }
+                        } else {
+                            System.out.println("source destination NOT exists + 4!!! " + sourceExportableAssetFolder);
+                            returnCode = "1";
+                            returnMessage = "Missing Appraisal Normalized assets folder / files";
+                        }
+
+                        // 4. accession's normalized appraised -> collection's normalized appraised
+                        targetExportableAssetsFolder4 = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR;
+                        new File(targetExportableAssetsFolder4).mkdir();
+                        sourceExportableAssetFolder = sourceAssetFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR;
+                        System.out.println("source: " + sourceExportableAssetFolder);
+                        System.out.println("destination: " + targetExportableAssetsFolder4);
+                        final Path sourceFilePath4 = new File(sourceExportableAssetFolder).toPath();
+
+                        if (Files.isDirectory(sourceFilePath4)) {
+                            try {
+                                Util.copy_directory(sourceExportableAssetFolder, targetExportableAssetsFolder4);
+                            } catch (IOException ioe) {
+                                returnCode = "4";
+                                returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                            }
+                        } else {
+                            System.out.println("source destination NOT exists + 5!!! " + sourceExportableAssetFolder);
+                            returnCode = "1";
+                            returnMessage = "Missing Appraisal Normalized assets folder / files";
+                        }
+                    }
+
+                    updateFileInBag(archiveBag, targetExportableAssetsFolder2, archiveBaseDir);
+                    updateFileInBag(archiveBag, targetExportableAssetsFolder3, archiveBaseDir);
+                    updateFileInBag(archiveBag, targetExportableAssetsFolder4, archiveBaseDir);
+                }
+                break;
+
+            case EXPORTABLE_PROCESSING_NORMALIZED_PROCESSED:
+                String normalizedProcessingAssetFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_SUBDIR;
+                targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_PROCESSED_SUBDIR;
+
+                final Path normalizedProcessingFilePath = new File(normalizedProcessingAssetFolder).toPath();
+
+                new File(targetExportableAssetsFolder).mkdir();
+
+                if (Files.isDirectory(normalizedProcessingFilePath)) {
+                    // generate normalized MBOX email store
+                    generateExportableAssetsNormalizedMbox(targetExportableAssetsFolder, normalizedFormat, includeRestricted, includeDuplicated);
+                } else {
+                    System.out.println("Processing Normalized assets folder NOT exists!!! " + normalizedProcessingAssetFolder);
+                    returnCode = "3";
+                    returnMessage = "Missing Processing Normalized assets folder / files";
+                }
+                break;
+        }
+
+        // Finally, update BagIt checksum
+        updateFileInBag(targetExportableAssetsFolder, baseDir);
+
+        result.put ("status", returnCode);
+        result.put ("errorMessage", returnMessage);
+
+        return result;
+    }
 
     /*public JSONArray getEntitiesCountAsJSON(Short entityType,int maxrecords){
 

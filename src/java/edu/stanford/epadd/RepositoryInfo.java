@@ -13,8 +13,8 @@ public class RepositoryInfo {
     public int numberOfMessages;
 
     public RepositoryInfo(String repositoryName, String institutionName){
-        this.institutionName=new String(institutionName);
-        this.repositoryName=new String(repositoryName);
+        this.institutionName= institutionName;
+        this.repositoryName= repositoryName;
         this.numberOfCollections=0;
         this.numberOfMessages=0;
 

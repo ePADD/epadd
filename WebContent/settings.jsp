@@ -149,42 +149,6 @@
                         window.location = './browse-top?archiveID=' +archiveID;
                     })                }
                 fetch_page_with_progress("ajax/async/setOwnersAddress.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod);
-
-               /* $.ajax({type: 'POST',
-                    dataType: 'json',
-                    url: 'ajax/setOwnersAddress.jsp',
-                    data: data,
-                    success: function (response) {
-                        $spinner.removeClass('fa-spin');
-                        // $('#spinner-div').fadeOut();
-                        // $('#recomputebutton').fadeIn();
-
-                        if (response) {
-                            if (response.status === 0) {
-                                epadd.info("Successfully set the owner's addresses",function(){
-                                    window.location = './browse-top?archiveID=' +archiveID;
-                                })
-                            } else{
-
-                                epadd.error('Error setting the owner\'s addresses ' + response.status + ', Message: ' + response.error, function(){
-                                    //window.location = './browse-top?archiveID=' +archiveID;
-                                });
-                            }
-                        }
-                        else{
-                            epadd.error('Error setting the owner\'s addresses. Improper response received!', function(){
-                                //window.location = './browse-top?archiveID=' +archiveID;
-                            });
-                        }
-                    },
-                    error: function(jq, textStatus, errorThrown) {
-                        // $('#spinner-div').fadeOut();
-                        // $('#recomputebutton').fadeIn();
-                        epadd.error('Sorry, there was an error while setting the owner\'s address. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.', function(){
-                            window.location = './browse-top?archiveID=' +archiveID;
-                        });
-                    }
-                });*/
             };
 
             var createThumbnailsAddressHandler = function(){

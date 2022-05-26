@@ -383,6 +383,14 @@ public class EmailUtils {
     }
 
     /*
+     * mbox files are generated in mbox format for email preservation need in PREMIS. Each of them would reflect the most up-to-dated email contents and attachments according to Lucene Documents.
+     *
+     */
+    public static void printNormalizedMbox(Archive archive, EmailDocument ed, PrintWriter mbox, BlobStore blobStore, boolean stripQuoted) {
+
+    }
+
+    /*
      * header is printed in mbox format, then each of the given contents sequentially
      * if blobStore is null, attachments are not printed. could make this better by allowing text/html attachments.
      */

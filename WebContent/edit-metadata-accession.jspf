@@ -1,0 +1,116 @@
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.util.Util" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.io.File" %>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="edu.stanford.muse.index.Archive" %>
+<%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+
+<%
+    String collectionFolder = request.getParameter("collection");
+    String archiveID = request.getParameter("archiveID");
+
+    // This restriction is not available now. User is allowed to prepare metadatas in Appriasal module
+    /*
+    if (!ModeConfig.isProcessingMode()) {
+        out.println ("Updating collection metadata is allowed only in ePADD's Processing mode.");
+        return;
+    }
+    */
+%>
+
+<div id="accession-tabs" style="display: none; vertical-align: top; display: inline-block; margin-left: 0px; width: 640px;">
+    <ul>
+        <li><a href="#fragment-4"><span>Accession</span></a></li>
+        <!--
+        <li><a href="#fragment-5"><span>EAD</span></a></li>
+        <li><a href="#fragment-6"><span>PREMIS</span></a></li>
+        -->
+    </ul>
+    <form id="accession-metadata-form">
+        <input type="hidden" name="collection" value="<%=Util.escapeHTML(collectionFolder)%>"/>
+    <div id="fragment-4" visibility="none">
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.accession-id")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.accession-id.title")%>" value="" class="form-control" type="text" name="accessionID" id="accessionID" readonly/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.accession-title")%></div>
+            <br/>
+            <div class="input-field">
+                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.accession-title.title")%>" value="" class="form-control" type="text" name="accessionTitle" id="accessionTitle"/>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.scope-content")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.scope-content.title")%>" style="resize:vertical;height:200px;" class="form-control" name="accessionScope" id="accessionScope"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.rights-condition")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.rights-condition.title")%>" style="resize:vertical;height:200px;" class="form-control" name="accessionRights" id="accessionRights"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div class="div-input-field">
+            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.notes")%></div>
+            <br/>
+            <div class="input-field">
+                <textarea title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-accession-metadata.notes.title")%>" style="resize:vertical;height:200px;" class="form-control" name="accessionNotes" id="accessionNotes"></textarea>
+            </div>
+        </div>
+        <br/>
+        <div style="margin-left:40px">
+            <button class="btn btn-cta" id="accession-gobutton">SAVE <i class="icon-arrowbutton"></i></button><br/><br/>
+        </div>
+    </div>
+    </form>
+
+    <!--
+    <div id="fragment-5" visibility="none">
+        tab2
+    </div>
+
+    <div id="fragment-6" visibility="none">
+        tab3
+    </div>
+    -->
+</div> <!-- end div of Accession -->
+
+<script>
+
+    $('#accession-gobutton').click (function() {
+        console.log("json:" + $('#accession-metadata-form').serialize());
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/updateAccessionMetadata.jsp',
+            data: $('#accession-metadata-form').serialize(),
+            success: function (response) {
+                if (response && response.status === 0){
+                    updateAccessionNodeWithMetadata();
+                    epadd.success('Accession metadata is saved.', function () {});
+                } else {
+                    epadd.error ("Sorry, something went wrong while updating accession metadata: " + (response && response.errorMessage ? response.errorMessage : ""));
+                }
+            },
+            error: function (jqxhr, status, ex) {
+                epadd.error("Sorry, there was an error while updating accession metadata: " + status + ". Exception: " + ex);
+            }
+        });
+        return false;
+
+    });
+
+</script>

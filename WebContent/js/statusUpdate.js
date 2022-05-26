@@ -12,7 +12,7 @@ var CANCEL_SELECTOR = '#cancel'; // ideally should be passed in as a param, curr
 // onready (optional) = function called over event: onready statechange
 // if redirect_page is specified, on success, it redirects to that page, instead of whatever the page's response is
 // need to clean up this onready stuff
-function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onready, redirect_page)
+function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onready, redirect_page, premisData)
 {
 	// little helper class to hold details
 	function Operation() {
@@ -22,8 +22,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 		//post_params.opID = this.id;
 		this.done = false; // done will be set when op is complete or cancelled
 		this.cancelled = false;
-		this.page_xhr = new_xhr();
-		this.status_xhr = new_xhr();
 		this.status_div = null;
 		this.status_text = null;
 		this.status_page = null;
@@ -32,7 +30,23 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	}
 
 	function onSuccess(response,onready,redirect_page){
+	    if (premisData) {
+            if (response.cancelled)
+            {
+                premisData.outcome = "Cancelled by user";
+            }
+            else
+            {
+                premisData.outcome = "success";
 
+            }
+                $.ajax({
+                    "type": "POST",
+                    "url": "ajax/premis.jsp",
+                    "data": {archiveID: archiveID, premisdata: JSON.stringify(premisData)},
+                });
+        }
+	    console.log("ON SUCCESS");
 		if(response.status===1){
             $(currentOp.status_div).hide();
             $('.muse-overlay').hide();
@@ -45,44 +59,11 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
             currentOp.done = true;
             document.title = currentOp.orig_doc_title;
 
-            // we'll aggressively update currentOp.status_div_text.innerHTML as late as possible, but before each return
-            // so we don't see residue for the next op
-
-           /* if (currentOp.cancelled) {
-                // if op was cancelled, return quietly without changing the page
-                $('.muse-overlay').hide();
-                return resolve(page_xhr.response);
-            }*/
-            // make sure we set the status_div to hide
-            // otherwise the window.onbeforeunload
-            // will prompt the user for confirmation
             $(currentOp.status_div).hide();
             $('.muse-overlay').hide();
 
             currentOp.status_div_text.innerHTML = "<br/>&nbsp;<br/>"; // wipe out the status so we dont see residue for the next op
 
-            // epadd.log ('op completed, status = ' + this.status);
-
-            // response is in json => key fields are status, error, cancelled, resultPage
-            /*var responseText = this.responseText;
-            responseText = muse.trim(responseText);
-
-            var j;
-            try {
-                eval("j = " + responseText + ";");
-            }
-            catch (e) {
-                epadd.log('error with status json response from page ' + page + ': ' + responseText);
-            }
-
-            epadd.log("Response text: " + responseText);
-            epadd.log("j:" + j);
-            if (!j) {
-                epadd.error("Sorry, there was an error: (no JSON was returned). Please retry and if the error persists, report the problem to us. HTTP status: " + this.status);
-                return;
-            }*/
-
-            // check if any errors
             if (response.error) {
                 epadd.log("Error in getting status:" + responseText);
                 window.location = "error";
@@ -113,9 +94,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
             if (resultPage != null) {
                 window.location = resultPage; // redirect to result page
             }
-            //return resolve(page_xhr.response);
-
-        };
+        }
 
     function kick_off_page_fetch(page, post_params, onready, redirect_page)
     {
@@ -144,155 +123,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 
     }
 
-        /*if (post_params == undefined)
-            page_xhr.send(null);
-        else {
-            page_xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            // browsers firebug complains that these params are unsafe...
-            //page_xhr.setRequestHeader("Content-length", post_params.length);
-            //page_xhr.setRequestHeader("Connection", "close");
-            // if post_params is an object, turn it into a URL string. we are introducing a dependency on jquery, that's ok.
-            if (typeof post_params == 'object')
-                post_params = $.param(post_params);
-            page_xhr.send(post_params);
-        }*/
-	//}
-	//function to fetch page, polling spage to receive status.
-	//sdiv is shown when status messages are active
-	//status messages are printed to the sdiv_text
-	//when the page is ready, the server should send a <resultPage>link</resultPage> result
-	//and the script will redirect to that page.
-
-	// need to clean up this onready stuff
-	// URL page is invoked with post_params
-	// if it returns successfully, has no error and is not cancelled, we'll set window.location to redirect_page if defined, else to <response>.resultPage
-	//IMP: Made changes in this function so that the result of this ajax call can be chained with other call. Especially in header.jspf when close is clicked then the save is performed followed by unloading the archive and then setting the current page as collection-detail page.
-	/*function kick_off_page_fetch(page, post_params, onready, redirect_page)
-	{
-	var returnresult = function(resolve, reject){
-			var page_xhr = currentOp.page_xhr;
-		var status_div = currentOp.status_div;
-		if (post_params == undefined)
-			page_xhr.open('GET', page, true);
-		else {
-			page_xhr.open('POST', page, true);
-		}
-        poll_status();
-
-		//	page_xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-		page_xhr.onreadystatechange = function () {
-			if (this.readyState != 4)
-				return false;
-			if(this.status == 0)//to avoid the issue when the op was considered as completed but nothing returned in json because the system went to sleep and the network got disconnected.
-				return false;
-			currentOp.done = true;
-			document.title = currentOp.orig_doc_title;
-
-			// we'll aggressively update currentOp.status_div_text.innerHTML as late as possible, but before each return
-			// so we don't see residue for the next op
-
-			if (currentOp.cancelled) {
-				// if op was cancelled, return quietly without changing the page
-				$('.muse-overlay').hide();
-				return resolve(page_xhr.response);
-			}
-			// make sure we set the status_div to hide
-			// otherwise the window.onbeforeunload
-			// will prompt the user for confirmation
-			$(currentOp.status_div).hide();
-			$('.muse-overlay').hide();
-
-			currentOp.status_div_text.innerHTML = "<br/>&nbsp;<br/>"; // wipe out the status so we dont see residue for the next op
-
-			// epadd.log ('op completed, status = ' + this.status);
-
-			// check for errors first
-			if (this.status != 200 && this.status != 0) {
-				// sgh: not sure why status = 0 is checked above.
-				// i think this is historical because earlier 0 might be returned for success. but i think it is not necessary now
-				window.location = "error";
-				epadd.log("Error: status " + this.status + " received from page: " + page);
-				return reject(page_xhr.response);
-			}
-
-			// response is in json => key fields are status, error, cancelled, resultPage
-			var responseText = this.responseText;
-			responseText = muse.trim(responseText);
-
-			var j;
-			try {
-				eval("j = " + responseText + ";");
-			}
-			catch (e) {
-				epadd.log('error with status json response from page ' + page + ': ' + responseText);
-			}
-
-			epadd.log("Response text: " + responseText);
-			epadd.log("j:" + j);
-			if (!j) {
-				epadd.error("Sorry, there was an error: (no JSON was returned). Please retry and if the error persists, report the problem to us. HTTP status: " + this.status);
-				return;
-			}
-
-			// check if any errors
-			if (j.error) {
-				epadd.log("Error in getting status:" + responseText);
-				window.location = "error";
-				return;
-			}
-
-			// in case op is cancelled, we should get back cancelled = true
-			if (j.cancelled)
-				return;
-
-			// ok, so the op was successful, have we been told what ready function to call or page to to redirect on the client side by the caller?
-			if (onready) {
-				onready(j);
-				return;
-			}
-
-			if (redirect_page) {
-				window.location = redirect_page;
-				return;
-			}
-
-			// we haven't been told where to redirect by the client, so go by what the page says in its json
-			resultPage = j.resultPage;
-
-			if (resultPage != null) {
-				window.location = resultPage; // redirect to result page
-			}
-			return resolve(page_xhr.response);
-
-		};
-
-		if (post_params == undefined)
-			page_xhr.send(null);
-		else {
-			page_xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			// browsers firebug complains that these params are unsafe...
-			//page_xhr.setRequestHeader("Content-length", post_params.length);
-			//page_xhr.setRequestHeader("Connection", "close");
-			// if post_params is an object, turn it into a URL string. we are introducing a dependency on jquery, that's ok.
-			if (typeof post_params == 'object')
-				post_params = $.param(post_params);
-			page_xhr.send(post_params);
-		}
-	}
-		return new Promise(returnresult);
-
-	}*/
-	
-	function new_xhr()
-	{
-		if (window.XMLHttpRequest) {
-			return new XMLHttpRequest();
-		}
-		// IE
-		else if (window.ActiveXObject) {
-			return new ActiveXObject("Microsoft.XMLHTTP");
-		}
-	}
 	function 	poll_status(onready, redirect_page)
 	{
 		//also send the opID with each status request so that the backend returns the appropriate status.
@@ -445,12 +275,8 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
     */
 	function cancelCurrentOp()
 	{
+        $(CANCEL_SELECTOR).unbind();
 		epadd.log ('cancelling current op ' + currentOp);
-		// cancel requested. hide status box.
-		//currentOp.cancelled = true;
-
-		//currentOp.page_xhr.abort();
-//	currentOp.status_xhr.abort(); // do we need this ?
 		if (currentOp.teaserTimeoutId)
 			clearTimeout (currentOp.teaserTimeoutId);
 
@@ -471,17 +297,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
             error: function(xhr,status,error) {
                 epadd.error ("Sorry, there was an error while cancelling this operation. Report it to epadd_project@stanford.edu.");
             }});
-		//$.get('ajax/cancel.jsp');
-		// restore ui
-		/*$(currentOp.status_div).hide();
-		$('.muse_overlay').hide();
-		$('.teaser').hide();
-		currentOp.status_div_text.innerHTML = "<br/>&nbsp;<br/>";
-		document.title = currentOp.orig_doc_title;
-*/
-//	$('#div_main').removeClass('faded');
-//	$('body').css("background-color", "#e0e0e0"); // restore body margins when status window is closed
-
 	}
 
 	// check if an op is already running (in this tab)... in no case should we fire 2 ops from the same page
@@ -501,7 +316,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	// display status box in the middle of the window
 	$(currentOp.status_div).show();
 
-//	$('body').css("background-color", "#c0c0c0");  // fade body margins when status window is seen, a la hulu
 	// insert overlay only if it doesn't already exist
 	$('.muse-overlay').height($(document).height());
 	$('.muse-overlay').width($(document).width());

@@ -164,6 +164,10 @@
                     <%}%>
                 </p>
                 <br/>
+                <% } else if (ModeConfig.isAppraisalMode()) { %>
+                    <hr/>
+                        Metadata:
+                        <a href="edit-metadata?collection=user" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
                 <% } %>
 
             </div>

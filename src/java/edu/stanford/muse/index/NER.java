@@ -36,6 +36,7 @@ import org.jsoup.Jsoup;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
@@ -75,7 +76,7 @@ import java.util.zip.GZIPInputStream;
 	public static void readLocationsFreebase() throws IOException
 	{
 		InputStream is = new GZIPInputStream(NER.class.getClassLoader().getResourceAsStream("locations.gz"));
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(is, "UTF-8"));
+		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 		while (true)
 		{
 			String line = lnr.readLine();
@@ -99,7 +100,7 @@ import java.util.zip.GZIPInputStream;
 		InputStream is = null;
 		try {
 			is = new GZIPInputStream(NER.class.getClassLoader().getResourceAsStream("WG.locations.txt.gz"));
-			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(is, "UTF-8"));
+			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 			while (true)
 			{
 				String line = lnr.readLine();
@@ -138,7 +139,7 @@ import java.util.zip.GZIPInputStream;
 		String suppress_file = "suppress.locations.txt.gz";
 		try {
 			InputStream is = new GZIPInputStream(NER.class.getClassLoader().getResourceAsStream(suppress_file));
-			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(is, "UTF-8"));
+			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 			while (true)
 			{
 				String line = lnr.readLine();
@@ -385,7 +386,7 @@ import java.util.zip.GZIPInputStream;
 		conn.connect();
 		Indexer.log.info("url for extracting names:" + conn.getURL());
 		byte[] b = Util.getBytesFromStream(conn.getInputStream());
-		String text = new String(b, "UTF-8");
+		String text = new String(b, StandardCharsets.UTF_8);
 		text = Util.unescapeHTML(text);
 		org.jsoup.nodes.Document doc = Jsoup.parse(text);
 		text = doc.body().text();
@@ -402,7 +403,7 @@ import java.util.zip.GZIPInputStream;
 		conn.connect();
 
 		byte[] b = Util.getBytesFromStream(conn.getInputStream());
-		String text = new String(b, "UTF-8");
+		String text = new String(b, StandardCharsets.UTF_8);
 		text = Util.unescapeHTML(text);
 		org.jsoup.nodes.Document doc = Jsoup.parse(text);
 		text = doc.body().text();

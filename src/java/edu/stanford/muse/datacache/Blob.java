@@ -32,6 +32,10 @@ public long size = -1;
 protected String filename;
 public String contentType;
 
+public String getFilename()
+{
+	return filename;
+}
 
 public enum ContentTransferEncoding
 {

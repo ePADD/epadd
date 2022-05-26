@@ -63,14 +63,24 @@ private void saveFile(HttpServletRequest request, String param, String filePath)
 %>
 <%
 	JSONObject result = new JSONObject();
+
+    // This restriction is not available now. User is allowed to prepare metadatas in Appriasal module
+	/*
 	if (!ModeConfig.isProcessingMode()) {
 		result.put ("status", 1);
 		result.put ("errorMessage", "Updating collection metadata is allowed only in ePADD's Processing mode.");
 		out.println (result.toString(4));
 		return;
 	}
+    */
 
-	String archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collection");
+	//String archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collection");
+    String archiveBaseDir;
+    if (ModeConfig.isAppraisalMode()) {
+        archiveBaseDir =  Config.REPO_DIR_APPRAISAL + File.separator + "user";
+    } else {
+        archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + request.getParameter ("collection");
+    }
 
 try {
 
@@ -99,6 +109,30 @@ try {
 	cm.catalogRecordLink = request.getParameter("catalogRecordLink");
 	cm.about = request.getParameter("about");
 
+    cm.archivalHistory = request.getParameter("archivalHistory");
+    cm.description = request.getParameter("description");
+    cm.access = request.getParameter("access");
+    cm.embargoReviewDate = request.getParameter("embargoReviewDate");
+    cm.embargoStartDate = request.getParameter("embargoStartDate");
+    cm.embargoDuration = request.getParameter("embargoDuration");
+    cm.embargoEndDate = request.getParameter("embargoEndDate");
+    cm.sensitivityReview = request.getParameter("sensitivityReview");
+    cm.processingNote = request.getParameter("processingNote");
+
+    cm.preservationLevelRole = request.getParameter("preservationLevelRole");
+    cm.preservationLevelRationale = request.getParameter("preservationLevelRationale");
+    cm.environmentCharacteristic = request.getParameter("environmentCharacteristic");
+    cm.relatedEnvironmentPurpose = request.getParameter("relatedEnvironmentPurpose");
+    cm.environmentNote = request.getParameter("environmentNote");
+    cm.softwareName = request.getParameter("softwareName");
+    cm.softwareVersion = request.getParameter("softwareVersion");
+    cm.rightsStatementIdentifierType = request.getParameter("rightsStatementIdentifierType");
+    cm.rightsStatementIdentifierValue = request.getParameter("rightsStatementIdentifierValue");
+    cm.statuteJurisdiction = request.getParameter("statuteJurisdiction");
+    cm.statuteDocumentationIdentifierType = request.getParameter("statuteDocumentationIdentifierType");
+    cm.statuteDocumentationIdentifierValue = request.getParameter("statuteDocumentationIdentifierValue");
+    cm.statuteDocumentationRole = request.getParameter("statuteDocumentationRole");
+
 /*
 	saveFile (request, "collectionImage", archive.baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + "landingPhoto.png");
 	saveFile (request, "bannerImage", archive.baseDir + File.separator + Archive.IMAGES_SUBDIR + File.separator + "bannerImage.png");
@@ -115,7 +149,7 @@ try {
 	    warchive.get().collectionMetadata= cm;
 	ArchiveReaderWriter.saveCollectionMetadata(warchive.get(),Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 	}else{
-	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir);
+	ArchiveReaderWriter.saveCollectionMetadata(cm, archiveBaseDir, ArchiveReaderWriter.readArchiveIfPresent(archiveBaseDir));
     //for updating the checksum we need to first read the bag from the basedir..
     Bag archiveBag=Archive.readArchiveBag(archiveBaseDir);
     if(archiveBag==null)

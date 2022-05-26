@@ -8,7 +8,7 @@ public class InstitutionInfo {
     public int numberOfCollections;
 
     public InstitutionInfo(String institutionName){
-        this.institutionName=new String(institutionName);
+        this.institutionName= institutionName;
         this.numberOfCollections=0;
 
 

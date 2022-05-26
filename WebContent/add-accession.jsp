@@ -117,6 +117,11 @@
     </script>
 
     <script type="text/javascript">
+
+        function importAccession(e){
+            epadd.import_accession(e, muse.collect_input_fields());
+        }
+
         $('#gobutton').click(function(e) {
             // this currently just copies the archive into the accession.
             // it has to be extended to do a merge if the collection already exists
@@ -124,9 +129,18 @@
             var accpath = $('#accessionFolder').val();
 
                 if (accpath && accpath.length > 0) {
-                    if (accid && accid.length > 0)
-                        epadd.import_accession(e, muse.collect_input_fields());
-                    else
+                    if (accid && accid.length > 0) {
+                        // To support exportable asset, result of success ajax/setExportableAssets should be a call to importAccession which,
+                        // in turn, call to epadd.import_accession
+                        //epadd.import_accession(e, muse.collect_input_fields());
+
+                        var post_params = '&exportableAssets=exportAccessionProcessing&exportableAssetsFiles=' + accpath;
+                        var page = "ajax/async/setExportableAssets.jsp";
+                        console.log("add-accession.jsp: goButton.click: post_params=" + post_params);
+                        try {
+                            fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params, importAccession(e));
+                        } catch(err) { }
+                    } else
                         epadd.error("Please provide an accession ID for this accession");
                 }
                 else

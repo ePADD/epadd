@@ -1,0 +1,224 @@
+<%@page import="edu.stanford.muse.Config"%>
+<%@page import="edu.stanford.muse.index.Archive"%>
+<%@page import="edu.stanford.muse.util.Util"%>
+<%@page import="edu.stanford.muse.webapp.SimpleSessions"%>
+<%@page import="java.io.File"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
+<%@page import="org.json.JSONArray" %>
+<%@page import="org.json.JSONObject" %>
+<%@ page import="java.util.List" %>
+
+<%!
+    private JSONArray mergeJSONArrays(JSONArray source, JSONArray destination){
+        for (int i = 0; i < source.length(); i++) {
+            destination.put(source.getJSONObject(i));
+        }
+        return destination;
+    }
+
+    private JSONArray getFileNodesJson(List<Archive.FileMetadata> fileMetadatas){
+        JSONArray fileNodes = new JSONArray();
+        //System.out.println("fileMetadatas.size() = "+ fileMetadatas.size());
+        for (Archive.FileMetadata fm: fileMetadatas) {
+            JSONObject aFile = new JSONObject();
+            aFile.put("text", fm.fileID);
+            aFile.put("type", "MBOX");
+            aFile.put("icon", "glyphicon glyphicon-file");
+
+            // File Metadata
+            aFile.put("fileID", fm.fileID);
+            aFile.put("filename", fm.filename);
+            aFile.put("fileFormat", fm.fileFormat);
+            aFile.put("notes", fm.notes);
+
+            aFile.put("preservationLevelRole", fm.preservationLevelRole);
+            aFile.put("preservationLevelRationale", fm.preservationLevelRationale);
+            aFile.put("preservationLevelDateAssigned", fm.preservationLevelDateAssigned);
+            aFile.put("compositionLevel", fm.compositionLevel);
+            aFile.put("messageDigestAlgorithm", fm.messageDigestAlgorithm);
+            aFile.put("messageDigest", fm.messageDigest);
+            aFile.put("messageDigestOrginator", fm.messageDigestOrginator);
+            aFile.put("formatName", fm.formatName);
+            aFile.put("formatVersion ", fm.formatVersion);
+            aFile.put("creatingApplicationName", fm.creatingApplicationName);
+            aFile.put("creatingApplicationVersion", fm.creatingApplicationVersion);
+            aFile.put("dateCreatedByApplication", fm.dateCreatedByApplication);
+            aFile.put("environmentCharacteristic", fm.environmentCharacteristic);
+            aFile.put("relatedEnvironmentPurpose", fm.relatedEnvironmentPurpose);
+            aFile.put("environmentNote", fm.relatedEnvironmentNote);
+            aFile.put("softwareName", fm.softwareName);
+            aFile.put("softwareVersion", fm.softwareVersion);
+
+            //System.out.println("add file node");
+            fileNodes.put(aFile);
+        }
+        //System.out.println("fileNodes = " + fileNodes.toString(4));
+        return fileNodes;
+    }
+%>
+
+<%
+    String collectionFolder = request.getParameter("collection");
+    String accessionId = request.getParameter("accession");
+
+    String defaultTreeSelected; // 'collection' or 'accession'
+
+    if (collectionFolder != null && accessionId == null)
+        // Because there is no accession ID, default tree selected set to collection level
+        defaultTreeSelected = "collection";
+    else
+        // Because there is accession ID, we will set default selected node to that accession later
+        defaultTreeSelected = "accession";
+
+    // Variables for creating tree JSON object
+    JSONArray metadataTree = new JSONArray();
+    JSONObject collection = new JSONObject();
+    JSONArray accessionNodes = new JSONArray();
+    JSONArray collectionFileNodes = new JSONArray();
+
+    // extract collection information
+    String modeBaseDir;
+
+    if (ModeConfig.isProcessingMode())
+        modeBaseDir = Config.REPO_DIR_PROCESSING;
+    else if (ModeConfig.isDeliveryMode())
+        modeBaseDir = Config.REPO_DIR_DELIVERY;
+    else if (ModeConfig.isDiscoveryMode())
+        modeBaseDir = Config.REPO_DIR_DISCOVERY;
+    else {
+        modeBaseDir = Config.REPO_DIR_APPRAISAL; // not really needed in appraisal, but just leave it in, since we might some day support multiple archives in appraisal
+        collectionFolder = "user";
+    }
+
+    String archiveDir = modeBaseDir + File.separator + collectionFolder;
+
+    File f = new File(archiveDir);
+    if (!f.isDirectory()) {
+        out.println ("No collection at that location.");
+        return;
+    }
+
+    String archiveFile = f.getAbsolutePath() + File.separator + Archive.BAG_DATA_FOLDER + File.separator+ Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix();
+    if (!new File(archiveFile).exists()) {
+        out.println ("No collection at that location.");
+        return;
+    }
+
+    Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
+
+    if (cm == null) {
+        out.println ("No metadata for that collection. The archive folder may be corrupted. Please contact your ePADD administrator.");
+        return;
+    }
+
+    // extract accessions
+    if (!Util.nullOrEmpty(cm.accessionMetadatas)) {
+
+        for (Archive.AccessionMetadata am: cm.accessionMetadatas) {
+            //System.out.println("am.id = "+ am.id);
+            //System.out.println("Accession Files # = "+ am.fileMetadatas.size());
+            JSONObject aAccession = new JSONObject();
+            JSONArray accessionFileNodes = getFileNodesJson(am.fileMetadatas);
+            //System.out.println("This accession file nodes length = " + accessionFileNodes.length());
+            // Accession node
+            aAccession.put("text", am.id);
+            aAccession.put("type", "Accession");
+            aAccession.put("icon", "glyphicon glyphicon-folder-close");
+
+            // Accession Metadata
+            aAccession.put("accessionID", am.id);
+            aAccession.put("accessionTitle", am.title);
+            aAccession.put("accessionScope", am.scope);
+            aAccession.put("accessionRights", am.rights);
+            aAccession.put("accessionNotes", am.notes);
+
+            if (defaultTreeSelected.equals("accession") && am.id.equals(accessionId)) {
+
+                JSONObject state = new JSONObject();
+                state.put("selected", true);
+                state.put("expanded", true);
+                aAccession.put("state", state);
+            }
+            aAccession.put("nodes", accessionFileNodes);
+
+            accessionNodes.put(aAccession);
+        }
+
+    }
+
+    // If the archive has any legacy MBOX files (i.e. exist before any accession has been created), include them under this collection as well.
+    if (!Util.nullOrEmpty(cm.fileMetadatas)) {
+        collectionFileNodes = getFileNodesJson(cm.fileMetadatas);
+        accessionNodes = mergeJSONArrays(collectionFileNodes, accessionNodes);
+    }
+
+    // Collection node
+    // We use Collection ID for collection node text. If no collection ID is defined, display a default text.
+    collection.put("text", Util.nullOrEmpty(cm.collectionID)?"Collection ID: Unassigned":cm.collectionID);
+    collection.put("type", "Collection");
+    collection.put("icon", "glyphicon glyphicon-folder-close");
+
+    // Collection Metadata
+    collection.put("institution", cm.institution);
+    collection.put("repository", cm.repository);
+    collection.put("collectionTitle", cm.collectionTitle);
+    collection.put("shortTitle", cm.shortTitle);
+    collection.put("collectionID", cm.collectionID);
+    collection.put("findingAidLink", cm.findingAidLink);
+    collection.put("catalogRecordLink", cm.catalogRecordLink);
+    collection.put("contactEmail", cm.contactEmail);
+    collection.put("shortDescription", cm.shortDescription);
+    collection.put("about", cm.about);
+    collection.put("rights", cm.rights);
+    collection.put("notes", cm.notes);
+    collection.put("scopeAndContent", cm.scopeAndContent);
+
+    collection.put("archivalHistory", cm.archivalHistory);
+    collection.put("description", cm.description);
+    collection.put("access", cm.access);
+    collection.put("embargoReviewDate", cm.embargoReviewDate);
+    collection.put("embargoStartDate", cm.embargoStartDate);
+    collection.put("embargoDuration", cm.embargoDuration);
+    collection.put("embargoEndDate", cm.embargoEndDate);
+    collection.put("sensitivityReview", cm.sensitivityReview);
+    collection.put("processingNote", cm.processingNote);
+
+    collection.put("preservationLevelRole", cm.preservationLevelRole);
+    collection.put("preservationLevelRationale", cm.preservationLevelRationale);
+    collection.put("environmentCharacteristic", cm.environmentCharacteristic);
+    collection.put("relatedEnvironmentPurpose", cm.relatedEnvironmentPurpose);
+    collection.put("environmentNote", cm.environmentNote);
+    collection.put("softwareName", cm.softwareName);
+    collection.put("softwareVersion", cm.softwareVersion);
+    collection.put("rightsStatementIdentifierType", cm.rightsStatementIdentifierType);
+    collection.put("rightsStatementIdentifierValue", cm.rightsStatementIdentifierValue);
+    collection.put("statuteJurisdiction", cm.statuteJurisdiction);
+    collection.put("statuteDocumentationIdentifierType", cm.statuteDocumentationIdentifierType);
+    collection.put("statuteDocumentationIdentifierValue", cm.statuteDocumentationIdentifierValue);
+    collection.put("statuteDocumentationRole", cm.statuteDocumentationRole);
+
+    if (defaultTreeSelected.equals("collection")) {
+        JSONObject state = new JSONObject();
+        state.put("selected", true);
+        state.put("expanded", true);
+        collection.put("state", state);
+    }
+
+    collection.put("nodes", accessionNodes);
+
+    // return nested of javascript object
+    metadataTree = new JSONArray();
+    metadataTree.put(collection);
+
+%>
+
+<script>
+    var metadataTreeJSON = <%= metadataTree.toString(4) %>;
+
+</script>
+
+<!--div id="tree" style="display: inline-block; width: 220px; overflow: hidden;"-->
+<div id="tree" style="display: inline-block; width: 420px; overflow: hidden;">
+    <!-- jquery tree view will build up the tree -->
+</div>
