@@ -5,8 +5,9 @@ import edu.stanford.epadd.Version;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.io.Serializable;
 
-public class Fixity {
+public class Fixity  implements Serializable {
 
     @XmlElement
     private MessageDigestAlgorithm messageDigestAlgorithm;
@@ -34,7 +35,7 @@ public class Fixity {
         this.messageDigestAlgorithm = new MessageDigestAlgorithm(digestAlgorithm);
     }
 
-    static class MessageDigestAlgorithm {
+    static class MessageDigestAlgorithm implements Serializable {
 
         @XmlAttribute
         private final String authority = "cryptographicHashFunctions";

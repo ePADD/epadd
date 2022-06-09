@@ -439,6 +439,7 @@ public class ArchiveReaderWriter{
 
 
         public static void saveMutable_Incremental(Archive archive, String fileID){
+
         saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         ////////////////EntityBook Writing -- In human readable form/////////////////////////////////////
         saveEntityBookManager(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
@@ -537,7 +538,8 @@ public class ArchiveReaderWriter{
 
     }
 */
-    public static void saveAddressBook(Archive archive, Archive.Save_Archive_Mode mode){
+
+   public static void saveAddressBook(Archive archive, Archive.Save_Archive_Mode mode){
 
         String baseDir = archive.baseDir;
         String dir = baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;

@@ -22,7 +22,7 @@
         //System.out.println("fileMetadatas.size() = "+ fileMetadatas.size());
         for (Archive.FileMetadata fm: fileMetadatas) {
             JSONObject aFile = new JSONObject();
-            aFile.put("text", fm.fileID);
+            aFile.put("text", fm.filename);
             aFile.put("type", "MBOX");
             aFile.put("icon", "glyphicon glyphicon-file");
 

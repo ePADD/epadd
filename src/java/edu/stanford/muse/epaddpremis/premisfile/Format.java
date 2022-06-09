@@ -1,8 +1,9 @@
 package edu.stanford.muse.epaddpremis.premisfile;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
-public class Format {
+public class Format  implements Serializable {
 
     @XmlElement
     private final FormatDesignation formatDesignation = new FormatDesignation();
@@ -18,7 +19,7 @@ public class Format {
         formatDesignation.formatVersion = version;
     }
 
-    private static class FormatDesignation {
+    private static class FormatDesignation implements Serializable {
         @XmlElement
         private String formatName = "";
 

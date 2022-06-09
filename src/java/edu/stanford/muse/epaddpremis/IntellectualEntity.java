@@ -3,21 +3,17 @@ package edu.stanford.muse.epaddpremis;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.*;
 
-public class PremisIntellectualEntityObject {
+public class IntellectualEntity extends IntellectualEntityBaseClass implements Serializable {
     @XmlTransient
-    private static final Logger log = LogManager.getLogger(PremisIntellectualEntityObject.class);
+    private static final Logger log = LogManager.getLogger(IntellectualEntity.class);
 
-    @XmlAttribute(name = "xsi:type")
-    private final String type = "premis:intellectualEntity";
-    @XmlElement(name = "environmentExtension")
-    private final EnvironmentExtensionIntellectualEntity environmentExtensionIntellectualEntity = new EnvironmentExtensionIntellectualEntity();
-    @XmlElement
-    private final Relationship relationship = new Relationship();
+//    @XmlAttribute(name = "xsi:type")
+//    private final String type = "premis:intellectualEntity";
     @XmlElement(name = "objectIdentifier")
     private final PremisIdentityObjectIdentifier premisIdentityObjectIdentifier = new PremisIdentityObjectIdentifier();
     @XmlElement
@@ -31,10 +27,16 @@ public class PremisIntellectualEntityObject {
     // When reading the XML file significantPropertiesSet is filled automatically in the process of unmarshalling.
     // significantPropertiesMap is then created by using the data in significantPropertiesSet.
     private Set<SignificantProperties> significantPropertiesSet;
+    @XmlElement(name = "environmentExtension")
+    private final EnvironmentExtensionIntellectualEntity environmentExtensionIntellectualEntity = new EnvironmentExtensionIntellectualEntity();
+    @XmlElement
+    private final Relationship relationship = new Relationship();
+
+
     @XmlTransient
     private final Map<String, SignificantProperties> significantPropertiesMap = new HashMap<>();
 
-    public PremisIntellectualEntityObject() {
+    public IntellectualEntity() {
     }
 
     protected void updateSignificantPropertiesSet() {
@@ -94,7 +96,7 @@ public class PremisIntellectualEntityObject {
         }
     }
 
-    private static class EnvironmentExtensionIntellectualEntity {
+    private static class EnvironmentExtensionIntellectualEntity implements Serializable {
         @XmlElement
         public String environmentNote = "";
 
@@ -108,7 +110,7 @@ public class PremisIntellectualEntityObject {
         private final Map<String, SignificantProperties> mimeCountMap = new HashMap<>();
     }
 
-    private static class PremisIdentityObjectIdentifier {
+    private static class PremisIdentityObjectIdentifier implements Serializable {
         @XmlElement(name = "objectIdentifierType")
         private final String objectIdentifierType = "local";
 

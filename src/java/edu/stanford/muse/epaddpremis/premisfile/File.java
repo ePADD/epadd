@@ -1,41 +1,46 @@
 package edu.stanford.muse.epaddpremis.premisfile;
 
+import edu.stanford.muse.epaddpremis.ObjectBaseClass;
 import edu.stanford.muse.epaddpremis.PreservationLevel;
 import edu.stanford.muse.index.Archive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class PremisFileObject {
+public class File extends ObjectBaseClass implements Serializable {
 
     @XmlTransient
-    private static final Logger log = LogManager.getLogger(PremisFileObject.class);
+    private static final Logger log = LogManager.getLogger(File.class);
+    @XmlElement(name = "objectIdentifier")
+    private List<ObjectIdentifier> objectIdentifiers = new ArrayList<>();
+    @XmlElement
+    private PreservationLevel preservationLevel = new PreservationLevel();
 
-    @XmlAttribute(name = "xsi:type")
-    private final String type = "premis:file";
+
     @XmlElement(name = "significantProperties")
     //A map matching property types with SignificantProperties objects would be better but I run into problems with JAXB.
     private Set<SignificantPropertiesFile> significantPropertiesSet = SignificantPropertiesFile.getInitialSet();
+    @XmlElement
+        private ObjectCharacteristics objectCharacteristics;
+
+    
     @XmlElement(name = "relationship")
     private final RelationshipFile relationshipFile = new RelationshipFile();
-    @XmlElement(name = "objectIdentifier")
-    private List<ObjectIdentifier> objectIdentifiers = new ArrayList<>();
 
-    @XmlElement
-    private PreservationLevel preservationLevel = new PreservationLevel();
-    @XmlElement
-    private ObjectCharacteristics objectCharacteristics;
 
-    public PremisFileObject(String fileName, long size) {
+
+
+    public File(String fileName, long size) {
         this.objectIdentifiers.add(new ObjectIdentifier("file name", fileName + "#"));
         this.objectCharacteristics = new ObjectCharacteristics(size, fileName);
     }
 
-    public PremisFileObject() {
+    public File() {
     }
 
     void setSignificantProperty(String type, String value) {
@@ -155,7 +160,9 @@ public class PremisFileObject {
 
     public String getFolderName() {
         String folderName = getFirstObjectIdentifierValue();
-        folderName = folderName.substring(0, folderName.length() - 1);
+        if (folderName != null && !folderName.isEmpty()) {
+            folderName = folderName.substring(0, folderName.length() - 1);
+        }
         return folderName;
     }
 
@@ -172,7 +179,7 @@ public class PremisFileObject {
     }
 
 
-    private static class ObjectIdentifier {
+    private static class ObjectIdentifier implements Serializable {
         @XmlElement(name = "objectIdentifierType")
         private String objectIdentifierType = "";
 
@@ -188,7 +195,7 @@ public class PremisFileObject {
         }
     }
 
-    public static class RelationshipSubType {
+    public static class RelationshipSubType implements Serializable  {
         @XmlAttribute
         private final String authority = "relationshipSubType";
         @XmlAttribute
@@ -202,7 +209,7 @@ public class PremisFileObject {
         }
     }
 
-    public static class RelatedObjectIdentifier {
+    public static class RelatedObjectIdentifier implements Serializable {
         @XmlElement
         private final String relatedObjectIdentifierType = "local";
         @XmlElement

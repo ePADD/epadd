@@ -1,8 +1,9 @@
 package edu.stanford.muse.epaddpremis;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
-public class Agent {
+public class Agent implements Serializable {
 
     @XmlElement(name="agentIdentifier")
     private AgentIdentifier agentIdentifier;
@@ -28,7 +29,7 @@ public class Agent {
         agentVersion = version;
     }
 
-    private static class AgentIdentifier {
+    private static class AgentIdentifier implements Serializable {
 
         @XmlElement(name="agentIdentifierType")
         private final String agentIdentifierType = "local";

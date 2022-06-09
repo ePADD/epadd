@@ -7,10 +7,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SignificantPropertiesFile {
+public class SignificantPropertiesFile implements Serializable {
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(SignificantPropertiesFile.class);
@@ -82,7 +83,7 @@ public class SignificantPropertiesFile {
             return propertyType;
         }
     }
-    public static class SignificantPropertiesTypeAdapter extends XmlAdapter<String, PropertyType> {
+    public static class SignificantPropertiesTypeAdapter extends XmlAdapter<String, PropertyType> implements Serializable {
         public String marshal(PropertyType propertyType) {
             return propertyType.toString();
         }

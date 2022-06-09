@@ -383,7 +383,16 @@ public class BlobStore implements Serializable {
             add(blob);
             if (archive != null && addMimeTypeToPremisIfNoDuplicate)
             {
-                String mime = blob.contentType.substring(0, blob.contentType.indexOf(";"));
+                String mime;
+                if (blob.contentType.contains(";"))
+                {
+                    mime = blob.contentType.substring(0, blob.contentType.indexOf(";"));
+                }
+                else
+                {
+                    mime = blob.contentType;
+                }
+
                 archive.getEpaddPremis().addToSignificantProperty(mime, 1);
             }
             // move it from the temp file to the blobs dir. don't do this before add(blob), because full_filename_normalized will not be set up correctly until the blob object can be lookedup

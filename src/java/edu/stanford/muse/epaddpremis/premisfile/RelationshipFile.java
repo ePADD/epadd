@@ -5,15 +5,16 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 
-public class RelationshipFile {
+public class RelationshipFile implements Serializable {
 
     @XmlElement(name = "relationshipType")
     private final RelationshipTypeFile relationshipTypeFile = new RelationshipTypeFile();
     @XmlElement(name = "relationshipSubType")
-    private final PremisFileObject.RelationshipSubType relationshipSubTypeFile = new PremisFileObject.RelationshipSubType();
+    private final File.RelationshipSubType relationshipSubTypeFile = new File.RelationshipSubType();
     @XmlElement(name = "relatedObjectIdentifier")
-    private final PremisFileObject.RelatedObjectIdentifier relatedObjectIdentifierFile = new PremisFileObject.RelatedObjectIdentifier();
+    private final File.RelatedObjectIdentifier relatedObjectIdentifierFile = new File.RelatedObjectIdentifier();
 
     @XmlElement
     public String relatedEnvironmentPurpose = "";
@@ -79,7 +80,7 @@ public class RelationshipFile {
         }
     }
 
-    private static class RelatedEnvironmentCharacteristicAdapter extends XmlAdapter<String, RelationshipFile.RelatedEnvironmentCharacteristic> {
+    private static class RelatedEnvironmentCharacteristicAdapter extends XmlAdapter<String, RelationshipFile.RelatedEnvironmentCharacteristic> implements Serializable {
         public String marshal(RelationshipFile.RelatedEnvironmentCharacteristic relatedEnvironmentCharacteristic) {
             return relatedEnvironmentCharacteristic.toString();
         }
@@ -89,7 +90,7 @@ public class RelationshipFile {
         }
     }
 
-    private static class EnvironmentPurposeAdapter extends XmlAdapter<String, RelationshipFile.RelatedEnvironmentPurpose> {
+    private static class EnvironmentPurposeAdapter extends XmlAdapter<String, RelationshipFile.RelatedEnvironmentPurpose> implements Serializable {
         public String marshal(RelationshipFile.RelatedEnvironmentPurpose relatedEnvironmentPurpose) {
             return relatedEnvironmentPurpose.toString();
         }
@@ -99,7 +100,7 @@ public class RelationshipFile {
         }
     }
 
-    private static class RelationshipTypeFile {
+    private static class RelationshipTypeFile implements Serializable {
         @XmlAttribute
         private final String authority = "relationshipType";
         @XmlAttribute

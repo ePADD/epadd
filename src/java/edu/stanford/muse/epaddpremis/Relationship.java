@@ -1,20 +1,21 @@
 package edu.stanford.muse.epaddpremis;
 
-import edu.stanford.muse.epaddpremis.premisfile.PremisFileObject;
+import edu.stanford.muse.epaddpremis.premisfile.File;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 
-public class Relationship {
+public class Relationship implements Serializable {
     @XmlElement
     private final RelationshipType relationshipType = new RelationshipType();
     @XmlElement
-    private final PremisFileObject.RelationshipSubType relationshipSubType = new PremisFileObject.RelationshipSubType();
+    private final File.RelationshipSubType relationshipSubType = new File.RelationshipSubType();
     @XmlElement
-    private final PremisFileObject.RelatedObjectIdentifier relatedObjectIdentifier = new PremisFileObject.RelatedObjectIdentifier();
+    private final File.RelatedObjectIdentifier relatedObjectIdentifier = new File.RelatedObjectIdentifier();
 
     @XmlElement
     @XmlJavaTypeAdapter(RelatedEnvironmentCharacteristicAdapter.class)
@@ -76,7 +77,7 @@ public class Relationship {
         }
     }
 
-    private static class RelatedEnvironmentCharacteristicAdapter extends XmlAdapter<String, RelatedEnvironmentCharacteristic> {
+    private static class RelatedEnvironmentCharacteristicAdapter extends XmlAdapter<String, RelatedEnvironmentCharacteristic> implements Serializable {
         public String marshal(RelatedEnvironmentCharacteristic relatedEnvironmentCharacteristic) {
             return relatedEnvironmentCharacteristic.toString();
         }
@@ -86,7 +87,7 @@ public class Relationship {
         }
     }
 
-    private static class EnvironmentPurposeAdapter extends XmlAdapter<String, RelatedEnvironmentPurpose> {
+    private static class EnvironmentPurposeAdapter extends XmlAdapter<String, RelatedEnvironmentPurpose> implements Serializable {
         public String marshal(RelatedEnvironmentPurpose relatedEnvironmentPurpose) {
             return relatedEnvironmentPurpose.toString();
         }
@@ -96,7 +97,7 @@ public class Relationship {
         }
     }
 
-    private static class RelationshipType {
+    private static class RelationshipType implements Serializable {
         @XmlAttribute
         private final String authority = "relationshipType";
         @XmlAttribute
@@ -110,7 +111,7 @@ public class Relationship {
         }
     }
 
-    private static class EnvironmentExtension {
+    private static class EnvironmentExtension implements Serializable {
         @XmlElement
         public String environmentNote = "";
 

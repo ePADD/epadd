@@ -9,10 +9,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class PreservationLevel {
+public class PreservationLevel implements Serializable {
 
     @XmlTransient
     private static final Logger log =  LogManager.getLogger(PreservationLevel.class);
@@ -79,7 +80,7 @@ public class PreservationLevel {
         }
     }
 
-    private static class PreservationLevelRoleTypeAdapter extends XmlAdapter<String, PreservationLevelRoleType>
+    private static class PreservationLevelRoleTypeAdapter extends XmlAdapter<String, PreservationLevelRoleType> implements Serializable
     {
         public String marshal(PreservationLevelRoleType roleType) {
             return roleType.toString();
@@ -113,7 +114,7 @@ public class PreservationLevel {
         }
     }
 
-    private static class PreservationLevelRationaleTypeAdapter extends XmlAdapter<String, PreservationLevelRationaleType>
+    private static class PreservationLevelRationaleTypeAdapter extends XmlAdapter<String, PreservationLevelRationaleType> implements Serializable
     {
         public String marshal(PreservationLevelRationaleType reationalType) {
             return reationalType.toString();
@@ -123,7 +124,7 @@ public class PreservationLevel {
         }
     }
 
-    static class PreservationLevelRole {
+    static class PreservationLevelRole implements Serializable {
         @XmlAttribute
         private final String authority = "preservationLevelRole";
         @XmlAttribute

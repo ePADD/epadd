@@ -12,7 +12,7 @@ package edu.stanford.muse.epaddpremis;//Example: ingest
 //        package edu.stanford.muse.epaddpremis;
 
 import edu.stanford.epadd.Version;
-import edu.stanford.muse.epaddpremis.premisfile.PremisFileObject;
+import edu.stanford.muse.epaddpremis.premisfile.File;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.Util;
@@ -41,10 +41,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "premis")
-public class EpaddPremis {
+public class EpaddPremis implements Serializable {
 
     @XmlTransient
-    public static final String FILE_NAME = "epaddPremis.xml";
+    public static final String XML_FILE_NAME = "epaddPremis.xml";
+
+    @XmlTransient
+    public static final String SERIALIZED_FILE_NAME = "premisobject.ser";
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(EpaddPremis.class);
@@ -65,12 +68,12 @@ public class EpaddPremis {
     private Archive archive;
 
 
-    @XmlElement(name="object")
-    private PremisIntellectualEntityObject premisIntellectualEntityObject;
+    @XmlElement(name = "object")
+    private IntellectualEntityBaseClass intellectualEntity = new IntellectualEntity();
 
 
-    @XmlElement(name="Object")
-    private final List<PremisFileObject> fileObjects = new ArrayList<>();
+    @XmlElement(name = "object")
+    private final List<ObjectBaseClass> file = new ArrayList<>();
 
     @XmlElement(name = "event")
     private final List<EpaddEvent> epaddEvents = new ArrayList<>();
@@ -80,22 +83,51 @@ public class EpaddPremis {
     PremisRights premisRights = new PremisRights();
 
 
-
-
     public EpaddPremis(String baseDir, String dataFolder, Archive archive) throws JAXBException, IOException {
         this.baseDir = baseDir;
-        this.pathToDataFolder = baseDir + File.separatorChar + dataFolder;
+        this.pathToDataFolder = baseDir + java.io.File.separatorChar + dataFolder;
         this.archive = archive;
-        this.premisIntellectualEntityObject = new PremisIntellectualEntityObject();
-        this.premisIntellectualEntityObject.setPreservationLevelDateAssignedToToday();
+        this.intellectualEntity = new IntellectualEntity();
+        this.getIntellectualEntity().setPreservationLevelDateAssignedToToday();
         setAgent(archive);
+    }
+
+    public void savePremisObject() {
+        try {
+            FileOutputStream f = new FileOutputStream(new java.io.File(getSerializedPathAndFileName()));
+            ObjectOutputStream o = new ObjectOutputStream(f);
+            o.writeObject(this);
+            o.close();
+            f.close();
+        } catch (Exception e) {
+            log.warn("Exception saving EpaddPremis object. " + e);
+        }
+    }
+
+    public static EpaddPremis readPremisObject(String baseDir, String bagDataFolder) {
+        EpaddPremis epaddPremis = null;
+        try {
+            FileInputStream fi = new FileInputStream(new java.io.File(baseDir + java.io.File.separatorChar + bagDataFolder + java.io.File.separatorChar + SERIALIZED_FILE_NAME));
+            ObjectInputStream oi = new ObjectInputStream(fi);
+            epaddPremis = (EpaddPremis) oi.readObject();
+            oi.close();
+            fi.close();
+        } catch (Exception e) {
+            log.warn("Exception reading EpaddPremis object. " + e);
+        }
+        return epaddPremis;
+    }
+
+    private IntellectualEntity getIntellectualEntity() {
+        return ((IntellectualEntity) intellectualEntity);
     }
 
     public EpaddPremis() {
     }
 
     public void setFileID(String fileID, String folderName) {
-        for (PremisFileObject fo : fileObjects) {
+        for (ObjectBaseClass bc : file) {
+            File fo = (File) bc;
             // Would be better to use a map <String, PremisFileObject> for storing the file objects.
             // Two files could have the same folder name (but not two files in the same import session).
             // If a fileID already exists for this file then we probably have
@@ -107,9 +139,9 @@ public class EpaddPremis {
         }
     }
 
-    private PremisFileObject getFileFromID(String fileID)
-    {
-        for (PremisFileObject fo : fileObjects) {
+    private File getFileFromID(String fileID) {
+        for (ObjectBaseClass bc : file) {
+            File fo = (File) bc;
             // Would be better to use a map <String, PremisFileObject> for storing the file objects.
             if (fileID != null && fileID.equals(fo.getFileID())) {
                 return fo;
@@ -118,30 +150,31 @@ public class EpaddPremis {
         return null;
     }
 
+    //NOT IN USE
     public static EpaddPremis createFromFile(String baseDir, String bagDataFolder, Archive archive) {
 
         String xsdFile = "C:\\Users\\jochen\\dropbox_stuff\\epadd\\premis_schema.txt";
         EpaddPremis epaddPremis = null;
-        Path file = Paths.get(baseDir + File.separatorChar + bagDataFolder + File.separatorChar + FILE_NAME);
+        Path file = Paths.get(baseDir + java.io.File.separatorChar + bagDataFolder + java.io.File.separatorChar + XML_FILE_NAME);
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(EpaddPremis.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(EpaddPremis.class, ObjectBaseClass.class, File.class, IntellectualEntity.class, IntellectualEntityBaseClass.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             InputStream inputStream = new FileInputStream(file.toFile());
 
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema employeeSchema = sf.newSchema(new File(xsdFile));
-           //unmarshaller.setSchema(employeeSchema);
+            Schema employeeSchema = sf.newSchema(new java.io.File(xsdFile));
+            unmarshaller.setSchema(employeeSchema);
             epaddPremis = (EpaddPremis) unmarshaller.unmarshal(inputStream);
             epaddPremis.archive = archive;
             epaddPremis.baseDir = baseDir;
-            epaddPremis.pathToDataFolder = baseDir + File.separatorChar + bagDataFolder;
+            epaddPremis.pathToDataFolder = baseDir + java.io.File.separatorChar + bagDataFolder;
             inputStream.close();
         } catch (Exception e) {
             Util.print_exception("Exception reading Premis XML file", e, LogManager.getLogger(EpaddPremis.class));
             System.out.println("Exception reading Premis XML file " + e);
         }
-        if (epaddPremis != null && epaddPremis.premisIntellectualEntityObject != null) {
-            epaddPremis.premisIntellectualEntityObject.initialiseSignificantPropertiesMapFromSet();
+        if (epaddPremis != null && epaddPremis.getIntellectualEntity() != null) {
+            epaddPremis.getIntellectualEntity().initialiseSignificantPropertiesMapFromSet();
         }
         return epaddPremis;
     }
@@ -152,44 +185,46 @@ public class EpaddPremis {
     }
 
     public void createFileObject(String fileName, Long size) {
-        fileObjects.add(new PremisFileObject(fileName, size));
+        file.add(new File(fileName, size));
     }
 
     public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome) {
         epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
+        printToFiles();
+
     }
 
     public void addToSignificantProperty(String type, int value) {
-        if (premisIntellectualEntityObject != null) {
-            premisIntellectualEntityObject.addToSignificantProperty(type, value);
+        if (intellectualEntity != null) {
+            getIntellectualEntity().addToSignificantProperty(type, value);
         } else {
             log.warn("no premisIntellectualEntityObject in addSignificantProperty");
         }
     }
 
     public void setIntellectualEntityObjectEnvironmentCharacteristics(String characteristics) {
-        this.premisIntellectualEntityObject.setRelatedEnvironmentCharacteristic(characteristics);
+        this.getIntellectualEntity().setRelatedEnvironmentCharacteristic(characteristics);
     }
 
     public void setIntellectualEntityObjectEnvironmentPurpose(String purpose) {
-        this.premisIntellectualEntityObject.setEnvironmentPurpose(purpose);
+        this.getIntellectualEntity().setEnvironmentPurpose(purpose);
     }
 
     public void setIntellectualEntityObjectEnvironmentNote(String note) {
-        this.premisIntellectualEntityObject.setEnvironmentNote(note);
+        this.getIntellectualEntity().setEnvironmentNote(note);
     }
 
     public void setIntellectualEntityObjectEnvironmentSoftwareName(String softwareName) {
-        this.premisIntellectualEntityObject.setEnvironmentSoftwareName(softwareName);
+        this.getIntellectualEntity().setEnvironmentSoftwareName(softwareName);
     }
 
     public void setIntellectualEntityObjectEnvironmentSoftwareVersion(String version) {
-        this.premisIntellectualEntityObject.setEnvironmentSoftwareVersion(version);
+        this.getIntellectualEntity().setEnvironmentSoftwareVersion(version);
     }
 
     public void setSignificantProperty(String type, int value) {
-        if (premisIntellectualEntityObject != null) {
-            premisIntellectualEntityObject.setSignificantProperty(type, value);
+        if (intellectualEntity != null) {
+            getIntellectualEntity().setSignificantProperty(type, value);
         } else {
             log.warn("no premisIntellectualEntityObject in addSignificantProperty");
         }
@@ -197,25 +232,36 @@ public class EpaddPremis {
 
     public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome, String linkingObjectIdentifierType, String linkingObjectIdentifierValue) {
         epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, linkingObjectIdentifierType, linkingObjectIdentifierValue, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
+        printToFiles();
+
     }
 
     public void createEvent(JSONObject eventJsonObject) {
         epaddEvents.add(new EpaddEvent(eventJsonObject, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
+        printToFiles();
     }
 
-    private String getPathAndFileName() {
-        return pathToDataFolder + File.separatorChar + FILE_NAME;
+    private String getXmlPathAndFileName() {
+        return pathToDataFolder + java.io.File.separatorChar + XML_FILE_NAME;
     }
 
-    public void printToFile() {
-        premisIntellectualEntityObject.updateSignificantPropertiesSet();
+    private String getSerializedPathAndFileName() {
+        return pathToDataFolder + java.io.File.separatorChar + SERIALIZED_FILE_NAME;
+    }
+
+    public void printToFiles() {
+        getIntellectualEntity().updateSignificantPropertiesSet();
+
+        //Serialization for internal use
+        savePremisObject();
+
+        //Print XML file for users
         try {
-            JAXBContext context = JAXBContext.newInstance(EpaddPremis.class);
-            Marshaller mar = context.createMarshaller();
-            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-           // mar.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,  "C:\\Users\\jochen\\dropbox_stuff\\epadd\\premis_schema.txt");
-
-            mar.marshal(this, new File(getPathAndFileName()));
+            JAXBContext jc = JAXBContext.newInstance(EpaddPremis.class, IntellectualEntity.class, File.class, ObjectBaseClass.class, IntellectualEntityBaseClass.class);
+            StringWriter writer = new StringWriter();
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(this, new java.io.File(getXmlPathAndFileName()));
             Bag bag = Archive.readArchiveBag(baseDir);
             if (bag == null) {
                 log.warn("bag null in EpaddPremis.printToFile()");
@@ -225,7 +271,7 @@ public class EpaddPremis {
                 log.warn("Archive null in EpaddPremis.printToFile()");
                 return;
             }
-            Archive.updateFileInBag(bag, getPathAndFileName(), baseDir);
+            Archive.updateFileInBag(bag, getXmlPathAndFileName(), baseDir);
             archive.setArchiveBag(bag);
         } catch (Exception e) {
             Util.print_exception("Exception in EpaddPremis.printToFile() ", e, LogManager.getLogger(EpaddPremis.class));
@@ -234,11 +280,11 @@ public class EpaddPremis {
     }
 
     public void setPreservationLevelRationale(String preservationLevelRationale) {
-        this.premisIntellectualEntityObject.setPreservationLevelRationale(preservationLevelRationale);
+        this.getIntellectualEntity().setPreservationLevelRationale(preservationLevelRationale);
     }
 
     public void setPreservationLevelRole(String preservationLevelRole) {
-        this.premisIntellectualEntityObject.setPreservationLevelRole(preservationLevelRole);
+        this.getIntellectualEntity().setPreservationLevelRole(preservationLevelRole);
     }
 
     public void setRightsStatementIdentifierType(String type) {
@@ -266,15 +312,15 @@ public class EpaddPremis {
     }
 
 
-
     public void setFileMetadata(String fileID, Archive.FileMetadata fmetadata) {
-        for (PremisFileObject bc : fileObjects) {
+        for (ObjectBaseClass bc : file) {
+            File fo = (File) bc;
             // Would be better to use a map <String, PremisFileObject> for storing the file objects.
             // Two files could have the same folder name (but not two files in the same import session).
             // If a fileID already exists for this file then we probably have
             // a file with the same name which has already been imported.
-            if (fileID.equals(bc.getFileID())) {
-                bc.setMetadata(fmetadata);
+            if (fileID.equals(fo.getFileID())) {
+                fo.setMetadata(fmetadata);
                 break;
             }
         }

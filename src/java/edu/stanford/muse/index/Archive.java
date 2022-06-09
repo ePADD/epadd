@@ -29,6 +29,7 @@ import edu.stanford.muse.AnnotationManager.AnnotationManager;
 import edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper;
 import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
+import edu.stanford.muse.epaddpremis.EpaddEvent;
 import edu.stanford.muse.epaddpremis.EpaddPremis;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBookManager;
@@ -129,8 +130,9 @@ public class Archive implements Serializable {
     public static final String BLOBLNORMALIZATIONFILE_SUFFIX="NormalizationInfo.csv";
     public transient  static ResultCache cacheManager = new ResultCache();//making it static so that it becomes visible for all archives.
 
-    // We read the xml text file, so no serialization
-    private transient EpaddPremis epaddPremis;
+	// We read and write the serialized Premis object in EpaddPremis.readPremisObject() and
+	// EpaddPremis.savePremisObject()
+    public transient EpaddPremis epaddPremis;
 
     public int getNImageAttachments() {
         int nImages = 0;
@@ -739,7 +741,7 @@ int errortype=0;
 
     public void printEpaddPremis() {
         if (epaddPremis != null) {
-            epaddPremis.printToFile();
+            epaddPremis.printToFiles();
         }
     }
 
@@ -1428,9 +1430,9 @@ int errortype=0;
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + edu.stanford.muse.Config.AUTHORITY_ASSIGNER_FILENAME));
 
 
-        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.FILE_NAME).exists())
-            FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.FILE_NAME),
-                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.FILE_NAME));
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.XML_FILE_NAME).exists())
+            FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.XML_FILE_NAME),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.XML_FILE_NAME));
 
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
@@ -1898,7 +1900,7 @@ after maskEmailDomain.
 
     public void postDeserialized(String baseDir, boolean readOnly) throws IOException {
 
-        epaddPremis = EpaddPremis.createFromFile(baseDir, Archive.BAG_DATA_FOLDER, this);
+        epaddPremis = EpaddPremis.readPremisObject(baseDir, Archive.BAG_DATA_FOLDER);
         log.info(indexer.computeStats());
 
         indexer.setBaseDir(baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER+ File.separatorChar);
@@ -2689,13 +2691,16 @@ after maskEmailDomain.
         String returnMessage = "";
 
         String archiveBaseDir = "";
-
-        if (exportableAssets == EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED || exportableAssets == EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED || exportableAssets == EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED)
+        boolean isAppraisal = false, isProcessing = false;
+        if (exportableAssets == EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED || exportableAssets == EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED || exportableAssets == EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED) {
             archiveBaseDir = Config.REPO_DIR_APPRAISAL + File.separatorChar + "user" + File.separatorChar;
+            isAppraisal = true;
+        }
         else {
             String bestName = addressBook.getBestNameForSelf().trim();
             archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + "ePADD archive of " + bestName + File.separatorChar;
 //            archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + File.separatorChar + "user" + File.separatorChar;
+            isProcessing = true;
 
         }
 
@@ -2879,6 +2884,8 @@ after maskEmailDomain.
                         if (Files.isDirectory(sourceFilePath4)) {
                             try {
                                 Util.copy_directory(sourceExportableAssetFolder, targetExportableAssetsFolder4);
+
+
                             } catch (IOException ioe) {
                                 returnCode = "4";
                                 returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
@@ -2920,7 +2927,28 @@ after maskEmailDomain.
 
         result.put ("status", returnCode);
         result.put ("errorMessage", returnMessage);
-
+        String detailInformation = "";
+        String outcome = "";
+        if (isAppraisal)
+        {
+            detailInformation = "Export from appraisal";
+        }
+        else if (isProcessing)
+        {
+            detailInformation = "Export from processing";
+        }
+        if (returnMessage != null && !returnMessage.isEmpty())
+        {
+            outcome = "Failure. " + returnMessage;
+        }
+        else
+        {
+            outcome = "success";
+        }
+        if (epaddPremis != null)
+        {
+            epaddPremis.createEvent(EpaddEvent.EventType.EXPORT_FOR_PRESERVATION, detailInformation, outcome);
+        }
         return result;
     }
 

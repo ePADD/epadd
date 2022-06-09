@@ -11,12 +11,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectCharacteristics {
+public class ObjectCharacteristics implements Serializable {
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(ObjectCharacteristics.class);
@@ -115,7 +116,7 @@ public class ObjectCharacteristics {
         public String toString() {
             if (this == NOT_INITIALISED)
             {
-                return "Unknown";
+                return "0";
             }
             // Only print the number, not the text.
             if ("".equals(compositionLevel)) {
@@ -126,7 +127,7 @@ public class ObjectCharacteristics {
         }
     }
 
-    public static class CompositionLevelAdapter extends XmlAdapter<String, CompositionLevel> {
+    public static class CompositionLevelAdapter extends XmlAdapter<String, CompositionLevel> implements Serializable {
         public String marshal(CompositionLevel compositionLevel) {
             return compositionLevel.toString();
         }
@@ -157,7 +158,7 @@ public class ObjectCharacteristics {
         this.creatingApplication.dateCreatedByApplication = dateCreatedByApplication;
     }
 
-    static class CreatingApplication {
+    static class CreatingApplication implements Serializable {
         @XmlElement
         private String creatingApplicationName = "";
 

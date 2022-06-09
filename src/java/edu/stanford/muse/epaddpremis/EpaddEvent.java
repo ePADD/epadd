@@ -6,11 +6,12 @@ import org.json.JSONObject;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-public class EpaddEvent {
+public class EpaddEvent implements Serializable {
 
     @XmlElement
     private EventIdentifier eventIdentifier;
@@ -87,7 +88,7 @@ public class EpaddEvent {
     }
 
     public enum EventType {
-        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), NOT_RECOGNIZED("not recognized");
+        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized");
 
         private final String eventType;
 
@@ -110,7 +111,7 @@ public class EpaddEvent {
         }
     }
 
-    public static class EventTypeAdapter extends XmlAdapter<String, EventType>
+    public static class EventTypeAdapter extends XmlAdapter<String, EventType> implements Serializable
     {
         public String marshal(EventType eventType) {
             return eventType.toString();
@@ -120,7 +121,7 @@ public class EpaddEvent {
         }
     }
 
-    private static class EventIdentifier
+    private static class EventIdentifier implements Serializable
     {
         @XmlElement
         private final String eventIdentifierType = "UUID";
@@ -135,7 +136,7 @@ public class EpaddEvent {
         }
     }
 
-    public static class EventDetailInformation
+    public static class EventDetailInformation implements Serializable
     {
         @XmlElement
         private String eventDetail;
@@ -148,7 +149,7 @@ public class EpaddEvent {
         }
     }
 
-    private static class EventOutcomeInformation {
+    private static class EventOutcomeInformation implements Serializable {
 
         @XmlElement
         private String eventOutcome;
@@ -162,7 +163,7 @@ public class EpaddEvent {
         }
     }
 
-    private static class LinkingObjectIdentifier
+    private static class LinkingObjectIdentifier implements Serializable
     {
         @XmlElement
         private String linkingObjectIdentifierType;
@@ -177,7 +178,7 @@ public class EpaddEvent {
         }
     }
 
-    private static class LinkingAgentIdentifier {
+    private static class LinkingAgentIdentifier implements Serializable {
 
         @XmlElement
         private final String linkingAgentIdentifierType = "local";
@@ -219,7 +220,7 @@ public class EpaddEvent {
             linkingAgentIdentifierValue += (" - running in " + System.getProperty("java.version"));
         }
 
-        private static class LinkingAgentRole {
+        private static class LinkingAgentRole implements Serializable {
             @XmlAttribute
             private final String authority="eventRelatedAgentRole";
             @XmlAttribute

@@ -2,8 +2,9 @@ package edu.stanford.muse.epaddpremis;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
-public class PremisRights {
+public class PremisRights implements Serializable {
 
     @XmlAttribute
     private final String xmlID = "AAAAG";
@@ -34,7 +35,7 @@ public class PremisRights {
         this.rightsStatement.rightsStatementIdentifier.rightsStatementIdentifierValue = value;
     }
 
-    private static class RightsStatement {
+    private static class RightsStatement implements Serializable {
         @XmlElement
         RightsStatementIdentifier rightsStatementIdentifier = new RightsStatementIdentifier();
         @XmlElement
@@ -42,7 +43,7 @@ public class PremisRights {
         private RightsStatement() {
         }
 
-        private static class RightsStatementIdentifier {
+        private static class RightsStatementIdentifier implements Serializable {
             @XmlElement
             private String rightsStatementIdentifierType = "";
 
@@ -52,7 +53,7 @@ public class PremisRights {
         }
     }
 
-    public static class RightsExtension {
+    public static class RightsExtension implements Serializable {
         @XmlElement
         private final StatuteInformation statuteInformation = new StatuteInformation();
 
@@ -61,7 +62,7 @@ public class PremisRights {
             return statuteInformation;
         }
 
-        public static class StatuteInformation {
+        public static class StatuteInformation implements Serializable {
 
             @XmlElement
             private String statuteJurisdiction = "";
@@ -88,7 +89,7 @@ public class PremisRights {
                 this.statuteDocumentationIdentifier.statuteDocumentationRole = statuteDocumentationRole;
             }
 
-            private static class StatuteDocumentationIdentifier {
+            private static class StatuteDocumentationIdentifier implements Serializable {
                 @XmlElement
                 private String statuteDocumentationIdentifierType = "";
                 @XmlElement
