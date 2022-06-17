@@ -58,7 +58,7 @@ if(opID==null){
 %>
 
 <%!
-public void setExportableAssets(Multimap<String,String> params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultJSON, Archive archive){
+private void setExportableAssets(Multimap<String,String> params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultJSON, Archive archive){
     if(setStatusProvider!=null)
         setStatusProvider.accept(new StaticStatusProvider("setting exportable assets..."));
 

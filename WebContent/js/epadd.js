@@ -313,7 +313,7 @@ epadd.submitFolders = function()
 		for (var i=0; i < checked.length; i++)
 		{
 			store = checked[i].getAttribute("STORE");
-			urlParams += encodeURIComponent(store) + '^-^';
+			urlParams += encodeURIComponent(checked[i].name)  + '^-^';
 		}
 		urlParams = "exportableAssetsFiles="+urlParams;
 
@@ -330,28 +330,28 @@ epadd.submitFolders = function()
 	}
 
 	function getSelectedFolderParams() {
-	    var checked = $('input.folder:checked');
-	    var urlParams = "";
-	    if (checked.length == 0)
-	    {
-	        epadd.error ("Please select at least one folder.");
-	        throw "Error";
-	    }
+		var checked = $('input.folder:checked');
+		var urlParams = "";
+		if (checked.length == 0)
+		{
+			epadd.error ("Please select at least one folder.");
+			throw "Error";
+		}
 
-	    for (var i=0; i < checked.length; i++)
-	    {
-	         var store = checked[i].getAttribute("STORE");
-	         urlParams += "folder=" + encodeURIComponent(store) + '^-^' + encodeURIComponent(checked[i].name) + "&";
-	    }
+		for (var i=0; i < checked.length; i++)
+		{
+			var store = checked[i].getAttribute("STORE");
+			urlParams += "folder=" + encodeURIComponent(store) + '^-^' + encodeURIComponent(checked[i].name) + "&";
+		}
 
-	    // convert from, to fields to dateRange field needed by doFetchAndIndex
+		// convert from, to fields to dateRange field needed by doFetchAndIndex
 		/*
 	    if ($('#from').val().length > 0 && $('#to').val().length > 0)
 	    	urlParams += '&dateRange=' + $('#from').val() + '-' + $('#to').val();
 	    */
 
-	    epadd.log ('urlparams = ' + urlParams);
-	    return urlParams;
+		epadd.log ('urlparams = ' + urlParams);
+		return urlParams;
 	}
 	try {
 		var post_params = getSelectedFolderParams() + '&period=Monthly&downloadAttachments=true';
