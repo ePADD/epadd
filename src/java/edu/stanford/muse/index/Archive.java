@@ -2641,7 +2641,7 @@ after maskEmailDomain.
                         EmailDocument ed = (EmailDocument) d;
                         // if includeRestricted is set to false, need filter out those labelled with DNT labels
                         if (includeRestricted || !getLabelIDs(ed).contains(LabelManager.LABELID_DNT))
-                            EmailUtils.printToMbox(this, ed, pw, getBlobStore(), true);
+                            EmailUtils.printToMbox(this, ed, pw, getBlobStore(), false);
 
                     }
                     // if includeDuplicated is set to true, need perform deduplication
@@ -2652,7 +2652,7 @@ after maskEmailDomain.
 
                             if (aSourceFolder.equals(s.getFirst())){
                                 System.out.println("generateExportableAssetsNormalizedMbox: Deduplicate for this email document: "+ deduplicate.getUniqueId());
-                                EmailUtils.printToMbox(this, (EmailDocument) deduplicate, pw, getBlobStore(), true);
+                                EmailUtils.printToMbox(this, (EmailDocument) deduplicate, pw, getBlobStore(), false);
                             }
                         }
                     }
