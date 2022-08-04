@@ -1,6 +1,7 @@
 Building epadd:
 
-There are 2 versions of ePADD; a full one with the suffix epadd-) that is used for appraisal, processing and delivery modules, and another one (with the prefix epadd-discovery). ePADD is first built as a WAR file, and then packaged in the epadd-launcher project as a -standalone.jar, and then a .exe for Windows, and a .app and .dmg for Mac OS. 
+There are 2 versions of ePADD; a full one with the suffix epadd-) that is used for appraisal, processing and delivery modules, and another one (with the prefix epadd-discovery). ePADD is first built as a WAR file, and then packaged in the epadd-
+launcher project as a -standalone.jar, and then a .exe for Windows, and a .app and .dmg for Mac OS.
 
 Make sure you have the Java 8 JDK installed, as well as the Java build tools maven and ant, and that mvn and ant are available in your path. Your JAVA_HOME should be pointing to the correct JDK installation directory. You can check this by ensuring that the following command gives the expected output.
 

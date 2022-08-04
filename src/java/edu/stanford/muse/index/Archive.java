@@ -225,7 +225,7 @@ public class Archive implements Serializable {
     private List<Document> allDocs;                                                    // this is the equivalent of fullEmailDocs earlier
     transient private Set<Document> allDocsAsSet = null;
     transient private Map<Document,Document> allUniqueDocsMap=null;
-    private transient Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
+    private Multimap<Document, Tuple2<String,String>> dupMessageInfo = LinkedListMultimap.create();//added to support more informative messages when finding duplicate mails..
     private transient Map<Long,List<Document>> threadIDToDocs = new LinkedHashMap<>();
 
     private final Set<FolderInfo> fetchedFolderInfos = new LinkedHashSet<>();    // keep this private since its updated in a controlled way
@@ -2906,19 +2906,9 @@ after maskEmailDomain.
             case EXPORTABLE_PROCESSING_NORMALIZED_PROCESSED:
                 String normalizedProcessingAssetFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_SUBDIR;
                 targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_PROCESSING_NORMALIZED_PROCESSED_SUBDIR;
-
-                final Path normalizedProcessingFilePath = new File(normalizedProcessingAssetFolder).toPath();
-
                 new File(targetExportableAssetsFolder).mkdir();
-
-                if (Files.isDirectory(normalizedProcessingFilePath)) {
-                    // generate normalized MBOX email store
-                    generateExportableAssetsNormalizedMbox(targetExportableAssetsFolder, normalizedFormat, includeRestricted, includeDuplicated);
-                } else {
-                    System.out.println("Processing Normalized assets folder NOT exists!!! " + normalizedProcessingAssetFolder);
-                    returnCode = "3";
-                    returnMessage = "Missing Processing Normalized assets folder / files";
-                }
+                // generate normalized MBOX email store
+                generateExportableAssetsNormalizedMbox(targetExportableAssetsFolder, normalizedFormat, includeRestricted, includeDuplicated);
                 break;
         }
 

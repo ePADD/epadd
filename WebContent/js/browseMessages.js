@@ -202,7 +202,11 @@ var Annotations = function() {
             if(overwrite_or_append=="overwrite") {
                     annotations[PAGE_ON_SCREEN] = annotation;
             }else if (overwrite_or_append=="append"){
-                    annotations[PAGE_ON_SCREEN] += annotation;
+                if (annotations[PAGE_ON_SCREEN] === undefined)
+                {
+                    annotations[PAGE_ON_SCREEN] = "";
+                }
+                annotations[PAGE_ON_SCREEN] += (" " + annotation);
             }
 
             Annotations.refreshAnnotation();
@@ -240,19 +244,37 @@ var Annotations = function() {
                 alert("Select an option to either ovewrite or append this annotation");
             return false;
             }
-            if(overwrite_or_append=="overwrite") {
-                var c = epadd.warn_confirm_continue('The existing annotations for all ' + numMessages + ' messages will be overwritten. Do you want to continue?', function() {
+                var warningText = "";
+                if (overwrite_or_append=="overwrite")
+                {
+                    warningText = "The existing annotations for all " + numMessages + " messages will be overwritten. Do you want to continue?";
+                }
+                else
+                {
+                    warningText = "Appending to all " + numMessages + " messages. Do you want to continue?";
+                }
+                var c = epadd.warn_confirm_continue(warningText, function() {
                     //If user confirms then proceed.
                     Navigation.enableCursorKeys();
-                    var annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
-                    // if(annotation.trim().length==0)
-                    //     annotation="";
+                    var annotation;
+                    if (overwrite_or_append == "overwrite")
+                    {
+                        annotation = $('#annotation-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
+                    }
+                    else
+                    {
+                        annotation = " " + $('#annotation-modal .modal-body').val();
+                    }
                     if(overwrite_or_append=="overwrite") {
                         for (var i = 0; i < TOTAL_PAGES; i++)
                             annotations[i] = annotation;
                     }else if (overwrite_or_append=="append"){
-                        for (var i = 0; i < TOTAL_PAGES; i++)
+                        for (var i = 0; i < TOTAL_PAGES; i++) {
+                            if (annotations[i] === undefined) {
+                                annotations[i] = "";
+                            }
                             annotations[i] += annotation;
+                        }
                     }
 
                     Annotations.refreshAnnotation();
@@ -273,12 +295,10 @@ var Annotations = function() {
                                 $('.annotation-area').text(annotation ? annotation: 'No annotation'); // we can't set the annotation area to a completely empty string because it messes up rendering if the span is empty!
                             else if(overwrite_or_append=="append")
                                 $('.annotation-area').text(annotation ? annotations[PAGE_ON_SCREEN]: 'No annotation');
-                            //  $('#annotation-modal .modal-body').val(''); // clear the val otherwise it briefly appears the next time the annotation modal is invoked
                         },
                         error: function () { epadd.error('There was an error saving the annotation. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');}
                     });
                 });
-            }
         }
 
         for (var i = 0; i < TOTAL_PAGES; i++) {

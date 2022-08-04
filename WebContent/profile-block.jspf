@@ -66,8 +66,8 @@
     }
 %>
 
-
-<% if (haveArchive) {
+<%
+if (haveArchive) {
 
     Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(ArchiveReaderWriter.getArchiveForArchiveID(archiveID).baseDir); %>
 
@@ -167,7 +167,7 @@
                 <% } else if (ModeConfig.isAppraisalMode()) { %>
                     <hr/>
                         Metadata:
-                        <a href="edit-metadata?collection=user" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
+                        <a href="edit-metadata?collection=user&archiveID=<%=archiveID%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
                 <% } %>
 
             </div>

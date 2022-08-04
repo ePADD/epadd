@@ -42,7 +42,6 @@ public class Messages {
 	}
 	else
 		locale = Locale.getDefault();
-
 		return getMessage(locale, bundleName, key, null);
 
 	}
@@ -62,7 +61,6 @@ public class Messages {
 		//Locale ingest= new Locale("France", "French");
 
 		//log.info("currentLocale = " + locale.toString());		//Used to know current locale
-
 		ResourceBundle messages = ResourceBundle.getBundle(bundleName, locale);
 
 		MessageFormat formatter = new MessageFormat("");

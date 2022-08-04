@@ -1,8 +1,8 @@
-<!-- These are standard modals that should be included and available on all pages.
-Pages which need specific versions of these modals (e.g. with custom buttons, handlers, etc.) can create their own modals, but:
-- they should use exactly one of the classes: error-modal, warning-modal, confirm-modal, info-modal, success-modal.
-- they should give the modal some other id other than the ones used here.
--->
+<%--These are standard modals that should be included and available on all pages.--%>
+<%--Pages which need specific versions of these modals (e.g. with custom buttons, handlers, etc.) can create their own modals, but:--%>
+<%--- they should use exactly one of the classes: error-modal, warning-modal, confirm-modal, info-modal, success-modal.--%>
+<%--- they should give the modal some other id other than the ones used here.--%>
+
 
 <div id="alert-modal" class="alert modal fade" style="z-index:99999">
 	<div class="modal-dialog">

@@ -66,6 +66,7 @@
 <%
 	String collectionFolder = request.getParameter("collection");
 	String accessionId = request.getParameter("accession");
+	archiveID = request.getParameter("archiveID");
 
 	// Currently, we assume there should be one and only one targeted collection to navigate from.
 	// If there is no defined, just return

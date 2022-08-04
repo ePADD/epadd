@@ -274,8 +274,13 @@ public class Config {
             }
         } else {
             log.warn("ePADD properties file " + EPADD_PROPS_FILE + " does not exist or is not readable");
+            try (BufferedWriter br = new BufferedWriter(new FileWriter(EPADD_PROPS_FILE))) {
+                br.write("epadd.mode=appraisal\n#uncomment this line in order to change the epadd base directory ");
+                br.append("(currently c:\\users\\<username>\\)\n#epadd.base.dir=C:\\");
+            } catch (IOException e) {
+                Util.print_exception("Error writing epadd properties file " + EPADD_PROPS_FILE, e, log);
+            }
         }
-
         // each individual property can further be overridden from the command line by a system property
         for (String key: props.stringPropertyNames()) {
             String val = System.getProperty (key);
