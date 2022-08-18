@@ -60,8 +60,11 @@ var Navigation = function(){
         });
 
         // forward/back nav
+
+        if (typeof jog !== 'undefined') {				// 2022.08.02	Aries Tsang
         $('#page_forward').click(jog.forward);
         $('#page_back').click(jog.backward);
+        }
     };
 
     // annoying, have to declare these connector funcs, because jog is defined only in setupEvents, so can't directly use those funcs in the Navigation's interface.

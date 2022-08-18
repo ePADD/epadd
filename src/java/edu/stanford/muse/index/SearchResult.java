@@ -347,7 +347,16 @@ public class SearchResult {
                 String comment = annotationManager.getAnnotation(edoc.getUniqueId());
                 if (!Util.nullOrEmpty(comment)) {
                     comment = comment.toLowerCase();
-                    return annotations.contains(comment);
+// 2022-08-09 Aries Tsang					
+                    boolean isFound=false;
+                    for (String f1 : annotations) {
+                        if (comment.contains(f1)) {
+                            isFound = true;
+                            break;
+                        }
+                    }                    
+//                    return annotations.contains(comment);
+                    return isFound;
                 }else
                     return false;
             }).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));

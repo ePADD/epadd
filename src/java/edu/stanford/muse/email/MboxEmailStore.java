@@ -200,7 +200,10 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
         //This is the root folder in the namespace provided
         //see http://docs.oracle.com/javaee/5/api/javax/mail/Store.html#getDefaultFolder%28%29
-		Folder folder = store.getDefaultFolder();
+// 2022-08-11 Aries Tsang        
+//		Folder folder = store.getDefaultFolder();
+		Folder folder = store.getFolder(fname);
+		
 		if (folder == null)
 			throw new RuntimeException ("Invalid folder: " + fname);
 
