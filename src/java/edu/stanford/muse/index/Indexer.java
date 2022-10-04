@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+    2022-09-13  Added finalizer to close the index files
+*/
 package edu.stanford.muse.index;
 
 import edu.stanford.muse.Config;
@@ -836,6 +839,16 @@ is what we want.
 		return dir;
 	}
 
+// 2022-09-13        
+        @Override
+        protected void finalize() {
+            try {
+                close();
+            } catch (Exception e) {
+                Util.print_exception("Indexer.finalize.close", e, log);
+            }
+        }
+
 	/*
 	 * properly close index writers.
 	 * also null out directories that may not be serializable
@@ -1008,7 +1021,6 @@ is what we want.
 			bs.close();
 			
 			doc.add(new Field("headers_original", bs.toByteArray(), storeOnly_ft));
-			System.out.println("xxx stored headers");
 		} catch (IOException e) {
 			log.warn("Failed to serialize headers");
 			e.printStackTrace();
@@ -1252,7 +1264,7 @@ is what we want.
         if(attachmentType)
             fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
         else
-            fieldsArray = new String[]{"body","headers_original","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+            fieldsArray = new String[]{"body","headers_original","text_html_part", "body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
                     "cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
         Set<String> fieldsToLoad = new HashSet<String>();
@@ -1829,7 +1841,7 @@ is what we want.
 		if(attachmentType)
 			fieldsArray = new String[]{"body","meta","fileName","docId","emailDocId","languages"};
 		else
-			fieldsArray = new String[]{"body","headers_original","body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
+			fieldsArray = new String[]{"body","headers_original","text_html_part", "body_original","docId","title","to_emails","from_emails","cc_emails","bcc_emails","to_names","from_names",
 					"cc_names","bcc_names","languages","names","names_original","en_names_title"};
 
 		Set<String> fieldsToLoad = new HashSet<String>();

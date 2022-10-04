@@ -21,12 +21,14 @@
     <link rel="icon" type="image/png" href="images/epadd-favicon.png">
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-dialog.css">
     <jsp:include page="css/css.jsp"/>
 
     <script src="js/jquery.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js" type="text/javascript"></script>
+	<script src="js/bootstrap-dialog.js"></script>
     <style>
 
         .collection-detail { text-align: left; margin:auto; width: 1100px; position: relative;}
@@ -72,7 +74,7 @@
     }
 
     String archiveDir = modeBaseDir + File.separator + id;
-
+    String archiveDirForJs = archiveDir.replace("\\", "\\\\");
     File f = new File(archiveDir);
     if (!f.isDirectory()) {
         out.println ("No collection at that location.");
@@ -233,6 +235,8 @@
         <a target="_blank" href="<%=cm.catalogRecordLink%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.catalog-rec")%></a>
         <br/>
         <% } %>
+		
+		<div align="middle"><button id="btn_delete" class="btn-default" onclick="delFolder();">Delete</button></div>
     </div>
 
     <div class="collection-info">
@@ -376,6 +380,69 @@
             return false;
         });
 
+        function delFolder () {
+            <%  String getPath = archiveDir.replaceAll("\\\\","/");  %>
+            var folder = "<%=getPath%>";
+            
+            BootstrapDialog.show({
+                title: 'Delete Collection',
+                message: 'Confirm to delete this Collection?<br>[<%=id%>]',
+                type: BootstrapDialog.TYPE_DANGER,
+                data: {
+                   'folder': folder
+                },
+                buttons: [
+                   {
+                    id: 'btn-yes',   
+//                  icon: 'glyphicon glyphicon-check',       
+                    label: 'Yes',
+                    cssClass: 'btn-default', 
+                    autospin: false,
+                    action: function(dialogRef){    
+                        $.ajax({
+                            type: "POST",
+                            url: "ajax/delFolder",
+                            data: { folder: folder },
+                            success: function(response) {
+                               if (response['result'] === "ok") {
+                                    BootstrapDialog.alert(
+                                        {
+                                         message:response['reason'], 
+                                         type: BootstrapDialog.TYPE_SUCCESS,
+                                         action: function(dialog) {
+                                            dialog.close(); 
+                                          },
+                                          callback: function(result) {
+                                            window.location.href = 'collections';
+                                          }    
+                                        }
+                                    );
+                                    dialogRef.close();
+//                                    window.location.href = 'collections';
+                               } else {
+                                    BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                               }
+                            },
+                            error: function() {
+                                    BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                            }
+                        });                                
+                    }
+                  },
+                  {
+                   id: 'btn-cancel',   
+//                 icon: 'glyphicon glyphicon-check',       
+                   label: 'No',
+                   cssClass: 'btn-default', 
+                   autospin: false,
+                   action: function(dialogRef){    
+                        dialogRef.close();
+                   }    
+                  }
+                ]
+            });                    
+        }    
+
         function loadArchive(){
             var enterparams = 'dir='+encodeURIComponent('<%=id%>');
             var page = "ajax/async/loadArchive.jsp";
@@ -394,7 +461,7 @@
         $('.collection-enter').click(function() { fetch_page_with_progress ('ajax/async/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); });
         */
         $('.collection-enter').click(function() {
-            var post_params = '&exportableAssets=exportProcessing';
+            var post_params = '&exportableAssets=exportProcessing&archiveDir=<%=archiveDirForJs%>';
             var page = "ajax/async/setExportableAssets.jsp";
 
             try {

@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ /*
+	2022-09-05 	Added handling for IMAP
+	2022-09-09	Fixed bug in generateExportableAssetsNormalizedMbox
+	2022-10-03	Changed the fileformat to IMAP for IMAP import
+    2022-10-03 	Corrected function isMBOX() to check if the source is MBOX 
+ */
 package edu.stanford.muse.index;
 
 import com.google.common.collect.LinkedHashMultimap;
@@ -109,6 +115,8 @@ public class Archive implements Serializable {
     // the archive structure: the archive's top level dir has these subdirs
     public static final String BAG_DATA_FOLDER="data";
     public static final String BLOBS_SUBDIR = "blobs";
+    public static final String SIDECAR_DIR = BLOBS_SUBDIR + File.separatorChar + "sidecarfiles";
+
     public static final String TEMP_SUBDIR = System.getProperty("java.io.tmpdir");
     public static final String INDEXES_SUBDIR = "indexes";
     public static final String SESSIONS_SUBDIR = "sessions"; // original idea was that there would be different sessions on the same archive (index). but in practice we only have one session
@@ -682,8 +690,62 @@ int errortype=0;
             cm.fileMetadatas = fms;
             archive.collectionMetadata = cm;
         }
+
+	
+// 2022-09-05 Added for handling IMAP
+        public void setFileMetadatasIMAP(Archive archive, String[] importedFiles) {
+            EpaddPremis epaddPremis = archive.getEpaddPremis();
+            final String STORE_FOLDER_SEPARATOR = "^-^";
+
+            CollectionMetadata cm = archive.collectionMetadata;
+            List<Archive.FileMetadata> fms;
+            int count = 0;
+
+            if (cm.fileMetadatas != null) {
+                count = cm.fileMetadatas.size();
+                fms = cm.fileMetadatas;
+            } else {
+                fms = new ArrayList<Archive.FileMetadata>();
     }
 
+            Archive.FileMetadata fm = new Archive.FileMetadata();
+                
+            if (importedFiles != null) {
+                Set<Document> docset=archive.getAllDocsAsSet();
+                EmailDocument doc1 = (EmailDocument) docset.iterator().next(); 
+                for (String fs : importedFiles) {
+                    
+                    int idx = fs.indexOf(STORE_FOLDER_SEPARATOR);
+                    if (idx == -1) {
+                        // Bad folder name received. Content not parsed
+                        continue;
+                    }
+                    //String accountName = fs.substring (0, idx); // example: GMail
+                    String folderName = fs.substring(idx + STORE_FOLDER_SEPARATOR.length()); // example: MyFolder
+
+                    fm = new Archive.FileMetadata();
+                    fm.filename = doc1.emailSource;
+                    fm.fileID = folderName;
+                    if (epaddPremis != null)
+                    {
+                        epaddPremis.setFileID(fm.fileID, folderName);
+//                        epaddPremis.setFileID(fm.fileID, doc1.emailSource + folderName);
+                    }
+// 2022-10-03					
+//                    fm.fileFormat = "MBOX";
+                    fm.fileFormat = "IMAP";
+                    fm.notes = "";
+
+                    count++;
+                    fms.add(fm);
+                } // end for
+            }   //end if (importedFiles!=null)
+
+            cm.fileMetadatas = fms;
+            archive.collectionMetadata = cm;
+        }
+    }
+// 2022-09-05
 
     /**
      * set the base dir of the archive, this is the place where all the archive cache is dumped
@@ -872,6 +934,7 @@ int errortype=0;
     private void prepareBaseDir(String dir) {
         prepareLexiconsDir(dir);
         prepareExportableAssetsDir(dir);
+        prepareSidecarDir(dir);
     }
 
     private void prepareLexiconsDir(String dir) {
@@ -912,6 +975,12 @@ int errortype=0;
         dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.EXPORTABLE_ASSETS_SUBDIR;
         exportableAssetsDir = new File(dir);
         exportableAssetsDir.mkdirs();
+    }
+
+    private void prepareSidecarDir(String dir) {
+        dir = dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SIDECAR_DIR;
+        File sidecarDir = new File(dir);
+        sidecarDir.mkdirs();
     }
 
     /** adds alternateEmailAddrs if specified in the request to the session. alternateEmailAddrs are simply appended to. */
@@ -1434,6 +1503,21 @@ int errortype=0;
             FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.XML_FILE_NAME),
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.XML_FILE_NAME));
 
+
+       if (export_mode == Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR).exists()) {
+           FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR),
+                   new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR));
+       }
+
+        if (export_mode == Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR).exists()) {
+            FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR));
+        }
+        if (export_mode == Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING && export_mode != Export_Mode.EXPORT_PROCESSING_TO_DELIVERY && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + SIDECAR_DIR).exists()) {
+            FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + SIDECAR_DIR),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + SIDECAR_DIR));
+        }
+
         // save the states that may get modified
         List<Document> savedAllDocs = allDocs;
         LabelManager oldLabelManager= getLabelManager();
@@ -1464,6 +1548,10 @@ int errortype=0;
             if (!retainedDocIDs.contains(doc.get("docId")))
                 return false;
 
+            if (export_mode != Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING)
+            {
+                doc.removeFields("headers_original");
+            }
             if (exportInPublicMode) {
                 String text;
                 if (redact_body_instead_of_remove) {
@@ -1588,7 +1676,17 @@ after maskEmailDomain.
     public List<Document> docsWithThreadId(long threadID) {
 
         if(threadIDToDocs!=null && threadIDToDocs.size()!=0){
-            return threadIDToDocs.get(threadID);
+            List<Document>  documentList = threadIDToDocs.get(threadID);
+
+            //Had an issue with trying to get a documentList straight after import
+            //and it was null. Seems threadIDToDocs is updated when ePADD starts, so import
+            //is not taken into account before re-start. Fix:
+            //if documentList returned from threadIDToDocs is null then do the same thing as when threadIDToDocs is null
+            //or empty.
+            if (documentList != null)
+            {
+                return documentList;
+            }
         }
         threadIDToDocs=new LinkedHashMap<>();
         List<Document> result = new ArrayList<>();
@@ -2645,7 +2743,8 @@ after maskEmailDomain.
 
                     }
                     // if includeDuplicated is set to true, need perform deduplication
-                    if (includeDuplicated){
+// 2022-09-09       if (includeDuplicated){
+                    if (includeDuplicated && dupMessageInfo != null){
                         for (Map.Entry<Document, Tuple2<String, String>>  entry: dupMessageInfo.entries()) {
                             Document deduplicate = entry.getKey();
                             Tuple2<String, String> s = entry.getValue();
@@ -2657,12 +2756,15 @@ after maskEmailDomain.
                         }
                     }
 
-                    pw.close();
+// 2022-09-09        pw.close();
 
                 } catch (Exception e) {
                     e.printStackTrace();
                     returnCode = "1";
                     returnMessage = "Unexpect error is found" + e.toString();
+                } finally {
+// 2022-09-09					
+                    if (pw!=null) pw.close();
                 }
             } else {
                 //TODO: more codings are required here to support non-MBOX normalization formats.
@@ -2714,7 +2816,7 @@ after maskEmailDomain.
             case EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED:
                 targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR;
                 new File(targetExportableAssetsFolder).mkdir();
-
+/* 2022-09-05
                 try {
                     for (String sourceAssetsFile : sourceAssetsLocations) {
                         // We use the same filenames for canonical acquisitioned assets
@@ -2725,13 +2827,24 @@ after maskEmailDomain.
                     returnCode = "4";
                     returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
                 }
-
+*/
+// 2022-09-05 Added handling for IMAP
+                for (String sourceAssetsFile : sourceAssetsLocations) {
+                    // We use the same filenames for canonical acquisitioned assets
+                    targetExportableAssetsFilename = Util.filePathTail(sourceAssetsFile);
+                    returnCode = export2mbox(sourceAssetsFile, targetExportableAssetsFolder, targetExportableAssetsFilename);
+                    if (returnCode.equals("4")) {
+                        returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                        break;
+                    }
+                }
+// 2022-09-05
                 break;
 
             case EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED:
                 targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR;
                 new File(targetExportableAssetsFolder).mkdir();
-
+/* 2022-09-05
                 try {
                     for (String sourceAssetFolder : sourceAssetsLocations) {
                         targetExportableAssetsFilename = Util.filePathTail(sourceAssetFolder);
@@ -2741,25 +2854,28 @@ after maskEmailDomain.
                     returnCode = "4";
                     returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
                 }
-
+*/
+// 2022-09-05 Added handling for IMAP
+                for (String sourceAssetFolder : sourceAssetsLocations) {
+                    targetExportableAssetsFilename = Util.filePathTail(sourceAssetFolder);
+                    returnCode = export2mbox(sourceAssetFolder, targetExportableAssetsFolder, targetExportableAssetsFilename);
+                    if (returnCode.equals("4")) {
+                        returnMessage = "Real time error happened during normalization process: unexpected error is found during copying files";
+                        break;
+                    }
+                }
+// 2022-09-05
                 break;
 
             case EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED:
                 // Existence of normalized acquisition MBOX is mandatory for creating normalized appraised
                 final Path normalizedAcquisitionFile = new File(targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR).toPath();
 
-                if (Files.isDirectory(normalizedAcquisitionFile)){
-                    // Continue only when normalized acquisition MBOX exists
-
                     targetExportableAssetsFolder = targetExportableAssetsFolder + BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR;
                     new File(targetExportableAssetsFolder).mkdir();
 
                     // generate normalized MBOX email store
                     generateExportableAssetsNormalizedMbox(targetExportableAssetsFolder, normalizedFormat, includeRestricted, includeDuplicated);
-                } else {
-                    returnCode = "1";
-                    returnMessage = "Missing Appraisal Normalized assets folder / files";
-                }
                 break;
 
             case EXPORTABLE_PROCESSING_NORMALIZED:
@@ -3094,4 +3210,51 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
 
         indexer.deleteAndCleanupFiles();
     }
+	
+// 2022-09-05
+    public boolean isMBOX() {
+        if (allDocs == null || allDocs.isEmpty()) return true;
+        EmailDocument doc1 = (EmailDocument) allDocs.iterator().next();
+//        if (doc1.emailSource.contains("@") && doc1.emailSource.contains("imap")) return false;
+//        else return true;
+// 2022-10-03
+//        if (doc1.emailSource.toLowerCase().contains(".mbox")) return true;
+        if (doc1.emailSource.toLowerCase().contains("mbox")) return true;
+        else return false;
+    }
+    
+    public String export2mbox(String sourceFile, String targetDir, String targetFilename) {
+        String returnCode = "0";
+        String targetFile;
+        if (allDocs == null || allDocs.isEmpty()) {
+            return "4";
+        }
+        if (isMBOX()) {    
+            targetFile = targetDir + File.separatorChar + targetFilename;
+            try {
+                Util.copy_file(sourceFile, targetFile);
+            } catch (IOException ioe) {
+                returnCode = "4";
+            }
+        } else {
+            EmailDocument doc1 = (EmailDocument) allDocs.iterator().next();     
+            targetFile = targetDir + File.separatorChar + doc1.emailSource + ".mbox";
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(targetFile, "UTF-8");
+                boolean stripQuoted = false;
+                for (Document ed: allDocs)
+                    EmailUtils.printToMbox(this, (EmailDocument) ed, pw, getBlobStore(), stripQuoted);
+            } catch(Exception e){
+                //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
+                e.printStackTrace();
+                returnCode = "4";
+            } finally {
+                if (pw != null) pw.close();
+            }
+        }
+        return returnCode;
+    }
+// 2022-09-05
+	
 }

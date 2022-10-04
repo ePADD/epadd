@@ -72,7 +72,7 @@
 
 
 			<% if (ModeConfig.isAppraisalMode()) {
-				out.println("<li style='display:inline'><a href='email-sources'>"+imp+"</a></li>");
+				out.println("<li style='display:inline'><a href='email-sources?archiveID=" + archiveID +"'>"+imp+"</a></li>");
 			} else if(!haveArchive && ModeConfig.isProcessingMode()) { //display collection tab only if there is no archive opened currently. Note that the first and second
 				//conditions (if and else part) can be true simultaneously. Therefore the ordering of these two is important because we want
 				//to display import tab in the appraisal mode and collection tab in other modes.

@@ -88,7 +88,11 @@ public class EpaddEvent implements Serializable {
     }
 
     public enum EventType {
-        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized");
+// 2022-09-01 Added IMAP_INGEST		
+//        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized");
+        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized"), 
+        IMAP_INGEST("imap ingest")
+        ;
 
         private final String eventType;
 

@@ -1,3 +1,6 @@
+/*
+	2022-09-13	fixed bug in readArchiveIfPresent
+*/
 package edu.stanford.muse.index;
 
 import com.google.common.collect.Multimap;
@@ -861,6 +864,8 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                     Archive a = wra.get();
                     if (a != null) {
                         log.info("Great, could re-use loaded archive for dir: " + archiveFile + "; archive = " + a);
+// 2022-09-13			
+						//a.close();	// close the archive before re-use
                         return a;
                     }
                 }

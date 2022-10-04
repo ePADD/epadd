@@ -83,6 +83,11 @@ div.buttons_on_datatable_row{
 	cursor:pointer;
 }
 
+.button_image{
+	height:20px;
+	padding-right: 10px;
+	cursor:pointer;
+}
 .button_image_on_datatable_row{
 	height:15px;
 	padding-right: 10px;

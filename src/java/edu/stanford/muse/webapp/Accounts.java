@@ -132,6 +132,11 @@ public class Accounts {
 
 				String emailDomain = loginName.substring(loginName.indexOf("@") + 1);
 				log.info("Domain: " + emailDomain);
+				log.info("Java: "+System.getProperty("java.version"));
+/*
+	2022-08-25
+    JDK 8u102 changed JceSecurity#isRestricted to final
+    JDK 1.8.0_161 enables unlimited strength encryption by default.
 
 				// from http://suhothayan.blogspot.in/2012/05/how-to-install-java-cryptography.html
 				// to get around the need for installingthe unlimited strength encryption policy files.
@@ -142,7 +147,7 @@ public class Accounts {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-
+*/
 //				URL url = new URL("https://live.mozillamessaging.com/autoconfig/v1.1/" + emailDomain);
 				URL url = new URL("https://autoconfig.thunderbird.net/v1.1/" + emailDomain);
 				try {

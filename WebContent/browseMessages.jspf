@@ -377,12 +377,18 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         }catch(Exception e){
             Util.print_exception("Error while making a dataset out of docs", e, JSPHelper.log);
         }
-
-        DataSet browseSet = pair.getFirst();
-        JSONArray jsonObjectsForMessages = pair.getSecond(); // this has message labels
+// 2022-09-13	Enhance the error handling
+        DataSet browseSet = null;
+        JSONArray jsonObjectsForMessages = null;
+		if (pair != null) {
+//			DataSet browseSet = pair.getFirst();
+//			JSONArray jsonObjectsForMessages = pair.getSecond(); // this has message labels
+			browseSet = pair.getFirst();
+			jsonObjectsForMessages = pair.getSecond(); // this has message labels
+		}	
         %>
         <script>
-            window.messageMetadata = <%=jsonObjectsForMessages.toString()%>;
+            window.messageMetadata = <%=(jsonObjectsForMessages==null? "":jsonObjectsForMessages.toString())%>;
         </script>
         <%
         // entryPct says how far (what percentage) into the selected pages we want to enter
@@ -406,11 +412,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
 
         out.println ("<script type=\"text/javascript\">var entryPage = " + entryPage + ";</script>\n");
         String labelMap = archive.getLabelManager().getLabelInfoMapAsJSONString();
-        out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+browseSet.size()+";</script>\n");
-        session.setAttribute (docsetID, browseSet);
+//        out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+browseSet.size()+";</script>\n");
+out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+ (browseSet==null?0:browseSet.size()) +";</script>\n");
+        if (browseSet != null) session.setAttribute (docsetID, browseSet);
 
-        JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + docsetID);
-
+//        JSPHelper.log.info ("Browsing " + browseSet.size() + " pages in dataset " + docsetID);
+		JSPHelper.log.info ("Browsing " + (browseSet==null?0:browseSet.size()) + " pages in dataset " + docsetID);
     %>
 </div> <!--  browsepage -->
 <br/>

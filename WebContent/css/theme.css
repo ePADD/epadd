@@ -1487,6 +1487,17 @@ body {
 
 }
 
+.browse-all {
+	position: absolute;
+	font-size: 16px;
+	vertical-align: middle;
+	display: table-cell;
+	cursor: pointer;
+	top: 30px ;
+	right: 150px;
+
+}
+
 .profile-title {
 	font-weight: bold;
 	border-right: solid 1px #ccc;

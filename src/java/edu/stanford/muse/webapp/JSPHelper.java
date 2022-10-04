@@ -453,7 +453,10 @@ public class JSPHelper {
         // add the new stores
 
 		// we add the following code to support file metada requirement in epadd+ project
-		archive.collectionMetadata.setFileMetadatas(archive, allFolders);
+// 2022-09-05	Added handling for IMAP		
+//		archive.collectionMetadata.setFileMetadatas(archive, allFolders);
+        if (archive.isMBOX()) archive.collectionMetadata.setFileMetadatas(archive, allFolders);
+        else archive.collectionMetadata.setFileMetadatasIMAP(archive, allFolders);
         archive.printEpaddPremis();
     }
 

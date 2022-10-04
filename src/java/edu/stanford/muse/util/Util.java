@@ -24,11 +24,15 @@
 // warning: do not introduce package dependencies other than java.* classes in
 // this collection of utils
 // utils that are specific to other libs should go in their own utils file
+/*
+	2022-09-12	Updated print_exception to output error message to log file
+*/
 package edu.stanford.muse.util;
 
 import edu.stanford.muse.Config;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -236,8 +240,11 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 	{
 		String trace = stackTrace(t);
 		String s = message + "\n" + t.toString() + "\n" + trace;
-		if (log != null)
-			log.warn(s);
+// 2022-09-12		
+//		if (log != null)
+//			log.warn(s);
+        Logger logger =  LogManager.getLogger( edu.stanford.muse.util.Util.class );
+        logger.error(message, t);
 		System.err.println(s);
 	}
 

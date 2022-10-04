@@ -183,13 +183,8 @@
             </div>
         </div>
         <br/>
-        <div class="div-input-field">
-            <div class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-end-date")%></div>
-            <br/>
-            <div class="input-field">
-                <input title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.embargo-end-date.title")%>" value="" class="form-control" type="text" name="embargoEndDate" id="embargoEndDate"/>
-            </div>
-        </div>
+<!-- 2022-09-08	-->		
+        <input value="" class="form-control" type="hidden" name="embargoEndDate" id="embargoEndDate"/>
         <br/>
         <div class="div-input-field">
             <label class="input-field-label"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "edit-collection-metadata.sensitivity-review")%></label>

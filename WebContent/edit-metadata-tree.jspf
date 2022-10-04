@@ -22,8 +22,14 @@
         //System.out.println("fileMetadatas.size() = "+ fileMetadatas.size());
         for (Archive.FileMetadata fm: fileMetadatas) {
             JSONObject aFile = new JSONObject();
-            aFile.put("text", fm.filename);
-            aFile.put("type", "MBOX");
+// 2022-10-03			
+//            aFile.put("text", fm.filename);
+//            aFile.put("type", "MBOX");
+            if (fm.fileFormat.equals("IMAP")) aFile.put("text", fm.fileID);
+            else aFile.put("text", fm.filename);
+            aFile.put("type", fm.fileFormat);
+// 2022-10-03
+						
             aFile.put("icon", "glyphicon glyphicon-file");
 
             // File Metadata

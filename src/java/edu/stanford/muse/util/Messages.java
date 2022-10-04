@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 
@@ -66,8 +67,15 @@ public class Messages {
 		MessageFormat formatter = new MessageFormat("");
 		formatter.setLocale(locale);
 
-		formatter.applyPattern(messages.getString(key));
-		return formatter.format(args);
+		try {
+			formatter.applyPattern(messages.getString(key));
+			return formatter.format(args);
+		}
+		catch (MissingResourceException e)
+		{
+			log.error("Resource missing " + bundleName + " " + key, e);
+			return "";
+		}
 	}
 
 

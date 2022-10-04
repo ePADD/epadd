@@ -24,6 +24,7 @@
     <jsp:include page="css/css.jsp"/>
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/bootstrap-dialog.css">
 
     <script src="js/jquery.js"></script>
 
@@ -38,6 +39,7 @@
 
     <script src="js/muse.js"></script>
     <script src="js/epadd.js"></script>
+    <script src="js/bootstrap-dialog.js"></script>
 
     <style>
         .mini-box { height: 105px; vertical-align:top; background-color: #f5f5f8; display: inline-block; width:200px; padding:20px; margin-right:22px;}
@@ -57,6 +59,24 @@
         .picker-buttons { margin-top:40px; margin-left:-30px; } /* so that the browse button appears at the right edge of the input box */
         .form-group { margin-bottom: 25px;}
         .review-messages { vertical-align:center; text-align:center;}
+        .buttonIn {
+                width: 640px;
+                position: relative;
+        }
+        .folder-button {
+                position: absolute;
+                top: 10;
+                border-radius: 5px;
+                right: 6px;
+                z-index: 2;
+                border: none;
+                top: 2px;
+                height: 32px;
+                cursor: pointer;
+                color: white;
+                background-color: #1e90ff;
+                transform: translateX(2px);
+        }
     </style>
 </head>
 <body style="background-color:white;">
@@ -202,7 +222,10 @@ Error: Export is only available in processing or appraisal modes!
             <div class="one-line" id="export-next">
                 <div class="form-group col-sm-8">
                     <label for="export-next-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.specify-location")%></label>
+                    <div class="buttonIn">
                     <input id="export-next-file" class="dir form-control" type="text" name="name" value=""/>
+<%--						<button id="export-next-create" class="btn-default folder-button" onclick=createFolder(document.getElementById('export-next-file'));>New Folder</button>--%>
+                    </div>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
                     <button id="export-next-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%></button>
@@ -265,7 +288,10 @@ Error: Export is only available in processing or appraisal modes!
             <div class="one-line" id="export-attach">
                 <div class="form-group col-sm-8">
                     <label for="export-attach-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.specify-location")%></label>
+                    <div class="buttonIn">
                     <input id="export-attach-file" class="dir form-control" type="text" name="name" value=""/>
+<%--						<button id="export-attach-create" class="btn-default folder-button" onclick=createFolder(document.getElementById('export-attach-file'));>New Folder</button>--%>
+                    </div>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
                     <button id="export-attach-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%></button>
@@ -295,7 +321,8 @@ Error: Export is only available in processing or appraisal modes!
                     var baseUrl = 'export-attachments';
                     var dir = $('.dir', $('#export-attach')).val();
                     if (dir && dir.length > 0)
-                        window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
+// 2022-09-09           window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked');
+						window.location = encodeURI(baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir + '&type=' + type + '&ext=' + ext + '&unprocessedonly=' + $('input[name="unprocessedOption"]').prop('checked'));
                 });
             </script>
 
@@ -555,6 +582,57 @@ Error: Export is only available in processing or appraisal modes!
 //            new FilePicker($('#export-auth'));
             new FilePicker($('#export-headers'));
         });
+		
+        function createFolder(obj) {
+                    BootstrapDialog.show({
+                        title: 'Create Folder',
+                        message: 'New Folder: <input type="text" class="form-control" value="' + obj.value +'">',
+                        data: {
+                          'folder': obj.value
+                        },
+                        buttons: [
+                          {
+                            id: 'btn-ok',   
+//                            icon: 'glyphicon glyphicon-check',       
+                            label: 'OK',
+                            cssClass: 'btn-default', 
+                            autospin: false,
+                            action: function(dialogRef){    
+                                $.ajax({
+                                    type: "POST",
+                                    url: "ajax/newFolder",
+                                    data: { folder: dialogRef.getModalBody().find('input').val() },
+                                    success: function(response) {
+//                                        alert(response['reason']);
+                                        if (response['result'] === "ok") {
+                                            BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_SUCCESS});
+                                            obj.value = dialogRef.getModalBody().find('input').val().replaceAll('\\', '/');
+                                            dialogRef.close();
+                                        } else {
+                                            BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                                        }
+                                    },
+                                    error: function() {
+//                                        alert(response['reason']);
+                                        BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                                    }
+                                });                                
+                            }
+                          },
+                          {
+                            id: 'btn-cancel',   
+//                            icon: 'glyphicon glyphicon-check',       
+                            label: 'Cancel',
+                            cssClass: 'btn-default', 
+                            autospin: false,
+                            action: function(dialogRef){    
+                                dialogRef.close();
+                            }    
+                          }
+                        ]
+                    });                    
+        }    
+		
         $('#export-next .go-button').click (function(e) {
             var $button = $(e.target);
             if ($button.hasClass('faded'))

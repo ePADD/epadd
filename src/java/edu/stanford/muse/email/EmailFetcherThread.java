@@ -1601,6 +1601,16 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         Util.print_exception("Exception trying to fetch messages, results will be incomplete! ", e, log);
                     }
                 }
+//2022-09-01                
+                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.IMAP_INGEST, "["+folder_name() + "] "+ nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "imap account", email_source());
+//              archive.getEpaddPremis().createFileObject(email_source(),new File(email_source()).length());
+                archive.getEpaddPremis().addToSignificantProperty("folder count", 1);
+                archive.getEpaddPremis().addToSignificantProperty("overall message_count", nMessages);
+                archive.getEpaddPremis().addToSignificantProperty("overall unique message_count", nMessages - stats.nMessagesAlreadyPresent);
+                archive.getEpaddPremis().setSignificantProperty("overall unique attachment count", archive.blobStore.uniqueBlobs.size());
+                archive.getEpaddPremis().setSignificantProperty("overall unique image count", archive.getNImageAttachments());
+//2022-09-01                                
+				
                 log.info("Read #" + nMessages + " messages in  in " + (System.currentTimeMillis() - st) + "ms");
             }
         } catch (Throwable t) {

@@ -190,7 +190,10 @@ public void doFetchAndIndex(Multimap<String,String> paramsMap, Consumer<StatusPr
 				p = Util.fieldsToCSV(archive.getIndexStats(), false);
 				JSPHelper.log.info("INDEXERSTATS-1: " + p.getFirst());
 				JSPHelper.log.info("INDEXERSTATS-2: " + p.getSecond());
-			} catch (Exception e) { }
+			} catch (Exception e) { 
+// 2022-09-14   add logging for exception
+                Util.print_exception("doFetchAndIndex.archive.getStats()", e, JSPHelper.log);
+			}
 	} catch (CancelledException ce) {
 		// op was cancelled, so just go back to where we must have been
 		JSPHelper.log.warn("Fetch groups and indexing cancelled by user");

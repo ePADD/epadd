@@ -7,6 +7,10 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
 <%@ page import="java.util.Set" %>
+
+<link rel="stylesheet" href="css/bootstrap-dialog.css">
+<script src="js/bootstrap-dialog.js"></script>
+
 <%!
   // this profile block will go onto pretty much every page via the header.jspf
 
@@ -56,6 +60,7 @@
                     + "</div>"
                     + "</div>" // end profile-block-left
                     + "<div class=\"collection-metadata\" style=\"width: " + metadataWidth + "px;max-width: " + metadataWidth + "px\">" + collectionInfo + "</div>"
+                    + "<div class=\"browse-all\" style=\"width:32px\"><img width = 120px title=\"Browse all messages\" src=\"images/all_messages.png\"/> </div>"
                     + "<div class=\"profile-more-info\" style=\"width:32px\"><img title=\"More information about this collection\" src=\"images/information_black.svg\"/> </div>"
                     + "</div></div><br/>";
 
@@ -66,8 +71,8 @@
     }
 %>
 
-<%
-if (haveArchive) {
+
+<% if (haveArchive) {
 
     Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(ArchiveReaderWriter.getArchiveForArchiveID(archiveID).baseDir); %>
 
@@ -171,8 +176,12 @@ if (haveArchive) {
                 <% } %>
 
             </div>
-            <div class="modal-footer">
-                <button type="button" class="ok-button btn btn-default" data-dismiss="modal"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button>
+			<hr/>
+            <!--div class="modal-footer"-->
+			<div class="row">
+                <div class="col-sm-5"><button id="btn_delete" class="btn-default" onclick="delArchive(archiveID);">Delete</button></div>
+                <!--button type="button" class="ok-button btn btn-default" data-dismiss="modal"> %=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button-->
+                <div class="col-sm-5"><button type="button" class="ok-button btn btn-default" data-dismiss="modal"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button></div>               
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -181,6 +190,78 @@ if (haveArchive) {
     // ensure that this func is called only when doc is ready because .profile-more-info doesn't exist yet when this header is included
     $(function() {
         $('.profile-more-info').click (function() { $('#collection-summary-modal').modal();});
+        $('.browse-all').click (function() {
+            location.href='browse?archiveID=<%=archiveID%>';
+        })})
+
+    function delArchive (archive1) {
+            <%  String getPath = ArchiveReaderWriter.CACHE_DIR.replaceAll("\\\\","/");  %>
+            var folder = "<%=getPath%>";
+
+            $('#collection-summary-modal').modal("hide");
+            
+            BootstrapDialog.show ({
+                title: 'Delete Archive',
+                message: 'Confirm to delete this Archive?',
+                type: BootstrapDialog.TYPE_DANGER,
+                closable: false,
+                data: {
+                   'folder': folder
+                },
+                buttons: [
+                   {
+                    id: 'btn-yes',   
+//                  icon: 'glyphicon glyphicon-check',       
+                    label: 'Yes',
+                    cssClass: 'btn-default', 
+                    autospin: false,
+                    action: function(dialogRef){    
+                        $.ajax({
+                            type: "POST",
+                            url: "ajax/delFolder",
+                            data: { folder: folder, archive: archive1 },
+                            success: function(response) {
+                               if (response['result'] === "ok") {
+                                    BootstrapDialog.alert(
+                                        {
+                                         message:response['reason'], 
+                                         type: BootstrapDialog.TYPE_SUCCESS,
+                                         action: function(dialog) {
+                                            dialog.close(); 
+                                          },
+                                          callback: function(result) {
+//                                            ('#collection-summary-modal').modal('show');
+                                            window.location.href = 'email-sources';
+                                          }    
+                                        }
+                                    );
+                                    dialogRef.close();
+//                                    window.location.href = 'collections';
+//                                    $('#collection-summary-modal').modal('show');
+                               } else {
+                                    BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                               }
+                            },
+                            error: function() {
+                                    BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                            }
     });
+                    }
+                  },
+                  {
+                   id: 'btn-cancel',   
+//                 icon: 'glyphicon glyphicon-check',       
+                   label: 'No',
+                   cssClass: 'btn-default', 
+                   autospin: false,
+                   action: function(dialogRef){    
+                        dialogRef.close();
+                        $('#collection-summary-modal').modal('show');
+                   }    
+                  }
+                ]
+            });                    
+    }    // End of delArchive
+	
 </script>
 <% } %>

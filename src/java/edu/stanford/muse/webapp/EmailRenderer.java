@@ -1,3 +1,6 @@
+/*
+    2022-09-14   Null Object handling
+*/
 package edu.stanford.muse.webapp;
 
 import com.google.common.collect.Multimap;
@@ -678,7 +681,10 @@ public class EmailRenderer {
 					    EmailDocument ed = (EmailDocument) d;
 						jsonObj.put("id", ed.getUniqueId());
                         jsonObj.put ("threadID", ed.threadID);
-                        jsonObj.put("msgInThread",result.getArchive().docsWithThreadId(ed.threadID).size());//docsWithThreadID is not expensive method as it caches the result for future queries
+// 2022-09-14   Null Object handling
+//                        jsonObj.put("msgInThread",result.getArchive().docsWithThreadId(ed.threadID).size());//docsWithThreadID is not expensive method as it caches the result for future queries
+                        List<Document> list1 = result.getArchive().docsWithThreadId(ed.threadID);
+                        jsonObj.put("msgInThread", (list1==null? 0:list1.size()) );
 						jsonObj.put ("nAttachments", ed.attachments != null ? ed.attachments.size(): 0);
 					}
 					resultObj.put(resultCount++, jsonObj);

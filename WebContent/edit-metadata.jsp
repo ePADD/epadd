@@ -82,7 +82,17 @@
 <%
 	if (ModeConfig.isAppraisalMode()) {
 %>
-<div style="text-align: left; margin:auto; width: 1100px; position: relative;"> Appraisal  &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; <a href="browse-top?archiveID=<%=archiveID%>">Browse this Collection</a> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; Edit Metadata</div>
+<%
+//	2022-08-24
+        String browseTop;    
+        if (archiveID != null) { 
+            browseTop = "<a href=\"browse-top?archiveID=" + archiveID + "\">";
+        } else {
+            browseTop = "<a href=\"browse-top\">";
+        }
+%>          
+	<!--div style="text-align: left; margin:auto; width: 1100px; position: relative;"> Appraisal  &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; <a href="browse-top?archiveID=<%=archiveID%>">Browse this Collection</a> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; Edit Metadata</div-->
+	<div style="text-align: left; margin:auto; width: 1100px; position: relative;"> Appraisal  &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; <%=browseTop%>Browse this Collection</a> &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp; Edit Metadata</div>
 <%
 	} else {
 %>
@@ -317,7 +327,9 @@
 					fillCollectionMetadataFields(node);
 				} else if (node.type=="Accession"){
 					fillAccessionMetadataFields(node);
-				} else if (node.type=="MBOX"){
+// 2022-10-03					 
+//				} else if (node.type=="MBOX"){
+				} else if (node.type=="MBOX" || node.type=="IMAP"){
 					fillFileMetadataFields(node);
 				}
 				showRightPanelView(node.type);
@@ -362,7 +374,8 @@
 			yearRange: "2000:2100",
 			beforeShow: function(i) { if ($(i).attr('readonly')) { return false; } }
 		});
-
+/*
+ * 2022-09-08
 		$('#embargoDuration').datepicker({
 			minDate: new Date(1960, 1 - 1, 1),
 			dateFormat: "yy-mm-dd",
@@ -380,7 +393,7 @@
 			yearRange: "2000:2100",
 			beforeShow: function(i) { if ($(i).attr('readonly')) { return false; } }
 		});
-
+*/
 		$('#dateCreatedByApplication').datepicker({
 			minDate: new Date(1960, 1 - 1, 1),
 			dateFormat: "yy-mm-dd",

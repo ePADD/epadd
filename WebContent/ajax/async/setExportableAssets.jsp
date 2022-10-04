@@ -8,8 +8,24 @@
 //by the presence of operation ID (opID field) in the request. If it is being invoked as a long running operation then the front end will use fetch_page_progress_bar method to invoke it
 //which in turn will provide it with an operation ID.
 
-    Archive archive = ArchiveReaderWriter.prepareAndLoadDefaultArchive(request);
-
+    String archiveID = request.getParameter("archiveID");
+    Archive archive;
+    if (archiveID != null && !archiveID.isEmpty())
+    {
+        archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+    }
+    else
+    {
+        String archiveDir = request.getParameter("archiveDir");
+        if (archiveDir != null && !archiveDir.isEmpty())
+        {
+         archive = ArchiveReaderWriter.readArchiveIfPresent(archiveDir);
+        }
+        else
+        {
+            archive = ArchiveReaderWriter.prepareAndLoadDefaultArchive(request);
+        }
+    }
     Multimap<String,String> paramMap = JSPHelper.convertRequestToMap(request);
      //String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
      String appURL="";

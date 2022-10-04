@@ -131,7 +131,9 @@ public class AnnotationManager{
             //get existing annotation if any, then concatenate the annotationText to it.
             docids.forEach(docid->{
                 String existing = docToAnnotation.getOrDefault(docid,"");
-                docToAnnotation.put(docid,existing+annotationText);
+// 2022.07.25 Aries Tsang				
+//                docToAnnotation.put(docid,existing+annotationText);
+                docToAnnotation.put(docid,existing + " " + annotationText);
             });
         }
     }
