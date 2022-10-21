@@ -175,6 +175,8 @@
                         <a href="edit-metadata?collection=user&archiveID=<%=archiveID%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
                 <% } %>
 
+				<button id="btn_delete" class="btn-default" onclick="updateHash(archiveID);" style="float: right;">Update checksum</button>
+
             </div>
 			<hr/>
             <!--div class="modal-footer"-->
@@ -262,6 +264,72 @@
                 ]
             });                    
     }    // End of delArchive
+	
+    function updateHash (archive1) {
+            $('#collection-summary-modal').modal("hide");
+            BootstrapDialog.show ({
+                title: 'Update Checksum',
+                message: 'Confirm to update the checksum?',
+                type: BootstrapDialog.TYPE_INFO,
+                closable: false,
+//                data: {
+//                   'folder': folder
+//                },
+                buttons: [
+                   {
+                    id: 'btn-yes',   
+//                  icon: 'glyphicon glyphicon-check',       
+                    label: 'Yes',
+                    cssClass: 'btn-default', 
+                    autospin: false,
+                    action: function(dialogRef){    
+                        $.ajax({
+                            type: "POST",
+                            url: "ajax/hashUpdate",
+                            data: { archive: archive1 },
+                            success: function(response) {
+                               if (response['result'] === "ok") {
+                                    BootstrapDialog.alert(
+                                        {
+                                         message:response['reason'], 
+                                         type: BootstrapDialog.TYPE_SUCCESS,
+                                         action: function(dialog) {
+                                            dialog.close(); 
+                                          },
+                                          callback: function(result) {
+                                            dialogRef.close();
+                                            $('#collection-summary-modal').modal('show');
+//                                            window.location.href = 'email-sources';
+                                          }    
+                                        }
+                                    );
+                                    dialogRef.close();
+//                                    window.location.href = 'collections';
+//                                    $('#collection-summary-modal').modal('show');
+                               } else {
+                                    BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                               }
+                            },
+                            error: function() {
+                                    BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                            }
+                        });                                
+                    }
+                  },
+                  {
+                   id: 'btn-cancel',   
+//                 icon: 'glyphicon glyphicon-check',       
+                   label: 'No',
+                   cssClass: 'btn-default', 
+                   autospin: false,
+                   action: function(dialogRef){    
+                        dialogRef.close();
+                        $('#collection-summary-modal').modal('show');
+                   }    
+                  }
+                ]
+            });                    
+    }    // End of updateHash
 	
 </script>
 <% } %>

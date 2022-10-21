@@ -1,5 +1,6 @@
 /*
 	2022-09-13	fixed bug in readArchiveIfPresent
+	2022-10-13	added SHA256 checksum
 */
 package edu.stanford.muse.index;
 
@@ -392,7 +393,9 @@ public class ArchiveReaderWriter{
         }*/
 //if archivesave mode is freshcreation then create a bag around basedir and set bag as this one..
         if(mode== Archive.Save_Archive_Mode.FRESH_CREATION){
-            StandardSupportedAlgorithms algorithm = StandardSupportedAlgorithms.MD5;
+// 2022-10-13            
+//            StandardSupportedAlgorithms algorithm = StandardSupportedAlgorithms.MD5;
+            StandardSupportedAlgorithms algorithm[] = { StandardSupportedAlgorithms.MD5, StandardSupportedAlgorithms.SHA256};
             boolean includeHiddenFiles = false;
             try {
                 archive.close();
