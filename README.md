@@ -133,7 +133,7 @@ Copyright (c) 2007, Ben Fortuna All rights reserved. Redistribution and use in s
 - Jeremy Leighton John, British Library;
 - Cal Lee, University of North Carolina, Chapel Hill;
 - Evelyn McLellan, Artefactual;
-- Mark Matienzo, Digital Public Library of America;
+- Maria Matienzo, Digital Public Library of America;
 - T. Christian Miller, ProPublica;
 - Jessica Moran, National Library of New Zealand;
 - David Rosenthal, Stanford University;
