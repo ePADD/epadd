@@ -1,7 +1,7 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="java.util.function.Consumer"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%>
+<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="java.util.function.Consumer"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="edu.stanford.epadd.util.EmailConvert"%>
 <%
 
 //This api needs to be supported for both types of flows - long running with status bar and normal (without status bar). Theso two invocation types of this jsp will be identified
@@ -76,7 +76,9 @@ if(opID==null){
 <%!
 private void setExportableAssets(Multimap<String,String> params, Consumer<StatusProvider> setStatusProvider, HttpSession session, JSONObject resultJSON, Archive archive){
     if(setStatusProvider!=null)
-        setStatusProvider.accept(new StaticStatusProvider("setting exportable assets..."));
+    {
+        setStatusProvider.accept(new StaticStatusProvider("Copying files for preservation ..."));
+    }
 
     String exportableAssets = JSPHelper.getParam(params,"exportableAssets");
     String exportableAssetsFiles = JSPHelper.getParam(params,"exportableAssetsFiles");
@@ -101,24 +103,37 @@ private void setExportableAssets(Multimap<String,String> params, Consumer<Status
         assetsLocation = new ArrayList(Arrays.asList(exportableAssetsFiles.split("\\^-\\^")));
     }
 
-     if ("exportAcquisitioned".equals(exportableAssets)){
-        System.out.println("exportableAssets = exportAcquisitioned");
+    System.out.println("exportableAssets = " + exportableAssets);
+    if (exportableAssets != null && !exportableAssets.isEmpty())
+    {
+        switch(exportableAssets)
+        {
+            case EmailExporter.EXPORT_ACQUISITIONED:
         // Notes: assetsLocation here should be a list of full path filenames
-        exportResult = archive.setExportableAssets(Archive.Exportable_Assets.EXPORTABLE_APPRAISAL_CANONICAL_ACQUISITIONED, assetsLocation);
-        exportResult = archive.setExportableAssets(Archive.Exportable_Assets.EXPORTABLE_APPRAISAL_NORMALIZED_ACQUISITIONED, assetsLocation);
-     } else if ("exportAppraised".equals(exportableAssets)){
-        System.out.println("exportableAssets = exportAppraised");
-        exportResult = archive.setExportableAssets(Archive.Exportable_Assets.EXPORTABLE_APPRAISAL_NORMALIZED_APPRAISED);
-     } else if ("exportProcessing".equals(exportableAssets)){
-         System.out.println("exportableAssets = exportProcessing");
-        exportResult = archive.setExportableAssets(Archive.Exportable_Assets.EXPORTABLE_PROCESSING_NORMALIZED);
-     } else if ("exportAccessionProcessing".equals(exportableAssets)){
-        System.out.println("exportableAssets = exportAccessionProcessing");
+       new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.APPRAISAL_CANONICAL_ACQUISITIONED, assetsLocation);
+       new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.APPRAISAL_NORMALIZED_ACQUISITIONED, assetsLocation);
+       EmailConvert.deleteTmpDir();
+                break;
+
+            case EmailExporter.EXPORT_APPRAISED_EML:
+            case EmailExporter.EXPORT_APPRAISED_MBOX:
+        new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.APPRAISAL_NORMALIZED_APPRAISED);
+                break;
+
+            case EmailExporter.EXPORT_PROCESSING:
+        new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.PROCESSING_NORMALIZED);
+                break;
+
+            case EmailExporter.EXPORT_ACCESSION_PROCESSING:
         // Notes: assetsLocation here should be a list of folder paths
-        exportResult = archive.setExportableAssets(Archive.Exportable_Assets.EXPORTABLE_PROCESSING_NORMALIZED, assetsLocation);
-     } else if ("exportProcessed".equals(exportableAssets)){
-        System.out.println("exportableAssets = exportProcessed");
-        exportResult = archive.setExportableAssets(Archive.Exportable_Assets.EXPORTABLE_PROCESSING_NORMALIZED_PROCESSED);
+        new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.PROCESSING_NORMALIZED, assetsLocation);
+                break;
+
+            case EmailExporter.EXPORT_PROCESSED_EML:
+            case EmailExporter.EXPORT_PROCESSED_MBOX:
+        new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.PROCESSING_NORMALIZED_PROCESSED);
+                break;
+        }
      }
 
         if (!Util.nullOrEmpty(error)){

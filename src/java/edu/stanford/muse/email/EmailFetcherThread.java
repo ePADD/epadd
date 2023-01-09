@@ -16,6 +16,7 @@
 package edu.stanford.muse.email;
 
 import com.sun.mail.imap.IMAPFolder;
+import edu.stanford.epadd.util.EmailConvert;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
@@ -172,7 +173,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         return nUncachedMessagesProcessed;
     }
 
-    private String folder_name() {
+    private String getFolderName() {
         return fetchedFolderInfo.longName;
     }
 
@@ -348,24 +349,36 @@ public class EmailFetcherThread implements Runnable, Serializable {
             internAddressList(cc);
             internAddressList(bcc);
         } catch (AddressException ae) {
-            String s = "Bad address in folder " + folder_name() + " message id" + id + " " + ae;
+            String s = "Bad address in folder " + getFolderName() + " message id" + id + " " + ae;
             dataErrors.add(s);
         }
-
-        //following case is to handle scenario when an icon file is considered as an mbox file with 1 message.
-     /*   if(hackyDate && from==null && to==null && cc==null && bcc==null) {
-            dataErrors.add("IMP:::: hacky date with all as null (from, to, cc, bcc) for folder "+folder_name() + " message id " + id );
-            //return null;
-
+        String rootPath ="";
+        String folderName = "";
+        try {
+            rootPath = ((MboxEmailStore) emailStore).getRootPath();
         }
-*/        // take a deep breath. This object is going to live longer than most of us.
-        EmailDocument ed = new EmailDocument(id, email_source(), folder_name(), to, cc, bcc, from, m.getSubject(), m.getMessageID(), c.getTime());
-
+        catch (Exception e)
+        {
+            Util.print_exception("Exception getting rootPath", e, LogManager.getLogger(EmailFetcherThread.class));
+            //rootPath stays empty string
+        }
+        if (!rootPath.isEmpty())
+        {
+            if (rootPath.contains(EmailConvert.EPADD_EMAILCHEMY_TMP)) {
+                folderName = FolderInfo.getDisplayNameForNonMbox(emailStore.displayName, getFolderName());
+            }
+            else
+            {
+                folderName = getFolderName();
+            }
+        }
+        // take a deep breath. This object is going to live longer than most of us.
+        EmailDocument ed = new EmailDocument(id, email_source(), folderName, to, cc, bcc, from, m.getSubject(), m.getMessageID(), c.getTime());
+        int i = 0;
         String[] headers = m.getHeader("List-Post");
         if (headers != null && headers.length > 0) {
             // trim the headers because they usually look like: "<mailto:prpl-devel@lists.stanford.edu>"
             ed.sentToMailingLists = new String[headers.length];
-            int i = 0;
             for (String header : headers) {
                 header = header.trim();
                 header = header.toLowerCase();
@@ -377,11 +390,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 ed.sentToMailingLists[i++] = header;
             }
         }
-       /* if (hackyDate) {
-            String s = "Guessed date " + Util.formatDate(c) + " for message id: " + id + ": " + ed.getHeader();
-            dataErrors.add(s);
-            ed.hackyDate = true;
-        }*/
+
         if(noDate){
             Set<String> lab = new LinkedHashSet<>();
             lab.add(LabelManager.LABELID_NODATE);
@@ -463,7 +472,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         List<String> list = new ArrayList<>(); // content list
         if (messagePart == null) {
-            dataErrors.add("part is null: " + folder_name() + " idx " + messageNum);
+            dataErrors.add("part is null: " + getFolderName() + " idx " + messageNum);
             Set<String> label = new LinkedHashSet<>();
             label.add(LabelManager.LABELID_PARSING_ERRS);
             archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
@@ -551,7 +560,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 }
             }
             if (dirty) {
-                dataErrors.add("Dirty message part, has conflicting message part headers."  + folder_name() + " Message# " + messageNum);
+                dataErrors.add("Dirty message part, has conflicting message part headers."  + getFolderName() + " Message# " + messageNum);
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_PARSING_ERRS);
                 archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
@@ -586,7 +595,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     } catch (DecoderException e) {
                         e.printStackTrace();
                         log.error("Unable to decode quoted printable encoded message");
-                        dataErrors.add("Unable to decode quoted printable encoded message in  " + folder_name() + " Message #" + messageNum + " type " + type );
+                        dataErrors.add("Unable to decode quoted printable encoded message in  " + getFolderName() + " Message #" + messageNum + " type " + type );
                         Set<String> label = new LinkedHashSet<>();
                         label.add(LabelManager.LABELID_PARSING_ERRS);
                         archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
@@ -611,7 +620,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     content = new String(b);
                 }
             } catch (UnsupportedEncodingException uee) {
-                dataErrors.add("Unsupported encoding: " + folder_name() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
+                dataErrors.add("Unsupported encoding: " + getFolderName() + " Message #" + messageNum + " type " + type + ", using brute force conversion");
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_PARSING_ERRS);
                 archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
@@ -716,7 +725,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             } else if (o instanceof Part)
                 list.addAll(processMessagePart(emailDocument,messageNum, topLevelMessage, (Part) o, attachmentsList, textHtmlPart).getFirst());
             else {
-                dataErrors.add("Unhandled part content, " + folder_name() + " Message #" + messageNum + "Java type: " + o.getClass() + " Content-Type: " + messagePart.getContentType());
+                dataErrors.add("Unhandled part content, " + getFolderName() + " Message #" + messageNum + "Java type: " + o.getClass() + " Content-Type: " + messagePart.getContentType());
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_PARSING_ERRS);
                 archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
@@ -733,7 +742,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
                 }
             } catch (Exception e) {
-                dataErrors.add("Ignoring attachment for " + folder_name() + " Message #" + messageNum + ": " + Util.stackTrace(e));
+                dataErrors.add("Ignoring attachment for " + getFolderName() + " Message #" + messageNum + ": " + Util.stackTrace(e));
                 Set<String> label = new LinkedHashSet<>();
                 label.add(LabelManager.LABELID_ATTCH_ERRS);
                 archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
@@ -768,14 +777,14 @@ public class EmailFetcherThread implements Runnable, Serializable {
             // Folders__gmail-sent Message #12185 Expected ';', got "Message"
             // javax.mail.internet.ParseException: Expected ';', got "Message"
 
-            dataErrors.add("Unable to read attachment name: " + folder_name() + " Message# " + idx);
+            dataErrors.add("Unable to read attachment name: " + getFolderName() + " Message# " + idx);
             Set<String> label = new LinkedHashSet<>();
             label.add(LabelManager.LABELID_ATTCH_ERRS);
             archive.getLabelManager().setLabels(ed.getUniqueId(),label);
             return null;
         }
 
-        String sanitizedFName = Util.sanitizeFolderName(emailStore.getAccountID() + "." + folder_name());
+        String sanitizedFName = Util.sanitizeFolderName(emailStore.getAccountID() + "." + getFolderName());
         if (filename == null) {
             String tempFname = sanitizedFName + "." + idx;
             dataErrors.add("attachment filename is null for " + sanitizedFName + " Message#" + idx + " assigning it the name: " + tempFname);
@@ -1380,7 +1389,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         nErrors++;
                         stats.nErrors++;
                         EmailDocument ed = new EmailDocument(Integer.toString(messageNum));
-                        log.warn("Exception reading message from " + folder_name() + " Message #" + messageNum + " " + ex.getMessage() + "\n" + Util.stackTrace(ex));
+                        log.warn("Exception reading message from " + getFolderName() + " Message #" + messageNum + " " + ex.getMessage() + "\n" + Util.stackTrace(ex));
 
                         ed.setErrorString(Util.stackTrace(ex));
                     }
@@ -1410,7 +1419,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         folder = null;
 
         store = emailStore.connect();
-        folder = emailStore.get_folder(store, folder_name());
+        folder = emailStore.get_folder(store, getFolderName());
         if (folder != null)
             return folder.getMessageCount();
         else
@@ -1452,7 +1461,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
             if (use_uid_if_available && is_uid_folder) {
                 // for uidfolders, we want to update the last seen uid in the FolderInfo
-                long uid = archive.getLastUIDForFolder(emailStore.getAccountID(), folder_name());
+                long uid = archive.getLastUIDForFolder(emailStore.getAccountID(), getFolderName());
                 if (uid > 0) {
                     messages = ((UIDFolder) folder).getMessagesByUID(uid + 1, UIDFolder.LASTUID);
                     log.info("Archive has already seen this folder: " + descr + " will only fetch messages from uid " + uid + " onwards, " + messages.length + " messages will be incrementally fetched");
@@ -1494,7 +1503,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * In order to make indexing of large archives possible, fetch of NON-MBOXEmailstrore formats is penalised. It is possible to avoid this by handling MBox and IMAP/POP formats differently.
      */
     public void run() {
-        currentStatus = JSONUtils.getStatusJSON("Reading " + folder_name());
+        currentStatus = JSONUtils.getStatusJSON("Reading " + getFolderName());
 
         isCancelled = false;
         Thread.currentThread().setName("EmailFetcher");
@@ -1551,8 +1560,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     log.info("Fetch stats for this fetcher thread: " + stats);
                 }
 
-                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_INGEST,  nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "file name", folder_name());
-                archive.getEpaddPremis().createFileObject(folder_name(),new File(folder_name()).length());
+                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_INGEST,  nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "file name", getFolderName());
+                archive.getEpaddPremis().createFileObject(getFolderName(),new File(getFolderName()).length());
                 archive.getEpaddPremis().addToSignificantProperty("mbox file count", 1);
                 archive.getEpaddPremis().addToSignificantProperty("overall message_count", nMessages);
                 archive.getEpaddPremis().addToSignificantProperty("overall unique message_count", nMessages - stats.nMessagesAlreadyPresent);
@@ -1602,7 +1611,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
                 }
 //2022-09-01                
-                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.IMAP_INGEST, "["+folder_name() + "] "+ nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "imap account", email_source());
+                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.IMAP_INGEST, "["+ getFolderName() + "] "+ nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "imap account", email_source());
 //              archive.getEpaddPremis().createFileObject(email_source(),new File(email_source()).length());
                 archive.getEpaddPremis().addToSignificantProperty("folder count", 1);
                 archive.getEpaddPremis().addToSignificantProperty("overall message_count", nMessages);
@@ -1622,9 +1631,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
             // so mild warning in that case.
             // however, try to give a big warning in case it is a real mbox file.
             if (begin_msg_index == 1 && end_msg_index == 1)
-                log.warn ("An error parsing mbox file " + folder_name() + " (it may not be an mbox file at all)");
+                log.warn ("An error parsing mbox file " + getFolderName() + " (it may not be an mbox file at all)");
             else
-                Util.aggressiveWarn(" A major error seems to have occurred! Processing of messages has been aborted for folder " + folder_name() + " messages [" + begin_msg_index + ", " + end_msg_index + ")", 5000, log);
+                Util.aggressiveWarn(" A major error seems to have occurred! Processing of messages has been aborted for folder " + getFolderName() + " messages [" + begin_msg_index + ", " + end_msg_index + ")", 5000, log);
             Util.print_exception(t, log);
         } finally {
             try {
@@ -1633,7 +1642,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 if (store != null)
                     store.close();
             } catch (Exception e) {
-                Util.print_exception(e);
+                Util.print_exception("Exception trying to close folder or store", e, LogManager.getLogger(EmailFetcherThread.class));
             }
         }
     }

@@ -175,7 +175,7 @@ public class ImapPopEmailStore extends EmailStore {
 			f.open(Folder.READ_ONLY);
 			int count = f.getMessageCount();
 			f.close(false);
-			this.folderInfos.add(new FolderInfo(getAccountID(), "INBOX", "INBOX", count));
+			this.folderInfos.add(new FolderInfo(displayName, getAccountID(), "INBOX", "INBOX", count));
 		}
 		else
 			collect_folder_names(store, this.folderInfos, store.getDefaultFolder());
@@ -183,7 +183,7 @@ public class ImapPopEmailStore extends EmailStore {
 		folderBeingScanned = "";
 
 		if (connectOptions.server.endsWith(".pobox.stanford.edu"))
-			this.folderInfos.add(new FolderInfo(getAccountID(), "INBOX", "INBOX", 0)); // hack for stanford imap, it lists INBOX as a dir folder! TOFIX
+			this.folderInfos.add(new FolderInfo(displayName, getAccountID(), "INBOX", "INBOX", 0)); // hack for stanford imap, it lists INBOX as a dir folder! TOFIX
 
 		doneReadingFolderCounts = true;
 	}

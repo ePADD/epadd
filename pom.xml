@@ -60,17 +60,49 @@
       <artifactId>gson</artifactId>
       <version>1.5</version>
     </dependency>
+
+      <!-- https://mvnrepository.com/artifact/jpl/jpl -->
+      <dependency>
+          <groupId>jpl</groupId>
+          <artifactId>jpl</artifactId>
+          <version>7.4.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+      <dependency>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna</artifactId>
+          <version>5.12.1</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform -->
+      <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform -->
+      <dependency>
+          <groupId>net.java.dev.jna</groupId>
+          <artifactId>jna-platform</artifactId>
+          <version>5.12.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>jhlabs-layouts</groupId>
+          <artifactId>jhlabs-layouts</artifactId>
+          <version>1.0.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/net.sourceforge.jdatepicker/jdatepicker -->
+      <dependency>
+          <groupId>net.sourceforge.jdatepicker</groupId>
+          <artifactId>jdatepicker</artifactId>
+          <version>1.3.2</version>
+      </dependency>
+
+
     <!-- could have given commons-io 2.4 but using 2.0.1 because muse also has it, so we won't import twice. -->
     <!-- <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.0.1</version>
     </dependency>-->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.3.2</version>
-    </dependency>
     
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -133,8 +165,227 @@
           <artifactId>groovy</artifactId>
           <version>3.0.8</version>
       </dependency>
+
+      <dependency>
+          <groupId>emailchemy</groupId>
+          <artifactId>emailchemy_api</artifactId>
+          <version>15.0 beta</version>
+      </dependency>
+      <dependency>
+          <groupId>common-image</groupId>
+          <artifactId>common-image</artifactId>
+          <version>3.5.2</version>
+      </dependency>
+      <dependency>
+
+      <groupId>net.samuelcampos</groupId>
+      <artifactId>usbdrivedetector</artifactId>
+      <version>2.0.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+      <dependency>
+          <groupId>com.opencsv</groupId>
+          <artifactId>opencsv</artifactId>
+          <version>5.7.1</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.subethamail/subethasmtp -->
+      <dependency>
+          <groupId>org.subethamail</groupId>
+          <artifactId>subethasmtp</artifactId>
+          <version>3.1.7</version>
+          <scope>test</scope>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+      <dependency>
+          <groupId>org.xerial</groupId>
+          <artifactId>sqlite-jdbc</artifactId>
+          <version>3.40.0.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/relaxngDatatype/relaxngDatatype -->
+      <dependency>
+          <groupId>relaxngDatatype</groupId>
+          <artifactId>relaxngDatatype</artifactId>
+          <version>20020414</version>
+      </dependency>
+
+      <dependency>
+          <groupId>quaqua-jfc</groupId>
+          <artifactId>quaqua-jfc</artifactId>
+          <version>1.0.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-ooxml</artifactId>
+          <version>5.2.3</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
+      <dependency>
+          <groupId>info.picocli</groupId>
+          <artifactId>picocli</artifactId>
+          <version>4.7.0</version>
+      </dependency>
+
+
+
+     <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+      <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+          <version>1.4.5</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+      <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>1.4.5</version>
+          <scope>test</scope>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.beetstra.jutf7/jutf7 -->
+      <dependency>
+          <groupId>com.beetstra.jutf7</groupId>
+          <artifactId>jutf7</artifactId>
+          <version>1.0.0</version>
+
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.imageio/imageio-metadata -->
+      <dependency>
+          <groupId>com.twelvemonkeys.imageio</groupId>
+          <artifactId>imageio-metadata</artifactId>
+          <version>3.9.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.imageio/imageio-icns -->
+      <dependency>
+          <groupId>com.twelvemonkeys.imageio</groupId>
+          <artifactId>imageio-icns</artifactId>
+          <version>3.9.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.imageio/imageio-core -->
+      <dependency>
+          <groupId>com.twelvemonkeys.imageio</groupId>
+          <artifactId>imageio-core</artifactId>
+          <version>3.9.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.twmacinta/fast-md5 -->
+      <dependency>
+          <groupId>fast-md5</groupId>
+          <artifactId>fast-md5</artifactId>
+          <version>1.0.0</version>
+      </dependency>
+
+      <dependency>
+          <groupId>oshi-core</groupId>
+          <artifactId>oshi-core</artifactId>
+          <version>1.0.0</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
+      <dependency>
+          <groupId>org.dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+          <version>2.1.3</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-text</artifactId>
+          <version>1.10.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+      <dependency>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+          <version>1.2</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+          <version>3.12.0</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+      <dependency>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+          <version>2.6</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-dbutils/commons-dbutils -->
+      <dependency>
+          <groupId>commons-dbutils</groupId>
+          <artifactId>commons-dbutils</artifactId>
+          <version>1.7</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
+      <dependency>
+          <groupId>commons-configuration</groupId>
+          <artifactId>commons-configuration</artifactId>
+          <version>1.10</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
+          <version>1.22</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+      <dependency>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+          <version>3.2.2</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+      <dependency>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+          <version>1.15</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+      <dependency>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+          <version>1.9.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.common/common-lang -->
+      <dependency>
+          <groupId>com.twelvemonkeys.common</groupId>
+          <artifactId>common-lang</artifactId>
+          <version>3.9.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.common/common-io -->
+      <dependency>
+          <groupId>com.twelvemonkeys.common</groupId>
+          <artifactId>common-io</artifactId>
+          <version>3.9.4</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.common/common-image -->
+      <dependency>
+          <groupId>com.twelvemonkeys.common</groupId>
+          <artifactId>common-image</artifactId>
+          <version>3.9.4</version>
+      </dependency>
+
   </dependencies>
-  
   <build>
     <defaultGoal>install</defaultGoal>
     <sourceDirectory>src/java</sourceDirectory>
@@ -272,39 +523,7 @@
             <artifactId>maven-install-plugin</artifactId>
             <version>2.5.2</version>
             <executions>
-                <execution>
-                <id>install-external-bagit</id>
-                <phase>clean</phase>
-                <configuration>
-                    <file>${basedir}/lib/bagit-5.0.0-modified.jar</file>
-                    <repositoryLayout>default</repositoryLayout>
-                    <groupId>gov.loc</groupId>
-                    <artifactId>bagit</artifactId>
-                    <version>5.0.0-modified</version>
-                    <packaging>jar</packaging>
-                    <generatePom>false</generatePom>
-                </configuration>
-                <goals>
-                    <goal>install-file</goal>
-                </goals>
-            </execution>
 
-<!-- <execution>
-                    <id>install-external-mstor</id>
-                    <phase>clean</phase>
-                    <configuration>
-                        <file>${basedir}/lib/mstor-0.9.14.jar</file>
-                        <repositoryLayout>default</repositoryLayout>
-                        <groupId>org.mnode.mstor</groupId>
-                        <artifactId>mstor</artifactId>
-                        <version>0.9.14</version>
-                        <packaging>jar</packaging>
-                        <generatePom>false</generatePom>
-                    </configuration>
-                    <goals>
-                        <goal>install-file</goal>
-                    </goals>
-                </execution>-->
             </executions>
         </plugin>
 

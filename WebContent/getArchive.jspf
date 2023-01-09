@@ -1,10 +1,9 @@
+<%@page import="edu.stanford.epadd.util.EmailConvert"%>
 <%@page import="edu.stanford.muse.index.Archive"%>
 <%@page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
-<%@page import="edu.stanford.muse.webapp.ModeConfig"%>
 <%@page import="edu.stanford.muse.webapp.JSPHelper" %>
-<%@page import="edu.stanford.muse.index.Archive" %>
-<%@page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
 <%@page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@page import="java.util.concurrent.TimeUnit"%>
 <%
 Archive archive = JSPHelper.getArchive(request);
 if (archive == null) {
@@ -13,7 +12,9 @@ if (archive == null) {
 		JSPHelper.log.info ("No archive in session, trying to load default archive");
 		archive = ArchiveReaderWriter.prepareAndLoadDefaultArchive(request); // if we don't have an archive and are running in desktop mode, try to load archive from given cachedir or from the default dir
 		JSPHelper.log.info ("Default archive = " + archive);
+		System.out.println("call activateLicense())");
 
+		EmailConvert.activateLicense();
 		if (archive == null) {
 			response.sendRedirect("email-sources");
 			return;

@@ -20,7 +20,7 @@ public class StandaloneIngestion{
         String errorMessage="";
         MboxEmailStore me = null;
         try {
-            mailFetcher.addMboxAccount(name,folderpath,false);
+            mailFetcher.addMboxAccount(name,folderpath, folderpath, false);
         } catch (IOException e) {
             errorMessage="File input output error : "+e.getMessage();
         }

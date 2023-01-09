@@ -81,14 +81,14 @@
 
 		String folder = dir + File.separator + "ePADD archive of " + bestName;
 		List<Document> docsToExport = new ArrayList<>();
-		docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING);
+		docsToExport = archive.getDocsForExport(Archive.ExportMode.EXPORT_APPRAISAL_TO_PROCESSING);
 
 			//From appraisal to processing we do not remove any label from labelManager so pass the current
 			//label info map as an argument to set labelmanager for the exported archive.
 		JSPHelper.log.info("Exporting #"+docsToExport.size()+" docs");
 		// to do: need a progress bar here
 		try {
-			archive.export(docsToExport, Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING, folder, "default",setStatusProvider);
+			archive.export(docsToExport, Archive.ExportMode.EXPORT_APPRAISAL_TO_PROCESSING, folder, "default",setStatusProvider);
 		} catch (Exception e) {
 			Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
 			error = "Sorry, error exporting archive: " + e + ". Please see the log file for more details.";

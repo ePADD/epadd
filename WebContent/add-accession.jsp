@@ -134,6 +134,7 @@
                         // in turn, call to epadd.import_accession
                         //epadd.import_accession(e, muse.collect_input_fields());
 
+                        //If you change exportAccessionProcessing then also change EmailExporter.EXPORT_ACCESSION_PROCESSING
                         var post_params = '&exportableAssets=exportAccessionProcessing&exportableAssetsFiles=' + accpath;
                         var page = "ajax/async/setExportableAssets.jsp";
                         console.log("add-accession.jsp: goButton.click: post_params=" + post_params);

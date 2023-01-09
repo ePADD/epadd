@@ -328,11 +328,11 @@ public class LabelManager implements Serializable{
     /*
     Returns a new labelmanager to capture what all labels and docs are being exported from a module
      */
-    public LabelManager getLabelManagerForExport(Set<String> docids, Archive.Export_Mode mode){
+    public LabelManager getLabelManagerForExport(Set<String> docids, Archive.ExportMode mode){
         LabelManager tmp = new LabelManager(archiveID);
         tmp.labelInfoMap.putAll(labelInfoMap);
         tmp.docToLabelID.putAll(docToLabelID);
-        if(mode== Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING){
+        if(mode== Archive.ExportMode.EXPORT_APPRAISAL_TO_PROCESSING){
             //all labels are exported.. But in labelDocMap keep only those docs which are being exported.
             tmp.docToLabelID.keySet().retainAll(docids);
         }else{
@@ -342,7 +342,7 @@ public class LabelManager implements Serializable{
             tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->!entry.getValue().isSysLabel()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
             tmp.docToLabelID.keySet().retainAll(docids);
             //alsow, following #260, label 'Reviewed' to be removed if exported to discovery module.
-            if(mode== Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY){
+            if(mode== Archive.ExportMode.EXPORT_PROCESSING_TO_DISCOVERY){
                 tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->!entry.getKey().equalsIgnoreCase(LABELID_REVIEWED)).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
             }
             //also, following #260, retain only those labels from docidmap for which there is  info in labelInfoMap-- for example if reviewed is removed from labelinfomap
@@ -350,7 +350,7 @@ public class LabelManager implements Serializable{
             //reviewed label but remove this label from all documents (if applied).
             Collection<String> labelidsleft = new LinkedHashSet<>(tmp.labelInfoMap.keySet());
             //Contd.. To achieve this, remove LabelID-Reviewed from labelidsleft collection if mode is export_processing_to_delivery.
-            if(mode == Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY){
+            if(mode == Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY){
                 labelidsleft.remove(LABELID_REVIEWED);
             }
 

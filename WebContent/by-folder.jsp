@@ -63,36 +63,38 @@
         Map<String, String> folderToSource = new LinkedHashMap<>();
         Map<String, Integer> folderToInCount = new LinkedHashMap<>(), folderToOutCount = new LinkedHashMap<>(), folderToTotalCount =  new LinkedHashMap<>();
         for (EmailDocument ed: docs) {
-            String folder = ed.folderName;
+            String folderName = ed.folderName;
             Pair<Boolean, Boolean> p = ab.isSentOrReceived(ed.getToCCBCC(), ed.from);
             // p: first sent, second received
             if (p.getFirst()) { //means message is sent from owner.
-                Integer I = folderToOutCount.get(folder);
-                folderToOutCount.put(folder, (I == null) ? 1 : I + 1);
+                Integer I = folderToOutCount.get(folderName);
+                folderToOutCount.put(folderName, (I == null) ? 1 : I + 1);
             }
             if (p.getSecond()) {//means the message is received by owner (to/cc/bcc)
-                Integer I = folderToInCount.get(folder);
-                folderToInCount.put(folder, (I == null) ? 1 : I + 1);
+                Integer I = folderToInCount.get(folderName);
+                folderToInCount.put(folderName, (I == null) ? 1 : I + 1);
             }
 
-            Integer I = folderToTotalCount.get(folder);
-            folderToTotalCount.put (folder, (I == null) ? 1 : I+1);
+            Integer I = folderToTotalCount.get(folderName);
+            folderToTotalCount.put (folderName, (I == null) ? 1 : I+1);
             if (ed.emailSource != null)
-                folderToSource.put (folder, ed.emailSource);
+                folderToSource.put (folderName, ed.emailSource);
         }
 
         int count = 0;
-        for (String folder: folderToTotalCount.keySet()) {
-            String source = folderToSource.get(folder);
+        for (String folderName: folderToTotalCount.keySet()) {
+            String source = folderToSource.get(folderName);
             if (source == null)
                 source = "";
 
             JSONArray j = new JSONArray();
             j.put(0, Util.escapeHTML(source));
-            j.put(1, Util.escapeHTML(folder));
+            j.put(1, Util.escapeHTML(folderName));
             //j.put(2, folderToInCount.get(folder));
-            j.put(2, folderToOutCount.getOrDefault(folder,0));
-            j.put(3, folderToTotalCount.getOrDefault(folder,0));
+            j.put(2, folderToOutCount.getOrDefault(folderName,0));
+            j.put(3, folderToTotalCount.getOrDefault(folderName,0));
+            j.put(4,  Util.escapeHTML(folderName));
+
             resultArray.put(count++, j);
         }
     %>
@@ -102,7 +104,7 @@
         $(document).ready(function() {
             var clickable_message = function ( data, type, full, meta ) {
                 //return '<a target="_blank" title="' + full[1] + '" href="/epadd/browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
-                return '<a target="_blank" title="' + full[1] + '" href="browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+                return '<a target="_blank" title="' + full[1] + '" href="browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[4]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
             };
 
             $('#folders').dataTable({

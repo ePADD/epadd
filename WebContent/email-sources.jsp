@@ -25,6 +25,7 @@
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/main.css">
+	<link href="css/selectpicker.css" rel="stylesheet" type="text/css" media="screen" />
 
     <style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px; vertical-align: top;}
@@ -39,6 +40,7 @@
 	<script src="js/filepicker.js"></script>
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
+	<script src="js/selectpicker.js"></script>
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
@@ -49,6 +51,8 @@
 
 <%-- header.jspf was here --%>
 <%@include file="header.jspf" %>
+<%@include file="div_status.jspf"%>
+
 <title><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.head-specify-source")%></title>
 
 <jsp:include page="div_filepicker.jspf"/>
@@ -239,7 +243,101 @@ if (archive != null) {
 		</div>
 	</section>
 <section>
+	<div id="psts" class="c panel">
+		<div class="panel-heading">
+			Non-Mbox email files<br/>
+			Emailchemy license: <span id="license" style="color:orange">Retrieving status ...</span><br/>
+		</div>
 
+		<div class="account">
+			<input class="accountType" type="text" style="display:none" name="accountType3" value="mbox"/>
+			<div class="div-input-field">
+				<div class="input-field-label"><i class="fa fa-folder-o"></i> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.f-location")%></div>
+				<br/>
+				<div class="input-field" style="width:800px"> <!-- override default 350px width because we need a wider field and need browse button on side-->
+					<div class="form-group col-sm-8">
+						<input class="dir form-control" type="text" name="mboxDir3"/> <br/>
+					</div>
+					<div class="form-group col-sm-4">
+						<button style="height:37px" class="browse-button btn-default"><i class="fa fa-file"></i> <!-- special height for this button to make it align perfectly with input box. same height is used in export page as well -->
+							<span><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.browse")%></span>
+						</button>
+					</div>
+				</div>
+
+				<div class="one-line">
+					<div class="form-group col-sm-8">
+						<label for="export-next-file"><i class="fa fa-file-code-o"></i> Input File Format</label>
+						<select id="inFormat" name="inFormat" class="form-control selectpicker">
+							<option value="aolmac">AOL for Mac (3.0 or higher)</option>
+							<option value="aoldeskmac">AOL Desktop for Mac</option>
+							<option value="aolwin">AOL for Windows</option>
+							<option value="osx1">Apple Mail 1.0</option>
+							<option value="osx2">Apple Mail (2.0 and later)</option>
+							<option value="maccim">CompuServe Classic for Mac</option>
+							<option value="wincim">CompuServe for Windows 1.0-2.61</option>
+							<option value="cserv4">CompuServe for Windows 3.0+</option>
+							<option value="cserv2k">CompuServe 2000 (5.0 or higher) for Windows</option>
+							<option value="emailer1">Claris Emailer 1 (Filing Cabinet)</option>
+							<option value="emailer1fr">Claris Emailer 1 français</option>
+							<option value="emailer2">Claris Emailer 2 (Mail Database)</option>
+							<option value="eml">EML file (RFC-2822 Message)</option>
+							<option value="entourage">Entourage (Database)</option>
+							<option value="vrgemsg">Entourage Cache</option>
+							<option value="entouragerecovery">Entourage Recovery (Database)</option>
+							<option value="ent2001">Entourage 2001 (Database)</option>
+							<option value="ent2001msg">Entourage 2001 (Messages file)</option>
+							<option value="eudoramac">Eudora for Mac</option>
+							<option value="eudorawin">Eudora for Windows</option>
+							<!--option value="mbox">MBOX File ("standard mbox")</option-->
+							<option value="mozilla">Mozilla</option>
+							<option value="mulberry">Mulberry</option>
+							<option value="musashi">Musashi</option>
+							<option value="neoplanet">Neoplanet</option>
+							<option value="netscape">Netscape/Mozilla</option>
+							<option value="opera">Opera</option></option>
+							<option value="<option value="pstmac">Outlook for Mac (8.x, 2001)</option>
+							<option value="outlookmsg">Outlook for Windows (.MSG)</option>
+							<option value="pstwin" selected>Outlook for Windows (.PST)</option>
+							<option value="olm">Outlook for Mac OLM file</option>
+							<option value="olk14msg">Outlook for Mac 2011 (.olk14Message)</option>
+							<option value="olk14msrc">Outlook for Mac 2011 (.olk14MsgSource)</option>
+							<option value="olmxml">Outlook for Mac 2011 (.xml)</option>
+							<option value="olk15msg">Outlook for Mac 2015/2016 (.olk15Message)</option>
+							<option value="olk15msrc">Outlook for Mac 2015/2016 (.olk15MsgSource)</option>
+							<option value="oe4mac">Outlook Express 4 for Mac</option>
+							<option value="oe4unix">Outlook Express 4 for Unix</option>
+							<option value="oe4win">Outlook Express 4 for Windows</option>
+							<option value="oe5mac">Outlook Express 5 for Mac (Database file)</option>
+							<option value="oe5macmsg">Outlook Express 5 for Mac (Messages file)</option>
+							<option value="oe5win">Outlook Express 5 for Windows</option>
+							<option value="oe6win">Outlook Express 6 for Windows</option>
+							<option value="outspring">Outspring Mail</option>
+							<option value="aoce">PowerTalk/AOCE AppleMail</option>
+							<option value="qmp">QuickMail Pro for Mac</option>
+							<option value="qmpwin">QuickMail Pro for Windows</option>
+							<option value="tbird">Thunderbird</option>
+							<option value="winmail">Windows Mail</option>
+							<option value="winlive">Windows Live Mail</option>
+							<option value="yahoo">Yahoo! Archive</option>
+						</select>
+					</div>
+				</div>
+				<br/>
+			</div>
+			<div class="div-input-field">
+				<div class="input-field-label"><i class="fa fa-bullseye"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.source-name")%></div>
+				<br/>
+				<div class="input-field">
+					<input class="form-control" type="text" name="emailSource3" value=""/>
+				</div>
+			</div>
+
+			<br/>
+		</div> <!--  end account -->
+	</div>
+</section>
+<section>
 	<div id="sidecarfile_upload" class="accounts panel">
 		<%--Button for starting sidecar upload--%>
 		<div class="panel-heading">
@@ -310,9 +408,25 @@ if (archive != null) {
 <jsp:include page="footer.jsp"/>
 
 	<script>
+		function fetchLicenseStatus() {
+			$.ajax({
+						type: "POST",
+						url: "ajax/licenseStatus",
+						success: function (result) {
+							console.log("RESULT " + result);
+							document.getElementById('license').innerHTML = result;
+							if (result.includes("License active")) {
+								document.getElementById('license').setAttribute("style", "color:green;");
+							} else {
+								document.getElementById('license').setAttribute("style", "color:red;");
+								document.getElementById('license').innerHTML += "- Email conversion working in demo mode"
+							}
+						}
+					}
+			)
+		}
 		var uploadSidecarHandler=function() {
 			var sidecarfilenameWithFakepath = $('#sidecarfile').val();
-			debugger
 			if (!sidecarfilenameWithFakepath) {
 				alert('Please provide the path of the sidecar file');
 				return false;
@@ -368,7 +482,10 @@ if (archive != null) {
 		}
 		var fps = []; // array of file pickers, could have multiple open at the same time, in theory.
 		var $account0 = $($('#mboxes .account')[0]);
+		var $account1 = $($('#psts .account')[0]);
+
 		fps.push(new FilePicker($account0));
+		fps.push(new FilePicker($account1));
 
 		function add_mboxdir() {
 			// first close all accounts, in case they have been expanded etc.
@@ -401,6 +518,7 @@ if (archive != null) {
 				var value = localStorage.getItem(field);
 				$(this).val(value);
 			});
+			setInterval(fetchLicenseStatus, 3000);
 		});
 
 	</script>

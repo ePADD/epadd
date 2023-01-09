@@ -1,7 +1,7 @@
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
-<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="java.util.function.Consumer"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%>
+<%@ page import="org.json.JSONArray" %><%@ page import="org.json.JSONObject"%><%@ page import="org.json.CDL"%><%@ page import="org.apache.commons.io.FileUtils"%><%@ page import="au.com.bytecode.opencsv.CSVWriter"%><%@ page import="java.util.*"%><%@ page import="edu.stanford.muse.ner.model.NEType"%><%@ page import="edu.stanford.muse.index.*"%><%@ page import="java.io.*"%><%@ page import="java.util.zip.GZIPOutputStream"%><%@ page import="java.util.zip.ZipOutputStream"%><%@ page import="java.util.zip.ZipEntry"%><%@ page import="edu.stanford.muse.util.EmailUtils"%><%@ page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.AddressBookManager.AddressBook"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="java.util.function.Consumer"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StaticStatusProvider"%><%@ page import="edu.stanford.epadd.util.EmailConvert"%><%@ page import="com.weirdkid.emailchemy.api.Format"%><%@ page import="com.weirdkid.emailchemy.api.OutputFormat"%><%@ page import="com.weirdkid.emailchemy.api.Converter"%><%@ page import="edu.stanford.epadd.util.EmlCreator"%>
 <%
 
 //This api needs to be supported for both types of flows - long running with status bar and normal (without status bar). Theso two invocation types of this jsp will be identified
@@ -174,7 +174,7 @@ try{
     new File(pathToDirectory).mkdir();//create the direcotry.
     PrintWriter pw = null;
         try {
-            List<Document> docs = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY);
+            List<Document> docs = archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY);
             Set<Document> docset = new LinkedHashSet<>(docs);//convert to set to remove possible duplicates.
             int i=1;
             for(Document doc: docset){
@@ -197,49 +197,57 @@ try{
            error="Error exporting confirmed correspondents";///
         }
 
-    }else if(query.equals("to-mbox")){
+    }else if(query.equals("to-mbox") || query.equals("to-eml")){
 
         String type=JSPHelper.getParam(params,"type");
         Set<Document> docset = null;
         String fnameprefix=null;
-        Archive.Export_Mode mode=null;
-        if(ModeConfig.isAppraisalMode())
-            mode = Archive.Export_Mode.EXPORT_APPRAISAL_TO_PROCESSING;
-        else if(ModeConfig.isProcessingMode())
-            mode =Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY;//to discovery is also same so no difference.
         if(type.equals("all")){
             docset=archive.getAllDocsAsSet();
             fnameprefix="all-messages";
         }else if(type.equals("non-restricted")){
-            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY));
+            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY));
             fnameprefix="non-restricted-messages";
         }else if(type.equals("restricted")){
-            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY));
+            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY));
             Set<Document> alldocs = new LinkedHashSet<>(archive.getAllDocsAsSet());
             alldocs.removeAll(docset);//now alldocs contain those messages which are not exported,i.e. are restricted.
             docset=alldocs;
             fnameprefix="restricted-messages";
         }
 
-
-    String pathToFile = Archive.TEMP_SUBDIR + File.separator + fnameprefix+".mbox";
+    String pathToTmpDir =  Archive.TEMP_SUBDIR;
+    String pathToMboxFile = Archive.TEMP_SUBDIR + File.separator + fnameprefix+".mbox";
         Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"mbox",JSPHelper.log);
-    PrintWriter pw = null;
+    PrintWriter pw;
     try {
-        pw = new PrintWriter(pathToFile, "UTF-8");
+        pw = new PrintWriter(pathToMboxFile, "UTF-8");
         boolean stripQuoted = false;
         for (Document ed: docset)
+        {
             EmailUtils.printToMbox(archive, (EmailDocument) ed, pw,archive.getBlobStore(), stripQuoted);
-
+        }
         pw.close();
 
-         //return it's URL to download
-        String contentURL = "serveTemp.jsp?archiveID="+ArchiveReaderWriter.getArchiveIDForArchive(archive)+"&file="+fnameprefix+".mbox" ;
+        String contentURL = "serveTemp.jsp?archiveID=" + ArchiveReaderWriter.getArchiveIDForArchive(archive) + "&file=";
+        if (query.equals("to-mbox"))
+        {
+            contentURL = contentURL + fnameprefix + ".mbox" ;
+        }
+        else
+        {
+            EmlCreator emlCreator = new EmlCreator(setStatusProvider);
+            String emlDir = emlCreator.convertToEml(pathToMboxFile, pathToTmpDir, docset.size());
+            String zipFileName = pathToTmpDir + File.separatorChar + fnameprefix + "_as_eml.zip";
+            Util.zipDirectory(emlDir, zipFileName);
+            Util.deleteDir(emlDir, JSPHelper.log);
+            contentURL = contentURL + fnameprefix +  "_as_eml.zip";
+        }
         downloadURL = /*appURL + "/" + */ contentURL;
         } catch(Exception e){
-            //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
            e.printStackTrace();
-           error="Error exporting confirmed correspondents";///
+           JSPHelper.log.error("Error downloading emails. query: " + query + ". Exception: " + e);
+           error = "Error exporting emails";
         }
 
     }//////////////////////////////////////Download unconfirmed correspondent file//////////////////////////////////////////////////////////////////////

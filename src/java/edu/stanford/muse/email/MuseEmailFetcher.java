@@ -16,11 +16,9 @@
 package edu.stanford.muse.email;
 
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.MboxFolderNotReadableException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
@@ -31,8 +29,6 @@ import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import groovy.lang.Tuple2;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -42,10 +38,12 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.function.Consumer;
+
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 /** important class -- this is the primary class used by clients to fetch email with muse.
  * fetches email from multiple accounts.
@@ -266,10 +264,10 @@ public class MuseEmailFetcher {
 	/** add mbox stores, given comma separated email directories.
 	 * if localFolders, sets the display name of the store to "Local Folders" instead of the full path
 	 * @throws MboxFolderNotReadableException */
-	public synchronized String addMboxAccount(String accountKey, String mailDirs, boolean localFolders) throws IOException {
+	public synchronized String addMboxAccount(String accountKey, String mailDirs, String displayPath, boolean localFolders) throws IOException {
 		if (Util.nullOrEmpty(mailDirs))
 			return null;
-		EmailStore emailStore = new MboxEmailStore(accountKey, localFolders ? "Local Folders" : mailDirs, mailDirs);
+		EmailStore emailStore = new MboxEmailStore(accountKey, localFolders ? "Local Folders" : displayPath, mailDirs);
 		return doConnect(emailStore);
 	}
 

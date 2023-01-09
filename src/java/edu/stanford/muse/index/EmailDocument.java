@@ -18,11 +18,10 @@ package edu.stanford.muse.index;
 
 
 import com.google.common.collect.LinkedHashMultimap;
-import edu.stanford.muse.AddressBookManager.MailingList;
-import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.AddressBookManager.AddressBook;
-import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.datacache.Blob;
+import edu.stanford.muse.email.CalendarUtil;
 import edu.stanford.muse.email.EmailFetcherThread;
 import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Util;
@@ -30,18 +29,20 @@ import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
-import java.io.*;
-import java.security.GeneralSecurityException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 /** EmailDocument is really like an email header - it stores metadata about a message.
  * use ed.date, ed.to/from/cc/bcc, and ed.getContents() gets its contents, ed.attachments gets its attachments */
@@ -81,8 +82,6 @@ public class EmailDocument extends DatedDocument implements Serializable
 		this.bcc = bcc;
 		this.from = from;
 		this.messageID = messageID;
-
-		//		this.url = url;
 		if (folderName != null)
 			this.folderName = InternTable.intern(folderName); // many messages will have the same foldername so better to intern
 		if (emailSource != null)
@@ -111,7 +110,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 			EmailDocument.uniqueIdToSignature.put(uniqueID,getSignature());
 			return uniqueID;
 		}
-	}//folderName + "-" + id; }
+	}
 	
 	/** returns a sorted list of strings based on given addresses.
 	 * none of the addresses should be null!

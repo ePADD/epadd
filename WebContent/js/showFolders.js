@@ -47,7 +47,8 @@ function render_folders_box(accountName, accountIdx, accountStatus)
 		var folderInfo = folderInfos[i];
 		// if the folder was already selected (checked[i], give it a selected-folder class so it'll be highlighted
 		var classStr = (checked[i]) ? 'folderEntry selected-folder' : 'folderEntry';
-		var hovertext = folderInfo.longName;
+		
+		var hovertext = folderInfo.displayName;
 		if (folderInfo.fileSize && folderInfo.fileSize > 0) {
 			if (folderInfo.fileSize > 1024)
 				hovertext += ' (Size: ' + Math.floor(folderInfo.fileSize/1024) + " KB)";

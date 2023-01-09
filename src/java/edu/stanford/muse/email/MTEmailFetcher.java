@@ -15,6 +15,14 @@
  */
 package edu.stanford.muse.email;
 
+import edu.stanford.muse.datacache.BlobStore;
+import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.util.JSONUtils;
+import edu.stanford.muse.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,16 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import edu.stanford.muse.datacache.BlobStore;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
-
-import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.util.JSONUtils;
-import edu.stanford.muse.util.Util;
 
 /** Multi-threaded email fetcher - deals with a single account (but supports multiple folders). wrapper around multiple instances of EmailFetcher.
  * currently, we only fetch in single threaded mode because some servers (incl. gmail) don't play nice with MT fetching.
@@ -348,6 +348,7 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 	public boolean isCancelled() { return isCancelled; }
 
 	/* returns percentage of messages processed */
+	@Override
 	public String getStatusMessage()
 	{
 		// if we have only 1 thread and it has a static message, return it

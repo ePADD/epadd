@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
+<%@page language="java" %>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="edu.stanford.muse.Config" %>
@@ -8,6 +8,7 @@
 <%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
 <%@ page import="java.util.LinkedHashMap" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
+<%@ page import="edu.stanford.muse.index.*" %>
 <%@page language="java" %>
 <!DOCTYPE HTML>
 <html>
@@ -195,15 +196,20 @@ Error: Export is only available in processing or appraisal modes!
 --%>
     <section>
             <div class="panel" id="export-preservation">
-                <div class="panel-heading">Export to Preservation</div>
+                <div class="panel-heading">Export to Preservation<br>
+                    Emailchemy license: <span id="license" style="color:orange">Retrieving status ...</span><br/>
+                </div>
                 <div class="one-line">
                     <div class="form-group col-sm-8">
                         <select id="export-preservation-options" name="export-preservation-options" class="form-control selectpicker">
                             <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%></option>
                             <% if (ModeConfig.isAppraisalMode()) { %>
-                                <option value = "exportAppraised">exportAppraised</option>
+                                <option value = <%=EmailExporter.EXPORT_APPRAISED_MBOX%>>Export appraised emails in Mbox format</option>
+                                <option value = <%=EmailExporter.EXPORT_APPRAISED_EML%>>Export appraised emails in EML format</option>
+
                             <% } else if (ModeConfig.isProcessingMode()) { %>
-                                <option value = "exportProcessed">exportProcessed</option>
+                                <option value = <%=EmailExporter.EXPORT_PROCESSED_MBOX%>>Export processed emails in Mbox format</option>
+                                <option value = <%=EmailExporter.EXPORT_PROCESSED_EML%>>Export processed emails in EML format</option>
                             <% } %>
                         </select>
                     </div>
@@ -368,18 +374,47 @@ Error: Export is only available in processing or appraisal modes!
     <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
     <section>
         <div class="panel" id="export-mbox">
-            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-mbox-message")%></div>
+                <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-message")%>
+                </div>
+                <div class="one-line">
+                    <div class="form-group col-sm-8">
+                        Emailchemy license:<br>
+<span id="licenseDownload"
+      style="color:orange;margin-left: 40px">Retrieving status ...</span><br/>
+<span id="licenseDownload2"
+                              style="margin-left: 40px"></span><br/><br/>
+<label for=downloadformat>Download format</label>
+<fieldset id="downloadformat" class="comman-radio">
+    <label class="radio-inline">
+        <input type="radio" id="mbox" name="formatradiobutton">
+        <span class="text-radio">MBOX</span>
+    </label>
+
+    <label class="radio-inline">
+        <input type="radio" id="eml" name="formatradiobutton">
+        <span class="text-radio">EML</span>
+    </label>
+</fieldset>
+</div>
+</div>
             <div class="one-line">
                 <div class="form-group col-sm-8">
                     <select id="export-mbox-options" name="export-mbox-options" class="form-control selectpicker">
-                        <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%></option>
-                        <option value = "all"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-all")%></option>
-                        <option value = "non-restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-non-restricted")%></option>
-                        <option value = "restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-restricted")%></option>
+            <option value="" selected
+                    disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%>
+            </option>
+            <option value="all"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-all")%>
+            </option>
+            <option value="non-restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-non-restricted")%>
+            </option>
+            <option value="restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-restricted")%>
+            </option>
                     </select>
                 </div>
                 <div class="form-group col-sm-4">
-                    <button id="export-mbox-do" class="go-button  btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
+        <button id="export-mbox-do"
+                class="go-button  btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%>
+        </button>
                 </div>
             </div>
 
@@ -403,34 +438,28 @@ Error: Export is only available in processing or appraisal modes!
 
         $('#export-mbox .go-button').click (function(e) {
             var exportoptions= $('#export-mbox-options').val();
+            var isEml = $('#eml').prop('checked');
+
+            var format;
+            if (isEml)
+            {
+                format = "to-eml";
+            }
+            else
+            {
+                format = "to-mbox";
+            }
+            debugger
             if(!exportoptions){
                 alert("Please select at least one option!");
                 return false;
             }
-            var post_params={archiveID:archiveID, data:"to-mbox", type:exportoptions};
+            var post_params={archiveID:archiveID, data:format, type:exportoptions};
             var params = epadd.convertParamsToAmpersandSep(post_params);
 
            
             var premisData = {eventType: "mbox export", eventDetailInformation: exportoptions};
              fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params, null, null, premisData);
-            /*
-             $.ajax({
-             type: 'POST',
-             url: "ajax/downloadData.jsp",
-             data: {archiveID: archiveID, data: "to-mbox",type:exportoptions},
-             dataType: 'json',
-             success: function (data) {
-             epadd.alert('An mbox file containing selected messages will be downloaded in your download folder!', function () {
-             window.location=data.downloadurl;
-             });
-             },
-             error: function (jq, textStatus, errorThrown) {
-             var message = ("Error Exporting file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
-             epadd.log(message);
-             epadd.alert(message);
-             }
-             });
-             */
         });
     </script>
     <% } %>
@@ -581,8 +610,42 @@ Error: Export is only available in processing or appraisal modes!
             new FilePicker($('#export-attach'));
 //            new FilePicker($('#export-auth'));
             new FilePicker($('#export-headers'));
+
+           setInterval(fetchLicenseStatus, 3000);
+
         });
 		
+        function fetchLicenseStatus() {
+            $.ajax({
+                    type: "POST",
+                    url: "ajax/licenseStatus",
+                    success: function (result) {
+                        console.log("RESULT " + result);
+                        document.getElementById('license').innerHTML = result;
+                        document.getElementById('licenseDownload').innerHTML = result;
+
+                        if (result.includes("License active")) {
+                            document.getElementById('license').setAttribute("style", "color:green;");
+                            document.getElementById('license').innerHTML += "- Conversion for export to EML fully working"
+
+                            document.getElementById('licenseDownload').setAttribute("style", "color:green; margin-left: 40px;");
+
+                            document.getElementById('licenseDownload2').setAttribute("style", "color:green; margin-left: 40px;");
+                            document.getElementById('licenseDownload2').innerHTML = "Conversion for downloading EML files fully working"
+                        } else {
+                            document.getElementById('license').setAttribute("style", "color:red");
+                            document.getElementById('license').innerHTML += "- Conversion for export to EML working in demo mode"
+
+                            document.getElementById('licenseDownload').setAttribute("style", "color:red; margin-left: 40px;");
+
+                            document.getElementById('licenseDownload2').setAttribute("style", "color:red; margin-left: 40px;");
+                            document.getElementById('licenseDownload2').innerHTML = "Conversion for downloading EML files working in demo mode"
+                        }
+                    }
+                }
+            )
+        }
+
         function createFolder(obj) {
                     BootstrapDialog.show({
                         title: 'Create Folder',

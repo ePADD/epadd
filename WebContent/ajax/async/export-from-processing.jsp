@@ -94,7 +94,7 @@ Archive archive = JSPHelper.getArchive(params);
 	String folderPublic = dir + File.separator + "ePADD archive of " + bestName + "-Discovery";
 	//same set of docs are exported from processing to delivery or discovery only difference being the
 		//content of these messages. In case of processing to discovery mode the redaction takes place.
-	List<Document> docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY);
+	List<Document> docsToExport = archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY);
 
 	/*
 	Before v5 we faced an issue where after exporting to delivery/discovery the document's content got
@@ -122,7 +122,7 @@ Archive archive = JSPHelper.getArchive(params);
 	// archive.collectionMetadata.entityCounts = null;
 	archive.collectionMetadata.numPotentiallySensitiveMessages = -1;
 	try {
-		archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default",setStatusProvider);
+		archive.export(docsToExport, Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY, folder, "default",setStatusProvider);
 //		//remove fordelivery archive from the global map
 //		SimpleSessions.removeFromGlobalArchiveMap(folder,fordelivery);
 	} catch (Exception e) {
@@ -139,7 +139,7 @@ Archive archive = JSPHelper.getArchive(params);
 	//Read archive from folderPublic directory and operate on that.
 	//Archive forDeliveryPublic = SimpleSessions.readArchiveIfPresent(folderPublic);
 	//With the introduction of 'Transfer only to Delivery' label, the set of docs exported to Delivery will not be same for Discovery.
-	docsToExport = archive.getDocsForExport(Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY);
+	docsToExport = archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DISCOVERY);
 	JSPHelper.log.info("Exporting for discovery");
 	/*v6- why were we exporting correspondent authority file separately? Removed now.
 		try {
@@ -156,7 +156,7 @@ Archive archive = JSPHelper.getArchive(params);
 	}
 	*/
 	try {
-        archive.export(docsToExport, Archive.Export_Mode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default",setStatusProvider);
+        archive.export(docsToExport, Archive.ExportMode.EXPORT_PROCESSING_TO_DISCOVERY/* public mode */, folderPublic, "default",setStatusProvider);
     }catch (Exception e) {
 		Util.print_exception ("Error trying to export archive", e, JSPHelper.log);
 			error = "Sorry, error exporting archive: " + e + ". Please see the log file for more details.";

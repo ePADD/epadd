@@ -239,7 +239,16 @@ public class Accounts {
 			String emailSource = request.getParameter("emailSource" + accountNum);
 			// for non-std local folders dir, tbird prefs.js has a line like: user_pref("mail.server.server1.directory-rel", "[ProfD]../../../../../../tmp/tb");
 			log.info("adding mbox account: " + mboxDir);
-			errorMessage = m.addMboxAccount(emailSource, mboxDir, accountType.equals("tbirdLocalFolders"));
+			String displayFolderName = "";
+			//accountNum 3 is for non-mbox files. In that case mboxDir is the path
+			//to the converted files in the temp directory. For the display of the folders we want to show the
+			//value of inFile (the original file path) and not the value of mboxDir to the user.
+			if (accountNum == 3)
+			{
+				 displayFolderName = request.getParameter("inFile");
+			}
+		//	request is for all account, accountIdx tells which one we are dealing with.
+			errorMessage = m.addMboxAccount(emailSource, mboxDir, displayFolderName, accountType.equals("tbirdLocalFolders"));
 			//Store this info in m for persistence in the data report issue #254
 			if(m.emailSources==null)
 				m.emailSources = new LinkedHashSet<>();

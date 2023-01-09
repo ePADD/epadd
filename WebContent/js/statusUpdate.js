@@ -79,7 +79,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 
             // ok, so the op was successful, have we been told what ready function to call or page to to redirect on the client side by the caller?
             if (onready) {
-                onready();
+                onready(response);
                 return;
             }
 
@@ -149,7 +149,6 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
                 try { document.title = html; } catch (e) { epadd.log ('exception trying to set title to ' + html); } // set title so user can switch tabs and still keep an eye on the status of this one
                 var $progress = $('.progress_bar');
                 var total_width = $('.progress_bar_outer_box').width();
-                epadd.log("pct: "+response.pctComplete);
                 if (response.pctComplete && response.pctComplete >= 0)
                 {
 
@@ -232,12 +231,18 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
                         epadd.error('Sorry, there was an error while querying for the status of an operation. Improper response received from the ePADD server.');
                 }}(onready,redirect_page),
             error: function(xhr,status,error) {
-                var err = ("Sorry, looks like we can't get a response from the server. Please try restarting ePADD.");
+                var err = ("There was an error on the server. status: " + status + " error: " + error);
+                if (xhr.responseText && xhr.responseText != '')
+                {
+                    err += (" Response : " + xhr.responseText);
+                }
+
+                console.log(err);
                 epadd.error (err);
                 $('.muse-overlay').hide();
-                window.location = "error.jsp";
-        	//epadd.error ("Sorry, there was an error while importing the accession. The ePADD program has either quit, or there was an internal error. Please retry and if the error persists, report it to epadd_project@stanford.edu.");
-            }});
+                //window.location = "error.jsp";
+            }
+        });
 	}
 
 

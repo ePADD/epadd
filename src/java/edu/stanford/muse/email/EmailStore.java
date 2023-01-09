@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import edu.stanford.epadd.util.EmailConvert;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -83,7 +84,7 @@ public abstract class EmailStore implements Serializable {
 		if (folderBeingScanned != null && !doneReadingFolderCounts)
 		{
 			String s = (folderBeingScannedShortName == null) ? folderBeingScanned : folderBeingScannedShortName;
-			tmp.add (new FolderInfo(getAccountID(), folderBeingScanned, s, -1));
+			tmp.add (new FolderInfo(displayName, getAccountID(), folderBeingScanned, s, -1));
 		}
 
 		log.info("Folder infos currently available: " + tmp.size());
@@ -104,6 +105,10 @@ public abstract class EmailStore implements Serializable {
 	EmailStore(String name, String emailAddress)
 	{
 		this.displayName = name;
+		if (EmailConvert.EPADD_EMAILCHEMY_TMP.contains(displayName))
+		{
+	//		displayName = FolderInfo.getDisplayNameForNonMbox(displayName);
+		}
 		// display name is often used in html pages for attributes and javascript, so its probably very bad to have " or '
 		displayName = displayName.replaceAll("\\\\", "/");
 		displayName = displayName.replaceAll("'", "");

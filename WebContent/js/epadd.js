@@ -29,6 +29,7 @@ epadd.post_message = function(mesg, warn)
 
 epadd.log = function(mesg, warn)
 {
+	console.log(mesg)
 //	alert ('logging ' + mesg);
 	if (typeof console != 'undefined') {
 		console[warn ? 'warn' : 'info'](mesg);
@@ -158,27 +159,34 @@ epadd.fix_login_account_numbers = function() {
 		$emailSource.attr('id', 'emailSource' + count);
 		count++;
 	}
+	var $pst_accounts = $('#psts .account');
+	for (var i = 0; i < $pst_accounts.length; i++)
+	{
+
+		var $accountType = $('.accountType', $pst_accounts[i]);
+		// We read a pst file but after conversion we deal with mbox, so type is set to mbox
+		$accountType.val('mbox');
+		$accountType.attr('name', 'accountType' + (count));
+		$accountType.attr('id', 'accountType' + (count));
+
+		var $dir = $($('input', $pst_accounts[i])[1]); // third input field is the non-Mbox dir
+
+		$dir.attr('name', 'mboxDir' + (count));
+		$dir.attr('id', 'mboxDir' + (count));
+		var $emailSource = $($('input', $pst_accounts[i])[2]); // second input field is the email source
+		$emailSource.attr('name', 'emailSource' + (count));
+		$emailSource.attr('id', 'emailSource' + (count));
+
+	//	$("#mboxDir3").val("C:\/apache/apache-tomcat-8.5.71/temp/epadd_tmp_files/Top of Personal Folders/test_emails.mbox");
+
+
+		count++;
+	}
 };
-
+	
 /** takes the input fields and does logins, showing spinners while logging is on. returns false if an obvious error occurred. */
-
-epadd.do_logins = function() {
-
-	epadd.fix_login_account_numbers();
-
-	// squirrel away the input field values in local storage
-	$('input[type="text"]').each(function(){
-		var field = 'email-source:' + $(this).attr('name');
-		if (!field)
-			return;
-		var value = $(this).val();
-		localStorage.setItem(field, value);
-	});
-
-	epadd.log('doing login (go button pressed) for ' + $('#loginName0').val());
-	var post_params = muse.collect_input_fields();
 	
-	
+function continueLogin(post_params) {
 	if (!post_params.name || $.trim(post_params.name).length === 0){
 		//name doesn't exist or is just whitespace
 		epadd.error('Please enter name of archive owner.');
@@ -286,8 +294,55 @@ epadd.do_logins = function() {
 	});
 
 	return true;
-};
+}
 
+epadd.do_logins = function() {
+	epadd.fix_login_account_numbers();
+	// squirrel away the input field values in local storage
+	$('input[type="text"]').each(function(){
+		var field = 'email-source:' + $(this).attr('name');
+		if (!field)
+			return;
+		var value = $(this).val();
+		localStorage.setItem(field, value);
+	});
+	epadd.log('doing login (go button pressed) for ' + $('#loginName0').val());
+	var post_params = muse.collect_input_fields();
+
+	//mboxDir3 is the path to non-mbox files. It is called mboxDir as
+	//eventually the files will be converted to Mbox.
+	if (post_params.mboxDir3 && post_params.mboxDir3 != '')
+	{
+		epadd.post_params = post_params;
+		doConversion(post_params);
+		//If we have non mbox files to convert then we have to wait for the conversion to finish.
+		//continueLogin is then called in the callback function isReady().
+	}
+	else
+	{
+		//No conversion here so just call continueLogin()
+		continueLogin(post_params);
+	}
+};
+var isReady = (response) => {
+	var pp = epadd.post_params;
+		if (response.outFolder && response.outFolder != '')
+		{
+			pp.mboxDir3 = response.outFolder;
+			epadd.post_params.mboxDir3 = response.outFolder;
+		}
+	// DO STUFF HERE -> move files, etc
+	continueLogin(pp);
+
+	//var emailTmpFolder = response.outputFolder;
+
+}
+function doConversion(post_params) {
+	post_params.inFile = post_params.mboxDir3;
+	var params = epadd.convertParamsToAmpersandSep(post_params);
+	var page = "ajax/emailConvert";
+	fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), params, isReady);
+}
 
 
 epadd.all_logins_complete = function(sent_folder_found) {
@@ -310,10 +365,18 @@ epadd.submitFolders = function()
 		var urlParams = "";
 		var store="";
 
-		for (var i=0; i < checked.length; i++)
-		{
+		for (var i=0; i < checked.length; i++) {
 			store = checked[i].getAttribute("STORE");
-			urlParams += encodeURIComponent(checked[i].name)  + '^-^';
+			// If you change "epadd_emailchemy_tmp" then you also have to change
+			// in EmailConvert.java: EPADD_EMAILCHEMY_TMP;
+			var isNonMbox = checked[i].name.includes("epadd_emailchemy_tmp");
+			var nonMboxName = " ";
+			if (isNonMbox === true)
+		{
+				nonMboxName = store
+			}
+			// In case of non-mbox files we have pairs mbox file name - name of non mbox file which was converted.
+			urlParams += encodeURIComponent(checked[i].name)  + '^x^' + store + '^-^';
 		}
 		urlParams = "exportableAssetsFiles="+urlParams;
 
@@ -516,6 +579,7 @@ epadd.warn = function(text, continuation) {
 
 // pop up an error modal with the given text (user can only close). call continuation if provided on close
 epadd.error = function(text, continuation) {
+	console.log(text);
     epadd.log ("showing error modal: " + text, true /* log as warning */);
     $('#error-modal .modal-body').text(text);
     $('#error-modal .ok-button').off('click'); // unset all previous handlers to be safe

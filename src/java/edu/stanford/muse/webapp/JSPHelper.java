@@ -18,12 +18,12 @@ package edu.stanford.muse.webapp;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import edu.stanford.epadd.util.OperationInfo;
-import edu.stanford.muse.LabelManager.Label;
-import edu.stanford.muse.datacache.BlobStore;
-import edu.stanford.muse.email.*;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
+import edu.stanford.muse.LabelManager.Label;
 import edu.stanford.muse.LabelManager.LabelManager;
+import edu.stanford.muse.datacache.BlobStore;
+import edu.stanford.muse.email.*;
 import edu.stanford.muse.epaddpremis.EpaddEvent;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
@@ -32,15 +32,16 @@ import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.DummyNERModel;
 import edu.stanford.muse.ner.model.NBModel;
 import edu.stanford.muse.ner.model.NERModel;
-import edu.stanford.muse.util.*;
+import edu.stanford.muse.util.DetailedFacetItem;
+import edu.stanford.muse.util.Log4JUtils;
+import edu.stanford.muse.util.Pair;
+import edu.stanford.muse.util.Util;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTimeComparator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +57,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
+
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 /* import javax.servlet.jsp.JspWriter; */
 
