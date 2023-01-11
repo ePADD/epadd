@@ -1,3 +1,8 @@
+<%
+/*    
+    2022-10-28      Allow custom naming in Export to next ePADD module
+*/
+%>
 <%@page language="java" contentType="application/json;charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="java.io.*"%>
@@ -67,6 +72,8 @@
 	//writeProfileBlock(out, archive, "Export archive");
 	String rawDir = JSPHelper.getParam(params,"dir");
 	 String error="";
+// 2022-10-28
+        String dir_name = JSPHelper.getParam(params,"dir_name");
 
 	/*
 	List<String> pathTokens = Util.tokenize(dir, "\\/");
@@ -78,8 +85,11 @@
 	if (!file.isDirectory() || !file.canWrite()) {
 		error = "Sorry, the directory " + dir + " is not writable. Please select a different directory.";
 	}else{
-
-		String folder = dir + File.separator + "ePADD archive of " + bestName;
+// 2022-10-28
+//		String folder = dir + File.separator + "ePADD archive of " + bestName;
+        String folder;
+        if (dir_name != null && dir_name != "")  folder = dir + File.separator + dir_name;
+        else folder = dir + File.separator + "ePADD archive of " + bestName;
 		List<Document> docsToExport = new ArrayList<>();
 		docsToExport = archive.getDocsForExport(Archive.ExportMode.EXPORT_APPRAISAL_TO_PROCESSING);
 

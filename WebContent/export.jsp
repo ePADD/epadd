@@ -1,16 +1,19 @@
+<%
+/*    
+    2022-10-28      Allow custom naming in Export to next ePADD module
+*/
+%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" %>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="edu.stanford.muse.Config" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
-<%@ page import="java.util.LinkedHashMap" %>
+<%@page language="java" import="edu.stanford.epadd.util.EmailConvert"%>
+<%@ page import="edu.stanford.muse.index.EmailExporter" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
-<%@ page import="edu.stanford.muse.index.*" %>
+<%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="java.util.Map" %>
 <%@page language="java" %>
-<!DOCTYPE HTML>
+<%	EmailConvert.activateLicense();%>
+
+    <!DOCTYPE HTML>
 <html>
 <head>
 
@@ -118,6 +121,8 @@
     String bestEmail = "";
     if (archive != null) {
         AddressBook ab = archive.addressBook;
+// 2022-10-28        
+        bestName = ab.getBestNameForSelf();
         Set<String> addrs = ab.getOwnAddrs();
         if (addrs.size() > 0)
             bestEmail = addrs.iterator().next();
@@ -235,6 +240,12 @@ Error: Export is only available in processing or appraisal modes!
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
                     <button id="export-next-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%></button>
+                </div>
+                <div class="form-group col-sm-8">
+                    <label><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-archive")%></label>
+                    <input id="export-next-dir" class="form-control" type="text" name="name_dir" value="ePADD archive of <%=bestName%>" />
+                </div>    
+                <div class="form-group col-sm-4 picker-buttons">    
                     <button id="export-next-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
                 </div>
             </div>
@@ -720,7 +731,9 @@ Error: Export is only available in processing or appraisal modes!
                     }(dir);
                 }
                 //window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
-                var post_params = {archiveID: archiveID, dir: dir};
+// 2022-10-28
+//                var post_params = {archiveID: archiveID, dir: dir};
+                var post_params = {archiveID: archiveID, dir: dir, dir_name: dir_name};				
                 var params = epadd.convertParamsToAmpersandSep(post_params);
                 var premisData = {eventType: "transfer to processing", eventDetailInformation: "Exported to " + post_params.dir};
                 fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod, null, premisData);

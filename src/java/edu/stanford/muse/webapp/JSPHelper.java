@@ -32,10 +32,7 @@ import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.DummyNERModel;
 import edu.stanford.muse.ner.model.NBModel;
 import edu.stanford.muse.ner.model.NERModel;
-import edu.stanford.muse.util.DetailedFacetItem;
-import edu.stanford.muse.util.Log4JUtils;
-import edu.stanford.muse.util.Pair;
-import edu.stanford.muse.util.Util;
+import edu.stanford.muse.util.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -459,8 +456,11 @@ public class JSPHelper {
 		// we add the following code to support file metada requirement in epadd+ project
 // 2022-09-05	Added handling for IMAP		
 //		archive.collectionMetadata.setFileMetadatas(archive, allFolders);
-        if (archive.isMBOX()) archive.collectionMetadata.setFileMetadatas(archive, allFolders);
-        else archive.collectionMetadata.setFileMetadatasIMAP(archive, allFolders);
+      //  if (archive.isMBOX())
+        	archive.collectionMetadata.setFileMetadatas(archive, allFolders);
+
+        // IMAP not currently supported
+     //   else archive.collectionMetadata.setFileMetadatasIMAP(archive, allFolders);
         archive.printEpaddPremis();
     }
 

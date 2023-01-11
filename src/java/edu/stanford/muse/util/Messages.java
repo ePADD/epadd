@@ -1,3 +1,6 @@
+/*
+    2022-11-14  Changed to determine language with Config.EPADD_LANGUAGE
+*/
 package edu.stanford.muse.util;
 
 import edu.stanford.muse.index.Archive;
@@ -29,20 +32,23 @@ public class Messages {
 	 */
 	public static String getMessage(String archiveID, String bundleName, String key)
 	{
-		Archive ar= ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+//		Archive ar= ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
 
 
 	Locale locale;
 
 	/* Use collection specifice language/locale only in the discovery mode - for now. For other modes just use system's default locale*/
-	if(ModeConfig.isDiscoveryMode()) {
-		if (ar != null)
-			locale = Locale.forLanguageTag(ar.collectionMetadata.getIngestionLocaleTag());
-		else /*For the case when archive isn't loaded yet in the discovery mode. In that case continue to use system's default locale*/
-			locale = Locale.getDefault();
-	}
-	else
-		locale = Locale.getDefault();
+//	if(ModeConfig.isDiscoveryMode()) {
+//		if (ar != null)
+//			locale = Locale.forLanguageTag(ar.collectionMetadata.getIngestionLocaleTag());
+//		else /*For the case when archive isn't loaded yet in the discovery mode. In that case continue to use system's default locale*/
+//			locale = Locale.getDefault();
+//	}
+//	else
+//		locale = Locale.getDefault();
+	
+// 2022-11-14	
+		locale = new Locale(edu.stanford.muse.Config.EPADD_LANGUAGE);
 		return getMessage(locale, bundleName, key, null);
 
 	}

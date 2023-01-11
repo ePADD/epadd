@@ -1,15 +1,19 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
-<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
-<%@page language="java" import="edu.stanford.muse.index.Archive"%>
-<%@page language="java" import="java.util.Set"%>
-<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@page language="java" import="edu.stanford.epadd.util.EmailConvert"%>
+<%@page language="java" %>
+<%@page language="java" %>
 <%@page language="java" %>
 
 <%--
 	<%@ page import="Internationalisation.ReadFromProp"%>
 --%>
-
+<%
+	EmailConvert.activateLicense();
+/*
+    2022-11-09  Added Sidecar file listing
+*/    
+%>
 
 <!DOCTYPE HTML>
 <html>
@@ -279,7 +283,7 @@ if (archive != null) {
 							<option value="cserv4">CompuServe for Windows 3.0+</option>
 							<option value="cserv2k">CompuServe 2000 (5.0 or higher) for Windows</option>
 							<option value="emailer1">Claris Emailer 1 (Filing Cabinet)</option>
-							<option value="emailer1fr">Claris Emailer 1 français</option>
+							<option value="emailer1fr">Claris Emailer 1 franÃ§ais</option>
 							<option value="emailer2">Claris Emailer 2 (Mail Database)</option>
 							<option value="eml">EML file (RFC-2822 Message)</option>
 							<option value="entourage">Entourage (Database)</option>
@@ -353,6 +357,12 @@ if (archive != null) {
 				<br/>
 			</div>
 			<p></p>
+			
+            <% if (archiveID != null) { %>
+                <button id="manage-sidecar-btn" class="btn-default" onclick="return goSidecarFiles();"><i class="fa fa-files-o fa-2x" aria-hidden="true"></i>&nbsp; 
+                <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar.management-title")%>
+                </button>
+            <% } %>                            
 		</div>
 <div>
 </form>
@@ -408,6 +418,13 @@ if (archive != null) {
 <jsp:include page="footer.jsp"/>
 
 	<script>
+	// 2022-11-09            
+        function goSidecarFiles() {
+            url = "sidecarFiles?archiveID=<%=archiveID%>";
+            window.location.href = url;
+            return false;
+        }
+        
 		function fetchLicenseStatus() {
 			$.ajax({
 						type: "POST",

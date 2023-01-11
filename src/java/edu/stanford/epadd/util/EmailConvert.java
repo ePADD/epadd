@@ -139,7 +139,6 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
     public static void activateLicense()
     {
         emailConvert = new EmailConvert();
-        emailConvert = new EmailConvert();
         License license = new License();
         license.activateWithDongle(emailConvert);
         System.out.println("activateWithDongle");

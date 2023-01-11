@@ -10,6 +10,11 @@ package edu.stanford.muse.epaddpremis;//Example: ingest
 //        MORE ITERATIONS OF THIS FIELD?)
 //
 //        package edu.stanford.muse.epaddpremis;
+/*
+	2022-10-19	Added JSON export
+	2022-11-01	Moved export2JSON() into printToFiles(), overwrite JSON file, update checksum for JSON file
+	2022-11-03	Added createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome, ZonedDateTime date1)
+*/
 
 import edu.stanford.epadd.Version;
 import edu.stanford.muse.epaddpremis.premisfile.File;
@@ -21,6 +26,9 @@ import gov.loc.repository.bagit.domain.Bag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+// 2022-10-19
+import org.json.JSONException;
+import org.json.XML;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -39,6 +47,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+// 2022-11-03
+import java.time.ZonedDateTime;
 
 @XmlRootElement(name = "premis")
 public class EpaddPremis implements Serializable {
@@ -48,6 +58,9 @@ public class EpaddPremis implements Serializable {
 
     @XmlTransient
     public static final String SERIALIZED_FILE_NAME = "premisobject.ser";
+
+    @XmlTransient
+    private static final String JSON_FILE_NAME = "epaddPremis.json";
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(EpaddPremis.class);
@@ -193,6 +206,11 @@ public class EpaddPremis implements Serializable {
         printToFiles();
 
     }
+// 2022-11-03
+    public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome, ZonedDateTime date1) {
+        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive)), date1));
+        printToFiles();
+    }
 
     public void addToSignificantProperty(String type, int value) {
         if (intellectualEntity != null) {
@@ -249,6 +267,46 @@ public class EpaddPremis implements Serializable {
         return pathToDataFolder + java.io.File.separatorChar + SERIALIZED_FILE_NAME;
     }
 
+// 2022-11-01
+    private String getJsonPathAndFileName() {
+        return pathToDataFolder + java.io.File.separatorChar + JSON_FILE_NAME;
+    }
+
+// 2022-10-19
+    public void export2JSON() {
+            InputStream inputStream = null;
+            BufferedWriter bufferedWriter = null;
+            try {
+                java.io.File xmlfile = new java.io.File (pathToDataFolder + java.io.File.separatorChar + XML_FILE_NAME);
+                inputStream = new FileInputStream(xmlfile);  
+                StringBuilder builder =  new StringBuilder();  
+                int ptr = 0;  
+                while ((ptr = inputStream.read()) != -1 ) {  
+                    builder.append((char) ptr); 
+                }  
+                String xml  = builder.toString();  
+                JSONObject jsonObj = XML.toJSONObject(xml);   
+            // Assume default encoding.
+// 2022-11-01  			
+//                FileWriter fileWriter =  new FileWriter(pathToDataFolder + java.io.File.separatorChar + JSON_FILE_NAME);
+				FileWriter fileWriter =  new FileWriter(getJsonPathAndFileName(), false);
+                bufferedWriter = new BufferedWriter(fileWriter);
+
+                for(int i= 0 ;i < jsonObj.toString().split(",").length; i ++) {
+                    bufferedWriter.write(jsonObj.toString().split(",")[i]);
+                    bufferedWriter.write("\n");
+                }
+                		
+            } catch (IOException | JSONException e) {
+                Util.print_exception("Exception in EpaddPremis.export2JSON() ", e, LogManager.getLogger(EpaddPremis.class)); 
+            } finally {
+                try {
+                    if (inputStream != null) inputStream.close();
+                    if (bufferedWriter != null) bufferedWriter.close();	
+                } catch (IOException e) {}   
+            }
+    }	
+
     public void printToFiles() {
         getIntellectualEntity().updateSignificantPropertiesSet();
 
@@ -262,6 +320,9 @@ public class EpaddPremis implements Serializable {
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(this, new java.io.File(getXmlPathAndFileName()));
+// 2022-11-01            
+            export2JSON();
+			
             Bag bag = Archive.readArchiveBag(baseDir);
             if (bag == null) {
                 log.warn("bag null in EpaddPremis.printToFile()");
@@ -272,6 +333,8 @@ public class EpaddPremis implements Serializable {
                 return;
             }
             Archive.updateFileInBag(bag, getXmlPathAndFileName(), baseDir);
+// 2022-11-01            
+            Archive.updateFileInBag(bag, getJsonPathAndFileName(), baseDir);    
             archive.setArchiveBag(bag);
         } catch (Exception e) {
             Util.print_exception("Exception in EpaddPremis.printToFile() ", e, LogManager.getLogger(EpaddPremis.class));

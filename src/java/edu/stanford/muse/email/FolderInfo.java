@@ -132,15 +132,19 @@ public class FolderInfo implements Serializable {
 		return displayName;
 	}
 
-	private static String removeTmpPartOfPath(String pathOfTmpMboxFile) {
-		String s = pathOfTmpMboxFile.substring(pathOfTmpMboxFile.lastIndexOf(EmailConvert.getTmpDir()) + EmailConvert.getTmpDir().length());
-		//Remove trailing /
-		if (s.length() > 1) {
-			s = s.substring(1);
-		}
-		else
-		{
-			log.warn("Something wrong in removeTmpPartOfPath. There should be a leading '/'. Temp string = " + s);
+	public static String removeTmpPartOfPath(String pathOfTmpMboxFile) {
+		String s;
+		if (pathOfTmpMboxFile.contains(EmailConvert.getTmpDir())) {
+			s = pathOfTmpMboxFile.substring(pathOfTmpMboxFile.lastIndexOf(EmailConvert.getTmpDir()) + EmailConvert.getTmpDir().length());
+			//Remove trailing /
+			if (s.length() > 1) {
+				s = s.substring(1);
+			} else {
+				log.warn("Something wrong in removeTmpPartOfPath. There should be a leading '/'. Temp string = " + s);
+			}
+		} else {
+			// There is no tmp path to remove
+			s = pathOfTmpMboxFile;
 		}
 		return s;
 	}

@@ -662,6 +662,15 @@
 		<url-pattern>/report</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>sidecarFiles</servlet-name>
+		<jsp-file>/sidecarFiles.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sidecarFiles</servlet-name>
+		<url-pattern>/sidecarFiles</url-pattern>
+	</servlet-mapping>
+
     <!-- 404 page -->
     <servlet>
         <servlet-name>error-404</servlet-name>

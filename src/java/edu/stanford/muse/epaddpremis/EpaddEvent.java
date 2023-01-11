@@ -1,3 +1,8 @@
+/*
+    2022-11-03  added EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String mode, ZonedDateTime date1)
+                added more EventType
+
+*/
 package edu.stanford.muse.epaddpremis;
 
 import edu.stanford.epadd.Version;
@@ -47,6 +52,18 @@ public class EpaddEvent implements Serializable {
         this.eventDetailInformation = new EventDetailInformation(eventDetailInformation);
         setValues();
     }
+// 2022-11-03
+    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String mode, ZonedDateTime date1)
+    {
+        eventOutcomeInformation = new EventOutcomeInformation(outcome);
+        linkingAgentIdentifier = new LinkingAgentIdentifier(mode);
+        this.eventType = eventType;
+        this.eventDetailInformation = new EventDetailInformation(eventDetailInformation);
+//        setValues();
+        generateAndSetUuid();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+        eventDateTime = date1.format(formatter);
+    }
 
     public EpaddEvent() {
     }
@@ -89,9 +106,26 @@ public class EpaddEvent implements Serializable {
 
     public enum EventType {
 // 2022-09-01 Added IMAP_INGEST		
+// 2022-11-03	Added more EventType		
 //        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized");
         TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized"), 
-        IMAP_INGEST("imap ingest")
+        IMAP_INGEST("imap ingest"),
+		
+        INGESTION("Ingestion"),
+        IDENTIFIER_ASSIGNMENT("Identifier assignment"),
+        FIXITY_CHECK("Fixity check"),
+        MESSAGE_DIGEST_CALCULATION("Message digest calculation"),
+        QUARANTINE("Quarantine"),
+        UNQUARANTINE("Unquarantine"),
+        UNPACKING("Unpacking"),
+        NAME_CLEANUP("Name cleanup"),
+        VIRUS_CHECK("Virus check"),
+        FORMAT_IDENTIFICATION("Format identification"),
+        VALIDATION("Validation"),
+        NORMALIZATION("Normalization"),
+        TRANSCRIPTION("Transcription"),
+        CREATION("Creation"),
+        OTHER("Other")
         ;
 
         private final String eventType;

@@ -192,6 +192,10 @@ function continueLogin(post_params) {
 		epadd.error('Please enter name of archive owner.');
 		return;
 	}
+
+	//This is a bit of a hack to make the function isMbox() working.
+	post_params.emailSource2 = "mbox  " + post_params.emailSource2;
+
 	var is_valid_account = [];
 	$('.account .input-field').removeClass('has-error'); // remove all input fields marked with an error
 
@@ -200,7 +204,6 @@ function continueLogin(post_params) {
 		for (var i = 0; i < $accounts.length; i++) {
 			if (!is_valid_account[i])
 				continue;
-
 			post_params.accountIdx = i;
 			post_params.incremental = 'true'; // don't think this is needed any more
 			var n_errors = 0, resp_received = 0;

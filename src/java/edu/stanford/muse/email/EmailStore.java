@@ -105,10 +105,7 @@ public abstract class EmailStore implements Serializable {
 	EmailStore(String name, String emailAddress)
 	{
 		this.displayName = name;
-		if (EmailConvert.EPADD_EMAILCHEMY_TMP.contains(displayName))
-		{
-	//		displayName = FolderInfo.getDisplayNameForNonMbox(displayName);
-		}
+		
 		// display name is often used in html pages for attributes and javascript, so its probably very bad to have " or '
 		displayName = displayName.replaceAll("\\\\", "/");
 		displayName = displayName.replaceAll("'", "");

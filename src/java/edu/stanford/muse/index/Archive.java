@@ -20,6 +20,9 @@
     2022-10-03 	Corrected function isMBOX() to check if the source is MBOX 
 	2022-10-04	Added file ID same as MBOX for IMAP
 	2022-10-13	Added SHA-256 in updateFileInBag	
+    2022-10-19  Added PREMIS data export in JSON
+	2022-11-01  Moved export2JSON() into epaddPremis.printToFiles()
+	2022-11-09	Added function getSidecarDir()
  */
 package edu.stanford.muse.index;
 
@@ -27,7 +30,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
-import edu.stanford.epadd.util.EmailConvert;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.CorrespondentAuthorityMapper;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
@@ -76,7 +78,10 @@ import org.json.JSONArray;
 
 import javax.mail.Header;
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -101,8 +106,6 @@ import gov.loc.repository.bagit.writer.BagWriter;
 import org.apache.commons.collections4.BagUtils;
 import org.apache.commons.collections4.bag.HashBag;
 */
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /**
  * Core data structure that represents an archive. Conceptually, an archive is a
@@ -699,6 +702,7 @@ int errortype=0;
                     }
                     //String accountName = fs.substring (0, idx); // example: GMail
                     String folderName = fs.substring(idx + STORE_FOLDER_SEPARATOR.length()); // example: MyFolder
+                    folderName = FolderInfo.removeTmpPartOfPath(folderName);
 
                     fm = new Archive.FileMetadata();
                     fm.fileID = "Collection/File/" + StringUtils.leftPad("" + count, 4, "0");
@@ -721,6 +725,7 @@ int errortype=0;
 
 	
 // 2022-09-05 Added for handling IMAP
+        // IMAP is currently not supported
         public void setFileMetadatasIMAP(Archive archive, String[] importedFiles) {
             EpaddPremis epaddPremis = archive.getEpaddPremis();
             final String STORE_FOLDER_SEPARATOR = "^-^";
@@ -748,9 +753,10 @@ int errortype=0;
                         // Bad folder name received. Content not parsed
                         continue;
                     }
+
                     //String accountName = fs.substring (0, idx); // example: GMail
                     String folderName = fs.substring(idx + STORE_FOLDER_SEPARATOR.length()); // example: MyFolder
-
+                    folderName = FolderInfo.removeTmpPartOfPath(folderName);
                     fm = new Archive.FileMetadata();
                     fm.filename = doc1.emailSource;
 //                    fm.fileID = folderName;
@@ -2596,8 +2602,6 @@ after maskEmailDomain.
 
         MessageDigest[] finalMessageDigest = new MessageDigest[2];
         try {
-//            messageDigest = MessageDigest.getInstance(StandardSupportedAlgorithms.MD5.name());
-//            MessageDigest finalMessageDigest = messageDigest;
             for (int i=0; i<2; i++) {
                 messageDigest[i] = MessageDigest.getInstance(algorithms[i]);
                 finalMessageDigest[i] = messageDigest[i];
@@ -2617,15 +2621,8 @@ after maskEmailDomain.
                 if ( manifest.getAlgorithm().toString().equals(algorithms[0])) manifestToMessageDigest[0].put(manifest, finalMessageDigest[0]);
                 else manifestToMessageDigest[1].put(manifest, finalMessageDigest[1]);
             });
-//            CreatePayloadManifestsVistor sut = new CreatePayloadManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
-//            Files.walkFileTree(filepathname, sut);
             CreatePayloadManifestsVistor sut1 = new CreatePayloadManifestsVistor(manifestToMessageDigest[0], includeHiddenFiles);
             Files.walkFileTree(filepathname, sut1);
-            //Files.walkFileTree(baginfofile,sut);
-            /////Now write payload manifest
-//            archiveBag.getPayLoadManifests().clear();
-//            archiveBag.getPayLoadManifests().addAll(manifestToMessageDigest.keySet());
-//            ManifestWriter.writePayloadManifests(archiveBag.getPayLoadManifests(), PathUtils.getBagitDir(archiveBag),archiveBag.getRootDir(),archiveBag.getFileEncoding());
             CreatePayloadManifestsVistor sut2 = new CreatePayloadManifestsVistor(manifestToMessageDigest[1], includeHiddenFiles);
             Files.walkFileTree(filepathname, sut2);
             archiveBag.getPayLoadManifests().clear();
@@ -2652,18 +2649,10 @@ after maskEmailDomain.
                     }    
                );
 			
-//            final CreateTagManifestsVistor tagVistor = new CreateTagManifestsVistor(manifestToMessageDigest, includeHiddenFiles);
             final CreateTagManifestsVistor tagVistor1 = new CreateTagManifestsVistor(manifestToMessageDigest[0], includeHiddenFiles);
-            //Files.walkFileTree(filepathname, tagVistor);
-//            Files.walkFileTree(baginfofile,tagVistor);
-//            Files.walkFileTree(manifestinfofile,tagVistor);
             Files.walkFileTree(baginfofile,tagVistor1);
             Files.walkFileTree(manifestinfofile[0],tagVistor1);
             Files.walkFileTree(manifestinfofile[1],tagVistor1);
-            //update bag'stagemanifest
-//            archiveBag.getTagManifests().clear();
-//            archiveBag.getTagManifests().addAll(manifestToMessageDigest.keySet());
-//            ManifestWriter.writeTagManifests(archiveBag.getTagManifests(), PathUtils.getBagitDir(archiveBag), archiveBag.getRootDir(), archiveBag.getFileEncoding());
 
             final CreateTagManifestsVistor tagVistor2 = new CreateTagManifestsVistor(manifestToMessageDigest[1], includeHiddenFiles);
             //Files.walkFileTree(filepathname, tagVistor);
@@ -2929,58 +2918,66 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
 //        else return true;
 // 2022-10-03
 //        if (doc1.emailSource.toLowerCase().contains(".mbox")) return true;
-        if (doc1.emailSource.toLowerCase().contains("mbox")) return true;
+
+       // emailSource is a text field in email-sources.jsp. Added "mbox" to the beginning of the string for the Import Mbox
+        // section in order to make isMbox() working.
+    if (doc1.emailSource.toLowerCase().contains("mbox")) return true;
         else return false;
     }
     
-    public String export2mbox(String sourceFile, String targetDir, String targetFilename) {
-        if (sourceFile.contains(EmailConvert.EPADD_EMAILCHEMY_TMP)) {
-            //If we have a non mbox email source then we want to add .mbox to the file name.
-            //If we have an Mbox email source then we keep the original name of the Mbox file
-            //which might or might not have the .mbox ending.
-            if (targetFilename.length() > 4 ) {
-                //The condition should always be true because we just have the name of a folder
-                //in an email account and so no .mbox ending.
-                if (!".mbox".equals(targetFilename.substring(targetFilename.length() - 5))) {
-                    targetFilename = targetFilename + ".mbox";
-                }
-            }
-            else
-            {
-                log.error("Something wrong with targetFileName in export2Mbox(). targetFileName = " + targetFilename);
-            }
-        }
-        String returnCode = "0";
-        String targetFile;
-        if (allDocs == null || allDocs.isEmpty()) {
-            return "4";
-        }
-        if (isMBOX()) {    
-            targetFile = targetDir + File.separatorChar + targetFilename;
-            try {
-                Util.copy_file(sourceFile, targetFile);
-            } catch (IOException ioe) {
-                returnCode = "4";
-            }
-        } else {
-            EmailDocument doc1 = (EmailDocument) allDocs.iterator().next();     
-            targetFile = targetDir + File.separatorChar + doc1.emailSource + ".mbox";
-            PrintWriter pw = null;
-            try {
-                pw = new PrintWriter(targetFile, "UTF-8");
-                boolean stripQuoted = false;
-                for (Document ed: allDocs)
-                    EmailUtils.printToMbox(this, (EmailDocument) ed, pw, getBlobStore(), stripQuoted);
-            } catch(Exception e){
-                //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
-                e.printStackTrace();
-                returnCode = "4";
-            } finally {
-                if (pw != null) pw.close();
-            }
-        }
-        return returnCode;
-    }
+//    public String export2mbox(String sourceFile, String targetDir, String targetFilename) {
+//        if (sourceFile.contains(EmailConvert.EPADD_EMAILCHEMY_TMP)) {
+//            //If we have a non mbox email source then we want to add .mbox to the file name.
+//            //If we have an Mbox email source then we keep the original name of the Mbox file
+//            //which might or might not have the .mbox ending.
+//            if (targetFilename.length() > 4 ) {
+//                //The condition should always be true because we just have the name of a folder
+//                //in an email account and so no .mbox ending.
+//                if (!".mbox".equals(targetFilename.substring(targetFilename.length() - 5))) {
+//                    targetFilename = targetFilename + ".mbox";
+//                }
+//            }
+//            else
+//            {
+//                log.error("Something wrong with targetFileName in export2Mbox(). targetFileName = " + targetFilename);
+//            }
+//        }
+//        String returnCode = "0";
+//        String targetFile;
+//        if (allDocs == null || allDocs.isEmpty()) {
+//            return "4";
+//        }
+//        if (isMBOX()) {
+//            targetFile = targetDir + File.separatorChar + targetFilename;
+//            try {
+//                Util.copy_file(sourceFile, targetFile);
+//            } catch (IOException ioe) {
+//                returnCode = "4";
+//            }
+//        } else {
+//            EmailDocument doc1 = (EmailDocument) allDocs.iterator().next();
+//            targetFile = targetDir + File.separatorChar + doc1.emailSource + ".mbox";
+//            PrintWriter pw = null;
+//            try {
+//                pw = new PrintWriter(targetFile, "UTF-8");
+//                boolean stripQuoted = false;
+//                for (Document ed: allDocs)
+//                    EmailUtils.printToMbox(this, (EmailDocument) ed, pw, getBlobStore(), stripQuoted);
+//            } catch(Exception e){
+//                //Util.print_exception ("Error exporting authorities", e, JSPHelper.log);
+//                e.printStackTrace();
+//                returnCode = "4";
+//            } finally {
+//                if (pw != null) pw.close();
+//            }
+//        }
+//        return returnCode;
+//    }
 // 2022-09-05
+
+// 2022-11-09    
+    public String getSidecarDir() {
+        return baseDir + File.separator + BAG_DATA_FOLDER + File.separator + SIDECAR_DIR;
+    }
 	
 }

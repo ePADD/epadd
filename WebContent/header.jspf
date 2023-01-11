@@ -2,8 +2,14 @@
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter" %>
 <%@ page import="edu.stanford.muse.util.Util" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
+<%@ page import="edu.stanford.muse.Config" %>
 <%@page language="java" %>
 
+<%
+/*
+    2022-11-14  added option to change UI language
+*/
+%>    
 <%
 	boolean haveArchive = false;
 	String archiveID = null;
@@ -145,9 +151,64 @@
                 }
             }(archiveID)));
 
+// 2022-11-14
+        function chang_lang(sel) {
+            $.ajax({
+                type: "POST",
+                url: "ajax/changeLanguage",
+                data: { lang: sel },
+                success: function(response) {
+                    if (response['result'] === "ok") {
+                        if (response['reason'] !== "") {
+                            location.reload();
+                        }
+                    }
+                }    
+            });
+        }
+        
+        function getImage() {
+            var flags = {"en": "icons8-great-britain-16.png", "de": "icons8-germany-16.png", "fr": "icons8-france-16.png"};
+            var lang="<%=Config.EPADD_LANGUAGE%>";
+            if (lang in flags) return flags[lang];
+            else return flags["en"];
+        }
+
+        $( document ).ready(function() {
+             $("#active").attr("src", "images/"+getImage());
+        });
+			
+
         </script>
 
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">
+
+<li class="dropdown language-selector">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+    <img id="active" src="images/icons8-great-britain-16.png" />
+  </a>
+  <ul class="dropdown-menu pull-right">
+    <li>
+      <a href="javascript:chang_lang('de')">
+        <img src="images/icons8-germany-16.png" />
+        <span>Deutsch</span>
+      </a>
+    </li>
+    <li>
+      <a href="javascript:chang_lang('en')">
+        <img src="images/icons8-great-britain-16.png" />
+        <span>English</span>
+      </a>
+    </li>
+    <li>
+      <a href="javascript:chang_lang('fr')">
+        <img src="images/icons8-france-16.png" />
+        <span>François</span>
+      </a>
+    </li>
+  </ul>
+</li>                    
+		
 			<li class="dropdown" id="options">
 				<a id="help" title="help" class="dropdown-toggle" data-toggle="dropdown" href="#">
 		 			<img style="height:25px" title="Help" src="images/help.svg"/>

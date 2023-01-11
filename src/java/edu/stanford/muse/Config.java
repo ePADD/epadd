@@ -1,16 +1,28 @@
+/*
+    2022-11-14  Added EPADD_LANGUAGE, epadd.language
+                Added function setLanguage to update config file
+*/
 package edu.stanford.muse;
 
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+
 import java.io.*;
 import java.util.*;
+
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 /*
 VIP class. This class has constants/settings that generally do not change during an ePADD execution, and are set only at startup.
@@ -24,6 +36,9 @@ public class Config {
     public static final String COLLECTION_METADATA_FILE = "collection-metadata.json"; // all session files end with .session
     private static final Logger log =  LogManager.getLogger(Config.class);
     public static final String admin; // this is the admin user for an installation of ePADD
+
+// 2022-11-14
+    public static String EPADD_LANGUAGE;
 
     /* default location for dir under which archives are imported/stored. Should not end in File.separator */
     public  static String	REPO_DIR_APPRAISAL;
@@ -83,6 +98,10 @@ public class Config {
             else if (mode != null)
                 log.warn("Invalid value for epadd.mode: " + mode);
         }
+
+
+// 2022-11-14
+        EPADD_LANGUAGE = props.getProperty("epadd.language", "en");
 
         // set up base_dir and its subdirs
         String BASE_DIR = props.getProperty("epadd.base.dir", DEFAULT_BASE_DIR);
@@ -288,6 +307,29 @@ public class Config {
                 props.setProperty(key, val);
         }
         return props;
+    }
+	
+// 2022-11-14    
+    public static int setLanguage(String lang) {
+        int ret = 0;
+        if (Config.EPADD_LANGUAGE.equals(lang)) return 0;
+        
+        Config.EPADD_LANGUAGE = lang;
+        try {
+            Parameters params = new Parameters();
+            FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
+                new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
+                .configure(params.properties()
+                .setFileName(EPADD_PROPS_FILE));
+            Configuration config = builder.getConfiguration();
+            config.setProperty("epadd.language", Config.EPADD_LANGUAGE);        
+            builder.save();        
+            ret = 1;
+        } catch (ConfigurationException e) {
+            log.warn ("Error in writing "+ EPADD_PROPS_FILE);
+            ret = -1;
+        }   
+        return ret;
     }
 
     /** reads a resource with the given offset path. Resources should be read ONLY with this method, so there is a uniform way of finding and overriding resources.

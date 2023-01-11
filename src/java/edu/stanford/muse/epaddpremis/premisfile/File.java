@@ -1,12 +1,16 @@
 package edu.stanford.muse.epaddpremis.premisfile;
 
+import edu.stanford.muse.email.FolderInfo;
 import edu.stanford.muse.epaddpremis.ObjectBaseClass;
 import edu.stanford.muse.epaddpremis.PreservationLevel;
 import edu.stanford.muse.index.Archive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +40,13 @@ public class File extends ObjectBaseClass implements Serializable {
 
 
     public File(String fileName, long size) {
+        fileName = FolderInfo.removeTmpPartOfPath(fileName);
         this.objectIdentifiers.add(new ObjectIdentifier("file name", fileName + "#"));
         this.objectCharacteristics = new ObjectCharacteristics(size, fileName);
     }
 
     public File() {
     }
-
     void setSignificantProperty(String type, String value) {
         if (getProperty(SignificantPropertiesFile.PropertyType.fromString(type)) != null) {
             getProperty(SignificantPropertiesFile.PropertyType.fromString(type)).setValue(value);

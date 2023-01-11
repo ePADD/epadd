@@ -1,3 +1,9 @@
+<%
+    /*
+        2022-10-27  Fixed for terms containing diacritics
+    */
+%>
+<%@ page import="java.nio.charset.StandardCharsets" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE html>
@@ -35,9 +41,19 @@
     //the request is coming for term search result then no entity recognition takes place. Otherwise the entity recognitioni takes place. After that
     //the result is displayed in the same manner by establishing a hyperlink to actual messages containing those terms.
     String req = request.getParameter("refText");
+// 2022-10-27    
+    if (req != null) {
+        byte[] bytes = req.getBytes(StandardCharsets.ISO_8859_1);
+        req = new String(bytes, StandardCharsets.UTF_8);    
+    }
     boolean one_line_per_term_search=false;
     if(req==null){
         req=request.getParameter("refTextTerms");//if querygenerator is being called for one line per term type of search.
+// 2022-10-27        
+        if (req != null) {
+            byte[] bytes = req.getBytes(StandardCharsets.ISO_8859_1);
+            req = new String(bytes, StandardCharsets.UTF_8);    
+        }  
         one_line_per_term_search=true;
     }
     writeProfileBlock(out, archive, one_line_per_term_search ? "Multi-term search results" : "Multi-entity search results");

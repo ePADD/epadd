@@ -1,3 +1,6 @@
+<%
+//    2022-11-03  allow to add event manually to PREMIS metadata
+%>    
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page import="edu.stanford.muse.webapp.ModeConfig"%>
 <%@page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
@@ -13,16 +16,19 @@
 
 	<jsp:include page="css/css.jsp"/>
 	<link rel="stylesheet" href="css/sidebar.css">
-
+	<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 	<%-- Jscript was included here --%>
 
+	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="js/jquery.js"></script>
     <script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 
 	<script src="js/epadd.js"></script>
 	<script src="js/stacktrace.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
 	<style>
 		#advanced_options button {width:250px;}
         #advanced_options input {width:250px;}
@@ -124,7 +130,125 @@
 </div>
     </div>
 </section>
+
+<section>
+    <div class="panel" id="premispanel">
+        <div class="panel-heading">PREMIS Metadata</div>
+        
+        <div class="form-group col-sm-12">
+            Event
+            <select id="premisevent" class="form-control selectpicker" style="margin: 0 100px; width:600px">
+                <option value="Ingestion">Ingestion</option>
+                <option value="Identifier assignment">Identifier assignment</option>
+                <option value="Fixity check">Fixity check</option>
+                <option value="Message digest calculation">Message digest calculation</option>
+                <option value="Quarantine">Quarantine</option>
+                <option value="Unquarantine">Unquarantine</option>
+                <option value="Unpacking">Unpacking</option>
+                <option value="Name cleanup">Name cleanup</option>
+                <option value="Virus check">Virus check</option>
+                <option value="Format identification">Format identification</option>
+                <option value="Validation">Validation</option>
+                <option value="Normalization">Normalization</option>
+                <option value="Transcription">Transcription</option>
+                <option value="Creation">Creation</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>        
+
+        <div class="form-group col-sm-12"> 
+            Detail
+            <input type="text" class="form-control" placeholder="" id="premisdetail" style="margin: 0 100px; width:600px"></input>
+        </div>
+        
+    <div class="container form-group col-sm-6" >
+       Date/Time
+            <div class='input-group date' id='premisdatetime' style="margin: 0 100px;">
+               <input type='text' class="form-control"/>
+               <span class="input-group-addon">
+                   <i class="glyphicon glyphicon-calendar"></i>
+               </span>
+            </div>
+      <script type="text/javascript">
+         $(function () {
+             $('#premisdatetime').datetimepicker({
+                 format: 'YYYY-MM-DD HH:mm',
+                 defaultDate: new Date()
+             });
+         });
+      </script>
+    </div>        
+        
+        <div class="form-group col-sm-6"></div>
+        <div align="right">     
+            <button id="premisbutton" onclick="add2Premis(archiveID);" class="btn-default" style="cursor:pointer">Add</button>
+        </div>
+        
+    </div>
+</section>
+
         <script>
+// 2022-11-03            
+        function add2Premis(archive1) {
+           if (!$('#premisdetail').val()) {
+                BootstrapDialog.show({
+                    message: 'Detail is empty', 
+                    type: BootstrapDialog.TYPE_WARNING, 
+                    buttons: [{label: 'OK', action:function(dialogItself) { dialogItself.close();} }] 
+                });
+               return false;
+           }
+           if ( $("#premisdatetime").data('DateTimePicker').date()) {
+               var a1 = moment($("#premisdatetime").data('DateTimePicker').date());
+               if (!a1.isValid()) {
+                    BootstrapDialog.show({
+                        message: 'Date/Time is invalid', 
+                        type: BootstrapDialog.TYPE_WARNING, 
+                        buttons: [{label: 'OK', action:function(dialogItself) { dialogItself.close();} }] 
+                    });
+                   return false;
+               }    
+            } else {
+                BootstrapDialog.show({
+                    message: 'Date/Time is empty', 
+                    type: BootstrapDialog.TYPE_WARNING, 
+                    buttons: [{label: 'OK', action:function(dialogItself) { dialogItself.close();} }] 
+                });
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "ajax/add2Premis",
+                data: { 
+                       archive: archive1,
+                       premisevent: $('#premisevent').val(),
+                       premisdetail: $('#premisdetail').val(),
+                       premisdatetime: moment($("#premisdatetime").data('DateTimePicker').date()).format('YYYY-MM-DD HH:mm:ss')
+                },
+                success: function(response) {
+                                        if (response['result'] === "ok") {
+                                            BootstrapDialog.show({
+                                                message:response['reason'],  
+                                                type: BootstrapDialog.TYPE_SUCCESS, 
+                                                buttons: [{label: 'OK', action:function(dialogItself) { dialogItself.close();} }] 
+                                            });
+                                        } else {
+                                            BootstrapDialog.show({
+                                                message:response['reason'], 
+                                                type: BootstrapDialog.TYPE_WARNING, 
+                                                buttons: [{label: 'OK', action:function(dialogItself) { dialogItself.close();} }] 
+                                            });
+                                        }
+                                    },
+                                    error: function(response) {
+                                        BootstrapDialog.show({message:response['reason'], type: BootstrapDialog.TYPE_WARNING});
+                                    }
+            });                                
+            
+            return true;
+        }
+		
             var setOwnerMailHandler = function(){
                 var archiveID='<%=archiveID%>';
                 //get owners address. In case of more than one separate by ;.
