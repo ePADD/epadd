@@ -19,6 +19,7 @@ package edu.stanford.muse.email;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
+import edu.stanford.muse.epaddpremis.EpaddEvent;
 import edu.stanford.muse.exceptions.CancelledException;
 import edu.stanford.muse.exceptions.MboxFolderNotReadableException;
 import edu.stanford.muse.exceptions.NoDefaultFolderException;
@@ -582,7 +583,20 @@ public class MuseEmailFetcher {
 		stats.userKey = "USER KEY UNUSED"; // (String) JSPHelper.getSessionAttribute(session, "userKey");
 		stats.fetchAndIndexTimeMillis = elapsedMillis;
 
-	    updateStats(archive, addressBook, stats);
+		try {
+			updateStats(archive, addressBook, stats);
+			for (Map.Entry<String, EmailFetcherThread.NonMboxData> entry : EmailFetcherThread.nonMboxData.entrySet()) {
+				EmailFetcherThread.NonMboxData data = entry.getValue();
+				String fileName = entry.getKey();
+				archive.getEpaddPremis().createEvent(EpaddEvent.EventType.NON_MBOX_INGEST, "Folders ingested: " + data.nFolders + " - Messages ingested: " + data.nMessages + " - Duplicate messages: " + data.nDuplicates + " - Errors: " + data.nErrors, "success", "file name", entry.getKey());// + " messages - " + nErrors + " errors t, "success", "file name", pathOnDisk);
+			}
+			EmailFetcherThread.clearAlreadyReadNonMboxFiles();
+			EmailFetcherThread.clearNonMboxData();
+		}
+		catch (Exception e)
+		{
+			log.error("Exception creating Premis event " + e);
+		}
 		//if (session != null)
 		//	session.removeAttribute("statusProvider");
 		log.info ("Fetch+index complete: " + Util.commatize(System.currentTimeMillis() - startTime) + " ms");

@@ -193,9 +193,6 @@ function continueLogin(post_params) {
 		return;
 	}
 
-	//This is a bit of a hack to make the function isMbox() working.
-	post_params.emailSource2 = "mbox  " + post_params.emailSource2;
-
 	var is_valid_account = [];
 	$('.account .input-field').removeClass('has-error'); // remove all input fields marked with an error
 

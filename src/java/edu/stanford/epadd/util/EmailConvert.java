@@ -96,6 +96,10 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 //            return "License active";
 //        }
 
+       if (licenseStatus.endsWith("."))
+       {
+           licenseStatus = licenseStatus.substring(0, licenseStatus.length() -1);
+       }
        return licenseStatus;
 
     }
@@ -156,7 +160,6 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
         if (directoryListing != null) {
             for (File child : directoryListing) {
                 files.add(child);
-                System.out.println("child " + child);
             }
         } else {
             files.add(dir);// Handle the case where dir is not really a directory.
@@ -238,7 +241,6 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
         //Just mbox for now.
         OutputFormat outFormat = OutputFormat.forName("mbox");
         converter = new Converter(source, inFormat, destination, outFormat);
-        System.out.println("Version -----------" +  Settings.getVersion());
         converter.addConverterListener(this);
         currentFolder = source;
         //converter.withLogFile("C:\\Users\\jochen\\log.log");
@@ -268,13 +270,11 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
     @Override
     public void messageConverted(Date date, String s, File file) {
         nMessageConverted++;
-        System.out.println("Message converted " + nMessageConverted);
         if (nMessageConverted % 100 == 0) {
             String currentFolderString = "";
             if (currentFolder != null) {
                 currentFolderString = currentFolder.toString();
             }
-            System.out.println("Print Status");
             sendStatus(lastMessage + " " + nMessageConverted + " messages converted (" + converter.getPercentComplete() + "%) for folder " + currentFolderString);
         }
     }

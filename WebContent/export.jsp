@@ -467,9 +467,15 @@ Error: Export is only available in processing or appraisal modes!
             }
             var post_params={archiveID:archiveID, data:format, type:exportoptions};
             var params = epadd.convertParamsToAmpersandSep(post_params);
-
-           
-            var premisData = {eventType: "mbox export", eventDetailInformation: exportoptions};
+            var type = "export";
+            if (format == "to-mbox")
+            {
+                type = "mbox export"
+            }
+            else {
+                type = "eml export"
+            }
+            var premisData = {eventType: type, eventDetailInformation: exportoptions};
              fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params, null, null, premisData);
         });
     </script>

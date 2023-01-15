@@ -257,6 +257,8 @@ public class EpaddPremis implements Serializable {
     public void createEvent(JSONObject eventJsonObject) {
         epaddEvents.add(new EpaddEvent(eventJsonObject, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
         printToFiles();
+
+
     }
 
     private String getXmlPathAndFileName() {

@@ -245,8 +245,7 @@ public class EmailExporter implements StatusProvider, ConverterListener {
         Bag archiveBag = Archive.readArchiveBag(archiveBaseDir);
 
         String targetFolder = archiveBaseDir;
-        String mboxFilename;
-        Map<String, Boolean> folderIsNonMboxMap;
+
 
         switch (exportableAssets) {
             case APPRAISAL_CANONICAL_ACQUISITIONED:
@@ -281,10 +280,11 @@ public class EmailExporter implements StatusProvider, ConverterListener {
         String detailInformation = "";
         String outcome = "";
         if (isAppraisal) {
-            detailInformation = "Export from appraisal";
+            detailInformation = "Export from appraisal in " + outputFormat + " format.";
         } else {
-            detailInformation = "Export from processing";
+            detailInformation = "Export from processing in " + outputFormat + " format.";
         }
+
         if (archive.epaddPremis != null) {
             archive.epaddPremis.createEvent(EpaddEvent.EventType.EXPORT_FOR_PRESERVATION, detailInformation, outcome);
         }
@@ -580,7 +580,6 @@ public class EmailExporter implements StatusProvider, ConverterListener {
                     String nonMboxFileName = FolderInfo.getNonMboxFileNameFromTmpPath(mboxFileNameWithTmpPath);
                     File dirUntouchedNonMboxFiles = new File(targetFolder + File.separatorChar + Archive.DIR_NAME_FILES_BEFORE_CONVERSION_WITH_EMAILCHEMY);
                     dirUntouchedNonMboxFiles.mkdir();
-                    System.out.println("Copy xxx " + nonMboxFileWithOriginalPath);
                     String s = targetFolder + File.separatorChar + Archive.DIR_NAME_FILES_BEFORE_CONVERSION_WITH_EMAILCHEMY + File.separatorChar + nonMboxFileName;
                     if (!new File(s).exists()) {
                         System.out.println("Do Copy xxx " + nonMboxFileWithOriginalPath);

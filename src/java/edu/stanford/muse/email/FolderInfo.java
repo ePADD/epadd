@@ -92,7 +92,7 @@ public class FolderInfo implements Serializable {
 		return lastIndexOfSlash == s.length() - 1;
 	}
 
-	private static String getFirstPartOfPAth(String s)
+	static String getFirstPartOfPAth(String s)
 	{
 		//Looking for the index of File.separator doesn't work. We make any / or \ being /:
 		s = s.replace("\\", "/");

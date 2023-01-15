@@ -108,7 +108,13 @@ public class EpaddEvent implements Serializable {
 // 2022-09-01 Added IMAP_INGEST		
 // 2022-11-03	Added more EventType		
 //        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized");
-        TRANSFER_TO_PROCESSING("transfer to processing"), TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"), MBOX_INGEST("mbox ingest"), MBOX_EXPORT("mbox export"), EXPORT_FOR_PRESERVATION("export for preservation"), NOT_RECOGNIZED("not recognized"), 
+        TRANSFER_TO_PROCESSING("transfer to processing"),
+        TRANSFER_TO_DISCOVERY_AND_DELIVERY("transfer to discovery and delivery"),
+        MBOX_INGEST("mbox ingest"),
+        MBOX_EXPORT("mbox export"),
+        EML_EXPORT("eml export"),
+        NON_MBOX_INGEST("non Mbox ingest"),
+        EXPORT_FOR_PRESERVATION("export for preservation"),
         IMAP_INGEST("imap ingest"),
 		
         INGESTION("Ingestion"),
@@ -125,7 +131,8 @@ public class EpaddEvent implements Serializable {
         NORMALIZATION("Normalization"),
         TRANSCRIPTION("Transcription"),
         CREATION("Creation"),
-        OTHER("Other")
+        OTHER("Other"),
+        NOT_RECOGNIZED("not recognized")
         ;
 
         private final String eventType;
@@ -255,7 +262,7 @@ public class EpaddEvent implements Serializable {
 
         private void setJavaVersion()
         {
-            linkingAgentIdentifierValue += (" - running in " + System.getProperty("java.version"));
+            linkingAgentIdentifierValue += (" - running in Java " + System.getProperty("java.version"));
         }
 
         private static class LinkingAgentRole implements Serializable {

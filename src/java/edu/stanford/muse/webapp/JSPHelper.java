@@ -962,11 +962,13 @@ public class JSPHelper {
 				String fileName = f.getName();
 				String suffix = fileName.substring(fileName.length()-5);
 				boolean isMboxFile = ".mbox".equals(suffix);
-				boolean isMboxExportFromMainMenu = ("all-messages.mbox").equals(fileName) || ("non-restricted-messages.mbox").equals(fileName) || ("restricted-messages.mbox").equals(fileName);
+				boolean isEmlFile = ".zip".equals(suffix);
+
+				boolean isExportFromMainMenu = fileName.startsWith("all-messages") || fileName.startsWith("non-restricted-messages") || fileName.startsWith("restricted-messages");
 
 				// Mbox export from main menue is dealt with in statusUpdate.js
-				boolean mboxWeDealWithHere = isMboxFile && !isMboxExportFromMainMenu;
-				if (mboxWeDealWithHere)
+				boolean fileWeDealWithHere = (isMboxFile || isEmlFile) && !isExportFromMainMenu;
+				if (fileWeDealWithHere)
 				{
 					archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_EXPORT, "Exported a subset of the collection", "Error");
 				}

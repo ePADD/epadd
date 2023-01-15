@@ -90,6 +90,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
     public static final Date
             INVALID_DATE; // like 0xdeadbeef
 
+    private static Set<String> alreadyReadNonMboxFiles = new HashSet<>();
+
     static {
         Calendar c = new GregorianCalendar();
         c.set(Calendar.YEAR, 1960);
@@ -123,6 +125,66 @@ public class EmailFetcherThread implements Runnable, Serializable {
     final EmailFetcherStats stats = new EmailFetcherStats();
     String currentStatus;
 
+    public static void clearAlreadyReadNonMboxFiles() {
+        alreadyReadNonMboxFiles.clear();
+    }
+
+    public static void clearNonMboxData() {
+        nonMboxData = new HashMap<>();
+    }
+
+    private void addToNIngestedMessagesFromNonMbox(String fileName, int n)
+    {
+        NonMboxData data = nonMboxData.get(fileName);
+        if (data == null)
+        {
+            data = new NonMboxData();
+        }
+        data.nMessages += n;
+        nonMboxData.put(fileName, data);
+    }
+
+    private void incrementNIngestedFoldersFromNonMbox(String fileName)
+    {
+        NonMboxData data = nonMboxData.get(fileName);
+        if (data == null)
+        {
+            data = new NonMboxData();
+        }
+        data.nFolders ++;
+        nonMboxData.put(fileName, data);
+    }
+
+    private void addToNDuplicatesFromNonMbox(String fileName, int n)
+    {
+        NonMboxData data = nonMboxData.get(fileName);
+        if (data == null)
+        {
+            data = new NonMboxData();
+        }
+        data.nDuplicates += n;
+        nonMboxData.put(fileName, data);
+    }
+
+    private void addToNErrorFromNonMbox(String fileName, int n)
+    {
+        NonMboxData data = nonMboxData.get(fileName);
+        if (data == null)
+        {
+            data = new NonMboxData();
+        }
+        data.nErrors += n;
+        nonMboxData.put(fileName, data);
+    }
+
+    public static class NonMboxData
+    {
+        int nMessages = 0;
+        int nDuplicates = 0;
+        int nFolders = 0;
+        int nErrors = 0;
+    }
+    public static HashMap<String, NonMboxData> nonMboxData = new HashMap<>();
 
     private int totalMessagesInFetch;
     private int messagesCompletedInFetch;                        // this fetcher may be part of a bigger fetch operation. we need to track the progress of the bigger fetch in order to track progress accurately.
@@ -1503,6 +1565,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * In order to make indexing of large archives possible, fetch of NON-MBOXEmailstrore formats is penalised. It is possible to avoid this by handling MBox and IMAP/POP formats differently.
      */
     public void run() {
+        //Currently run() is only called directly and not by using start(). Therefore this is not part of a multi threaded
+        //operation and we don't have to worry about synchronization issues.
         currentStatus = JSONUtils.getStatusJSON("Reading " + getFolderName());
 
         isCancelled = false;
@@ -1559,15 +1623,49 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
                     log.info("Fetch stats for this fetcher thread: " + stats);
                 }
+                try {
+                    String fileName;
 
-                archive.getEpaddPremis().createEvent(EpaddEvent.EventType.MBOX_INGEST,  nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "file name", getFolderName());
-                archive.getEpaddPremis().createFileObject(getFolderName(),new File(getFolderName()).length());
-                archive.getEpaddPremis().addToSignificantProperty("mbox file count", 1);
-                archive.getEpaddPremis().addToSignificantProperty("overall message_count", nMessages);
-                archive.getEpaddPremis().addToSignificantProperty("overall unique message_count", nMessages - stats.nMessagesAlreadyPresent);
-                archive.getEpaddPremis().setSignificantProperty("overall unique attachment count", archive.blobStore.uniqueBlobs.size());
-                //archive.getEpaddPremis().updateSignificantProperty("overall attachment count",);
-                archive.getEpaddPremis().setSignificantProperty("overall unique image count", archive.getNImageAttachments());
+                    EpaddEvent.EventType eventType;
+                    String pathOnDisk;
+
+                    if (getFolderName().contains(EmailConvert.getTmpDir())) {
+                        eventType = EpaddEvent.EventType.NON_MBOX_INGEST;
+                        String mBoxPathWithNonMboxFileName = FolderInfo.removeTmpPartOfPath(getFolderName());
+                        String nonMboxFileName = FolderInfo.getFirstPartOfPAth(mBoxPathWithNonMboxFileName);
+                        fileName = nonMboxFileName;
+                        pathOnDisk = emailStore.displayName;
+                        if (new File(emailStore.displayName).isDirectory()) {
+                            pathOnDisk = pathOnDisk + fileName;
+                        }
+                    } else {
+                        eventType = EpaddEvent.EventType.MBOX_INGEST;
+                        pathOnDisk = getFolderName();
+                    }
+                    boolean nonMboxFileAlreadyInPremis = false;
+                    if (eventType == EpaddEvent.EventType.NON_MBOX_INGEST) {
+                        nonMboxFileAlreadyInPremis = isNonMboxFileAlreadyInPremis(nMessages, pathOnDisk);
+                    }
+                    //In case of Mbox ingest we create an event for each ingested file. In case of a non mbox ingest we create the
+                    //event once for each ingested non mbox file and not for each folder conained in the non mbox file.
+                    if (eventType == EpaddEvent.EventType.MBOX_INGEST) {// || !nonMboxFileAlreadyInPremis) {
+                        archive.getEpaddPremis().createEvent(eventType, nMessages + " messages - " + nErrors + " errors - Duplicate messages: " + stats.nMessagesAlreadyPresent, "success", "file name", pathOnDisk);
+                    }
+                    if (eventType == EpaddEvent.EventType.MBOX_INGEST || !nonMboxFileAlreadyInPremis) {
+                        archive.getEpaddPremis().createFileObject(pathOnDisk, new File(pathOnDisk).length());
+                    }
+
+                    //archive.getEpaddPremis().addToSignificantProperty("mbox file count", 1);
+                    archive.getEpaddPremis().addToSignificantProperty("overall message_count", nMessages);
+                    archive.getEpaddPremis().addToSignificantProperty("overall unique message_count", nMessages - stats.nMessagesAlreadyPresent);
+                    archive.getEpaddPremis().setSignificantProperty("overall unique attachment count", archive.blobStore.uniqueBlobs.size());
+                    //archive.getEpaddPremis().updateSignificantProperty("overall attachment count",);
+                    archive.getEpaddPremis().setSignificantProperty("overall unique image count", archive.getNImageAttachments());
+                }
+                catch (Exception e)
+                {
+                    log.error("Exception creating Premis event in EmailFetcherThread " + e);
+                }
 //                archive.getEpaddPremis().setSignificantProperty("overall unique attached email count", archive.getNAttachedEmails());
 //                archive.getEpaddPremis().setSignificantProperty("overall unique word attachment count", archive.getNAttachmentsForSuffix("doc", "docx"));
 //                archive.getEpaddPremis().setSignificantProperty("overall unique ppt attachment count", archive.getNAttachmentsForSuffix("ppt", "pptx"));
@@ -1647,7 +1745,26 @@ public class EmailFetcherThread implements Runnable, Serializable {
         }
     }
 
-	/*
+    private boolean isNonMboxFileAlreadyInPremis(int nMessages, String pathOnDisk) {
+        boolean nonMboxFileAlreadyInPremis;//There might be a number of folders in a non mbox file. We want to add the event of importing
+        //the non mbox file only once and we also want to add the file to the Premis data only once.
+        //The Set alreadyReadNonMboxFiles exists only for the
+        nonMboxFileAlreadyInPremis = false;
+        for (String nonMboxFileName : alreadyReadNonMboxFiles) {
+            if (pathOnDisk.equals(nonMboxFileName)) {
+                nonMboxFileAlreadyInPremis = true;
+                break;
+            }
+        }
+        alreadyReadNonMboxFiles.add(pathOnDisk);
+        addToNIngestedMessagesFromNonMbox(pathOnDisk, nMessages);
+        addToNDuplicatesFromNonMbox(pathOnDisk, stats.nMessagesAlreadyPresent);
+        incrementNIngestedFoldersFromNonMbox(pathOnDisk);
+        addToNErrorFromNonMbox(pathOnDisk, nErrors);
+        return nonMboxFileAlreadyInPremis;
+    }
+
+    /*
 	 * code for handling other kinds of headers, e.g. to find location of the
 	 * message -- not used right now, but may use in the future.
 	 * public void processHeaders(MimeMessage m) throws Exception
