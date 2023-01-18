@@ -2,9 +2,9 @@ package edu.stanford.muse.epaddpremis.premisfile;
 
 import edu.stanford.epadd.Version;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 
 public class Fixity  implements Serializable {

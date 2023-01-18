@@ -77,7 +77,7 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 
 import javax.mail.Header;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,9 +154,27 @@ public class Archive implements Serializable, StatusProvider {
     static final String ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR = "AppraisalNormalizedAcquisitioned";
     public transient  static ResultCache cacheManager = new ResultCache();//making igeneratedt static so that it becomes visible for all archives.
 
-	// We read and write the serialized Premis object in EpaddPremis.readPremisObject() and
+    private static Set<String> alreadyReadMetadataForNonMboxFiles = new HashSet<>();
+
+    // We read and write the serialized Premis object in EpaddPremis.readPremisObject() and
 	// EpaddPremis.savePremisObject()
     public transient EpaddPremis epaddPremis;
+
+    public static void clearAlreadyReadMetadataForNonMboxFiles() {
+        alreadyReadMetadataForNonMboxFiles.clear();
+    }
+
+    private static boolean isNonMboxFileAlreadyInFileMetadata(String pathOnDisk) {
+        boolean nonMboxFileAlreadyFileMetadata = false;//There might be a number of folders in a non mbox file. We want to add the event of importing
+        //the non mbox file only once and we also want to add the file only once.
+        for (String nonMboxFileName : alreadyReadMetadataForNonMboxFiles) {
+            if (pathOnDisk.equals(nonMboxFileName)) {
+                nonMboxFileAlreadyFileMetadata = true;
+                break;
+            }
+        }
+        return nonMboxFileAlreadyFileMetadata;
+    }
 
     public int getNImageAttachments() {
         int nImages = 0;
@@ -675,7 +693,7 @@ int errortype=0;
         }
 
         public void setFileMetadatas(Archive archive, String[] importedFiles) {
-
+            //JFX refactor this method, split into smaller methods
             EpaddPremis epaddPremis = archive.getEpaddPremis();
             final String STORE_FOLDER_SEPARATOR = "^-^";
 
@@ -694,7 +712,8 @@ int errortype=0;
 
             if (importedFiles != null) {
                 for (String fs : importedFiles) {
-
+                    boolean isNonMboxFile = false;
+                    boolean alreadyReadNonMboxFile = false;
                     int idx = fs.indexOf(STORE_FOLDER_SEPARATOR);
                     if (idx == -1) {
                         // Bad folder name received. Content not parsed
@@ -702,16 +721,63 @@ int errortype=0;
                     }
                     //String accountName = fs.substring (0, idx); // example: GMail
                     String folderName = fs.substring(idx + STORE_FOLDER_SEPARATOR.length()); // example: MyFolder
-                    folderName = FolderInfo.removeTmpPartOfPath(folderName);
 
+                    String pathOnDisk;
+                    if (fs.indexOf(STORE_FOLDER_SEPARATOR) != 0) {
+                        isNonMboxFile = true;
+                        //This is a non mbox file. We have folderName which is something like
+                        //myemails.pst/private/inbox and path on disc which is something like
+                        //D://myPsts/myEMails.pst. One non mbox file can contain several folders
+                        //(each converted into one Mbox file internally), so we have one pathOnDisk and
+                        //one or more folderNames.
+                        pathOnDisk = fs.substring(0, idx);
+                        if (new File(pathOnDisk).isDirectory())
+                        {
+                            //The user pointed to a folder rather than a specific file.
+                            //Get the fileName from folderName and add it to pathOnDisk.
+                            String fileName = FolderInfo.getNonMboxFileNameFromTmpPath(folderName);
+                            pathOnDisk = pathOnDisk + File.separatorChar + fileName;
+                        }
+                    }
+                    else
+                    {
+                        //This is an Mbox file. There is one folder per Mbox file and folder name and path
+                        //on disk are identical.
+                        pathOnDisk = folderName;
+                    }
+                    if (isNonMboxFile) {
+                        if (isNonMboxFileAlreadyInFileMetadata(pathOnDisk)) {
+                            alreadyReadNonMboxFile = true;
+                        } else {
+                            alreadyReadMetadataForNonMboxFiles.add(pathOnDisk);
+                        }
+                    }
+                    if (alreadyReadNonMboxFile)
+                    {
+                        //Only one entry file metadata per non mbox file, not one entry for each Mbox file
+                        //generated from the non mbox file.
+                        continue;
+                    }
+                    folderName = FolderInfo.removeTmpPartOfPath(folderName);
                     fm = new Archive.FileMetadata();
                     fm.fileID = "Collection/File/" + StringUtils.leftPad("" + count, 4, "0");
-                    fm.filename = folderName;
+
+                    if (isNonMboxFile)
+                    {
+                        fm.filename = pathOnDisk;
+
+                        //JFX include the format for non mbox
+                        fm.fileFormat = "MBOX";
+                    }
+                    else
+                    {
+                        fm.filename = folderName;
+                        fm.fileFormat = "MBOX";
+                    }
                     if (epaddPremis != null)
                     {
-                        epaddPremis.setFileID(fm.fileID, folderName);
+                        epaddPremis.setFileID(fm.fileID, pathOnDisk);
                     }
-                    fm.fileFormat = "MBOX";
                     fm.notes = "";
 
                     count++;
@@ -721,11 +787,12 @@ int errortype=0;
 
             cm.fileMetadatas = fms;
             archive.collectionMetadata = cm;
+            clearAlreadyReadMetadataForNonMboxFiles();
         }
 
 	
 // 2022-09-05 Added for handling IMAP
-        // IMAP is currently not supported
+        // IMAP is currently not supported 16/1/2023
         public void setFileMetadatasIMAP(Archive archive, String[] importedFiles) {
             EpaddPremis epaddPremis = archive.getEpaddPremis();
             final String STORE_FOLDER_SEPARATOR = "^-^";

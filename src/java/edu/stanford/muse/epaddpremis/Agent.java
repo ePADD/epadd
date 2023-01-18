@@ -1,6 +1,6 @@
 package edu.stanford.muse.epaddpremis;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 
 public class Agent implements Serializable {

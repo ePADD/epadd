@@ -112,6 +112,7 @@
         if(fetchStats!=null) {
             for (FetchStats fs : fetchStats) {
                 fm = new Archive.FileMetadata();
+                //Only one entry per pst and format = PST
                 fm.fileID = "Collection/File/" + StringUtils.leftPad(""+count, 4, "0");
                 fm.fileFormat = "MBOX";
                 fm.notes="";

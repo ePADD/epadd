@@ -1636,7 +1636,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         fileName = nonMboxFileName;
                         pathOnDisk = emailStore.displayName;
                         if (new File(emailStore.displayName).isDirectory()) {
-                            pathOnDisk = pathOnDisk + fileName;
+                            pathOnDisk = pathOnDisk + File.separatorChar + fileName;
                         }
                     } else {
                         eventType = EpaddEvent.EventType.MBOX_INGEST;

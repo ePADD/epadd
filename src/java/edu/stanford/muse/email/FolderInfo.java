@@ -149,7 +149,11 @@ public class FolderInfo implements Serializable {
 		return s;
 	}
 
-	public String toString()
+    public static boolean includesTmpPath(String string) {
+		return string.contains(EmailConvert.getTmpDir());
+    }
+
+    public String toString()
 	{
 		return accountKey + ":" + shortName + " messages:" + messageCount; // + " lastUID:" + lastSeenUID;
 	}

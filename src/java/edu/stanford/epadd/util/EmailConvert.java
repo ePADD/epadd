@@ -95,7 +95,7 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 //
 //            return "License active";
 //        }
-
+//return "License active";
        if (licenseStatus.endsWith("."))
        {
            licenseStatus = licenseStatus.substring(0, licenseStatus.length() -1);
@@ -189,7 +189,9 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 //                //operationinfo object
 //                Consumer<StatusProvider> setStatusProvider = statusProvider -> this.setStatusProvider(statusProvider);
 //                cancelSetOwnerAddress(setStatusProvider);
-                converter.interrupt();
+                if (converter != null) {
+                    converter.interrupt();
+                }
             }
         };
         JSPHelper.setOperationInfo(request.getSession(), opID, opinfo);

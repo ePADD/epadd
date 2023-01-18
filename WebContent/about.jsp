@@ -53,7 +53,7 @@
 <div style="margin-left:160px;margin-right:160px">
 <p>
     The ePADD software client is browser-based and compatible with Chrome and Firefox. It is optimized for Windows 10,
-    OS X 10.13, and Ubuntu 16.04 machines, using Java 8.
+    OS X 10.13, and Ubuntu 16.04 machines, using Java 12.
 
     <%--[note on link to user manual]--%>
 
