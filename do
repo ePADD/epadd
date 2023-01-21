@@ -3,6 +3,7 @@
 # mvn clean
 ant version
 mvn clean
+mvn validate
 mvn -f pom-common.xml
 # mvn # this step is needed
 # cd ../epadd

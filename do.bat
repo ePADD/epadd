@@ -1,6 +1,7 @@
 REM call ant
 REM cd ..\muse
 call mvn clean
+call mvn validate
 call mvn -f pom-common.xml
 REM call mvn -f pom-jar.xmlm
 REM call mvn 

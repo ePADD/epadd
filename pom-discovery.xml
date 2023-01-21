@@ -27,13 +27,6 @@
       <version>3.0.1</version>
       <scope>provided</scope>
     </dependency>
-		<dependency>
-			<groupId>com.weirdkid.emailchemy.api</groupId>
-			<artifactId>emailchemy_api</artifactId>
-			<version>15.0</version>
-			<scope>system</scope>
-			<systemPath>${TMP}\emailchemy_api\java\emailchemy_api.jar</systemPath>
-		</dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -82,12 +75,6 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.5</version>
     </dependency>
-        <dependency>
-            <groupId>emailchemy</groupId>
-            <artifactId>emailchemy_api</artifactId>
-            <version>15.0 beta</version>
-            <scope>compile</scope>
-        </dependency>
 
   </dependencies>
 
