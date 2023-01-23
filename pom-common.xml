@@ -388,7 +388,7 @@
         <dependency>
             <groupId>emailchemy_api</groupId>
             <artifactId>emailchemy_api</artifactId>
-            <version>15.0 beta</version>
+            <version>15.0-beta</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
         <dependency>
@@ -401,28 +401,6 @@
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/java</sourceDirectory>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <id>install-jar-lib</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>emailchemy_api</groupId>
-                            <artifactId>emailchemy_api</artifactId>
-                            <version>15.0 beta</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/emailchemy_api-15.0 beta.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
     </build>

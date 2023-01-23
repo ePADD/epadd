@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>emailchemy_api</groupId>
+  <artifactId>emailchemy_api</artifactId>
+  <versioning>
+    <release>15.0-beta</release>
+    <versions>
+      <version>15.0 beta</version>
+      <version>15.0-beta</version>
+    </versions>
+    <lastUpdated>20230123143826</lastUpdated>
+  </versioning>
+</metadata>

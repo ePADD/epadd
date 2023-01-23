@@ -216,7 +216,11 @@
             <artifactId>relaxngDatatype</artifactId>
             <version>20020414</version>
         </dependency>
-
+        <dependency>
+            <groupId>emailchemy_api</groupId>
+            <artifactId>emailchemy_api</artifactId>
+            <version>15.0-beta</version>
+        </dependency>
         <dependency>
             <groupId>quaqua-jfc</groupId>
             <artifactId>quaqua-jfc</artifactId>
@@ -522,89 +526,6 @@
                                 </requireProperty>
                             </rules>
                             <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <id>install-jar-lib</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>oshi-core</groupId>
-                            <artifactId>oshi-core</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/oshi-core-1.0.0.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-jar-lib2</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>jhlabs-layouts</groupId>
-                            <artifactId>jhlabs-layouts</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/jhlabs-layouts-1.0.0.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-jar-lib3</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>common-image</groupId>
-                            <artifactId>common-image</artifactId>
-                            <version>3.5.2</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/common-image-3.5.2.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-jar-lib4</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>quaqua-jfc</groupId>
-                            <artifactId>quaqua-jfc</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/quaqua-jfc-1.0.0.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>install-jar-lib6</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>fast-md5</groupId>
-                            <artifactId>fast-md5</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/fast-md5-1.0.0.jar</file>
-                            <generatePom>true</generatePom>
                         </configuration>
                     </execution>
                 </executions>
