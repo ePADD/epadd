@@ -134,6 +134,12 @@ public class FolderInfo implements Serializable {
 
 	public static String removeTmpPartOfPath(String pathOfTmpMboxFile) {
 		String s;
+		if (pathOfTmpMboxFile == null)
+		{
+			System.out.println("pathOfTmpMboxFile is null in removeTmpPartOfPath");
+			log.error("pathOfTmpMboxFile is null in removeTmpPartOfPath");
+			return "";
+		}
 		if (pathOfTmpMboxFile.contains(EmailConvert.getTmpDir())) {
 			s = pathOfTmpMboxFile.substring(pathOfTmpMboxFile.lastIndexOf(EmailConvert.getTmpDir()) + EmailConvert.getTmpDir().length());
 			//Remove trailing /

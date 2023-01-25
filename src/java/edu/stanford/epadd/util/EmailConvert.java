@@ -43,7 +43,7 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
     private Consumer<StatusProvider> consumer;
     private String status = "Start converting emails to Mbox ...";
     private int pctComplete = 0;
-    private static String tmpDir;
+    private static String tmpDir = "";
     private static String licenseStatus = "No license dongle present.";
     private List<File> files;
     private Format inFormat;
