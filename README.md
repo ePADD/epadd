@@ -21,7 +21,7 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 OS: Windows 7 SP1 / 10, Mac OS X  10.12 / 10.13, Ubuntu 16.04 
 Memory:  8 GB RAM (4 GB RAM allocated to the application by default)
 Browser:  Chrome 64 or later, Firefox 58 or later
-Windows installations: Java Runtime Environment 8u101 or later required. 
+Windows installations: Java Runtime Environment 11 or later required. 
 
 **Installation** 
 
@@ -31,7 +31,7 @@ ePADD has been tested on and optimized for Windows 7 SP1 / 10, Mac OS X  10.13 /
 
 *Installing ePADD on Windows*
 
-Please download the latest ePADD distribution files (.exe) from https://github.com/ePADD/epadd/releases/. You will need to have Java 1.8 or later installed on your machine for ePADD to work properly.
+Please download the latest ePADD distribution files (.exe) from https://github.com/ePADD/epadd/releases/. You will need to have Java 11 or later installed on your machine for ePADD to work properly.
 
 When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it. The ePADD Appraisal Module directory is located at c:\users\<username>\epadd-appraisal. 
 

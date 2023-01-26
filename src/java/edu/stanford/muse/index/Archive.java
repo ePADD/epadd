@@ -66,6 +66,7 @@ import gov.loc.repository.bagit.util.PathUtils;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
 import groovy.lang.Tuple2;
+import jakarta.xml.bind.JAXBException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +78,6 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 
 import javax.mail.Header;
-import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -761,17 +761,13 @@ int errortype=0;
                     folderName = FolderInfo.removeTmpPartOfPath(folderName);
                     fm = new Archive.FileMetadata();
                     fm.fileID = "Collection/File/" + StringUtils.leftPad("" + count, 4, "0");
-
+                    fm.filename = pathOnDisk;
                     if (isNonMboxFile)
                     {
-                        fm.filename = pathOnDisk;
-
-                        //JFX include the format for non mbox
-                        fm.fileFormat = "MBOX";
+                        fm.fileFormat = "NON_MBOX";
                     }
                     else
                     {
-                        fm.filename = folderName;
                         fm.fileFormat = "MBOX";
                     }
                     if (epaddPremis != null)

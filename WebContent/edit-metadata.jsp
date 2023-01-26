@@ -329,7 +329,7 @@
 					fillAccessionMetadataFields(node);
 // 2022-10-03					 
 //				} else if (node.type=="MBOX"){
-				} else if (node.type=="MBOX" || node.type=="IMAP"){
+				} else if (node.type=="MBOX" || node.type=="NON_MBOX" ||  node.type=="IMAP"){
 					fillFileMetadataFields(node);
 				}
 				showRightPanelView(node.type);
