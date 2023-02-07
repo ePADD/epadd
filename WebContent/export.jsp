@@ -243,7 +243,7 @@ Error: Export is only available in processing or appraisal modes!
                 </div>
                 <div class="form-group col-sm-8">
                     <label><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-archive")%></label>
-                    <input id="export-next-dir" class="form-control" type="text" name="name_dir" value="ePADD archive of <%=bestName%>" />
+                    <input id="export-next-dir" class="form-control archive_name" type="text" name="archive_name" value="ePADD archive of <%=bestName%>" />
                 </div>    
                 <div class="form-group col-sm-4 picker-buttons">    
                     <button id="export-next-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
@@ -719,6 +719,7 @@ Error: Export is only available in processing or appraisal modes!
                 return false; // do nothing;
             var baseUrl = '<%=ModeConfig.isProcessingMode() ? "ajax/async/export-from-processing.jsp":"ajax/async/export-from-appraisal.jsp"%>';
             var dir = $('.dir', $('#export-next')).val();
+            var archive_name = $('.archive_name').val();
             if (dir && dir.length > 0) {
                 if(<%=ModeConfig.isAppraisalMode()%>) {
                     var promptmethod = function (dir) {
@@ -739,7 +740,8 @@ Error: Export is only available in processing or appraisal modes!
                 //window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
 // 2022-10-28
 //                var post_params = {archiveID: archiveID, dir: dir};
-                var post_params = {archiveID: archiveID, dir: dir, dir_name: dir_name};				
+                debugger
+                var post_params = {archiveID: archiveID, dir: dir, archive_name: archive_name};
                 var params = epadd.convertParamsToAmpersandSep(post_params);
                 var premisData = {eventType: "transfer to processing", eventDetailInformation: "Exported to " + post_params.dir};
                 fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod, null, premisData);
