@@ -315,7 +315,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
 
         <!--For learning tasks in segmentation of openNLPNER, this could be removed-->
