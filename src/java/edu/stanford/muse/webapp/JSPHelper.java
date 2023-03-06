@@ -32,7 +32,10 @@ import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.DummyNERModel;
 import edu.stanford.muse.ner.model.NBModel;
 import edu.stanford.muse.ner.model.NERModel;
-import edu.stanford.muse.util.*;
+import edu.stanford.muse.util.DetailedFacetItem;
+import edu.stanford.muse.util.Log4JUtils;
+import edu.stanford.muse.util.Pair;
+import edu.stanford.muse.util.Util;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -51,7 +54,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -286,7 +288,12 @@ public class JSPHelper {
 		}
 		if (param == null)
 			return null;
-		String newParam = new String(param.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+			
+		//6.3.2023 There was an issue not being able to import Mbox folders with names
+		//containing accented characters.
+		//String newParam = new String(param.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+		String newParam = new String(param);
+
 		if (!newParam.equals(param))
 			log.info("Converted to utf-8: " + param + " -> " + newParam);
 		return newParam;
