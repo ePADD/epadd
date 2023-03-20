@@ -647,21 +647,25 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     byte b[] = null;
                     ///Following code handles if by chance this part was not an instance of MimeBodyPart (which it should be) then fallback upon getting
                     //inputstream instead of getRawInputStream.
-                    if(bodyPart!=null)
-                       b  = Util.getBytesFromStream(bodyPart.getRawInputStream());
-                    else
-                        b  = Util.getBytesFromStream(messagePart.getInputStream());
-
-                    try {
-                        b = QuotedPrintableCodec.decodeQuotedPrintable(b);
-                    } catch (DecoderException e) {
-                        e.printStackTrace();
-                        log.error("Unable to decode quoted printable encoded message");
-                        dataErrors.add("Unable to decode quoted printable encoded message in  " + getFolderName() + " Message #" + messageNum + " type " + type );
-                        Set<String> label = new LinkedHashSet<>();
-                        label.add(LabelManager.LABELID_PARSING_ERRS);
-                        archive.getLabelManager().setLabels(emailDocument.getUniqueId(),label);
-                        //return list; //If decoding fails at least try to create content by new String(b,charset) using default encoding.
+                    if(bodyPart == null)
+                    {
+                        b = Util.getBytesFromStream(messagePart.getInputStream());
+                        //getInputStream() should return the message part already decoded, so
+                        //don't do b = QuotedPrintableCodec.decodeQuotedPrintable(b);
+                    }
+                    else {
+                        b = Util.getBytesFromStream(bodyPart.getRawInputStream());
+                        try {
+                            b = QuotedPrintableCodec.decodeQuotedPrintable(b);
+                        } catch (DecoderException e) {
+                            e.printStackTrace();
+                            log.error("Unable to decode quoted printable encoded message");
+                            dataErrors.add("Unable to decode quoted printable encoded message in  " + getFolderName() + " Message #" + messageNum + " type " + type);
+                            Set<String> label = new LinkedHashSet<>();
+                            label.add(LabelManager.LABELID_PARSING_ERRS);
+                            archive.getLabelManager().setLabels(emailDocument.getUniqueId(), label);
+                            //return list; //If decoding fails at least try to create content by new String(b,charset) using default encoding.
+                        }
                     }
                     content = new String(b, charset);
                 } else if(encoding.equals("base64")){
