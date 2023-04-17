@@ -57,7 +57,7 @@ public class EpaddPremis implements Serializable {
     public static final String SERIALIZED_FILE_NAME = "premisobject.ser";
 
     @XmlTransient
-    private static final String JSON_FILE_NAME = "epaddPremis.json";
+    public static final String JSON_FILE_NAME = "epaddPremis.json";
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(EpaddPremis.class);

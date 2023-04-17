@@ -1602,6 +1602,13 @@ int errortype=0;
             FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.XML_FILE_NAME),
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.XML_FILE_NAME));
 
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.SERIALIZED_FILE_NAME).exists())
+            FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.SERIALIZED_FILE_NAME),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.SERIALIZED_FILE_NAME));
+
+        if (new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.JSON_FILE_NAME).exists())
+            FileUtils.copyFile(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + EpaddPremis.JSON_FILE_NAME),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EpaddPremis.JSON_FILE_NAME));
 
        if (export_mode == ExportMode.EXPORT_APPRAISAL_TO_PROCESSING && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR).exists()) {
            FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR),

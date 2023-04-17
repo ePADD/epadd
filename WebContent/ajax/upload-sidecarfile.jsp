@@ -13,23 +13,38 @@
     // Create a new file upload handler
 
     String error = null;
-    Map<String,String> params = JSPHelper.convertRequestToMapMultipartData(request);
-    String archiveID = params.get("archiveID");
+    String archiveID = request.getParameter("archiveID");
     Archive archive = null;
     int filesUploaded = 0;
     String docsetID = null;
     if (archiveID == null || "null".equals(archiveID)) {
                 error = "Sorry, no archive ID found";
             } else {
-                String filenameWithPathOnServer = params.get("sidecarfile");
-                String sidecarfilenameWithFakePath = params.get("sidecarpath");
+                String filenameWithPath = request.getParameter("sidecarpath");
                 archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
                 String sidecarDir = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SIDECAR_DIR;
-
-                Path p = Paths.get(sidecarfilenameWithFakePath);
+                Path p = Paths.get(filenameWithPath);
                 String sidecarFileName = p.getFileName().toString();
-                Util.copy_file(filenameWithPathOnServer,sidecarDir + File.separator + sidecarFileName);
-                archive.updateFileInBag(sidecarDir + File.separator + sidecarFileName,archive.baseDir);
+                if (!new File(filenameWithPath).exists())
+                {
+                    error = "The file \'" + filenameWithPath + "\' does not exist";
+                }
+                else if (!new File(filenameWithPath).isFile())
+                {
+                    error = "\'" + filenameWithPath + "\' is not a file";
+                }
+                else
+                {
+                    try
+                    {
+                        Util.copy_file(filenameWithPath,sidecarDir + File.separator + sidecarFileName);
+                    }
+                    catch (Exception e)
+                    {
+                        error = "Could not upload \'" + filenameWithPath + "\'";
+                    }
+                    archive.updateFileInBag(sidecarDir + File.separator + sidecarFileName,archive.baseDir);
+                }
            }
 
         if (error != null) {

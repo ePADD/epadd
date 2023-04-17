@@ -271,7 +271,7 @@ if (archive != null) {
 
 				<div class="one-line">
 					<div class="form-group col-sm-8">
-						<label for="export-next-file"><i class="fa fa-file-code-o"></i> Input File Format</label>
+						<label for="inFormat"><i class="fa fa-file-code-o"></i> Input File Format</label>
 						<select id="inFormat" name="inFormat" class="form-control selectpicker">
 							<option value="aolmac">AOL for Mac (3.0 or higher)</option>
 							<option value="aoldeskmac">AOL Desktop for Mac</option>
@@ -299,8 +299,8 @@ if (archive != null) {
 							<option value="musashi">Musashi</option>
 							<option value="neoplanet">Neoplanet</option>
 							<option value="netscape">Netscape/Mozilla</option>
-							<option value="opera">Opera</option></option>
-							<option value="<option value="pstmac">Outlook for Mac (8.x, 2001)</option>
+							<option value="opera">Opera</option>
+							<option value="pstmac">Outlook for Mac (8.x, 2001)</option>
 							<option value="outlookmsg">Outlook for Windows (.MSG)</option>
 							<option value="pstwin" selected>Outlook for Windows (.PST)</option>
 							<option value="olm">Outlook for Mac OLM file</option>
@@ -341,75 +341,73 @@ if (archive != null) {
 		</div> <!--  end account -->
 	</div>
 </section>
-<section>
-	<div id="sidecarfile_upload" class="accounts panel">
-		<%--Button for starting sidecar upload--%>
-		<div class="panel-heading">
-			<% if (archiveID == null) { %>
-			<div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar-top.upload-sidecar-no-archive")%>"
-				 class="buttons_on_datatable"><img class="button_image" src="images/upload_red.svg">
-			<%} else {%>
-				<div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar-top.upload-sidecar")%>"
-					 class="buttons_on_datatable" id="import-sidecar"><img class="button_image" src="images/upload.svg">
-			<% } %>
+	<section>
+		<div class="accounts panel">
+			<div class="panel-heading">
+				<% if (archiveID == null) {%>
+<%--				Nothing has been imported yet. Disable sidecar upload button until something has been imported --%>
+				<div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar-top.upload-sidecar-no-archive")%>"
+					 class="buttons_on_datatable"><img class="button_image" src="images/upload_red.svg">
+					<%} else {%>
+					<div title="<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar-top.upload-sidecar")%>"
+						 class="buttons_on_datatable" id="open-import-sidecar-modal"><img class="button_image"
+																						  src="images/upload.svg">
+						<%}%>
+					</div>
+					<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.sidecar")%>
+					<br/>
 				</div>
-				<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.sidecar")%>
-				<br/>
+				<p></p>
+
+				<%if (archiveID != null) {%>
+				<button id="manage-sidecar-btn" class="btn-default" onclick="return goSidecarFiles();"><i
+						class="fa fa-files-o fa-2x" aria-hidden="true"></i>&nbsp;
+					<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar.management-title")%>
+				</button>
+				<%}%>
 			</div>
-			<p></p>
-			
-            <% if (archiveID != null) { %>
-                <button id="manage-sidecar-btn" class="btn-default" onclick="return goSidecarFiles();"><i class="fa fa-files-o fa-2x" aria-hidden="true"></i>&nbsp; 
-                <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar.management-title")%>
-                </button>
-            <% } %>                            
 		</div>
-<div>
+	</section>
+</div>
+
 </form>
-		<%--Box for selecting an upload sidecar file		--%>
-		<div id="sidecar-upload-modal" class="info-modal modal fade" style="z-index:99999">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar.upload.sidecar-file")%>
-						</h4>
-					</div>
-					<div class="modal-body">
-						<form id="uploadsidecarform" method="POST" enctype="multipart/form-data">
-							<input type="hidden" value="<%=archiveID%>" name="archiveID"/>
-							<div class="form-group **text-left**">
-								<label for="sidecarfile"
-									   class="col-sm-2 control-label **text-left**"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload.file")%>
-								</label>
-								<div class="col-sm-10">
-									<input type="file" id="sidecarfile" name="sidecarfile" value=""/>
-	</div>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button id="upload-sidecar-btn" class="btn btn-cta"
-								onclick="uploadSidecarHandler();return false;"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar.upload.upload-button")%>
-							<i class="icon-arrowbutton"></i></button>
 
-
-						<%--<button id='overwrite-button' type="button" class="btn btn-default" data-dismiss="modal">Overwrite</button>--%>
-						<%--<button id='cancel-button' type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>--%>
+<%--Box for selecting an upload sidecar file		--%>
+<div id="sidecar-upload-modal" class="info-modal modal fade" style="">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "sidecar.upload.sidecar-file")%>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" value="<%=archiveID%>" id="archiveID"/>
+				<div class="one-line" id="upload-sidecar-file">
+					<div class="form-group col-sm-8">
+						<label for="sidecar-file-path">Select File</label>
+						<div class="buttonIn">
+							<input id="sidecar-file-path" class="dir form-control" type="text"/>
+						</div>
 					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div>
+					<div class="form-group col-sm-4 picker-buttons">
+						<button class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%>
+						</button>
+					</div>
+				</div>
+					<div>
+						<button class="btn btn-cta" onclick="uploadSidecarHandler();return false;">Upload Sidecar file</button>
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
 	</div>
-	</div>
-</section>
 
 
 
 	<div style="text-align:center;margin-top:20px">
 		<button class="btn btn-cta" id="gobutton" onclick="epadd.do_logins(); return false"> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.next")%> <i class="icon-arrowbutton"></i> </button>
 	</div>
-</div> <!--  all fields -->
 
 
 </form>
@@ -443,41 +441,40 @@ if (archive != null) {
 			)
 		}
 		var uploadSidecarHandler=function() {
-			var sidecarfilenameWithFakepath = $('#sidecarfile').val();
-			if (!sidecarfilenameWithFakepath) {
+			var sidecarfilenameWithPath = $('#sidecar-file-path').val();
+			var archiveID = $('#archiveID').val();
+			if (!sidecarfilenameWithPath) {
 				alert('Please provide the path of the sidecar file');
 				return false;
 			}
-			var form = $('#uploadsidecarform')[0];
-
-			// Create an FormData object
-			var data = new FormData(form);
-			data.append('sidecarpath', sidecarfilenameWithFakepath);
-
-
+			var data = {
+				sidecarpath: sidecarfilenameWithPath,
+				archiveID: archiveID
+			}
 			//hide the modal.
 			$('#sidecar-upload-modal').modal('hide');
 			//now send to the backend.. on it's success reload the same page. On failure display the error message.
 			$.ajax({
 				type: 'POST',
-				enctype: 'multipart/form-data',
-				processData: false,
+				dataType: 'json',
 				url: "ajax/upload-sidecarfile.jsp",
-				contentType: false,
-				cache: false,
 				data: data,
-				success: function () {
+				success: function (result) {
+					if (result.status == 1)
+					{
+						epadd.error(result.error);
+					}
+					else
+					{
 					epadd.success('Sidecar file uploaded.', function () {
 						window.location.reload();
 					});
-				},
+				}},
 				error: function (jq, textStatus, errorThrown) {
 					epadd.error("Error uploading file, status = " + textStatus + ' json = ' + jq.responseText + ' errorThrown = ' + errorThrown);
 				}
 			});
 		}
-
-
 
 		function add_server() {
 			// clone the first account
@@ -504,6 +501,8 @@ if (archive != null) {
 		fps.push(new FilePicker($account0));
 		fps.push(new FilePicker($account1));
 
+		new FilePicker($('#upload-sidecar-file'));
+
 		function add_mboxdir() {
 			// first close all accounts, in case they have been expanded etc.
 			for (var i = 0; i < fps.length; i++) {
@@ -523,7 +522,7 @@ if (archive != null) {
 		}
 
 		$(document).ready(function() {
-			$('#import-sidecar').click(function(){
+			$('#open-import-sidecar-modal').click(function(){
 				//open modal box to get the sidecar file and upload
 				$('#sidecar-upload-modal').modal('show');
 			});

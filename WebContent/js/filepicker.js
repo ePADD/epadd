@@ -20,7 +20,6 @@ var $currently_active_basediv; // basediv on whose behalf the modal is currently
 
 function FilePicker($basediv) {
 	var $go_button;
-
 	function update_go_button_status(val) {
 		if (val && val.length > 0) {
 			$go_button.removeClass('faded');
@@ -90,7 +89,7 @@ function FilePicker($basediv) {
 			$('.path-component').click (function(e) { var new_path = $(e.target).attr('data-path'); this.browse_root(new_path);}.bind(this));
 		},
 		open: function () {
-            $currently_active_basediv = $basediv; // mark the fact that the
+			$currently_active_basediv = $basediv; // mark the fact that the
 			$('#filepicker-modal').modal();
 			var start_from = original_val ? original_val : '';
 //			if (typeof start_from == 'undefined')
