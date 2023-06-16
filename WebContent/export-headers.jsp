@@ -84,7 +84,7 @@
 
             //Specify the header content of the csv file and print it to csv
             String [] fileHeader = {"Date","From_mailid","From_Bestname","To_mailids","To_Bestnames","cc_mailids","cc_bestnames",
-            "bcc_mailids","bcc_bestnames"};
+            "bcc_mailids","bcc_bestnames", "subject"};
             csvFilePrinter.printRecord(fileHeader);
 
             //Iterate over each document of this archive and print sender/receiver/cc/bcc's and date for that document
@@ -126,7 +126,12 @@
                             record.add(fromEmailIds.toString());
                             record.add(fromBestNames.toString());
                         }
-
+                        else {
+                            // No email
+                            record.add("");
+                            // No best name
+                            record.add("");
+                        }
                         //To address computation with best names
                         if (doc.to != null) { // to can sometimes be null e.g. for mbox files have a "IMAP server data -- DO NOT DELETE" as the first message
                             StringBuilder toEmailIds = new StringBuilder();
@@ -154,7 +159,10 @@
                             record.add(toEmailIds.toString());
                             record.add(toBestNames.toString());
                         }
-
+                        else {
+                            record.add("");
+                            record.add("");
+                        }
                         //cc address computation with best names
                         if (doc.cc != null) { // to can sometimes be null e.g. for mbox files have a "IMAP server data -- DO NOT DELETE" as the first message
                             StringBuilder ccEmailIds = new StringBuilder();
@@ -182,6 +190,12 @@
                             record.add(ccEmailIds.toString());
                             record.add(ccBestNames.toString());
 
+                        }
+                        else {
+                            // No email
+                            record.add("");
+                            // No best name
+                            record.add("");
                         }
 
                         //bcc address computation with best names
@@ -211,11 +225,22 @@
 
                             record.add(bccEmailIds.toString());
                             record.add(bccBestNames.toString());
+
+                        }
+                        else {
+                            //No email
+                            record.add("");
+                            //No best name
+                            record.add("");
+                        }
+
+                        if (doc.description != null) {
+                            record.add(doc.description);
                         }
                         csvFilePrinter.printRecord(record);
-
                     }
                 }
+
             }
             pw.close();
             csvFilePrinter.close();

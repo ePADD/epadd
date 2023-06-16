@@ -1,1 +1,1 @@
-ePADD version Release 10.0.5
+ePADD version Release 10.0.6

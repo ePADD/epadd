@@ -154,6 +154,7 @@ public class Archive implements Serializable, StatusProvider {
     static final String ASSETS_APPRAISAL_NORMALIZED_ACQUISITIONED_SUBDIR = "AppraisalNormalizedAcquisitioned";
     public transient  static ResultCache cacheManager = new ResultCache();//making igeneratedt static so that it becomes visible for all archives.
 
+    public transient static String processingBaseDir = "";
     private static Set<String> alreadyReadMetadataForNonMboxFiles = new HashSet<>();
 
     // We read and write the serialized Premis object in EpaddPremis.readPremisObject() and

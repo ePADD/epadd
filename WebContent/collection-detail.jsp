@@ -62,8 +62,10 @@
 
     String modeBaseDir;
     String id = request.getParameter("collection");
-    if (ModeConfig.isProcessingMode())
+    if (ModeConfig.isProcessingMode()) {
         modeBaseDir = Config.REPO_DIR_PROCESSING;
+        Archive.processingBaseDir = modeBaseDir + File.separator + id;
+    }
     else if (ModeConfig.isDeliveryMode())
         modeBaseDir = Config.REPO_DIR_DELIVERY;
     else if (ModeConfig.isDiscoveryMode())

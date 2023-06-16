@@ -238,7 +238,8 @@ public class EmailExporter implements StatusProvider, ConverterListener {
             isAppraisal = true;
         } else {
             String bestName = archive.addressBook.getBestNameForSelf().trim();
-            archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + "ePADD archive of " + bestName + File.separatorChar;
+            //archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + "ePADD archive of " + bestName + File.separatorChar;
+            archiveBaseDir = Archive.processingBaseDir + File.separatorChar;
         }
 
         //for updating the checksum we need to first read the bag from the basedir..
