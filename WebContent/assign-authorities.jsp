@@ -342,6 +342,7 @@
                 success: function () {
                   //  $spinner.removeClass('fa-spin');
                     $('#manual-assign-modal').modal('hide');
+                    window.location.reload();
 
                 },
                 error: function () {
