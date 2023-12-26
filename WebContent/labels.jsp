@@ -185,6 +185,7 @@
 			data: labels,
 			pagingType: 'simple',
 			order:[[1, 'desc']], // (message count), descending
+			autoWidth: false,
 			columnDefs: [
                 { className: "dt-center", "targets": dt_right_targets },
                 {targets: 0, width: "400px", render:clickable_message},

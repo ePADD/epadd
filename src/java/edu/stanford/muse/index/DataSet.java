@@ -68,10 +68,34 @@ public class DataSet {
         return "Data set with " + size() + " documents";
     }
 
+   /* returns message editing in textarea for doc i.
+    Caches the message editing once computed (Removed during refactoring. It was done in variable called pages).
+     In the front end jog plugin also does caching so removed server sided caching for simplicity*/
+
+    public String getPageForEdit(int i) {
+
+        try {
+            String editContent = "";
+
+            {
+                // we are assuming one page per doc for now. (true for
+                // emails)
+                editContent = EmailRenderer.textForDocument(docs.get(i), searchResult);
+
+            }
+
+            return editContent;
+
+        } catch (Exception e) {
+            return "Message unavailable, please try to reload this page.<br/>" + e.toString(); // also reflect this back to the user
+        }
+    }
+
     /* returns message browsing html for doc i.
     Caches the html once computed (Removed during refactoring. It was done in variable called pages).
      In the front end jog plugin also does caching so removed server sided caching for simplicity*/
-    public String getPageForMessages(int i, boolean IA_links, boolean inFull, boolean debug, String archiveID) {
+    public Pair <String, Boolean> getPageForMessages(int i, boolean IA_links, boolean inFull, boolean debug, String archiveID, boolean isPreserve) {
+        Boolean redacted ;
 //		if (authorisedEntities == null && !ModeConfig.isPublicMode()) {
 //			String filename = archive.baseDir + java.io.File.separator + edu.stanford.muse.Config.AUTHORITIES_FILENAME;
 //			try {
@@ -91,9 +115,10 @@ public class DataSet {
             {
                 // we are assuming one page per doc for now. (true for
                 // emails)
-                Pair<String, Boolean> htmlResult = EmailRenderer.htmlForDocument(docs.get(i), searchResult, datasetTitle,
-                         authorisedEntities, IA_links, inFull, debug,archiveID);
-                boolean overflow = htmlResult.second;
+                Pair<String, Pair<Boolean, Boolean>> htmlResult = EmailRenderer.htmlForDocument(docs.get(i), searchResult, datasetTitle,
+                         authorisedEntities, IA_links, inFull, debug,archiveID, isPreserve);
+                boolean overflow = htmlResult.second.first;
+                redacted = htmlResult.second.second;
                 Util.ASSERT(!(inFull && overflow));
                 pageContent = htmlResult.first
                         +
@@ -104,7 +129,7 @@ public class DataSet {
                 //pages.set(i, pageContent);
             }
             //return pages.get(i);
-            return pageContent;
+            return new Pair <String, Boolean> (pageContent, redacted);
         } catch (Exception e) {
             StringBuilder debugString = new StringBuilder();
             debugString.append ("Problem information: archiveID " + archiveID);
@@ -112,7 +137,7 @@ public class DataSet {
             debugString.append (" has " + ((docs == null) ? "(null)" : docs.size()) + " messages");
             debugString.append (" requested index " + i);
             Util.print_exception("Exception getting page in dataset " + debugString.toString(), e, JSPHelper.log);
-            return "Message unavailable, please try to reload this page.<br/>" + debugString.toString(); // also reflect this back to the user
+            return new Pair<String, Boolean>("Message unavailable, please try to reload this page.<br/>" + debugString.toString(), false); // also reflect this back to the user
         }
     }
 

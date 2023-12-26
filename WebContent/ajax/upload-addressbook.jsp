@@ -23,24 +23,9 @@
             } else {
                 String filename = params.get("addressbookfile");
                 archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
-                    //Now copy the file 'filename' inside session
-                    String sessiondir = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SESSIONS_SUBDIR + File.separator;
-                    Util.copy_file(filename,sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX);
-                    //update bag metadata
-                    archive.updateFileInBag(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX,archive.baseDir);
-                    //read addressbook again
-                    AddressBook ab = ArchiveReaderWriter.readAddressBook(sessiondir+File.separator+Archive.ADDRESSBOOK_SUFFIX,archive.getAllDocs());
-                    if(ab==null){
-                        error="Invalid addressbook file used";
-                    }else{
-                    //set as current archive's addressbook
-                    archive.setAddressBook(ab);
-                    //incremental saving of addressbook
-                    ArchiveReaderWriter.saveAddressBook(archive,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-                    //now reinitialize the cache for correspondent summary: NO need now as it happens inside readAddressBook method.
-                    //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
-                    }
 
+                // update the whole address book by using file upload file image
+                ArchiveReaderWriter.updateAddressBook(archive, filename);
             }
 
         if (error != null) {

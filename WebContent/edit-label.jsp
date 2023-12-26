@@ -106,6 +106,9 @@
                 <label for="labelType"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label.label-type")%></label>
                 <select id="labelType" name="labelType" class="form-control selectpicker">
                     <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label-choose-label-type")%></option>
+                    <% if (ModeConfig.isProcessingMode()) { %>
+                        <option value="<%=LabelManager.LabType.PERMISSION.toString()%>" <%=LabelManager.LabType.PERMISSION.toString().equals(labelType) ? "selected":""%> ><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label.choose-label-type.permission")%></option>
+                    <% } %>
                     <%if(!ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode()){%>
                         <option value="<%=LabelManager.LabType.RESTRICTION.toString()%>" <%=LabelManager.LabType.RESTRICTION.toString().equals(labelType) ? "selected":""%> ><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","edit-label.choose-label-type.restriction")%></option>
                     <%}%>

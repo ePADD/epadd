@@ -570,6 +570,36 @@ public class ArchiveReaderWriter{
         //Archive.cacheManager.cacheCorrespondentListing(ArchiveReaderWriter.getArchiveIDForArchive(archive));
 
     }
+    /*
+     * updated Address Book by overwriting by an updated file image, usually stored in Archive TEMP_DIR.
+     * The updated file must be in well format.
+     */
+    public static void updateAddressBook(Archive archive, String updatedFileImage){
+
+        //Now copy the file 'filename' inside session
+        String sessiondir = archive.baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SESSIONS_SUBDIR + File.separator;
+
+        try {
+            Util.copy_file(updatedFileImage, sessiondir + File.separator + Archive.ADDRESSBOOK_SUFFIX);
+
+            //update bag metadata
+            archive.updateFileInBag(sessiondir + File.separator + Archive.ADDRESSBOOK_SUFFIX, archive.baseDir);
+
+            //read addressbook again
+            AddressBook ab = ArchiveReaderWriter.readAddressBook(sessiondir + File.separator + Archive.ADDRESSBOOK_SUFFIX, archive.getAllDocs());
+
+            if (ab != null) {
+                //set as current archive's addressbook
+                archive.setAddressBook(ab);
+                //incremental saving of addressbook
+                ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+            } else {
+                throw new Exception("Invalid addressbook file used");
+            }
+        } catch (Exception e){
+            log.error("error in updating address book");
+        }
+    }
 
     public static void saveEntityBookManager(Archive archive, Archive.Save_Archive_Mode mode){
 

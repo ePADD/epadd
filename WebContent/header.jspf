@@ -182,33 +182,6 @@
         </script>
 
 		<ul style="list-style:none;display:inline; padding:0" class="nav navbar-nav navbar-right">
-
-<%--<li class="dropdown language-selector">--%>
-<%--  <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">--%>
-<%--    <img id="active" src="images/icons8-great-britain-16.png" />--%>
-<%--  </a>--%>
-<%--  <ul class="dropdown-menu pull-right">--%>
-<%--    <li>--%>
-<%--      <a href="javascript:chang_lang('de')">--%>
-<%--        <img src="images/icons8-germany-16.png" />--%>
-<%--        <span>Deutsch</span>--%>
-<%--      </a>--%>
-<%--    </li>--%>
-<%--    <li>--%>
-<%--      <a href="javascript:chang_lang('en')">--%>
-<%--        <img src="images/icons8-great-britain-16.png" />--%>
-<%--        <span>English</span>--%>
-<%--      </a>--%>
-<%--    </li>--%>
-<%--    <li>--%>
-<%--      <a href="javascript:chang_lang('fr')">--%>
-<%--        <img src="images/icons8-france-16.png" />--%>
-<%--        <span>Fran�ois</span>--%>
-<%--      </a>--%>
-<%--    </li>--%>
-<%--  </ul>--%>
-<%--</li>                    --%>
-		
 			<li class="dropdown" id="options">
 				<a id="help" title="help" class="dropdown-toggle" data-toggle="dropdown" href="#">
 		 			<img style="height:25px" title="Help" src="images/help.svg"/>

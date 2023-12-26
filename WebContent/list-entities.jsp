@@ -136,6 +136,7 @@ Browse page for entities based on fine types
             $('#entities').dataTable({
                 data: entities,
                 pagingType: 'simple',
+                autoWidth: false,
                 columnDefs: [
                         { className: "dt-right", targets: 1},
                         { className: "dt-right", targets: 2},

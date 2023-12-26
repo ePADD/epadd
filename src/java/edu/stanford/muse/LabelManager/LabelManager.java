@@ -43,7 +43,7 @@ public class LabelManager implements Serializable{
 
     public static final String ALL_EXPIRED="allexpired";
     public enum LabType {
-        RESTRICTION, GENERAL
+        RESTRICTION, GENERAL, PERMISSION
     }
 
     public enum RestrictionType {
@@ -179,6 +179,15 @@ public class LabelManager implements Serializable{
         labelIDs.forEach(labelid-> docToLabelID.put(docid,labelid));
     }
 
+    public boolean isPermissionLabel(String labid){
+        Label lab = labelInfoMap.getOrDefault(labid,null);
+        if(lab==null){
+            Util.softAssert(true,"No label found with the given label id "+labid, log);
+            return false;
+        }else
+            return lab.getType()==LabType.PERMISSION;
+
+    }
 
     public boolean isRestrictionLabel(String labid){
         Label lab = labelInfoMap.getOrDefault(labid,null);
@@ -404,6 +413,13 @@ public class LabelManager implements Serializable{
         return timedRestriction;
 
     }
+    public Set<String> getPermRestrictions(){
+        Set<Label> allRestrictions = getAllLabels(LabelManager.LabType.PERMISSION);
+        Set<String> permRestriction = new HashSet<>();
+        allRestrictions.forEach(label -> permRestriction.add(label.getLabelID()));
+        return permRestriction;
+    }
+
     public class MergeResult{
         public final Set<Label> newLabels = new LinkedHashSet<>();
         public final List<Pair<Label,Label>> labelsWithNameClash = new LinkedList<>();

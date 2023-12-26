@@ -572,7 +572,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             String encoding = "quoted-printable";
             String charset =  "utf-8";
             //make sure, p is not wrongly labelled as plain text.
-            Enumeration<Header> headers = messagePart.getAllHeaders();
+            Enumeration headers = bodyPart.getAllHeaders();
             boolean dirty = false;
             if (headers != null)
             {

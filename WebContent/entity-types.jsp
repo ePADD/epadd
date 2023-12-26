@@ -130,6 +130,7 @@
             data: entities,
             pagingType: 'simple',
             //paging: true,
+            autoWidth: false,
             columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "400px", targets: 0}],
             order:[[1, 'desc']], // col 1 (entity message count), descending
             fnInitComplete: function() { $('#spinner-div').hide(); $('#entities').fadeIn(); }

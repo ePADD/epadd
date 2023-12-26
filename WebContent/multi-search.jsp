@@ -96,6 +96,7 @@
 			$('#terms').dataTable({
 				data: entities,
 				pagingType: 'simple',
+				autoWidth: false,
 				columnDefs: [{ className: "dt-right", "targets": [ 1 ] },{width: "630px", targets: 0},{targets: 0, render:click_to_search}],
 				order:[[1, 'desc']], // col 1 (entity message count), descending
 				fnInitComplete: function() { $('#spinner-div').hide(); $('#terms').fadeIn(); }

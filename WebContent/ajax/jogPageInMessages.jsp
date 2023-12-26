@@ -6,6 +6,7 @@
 
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
+<%@page language="java" import="edu.stanford.muse.util.Pair"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 
 <%
@@ -19,9 +20,13 @@
 	int endPage = HTMLUtils.getIntParam(request, "endPage", -1);
 	boolean inFull = HTMLUtils.getIntParam(request, "inFull", 0) != 0;
 	boolean debug = HTMLUtils.getIntParam(request,"debug", 0) != 0;
+	boolean isPreserve = (request.getParameter("preserveMode") != null) && (request.getParameter("preserveMode").equals("1")); // in preservation mode
+
+	Pair <String, Boolean> result = null;
+
 	JSPHelper.log.info("jogpage: " + debug + ", " + request.getParameter("debug"));
 
-	JSPHelper.log.info ("Fetching pages [" + startPage + ".." + endPage + "] for dataset " + datasetId);
+	JSPHelper.log.info ("Fetching pages [" + startPage + ".." + endPage + "] for dataset " + datasetId + " in preserve mode: "+ isPreserve);
 
 // output format needed: an external div, which contains individual page divs
 	out.println ("<div>");
@@ -36,10 +41,12 @@
 		{
 			try {
 				out.println ("<script>$('.qtip').remove()</script>");
-				out.println (dataset.getPageForMessages(i, IA_links, inFull, debug,archiveID));
+				result = dataset.getPageForMessages(i, IA_links, inFull, debug,archiveID, isPreserve);
+				out.println (result.first);
+				String redacted = result.second.booleanValue()== true? "true" : "false" ;
 				out.println ("\n");
                 out.println ("<script src=\"js/epadd.js\"></script>");
-				out.println ("<script>initialiseqtip()</script>");
+				out.println ("<script>initialiseqtip(); toggleEditImage(" + redacted + "," + isPreserve + ")</script>");
 			} catch (Exception e) {
 				out.println ("Sorry... exception reading page content: " + e);
 			}

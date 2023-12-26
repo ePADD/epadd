@@ -138,6 +138,7 @@ for (EmailDocument ed: docs)
 	$('#messages').dataTable({
 	data: messages,
 	pagingType: 'simple',
+	autoWidth: false,
 	columnDefs: [{width: "540px", targets: 0},{targets: 0, render:clickable_message}],
 	order:[[1, 'asc']], // col 1 (date), ascending
 		fnInitComplete: function() { $('#spinner-div').hide(); $('#messages').fadeIn(); $('#nav3').fadeIn(); $('#export-button').fadeIn()}

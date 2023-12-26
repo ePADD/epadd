@@ -5,6 +5,13 @@ var escape = function(s) {
     s = title.replace(/"/g, "&quot;");
 };
 
+var toggleEditImage = function(mode) {
+	if (mode)
+		$('#img-edit').attr('src', 'images/edit-1.svg' );
+	else
+		$('#img-edit').attr('src', 'images/edit-0.svg' );
+}
+
 var initialiseqtip = function(){
 	$('.qtip').remove();
 	//TODO: use a proper selector

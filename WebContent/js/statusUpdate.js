@@ -149,6 +149,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
                 try { document.title = html; } catch (e) { epadd.log ('exception trying to set title to ' + html); } // set title so user can switch tabs and still keep an eye on the status of this one
                 var $progress = $('.progress_bar');
                 var total_width = $('.progress_bar_outer_box').width();
+                epadd.log("pct: "+response.pctComplete);
                 if (response.pctComplete && response.pctComplete >= 0)
                 {
 

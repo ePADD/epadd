@@ -14,7 +14,7 @@ abstract class testm{
 }
 public class StandaloneIngestion{
 
-    protected boolean IngestMbox(String name, String folderpath){
+    private boolean IngestMbox(String name, String folderpath){
 
         MuseEmailFetcher mailFetcher = new MuseEmailFetcher();
         String errorMessage="";
@@ -55,7 +55,7 @@ public class StandaloneIngestion{
         return true;
     }
 
-    public static void main(String[] args){
+    public static void main(String args[]){
 
         StandaloneIngestion si = new StandaloneIngestion();
         if(args.length!=2){

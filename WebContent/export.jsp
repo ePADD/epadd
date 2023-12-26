@@ -1,3 +1,5 @@
+download mbox/eml merge has to be completed
+
 <%
 /*    
     2022-10-28      Allow custom naming in Export to next ePADD module
@@ -5,11 +7,18 @@
 %>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
+<%@page language="java" import="edu.stanford.muse.index.Archive"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="edu.stanford.muse.Config" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="edu.stanford.muse.AddressBookManager.AddressBook" %>
+<%@ page import="java.util.LinkedHashMap" %>
+<%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@page language="java" import="edu.stanford.epadd.util.EmailConvert"%>
 <%@ page import="edu.stanford.muse.index.EmailExporter" %>
 <%@ page import="edu.stanford.muse.ner.model.NEType" %>
 <%@ page import="java.util.LinkedHashMap" %>
-<%@ page import="java.util.Map" %>
 <%@page language="java" %>
 <%	EmailConvert.activateLicense();%>
 
@@ -153,52 +162,7 @@ Error: Export is only available in processing or appraisal modes!
 <p>
 
 <div id="all_fields" style="margin:auto; width:1100px; padding: 10px">
-    <%--<b>Review messages</b>
-    <br/>
-    <br/>
-    <div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=transfer'" class="mini-box">
-        <div class="review-messages">
-            <i class="icon-browsetoparrow"></i><br/>View
-        </div>
-        <div class="mini-box-icon"><i class="fa fa-envelope-o"></i></div>
-        <div class="mini-box-description">
-            <div class="number"><%=Util.commatize(messagesToExport)%></div>
-            Unrestricted messages
-        </div>
-    </div>
-    <div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=annotated'" class="mini-box">
-        <div class="review-messages">
-            <i class="icon-browsetoparrow"></i><br/>View
-        </div>
-        <div class="mini-box-icon"><i class="fa fa-comment-o"></i></div>
-        <div class="mini-box-description">
-            <div class="number"><%=Util.commatize(annotatedMessages)%></div>
-            Annotated messages
-        </div>
-    </div>
-    <div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=transferWithRestrictions'" class="mini-box">
-        <div class="review-messages">
-            <i class="icon-browsetoparrow"></i><br/>View
-        </div>
-        <div class="mini-box-icon"><i class="fa fa-exclamation-triangle"></i></div>
-        <div class="mini-box-description">
-            <div class="number"><%=Util.commatize(restrictedMessages)%></div>
-            Restricted messages
-        </div>
-    </div>
-    <div onclick="window.location='export-review?archiveID=<%=archiveID%>&type=doNotTransfer'" class="mini-box" style="margin-right:0px">
-        <div class="review-messages">
-            <i class="icon-browsetoparrow"></i><br/>View
-        </div>
-        <div class="mini-box-icon"><i class="fa fa-ban"></i></div>
-        <div class="mini-box-description">
-            <div class="number"><%=Util.commatize(messagesNotToExport)%></div>
-            Messages not to export
-        </div>
-    </div>
-    <br/>
-    <br/>
---%>
+ 
     <section>
             <div class="panel" id="export-preservation">
                 <div class="panel-heading">Export to Preservation<br>
@@ -229,7 +193,21 @@ Error: Export is only available in processing or appraisal modes!
     <section>
         <div class="panel">
             <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.next-module")%></div>
-
+            <% if (ModeConfig.isProcessingMode()) { %>
+            <div class="one-line">
+                <fieldset name="message-filter" id="message-filter" class="comman-radio">
+                     <label class="radio-inline">
+                        <input name="message-filter" value="non-restricted" type="radio">
+                        <span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-filter-non-restricted")%></span>
+                    </label>
+                    <label class="radio-inline">
+                        <input name="message-filter" value="permissive" type="radio" checked>
+                        <span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-filter-permissive")%></span>
+                    </label>
+                </fieldset>
+            </div>
+            <br/>
+            <% } %>
             <div class="one-line" id="export-next">
                 <div class="form-group col-sm-8">
                     <label for="export-next-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.specify-location")%></label>
@@ -351,16 +329,16 @@ Error: Export is only available in processing or appraisal modes!
 
     <section>
         <div class="panel" id="export-headers">
-            <div class="panel-heading">Export headers (CSV)</div>
+            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.headers-file")%></div>
 
             <div class="one-line">
                 <div class="form-group col-sm-8">
-                    <label for="export-headers-file">Specify location</label>
+                    <label for="export-headers-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.headers-file-specify-location")%></label>
                     <input id="export-headers-file" class="dir form-control" type="text" name="name" value=""/>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
-                    <button id="export-headers-browse" class="btn-default browse-button">Browse</button>
-                    <button id="export-headers-do" style="margin-left: 10px;" class="go-button faded btn-default">Export</button>
+                    <button id="export-headers-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.headers-file-browse")%></button>
+                    <button id="export-headers-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.headers-file-export")%></button>
                 </div>
             </div>
 
@@ -385,10 +363,23 @@ Error: Export is only available in processing or appraisal modes!
     <% if (ModeConfig.isProcessingMode() || ModeConfig.isAppraisalMode()) { %>
     <section>
         <div class="panel" id="export-mbox">
-                <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-message")%>
-                </div>
-                <div class="one-line">
-                    <div class="form-group col-sm-8">
+            <div class="panel-heading"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-message")%></div>
+<%--            <% if (ModeConfig.isProcessingMode()) {%>--%>
+<%--                <div class="one-line">--%>
+<%--                    <div class="form-group col-sm-8">--%>
+<%--                    <label for="export-mbox"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.email-store")%></label>--%>
+<%--                    <select id="export-mbox-copy-options" name="export-mbox-copy-options" class="form-control selectpicker">--%>
+<%--                        <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%></option>--%>
+<%--                            <option value = "redacted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.email-store-redacted")%></option>--%>
+<%--                        <option value = "preserved"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.email-store-preserved")%></option>--%>
+<%--                    </select>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            <br/>--%>
+<%--                        <% } else { %>--%>
+<%--                        <input type="hidden" id="export-mbox-copy-options" name="export-mbox-copy-options" value="redacted"/>--%>
+<%--                        <% } %>--%>
+
                         Emailchemy license:<br>
 <span id="licenseDownload"
       style="color:orange;margin-left: 40px">Retrieving status ...</span><br/>
@@ -406,21 +397,28 @@ Error: Export is only available in processing or appraisal modes!
         <span class="text-radio">EML</span>
     </label>
 </fieldset>
-</div>
-</div>
+
+
             <div class="one-line">
                 <div class="form-group col-sm-8">
+                    <label for="export-mbox"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-exported")%></label>
                     <select id="export-mbox-options" name="export-mbox-options" class="form-control selectpicker">
-            <option value="" selected
-                    disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%>
-            </option>
-            <option value="all"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-all")%>
-            </option>
-            <option value="non-restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-non-restricted")%>
-            </option>
-            <option value="restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-restricted")%>
-            </option>
+                        <option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.select")%></option>
+                        <option value = "all"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-all")%></option>
+                        <option value = "restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-restricted")%></option>
+                        <option value = "non-restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-non-restricted")%></option>
+                        <% if (ModeConfig.isProcessingMode() ) { %>
+                            <option value = "permissive"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-permissive")%></option>
+                        <% } %>
                     </select>
+                </div>
+                <div class="one-line">
+                    <div class="checkbox-inline" style="padding:0px 0px 0px 15px">
+                        <label>
+                            <input type="checkbox" id="only-headers-option" name="only-headers-option">
+                            <span class="label-text"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.header-only")%></span>
+                        </label>
+                    </div>
                 </div>
                 <div class="form-group col-sm-4">
         <button id="export-mbox-do"
@@ -460,22 +458,22 @@ Error: Export is only available in processing or appraisal modes!
             {
                 format = "to-mbox";
             }
-            debugger
-            if(!exportoptions){
-                alert("Please select at least one option!");
-                return false;
-            }
-            var post_params={archiveID:archiveID, data:format, type:exportoptions};
+ 
+            // var copyType = $('#export-mbox-copy-options').val();
+            // if(!exportoptions || !copyType){
+            //     alert("Please select at least one option!");
+            //     return false;
+            // }
+            // Disabled the option to choose between redacted and preserved as currently the HTML parts
+            // of emails are always unredacted.
+            var copyType = "preserved";
+            /* var onlyHeadersOption= $('#only-headers-option').val(); */
+            var onlyHeadersOption=  ($('#only-headers-option').is(':checked'))? 'on': 'off';
+
+            var post_params={archiveID:archiveID, data:format, type:exportoptions, onlyHeaders:onlyHeadersOption, copyType:copyType};
             var params = epadd.convertParamsToAmpersandSep(post_params);
-            var type = "export";
-            if (format == "to-mbox")
-            {
-                type = "mbox export"
-            }
-            else {
-                type = "eml export"
-            }
-            var premisData = {eventType: type, eventDetailInformation: exportoptions};
+            var premisData = {eventType: "transfer to processing", eventDetailInformation: "Exported to " + post_params.dir};
+
              fetch_page_with_progress("ajax/downloadData.jsp", "status", document.getElementById('status'), document.getElementById('status_text'), params, null, null, premisData);
         });
     </script>
@@ -740,8 +738,18 @@ Error: Export is only available in processing or appraisal modes!
                 //window.location = baseUrl + '?archiveID=<%=archiveID%>&dir=' + dir;
 // 2022-10-28
 //                var post_params = {archiveID: archiveID, dir: dir};
-                debugger
-                var post_params = {archiveID: archiveID, dir: dir, archive_name: archive_name};
+
+                var messFilter = $("input[name='message-filter']:checked").val();
+
+                //var permLabelOnly = ($('#permissionLabelOnly').is(':checked'))? 'on' : 'off';
+                var permLabelOnly = ("permissive" ===messFilter)? 'on' : 'off';
+
+                var post_params = {
+                    archiveID: archiveID,
+                    dir: dir,
+                    permLabelOnly: permLabelOnly
+                };
+
                 var params = epadd.convertParamsToAmpersandSep(post_params);
                 var premisData = {eventType: "transfer to processing", eventDetailInformation: "Exported to " + post_params.dir};
                 fetch_page_with_progress(baseUrl, "status", document.getElementById('status'), document.getElementById('status_text'), params,promptmethod, null, premisData);

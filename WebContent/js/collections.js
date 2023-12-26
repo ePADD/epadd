@@ -284,6 +284,7 @@ var renderBrowseRepositories = function(institutionDetails, redrawComplete){
                 { data: 'numCollections' },
                 { data: 'numMessages' }
             ],
+            autoWidth: false,
             columnDefs: [/*{targets: 0,searchable: false, orderable: false},*/
                 {targets:0, width:"200px", searchable: false,orderable: true,render:clickable_repository,className: "dt-left"},
                 {targets:1,  searchable: false, orderable: true,render: nonclickable_institution,className: "dt-center"}, // no width for col 0 here because it causes linewrap in data and size fields (attachment name can be fairly wide as well)

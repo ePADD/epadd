@@ -2822,6 +2822,14 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 
 	}
 
+	public static String maskEmail(String s)
+	{
+		if (s != null)
+			return s.replaceAll("\\b([A-Za-z0-9][A-Za-z0-9\\-_\\.]*)@[A-Za-z0-9][A-Za-z\\-0-9_]*(\\.[A-Za-z0-9][A-Za-z\\-0-9_]*)*\\.[A-Za-z]{2,4}\\b", "...@...");
+		else
+			return null;
+	}
+
 	public static <E extends Comparable<? super E>> int compareToNullSafe(E a, E b)
 	{
 		if (a == b)

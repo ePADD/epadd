@@ -25,12 +25,14 @@
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/jquery.dataTables.select.min.js"></script>
 
 	<script src="js/modernizr.min.js"></script>
 	<script src="js/sidebar.js"></script>
 
 	<script src="js/muse.js"></script>
 	<script src="js/epadd.js"></script>
+    <script type="text/javascript" src="js/statusUpdate.js"></script>
 
 	<style type="text/css">
       .js #people {display: none;}
@@ -42,9 +44,6 @@
 
 	</style>
 
-	<script type="text/javascript" charset="utf-8">
-
-	</script>
 </head>
 <body>
 
@@ -69,9 +68,10 @@
 
 	<div class="search-tips" style="display:block">
 
-	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode() || ModeConfig.isDeliveryMode()) { %>
-		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.appraisal-processing-delivery")%>
-
+	<% if (ModeConfig.isAppraisalMode() || ModeConfig.isDeliveryMode()) { %>
+		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.appraisal-delivery")%>
+	<% } else if (ModeConfig.isProcessingMode()) { %>
+		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.processing")%>
 	<% } else if (ModeConfig.isDiscoveryMode()) { %>
 		<%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "correspondents.help.discovery")%>
 		<% } %>
@@ -99,10 +99,12 @@
 <div style="margin:auto; width:1100px">
 	<div class="button_bar_on_datatable">
 	<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.graph")%> " class="buttons_on_datatable" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><img class="button_image_on_datatable" src="images/graph.svg"></div>
-		<%if(!ModeConfig.isDiscoveryMode()){%>
+		<%if(ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode())%>
 	<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.edit")%> " class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/edit_correspondent.svg"></div>
+		<%if(ModeConfig.isProcessingMode())%>
+			<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.merge")%> " class="buttons_on_datatable" onclick="confirmBeforeMerge()"><img class="button_image_on_datatable" src="images/merge_correspondents.svg"></div>
+		<%if(ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode())%>
 		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload")%> " class="buttons_on_datatable" onclick="$('#correspondent-upload-modal').modal('show');"><img class="button_image_on_datatable" src="images/upload.svg"></div>
-		<%}%>
 		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.download")%> " class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
 	</div>
 <table id="people" style="display:none">
@@ -119,20 +121,48 @@
 		JSONArray resultArray = ab.getCountsAsJSON( false /* except owner */,archiveID);
 	%>
 	<script>
-	var correspondents = <%=resultArray.toString(4)%>;
+    // things to do when correspondent modification modal is shown
+        modification_modal_shown= function() {
+               $('#correspondent-entry-modification-modal .modal-body').val(correspondent_entry);
+               $('#correspondent-entry-modification-modal .modal-body').focus();
+    }
+
+	var correspondents = <%=resultArray.toString(5)%>;	//full dataset of all correspondents
+	var selectedCorrespondent;		// a subset (1 row) of correspondents , selected correspondent under editing
+
+	var correspondents_datatable;	// instance of datatable for manipulation
+	var correspondent_rownum;      // row number of selected correspondent in datatable
+	var correspondent_entry;     // changed details of selected correspondent detail under editing
+
+	var showCorrespondentEntryModificationModel = function(rowindex) {
+		correspondent_rownum = rowindex;
+	    selectedCorrespondent = correspondents[rowindex];
+        correspondent_entry = unescapeHTML(selectedCorrespondent[5]).trim();     // default content by copying from the original correspondent detail from addressbook, HTML decode it
+
+	    $('#correspondent-entry-modification-modal').modal('show');
+	};
+
 // get the href of the first a under the row of this checkbox, this is the browse url, e.g.
 	$(document).ready(function() {
 		var clickable_message = function ( data, type, full, meta ) {
 			return '<a target="_blank" title="' + full[5] + '" href="' + full[4] + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
 		};
 
-		$('#people').dataTable({
+		correspondents_datatable = $('#people').dataTable({
 			data: correspondents,
 			pagingType: 'simple',
 			order:[[1, 'desc']], // col 2 (sent message count), descending
+			aLengthMenu: [[ 20, 50, 100, 1000, 5000, -1], [ 20, 50, 100, 1000, 5000, "All"]],
+			iDisplayLength: 20,
+			<%if(!ModeConfig.isDiscoveryMode() && !ModeConfig.isDeliveryMode()){%>
+            	select: { style: 'multi' },
+			<%} %>
+			autoWidth: false,
 			columnDefs: [{width: "550px", targets: 0}, { className: "dt-right", "targets": [ 1,2,3 ] },{width: "50%", targets: 0},{targets: 0, render:clickable_message}], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
 			fnInitComplete: function() { $('#spinner-div').hide(); $('#people').fadeIn(); }
 		});
+
+		$('#correspondent-entry-modification-modal').on('shown.bs.modal', modification_modal_shown);
 	} );
 
 	var exportCorrespondentHandler=function(){
@@ -186,6 +216,81 @@
         });
     }
 
+	var confirmBeforeMerge=function(){
+
+        var selectedRows = correspondents_datatable.api().rows( { selected: true } );
+        var selectedRowData = selectedRows.data();
+
+		if (selectedRowData.length < 2){
+			epadd.error("Please select more than 1 contacts to perform merging");
+			return;
+		}
+
+        var nameList = "";
+        var list = "";
+        var i;
+        for (i=0; i<selectedRowData.length; i++){
+            var rowID = selectedRowData[i][8];
+            var name = selectedRowData[i][0];
+
+            if (list==""){
+                list += rowID;
+                nameList += name;
+            } else {
+                list += "," + rowID;
+                nameList += ", " + name;
+            }
+        }
+
+		if (list!="") {
+			epadd.info_confirm_continue('Are you sure to merge the contacts (' + nameList + ') in address book?', function () {
+			    mergeCorrespondents(list);
+            });
+		}
+	};
+
+    var onReadyMergedCorrespondents=function(){
+        epadd.success('Correspondent merged.', function () {
+            window.location.reload();
+        });
+    };
+
+    var mergeCorrespondents=function(mergeIDs){
+
+        //alert("mergeCorrespondents: mergeIDs = "+ mergeIDs);
+        if (mergeIDs != "") {
+            var params = "archiveID=" +  archiveID + "&mergeIDs="+ mergeIDs;
+            try {
+                fetch_page_with_progress ('ajax/async/mergeCorrespondents.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), params, onReadyMergedCorrespondents);
+            } catch (err) {}
+/*
+            $('#spinner-div').show();
+            $.ajax({
+                    type: 'POST',
+                    url: "ajax/mergeCorrespondents.jsp",
+                    data: {
+                        archiveID: archiveID,
+                        mergeIDs: mergeIDs,
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        $('#spinner-div').hide();
+                        if (response && response.status==0 ) {
+                            epadd.success('Correspondent merged.', function () {
+                                window.location.reload();
+                            });
+                        } else if (response && response.status == 1){
+                            epadd.error("Error merging correspondents: " + response.error);
+                        } else {
+                            console.log(response.status + ' | '+ response.error );
+                        }
+                    }
+            });
+*/
+        }
+
+    };
+
 </script>
 
 <div style="clear:both"></div>
@@ -224,6 +329,23 @@
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 </div>
+
+<div id="correspondent-entry-modification-modal" class="info-modal modal fade" style="z-index:99999">
+        <div class="modal-dialog">
+            <div class="modal-content" style="height: 900px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Correspondent Entry</h4>
+                </div>
+                <textarea title="Modify" name="correspondentEntryModificationField" style="margin: 3%; width: 90%; height: 75%; border: solid 1px gray;" class="modal-body">
+
+            </textarea>
+                <div class="modal-footer">
+                    <button id='ok-button-correspondent-entry-modification' type="button" class="btn btn-default" data-dismiss="modal" onclick="confirmBeforeSubmit();return false;">APPLY</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 	<jsp:include page="footer.jsp"/>
 

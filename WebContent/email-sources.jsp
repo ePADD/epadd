@@ -1,10 +1,13 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
+<%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page language="java" import="edu.stanford.muse.index.Archive"%>
+<%@page language="java" import="java.util.Set"%>
+<%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
+<%@page language="java" %>
+<%@page language="java" %>
+<%@page language="java" %>
 <%@page language="java" import="edu.stanford.epadd.util.EmailConvert"%>
-<%@page language="java" %>
-<%@page language="java" %>
-<%@page language="java" %>
-
 <%--
 	<%@ page import="Internationalisation.ReadFromProp"%>
 --%>

@@ -1,8 +1,13 @@
+<%@page import="com.fasterxml.jackson.core.JsonParser"%>
 <%@ page import="edu.stanford.muse.index.Document" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="edu.stanford.muse.index.SearchResult" %>
+<%@ page import="edu.stanford.muse.index.DataSet" %>
+
 <%@ page import="edu.stanford.muse.webapp.JSPHelper" %>
 <%@ page import="edu.stanford.muse.util.Pair" %>
+<%@ page import="com.google.gson.Gson" %>
+<%@ page import="java.util.*" %>
 
 <script src="js/browseMessages.js" type="text/javascript"></script>
 
@@ -26,8 +31,10 @@
 
     <div class="search-tips" style="display:block">
 
-        <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
-            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browseMessages.help.appraisal-processing")%>
+        <% if (ModeConfig.isAppraisalMode()) { %>
+            <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browseMessages.help.appraisal")%>
+        <% } else if (ModeConfig.isProcessingMode()) { %>
+        <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browseMessages.help.processing")%>
         <% } else if (ModeConfig.isDiscoveryMode()) { %>
             <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "help", "browseMessages.help.discovery")%>
         <% } else if (ModeConfig.isDeliveryMode()) { %>
@@ -216,6 +223,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                                     Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
                                     //get general labels
                                     Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
+                                    Set<Label> premlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.PERMISSION);
                                     for (Label opt : restrlabels){
                                 %>
                                 <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
@@ -224,6 +232,13 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             <optgroup label="General Labels">
                                 <%
                                     for (Label opt : genlabels){
+                                %>
+                                <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
+                                <%}%>
+                            </optgroup>
+                            <optgroup label="Permission Labels">
+                                <%
+                                    for (Label opt : premlabels){
                                 %>
                                 <option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
                                 <%}%>
@@ -260,6 +275,14 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         <div style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
                             <a target="_blank" href="export-mbox?archiveID=<%=archiveID%>&docsetID=<%=docsetID%>"><img title="Download messages as mbox" src="images/download.svg"></a>
                         </div>
+
+                        <%}%>
+
+                        <%if(ModeConfig.isProcessingMode()){%>
+                        <div id="trigger-preservation" style="display:inline; border-right: solid 1px #d4d4d4; padding-right: 10px; margin-right: 20px; position: relative; top: 4px; cursor: pointer;">
+                            <a><img id="plock" title="Toggle to preservation mode" src="images/lock-0.svg"></a>
+                        </div>
+
                         <%}%>
 
                         <div id="page_back" class="nav-arrow"><span style="position: relative; top:3px"> <img title="Previous message" src="images/prev.svg"/></span></div>
@@ -286,7 +309,11 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     <%}%>
                     <a href="#" class="id-link" title="Get message ID"><img style="padding: 0px 27px; border-right: solid 1px #ccc;" src="images/message_id.svg"/></a>
                     <a href="#" class="thread-link" target="_blank" title="Open thread"><span class="thread-count" style="padding-left:17px"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/thread_view.svg"/></a>
-                    <a style="color: inherit" href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img src="images/attachments.svg"/></a>
+                    <a style="color: inherit" href="#" class="attach-link" title="Scroll down to attachments"><span style="padding: 0px 5px 0px 27px;"></span><img style="padding: 0px 7px; border-right: solid 1px #ccc;" src="images/attachments.svg"/></a>
+
+                    <%if(ModeConfig.isProcessingMode()){%>
+                        <a href="#" class="email-content-link" title="Modify email content"><img id="img-edit" style="padding: 0px 27px;" src="images/edit-0.svg"/></a>
+                    <%}%>
                 </div>
 
                 <script>
@@ -333,6 +360,12 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                             $('.annotation').hide();
                         });
 
+                        $("#email-modification-icon").click(function() {
+                            $('#email-modification-modal').modal();
+                        });
+                        $("#close-email-modification-icon").click(function() {
+                            $('.email-modification').hide();
+                        });
                 </script>
 
 
@@ -452,6 +485,27 @@ out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var nu
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+<div>
+    <div id="email-modification-modal" class="info-modal modal fade" style="z-index:99999">
+        <div class="modal-dialog">
+            <div class="modal-content" style="height: 900px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Email</h4>
+                </div>
+                <textarea title="Mod" name="emailModificationField" style="margin: 3%; width: 90%; height: 75%; border: solid 1px gray;" class="modal-body">
+
+            </textarea>
+                <div class="modal-footer">
+                    <button id='ok-button-email-modification' type="button" class="btn btn-default" data-dismiss="modal">APPLY</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+
 
     <%--Modal for showing more information about an attachment (in case it was normalized/cleanedup during preservation support)--%>
     <div>

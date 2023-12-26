@@ -316,6 +316,7 @@ $(document).ready(function() {
 	$('#attachments').dataTable({
 		data: attachments,
 		pagingType: 'simple',
+		autoWidth: false,
 		columnDefs: [{targets: 0,render:clickable_message},
             {targets:3,render:clickable_attachment},
             <%if(IsNormalized){%>

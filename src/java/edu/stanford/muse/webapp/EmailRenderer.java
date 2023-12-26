@@ -41,6 +41,37 @@ public class EmailRenderer {
 	}
 
 	/**
+	 * returns a textual string for documents - in email modification modal
+	 *
+	 * @param
+	 * @throws Exception
+	 */
+	//TODO: inFull, debug params can be removed
+
+	public static String textForDocument(Document d, SearchResult searchResult) throws Exception {
+		JSPHelper.log.debug("Generating textual string for document: " + d);
+		EmailDocument ed = null;
+		Archive archive = searchResult.getArchive();
+		String contentsText = null;
+
+		if (d instanceof EmailDocument) {
+			// for email docs, 1 doc = 1 page
+			ed = (EmailDocument) d;
+
+			contentsText = archive.getTextForContents(d);
+
+		} else if (d instanceof DatedDocument) {
+			contentsText = "To be implemented";
+
+		} else {
+			JSPHelper.log.warn("Unsupported Document: " + d.getClass().getName());
+			contentsText = "";
+		}
+
+		return contentsText;
+	}
+
+	/**
 	 * returns a string for documents - in message browsing screen.
 	 *
 	 * @param
@@ -48,14 +79,15 @@ public class EmailRenderer {
 	 */
 	//TODO: inFull, debug params can be removed
 	//TODO: Consider a HighlighterOptions class
-	public static Pair<String, Boolean> htmlForDocument(Document d, SearchResult searchResult, String datasetTitle,
+	public static Pair<String, Pair<Boolean,Boolean>> htmlForDocument(Document d, SearchResult searchResult, String datasetTitle,
 														Map<String, Map<String, Short>> authorisedEntities,
-														boolean IA_links, boolean inFull, boolean debug, String archiveID) throws Exception {
+														boolean IA_links, boolean inFull, boolean debug, String archiveID, boolean isPreserve) throws Exception {
 		JSPHelper.log.debug("Generating HTML for document: " + d);
 		EmailDocument ed = null;
 		Archive archive = searchResult.getArchive();
 		String html = null;
 		boolean overflow = false;
+		boolean redacted = false;
 		if (d instanceof EmailDocument) {
 			// for email docs, 1 doc = 1 page
 			ed = (EmailDocument) d;
@@ -79,12 +111,15 @@ public class EmailRenderer {
 			Set<String> highlightTerms = searchResult.getHLInfoTerms(ed);
 
 			page.append("\n<div class=\"muse-doc-body\">\n");
-			Pair<StringBuilder, Boolean> contentsHtml = archive.getHTMLForContents(d, ((EmailDocument) d).getDate(),
+
+			Pair<StringBuilder, Pair<Boolean, Boolean>> contentsHtml = null;
+			contentsHtml = archive.getHTMLForContents(d, ((EmailDocument) d).getDate(),
 					d.getUniqueId(), searchResult.getRegexToHighlight(), highlightTerms,
-					authorisedEntities, IA_links, inFull, true);
+					authorisedEntities, IA_links, inFull, true, isPreserve);
 
 			StringBuilder htmlMessageBody = contentsHtml.first;
-			overflow = contentsHtml.second;
+			overflow = contentsHtml.second.first;
+			redacted = contentsHtml.second.second;
 			// page.append(ed.getHTMLForContents(indexer, highlightTermsStemmed,
 			// highlightTermsUnstemmed, IA_links));
 			page.append(htmlMessageBody);
@@ -207,7 +242,7 @@ public class EmailRenderer {
 			html = "";
 		}
 
-		return new Pair<>(html, overflow);
+		return new Pair<String, Pair<Boolean, Boolean>>(html, new Pair <Boolean, Boolean>(overflow, redacted));
 	}
 
 
@@ -731,9 +766,10 @@ public class EmailRenderer {
 		// + this.folderName + "</td></tr>\n");
 		if(debug)
 			result.append("<tr><td>docId: </td><td>"+ed.getUniqueId()+"</td></tr>\n");
+		final String style = "<tr><td align=\"right\" class=\"muted\" valign=\"top\">";
+		result.append(style + "<br>Folder: </td><td align=\"left\"><br>" + ed.folderName + "</td><br>");
 		result.append(JSPHelper.getHTMLForDate(archiveID,ed.date));
 
-		final String style = "<tr><td align=\"right\" class=\"muted\" valign=\"top\">";
 
 		// email specific headers
 		result.append(style + "From: </td><td align=\"left\">");
@@ -804,7 +840,7 @@ public class EmailRenderer {
 		// result.append ("\n" + style + "ID: " + "</td><td>" + messageId + " " + messageLink + "</td></tr>");
 		result.append("</table>\n"); // end docheader table
 
-		if (ModeConfig.isPublicMode())
+		if (ModeConfig.isPublicMode() || ModeConfig.isDeliveryMode())
 			return new StringBuilder(Util.maskEmailDomain(result.toString()));
 
 		return result;

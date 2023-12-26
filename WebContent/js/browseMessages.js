@@ -4,6 +4,10 @@
 var docIDs = []; // this is required for posting the docid of the message to which the label/annotation change should be applied.
 var PAGE_ON_SCREEN = -1; // current page displayed on screen
 var TOTAL_PAGES = 0;
+var JOG_URL_PREFIX;
+var JOG_URL_PRESERVATION = JOG_URL_PREFIX + "1";
+var JOG_URL_NON_PRESERVATION = JOG_URL_PREFIX + "0";
+var MESSAGE_HAVE_REDACTED = false;   // this is a flag to indicate current message on screen has been redacted.
 
 // interacts with #page_forward, #page_back, and #pageNumbering on screen
 var Navigation = function(){
@@ -42,9 +46,17 @@ var Navigation = function(){
         // it to retry making the whole thing (the entire browser and the system) to slow down
         //TODO: JOG plugin should not be this aggressive with the logger
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        JOG_URL_PREFIX = 'ajax/jogPageInMessages.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID + '&preserveMode=';
+        JOG_URL_PRESERVATION = JOG_URL_PREFIX + "1";
+        JOG_URL_NON_PRESERVATION = JOG_URL_PREFIX + "0";
+
+        var cookie = Cookies.get('palladium-epadd-mode-preserve');
+        var currentJogURL = (cookie && cookie == "1")? JOG_URL_PRESERVATION : JOG_URL_NON_PRESERVATION;
         jog = $(document).jog({
             paging_info: {
-                url: 'ajax/jogPageInMessages.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID,
+                //url: 'ajax/jogPageInMessages.jsp?archiveID=' + archiveID + '&datasetId=' + docsetID + '&preserveMode=0',
+                url: currentJogURL,
                 window_size_back: 30,
                 window_size_fwd: 50
             },
@@ -70,11 +82,15 @@ var Navigation = function(){
     // annoying, have to declare these connector funcs, because jog is defined only in setupEvents, so can't directly use those funcs in the Navigation's interface.
     function disableCursorKeys() { jog.disableCursorKeys();}
     function enableCursorKeys() { jog.enableCursorKeys();}
+    function reloadCurrentPage() { jog.reloadCurrentPage();}
+    function reloadJogURL(url) {jog.reloadJogURL(url);}
 
     return {
         setupEvents: setupEvents,
         disableCursorKeys: disableCursorKeys,
-        enableCursorKeys: enableCursorKeys
+        enableCursorKeys: enableCursorKeys,
+        reloadCurrentPage: reloadCurrentPage,
+        reloadJogURL: reloadJogURL
     };
 }();
 
@@ -356,6 +372,180 @@ var Annotations = function() {
     };
 }();
 
+
+
+
+var emailModifications = function() {
+
+    modifiedEmail = '';
+    // set up event handlers for annotations, should be called only once
+    function setup() {
+
+        // things to do when modification modal is shown
+        function email_modification_modal_shown() {
+
+            //console.log('PAGE_ON_SCREEN='+ PAGE_ON_SCREEN + ' || docIDs[PAGE_ON_SCREEN]='+ docsetID + ' || archiveID=' + archiveID );
+
+            // post to the backend, and when successful, refresh the text area with email body content on screen
+            $.ajax({
+                    url : 'ajax/getBodyContentForEdit.jsp',
+                    type : 'POST',
+
+                    data : {
+                            archiveID: archiveID,
+                            docsetID: docsetID,
+                            currentPage : PAGE_ON_SCREEN,
+                    },
+
+                    dataType : 'json',
+                    success : function(response) {
+
+                                if (response && response.status==0 ) {
+						            $('#email-modification-modal .modal-body').val(response.emailBody);
+                                }
+                    },
+                    error : function() {
+                            epadd
+                            .error('There was an error loading the email body for email modification. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+                    }
+            });
+
+            $('#email-modification-modal .modal-body').focus();
+
+            Navigation.disableCursorKeys();
+        }
+
+        // things to do when user clicks on 'apply to this message'
+        function email_modification_modal_dismissed_apply_to_this_message() {
+            
+            Navigation.enableCursorKeys();
+            modifiedEmail = $('#email-modification-modal .modal-body').val().trim(); // .val() gets the value of a text area. assume: no html in annotations
+
+            // post to the backend, and when successful, refresh the labels on screen
+            $.ajax({
+                        url : 'ajax/applyEmailModification.jsp',
+                        type : 'POST',
+                        data : {
+                            archiveID : archiveID,
+                            docId : docIDs[PAGE_ON_SCREEN],
+                            modifiedEmail : modifiedEmail,
+                        }, 
+                        dataType : 'json',
+                        success : function(response) {
+                            emailModifications.refreshEmail();
+                        },
+                        error : function() {
+                            epadd
+                                    .error('There was an error saving the modified email. Please try again, and if the error persists, report it to epadd_project@stanford.edu.');
+                        }
+                    });
+        }
+
+        $('#email-modification-modal').on('shown.bs.modal', email_modification_modal_shown);
+        $('#email-modification-modal').on('hidden.bs.modal', function() {
+            Navigation.enableCursorKeys();
+            $('#email-modification-modal .modal-body').val(''); // reset the email modification modal to empty before next call
+        });
+
+        $('#email-modification-modal').find('#ok-button-email-modification').click(
+                email_modification_modal_dismissed_apply_to_this_message);
+            // when annotation is clicked, invoke modal
+        $('a.email-content-link').click(function() {
+            // show the modal
+            $('div.email-modification').show();
+            $('#email-modification-modal').modal();
+            return false;
+        });
+
+        // when preservation is clicked, trigger navigation mode between preservation and non-preservation
+        // it is based on the existence of session cookie stored as 'palladium-epadd-mode-preserve'
+        var cookie = Cookies.get('palladium-epadd-mode-preserve');
+
+        $('#trigger-preservation').click(function() {
+            // Toggle mode between preservation and normal navigation modes
+            var newMode = (cookie == null || cookie == '0') ? true : false;     // true for Preservation mode, false for normal navigation mode
+
+            setup_upon_mode_switching(newMode);
+            window.location.reload();       // Due to some reason, upon view mode change, we have to reload the whole window screen to force refresh the jog plugin cached memory
+        });
+
+        // do some setup tasks for UI icons, toggle mode button and edit icon appearance etc.
+        if ( cookie == null || cookie == '0'){
+            // Toggle UI to normal navigation view
+            $('#plock').attr('src', 'images/lock-0.svg' );
+            $('#plock').attr('title', 'Toggle to perservation view' );
+            $('#img-edit').show();
+        } else {
+            // Toggle UI to preservation view
+            $('#plock').attr('src', 'images/lock-1.svg' );
+            $('#plock').attr('title', 'Toggle to normal view' );
+            $('#img-edit').hide();
+        }
+
+    }  // end Setup()
+
+    function reloadJogURL(url){
+        Navigation.reloadJogURL(url);
+    }
+
+    // copies annotation from .annotation-area on screen to the current page's
+    function refreshEmail() {
+        Navigation.reloadCurrentPage();
+
+        //window.location.reload();
+//        var $annotation = $('div.annotation');
+//        var $annotationarea = $('.annotation-area', $annotation);
+//        $('.annotation-area').css('filter', '');
+//
+//        if (annotations[PAGE_ON_SCREEN]
+//                && annotations[PAGE_ON_SCREEN].length > 0) {
+//            $annotationarea.text(annotations[PAGE_ON_SCREEN]);
+//            $annotation.show();
+//            //change the UI
+//            $('.message-menu a.annotation-link img').attr('src',
+//                    'images/add_annotation_dot.svg');
+//        } else {
+//            $annotationarea.text('No annotation');
+//            $annotation.hide();
+//            //chage the UI
+//            $('.message-menu a.annotation-link img').attr('src',
+//                    'images/add_annotation.svg');
+//        }
+    }
+
+    function setup_upon_mode_switching(inPreserveMode) {
+        if (inPreserveMode) {
+            // setup UI for preservation mode
+            $('#plock').attr('src', 'images/lock-1.svg' );
+            $('#plock').attr('title', 'Toggle to normal view' );
+            $('#img-edit').hide();
+            reloadJogURL(JOG_URL_PRESERVATION);
+            Cookies.set('palladium-epadd-mode-preserve', '1');
+        } else {
+            // setup UI for normal navigation mode
+            $('#plock').attr('src', 'images/lock-0.svg' );
+            $('#plock').attr('title', 'Toggle to preservation view' );
+            $('#img-edit').show();
+            reloadJogURL(JOG_URL_NON_PRESERVATION);
+            Cookies.set('palladium-epadd-mode-preserve', '0');
+        }
+
+        //refresh the jog view
+        emailModifications.refreshEmail();
+
+        return false;
+    }
+
+    return {
+        setup : setup,
+        refreshEmail : refreshEmail,
+        modifiedEmail : modifiedEmail,
+        reloadJogURL: reloadJogURL,
+        setup_upon_mode_switching: setup_upon_mode_switching
+    // debug only
+    };
+}();
+
 $(document).ready(function() {
 
     // allow facets panel to run the full height of the screen on the left
@@ -364,6 +554,7 @@ $(document).ready(function() {
     PAGE_ON_SCREEN = 0;
     Labels.setup();
     Annotations.setup();
+    emailModifications.setup();
     Navigation.setupEvents(); // important -- this has to be after labels and annotations setup to render the first page correctly
 
     // on page unload, release dataset to free memory

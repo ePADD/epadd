@@ -470,6 +470,8 @@ Jog.prototype.createClickHandler = function() {
 
 Jog.prototype.enableCursorKeys = function() { this.cursorKeysDisabled = false; }
 Jog.prototype.disableCursorKeys = function() { this.cursorKeysDisabled = true;}
+Jog.prototype.reloadCurrentPage = function() { page_out(currentPage, currentPage); page_in(currentPage, currentPage, ''); showCurrentPage();}
+Jog.prototype.reloadJogURL = function(url) { settings.paging_info.url = url;}
 
 	function keypress_handle(event) {
         function scrollSection(increment)
@@ -893,8 +895,11 @@ function page_in(startPage, endPage, urlParam)
 			for (var i = 0; i < recvdPages.length; i++) {
 				var recvdPageId = recvdPages[i].getAttribute("pageId");
 				var expectedPageId = startPage + i;
-				if (recvdPageId != expectedPageId)
+				if (recvdPageId != expectedPageId) {
 					LOG("Warning: pageId expected " + expectedPageId + " recvd " + recvdPageId);
+					console.log("-------------------recvdPageId != expectedPageId-----------------");
+				}
+				console.log("Setting pages [" + startPage + " + " + i + " ---------------------");
 				pages[startPage + i] = recvdPages[i].innerHTML;
 			}
 		},
@@ -915,8 +920,10 @@ function page_out(start, end)
 {
 	// sometimes start, end could be < 0
 	for (var i = start; i <= end; i++) // note: start and end page inclusive (same as jogPageInMessages.jsp)
-		if (i >= 0)
+		if (i >= 0) {
+			console.log("yyyyyyyyyyyyyyyyyyyyyyyyyy pages[" + i + "] = null");
 			pages[i] = null;
+}
 }
 
 // initial window: [-1,-1]
@@ -984,6 +991,7 @@ function update_page_window() {
           pageImagesFetched = [];
           for (var i = 0; i < totalPages; i++)
           {
+			  console.log("xxxxxxxxxxxxxxxx pages[" + i + "] = null");
               pages[i] = null;
               pageImagesFetched[i] = false;
           }

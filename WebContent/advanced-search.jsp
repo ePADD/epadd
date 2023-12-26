@@ -444,9 +444,29 @@
 	Set<Label> genlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.GENERAL);
 %>
 	<label for="labelIDs"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.labels")%></label>
+							<fieldset name="haveOrNotLabels" id="haveOrNotLabels" class="comman-radio">
+								<label class="radio-inline">
+									<input id="haveLabels" value="have" type="radio" name="haveOrNotLabels" checked>
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.have-labels")%></span>
+								</label>
+
+								<label class="radio-inline">
+									<input value="have-not" type="radio" name="haveOrNotLabels">
+									<span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.have-not-labels")%></span>
+								</label>
+							</fieldset>
+							<br/>
 							<select name="labelIDs" id="labelIDs" class="label-selectpicker form-control multi-select selectpicker" title="Select" multiple>
 								<option value="" selected disabled><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "advanced-search.select")%></option>
 								<% if(!ModeConfig.isDeliveryMode()){ %>
+								<optgroup label="Permission Labels">
+										<%
+									Set<Label> permlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.PERMISSION);
+									for (Label opt : permlabels){
+								%>
+									<option value = "<%=opt.getLabelID()%>"><%=opt.getLabelName()%></option>
+								<%}%>
+
 								<optgroup label="Restriction Labels">
 								<%
 									Set<Label> restrlabels = archive.getLabelManager().getAllLabels(LabelManager.LabType.RESTRICTION);
@@ -804,7 +824,7 @@
 
 			$('input[name="correspondentTo"], input[name="correspondentFrom"], input[name="correspondentCc"], input[name="correspondentBcc"]').prop('checked', true);
 			$('#termSubject, #termBody, #termOriginalBody, #termAttachments').prop('checked', true);
-			$('#doNotTransfer-either, #reviewed-either, #transferWithRestrictions-either, #sender-any, #mailingListState-either').prop ('checked', true);
+			$('#doNotTransfer-either, #reviewed-either, #transferWithRestrictions-either, #sender-any, #mailingListState-either, #haveLabels').prop ('checked', true);
 			// TODO: reset the other fields also, esp. the select picker
 			$('#attachmentFilesize, #emailSource, #lexiconName, #lexiconCategory, #sortBy,#entityType').prop ('selectedIndex', 0);
 			$('#attachmentType').prop ('selectedIndex', -1); // 0 for this one is not ok

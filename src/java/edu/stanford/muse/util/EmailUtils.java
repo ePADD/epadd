@@ -30,6 +30,7 @@ import edu.stanford.muse.ie.variants.Variants;
 import edu.stanford.muse.webapp.EmailRenderer;
 import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
@@ -382,23 +383,30 @@ public class EmailUtils {
         }
     }
 
-    /*
-     * mbox files are generated in mbox format for email preservation need in PREMIS. Each of them would reflect the most up-to-dated email contents and attachments according to Lucene Documents.
-     *
-     */
-    public static void printNormalizedMbox(Archive archive, EmailDocument ed, PrintWriter mbox, BlobStore blobStore, boolean stripQuoted) {
-
+    public static void printToMbox(Archive archive, EmailDocument ed, PrintWriter mbox, BlobStore blobStore, boolean stripQuoted) {
+        printToMbox(archive, ed, mbox, blobStore, stripQuoted, false, true);
     }
 
     /*
      * header is printed in mbox format, then each of the given contents sequentially
      * if blobStore is null, attachments are not printed. could make this better by allowing text/html attachments.
      */
-    public static void printToMbox(Archive archive, EmailDocument ed, PrintWriter mbox, BlobStore blobStore, boolean stripQuoted) {
+    public static void printToMbox(Archive archive, EmailDocument ed, PrintWriter mbox, BlobStore blobStore, boolean stripQuoted, boolean onlyHeaders, boolean redactedCopy) {
         String contents;
         String topLevelFrontier = "";
+        try
+	{
         topLevelFrontier = printHeaderToMbox(archive, ed, mbox, archive.getLabelManager(), archive.getAnnotationManager());
+if (!onlyHeaders)
+{
+        if (redactedCopy)
+	{
         contents = archive.getContents(ed, stripQuoted);
+	}
+                else
+	{
+                    contents = archive.getPreservedContents(ed);
+	}
         String htmlText = archive.indexer.getTextHtml(ed);
         List<Blob> attachments = null;
         if (ed != null) {
@@ -433,8 +441,11 @@ public class EmailUtils {
             case PLAIN_AND_HTML_AND_ATTACHMENT:
                 printPlainAndHtmlAndAttachments(mbox, contents, htmlText, topLevelFrontier, blobStore, attachments);
                 break;
-        }
+        }}
         mbox.println();
+	} catch (Exception e) {
+            Util.print_exception(e, log);
+        }
     }
 
     private static MessageType getMessageType(EmailDocument ed, boolean hasAttachments, boolean hasHtmlPart) {

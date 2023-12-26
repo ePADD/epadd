@@ -40,7 +40,7 @@ table.dataTable tr.even { background-color: white; }
 table.dataTable tr.odd { background-color: #f5f5f8; }
 table.dataTable tr.even { background-color: white; }
 table.dataTable tr { height: 50px }
-
+table.dataTable tr.selected {background-color:#b0bed9}
 /*
 table.dataTable tr.odd td.sorting_1 { background-color: #D3D6FF; }
 table.dataTable tr.odd td.sorting_2 { background-color: #DADCFF; }

@@ -3,11 +3,21 @@ var epadd = {};
 
 var escapeHTML = function(s) {
 	// verified that all the 5 characters "'&<> are ok being embedded inside a / /g
+	s = s.replace(/&/g, "&amp;");       // put &amp; replacement first
     s = s.replace(/"/g, "&quot;");
     s = s.replace(/'/g, "&apos;");
-    s = s.replace(/&/g, "&amp;");
     s = s.replace(/</g, "&lt;");
     s = s.replace(/>/g, "&gt;");
+    return s;
+};
+
+var unescapeHTML = function(s) {
+	// reverse of escapeHTML
+	s = s.replace(/&amp;/g, "&");   //it has to be called first!
+	s = s.replace(/&quot;/g, "\"");
+    s = s.replace(/&apos;/g, "'");
+    s = s.replace(/&lt;/g, "<");
+    s = s.replace(/&gt;/g, ">");
     return s;
 };
 

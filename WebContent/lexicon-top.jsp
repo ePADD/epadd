@@ -172,7 +172,7 @@
               window.open('browse?adv-search=1&archiveID=&lexiconCategory=' + cat + '&termAttachments=on&termBody=on&termSubject=on&lexiconName=' + $('#lexiconName').val());
         }
         //if the paging is set, then the lexicon anchors in the subsequent pages are not hyperlinked. Lexicons typically do not need paging, so we list all categories in one page
-        var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+        var oTable = $('#table').dataTable({paging:false, autoWidth: false, columnDefs: [{ className: "dt-right", "targets": 1}]});
         oTable.fnSort( [ [1,'desc'] ] );
         $('#table').show();
 */
@@ -180,7 +180,7 @@
             var lexname = $(e.target).text();
             window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	lexname;
         }
-        var oTable = $('#table').dataTable({paging:false, columnDefs: [{ className: "dt-right", "targets": 1}]});
+        var oTable = $('#table').dataTable({paging:false, autoWidth: false, columnDefs: [{ className: "dt-right", "targets": 1}]});
         oTable.fnSort( [ [1,'desc'] ] );
         $('#table').show();
         // attach the click handlers

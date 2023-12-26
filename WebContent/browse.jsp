@@ -98,6 +98,7 @@
     <script src="js/muse.js" type="text/javascript"></script>
     <script src="js/epadd.js"></script>
     <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
+    <script src="js/jquery_cookie.js" type="text/javascript"></script>  <!-- For preservation cookie -->
 
     <style>
         div.facets hr { width: 90%; }

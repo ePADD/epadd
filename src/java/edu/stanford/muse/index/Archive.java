@@ -1187,6 +1187,10 @@ int errortype=0;
         return indexer.getHeaders(d);
     }
 
+    public String getPreservedContents(Document d) {
+        return indexer.getPreservedContents(d);
+    }
+
     public String getHeaders(org.apache.lucene.document.Document ldoc){
         return indexer.getHeaders(ldoc);
     }
@@ -1460,9 +1464,12 @@ int errortype=0;
 	 * true; }
 	 */
 
+    public List<Document> getDocsForExport(ExportMode mode) {
+        return getDocsForExport(mode, false);
+    }
 
     /** Get docs for export based on the module for which exporting is taking place*/
-    public List<Document> getDocsForExport(ExportMode mode) {
+    public List<Document> getDocsForExport(ExportMode mode, boolean permLabelOnly) {
         List<Document> docsToExport = new LinkedList<>();
         if (mode == ExportMode.EXPORT_APPRAISAL_TO_PROCESSING) {
             //any message with DNT label will not be transferred
@@ -1477,6 +1484,7 @@ int errortype=0;
             //get a set of timed-restriction ids from LabelManager
             Set<String> genRestriction = getLabelManager().getGenRestrictions();
             Set<String> timedRestriction = getLabelManager().getTimedRestrictions();
+            Set<String> permRestriction = getLabelManager().getPermRestrictions();
             //any message with any general restriction label (including DNT) will not be transferred
             //any message with timed-restriction label whose date is not over, will not be transferred
             //everything else will be transferred.
@@ -1486,6 +1494,7 @@ int errortype=0;
                 //if it contains any general restriction label
                 boolean genfine = true;
                 boolean timefine =true;
+                boolean permfine = false;
                 if (Util.setIntersection(getLabelIDs(ed), genRestriction).size() != 0) {
                     //if gen restriction - DNT then it must contain cfr label for export (unless timed restriction stops it)
                     boolean isDNT = getLabelIDs(ed).contains(LabelManager.LABELID_DNT);
@@ -1516,6 +1525,19 @@ int errortype=0;
                 }
                 if(!timefine) {
                     continue;
+                }
+                //System.out.println("export-from-processing: before checking permission label "); //debug
+                // if permission label only option is set on when export to next module, further check if there are permission labels.
+                if (permLabelOnly) {
+                    //If permission label is found then export it
+                    if (Util.setIntersection(getLabelIDs(ed), permRestriction).size() != 0) {
+                        //System.out.println("export-from-processing: permission label found and then export it"); //debug
+                        permfine = true;
+                    }
+
+                    if (!permfine) {
+                        continue;
+                    }
                 }
                     //else export it
                     docsToExport.add(d);
@@ -1576,6 +1598,7 @@ int errortype=0;
         String statusmsg = export_mode== ExportMode.EXPORT_APPRAISAL_TO_PROCESSING? "Exporting to Processing":(export_mode== ExportMode.EXPORT_PROCESSING_TO_DISCOVERY?"Exporting to Discovery":"Exporting to Delivery");
 
         boolean exportInPublicMode = export_mode== ExportMode.EXPORT_PROCESSING_TO_DISCOVERY;
+        boolean exportInDelivery = export_mode==ExportMode.EXPORT_PROCESSING_TO_DELIVERY;
         setStatusProvider.accept(new StaticStatusProvider(statusmsg+":"+"Preparing base directory.."));
 
         prepareBaseDir(out_dir);
@@ -1679,6 +1702,26 @@ int errortype=0;
                     doc.add(new Field("title", redacted_title, Indexer.full_ft));
                 }
             }
+
+            // if export to Delivery mode, we now mask all email addresses here to negate data protection concerns with full email address of people living/active.
+            if (exportInDelivery){
+                String textNoEmails;
+                String text = doc.get("title");
+                if (text != null)
+                {
+                    doc.removeFields("title");
+                    textNoEmails = Util.maskEmail(text);
+                    doc.add(new Field("title", textNoEmails, Indexer.full_ft));
+                }
+
+                text = doc.get("body");
+                if (text != null)
+                {
+                    doc.removeFields("body");
+                    textNoEmails = Util.maskEmail(text);
+                    doc.add(new Field("body", textNoEmails, Indexer.full_ft));
+                }
+            }
             return true;
         };
 
@@ -1738,7 +1781,7 @@ after maskEmailDomain.
         //change base directory
         setBaseDir(out_dir);
 
-        if (exportInPublicMode) {
+        if (exportInPublicMode|| exportInDelivery) {
             List<Document> docs = this.getAllDocs();
             List<EmailDocument> eds = new ArrayList<>();
             for (Document doc : docs)
@@ -1855,13 +1898,45 @@ after maskEmailDomain.
                 entitiesWithId, IA_links, showDebugInfo);
     }
 
+    public String getTextForContents(Document d) throws Exception {
+        org.apache.lucene.document.Document ldoc = indexer.getDoc(d);
 
-    public Pair<StringBuilder, Boolean> getHTMLForContents(Document d, Date date, String docId, String regexToHighlight, Set<String> highlightTerms,
-                                                            Map<String, Map<String, Short>> authorisedEntities, boolean IA_links, boolean inFull, boolean showDebugInfo) throws Exception {
+        String contents = indexer.getContents(d, false);
+
+        contents = Util.removeMetaTag(contents);
+
+        if (ldoc == null) {
+            System.err.println("Lucene Doc is null for: " + d.getUniqueId() + " but the content is " + (contents == null ? "null" : "not null"));
+            return null;
+        }
+
+        //Mask any email address present in the content of the message
+        if (ModeConfig.isPublicMode())
+            contents = Util.maskEmailDomain(contents);
+
+        return contents;
+    }
+
+        public Pair<StringBuilder, Pair<Boolean, Boolean>> getHTMLForContents(Document d, Date date, String docId, String regexToHighlight, Set<String> highlightTerms,
+                                                            Map<String, Map<String, Short>> authorisedEntities, boolean IA_links, boolean inFull, boolean showDebugInfo, boolean preserve) throws Exception {
         org.apache.lucene.document.Document ldoc = indexer.getDoc(d);
         Span[] names = getAllNamesInLuceneDoc(ldoc,true);
 
-        String contents = indexer.getContents(d, false);
+        boolean redacted = false;
+        String contents = null;
+
+        String redactedContent = ldoc.get("body-preserved");
+
+        // if there is a preservation copy, we assume the email has been redacted
+        if (!preserve && redactedContent!= null)
+            redacted = true;
+
+        if (preserve)
+            contents = redactedContent;
+
+        if (!preserve || contents == null)
+           contents = indexer.getContents(d, false);
+
         //remove meta tags from the body of the message. It was a serious issue #246.
         contents = Util.removeMetaTag(contents);
         Set<String> acrs = Util.getAcronyms(contents);
@@ -1906,7 +1981,7 @@ after maskEmailDomain.
         sb.append(htmlContents);
 
         boolean overflow = false;
-        return new Pair<>(sb, overflow);
+        return new Pair<>(sb, new Pair<Boolean, Boolean>(overflow, redacted));
     }
 
     /* break up docs into clusters, based on existing docClusters
@@ -2378,7 +2453,12 @@ after maskEmailDomain.
             array.put (2, label.getDescription());
             array.put (3, docCount);
             array.put (4, label.isSysLabel());
-            String labelTypeDescription = LabelManager.LabType.RESTRICTION.equals(label.getType()) ? "Restriction" : "General";
+            //String labelTypeDescription = LabelManager.LabType.RESTRICTION.equals(label.getType()) ? "Restriction" : "General";
+            String labelTypeDescription = "General";
+            if (LabelManager.LabType.RESTRICTION.equals(label.getType()))
+                labelTypeDescription = "Restriction";
+            else if (LabelManager.LabType.PERMISSION.equals(label.getType()))
+                labelTypeDescription = "Permission";
 
             if (LabelManager.LabType.RESTRICTION.equals(label.getType()) && LabelManager.RestrictionType.RESTRICTED_FOR_YEARS.equals (label.getRestrictionType())) {
                 labelTypeDescription += " for " + Util.pluralize(label.getRestrictedForYears(), "year");

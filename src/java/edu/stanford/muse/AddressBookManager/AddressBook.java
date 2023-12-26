@@ -343,7 +343,7 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
     /**
      * returns the number of contacts in this address book
      */
-    protected int size() {
+    private int size() {
         return allContacts().size();
     }
 
@@ -1541,6 +1541,7 @@ mergeResult.newContacts.put(C2,savedC2)
                 j.put(7,new SimpleDateFormat("MM/dd/yyyy").format(range.second));
             else
                 j.put(7,range.second);
+            j.put(8, contactId);
 
             resultArray.put(count++, j);
             // could consider putting another string which has more info about the contact such as all names and email addresses... this could be shown on hover

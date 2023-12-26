@@ -200,8 +200,15 @@ try{
     }else if(query.equals("to-mbox") || query.equals("to-eml")){
 
         String type=JSPHelper.getParam(params,"type");
+        String copyType=JSPHelper.getParam(params,"copyType");
+        boolean redactedCopy = "redacted".equals(copyType);
         Set<Document> docset = null;
         String fnameprefix=null;
+        Archive.ExportMode mode=null;
+        if(ModeConfig.isAppraisalMode())
+            mode = Archive.ExportMode.EXPORT_APPRAISAL_TO_PROCESSING;
+        else if(ModeConfig.isProcessingMode())
+            mode =Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY;//to discovery is also same so no difference.
         if(type.equals("all")){
             docset=archive.getAllDocsAsSet();
             fnameprefix="all-messages";
@@ -214,18 +221,31 @@ try{
             alldocs.removeAll(docset);//now alldocs contain those messages which are not exported,i.e. are restricted.
             docset=alldocs;
             fnameprefix="restricted-messages";
+        } else if(type.equals("permissive")){
+            docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY, true));
+            fnameprefix="permissive-messages";
         }
 
+    String onlyHeadersString=JSPHelper.getParam(params,"onlyHeaders");
+    boolean onlyHeaders = onlyHeadersString.equals("on");
     String pathToTmpDir =  Archive.TEMP_SUBDIR;
     String pathToMboxFile = Archive.TEMP_SUBDIR + File.separator + fnameprefix+".mbox";
         Util.deleteAllFilesWithSuffix(Archive.TEMP_SUBDIR,"mbox",JSPHelper.log);
-    PrintWriter pw;
+    PrintWriter pw = null;
     try {
         pw = new PrintWriter(pathToMboxFile, "UTF-8");
-        boolean stripQuoted = false;
+        boolean stripQuoted = (!redactedCopy);  //turn off stripQuoted only when export from redacted store
+        int numOfMessageWritten = 0;
+        final int N_MAX_MESSAGE_TO_FLUSHED = 4*1024;    // experimental
+        // Try to periodically flush output stream to remedy the mbox file output crash. Experimental
         for (Document ed: docset)
         {
-            EmailUtils.printToMbox(archive, (EmailDocument) ed, pw,archive.getBlobStore(), stripQuoted);
+            EmailUtils.printToMbox(archive, (EmailDocument) ed, pw,archive.getBlobStore(), stripQuoted, onlyHeaders, redactedCopy);
+            numOfMessageWritten ++;
+            if (numOfMessageWritten == N_MAX_MESSAGE_TO_FLUSHED) { // experimental
+                  numOfMessageWritten = 0;
+                  pw.flush();
+            }
         }
         pw.close();
 

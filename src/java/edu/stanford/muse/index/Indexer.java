@@ -25,6 +25,7 @@ import edu.stanford.muse.email.StatusProvider;
 import edu.stanford.muse.lang.Languages;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.util.*;
+import edu.stanford.muse.webapp.JSPHelper;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -130,9 +131,9 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 	// these are field type configs for all the fields to be stored in the email and attachment index.
 	// most fields will use ft (stored and analyzed), and only the body fields will have a full_ft which is stored, analyzed (with stemming) and also keeps term vector offsets and positions for highlights
 	// some fields like name_offsets absolutely don't need to be indexed and can be kept as storeOnly_ft
-	final transient private static FieldType storeOnly_ft = new FieldTypeStoredOnly();
-	private static final transient FieldTypeStoredAnalyzed ft = new FieldTypeStoredAnalyzed();
-	static final transient FieldType full_ft = new FieldTypeStoredAnalysedTokenized();
+	final transient private static FieldType storeOnly_ft = new FieldTypeStoredOnly();;
+	private static final transient FieldType ft = new FieldTypeStoredAnalyzed();
+	public static final transient FieldType full_ft  = new FieldTypeStoredAnalysedTokenized();
 	static transient FieldType unanalyzed_full_ft;													// unanalyzed_full_ft for regex search
 	private static final CharArraySet MUSE_STOP_WORDS_SET = StopWords.getCharArraySet();
 
@@ -2105,6 +2106,42 @@ is what we want.
             return null;
         return doc.get("title");
     }
+
+	String getPreservedContents(edu.stanford.muse.index.Document d)
+	{
+		org.apache.lucene.document.Document doc;
+		try {
+			doc = getDoc(d);
+		} catch (IOException e) {
+			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
+			e.printStackTrace();
+			return null;
+		}
+
+		return getPreservedContents(doc);
+	}
+
+	String getPreservedContents(org.apache.lucene.document.Document doc) {
+		String contents;
+		try {
+			JSPHelper.log.info("getPreservedContents: get body-preserved");
+			contents = doc.get("body-preserved");
+
+			if (contents == null) {
+				contents = doc.get("body");
+				JSPHelper.log.info("getPreservedContents: get body!!!");
+			}
+
+		} catch (Exception e) {
+			log.warn("Exception " + e + " trying to read field 'body_preserved/body': " + Util.ellipsize(Util.stackTrace(e), 350));
+			//@TODO
+			Util.print_exception("Exception Trying to read field body_preserved/body",e,log);
+			contents = null;
+		}
+
+		return contents;
+	}
+
 
     //@TODO
 	String getContents(org.apache.lucene.document.Document doc, boolean originalContentOnly) {

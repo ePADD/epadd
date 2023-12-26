@@ -18,8 +18,13 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     int lastIndex = yearwiseAttachments.second.size()-1;
     int endYear = yearwiseAttachments.second.get(lastIndex).first; //last element in this sorted list corresponds to the last year of the range.
     if(isHacky){
+//      The below sentence is commented in Palladium since null value seem to be returned causing attachment searches not work. Null check is now added before attachmentsInUndatedMessages is calculated
+//        attachmentsInUndatedMessages = yearwiseAttachments.second.get(lastIndex).second; //Here the assumption is that the undated year will always be the at the end of the list yearwsieAttachments.second
 
-        attachmentsInUndatedMessages = yearwiseAttachments.second.get(lastIndex).second; //Here the assumption is that the undated year will always be the at the end of the list yearwsieAttachments.second
+//      Null check is now added before attachmentsInUndatedMessages is calculated
+        Integer countInUndatedYear = yearwiseAttachments.second.get(lastIndex).second;
+        if (countInUndatedYear != null)
+            attachmentsInUndatedMessages = countInUndatedYear; //Here the assumption is that the undated year will always be the at the end of the list yearwsieAttachments.second
         //it will be the first one.
         if(startYear!=endYear) //means there is another year apart from the no-dated year (1960) which should be made the end year.
             endYear = yearwiseAttachments.second.get(lastIndex-1).first; //Becuase the list is already in sorted order so pick the second year as the start year (actual)
@@ -29,6 +34,8 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
     int totalAttachments=0;
     int totalDocs = docs.size();
     for(Pair<Integer,Integer> yearinfo: yearwiseAttachments.second){
+        //In Palladium, null value seem to be returned causing attachment searches not work. Null check is now added before yearinfo.second is manipulated
+        if (yearinfo.second != null)
         totalAttachments+=yearinfo.second;
     }
 
@@ -217,6 +224,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
             $('#attachments').dataTable({
                 data: attachmentDetails,
                 pagingType: 'simple',
+                autoWidth: false,
                 columnDefs: [{targets: 0,render:clickable_message},
                     {targets:3,render:clickable_attachment},
                     {targets:4, render:clickable_normalization_info}, ///This is the only difference between two instantiations of datatable.
@@ -235,6 +243,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                     { data: 'size' },
                     { data: 'filename' }
                 ],
+                autoWidth: false,
                 columnDefs: [{targets: 0,render:clickable_message},
                     {targets:3,render:clickable_attachment},
                     {targets:1,width:'180px',className: "dt-right"},
