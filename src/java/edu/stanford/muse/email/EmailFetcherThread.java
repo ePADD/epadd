@@ -838,6 +838,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
         String filename = null;
         try {
             filename = p.getFileName();
+            if (!filename.trim().isEmpty()) {
+                filename = filename.trim();
+            }
         } catch (Exception e) {
             // seen this happen with:
             // Folders__gmail-sent Message #12185 Expected ';', got "Message"
