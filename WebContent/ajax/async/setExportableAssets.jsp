@@ -126,7 +126,7 @@ private void setExportableAssets(Multimap<String,String> params, Consumer<Status
 
             case EmailExporter.EXPORT_ACCESSION_PROCESSING:
         // Notes: assetsLocation here should be a list of folder paths
-        new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.PROCESSING_NORMALIZED, assetsLocation);
+        new EmailExporter(exportableAssets, archive, setStatusProvider).exportExportableAssets(Archive.AssetType.PROCESSING_NORMALIZED, assetsLocation, archive.baseDir);
                 break;
 
             case EmailExporter.EXPORT_PROCESSED_EML:

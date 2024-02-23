@@ -61,13 +61,23 @@ public class EmailExporter implements StatusProvider, ConverterListener {
     private static final Logger log = LogManager.getLogger(EmailExporter.class);
 
     public EmailExporter(String exportableAssets, Archive archive, Consumer<StatusProvider> setStatusProvider) {
+
        if (EXPORT_APPRAISED_EML.equals(exportableAssets) || EXPORT_PROCESSED_EML.equals(exportableAssets)) {
             outputFormat = EmailFormat.EML;
         } else {
             outputFormat = EmailFormat.MBOX;
         }
         this.archive = archive;
+
+       //Archives created with older versions of ePADD might not have this folder
+        createExportableAssetsFolderIfDoesntExist(archive);
         this.setStatusProvider = setStatusProvider;
+    }
+
+    private static void createExportableAssetsFolderIfDoesntExist(Archive archive) {
+        String exportableAssetsFolderString = archive.baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.EXPORTABLE_ASSETS_SUBDIR;
+        boolean result = new File(exportableAssetsFolderString).mkdir();
+        int i = 1;
     }
 
     private void exportEmails(String targetFolder, boolean includeRestricted, boolean includeDuplicated) {
@@ -223,23 +233,41 @@ public class EmailExporter implements StatusProvider, ConverterListener {
     }
 
     public void exportExportableAssets(Archive.AssetType exportableAssets) {
-        exportExportableAssets(exportableAssets, false, true, null);
+        exportExportableAssets(exportableAssets, false, true, null, null);
     }
 
     public void exportExportableAssets(Archive.AssetType exportableAssets, ArrayList<String> sourceAssetsLocations) {
-        exportExportableAssets(exportableAssets, false, true, sourceAssetsLocations);
+        exportExportableAssets(exportableAssets, false, true, sourceAssetsLocations, null);
     }
 
-    private void exportExportableAssets(Archive.AssetType exportableAssets, boolean includeRestricted, boolean includeDuplicated, ArrayList<String> folderLocations) {
+    public void exportExportableAssets(Archive.AssetType exportableAssets, ArrayList<String> sourceAssetsLocations, String baseDir) {
+        exportExportableAssets(exportableAssets, false, true, sourceAssetsLocations, baseDir);
+    }
+
+    private void exportExportableAssets(Archive.AssetType exportableAssets, boolean includeRestricted, boolean includeDuplicated, ArrayList<String> folderLocations, String baseDir) {
         String archiveBaseDir;
         boolean isAppraisal = false;
         if (exportableAssets == APPRAISAL_CANONICAL_ACQUISITIONED || exportableAssets == APPRAISAL_NORMALIZED_ACQUISITIONED || exportableAssets == APPRAISAL_NORMALIZED_APPRAISED) {
             archiveBaseDir = Config.REPO_DIR_APPRAISAL + File.separatorChar + "user" + File.separatorChar;
             isAppraisal = true;
         } else {
-            String bestName = archive.addressBook.getBestNameForSelf().trim();
-            //archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separator + "ePADD archive of " + bestName + File.separatorChar;
-            archiveBaseDir = Archive.processingBaseDir + File.separatorChar;
+            if (Archive.processingBaseDir == null || Archive.processingBaseDir.length() <2)
+            {
+                //This is importing an accession. Currently this is only supported for empty collections.
+                //If we import an accession into an empty collection we don't need to deal with reading
+                //the different exportableasset directories as the whole collection including
+                //exportable assets is just copied.
+                if (true)return;
+                archiveBaseDir = Config.REPO_DIR_PROCESSING + File.separatorChar;
+                //REPO_DIR_PROCESSING is for example /home/user/john/epadd-processing
+                //archive name is for example 'user'. So we want /home/user/john/epadd-processing/user
+                String archiveName = new File(baseDir).getName();
+                archiveBaseDir = archiveBaseDir + archiveName + File.separatorChar;
+            }
+            else
+            {
+                archiveBaseDir = Archive.processingBaseDir + File.separatorChar;
+            }
         }
 
         //for updating the checksum we need to first read the bag from the basedir..
@@ -294,8 +322,7 @@ public class EmailExporter implements StatusProvider, ConverterListener {
     private String saveProcessed(ArrayList<String> folderLocations, String archiveBaseDir, Bag archiveBag, String targetFolder) {
         String sourceExportableAssetFolder;
 
-        // There are 2 scenarios to be handled. First one is for imported archive collection with default accession.
-        // Second one is for accessioned collection with explicitly inputted folder path of sourceAssetFolder.
+        // There are 2 scenarios dsioned collection with explicitly inputted folder path of sourceAssetFolder.
         if (folderLocations == null) {
             // This case is for imported archive collection with default accession
             System.out.println("imported archive collection with default accession");
@@ -347,13 +374,13 @@ public class EmailExporter implements StatusProvider, ConverterListener {
 
                 if (Files.isDirectory(sourceFilePath)) {
                     try {
+                        if (!new File(targetFolder).exists()) {
+                            new File(targetFolder).mkdir();
+                        }
                         Util.copy_directory(sourceExportableAssetFolder, targetFolder);
                     } catch (IOException ioe) {
                         Util.print_exception("Exception in setExportableAssets().", ioe, LogManager.getLogger(EmailExporter.class));
                     }
-                } else {
-                    LogManager.getLogger().warn("source destination does NOT exists!!! " + sourceExportableAssetFolder);
-                    return null;
                 }
 
                 // 2. accession's canonical acquisitioned -> collection's canonical acquisitioned
@@ -392,7 +419,7 @@ public class EmailExporter implements StatusProvider, ConverterListener {
                         return null;
                     }
                 } else {
-                    log.warn("source destination NOT exists!!! " + sourceExportableAssetFolder);
+                    log.warn("source destination NOT exists -10 !!! " + sourceExportableAssetFolder);
                     return null;
                 }
 
@@ -412,7 +439,7 @@ public class EmailExporter implements StatusProvider, ConverterListener {
                     }
                     return null;
                 } else {
-                    log.warn("source destination NOT exists!!! " + sourceExportableAssetFolder);
+                    log.warn("source destination NOT exists 11 !!! " + sourceExportableAssetFolder);
                     return null;
                 }
             }

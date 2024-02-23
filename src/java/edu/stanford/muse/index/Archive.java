@@ -40,6 +40,7 @@ import edu.stanford.muse.ResultCacheManager.ResultCache;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.email.*;
+import edu.stanford.muse.epaddpremis.EpaddEvent;
 import edu.stanford.muse.epaddpremis.EpaddPremis;
 import edu.stanford.muse.ie.NameInfo;
 import edu.stanford.muse.ie.variants.EntityBookManager;
@@ -66,7 +67,6 @@ import gov.loc.repository.bagit.util.PathUtils;
 import gov.loc.repository.bagit.writer.ManifestWriter;
 import gov.loc.repository.bagit.writer.MetadataWriter;
 import groovy.lang.Tuple2;
-import jakarta.xml.bind.JAXBException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -910,13 +910,8 @@ int errortype=0;
 
     public EpaddPremis getEpaddPremis()
     {
-//        if (epaddPremis == null)
-//        {
-//            epaddPremis = EpaddPremis.createFromFile(baseDir, )
-//        }#
-        if (epaddPremis == null)
         {
-            log.warn("epaddPremis null in Archive.getEpaddPremise()");
+           log.warn("epaddPremis null in Archive.getEpaddPremise()");
         }
         return epaddPremis;
     }
@@ -973,8 +968,10 @@ int errortype=0;
         if(blobStore!=null)
             setBlobStore(blobStore);
         try {
+            String details = "Premis files created as part of archive creation.";
             epaddPremis = new EpaddPremis(baseDir, Archive.BAG_DATA_FOLDER, this);
-        } catch (JAXBException e) {
+            epaddPremis.createEvent(EpaddEvent.EventType.PREMIS_FILES_CREATED, details, "success");
+        } catch (Exception e) {
             Util.print_exception("Exception creating new EpaddPremis object", e, LogManager.getLogger(Archive.class));
         }
     }
@@ -2180,7 +2177,8 @@ after maskEmailDomain.
 
     public void postDeserialized(String baseDir, boolean readOnly) throws IOException {
 
-        epaddPremis = EpaddPremis.readPremisObject(baseDir, Archive.BAG_DATA_FOLDER);
+        epaddPremis = EpaddPremis.readPremisObject(this, baseDir, BAG_DATA_FOLDER);
+        //this.collectionMetadata = ArchiveReaderWriter.readCollectionMetadata(baseDir);
         log.info(indexer.computeStats());
 
         indexer.setBaseDir(baseDir+File.separatorChar + Archive.BAG_DATA_FOLDER+ File.separatorChar);

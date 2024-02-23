@@ -6,7 +6,8 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.email.FetchStats"%><%@ page import="java.util.Enumeration"%><%@ page import="edu.stanford.muse.email.FolderInfo"%><%@ page import="edu.stanford.muse.util.Pair"%><%@ page import="edu.stanford.epadd.util.EmailConvert"%><%@ page import="org.apache.commons.lang.StringUtils"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.email.FetchStats"%><%@ page import="java.util.Enumeration"%><%@ page import="edu.stanford.muse.email.FolderInfo"%><%@ page import="edu.stanford.muse.util.Pair"%><%@ page import="edu.stanford.epadd.util.EmailConvert"%><%@ page import="org.apache.commons.lang.StringUtils"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.Config"%>
 
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
@@ -79,10 +80,15 @@ if (!collectionDir.equals(baseDir))
             collection.collectionMetadata.normalizedFiles=collection.getBlobStore().getNormalizedFilesCount();
             collection.collectionMetadata.renamedFiles=collection.getBlobStore().getCleanedFilesCount();
             accessionAllStats = collection.allStats;     // for file metadata creation later
-            collection.collectionMetadata.fileMetadatas = null; // Erase all existing file metadatas as we will add back them into accession later
+
+            //Not sure why this is needed and where the metadatas should be added back.
+            //It resulted in collection metadata from the imported accession not being saved. Taking it out
+            //collection.collectionMetadata.fileMetadatas = null; // Erase all existing file metadatas as we will add back them into accession later
 
             //IMP to write collection metadata back..
             ArchiveReaderWriter.saveCollectionMetadata(collection.collectionMetadata,collection.baseDir, null);
+
+            Archive.processingBaseDir = baseDir;
             //accession id to each doc by saying that this is a baseAccessionID.
 		    result.put("status", 0);
 		    result.put ("message", "Import accession completed.");
@@ -115,7 +121,7 @@ if (!collectionDir.equals(baseDir))
             result.put("status", 1);
 		    result.put ("message", "Accession imported and merged with the collection.");
 	        result.put("archiveID",ArchiveReaderWriter.getArchiveIDForArchive(collection));
-	        }
+            }
 
 		JSPHelper.log.info ("Copy complete, creating new accession metadata object");
 
@@ -195,6 +201,7 @@ if (!collectionDir.equals(baseDir))
 
 	} catch (Exception e) {
 		result.put("status", 2);
+        JSPHelper.log.error("Unable to import accession: + e.getMessage()");
 		result.put ("error", "Unable to import accession: " + e.getMessage());
 	}
 	out.println (result.toString(4));

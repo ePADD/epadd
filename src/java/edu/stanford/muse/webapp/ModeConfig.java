@@ -62,6 +62,10 @@ public class ModeConfig
 		return isPublicMode() || isServerMode();
 	}
 
+	public static String getModeForDisplay() {
+		return getModeForDisplay(null);
+	}
+
 	public static String getModeForDisplay(String archiveID) {
 
 

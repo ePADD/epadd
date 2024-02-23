@@ -19,7 +19,6 @@ package edu.stanford.muse.epaddpremis;//Example: ingest
 import edu.stanford.epadd.Version;
 import edu.stanford.muse.epaddpremis.premisfile.File;
 import edu.stanford.muse.index.Archive;
-import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
 import gov.loc.repository.bagit.domain.Bag;
@@ -92,10 +91,12 @@ public class EpaddPremis implements Serializable {
     @XmlElement(name = "rights")
     PremisRights premisRights = new PremisRights();
 
+    static final long serialVersionUID = 3827719114666370610l;
+
 
     public EpaddPremis(String baseDir, String dataFolder, Archive archive) throws JAXBException, IOException {
         this.baseDir = baseDir;
-        this.pathToDataFolder = baseDir + java.io.File.separatorChar + dataFolder;
+        this.pathToDataFolder = baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER;
         this.archive = archive;
         this.intellectualEntity = new IntellectualEntity();
         this.getIntellectualEntity().setPreservationLevelDateAssignedToToday();
@@ -114,20 +115,31 @@ public class EpaddPremis implements Serializable {
         }
     }
 
-    public static EpaddPremis readPremisObject(String baseDir, String bagDataFolder) {
+    public static EpaddPremis readPremisObject(Archive archive, String baseDir, String bagDataFolder) {
         EpaddPremis epaddPremis = null;
         try {
             FileInputStream fi = new FileInputStream(new java.io.File(baseDir + java.io.File.separatorChar + bagDataFolder + java.io.File.separatorChar + SERIALIZED_FILE_NAME));
             ObjectInputStream oi = new ObjectInputStream(fi);
             epaddPremis = (EpaddPremis) oi.readObject();
+            epaddPremis.baseDir = baseDir;
+            epaddPremis.pathToDataFolder = baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER;
             oi.close();
             fi.close();
         } catch (Exception e) {
+            System.out.println("Exception reading EpaddPremis object. " + e);
             log.warn("Exception reading EpaddPremis object. " + e);
+
+            try {
+                epaddPremis = new EpaddPremis(baseDir, Archive.BAG_DATA_FOLDER, archive);
+                String details = "There were no Premis files. Maybe this archive was created before the introduction of recording Premis data.";
+                epaddPremis.createEvent(EpaddEvent.EventType.PREMIS_FILES_CREATED, details, "success");
+            } catch (JAXBException | IOException e2 ) {
+                Util.print_exception("Exception creating new EpaddPremis object", e2, LogManager.getLogger(EpaddPremis.class));
+            }
+
         }
         return epaddPremis;
     }
-
     private IntellectualEntity getIntellectualEntity() {
         return ((IntellectualEntity) intellectualEntity);
     }
@@ -199,13 +211,13 @@ public class EpaddPremis implements Serializable {
     }
 
     public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome) {
-        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
+        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay()));
         printToFiles();
 
     }
 // 2022-11-03
     public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome, ZonedDateTime date1) {
-        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive)), date1));
+        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay(), date1));
         printToFiles();
     }
 
@@ -246,13 +258,13 @@ public class EpaddPremis implements Serializable {
     }
 
     public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome, String linkingObjectIdentifierType, String linkingObjectIdentifierValue) {
-        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, linkingObjectIdentifierType, linkingObjectIdentifierValue, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
+        epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, linkingObjectIdentifierType, linkingObjectIdentifierValue, ModeConfig.getModeForDisplay()));
         printToFiles();
 
     }
 
     public void createEvent(JSONObject eventJsonObject) {
-        epaddEvents.add(new EpaddEvent(eventJsonObject, ModeConfig.getModeForDisplay(ArchiveReaderWriter.getArchiveIDForArchive(archive))));
+        epaddEvents.add(new EpaddEvent(eventJsonObject, ModeConfig.getModeForDisplay()));
         printToFiles();
 
 

@@ -1,5 +1,3 @@
-download mbox/eml merge has to be completed
-
 <%
 /*    
     2022-10-28      Allow custom naming in Export to next ePADD module
@@ -213,16 +211,16 @@ Error: Export is only available in processing or appraisal modes!
                     <label for="export-next-file"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.specify-location")%></label>
                     <div class="buttonIn">
                     <input id="export-next-file" class="dir form-control" type="text" name="name" value=""/>
-<%--						<button id="export-next-create" class="btn-default folder-button" onclick=createFolder(document.getElementById('export-next-file'));>New Folder</button>--%>
+<%--						<button id="expor2t-next-create" class="btn-default folder-button" onclick=createFolder(document.getElementById('export-next-file'));>New Folder</button>--%>
                     </div>
                 </div>
                 <div class="form-group col-sm-4 picker-buttons">
                     <button id="export-next-browse" class="btn-default browse-button"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.browse-button")%></button>
                 </div>
-                <div class="form-group col-sm-8">
-                    <label><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-archive")%></label>
-                    <input id="export-next-dir" class="form-control archive_name" type="text" name="archive_name" value="ePADD archive of <%=bestName%>" />
-                </div>    
+<%--                <div class="form-group col-sm-8">--%>
+<%--                    <label><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-archive")%></label>--%>
+<%--                    <input id="export-next-dir" class="form-control archive_name" type="text" name="archive_name" value="ePADD archive of <%=bestName%>" />--%>
+<%--                </div>    --%>
                 <div class="form-group col-sm-4 picker-buttons">    
                     <button id="export-next-do" style="margin-left: 10px;" class="go-button faded btn-default"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.export-button")%></button>
                 </div>
@@ -407,9 +405,7 @@ Error: Export is only available in processing or appraisal modes!
                         <option value = "all"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-all")%></option>
                         <option value = "restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-restricted")%></option>
                         <option value = "non-restricted"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-non-restricted")%></option>
-                        <% if (ModeConfig.isProcessingMode() ) { %>
                             <option value = "permissive"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-permissive")%></option>
-                        <% } %>
                     </select>
                 </div>
                 <div class="one-line">

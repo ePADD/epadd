@@ -703,6 +703,7 @@ public class ArchiveReaderWriter{
         public static void saveCollectionMetadata(Archive.CollectionMetadata cm, String basedir, Archive archive){
         saveCollectionMetadata(cm, basedir,  archive, null);
     }
+
     public static void saveCollectionMetadata(Archive.CollectionMetadata cm, String basedir, Archive archive, String fileID){
         EpaddPremis epaddPremis = null;
         if (archive != null) {

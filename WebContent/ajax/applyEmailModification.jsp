@@ -6,7 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.util.*"%>
 <%@page language="java" import="edu.stanford.muse.index.*"%>
 <%@ page import="java.util.stream.Collectors"%>
-<%@ page import="org.apache.lucene.document.Field"%>
+<%@ page import="org.apache.lucene.document.Field"%><%@ page import="edu.stanford.muse.epaddpremis.EpaddEvent"%>
 
 <%
 // does a login for a particular account, and adds the emailStore to the session var emailStores (list of stores for the current doLogin's)
@@ -64,6 +64,10 @@ if (docs != null)
        ldoc.add(new Field("body", emailBodyText, Indexer.full_ft));
 
        archive.updateDocument(ldoc);
+       if (archive.epaddPremis != null) {
+           String details = "docId = " + ldoc.get("docId");
+            archive.epaddPremis.createEvent(EpaddEvent.EventType.EMAIL_REDACTION, details, "success");
+        }
        EmailDocument ed = archive.docForId(id2);
        archive.close();
        //prepare to read again.

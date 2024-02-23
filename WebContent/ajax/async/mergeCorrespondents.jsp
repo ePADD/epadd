@@ -19,7 +19,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.LinkedHashSet"%>
 <%@ page import="java.util.Set"%>
-<%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="java.util.function.Function"%><%@ page import="java.util.function.Consumer"%>
+<%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.muse.ie.variants.EntityBookManager"%><%@ page import="java.io.File"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="java.util.function.Function"%><%@ page import="java.util.function.Consumer"%><%@ page import="edu.stanford.muse.epaddpremis.EpaddEvent"%>
 
 <%
 {
@@ -154,9 +154,40 @@ public void mergeCorrespondents(Multimap<String,String> paramsMap, Consumer<Stat
                 archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
                 ArchiveReaderWriter.saveAddressBook(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
                 ArchiveReaderWriter.saveCorrespondentAuthorityMapper(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
-
+                String mergedContactsString = "";
+                int i = 1;
+                for (Contact c : mergedContacts)
+                {
+                    mergedContactsString += "Contact " + i + ": ";
+                    i++;
+                    mergedContactsString += "Name(s): ";
+                    int j = 0;
+                    for (String name : c.getNames())
+                    {
+                        if (j != 0)
+                        {
+                            mergedContactsString += ", ";
+                        }
+                        j++;
+                        mergedContactsString += (name);
+                    }
+                    j = 0;
+                    mergedContactsString += " Email(s): ";
+                    for (String email : c.getEmails())
+                    {
+                        if (j != 0)
+                        {
+                            mergedContactsString += ", ";
+                        }
+                        j++;
+                        mergedContactsString += (email);
+                    }
+                    mergedContactsString += " ";
+                }
+                archive.epaddPremis.createEvent(EpaddEvent.EventType.MERGE_CORRESPONDENTS, mergedContactsString, "success");
             } catch (Exception e) {
                 e.printStackTrace();
+
             }
         }
 

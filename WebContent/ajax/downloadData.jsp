@@ -214,16 +214,16 @@ try{
             fnameprefix="all-messages";
         }else if(type.equals("non-restricted")){
             docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY));
-            fnameprefix="non-restricted-messages";
+            fnameprefix="messages-without-restriction-labels";
         }else if(type.equals("restricted")){
             docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY));
             Set<Document> alldocs = new LinkedHashSet<>(archive.getAllDocsAsSet());
             alldocs.removeAll(docset);//now alldocs contain those messages which are not exported,i.e. are restricted.
             docset=alldocs;
-            fnameprefix="restricted-messages";
+            fnameprefix="messages-with-restriction-labels";
         } else if(type.equals("permissive")){
             docset = new LinkedHashSet<>(archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY, true));
-            fnameprefix="permissive-messages";
+            fnameprefix="messages-with-permission-labels";
         }
 
     String onlyHeadersString=JSPHelper.getParam(params,"onlyHeaders");

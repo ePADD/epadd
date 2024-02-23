@@ -38,10 +38,13 @@ public class LabelManager implements Serializable{
     public final static String LABELID_PARSING_ERRS="6";
     public final static String LABELID_MISSING_CORRESPONDENT="7";
 
+    private static final String LABELID_PERMITTED = "8";
+
     private static final String JSONFILENAME="label-info.json";
     private static final String CSVFILENAME="docidmap.csv";
 
     public static final String ALL_EXPIRED="allexpired";
+
     public enum LabType {
         RESTRICTION, GENERAL, PERMISSION
     }
@@ -96,6 +99,9 @@ public class LabelManager implements Serializable{
         //reviewed
         Label reviewed = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.reviewed"),LabType.GENERAL,LABELID_REVIEWED, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.reviewed.mess"),false);
         lstLabels.add(reviewed);
+        //permitted for transfer
+        Label permitted = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.permitted"),LabType.PERMISSION,LABELID_PERMITTED, edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.permitted.mess"),false);
+        lstLabels.add(permitted);
         //clearForRelease
         Label readyForRelease = new Label(edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.clear-for-release"),LabType.GENERAL,LABELID_CFR,
                 edu.stanford.muse.util.Messages.getMessage(archiveID, "messages","label-manager.general.clear-for-release.mess"),true);

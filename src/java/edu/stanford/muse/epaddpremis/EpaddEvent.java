@@ -116,7 +116,12 @@ public class EpaddEvent implements Serializable {
         NON_MBOX_INGEST("non Mbox ingest"),
         EXPORT_FOR_PRESERVATION("export for preservation"),
         IMAP_INGEST("imap ingest"),
-		
+        EMAIL_REDACTION("email redaction"),
+
+        PREMIS_FILES_CREATED("Premis files created"),
+
+        MERGE_CORRESPONDENTS("Merge correspondents"),
+
         INGESTION("Ingestion"),
         IDENTIFIER_ASSIGNMENT("Identifier assignment"),
         FIXITY_CHECK("Fixity check"),
@@ -132,8 +137,7 @@ public class EpaddEvent implements Serializable {
         TRANSCRIPTION("Transcription"),
         CREATION("Creation"),
         OTHER("Other"),
-        NOT_RECOGNIZED("not recognized")
-        ;
+        NOT_RECOGNIZED("not recognized");
 
         private final String eventType;
 
