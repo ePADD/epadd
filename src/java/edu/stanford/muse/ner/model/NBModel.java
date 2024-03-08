@@ -4,14 +4,11 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
-import edu.stanford.muse.ner.featuregen.FeatureUtils;
-import edu.stanford.muse.ner.model.test.SequenceModelTest;
 import edu.stanford.muse.ner.tokenize.CICTokenizer;
 import edu.stanford.muse.ner.tokenize.Tokenizer;
-import edu.stanford.muse.util.*;
 import edu.stanford.muse.util.Util;
+import edu.stanford.muse.util.*;
 import edu.stanford.muse.webapp.JSPHelper;
-import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,10 +17,7 @@ import org.apache.lucene.analysis.core.StopAnalyzer;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
@@ -251,6 +245,11 @@ public class NBModel implements NERModel, Serializable {
 
 
     public Span[] find (String content){
+        if (content == null)
+        {
+            log.warn("content null in NBModel.find()");
+            return null;
+        }
         List<Span> spans = new ArrayList<>();
 
         opennlp.tools.util.Span[] sentSpans = NLPUtils.tokenizeSentenceAsSpan(content);

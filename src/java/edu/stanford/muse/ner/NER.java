@@ -220,7 +220,11 @@ public class NER implements StatusProvider {
             String content = archive.getContents(ldoc, false);
             String title = archive.getTitle(ldoc);
             //original content is substring of content;
-
+            if (title == null || content == null)
+            {
+                log.warn("title " + title + " content " + content + " in Ner.recognizeArchive()");
+                continue;
+            }
             Span[] names = nerModel.find(content);
             Span[] namesT = nerModel.find(title);
             recTime += System.currentTimeMillis() - st;

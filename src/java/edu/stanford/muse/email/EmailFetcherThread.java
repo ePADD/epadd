@@ -840,6 +840,10 @@ public class EmailFetcherThread implements Runnable, Serializable {
             filename = p.getFileName();
             if (!filename.trim().isEmpty()) {
                 filename = filename.trim();
+                if (filename.contains("\t"))
+                {
+                    filename = filename.replace("\t", "   ");
+                }
             }
         } catch (Exception e) {
             // seen this happen with:
