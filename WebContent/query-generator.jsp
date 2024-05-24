@@ -4,26 +4,26 @@
     */
 %>
 <%@ page import="java.nio.charset.StandardCharsets" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@include file="getArchive.jspf" %>
 <!DOCTYPE html>
 <html>
 <head>
-<%--
-	<title>Query Generator Results</title>
---%>
+    <%--
+        <title>Query Generator Results</title>
+    --%>
     <title>Multi-search results</title>
 
-	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
+    <link rel="icon" type="image/png" href="images/epadd-favicon.png">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <!-- Optional theme -->
-<!--    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css"> -->
+    <!--    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css"> -->
     <jsp:include page="css/css.jsp"/>
 
-	<script src="js/jquery.js"></script>
-	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
-	<script src="js/epadd.js"></script>
+    <script src="js/epadd.js"></script>
 
     <style>
         img { margin: 3px 0 0 10px;}
@@ -31,7 +31,7 @@
     </style>
 </head>
 <body>
-<%@include file="header.jspf"%>
+<%@include file="header.jspf" %>
 <script>epadd.nav_mark_active('Search');</script>
 
 <%
@@ -44,17 +44,17 @@
 // 2022-10-27    
     if (req != null) {
         byte[] bytes = req.getBytes(StandardCharsets.ISO_8859_1);
-        req = new String(bytes, StandardCharsets.UTF_8);    
+        req = new String(bytes, StandardCharsets.UTF_8);
     }
-    boolean one_line_per_term_search=false;
-    if(req==null){
-        req=request.getParameter("refTextTerms");//if querygenerator is being called for one line per term type of search.
+    boolean one_line_per_term_search = false;
+    if (req == null) {
+        req = request.getParameter("refTextTerms");//if querygenerator is being called for one line per term type of search.
 // 2022-10-27        
         if (req != null) {
             byte[] bytes = req.getBytes(StandardCharsets.ISO_8859_1);
-            req = new String(bytes, StandardCharsets.UTF_8);    
-        }  
-        one_line_per_term_search=true;
+            req = new String(bytes, StandardCharsets.UTF_8);
+        }
+        one_line_per_term_search = true;
     }
     writeProfileBlock(out, archive, one_line_per_term_search ? "Multi-term search results" : "Multi-entity search results");
 
@@ -64,16 +64,16 @@
     <div class="container">
         <div style="text-align:right">
             <label>
-                <%if(one_line_per_term_search){%>
+                <%if (one_line_per_term_search) {%>
                 <span style="background-color: #e7df9a;">Matched terms</span>
-                <%}else{%>
+                <%} else {%>
                 <span style="background-color: #e7df9a;">Matched entities</span>
                 <%}%>
             </label>
             <label style="margin-left:10px">
-                <%if(one_line_per_term_search){%>
+                <%if (one_line_per_term_search) {%>
                 <span style="border-bottom: 1px red dotted;">Unmatched terms</span>
-                <%}else{%>
+                <%} else {%>
                 <span style="border-bottom: 1px red dotted;">Unmatched Entities</span>
                 <%}%>
             </label>
@@ -83,7 +83,7 @@
             <div class="bulksearch-content" style="background-color: white; border: 1px solid #e8ebef;	line-height: 25px; height: auto; padding: 10px;">
                 <%
 
-                    out.println (Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
+                    out.println(Util.escapeHTML(req).replace("\r", "").replace("\n", "<br/>\n"));
                 %>
             </div>
         </div>
@@ -110,17 +110,19 @@
 <!-- Pop-up section -->
 
 <script type="text/javascript">
-    var archiveID="<%=archiveID%>";
-	window.MUSE_URL = "<%=request.getContextPath()%>"; // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
-    if(window.MUSE_URL==null)
-        window.MUSE_URL="";
-    var handle_submit = function() {
+    var archiveID = "<%=archiveID%>";
+    window.MUSE_URL = "<%=request.getContextPath()%>"; // note: getROOTURL() doesn't work right on a public server like epadd.stanford.edu -- it returns localhost:9099/epadd because of port forwarding < % =HTMLUtils.getRootURL(request)%>';
+    if (window.MUSE_URL == null)
+        window.MUSE_URL = "";
+    var handle_submit = function () {
         window.open('browse?archiveID=<%=archiveID%>&adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term="' + $('#search-term').html() + '"');
     };
 
     $('#submit-button').click(handle_submit);
 </script>
 <script type="text/javascript" src="js/muse-lens.user.js"></script>
-<jsp:include page="footer.jsp"/>
+<div style="position: fixed;right: 0;bottom: 0;left: 0;padding: 1rem;text-align: center;">
+    <jsp:include page="footer.jsp"/>
+</div>
 </body>
 </html>
