@@ -178,7 +178,8 @@
 */
         function changeLexicon(e) {
             var lexname = $(e.target).text();
-            window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	lexname;
+			var lexiconNameEncoded = encodeURIComponent(lexname);
+			window.location = 'lexicon?archiveID=<%=archiveID%>&lexicon=' +	lexiconNameEncoded;
         }
         var oTable = $('#table').dataTable({paging:false, autoWidth: false, columnDefs: [{ className: "dt-right", "targets": 1}]});
         oTable.fnSort( [ [1,'desc'] ] );
@@ -191,7 +192,9 @@
             var lexiconName = prompt ('Enter the name of new lexicon:');
             if (!lexiconName)
                 return;
-            window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconName;
+			var lexiconNameEncoded = encodeURIComponent(lexiconName);
+
+			window.location = 'edit-lexicon?archiveID=<%=archiveID%>&lexicon=' + lexiconNameEncoded;
         });
 
         $('#import-lexicon').click(function(){
