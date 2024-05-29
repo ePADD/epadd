@@ -29,10 +29,10 @@
 */
 package edu.stanford.muse.util;
 
-import edu.stanford.muse.Config;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -2800,7 +2800,18 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 
 	public static File createTempDirectory() throws IOException
 	{
-		final File temp = File.createTempFile("muse_", "_contents");
+		return createTempDirectory(null);
+	}
+
+	public static File createTempDirectory(File parent) throws IOException
+	{
+		final File temp;
+		if (parent != null) {
+			temp = File.createTempFile("muse_", "_contents", parent);
+		}
+		else {
+			temp = File.createTempFile("muse_", "_contents");
+		}
 
 		if (!(temp.delete()))
 		{

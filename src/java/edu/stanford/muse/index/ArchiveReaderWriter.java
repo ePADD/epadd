@@ -404,8 +404,16 @@ public class ArchiveReaderWriter{
                 //First copy the content of archive.baseDir + "/data" to archive.baseDir and then create an in place bag.
                 //Why so complicated? Because we wanted to have a uniform directory structure of archive irrespective of the fact whether it is
                 //in a bag or not. That structure is 'archive.baseDir + "/data" folder'
-                File tmp = Util.createTempDirectory();
+                File baseDirFile = Paths.get(archive.baseDir).toFile();
+                File baseDirOneUpFile = baseDirFile.getParentFile();
+
+                //29.05.2024 JF
+                //Create the tmp folder in the current location rather than the default location (something like /appdata/local/temp).
+                //This is in case the current location is on a different drive because there is not enough space in the home directory.
+                File tmp = Util.createTempDirectory(baseDirOneUpFile);
                 tmp.delete();
+
+
 
                 //It seems that if indexer kept the file handles open then move directory failed on windows because of the lock held on those file
                 //therefore call archive.close() before moving stuff around
