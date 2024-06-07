@@ -78,7 +78,7 @@
 
 	<!--Advanced Search-->
 	<div class="advanced-search">
-		<form id="adv-search-form" action="browse" method="post">
+		<form id="adv-search-form" action="browse" method="get">
 		<input type="hidden" name="adv-search" value="1"/>
 			<%--hidden parameter passed as archiveID--%>
 			<input type="hidden" name="archiveID" value="<%=archiveID%>"/>
