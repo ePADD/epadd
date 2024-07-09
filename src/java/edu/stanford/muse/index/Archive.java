@@ -910,6 +910,7 @@ int errortype=0;
 
     public EpaddPremis getEpaddPremis()
     {
+        if (epaddPremis == null)
         {
            log.warn("epaddPremis null in Archive.getEpaddPremise()");
         }
@@ -1639,6 +1640,10 @@ int errortype=0;
         if (export_mode == ExportMode.EXPORT_APPRAISAL_TO_PROCESSING && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR).exists()) {
             FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR),
                     new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_CANONICAL_ACQUISITIONED_SUBDIR));
+        }
+        if (export_mode == ExportMode.EXPORT_APPRAISAL_TO_PROCESSING && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR).exists()) {
+            FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR),
+                    new File(out_dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + EXPORTABLE_ASSETS_SUBDIR + File.separatorChar + EXPORTABLE_ASSETS_APPRAISAL_NORMALIZED_APPRAISED_SUBDIR));
         }
         if (export_mode == ExportMode.EXPORT_APPRAISAL_TO_PROCESSING && export_mode != ExportMode.EXPORT_PROCESSING_TO_DELIVERY && new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + SIDECAR_DIR).exists()) {
             FileUtils.copyDirectory(new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + SIDECAR_DIR),

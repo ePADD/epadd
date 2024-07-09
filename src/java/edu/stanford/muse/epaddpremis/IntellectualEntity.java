@@ -11,6 +11,7 @@ import java.util.*;
 public class IntellectualEntity extends IntellectualEntityBaseClass implements Serializable {
     @XmlTransient
     private static final Logger log = LogManager.getLogger(IntellectualEntity.class);
+    private static final long serialVersionUID = -7895952121343138144L;
 
 //    @XmlAttribute(name = "xsi:type")
 //    private final String type = "premis:intellectualEntity";
@@ -44,6 +45,10 @@ public class IntellectualEntity extends IntellectualEntityBaseClass implements S
         for (Map.Entry<String, SignificantProperties> entry : significantPropertiesMap.entrySet()) {
             significantPropertiesSet.add(entry.getValue());
         }
+    }
+
+    protected Set<SignificantProperties> getSignificantPropertiesSet() {
+        return significantPropertiesSet;
     }
 
     protected void initialiseSignificantPropertiesMapFromSet() {
@@ -96,7 +101,12 @@ public class IntellectualEntity extends IntellectualEntityBaseClass implements S
         }
     }
 
+    protected int getSignificantProperty(String type) {
+        return significantPropertiesMap.get(type).getValue();
+    }
+
     private static class EnvironmentExtensionIntellectualEntity implements Serializable {
+        private static final long serialVersionUID = -747554871459925927L;
         @XmlElement
         public String environmentNote = "";
 
@@ -111,6 +121,7 @@ public class IntellectualEntity extends IntellectualEntityBaseClass implements S
     }
 
     private static class PremisIdentityObjectIdentifier implements Serializable {
+        private static final long serialVersionUID = 2941673330260824341L;
         @XmlElement(name = "objectIdentifierType")
         private final String objectIdentifierType = "local";
 

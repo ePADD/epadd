@@ -35,6 +35,10 @@
 		</init-param>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>*.jsp</url-pattern>
+	</servlet-mapping>
 
 	<listener>
 		<listener-class>edu.stanford.epadd.EpaddInitializer</listener-class>

@@ -9,4 +9,5 @@ package edu.stanford.muse.epaddpremis;
 import java.io.Serializable;
 
 public class ObjectBaseClass implements Serializable {
+    private static final long serialVersionUID = -1125433511681045553L;
 }

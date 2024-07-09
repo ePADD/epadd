@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 @WebServlet(name = "Add2Premis", urlPatterns = {"/ajax/add2Premis"})
 public class Add2Premis extends HttpServlet {
 
+    private static final long serialVersionUID = -7835689011219866784L;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.

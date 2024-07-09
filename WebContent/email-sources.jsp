@@ -244,8 +244,8 @@ if (archive != null) {
 				<br/>
 			</div> <!--  end account -->
 			<br/>
-			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.add-folder")%></button>
-			<br/>
+<%--			<button  style="margin-left:40px" class="btn-default" onclick="return add_mboxdir(); return false;"><i class="fa fa-plus"></i><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "appraisal.email-sources.add-folder")%></button>--%>
+<%--			<br/>--%>
 			<br/>
 		</div>
 	</section>

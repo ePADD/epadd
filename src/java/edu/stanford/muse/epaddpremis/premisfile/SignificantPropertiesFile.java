@@ -15,6 +15,7 @@ public class SignificantPropertiesFile implements Serializable {
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(SignificantPropertiesFile.class);
+    private static final long serialVersionUID = 8146367656929634483L;
 
     @XmlElement
 
@@ -84,6 +85,8 @@ public class SignificantPropertiesFile implements Serializable {
         }
     }
     public static class SignificantPropertiesTypeAdapter extends XmlAdapter<String, PropertyType> implements Serializable {
+        private static final long serialVersionUID = -3042039936875496156L;
+
         public String marshal(PropertyType propertyType) {
             return propertyType.toString();
         }

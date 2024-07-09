@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 public class RelationshipFile implements Serializable {
 
+    private static final long serialVersionUID = -9032939648518691082L;
     @XmlElement(name = "relationshipType")
     private final RelationshipTypeFile relationshipTypeFile = new RelationshipTypeFile();
     @XmlElement(name = "relationshipSubType")
@@ -81,6 +82,8 @@ public class RelationshipFile implements Serializable {
     }
 
     private static class RelatedEnvironmentCharacteristicAdapter extends XmlAdapter<String, RelationshipFile.RelatedEnvironmentCharacteristic> implements Serializable {
+        private static final long serialVersionUID = -582696380954814381L;
+
         public String marshal(RelationshipFile.RelatedEnvironmentCharacteristic relatedEnvironmentCharacteristic) {
             return relatedEnvironmentCharacteristic.toString();
         }
@@ -91,6 +94,8 @@ public class RelationshipFile implements Serializable {
     }
 
     private static class EnvironmentPurposeAdapter extends XmlAdapter<String, RelationshipFile.RelatedEnvironmentPurpose> implements Serializable {
+        private static final long serialVersionUID = 6192505859687268504L;
+
         public String marshal(RelationshipFile.RelatedEnvironmentPurpose relatedEnvironmentPurpose) {
             return relatedEnvironmentPurpose.toString();
         }
@@ -101,6 +106,7 @@ public class RelationshipFile implements Serializable {
     }
 
     private static class RelationshipTypeFile implements Serializable {
+        private static final long serialVersionUID = -349697360010365664L;
         @XmlAttribute
         private final String authority = "relationshipType";
         @XmlAttribute

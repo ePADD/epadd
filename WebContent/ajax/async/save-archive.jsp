@@ -77,8 +77,8 @@ Archive archive = JSPHelper.getArchive(params);
         }
 
 try{
-
-        ArchiveReaderWriter.saveMutable_Incremental(archive);
+ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.FRESH_CREATION);
+       // ArchiveReaderWriter.saveMutable_Incremental(archive);
         JSPHelper.log.info ("session saved");
 	    resultJSON.put("status", 0);
 	    resultJSON.put("responseText", "Session saved");

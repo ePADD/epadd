@@ -26,10 +26,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -140,6 +137,29 @@ public class EpaddPremis implements Serializable {
         }
         return epaddPremis;
     }
+
+    //When adding an accessing into a non-empty collection we have to merge the two Premis files.
+    //addPremisObjects merges one Premis file into another Premis file.
+    public boolean addPremisObject(EpaddPremis epaddPremisToAdd)
+    {
+        this.epaddEvents.addAll(epaddPremisToAdd.getEvents());
+        this.file.addAll(epaddPremisToAdd.getFileObjects());
+        for (SignificantProperties eachProperty : epaddPremisToAdd.getIntellectualEntity().getSignificantPropertiesSet())
+        {
+            this.addToSignificantProperty(eachProperty.getType(), eachProperty.getValue());
+        }
+        return true;
+    }
+
+    private PremisRights getPremisRights() {
+        return premisRights;
+    }
+
+    private List<EpaddEvent> getEvents()
+    {
+        return this.epaddEvents;
+    }
+
     private IntellectualEntity getIntellectualEntity() {
         return ((IntellectualEntity) intellectualEntity);
     }
@@ -159,17 +179,6 @@ public class EpaddPremis implements Serializable {
                 break;
             }
         }
-    }
-
-    private File getFileFromID(String fileID) {
-        for (ObjectBaseClass bc : file) {
-            File fo = (File) bc;
-            // Would be better to use a map <String, PremisFileObject> for storing the file objects.
-            if (fileID != null && fileID.equals(fo.getFileID())) {
-                return fo;
-            }
-        }
-        return null;
     }
 
     //NOT IN USE
@@ -210,6 +219,11 @@ public class EpaddPremis implements Serializable {
         file.add(new File(fileName, size));
     }
 
+    private List<ObjectBaseClass> getFileObjects()
+    {
+        return file;
+    }
+
     public void createEvent(EpaddEvent.EventType eventType, String eventDetailInformation, String outcome) {
         epaddEvents.add(new EpaddEvent(eventType, eventDetailInformation, outcome, ModeConfig.getModeForDisplay()));
         printToFiles();
@@ -227,6 +241,11 @@ public class EpaddPremis implements Serializable {
         } else {
             log.warn("no premisIntellectualEntityObject in addSignificantProperty");
         }
+    }
+
+    private int getSignificantPropertyValue(String type)
+    {
+        return archive.getEpaddPremis().getIntellectualEntity().getSignificantProperty(type);
     }
 
     public void setIntellectualEntityObjectEnvironmentCharacteristics(String characteristics) {
@@ -326,7 +345,7 @@ public class EpaddPremis implements Serializable {
 
         //Print XML file for users
         try {
-            JAXBContext jc = JAXBContext.newInstance(EpaddPremis.class, IntellectualEntity.class, File.class, ObjectBaseClass.class, IntellectualEntityBaseClass.class);
+            JAXBContext jc = JAXBContext.newInstance(EpaddPremis.class, IntellectualEntity.class, File.class, ObjectBaseClass.class, IntellectualEntityBaseClass.class, EventDetailInformation.class);
             StringWriter writer = new StringWriter();
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

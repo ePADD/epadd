@@ -822,12 +822,13 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
             epaddPremis.setIntellectualEntityObjectEnvironmentSoftwareVersion(cm.softwareVersion);
         if (cm.statuteJurisdiction != null) epaddPremis.setStatutestatuteJurisdiction(cm.statuteJurisdiction);
 
+        if (cm.fileMetadatas != null) {
         for (Archive.FileMetadata fm : cm.fileMetadatas) {
             if (fm.fileID != null && fm.fileID.equals(fileID)) {
                 epaddPremis.setFileMetadata(fm.fileID, fm);
             }
         }
-
+        }
         archive.printEpaddPremis();
     }
         String baseDir = archive.baseDir;

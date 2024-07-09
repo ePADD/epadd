@@ -20,6 +20,7 @@ public class File extends ObjectBaseClass implements Serializable {
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(File.class);
+    private static final long serialVersionUID = -3480952664286498838L;
     @XmlElement(name = "objectIdentifier")
     private List<ObjectIdentifier> objectIdentifiers = new ArrayList<>();
     @XmlElement
@@ -184,6 +185,7 @@ public class File extends ObjectBaseClass implements Serializable {
 
 
     private static class ObjectIdentifier implements Serializable {
+        private static final long serialVersionUID = -6770467472098334033L;
         @XmlElement(name = "objectIdentifierType")
         private String objectIdentifierType = "";
 
@@ -200,6 +202,7 @@ public class File extends ObjectBaseClass implements Serializable {
     }
 
     public static class RelationshipSubType implements Serializable  {
+        private static final long serialVersionUID = 3232553166349546181L;
         @XmlAttribute
         private final String authority = "relationshipSubType";
         @XmlAttribute
@@ -214,6 +217,7 @@ public class File extends ObjectBaseClass implements Serializable {
     }
 
     public static class RelatedObjectIdentifier implements Serializable {
+        private static final long serialVersionUID = 6881706450437750937L;
         @XmlElement
         private final String relatedObjectIdentifierType = "local";
         @XmlElement

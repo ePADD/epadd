@@ -6,8 +6,7 @@
 <%@page language="java" import="edu.stanford.muse.webapp.*"%>
 <%@ page language="java" import="edu.stanford.muse.index.Archive"%>
 <%@ page language="java" import="org.apache.commons.io.FileUtils"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.ArrayList"%><%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.email.FetchStats"%><%@ page import="java.util.Enumeration"%><%@ page import="edu.stanford.muse.email.FolderInfo"%><%@ page import="edu.stanford.muse.util.Pair"%><%@ page import="edu.stanford.epadd.util.EmailConvert"%><%@ page import="org.apache.commons.lang.StringUtils"%><%@ page import="java.util.Set"%><%@ page import="java.util.LinkedHashSet"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.Config"%>
+<%@ page import="org.joda.time.DateTime"%><%@ page import="edu.stanford.muse.email.FetchStats"%><%@ page import="edu.stanford.muse.email.FolderInfo"%><%@ page import="edu.stanford.muse.util.Pair"%><%@ page import="edu.stanford.epadd.util.EmailConvert"%><%@ page import="org.apache.commons.lang.StringUtils"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="edu.stanford.muse.Config"%><%@ page import="edu.stanford.muse.epaddpremis.EpaddEvent"%><%@ page import="edu.stanford.muse.util.FolderMerger"%><%@ page import="java.util.*"%>
 
 <%
 /* copies new accession into REPO_DIR and then loads it from there */
@@ -21,7 +20,7 @@ if (Util.nullOrEmpty(baseDir))
 	out.println (result.toString(4));
 	return;
 }
-
+String accessionFolder = baseDir;
 // check if its really an archive
 if (!new File(baseDir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar +  Archive.SESSIONS_SUBDIR + File.separator + "default" + SimpleSessions.getSessionSuffix()).exists())
 {
@@ -98,11 +97,13 @@ if (!collectionDir.equals(baseDir))
             //read archives present in basedir and collection dir.
             collection = ArchiveReaderWriter.readArchiveIfPresent(collectionDir);
             Archive accession = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
+            collection.getEpaddPremis().addPremisObject(accession.getEpaddPremis());
 
             accessionAllStats = accession.allStats;     // Cache accession's allStatus before it is merged for file metadata creation later
 
             //call merge on these archives..
             Util.ASSERT(request.getParameter("accessionID")!=null);
+           // accession.exportableAssetsDir
             //Merge result will be stored in a field of collection archive object. It will be used
             //later to show mergeReport.[a transient field that will not be saved]
             collection.merge(accession,accessionID);
@@ -130,7 +131,7 @@ if (!collectionDir.equals(baseDir))
             Archive.AccessionMetadata am = new Archive.AccessionMetadata();
             am.id = accessionID;
             am.title = request.getParameter("accessionTitle");
-          //  am.date = request.getParameter("accessionDate");
+            am.date = request.getParameter("accessionDate");
             am.scope = request.getParameter("accessionScope");
             am.rights = request.getParameter("accessionRights");
             am.notes = request.getParameter("accessionNotes");
@@ -147,26 +148,26 @@ if (!collectionDir.equals(baseDir))
             // we update just the PM file in the target dir with this info. no need to go into the (legacy) archive object, because the PM inside it will always be overridden by the one in this file.
             // new archive objects will anyway not have PM objects embedded within them.
             // see SimpleSessions.readArchiveIfPresent()
+            Archive accession = null;
             {
                 Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata (collectionDir);
                 if (cm == null)
                     cm = new Archive.CollectionMetadata();
 
-                Archive accession = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
+                accession = ArchiveReaderWriter.readArchiveIfPresent(baseDir);
                 Archive.CollectionMetadata accession_cm = ArchiveReaderWriter.readCollectionMetadata (baseDir);
                 List<Archive.FileMetadata> accession_fms = accession_cm.fileMetadatas;
-
-                List<Archive.FileMetadata> fms = new ArrayList<Archive.FileMetadata>();
+                List<Archive.FileMetadata> fms = new ArrayList<>();
 
                 {
                    // we add the following code to support file metada requirement in epadd+ project
                    // All file metadatas in accession_fms would be copied into FileMetadatas fms, which is then stored in collection.
 
-                    Archive.FileMetadata fm = new Archive.FileMetadata();;
+                    //Archive.FileMetadata fm = new Archive.FileMetadata();;
 
                     int count = 0;
                     if (accession_fms!=null) {
-                        for (Archive.FileMetadata accessionFM : accession_fms) {
+                        for (Archive.FileMetadata fm : accession_fms) {
                             fm = new Archive.FileMetadata();
                             fm.fileID = "" + am.id + "/File/" + StringUtils.leftPad(""+count, 4, "0");
                             fm.fileFormat = "MBOX";
@@ -192,16 +193,42 @@ if (!collectionDir.equals(baseDir))
                 //SimpleSessions.saveCollectionMetadata (cm, collectionDir);
                 collection.collectionMetadata = cm;//IMP otherwise in-memory archive processingmetadata and
                 //should it be an incremental update or a fresh one??
-                ArchiveReaderWriter.saveCollectionMetadata(collection,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+                ArchiveReaderWriter.saveCollectionMetadata(collection,Archive.Save_Archive_Mode.FRESH_CREATION);
+                ArchiveReaderWriter.saveArchive(collection,Archive.Save_Archive_Mode.FRESH_CREATION);
+
                 //the updated metadata on disc will be out of sync. It manifests when saving this archive which
                 //overwrites the latest on-disc PM data with stale in-memory data.
             }
+
+            String targetExportableAssetsFolder = collection.exportableAssetsDir.toString();
+            String sourceExportableAssetsFolder = accessionFolder + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.EXPORTABLE_ASSETS_SUBDIR;
+//            Archive. + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.EXPORTABLE_ASSETS_SUBDIR + File.separatorChar;
+            Set<String> excludedFolders = new HashSet<>();
+            FolderMerger.merge(sourceExportableAssetsFolder, targetExportableAssetsFolder);
+            String sourceSidecarDir =  accessionFolder + File.separator + Archive.BAG_DATA_FOLDER + File.separator + Archive.SIDECAR_DIR;
+            String targetSidecarDir = collection.getSidecarDir();
+            FolderMerger.merge(sourceSidecarDir, targetSidecarDir);
+
+             if (collection.epaddPremis != null) {
+             JSONObject eventData = new JSONObject();
+             eventData.put("eventType", "import accession");
+             eventData.put("id", am.id);
+             eventData.put("title", am.title);
+             eventData.put("scopeAndContent", am.scope);
+             eventData.put("rights", am.rights);
+             eventData.put("notes", am.notes);
+             eventData.put("rightsAndConditions", am.rights);
+             eventData.put("date", am.date);
+             eventData.put("folder", accessionFolder);
+             collection.epaddPremis.createEvent(eventData);
+        }
             JSPHelper.log.info ("Accession metadata updated with imported file metadata");
         }
 
 	} catch (Exception e) {
 		result.put("status", 2);
-        JSPHelper.log.error("Unable to import accession: + e.getMessage()");
+        System.out.println("Exception in ImportAccession.jsp. " + e);
+        JSPHelper.log.error("Exception in ImportAccession.jsp. " + e);
 		result.put ("error", "Unable to import accession: " + e.getMessage());
 	}
 	out.println (result.toString(4));

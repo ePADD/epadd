@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class PremisRights implements Serializable {
 
+    private static final long serialVersionUID = 2484804048125390122L;
     @XmlAttribute
     private final String xmlID = "AAAAG";
     @XmlAttribute
@@ -36,6 +37,7 @@ public class PremisRights implements Serializable {
     }
 
     private static class RightsStatement implements Serializable {
+        private static final long serialVersionUID = 5698039281836318317L;
         @XmlElement
         RightsStatementIdentifier rightsStatementIdentifier = new RightsStatementIdentifier();
         @XmlElement
@@ -44,6 +46,7 @@ public class PremisRights implements Serializable {
         }
 
         private static class RightsStatementIdentifier implements Serializable {
+            private static final long serialVersionUID = -8878949886761368281L;
             @XmlElement
             private String rightsStatementIdentifierType = "";
 
@@ -54,6 +57,7 @@ public class PremisRights implements Serializable {
     }
 
     public static class RightsExtension implements Serializable {
+        private static final long serialVersionUID = -8755643207947803030L;
         @XmlElement
         private final StatuteInformation statuteInformation = new StatuteInformation();
 
@@ -64,6 +68,7 @@ public class PremisRights implements Serializable {
 
         public static class StatuteInformation implements Serializable {
 
+            private static final long serialVersionUID = -4680242431123009162L;
             @XmlElement
             private String statuteJurisdiction = "";
 
@@ -90,6 +95,7 @@ public class PremisRights implements Serializable {
             }
 
             private static class StatuteDocumentationIdentifier implements Serializable {
+                private static final long serialVersionUID = -6450831195687191660L;
                 @XmlElement
                 private String statuteDocumentationIdentifierType = "";
                 @XmlElement

@@ -17,6 +17,7 @@ public class PreservationLevel implements Serializable {
 
     @XmlTransient
     private static final Logger log =  LogManager.getLogger(PreservationLevel.class);
+    private static final long serialVersionUID = 686824887803527196L;
     @XmlElement(name = "preservationLevelValue")
     private final String preservationLevelValue = "bit level";
 
@@ -82,6 +83,8 @@ public class PreservationLevel implements Serializable {
 
     private static class PreservationLevelRoleTypeAdapter extends XmlAdapter<String, PreservationLevelRoleType> implements Serializable
     {
+        private static final long serialVersionUID = -3279410788564829540L;
+
         public String marshal(PreservationLevelRoleType roleType) {
             return roleType.toString();
         }
@@ -116,6 +119,8 @@ public class PreservationLevel implements Serializable {
 
     private static class PreservationLevelRationaleTypeAdapter extends XmlAdapter<String, PreservationLevelRationaleType> implements Serializable
     {
+        private static final long serialVersionUID = -4730133100282518532L;
+
         public String marshal(PreservationLevelRationaleType reationalType) {
             return reationalType.toString();
         }
@@ -125,6 +130,7 @@ public class PreservationLevel implements Serializable {
     }
 
     static class PreservationLevelRole implements Serializable {
+        private static final long serialVersionUID = -6797097824801337800L;
         @XmlAttribute
         private final String authority = "preservationLevelRole";
         @XmlAttribute

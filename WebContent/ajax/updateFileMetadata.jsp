@@ -38,7 +38,7 @@ try {
 
     // read, edit and write back the pm object. keep the other data inside it (such as accessions) unchanged.
 	Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(archiveBaseDir);
-    List <Archive.AccessionMetadata> ams = cm.accessionMetadatas;
+    //List <Archive.AccessionMetadata> ams = cm.accessionMetadatas;
 
 	if (cm == null) {
 	        errorMessage="Unable to find collection for collection id: " +request.getParameter("collection");

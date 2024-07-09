@@ -18,6 +18,8 @@ import java.util.UUID;
 
 public class EpaddEvent implements Serializable {
 
+    private final static long serialVersionUID = 1L;
+
     @XmlElement
     private EventIdentifier eventIdentifier;
 
@@ -25,10 +27,13 @@ public class EpaddEvent implements Serializable {
     @XmlJavaTypeAdapter(EventTypeAdapter.class)
     private EventType eventType;
 
+    @XmlElement(name="note")
+    private String note;
+
     @XmlElement(name="eventDateTime")
     private String eventDateTime;
 
-    @XmlElement(name="eventDetailInformation")
+    @XmlElement(name="eventDetailInformation", type = EventDetailInformation.class)
     private EventDetailInformation eventDetailInformation;
 
     @XmlElement
@@ -44,8 +49,7 @@ public class EpaddEvent implements Serializable {
     @XmlTransient
     private String mode;
 
-    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String mode)
-    {
+    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String mode) {
         eventOutcomeInformation = new EventOutcomeInformation(outcome);
         linkingAgentIdentifier = new LinkingAgentIdentifier(mode);
         this.eventType = eventType;
@@ -53,13 +57,11 @@ public class EpaddEvent implements Serializable {
         setValues();
     }
 // 2022-11-03
-    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String mode, ZonedDateTime date1)
-    {
+    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String mode, ZonedDateTime date1) {
         eventOutcomeInformation = new EventOutcomeInformation(outcome);
         linkingAgentIdentifier = new LinkingAgentIdentifier(mode);
         this.eventType = eventType;
         this.eventDetailInformation = new EventDetailInformation(eventDetailInformation);
-//        setValues();
         generateAndSetUuid();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
         eventDateTime = date1.format(formatter);
@@ -68,16 +70,17 @@ public class EpaddEvent implements Serializable {
     public EpaddEvent() {
     }
 
-    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String linkingObjectIdentifierType, String linkingObjectIdentifierValue, String mode)
-    {
+    public EpaddEvent(EventType eventType, String eventDetailInformation, String outcome, String linkingObjectIdentifierType, String linkingObjectIdentifierValue, String mode) {
         this(eventType, eventDetailInformation, outcome, mode);
         linkingObjectIdentifier = new LinkingObjectIdentifier(linkingObjectIdentifierType, linkingObjectIdentifierValue);
     }
 
     public EpaddEvent(JSONObject eventJsonObject, String mode) {
+        if (eventJsonObject.has("outcome")) {
         eventOutcomeInformation = new EventOutcomeInformation(eventJsonObject.getString("outcome"));
+        }
         linkingAgentIdentifier = new LinkingAgentIdentifier(mode);
-        String eventString = eventJsonObject.getString("eventType");
+        String eventString = eventJsonObject.optString("eventType", "");
         EpaddEvent.EventType eventType;
         if (eventString == null || eventString.isEmpty()) {
             eventType = EpaddEvent.EventType.NOT_RECOGNIZED;
@@ -85,7 +88,18 @@ public class EpaddEvent implements Serializable {
             eventType = EpaddEvent.EventType.fromString(eventString);
         }
         this.eventType = eventType;
-        this.eventDetailInformation = new EventDetailInformation(eventJsonObject.getString("eventDetailInformation"));
+        if (eventType == EventType.IMPORT_ACCESSION) {
+            String notes = eventJsonObject.optString("notes", "");
+            String id = eventJsonObject.optString("id", "");
+            String title = eventJsonObject.optString("title", "");
+            String scopeAndContent = eventJsonObject.optString("scopeAndContent", "");
+            String rightsAndConditions = eventJsonObject.optString("rightsAndConditions", "");
+            String folder = eventJsonObject.optString("folder", "");
+            String date = eventJsonObject.optString("date", "");
+            this.eventDetailInformation = new EventDetailInformation(eventJsonObject.optString("eventDetailInformation", ""), title, id, folder, date, scopeAndContent, rightsAndConditions, notes);
+        } else {
+            this.eventDetailInformation = new EventDetailInformation(eventJsonObject.optString("eventDetailInformation", ""));
+        }
         setValues();
     }
 
@@ -98,8 +112,7 @@ public class EpaddEvent implements Serializable {
         eventIdentifier = new EventIdentifier(UUID.randomUUID().toString());
     }
 
-    private void setEventDateTimeToNow()
-    {
+    private void setEventDateTimeToNow() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
         eventDateTime = ZonedDateTime.now().format(formatter);
     }
@@ -117,7 +130,7 @@ public class EpaddEvent implements Serializable {
         EXPORT_FOR_PRESERVATION("export for preservation"),
         IMAP_INGEST("imap ingest"),
         EMAIL_REDACTION("email redaction"),
-
+        IMPORT_ACCESSION("import accession"),
         PREMIS_FILES_CREATED("Premis files created"),
 
         MERGE_CORRESPONDENTS("Merge correspondents"),
@@ -154,14 +167,15 @@ public class EpaddEvent implements Serializable {
             return NOT_RECOGNIZED;
         }
 
-        public String toString()
-        {
+        @Override
+        public String toString() {
             return eventType;
         }
     }
 
-    public static class EventTypeAdapter extends XmlAdapter<String, EventType> implements Serializable
-    {
+    public static class EventTypeAdapter extends XmlAdapter<String, EventType> implements Serializable {
+        private static final long serialVersionUID = 7962060527555578482L;
+
         public String marshal(EventType eventType) {
             return eventType.toString();
         }
@@ -170,41 +184,27 @@ public class EpaddEvent implements Serializable {
         }
     }
 
-    private static class EventIdentifier implements Serializable
-    {
+    private static class EventIdentifier implements Serializable {
+        private static final long serialVersionUID = 2008612369137565723L;
         @XmlElement
         private final String eventIdentifierType = "UUID";
         @XmlElement
         private String eventIdentifierValue;
 
-        public EventIdentifier(){}
+        public EventIdentifier() {
+    }
 
-        public EventIdentifier(String eventIdentifierValue)
-        {
+        public EventIdentifier(String eventIdentifierValue) {
             this.eventIdentifierValue = eventIdentifierValue;
         }
     }
 
-    public static class EventDetailInformation implements Serializable
-    {
-        @XmlElement
-        private String eventDetail;
-
-        private EventDetailInformation(){}
-
-        private EventDetailInformation(String eventDetail)
-        {
-            this.eventDetail = eventDetail;
-        }
-    }
-
     private static class EventOutcomeInformation implements Serializable {
-
+        private static final long serialVersionUID = 3255508859801985191L;
         @XmlElement
         private String eventOutcome;
 
-        private EventOutcomeInformation()
-        {
+        private EventOutcomeInformation() {
         }
 
         private EventOutcomeInformation(String value) {
@@ -212,16 +212,17 @@ public class EpaddEvent implements Serializable {
         }
     }
 
-    private static class LinkingObjectIdentifier implements Serializable
-    {
+    private static class LinkingObjectIdentifier implements Serializable {
+        private static final long serialVersionUID = -2795947913188938163L;
         @XmlElement
         private String linkingObjectIdentifierType;
         @XmlElement
         private String linkingObjectIdentifierValue;
-        private LinkingObjectIdentifier(){}
 
-        private LinkingObjectIdentifier(String type, String value)
-        {
+        private LinkingObjectIdentifier() {
+        }
+
+        private LinkingObjectIdentifier(String type, String value) {
             linkingObjectIdentifierType = type;
             linkingObjectIdentifierValue = value;
         }
@@ -229,6 +230,7 @@ public class EpaddEvent implements Serializable {
 
     private static class LinkingAgentIdentifier implements Serializable {
 
+        private static final long serialVersionUID = -6355753400357439203L;
         @XmlElement
         private final String linkingAgentIdentifierType = "local";
 
@@ -238,13 +240,10 @@ public class EpaddEvent implements Serializable {
         @XmlElement
         private final LinkingAgentRole linkingAgentRole = new LinkingAgentRole();
 
-        private LinkingAgentIdentifier()
-        {
-
+        private LinkingAgentIdentifier() {
         }
 
-        private LinkingAgentIdentifier(String mode)
-        {
+        private LinkingAgentIdentifier(String mode) {
             linkingAgentIdentifierValue = "";
             setEpaddVersion();
             setMode(mode);
@@ -252,24 +251,24 @@ public class EpaddEvent implements Serializable {
             setOs();
         }
 
-        private void setEpaddVersion()
-        {
+        private void setEpaddVersion() {
             linkingAgentIdentifierValue += ("ePADD - " + Version.version);
         }
 
-        private void setOs()
-        {
+        private void setOs() {
             linkingAgentIdentifierValue += (" - " + System.getProperty("os.name"));
         }
 
-        private void setMode(String mode) { linkingAgentIdentifierValue += (" - " + mode);}
+        private void setMode(String mode) {
+            linkingAgentIdentifierValue += (" - " + mode);
+        }
 
-        private void setJavaVersion()
-        {
+        private void setJavaVersion() {
             linkingAgentIdentifierValue += (" - running in Java " + System.getProperty("java.version"));
         }
 
         private static class LinkingAgentRole implements Serializable {
+            private static final long serialVersionUID = -2308471709105728592L;
             @XmlAttribute
             private final String authority="eventRelatedAgentRole";
             @XmlAttribute
@@ -279,10 +278,9 @@ public class EpaddEvent implements Serializable {
             @XmlValue
             private final String value = "executing program";
 
-            private LinkingAgentRole()
-            {
-            }
+            private LinkingAgentRole() {
         }
 
     }
+}
 }

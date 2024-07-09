@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 public class Fixity  implements Serializable {
 
+    private static final long serialVersionUID = -969619711281079849L;
     @XmlElement
     private MessageDigestAlgorithm messageDigestAlgorithm;
     @XmlElement
@@ -37,6 +38,7 @@ public class Fixity  implements Serializable {
 
     static class MessageDigestAlgorithm implements Serializable {
 
+        private static final long serialVersionUID = -2662373807832725192L;
         @XmlAttribute
         private final String authority = "cryptographicHashFunctions";
         @XmlAttribute

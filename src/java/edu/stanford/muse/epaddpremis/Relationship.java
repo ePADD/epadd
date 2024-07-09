@@ -10,6 +10,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 
 public class Relationship implements Serializable {
+    private static final long serialVersionUID = -7113269669004449012L;
     @XmlElement
     private final RelationshipType relationshipType = new RelationshipType();
     @XmlElement
@@ -78,6 +79,8 @@ public class Relationship implements Serializable {
     }
 
     private static class RelatedEnvironmentCharacteristicAdapter extends XmlAdapter<String, RelatedEnvironmentCharacteristic> implements Serializable {
+        private static final long serialVersionUID = 831784790626624283L;
+
         public String marshal(RelatedEnvironmentCharacteristic relatedEnvironmentCharacteristic) {
             return relatedEnvironmentCharacteristic.toString();
         }
@@ -88,6 +91,8 @@ public class Relationship implements Serializable {
     }
 
     private static class EnvironmentPurposeAdapter extends XmlAdapter<String, RelatedEnvironmentPurpose> implements Serializable {
+        private static final long serialVersionUID = -2490535493909151150L;
+
         public String marshal(RelatedEnvironmentPurpose relatedEnvironmentPurpose) {
             return relatedEnvironmentPurpose.toString();
         }
@@ -98,6 +103,7 @@ public class Relationship implements Serializable {
     }
 
     private static class RelationshipType implements Serializable {
+        private static final long serialVersionUID = 6292322345630987275L;
         @XmlAttribute
         private final String authority = "relationshipType";
         @XmlAttribute
@@ -112,6 +118,7 @@ public class Relationship implements Serializable {
     }
 
     private static class EnvironmentExtension implements Serializable {
+        private static final long serialVersionUID = 737364250730594970L;
         @XmlElement
         public String environmentNote = "";
 

@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 public class Agent implements Serializable {
 
+    private static final long serialVersionUID = -8361916629404885272L;
     @XmlElement(name="agentIdentifier")
     private AgentIdentifier agentIdentifier;
 
@@ -31,6 +32,7 @@ public class Agent implements Serializable {
 
     private static class AgentIdentifier implements Serializable {
 
+        private static final long serialVersionUID = 6080790205853431994L;
         @XmlElement(name="agentIdentifierType")
         private final String agentIdentifierType = "local";
 

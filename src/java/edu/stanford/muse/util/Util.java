@@ -29,10 +29,11 @@
 */
 package edu.stanford.muse.util;
 
+import edu.stanford.muse.Config;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

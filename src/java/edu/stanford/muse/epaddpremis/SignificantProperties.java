@@ -13,6 +13,7 @@ public class SignificantProperties implements Serializable {
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(SignificantProperties.class);
+    private static final long serialVersionUID = 314223019138023269L;
 
     @XmlElement
     private String significantPropertiesType;
@@ -46,6 +47,10 @@ public class SignificantProperties implements Serializable {
 
     protected void addValue(int value) {
         this.significantPropertiesValue += value;
+    }
+
+    protected int getValue() {
+        return this.significantPropertiesValue;
     }
 
 }

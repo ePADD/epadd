@@ -21,6 +21,7 @@ public class ObjectCharacteristics implements Serializable {
 
     @XmlTransient
     private static final Logger log = LogManager.getLogger(ObjectCharacteristics.class);
+    private static final long serialVersionUID = -5997345754022573511L;
 
     @XmlElement
     @XmlJavaTypeAdapter(CompositionLevelAdapter.class)
@@ -128,6 +129,8 @@ public class ObjectCharacteristics implements Serializable {
     }
 
     public static class CompositionLevelAdapter extends XmlAdapter<String, CompositionLevel> implements Serializable {
+        private static final long serialVersionUID = 617595446087578873L;
+
         public String marshal(CompositionLevel compositionLevel) {
             return compositionLevel.toString();
         }
@@ -159,6 +162,7 @@ public class ObjectCharacteristics implements Serializable {
     }
 
     static class CreatingApplication implements Serializable {
+        private static final long serialVersionUID = -7029848406442060279L;
         @XmlElement
         private String creatingApplicationName = "";
 
