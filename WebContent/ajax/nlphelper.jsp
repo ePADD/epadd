@@ -20,7 +20,7 @@
 				String[] sents = NLPUtils.SentenceTokenizer(text);  
 				if(sents!=null)
 					json = gson.toJson(sents);	
-				JSPHelper.log.info(json);
+				JSPHelper.doLogging(json);
 				response.getWriter().write(json);
 			}
 		}

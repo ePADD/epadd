@@ -45,5 +45,5 @@
 	JSONObject obj = new JSONObject();
 	obj.put("status", status);
 	out.println (obj);
-	JSPHelper.log.info(obj);
+	JSPHelper.doLogging(obj);
 %>   

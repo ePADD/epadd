@@ -41,7 +41,7 @@ if(opID==null){
 //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
 
@@ -90,7 +90,7 @@ private void setExportableAssets(Multimap<String,String> params, Consumer<Status
         // The status should be 1, but in processing mode entering the archive is stopped altogether and the user is stuck
         // on the start page.
         //out.println (result);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
         return;
     }
 

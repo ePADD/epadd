@@ -64,7 +64,7 @@
 	 if (archive == null) {
         resultObject.put("error", "No archive in session");
         resultObject.put("status", 1);
-        JSPHelper.log.info(resultObject);
+        JSPHelper.doLogging(resultObject);
         return;
     }
 	AddressBook addressBook = archive.addressBook;
@@ -101,7 +101,7 @@
 
 			//From appraisal to processing we do not remove any label from labelManager so pass the current
 			//label info map as an argument to set labelmanager for the exported archive.
-		JSPHelper.log.info("Exporting #"+docsToExport.size()+" docs");
+		JSPHelper.doLogging("Exporting #"+docsToExport.size()+" docs");
 		// to do: need a progress bar here
 		try {
 			archive.export(docsToExport, Archive.ExportMode.EXPORT_APPRAISAL_TO_PROCESSING, folder, "default",setStatusProvider);

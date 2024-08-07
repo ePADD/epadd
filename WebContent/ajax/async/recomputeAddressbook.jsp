@@ -13,7 +13,7 @@
     //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
     String opID = request.getParameter("opID");
@@ -65,7 +65,7 @@ setStatusProvider.accept(new StaticStatusProvider("Starting up..."));
         resultJSON.put("status", 1);
         resultJSON.put("error", "No archive in session");
         //out.println (obj);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
         return;
     }
     String trustedaddrstring = JSPHelper.getParam(paramsMap,"trustedaddrs");
@@ -82,7 +82,7 @@ setStatusProvider.accept(new StaticStatusProvider("Starting up..."));
         resultJSON.put("status", 1);
         resultJSON.put("error", "Unable to recompute the addressbook!");
         //out.println (obj);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
     }else{
         //set this as current addressbook.,
         archive.setAddressBook(newaddressbook);
@@ -104,7 +104,7 @@ archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mapp
         resultJSON.put("status", 0);
         resultJSON.put("message","Addressbook reconstructed successfully!");
         //out.println (obj);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
 
     }
 

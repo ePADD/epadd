@@ -929,19 +929,19 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
 // no need to read archive authorized authorities, they will be loaded on demand from the legacy authorities.ser file
                 addToGlobalArchiveMap(baseDir,a);
                 //check if the loaded archive satisfy the verification condtiions. Call verify method on archive.
-               /* JSPHelper.log.info("After reading the archive checking if it is in good shape");
+               /* JSPHelper.doConsoleLogging("After reading the archive checking if it is in good shape");
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
 
                 if(mode!= ModeConfig.Mode.DISCOVERY) {
                     //now intialize the cache for lexicon
-                    JSPHelper.log.info("Computing summary of Lexicons");
+                    JSPHelper.doLogging("Computing summary of Lexicons");
                     //To reduce the load time that is spent in this summary calculation we first check if there is a file named 'lexicon-summary'
                     //in the basedir. If it is present then the summary datastructure is filled using that file. If not then the load
                     long startTime = System.currentTimeMillis();
                     Lexicon.fillL1_Summary_all(a, false);
-                    JSPHelper.log.info("Lexicons summary computed successfully in "+ (System.currentTimeMillis()-startTime) + " milliseconds");
+                    JSPHelper.doLogging("Lexicons summary computed successfully in "+ (System.currentTimeMillis()-startTime) + " milliseconds");
 
                 }
                 return a;
@@ -1017,12 +1017,12 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
         String dir = request.getParameter("cacheDir");
         if (Util.nullOrEmpty(dir))
             dir = CACHE_DIR;
-        JSPHelper.log.info("Trying to read archive from " + dir);
+        JSPHelper.doLogging("Trying to read archive from " + dir);
 
         Archive archive = readArchiveIfPresent(dir);
         if (archive != null)
         {
-            JSPHelper.log.info("Good, archive read from " + dir);
+            JSPHelper.doLogging("Good, archive read from " + dir);
 
         /*	// always set these three together
             session.setAttribute("userKey", "user");
@@ -1061,9 +1061,9 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
         Archive archive = readArchiveIfPresent(archiveDir);
 
         if (archive != null) {
-            JSPHelper.log.info("Good, existing archive found");
+            JSPHelper.doLogging("Good, existing archive found");
         } else {
-            JSPHelper.log.info("Creating a new archive in " + archiveDir);
+            JSPHelper.doLogging("Creating a new archive in " + archiveDir);
             archive = JSPHelper.preparedArchive(paramsMap, archiveDir, new ArrayList<>());
             //by this time the archive is created
             // add this to global maps archiveID->archive, archive->archiveID

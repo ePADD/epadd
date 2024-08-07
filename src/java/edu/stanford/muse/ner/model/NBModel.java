@@ -777,7 +777,7 @@ public class NBModel implements NERModel, Serializable {
                         csvwriter.close();
                         fw.close();
                     } catch (IOException e) {
-                        JSPHelper.log.warn("Unable to write docid to annotation map in csv file");
+                        JSPHelper.doLoggingWarnings("Unable to write docid to annotation map in csv file");
                         return;
                     }
             }

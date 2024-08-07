@@ -68,9 +68,25 @@ import java.util.function.Consumer;
  * All HTML/HTTP and presentation Java code must be present only in this file,
  * because the rest of the Muse code can be used in other, non-web apps.
  */
+
 public class JSPHelper {
 	public static final Logger		log						= LogManager.getLogger(JSPHelper.class);
 
+	public static void doLogging(Object o)
+	{
+		log.info(o);
+		System.out.println("Do logging: " + o);
+	}
+	public static void doLoggingWarnings(Object o)
+	{
+		log.warn(o);
+		System.out.println("Do warning logging: " + o);
+	}
+	public static void doLoggingError(Object o)
+	{
+		log.error(o);
+		System.out.println("Do error logging: " + o);
+	}
 	// jetty processes request params differently from tomcat
 	// tomcat assumes incoming params (both get/post) are iso8859.
 	// jetty assumes utf-8.

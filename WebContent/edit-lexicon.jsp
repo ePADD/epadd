@@ -16,14 +16,14 @@
 	// read the default lexicon from the session if no explicit parameter for the lexicon name
 	if (lex == null) {
 		lex = new Lexicon(archive.baseDir+ File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR, lexiconName);
-		JSPHelper.log.info ("Creating new lexicon: " + lexiconName);
+		JSPHelper.doLogging("Creating new lexicon: " + lexiconName);
 	}
 
 	// get the final name for lex
 	lexiconName = lex.name;
 	boolean isRegex = Lexicon.REGEX_LEXICON_NAME.equals (lexiconName);
 
-	JSPHelper.log.info ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
+	JSPHelper.doLogging("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
 
 	// ok, now lexiconName and lex are set up
 %>

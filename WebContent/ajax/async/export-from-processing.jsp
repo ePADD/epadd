@@ -64,7 +64,7 @@ Archive archive = JSPHelper.getArchive(params);
         resultObject.put("error", "No archive in session");
         resultObject.put("status", 1);
         //out.println (result);
-        JSPHelper.log.info(resultObject);
+        JSPHelper.doLogging(resultObject);
         return;
     }
     AddressBook addressBook = archive.addressBook;
@@ -80,7 +80,7 @@ Archive archive = JSPHelper.getArchive(params);
 	}else{
 
 
-	//JSPHelper.log.info("Saving archive in " + archive.baseDir);
+	//JSPHelper.doConsoleLogging("Saving archive in " + archive.baseDir);
 	try {
         ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
 	} catch (IOException e) {
@@ -142,7 +142,7 @@ Archive archive = JSPHelper.getArchive(params);
 	//Archive forDeliveryPublic = SimpleSessions.readArchiveIfPresent(folderPublic);
 	//With the introduction of 'Transfer only to Delivery' label, the set of docs exported to Delivery will not be same for Discovery.
 	docsToExport = archive.getDocsForExport(Archive.ExportMode.EXPORT_PROCESSING_TO_DISCOVERY, permLabelOnly);
-	JSPHelper.log.info("Exporting for discovery");
+	JSPHelper.doLogging("Exporting for discovery");
 	/*v6- why were we exporting correspondent authority file separately? Removed now.
 		try {
         String csv = archive.getCorrespondentAuthorityMapper().getAuthoritiesAsCSV ();
@@ -154,7 +154,7 @@ Archive archive = JSPHelper.getArchive(params);
         }
 	} catch(Exception e) {
 		out.println ("Warning: unable to write authorities CSV file into " + file);
-		JSPHelper.log.warn(e);
+		JSPHelper.doConsoleLoggingWarnings(e);
 	}
 	*/
 	try {
@@ -171,7 +171,7 @@ Archive archive = JSPHelper.getArchive(params);
 		//after export make sure to load the archive again. However, readArchiveIfPresent will not read from
 		//memroy if the archive and it's ID is already present in gloablArchiveMap (in SimpleSession).
 		//Hence first remove this from the map and then call readArchiveIfPresent method.
-		JSPHelper.log.info("Reading back archive...");
+		JSPHelper.doLogging("Reading back archive...");
 		session.setAttribute("statusProvider", new StaticStatusProvider("Reloading saved archive..."));
 		String baseDir = archive.baseDir;
 		ArchiveReaderWriter.removeFromGlobalArchiveMap(baseDir,archive);

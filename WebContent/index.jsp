@@ -5,7 +5,7 @@
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@include file="getArchive.jspf" %>
 <%
-	JSPHelper.log.info ("epadd v" + Version.version + " is running");
+	JSPHelper.doLogging("epadd v" + Version.version + " is running");
 	if (ModeConfig.isAppraisalMode())
 	{
 		if (archive != null) {

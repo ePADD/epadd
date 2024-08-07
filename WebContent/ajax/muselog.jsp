@@ -8,9 +8,9 @@ if (message != null) {
 		message = message.substring(1);
 
 	if (request.getParameter("warn") != null)
-		JSPHelper.log.warn("CLIENT LOG warning: " + message);
+		JSPHelper.doLoggingWarnings("CLIENT LOG warning: " + message);
 	else
-		JSPHelper.log.info("CLIENT LOG: " + message);
+		JSPHelper.doLogging("CLIENT LOG: " + message);
 }
 %>
     

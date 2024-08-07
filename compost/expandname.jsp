@@ -40,12 +40,12 @@
 
 	String name = request.getParameter("name");
 	String docId = request.getParameter("docId");
-	JSPHelper.log.info("DocId: " + docId + " ," + archive.getAllDocs().size());
+	JSPHelper.doLogging("DocId: " + docId + " ," + archive.getAllDocs().size());
 	EmailDocument ed = archive.docForId(docId);
 	if (ed == null) {
     	result.put("result", "Wrong docId!");
 	   	response.getWriter().write(result.toString(4));
-		JSPHelper.log.info("Wrong docId!");
+		JSPHelper.doLogging("Wrong docId!");
 		return;
 	} else {
 		String html = "<ol style='margin:0 0 0px'>";
@@ -78,6 +78,6 @@
 		result.put("result", html);
 	}
 
-	JSPHelper.log.info("Expand name: Response for: "+request.getParameter("name")+" is: "+result.toString(4));
+	JSPHelper.doLogging("Expand name: Response for: "+request.getParameter("name")+" is: "+result.toString(4));
 	response.getWriter().write(result.toString(4));
 %>

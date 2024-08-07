@@ -3060,7 +3060,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		int startIdx = indexOfUrlParam(allParams, param);
 		if (startIdx < 0)
 		{
-			// JSPHelper.log.warn
+			// JSPHelper.doConsoleLoggingWarnings
 			// ("unexpected! facet already selected but not in params: " +
 			// allParams);
 			return allParams;

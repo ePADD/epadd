@@ -35,7 +35,7 @@ try {
 	    obj.put("status", 1);
 	    obj.put("error", "No archive in session");
 	    out.println (obj);
-	    JSPHelper.log.info(obj);
+	    JSPHelper.doLogging(obj);
 	    return;
 	}
 
@@ -77,17 +77,17 @@ try {
 		long start = System.currentTimeMillis();
 		//list = Lens.getHits (names, lensPrefs, indexer, ab, baseURL, allDocs);
 		long end = System.currentTimeMillis();
-		//JSPHelper.log.info ("normal get hits " + (end - start) + " ms");
+		//JSPHelper.doConsoleLogging ("normal get hits " + (end - start) + " ms");
 		start = end;
 		if(allDocs == null){
-			   JSPHelper.log.warn("Alldocs object is null");
+			   JSPHelper.doLoggingWarnings("Alldocs object is null");
 		}
 		obj = Lens.detailsForTerm (term, pageScore, archive, ab, baseURL, allDocs);
 		((JSONObject) obj).put("url", "/epadd/browse?archiveID="+archiveID+"&adv-search=1&termBody=on&termSubject=on&termAttachments=on&termOriginalBody=on&term=\"" + term + "\"");
 		end = System.currentTimeMillis();
-		//JSPHelper.log.info ("quick get hits " + (end - start) + " ms");
+		//JSPHelper.doConsoleLogging ("quick get hits " + (end - start) + " ms");
 	} catch (Exception e) {
-		JSPHelper.log.warn ("Exception getting lens hits " + e);
+		JSPHelper.doLoggingWarnings ("Exception getting lens hits " + e);
 		Util.print_exception(e, JSPHelper.log);
 	}
 

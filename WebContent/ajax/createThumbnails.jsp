@@ -15,7 +15,7 @@
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
     String result = "",error="";
@@ -42,13 +42,13 @@
         obj.put("status", 0);
         obj.put("result", "Generated thumbnails for "+thumbgenerated+" attachments successfully!");
         out.println (obj);
-        //JSPHelper.log.info(obj);
+        //JSPHelper.doConsoleLogging(obj);
     }else{
         //means we had error. Build the response object accordingly.
         obj.put("status", 1);
         obj.put("error", error);
         out.println (obj);
-       // JSPHelper.log.info(obj);
+       // JSPHelper.doConsoleLogging(obj);
     }
 
 %>

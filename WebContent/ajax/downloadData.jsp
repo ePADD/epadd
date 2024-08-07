@@ -24,7 +24,7 @@ if(opID==null){
 //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
 
@@ -79,7 +79,7 @@ public void downloadData(Multimap<String,String> params, Consumer<StatusProvider
         resultJSON.put("error", "No archive in session");
         resultJSON.put("status", 1);
         //out.println (result);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
         return;
     }
 
@@ -266,7 +266,7 @@ try{
         downloadURL = /*appURL + "/" + */ contentURL;
         } catch(Exception e){
            e.printStackTrace();
-           JSPHelper.log.error("Error downloading emails. query: " + query + ". Exception: " + e);
+           JSPHelper.doLoggingError("Error downloading emails. query: " + query + ". Exception: " + e);
            error = "Error exporting emails";
         }
 
@@ -304,7 +304,7 @@ try{
                     line.add(l.get(j).toString());
 
                 }
-             //JSPHelper.log.info(i);
+             //JSPHelper.doConsoleLogging(i);
                  csvwriter.writeNext(line.toArray(new String[line.size()]));
              }
 

@@ -71,7 +71,7 @@
     }else {
         selectedDocs = new LinkedHashSet<>(archive.getAllDocs());
     }
-    JSPHelper.log.info ("exporting attachments for" + selectedDocs.size() + " docs");
+    JSPHelper.doLogging("exporting attachments for" + selectedDocs.size() + " docs");
 
 
 

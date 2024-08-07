@@ -19,7 +19,7 @@ if (archive == null) {
     obj.put("status", 1);
     obj.put("error", "No archive in session");
     out.println (obj);
-    JSPHelper.log.info(obj);
+    JSPHelper.doLogging(obj);
     return;
 }
 
@@ -30,12 +30,12 @@ Pair<Integer,String> status = lm.removeLabel(labelid);
 if(status.first==0){
     obj.put("status", 0);
     out.println (obj);
-    JSPHelper.log.info(obj);
+    JSPHelper.doLogging(obj);
 }else{
     //means the label was not deleted.. msg contains the error message.
     obj.put("status", 1);
     obj.put("error",status.second);
     out.println (obj);
-    JSPHelper.log.info(obj);
+    JSPHelper.doLogging(obj);
 }
 %>

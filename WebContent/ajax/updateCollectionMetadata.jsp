@@ -44,12 +44,12 @@ private void saveFile(HttpServletRequest request, String param, String filePath)
         while ((read = filecontent.read(bytes)) != -1) {
             out.write(bytes, 0, read);
         }
-        JSPHelper.log.info ("File " + fileName + " being uploaded to " + filePath);
+        JSPHelper.doLogging ("File " + fileName + " being uploaded to " + filePath);
     } catch (FileNotFoundException fne) {
-        JSPHelper.log.info ("You either did not specify a file to upload or are "
+        JSPHelper.doLogging ("You either did not specify a file to upload or are "
                 + "trying to upload a file to a protected or nonexistent "
                 + "location.");
-       JSPHelper.log.info  ("Problems during file upload. Error: " + fne.getMessage());
+       JSPHelper.doLogging  ("Problems during file upload. Error: " + fne.getMessage());
     } finally {
         if (out != null) {
             out.close();
@@ -89,7 +89,7 @@ try {
 
 	if (cm == null) {
 	    // not sure we want to init a new cm. we could simply bail out.
-	    //JSPHelper.log.warn ("No existing collection metadata in " + archiveBaseDir);
+	    //JSPHelper.doConsoleLoggingWarnings ("No existing collection metadata in " + archiveBaseDir);
 	    cm = new Archive.CollectionMetadata();
     }
 

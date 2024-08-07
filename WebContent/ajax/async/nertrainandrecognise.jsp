@@ -27,7 +27,7 @@
     //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
     String opID = request.getParameter("opID");
@@ -91,11 +91,11 @@
                 NERModel nerModel = null;
 //        = (SequenceModel) session.getAttribute("ner");
                 session.setAttribute("statusProvider", new StaticStatusProvider("Loading openNLPNER sequence model from: " + modelFile + "..."));
-                JSPHelper.log.info("Loading openNLPNER sequence model from: " + modelFile + " ...");
+                JSPHelper.doLogging("Loading openNLPNER sequence model from: " + modelFile + " ...");
                 nerModel = NBModel.loadModelFromRules(NBModel.MODEL_FILENAME);
 
                 if (nerModel == null) {
-                    JSPHelper.log.error("Could not load openNLPNER model from: " + modelFile);
+                    JSPHelper.doLoggingError("Could not load openNLPNER model from: " + modelFile);
                 } else {
                     NER ner = new NER(archive, nerModel);
                     session.setAttribute("statusProvider", ner);
@@ -110,18 +110,18 @@
                     double theta = 0.001;
                     archive.collectionMetadata.entityCounts = archive.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);//Archive.getEntitiesCountMapModuloThreshold(archive,theta);
 
-                    JSPHelper.log.info(ner.stats);
+                    JSPHelper.doLogging(ner.stats);
                 }
 //        archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
-                JSPHelper.log.info("Number of potentially sensitive messages " + archive.collectionMetadata.numPotentiallySensitiveMessages);
+                JSPHelper.doLogging("Number of potentially sensitive messages " + archive.collectionMetadata.numPotentiallySensitiveMessages);
 
                 session.removeAttribute("statusProvider");
                 resultPage = "browse-top?archiveID=" + archiveID;
             } catch (CancelledException ce) {
-                JSPHelper.log.warn("ePADD openNLPNER entity extraction cancelled by user");
+                JSPHelper.doLoggingWarnings("ePADD openNLPNER entity extraction cancelled by user");
                 cancelled = true;
             } catch (Exception e) {
-                JSPHelper.log.warn("Exception training/recognised named entities with epadd-ner");
+                JSPHelper.doLoggingWarnings("Exception training/recognised named entities with epadd-ner");
                 Util.print_exception(e, JSPHelper.log);
                 errorMessage = "Exception training/recognised named entities with epadd-ner";
                 // we'll leave archive in this

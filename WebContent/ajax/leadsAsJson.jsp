@@ -41,7 +41,7 @@ try {
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
 
@@ -80,7 +80,7 @@ try {
 	//	        for(Short k: map.keySet()){
 	//	            if(FeatureDictionary.OTHER==k)
 	//                    continue;
-	//	            JSPHelper.log.info("Entity type: "+k+", "+map.get(k).size());
+	//	            JSPHelper.doConsoleLogging("Entity type: "+k+", "+map.get(k).size());
 	//	            for(String e: map.get(k).keySet()){
 	//	                if(map.get(k).get(e)>1.0E-4)
 	//	                names.add(new Pair<>(e,new Float(1.0)));
@@ -125,10 +125,10 @@ try {
 			names.add(new Pair<>((String)e.getKey(),(Float)e.getValue()));
 
 		long ner_end_millis = System.currentTimeMillis();
-		JSPHelper.log.info("openNLPNER time " + (ner_end_millis - ner_start_millis) + " ms");
+		JSPHelper.doLogging("openNLPNER time " + (ner_end_millis - ner_start_millis) + " ms");
 
 		String DATE_FORMAT = "yyyyMMdd";
-		JSPHelper.log.info(termFreqMap.size() + " unique name(s) identified");
+		JSPHelper.doLogging(termFreqMap.size() + " unique name(s) identified");
 
 	}
 
@@ -146,17 +146,17 @@ try {
 		long start = System.currentTimeMillis();
 		//list = Lens.getHits (names, lensPrefs, indexer, ab, baseURL, allDocs);
 		long end = System.currentTimeMillis();
-		//JSPHelper.log.info ("normal get hits " + (end - start) + " ms");
+		//JSPHelper.doConsoleLogging ("normal get hits " + (end - start) + " ms");
 		start = end;
 		list = Lens.getHitsQuick (names, lensPrefs, archive, baseURL, allDocs);
 		end = System.currentTimeMillis();
-		//JSPHelper.log.info ("quick get hits " + (end - start) + " ms");
+		//JSPHelper.doConsoleLogging ("quick get hits " + (end - start) + " ms");
 	} catch (Exception e) {
-		JSPHelper.log.warn ("Exception getting lens hits " + e);
+		JSPHelper.doLoggingWarnings ("Exception getting lens hits " + e);
 		Util.print_exception(e, JSPHelper.log);
 		list = new ArrayList<>();
 	}
-	JSPHelper.log.info (list.size() + " hits after sorting");
+	JSPHelper.doLogging (list.size() + " hits after sorting");
 
 	JSONArray jsonArray = new JSONArray();
 	int index = 0;

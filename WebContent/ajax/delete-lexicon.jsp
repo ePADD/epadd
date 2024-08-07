@@ -20,7 +20,7 @@
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
     String lexiconName = request.getParameter("lexicon");
@@ -34,7 +34,7 @@
         obj.put("status", 1);
         obj.put("error", "No lexicon exists named "+lexiconName);
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
 	    }
 	//get the filename for this lexicon
@@ -47,6 +47,6 @@
 	result.put("status", 0);
 	result.put("archiveID",archiveID);//because on success we would like to redirect to some other page.
 	out.println (result.toString(4));
-	JSPHelper.log.info(result);
+	JSPHelper.doLogging(result);
 	return;
 %>

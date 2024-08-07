@@ -105,7 +105,7 @@ Options:
             exc.add(Short.parseShort(excS));
         }
         double theta = Double.parseDouble(cutoff);
-        JSPHelper.log.info("Params: " +
+        JSPHelper.doLogging("Params: " +
                 "Threshold: " + theta +
                 "\nexclude: " + exc +
                 "\ninclude: " + inc +

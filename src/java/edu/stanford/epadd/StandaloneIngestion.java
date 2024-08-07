@@ -2,7 +2,6 @@ package edu.stanford.epadd;
 
 import edu.stanford.muse.email.MboxEmailStore;
 import edu.stanford.muse.email.MuseEmailFetcher;
-import edu.stanford.muse.exceptions.MboxFolderNotReadableException;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.SimpleSessions;
@@ -45,7 +44,7 @@ public class StandaloneIngestion{
                 // mbox can only be with "desktop" mode, which means its a fixed cache dir (~/.muse/user by default)
                 // consider moving to its own directory under ~/.muse
                 String mboxFolderCountsCacheDir = SimpleSessions.getDefaultCacheDir();
-                JSPHelper.log.info ("getting folders and counts from fetcher #" + accountIdx);
+                JSPHelper.doLogging("getting folders and counts from fetcher #" + accountIdx);
                 // refresh_folders() will update the status and the account's folders div
                 mailFetcher.readFoldersInfos(accountIdx, mboxFolderCountsCacheDir);
             }

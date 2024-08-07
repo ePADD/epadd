@@ -115,7 +115,7 @@
 
 <%
     //The request params that post to this page can be huge, we may want JSPHelper to ignore the request rather than printing all the post params
-	JSPHelper.log.warn ("this is a warning");
+	JSPHelper.doLoggingWarnings("this is a warning");
     AddressBook ab = archive.addressBook;
 	String addressBookUpdate = request.getParameter("addressBookUpdate");
 	if (!Util.nullOrEmpty(addressBookUpdate)) {

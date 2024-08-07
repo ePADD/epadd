@@ -19,7 +19,7 @@
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
 
@@ -29,7 +29,7 @@
 	if (!Util.nullOrEmpty(lexiconName))
 		lex = archive.getLexicon(lexiconName);
 
-	JSPHelper.log.info ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
+	JSPHelper.doLogging ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
 
 	// now lexiconName and lex are both set correctly.
 	Collection<String> categories = lex.getRawMapFor(lex.getLexiconLanguage()).keySet();

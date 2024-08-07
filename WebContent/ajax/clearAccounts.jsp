@@ -16,7 +16,7 @@ synchronized (session) // synchronize, otherwise may lose the fetcher when multi
 	if (m != null) {
 		nAccounts = m.getNAccounts();
 		if (nAccounts > 0) {
-			JSPHelper.log.info ("Clearing email fetcher with " + m.getNAccounts() + " account(s)");
+			JSPHelper.doLogging ("Clearing email fetcher with " + m.getNAccounts() + " account(s)");
 			m.clearAccounts();
 		}
 	}

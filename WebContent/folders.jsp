@@ -91,7 +91,7 @@
 
 <%
 	int nAccounts = m == null ? 0 : m.getNAccounts();
-	JSPHelper.log.info ("Muse has " + nAccounts + " accounts");
+	JSPHelper.doLogging ("Muse has " + nAccounts + " accounts");
 	// we could parallelize the fetching of folders and counts for each fetcher at some point
 	// need to worry about displaying multiple statuses (statii ?) from each fetcher
 	// and aborting the others if one fails etc.
@@ -180,7 +180,7 @@
     		// mbox can only be with "desktop" mode, which means its a fixed cache dir (~/.muse/user by default)
     		// consider moving to its own directory under ~/.muse
     		String mboxFolderCountsCacheDir = SimpleSessions.getDefaultCacheDir();
-    		JSPHelper.log.info ("getting folders and counts from fetcher #" + accountIdx);
+    		JSPHelper.doLogging("getting folders and counts from fetcher #" + accountIdx);
            	// refresh_folders() will update the status and the account's folders div
             m.readFoldersInfos(accountIdx, mboxFolderCountsCacheDir);
   	    }

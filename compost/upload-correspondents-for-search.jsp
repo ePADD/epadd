@@ -53,7 +53,7 @@
                         csvreader.close();
                         fr.close();
                     } catch (IOException e) {
-                        JSPHelper.log.warn("Unable to read correspondents from csv file");
+                        JSPHelper.doLoggingWarnings("Unable to read correspondents from csv file");
 
                     }
 

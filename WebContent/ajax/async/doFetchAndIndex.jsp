@@ -16,7 +16,7 @@
     //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
     String opID = request.getParameter("opID");
@@ -156,26 +156,26 @@ public void doFetchAndIndex(Multimap<String,String> paramsMap, Consumer<StatusPr
 				            String dir = archive.baseDir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.SESSIONS_SUBDIR;
 
 				            String entityBookPath = dir + File.separatorChar + Archive.ENTITYBOOKMANAGER_SUFFIX;
-        JSPHelper.log.info("Archive created- Now saving it!!");
+        JSPHelper.doLogging("Archive created- Now saving it!!");
         setStatusProvider.accept(new StaticStatusProvider("Saving Archive..."));
 
 				            				ArchiveReaderWriter.saveArchive(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
-        JSPHelper.log.info("Archive saved");
+        JSPHelper.doLogging("Archive saved");
 
-        JSPHelper.log.info("Creating entitybooks by reading lucene index.");
+        JSPHelper.doLogging("Creating entitybooks by reading lucene index.");
         setStatusProvider.accept(new StaticStatusProvider("Finishing soon..."));
 
 				EntityBookManager entityBookManager = EntityBookManager.readObjectFromFiles(archive,entityBookPath);//this one ensures that we have entitybookmanager filled
-        JSPHelper.log.info("Entitybooks created successfully");
+        JSPHelper.doLogging("Entitybooks created successfully");
 				archive.setEntityBookManager(entityBookManager);
 				ArchiveReaderWriter.saveEntityBookManager(archive,Archive.Save_Archive_Mode.FRESH_CREATION);
-				JSPHelper.log.info("Entitybooks saved successfully (first time)");
+				JSPHelper.doLogging("Entitybooks saved successfully (first time)");
 
 				//After archive is saved recreate the cache.. For addressbook the cache gets created inside saveAddressBook.
 				//Do it for Lexicon cache.
-				JSPHelper.log.info("Filling lexicon summaries");
+				JSPHelper.doLogging("Filling lexicon summaries");
 				Lexicon.fillL1_Summary_all(archive,false);
-				JSPHelper.log.info("Lexicon summaries filled successfully");
+				JSPHelper.doLogging("Lexicon summaries filled successfully");
 
 				// (for all entities and also the summary objects- used for cache)
                 //Archive.cacheManager.cacheEntitiesListing(archiveID);
@@ -183,20 +183,20 @@ public void doFetchAndIndex(Multimap<String,String> paramsMap, Consumer<StatusPr
 			}
 			try {
 				String aStats = archive.getStats();
-				JSPHelper.log.info("ARCHIVESTATS-1: " + aStats);
+				JSPHelper.doLogging("ARCHIVESTATS-1: " + aStats);
 				Pair<String, String> p = Util.fieldsToCSV(archive.addressBook.getStats(), false);
-				JSPHelper.log.info("ADDRESSBOOKSTATS-1: " + p.getFirst());
-				JSPHelper.log.info("ADDRESSBOOKSTATS-2: " + p.getSecond());
+				JSPHelper.doLogging("ADDRESSBOOKSTATS-1: " + p.getFirst());
+				JSPHelper.doLogging("ADDRESSBOOKSTATS-2: " + p.getSecond());
 				p = Util.fieldsToCSV(archive.getIndexStats(), false);
-				JSPHelper.log.info("INDEXERSTATS-1: " + p.getFirst());
-				JSPHelper.log.info("INDEXERSTATS-2: " + p.getSecond());
+				JSPHelper.doLogging("INDEXERSTATS-1: " + p.getFirst());
+				JSPHelper.doLogging("INDEXERSTATS-2: " + p.getSecond());
 			} catch (Exception e) { 
 // 2022-09-14   add logging for exception
                 Util.print_exception("doFetchAndIndex.archive.getStats()", e, JSPHelper.log);
 			}
 	} catch (CancelledException ce) {
 		// op was cancelled, so just go back to where we must have been
-		JSPHelper.log.warn("Fetch groups and indexing cancelled by user");
+		JSPHelper.doLoggingWarnings("Fetch groups and indexing cancelled by user");
 		// need to be careful with incremental indexing here...
 		// may need to archive.clear();
 		cancelled = true;

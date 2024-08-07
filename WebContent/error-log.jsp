@@ -3,7 +3,7 @@
 <%
     // this JSP just ensures that we log the reasons for the error or exception to the warnings log, and then forwards to "/epadd/error"
     // if the page that met an error has a /ajax/ URL, it returns a JSON with status and error code
-    JSPHelper.log.warn ("Error in JSP, code " +  request.getAttribute("javax.servlet.error.status_code") + ", Exception type: " + request.getAttribute("javax.servlet.error.exception_type"));
+    JSPHelper.doLoggingWarnings("Error in JSP, code " +  request.getAttribute("javax.servlet.error.status_code") + ", Exception type: " + request.getAttribute("javax.servlet.error.exception_type"));
     Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
     if (throwable != null) {
         Util.print_exception(throwable, JSPHelper.log);

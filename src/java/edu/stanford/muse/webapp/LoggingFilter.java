@@ -3,12 +3,9 @@ package edu.stanford.muse.webapp;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-
-import edu.stanford.muse.webapp.JSPHelper;
 
 public class LoggingFilter implements Filter {
 
@@ -30,14 +27,14 @@ public class LoggingFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		JSPHelper.log.info("Filter LoggingFilter destroyed");
+		JSPHelper.doLogging("Filter LoggingFilter destroyed");
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void init(FilterConfig arg0) {
-		JSPHelper.log.info("Filter LoggingFilter initialized");
+		JSPHelper.doLogging("Filter LoggingFilter initialized");
 		// TODO Auto-generated method stub		
 	}
 }

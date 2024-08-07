@@ -71,7 +71,7 @@
 
 	if (!Util.nullOrEmpty(allAttachments)) {
 	    String cacheDir = archive.baseDir;
-        JSPHelper.log.info("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
+        JSPHelper.doLogging("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
 
 
         String extra_mesg = "";
@@ -86,7 +86,7 @@
         // create a dataset object to view
         int i = new Random().nextInt();
         String randomPrefix = String.format("%08x", i);
-        JSPHelper.log.info("Root dir for blobset top level page is " + cacheDir);
+        JSPHelper.doLogging("Root dir for blobset top level page is " + cacheDir);
         BlobSet bs = new BlobSet(cacheDir, new ArrayList<>(allAttachments), store);
 
         String appURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();

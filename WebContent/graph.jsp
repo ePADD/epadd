@@ -173,7 +173,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
             name = Config.DEFAULT_LEXICON;
             lex = archive.getLexicon(name);
         }
-        JSPHelper.log.info("req lex name = " + name + " session lex name = " + lex.name);
+        JSPHelper.doLogging("req lex name = " + name + " session lex name = " + lex.name);
         heading = "Lexicon Graph: " + lex.name;
         tableURL = "lexicon?archiveID="+archiveID;
     } else if ("people".equals(view)) {

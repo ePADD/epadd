@@ -68,7 +68,7 @@
 	JSONArray resultArray = new JSONArray();
 
 	String cacheDir = (String) JSPHelper.getSessionAttribute(session, "cacheDir");
-	JSPHelper.log.info("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
+	JSPHelper.doLogging("Will read attachments from blobs subdirectory off cache dir " + cacheDir);
     // convert req. params to a multimap, so that the rest of the code doesn't have to deal with httprequest directly
     Multimap<String, String> params = JSPHelper.convertRequestToMap(request);
     SearchResult inputSet = new SearchResult(archive,params);

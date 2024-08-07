@@ -12,9 +12,9 @@
     if (nerModel == null)
     {
         String modelFile = SequenceModel.MODEL_FILENAME;
-        JSPHelper.log.info("Loading openNLPNER model from: "+modelFile);
+        JSPHelper.doLogging("Loading openNLPNER model from: "+modelFile);
         nerModel = SequenceModel.loadModel(modelFile);
-        JSPHelper.log.info("Loaded ner model from "+modelFile);
+        JSPHelper.doLogging("Loaded ner model from "+modelFile);
         request.getSession().setAttribute("ner", nerModel);
     }
 %>

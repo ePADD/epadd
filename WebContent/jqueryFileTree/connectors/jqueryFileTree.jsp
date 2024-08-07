@@ -18,7 +18,7 @@
 		java.io.File[] rootFiles = java.io.File.listRoots();
 
 		if (rootFiles.length  > 1) { // this happens on Windows
-			JSPHelper.log.info ("Listing RootFiles = "  + String.join (",", Arrays.stream(rootFiles).map(f -> f.toString()).collect (Collectors.toList())));
+			JSPHelper.doLogging("Listing RootFiles = "  + String.join (",", Arrays.stream(rootFiles).map(f -> f.toString()).collect (Collectors.toList())));
 			out.print("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
 			for (java.io.File f : rootFiles) {
 				String rootFile = f.toString();

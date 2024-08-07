@@ -26,7 +26,7 @@
 //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
 //get the operation ID from the request parameter.
 String encoding = request.getCharacterEncoding();
-JSPHelper.log.info("request parameter encoding is " + encoding);
+JSPHelper.doLogging("request parameter encoding is " + encoding);
 
 String actionName = request.getRequestURI();
 String opID = request.getParameter("opID");

@@ -12,9 +12,9 @@ Archive archive = JSPHelper.getArchive(request);
 if (archive == null) {
 	if (ModeConfig.isAppraisalMode()) {
 		// in appraisal mode only: try and load it from the default dir.
-		JSPHelper.log.info ("No archive in session, trying to load default archive");
+		JSPHelper.doLogging("No archive in session, trying to load default archive");
 		archive = ArchiveReaderWriter.prepareAndLoadDefaultArchive(request); // if we don't have an archive and are running in desktop mode, try to load archive from given cachedir or from the default dir
-		JSPHelper.log.info ("Default archive = " + archive);
+		JSPHelper.doLogging("Default archive = " + archive);
 		System.out.println("call activateLicense())");
 
 		EmailConvert.activateLicense();

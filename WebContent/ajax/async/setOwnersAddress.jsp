@@ -14,7 +14,7 @@
     //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
     String opID = request.getParameter("opID");
@@ -67,7 +67,7 @@
         resultJSON.put("status", 1);
         resultJSON.put("error", "No archive in session");
         //out.println (obj);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
         return;
     }
     String owneraddresses = JSPHelper.getParam(paramsMap,"ownersaddress");
@@ -82,7 +82,7 @@
             resultJSON.put("status", 1);
         resultJSON.put("error",email+" is not a valid email addres!! Please check.");
         //out.println (obj);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
         return;
         }
     }
@@ -114,7 +114,7 @@ archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mapp
         resultJSON.put("status", 0);
         resultJSON.put("message","Owner's addresses set successfully!");
         //out.println (obj);
-        JSPHelper.log.info(resultJSON);
+        JSPHelper.doLogging(resultJSON);
 
 }
 

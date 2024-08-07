@@ -137,7 +137,7 @@
         ArchiveReaderWriter.saveCollectionMetadata(collection,Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
         //the updated metadata on disc will be out of sync. It manifests when saving this archive which
         //overwrites the latest on-disc PM data with stale in-memory data.
-        JSPHelper.log.info ("File metadata imported");
+        JSPHelper.doLogging("File metadata imported");
     }
 
     String fileParam = f.getName() + "/" + Archive.BAG_DATA_FOLDER+ "/" + Archive.IMAGES_SUBDIR + "/" + "bannerImage"; // always forward slashes please

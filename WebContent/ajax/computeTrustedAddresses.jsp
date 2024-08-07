@@ -15,7 +15,7 @@
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
     String trustedaddrstring = request.getParameter("trustedaddrs");
@@ -42,7 +42,7 @@
         obj.put("status", 1);
         obj.put("error", "Unable to recompute the addressbook!");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
     }else{
 //        archive.setAddressBook(newaddressbook);
   //      archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed
@@ -54,7 +54,7 @@
         obj.put("result",result);
         obj.put("message","Trusted addresses computed successfully!");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
 
     }
 

@@ -36,7 +36,7 @@
     }else {
         selectedDocs = new LinkedHashSet<>(archive.getAllDocs());
     }
-    JSPHelper.log.info ("download zip has " + selectedDocs.size() + " docs");
+    JSPHelper.doLogging ("download zip has " + selectedDocs.size() + " docs");
 
     /* Code to export attachments for the given set of documents as zip file*/
     Map<Blob, String> blobToErrorMessage = new LinkedHashMap<>();

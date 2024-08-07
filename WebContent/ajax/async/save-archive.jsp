@@ -19,7 +19,7 @@
 //<editor-fold desc="Setting up the operation object to execute this operation asynchronously">
     //get the operation ID from the request parameter.
     String encoding = request.getCharacterEncoding();
-    JSPHelper.log.info("request parameter encoding is " + encoding);
+    JSPHelper.doLogging("request parameter encoding is " + encoding);
 
     String actionName = request.getRequestURI();
     String opID = request.getParameter("opID");
@@ -79,7 +79,7 @@ Archive archive = JSPHelper.getArchive(params);
 try{
 ArchiveReaderWriter.saveArchive(archive, Archive.Save_Archive_Mode.FRESH_CREATION);
        // ArchiveReaderWriter.saveMutable_Incremental(archive);
-        JSPHelper.log.info ("session saved");
+        JSPHelper.doLogging ("session saved");
 	    resultJSON.put("status", 0);
 	    resultJSON.put("responseText", "Session saved");
 	    //out.println (result.toString(5));

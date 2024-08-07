@@ -35,7 +35,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeComparator;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1431,7 +1430,7 @@ public class IndexUtils {
 				else
 					startIdx = endIdx = Integer.parseInt(s);
 			} catch (Exception e) {
-				JSPHelper.log.error("Bad doc# string in query: " + s);
+				JSPHelper.doLoggingError("Bad doc# string in query: " + s);
 				continue;
 			}
 
@@ -1439,7 +1438,7 @@ public class IndexUtils {
 			{
 				if (idx < 0 || idx >= docs.size())
 				{
-					JSPHelper.log.error("Bad doc# " + idx + " # docs = " + docs.size() + " doc num spec = " + s);
+					JSPHelper.doLoggingError("Bad doc# " + idx + " # docs = " + docs.size() + " doc num spec = " + s);
 					continue;
 				}
 				result.add(docs.get(idx));
@@ -1459,7 +1458,7 @@ public class IndexUtils {
 			return result; // empty results
 		if (attachmentsStore == null)
 		{
-			JSPHelper.log.error("No attachments store!");
+			JSPHelper.doLoggingError("No attachments store!");
 			return result;
 		}
 

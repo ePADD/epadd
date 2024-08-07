@@ -66,13 +66,13 @@ Read all collections and crerate a map of institution name, count of archives fr
  */
 Map<String,RepositoryInfo> repositoryInfoMap = new LinkedHashMap<>();
       File topFile = new File(modeBaseDir);
-        JSPHelper.log.info("Reading collections from: " + modeBaseDir);
+        JSPHelper.doLogging("Reading collections from: " + modeBaseDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
             JSONObject obj = new JSONObject();
             obj.put("status", 1);
             obj.put("error", "Please place some archives in " + modeBaseDir);
             out.println (obj);
-            JSPHelper.log.info(obj);
+            JSPHelper.doLogging(obj);
             return;
 
         }  else {

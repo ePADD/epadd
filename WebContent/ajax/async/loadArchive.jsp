@@ -77,7 +77,7 @@ public void loadArchive(Multimap<String,String> params, Consumer<StatusProvider>
             dir = edu.stanford.muse.Config.REPO_DIR_DELIVERY + File.separator + dir;
         else if (ModeConfig.isDiscoveryMode())
             dir = edu.stanford.muse.Config.REPO_DIR_DISCOVERY + File.separator + dir;
-        JSPHelper.log.info("Loading archive from: "+dir);
+        JSPHelper.doLogging("Loading archive from: "+dir);
 
         Archive archive = null;
         if(ModeConfig.isDiscoveryMode())

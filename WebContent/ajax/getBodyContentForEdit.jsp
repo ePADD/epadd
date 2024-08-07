@@ -16,7 +16,7 @@
 
 	String datasetId = request.getParameter("docsetID");
 
-    //JSPHelper.log.info("getBodyContentForEdit: currentPage =" + currentPage + " || datasetId =" + datasetId );
+    //JSPHelper.doConsoleLogging("getBodyContentForEdit: currentPage =" + currentPage + " || datasetId =" + datasetId );
 
 	JSONObject result = new JSONObject();
 	Archive archive = JSPHelper.getArchive(request);
@@ -29,7 +29,7 @@
         	obj.put("status", 1);
 	        obj.put("error", "No dataset in session");
 	        out.println (obj);
-	        JSPHelper.log.info(obj);
+	        JSPHelper.doLogging(obj);
 	} else
 	{
             String emailBody = dataset.getPageForEdit(currentPage);

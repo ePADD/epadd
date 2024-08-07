@@ -25,9 +25,9 @@
 	int startPage = HTMLUtils.getIntParam(request, "startPage", -1);
 	int endPage = HTMLUtils.getIntParam(request, "endPage", -1);
 	boolean debug = HTMLUtils.getIntParam(request,"debug", 0) != 0;
-	JSPHelper.log.info("jogpage: " + debug + ", " + request.getParameter("debug"));
+	JSPHelper.doLogging("jogpage: " + debug + ", " + request.getParameter("debug"));
 
-	JSPHelper.log.info ("Fetching attachment pages (years) [" + startPage + ".." + endPage + "] for dataset " + datasetId);
+	JSPHelper.doLogging("Fetching attachment pages (years) [" + startPage + ".." + endPage + "] for dataset " + datasetId);
 
 	// output format needed: an external div, which contains individual page divs
 	out.println ("<div>");

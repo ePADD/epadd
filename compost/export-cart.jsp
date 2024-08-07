@@ -34,7 +34,7 @@
         selectedDocs.add(ed);
   }
 
-  JSPHelper.log.info ("original browse set has " + selectedDocs.size() + " docs");
+  JSPHelper.doLogging("original browse set has " + selectedDocs.size() + " docs");
 
   // either we do tags (+ or -) from selectedTags
   // or we do all docs from allDocs

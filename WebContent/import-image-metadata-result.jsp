@@ -107,7 +107,7 @@
 
     int nKeywordsExtracted = 0;
     for (File imageFile: imageFiles) {
-        JSPHelper.log.info ("imagefile = " + imageFile);
+        JSPHelper.doLogging("imagefile = " + imageFile);
         Blob b = fullNameToBlob.get (imageFile.getName().toLowerCase());
         if (b == null)
             continue;
@@ -122,7 +122,7 @@
                 String s = item.toString();
                 if (s.startsWith ("Keywords: ")) {
                     String keywordStr = s.substring ("Keywords: ".length());
-                    JSPHelper.log.info ("keyword : " + keywordStr);
+                    JSPHelper.doLogging("keyword : " + keywordStr);
                     nKeywordsExtracted++;
                     String[] keywords = keywordStr.split (",");
                     for (String keyword: keywords) {

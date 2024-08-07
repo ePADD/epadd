@@ -30,7 +30,7 @@
 				String titles = "";
 				if(hits.size()>0){
 					for(Pair<String,Double> hit: hits){
-						JSPHelper.log.info(hit.getSecond());
+						JSPHelper.doLogging(hit.getSecond());
 						titles += hit.getFirst()+"&nbsp"+hit.getSecond() +"kms<br>";
 					}
 				}
@@ -45,7 +45,7 @@
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		JSPHelper.log.info("Exception: " + e);
+		JSPHelper.doLogging("Exception: " + e);
 		return;
 	}
 	

@@ -414,7 +414,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
                         boolean facetAlreadySelected = facetParamIdx >= 0;
                         if (Util.nullOrEmpty(f.name))
                         {
-                            JSPHelper.log.info ("Warning; empty title!"); /* happened once */
+                            JSPHelper.doLogging("Warning; empty title!"); /* happened once */
                             continue;
                         }
                         String name = Util.ellipsize(f.name, 16);
@@ -577,7 +577,7 @@ a jquery ($) object that is overwritten when header.jsp is included! -->
         out.println("<script type=\"text/javascript\">var labelMap = "+labelMap+";var numMessages= "+browseSet.size()+";</script>\n");
         session.setAttribute (docsetID, browseSet);
 
-        JSPHelper.log.info ("Browsing attachments, " + browseSet.size() + " pages in dataset " + docsetID);
+        JSPHelper.doLogging("Browsing attachments, " + browseSet.size() + " pages in dataset " + docsetID);
 
     %>
 </div> <!--  browsepage -->

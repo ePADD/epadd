@@ -28,7 +28,7 @@
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
 	if (!Util.nullOrEmpty(query) && archive != null) {
@@ -60,7 +60,7 @@
 			if (emails != null) {
 				for (String email: emails) {
 					if (email.toLowerCase().contains(query)) {
-						JSPHelper.log.info("Adding name: " + names);
+						JSPHelper.doLogging("Adding name: " + names);
 						JSONObject s = new JSONObject();
 						s.put("value", email); // just get the first of the possibly many names
 						s.put("name", email); // just get the first of the possibly many names

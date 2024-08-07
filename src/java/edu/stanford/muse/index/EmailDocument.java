@@ -18,7 +18,6 @@ package edu.stanford.muse.index;
 
 
 import com.google.common.collect.LinkedHashMultimap;
-import edu.stanford.muse.AddressBookManager.MailingList;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.email.CalendarUtil;
@@ -36,9 +35,7 @@ import org.json.JSONObject;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.*;
-import java.security.GeneralSecurityException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 //import org.apache.commons.logging.Log;
@@ -828,9 +825,9 @@ public class EmailDocument extends DatedDocument implements Serializable
 		addressBook.organizeContacts();
 		//now fill summary object inside that addressbook.
 		Collection<Document> alldocs = new ArrayList<>(docs);
-		JSPHelper.log.info("Computing summary of the addressbook");
+		JSPHelper.doLogging("Computing summary of the addressbook");
 		addressBook.fillL1_SummaryObject(alldocs);
-		JSPHelper.log.info("Summary of the addressbook computed");
+		JSPHelper.doLogging("Summary of the addressbook computed");
 
 	}
 

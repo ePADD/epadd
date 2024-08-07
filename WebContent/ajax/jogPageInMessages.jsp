@@ -24,9 +24,9 @@
 
 	Pair <String, Boolean> result = null;
 
-	JSPHelper.log.info("jogpage: " + debug + ", " + request.getParameter("debug"));
+	JSPHelper.doLogging("jogpage: " + debug + ", " + request.getParameter("debug"));
 
-	JSPHelper.log.info ("Fetching pages [" + startPage + ".." + endPage + "] for dataset " + datasetId + " in preserve mode: "+ isPreserve);
+	JSPHelper.doLogging("Fetching pages [" + startPage + ".." + endPage + "] for dataset " + datasetId + " in preserve mode: "+ isPreserve);
 
 // output format needed: an external div, which contains individual page divs
 	out.println ("<div>");

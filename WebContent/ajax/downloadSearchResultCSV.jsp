@@ -59,7 +59,7 @@
     }else {
         selectedDocs = new LinkedHashSet<>(archive.getAllDocs());
     }
-    JSPHelper.log.info ("export csv has " + selectedDocs.size() + " docs");
+    JSPHelper.doLogging ("export csv has " + selectedDocs.size() + " docs");
 
     //Print csv headers information for search result csv format
     List<String> line = new ArrayList<>();

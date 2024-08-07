@@ -4,7 +4,7 @@
 <%@ page import="edu.stanford.epadd.util.OperationInfo" %>
 <%@ page import="org.json.JSONObject" %>
 <%
-	JSPHelper.log.warn ("\n\n\n------------------------------\nOperation cancelled!\n------------------------------\n\n\n");
+	JSPHelper.doLoggingWarnings("\n\n\n------------------------------\nOperation cancelled!\n------------------------------\n\n\n");
 	//read the operation ID for which the status needs to be returned..
 	String opID = request.getParameter("opID");
 	//check that opID should not be null else send a json to the client informing about this.

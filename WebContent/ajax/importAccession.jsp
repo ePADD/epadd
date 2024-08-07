@@ -66,7 +66,7 @@ if (!collectionDir.equals(baseDir))
 	    if(new File(collectionDir).listFiles().length==0)//means collection directory is empty
 	        {
     	    // delete the existing directory -- Q: should we give user a warning??
-	        JSPHelper.log.info ("Copying archive files from " + baseDir + " to " + collectionDir);
+	        JSPHelper.doLogging ("Copying archive files from " + baseDir + " to " + collectionDir);
 		    FileUtils.deleteDirectory(new File(collectionDir));
 		    //FileUtils.copyDirectory(new File(baseDir), new File(collectionDir), true /* preserve file date */);
                 Util.copy_directory(baseDir,collectionDir);
@@ -124,7 +124,7 @@ if (!collectionDir.equals(baseDir))
 	        result.put("archiveID",ArchiveReaderWriter.getArchiveIDForArchive(collection));
             }
 
-		JSPHelper.log.info ("Copy complete, creating new accession metadata object");
+		JSPHelper.doLogging ("Copy complete, creating new accession metadata object");
 
 		/* update the pm object with new accession info */
 		{
@@ -222,13 +222,13 @@ if (!collectionDir.equals(baseDir))
              eventData.put("folder", accessionFolder);
              collection.epaddPremis.createEvent(eventData);
         }
-            JSPHelper.log.info ("Accession metadata updated with imported file metadata");
+            JSPHelper.doLogging ("Accession metadata updated with imported file metadata");
         }
 
 	} catch (Exception e) {
 		result.put("status", 2);
         System.out.println("Exception in ImportAccession.jsp. " + e);
-        JSPHelper.log.error("Exception in ImportAccession.jsp. " + e);
+        JSPHelper.doLoggingError("Exception in ImportAccession.jsp. " + e);
 		result.put ("error", "Unable to import accession: " + e.getMessage());
 	}
 	out.println (result.toString(4));

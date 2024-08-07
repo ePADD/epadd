@@ -82,7 +82,7 @@
         modeBaseDir = Config.REPO_DIR_DISCOVERY;
 
       File topFile = new File(modeBaseDir);
-        JSPHelper.log.info("Reading collections from: " + modeBaseDir);
+        JSPHelper.doLogging("Reading collections from: " + modeBaseDir);
         if (!topFile.exists() || !topFile.isDirectory() || !topFile.canRead()) {
           out.println ("Please place some archives in " + modeBaseDir);
         }  else {

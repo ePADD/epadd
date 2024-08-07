@@ -27,14 +27,14 @@ epadd.post_message = function(mesg, warn)
 	if (warn)
 		data.warn = true;
 
-   /* $.ajax({
-		url: 'ajax/muselog.jsp',
-		type: 'POST',
-		data: data,
-		retryLimit: 3,
-		async: true
-	});*/
-	//$.post('/ajax/muselog.jsp', {'message': mesg.toString()});
+    // $.ajax({
+	// 	url: 'ajax/muselog.jsp',
+	// 	type: 'POST',
+	// 	data: data,
+	// 	retryLimit: 3,
+	// 	async: true
+	// });
+	// $.post('/ajax/muselog.jsp', {'message': mesg.toString()});
 };
 
 epadd.log = function(mesg, warn)

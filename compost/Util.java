@@ -1810,7 +1810,7 @@ public static String excludeUrlParam(String allParams, String param)
 	int startIdx = indexOfUrlParam(allParams, param);
 	if (startIdx < 0)
 	{
-		//JSPHelper.log.warn ("unexpected! facet already selected but not in params: " + allParams);
+		//JSPHelper.doConsoleLoggingWarnings ("unexpected! facet already selected but not in params: " + allParams);
 		return allParams;
 	}
 

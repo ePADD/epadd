@@ -416,7 +416,7 @@ public class SearchResult {
             //add this information to body highlight object under "contact" key
             inputSet.commonHLInfo.addContact(ci);
         } catch (Exception e) {
-            JSPHelper.log.warn(cid + " is not a contact id");
+            JSPHelper.doConsoleLoggingWarnings(cid + " is not a contact id");
         }
         return filterForCorrespondents(inputSet, correspondentName, true, true, true, true); // for contact id, all the 4 fields - to/from/cc/bcc are enabled*/
         return inputSet;

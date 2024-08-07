@@ -153,7 +153,7 @@ public class MailingList implements java.io.Serializable {
 				{
 					MailingList ml = ab.mailingListMap.get(c); // should be non-null, see above
 					if(ml==null)
-						JSPHelper.log.warn("found null");
+						JSPHelper.doLoggingWarnings("found null");
 					c.mailingListState |= MAYBE; // if only 1 toaddr, definitely ML, otherwise maybe
 					if (froms != null)
 						for (Address from: froms)

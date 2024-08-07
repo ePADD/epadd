@@ -29,7 +29,6 @@ import edu.stanford.muse.webapp.JSPHelper;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 //import org.apache.commons.logging.Log;
@@ -54,16 +53,12 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.automaton.RegExp;
 
-import javax.mail.Address;
 import javax.mail.Header;
 
 import java.io.*;
 import java.net.URL;
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /*
  * this class is pretty closely tied with the summarizer (which generates cards  - Muse only.).
@@ -2124,12 +2119,12 @@ is what we want.
 	String getPreservedContents(org.apache.lucene.document.Document doc) {
 		String contents;
 		try {
-			JSPHelper.log.info("getPreservedContents: get body-preserved");
+			JSPHelper.doLogging("getPreservedContents: get body-preserved");
 			contents = doc.get("body-preserved");
 
 			if (contents == null) {
 				contents = doc.get("body");
-				JSPHelper.log.info("getPreservedContents: get body!!!");
+				JSPHelper.doLogging("getPreservedContents: get body!!!");
 			}
 
 		} catch (Exception e) {

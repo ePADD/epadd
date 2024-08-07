@@ -64,7 +64,7 @@ public class EmailRenderer {
 			contentsText = "To be implemented";
 
 		} else {
-			JSPHelper.log.warn("Unsupported Document: " + d.getClass().getName());
+			JSPHelper.doLoggingWarnings("Unsupported Document: " + d.getClass().getName());
 			contentsText = "";
 		}
 
@@ -159,7 +159,7 @@ public class EmailRenderer {
 									thumbnailURL = "images/sorry.png";
 							}
 						} else {
-							JSPHelper.log.warn("attachments store is null!");
+							JSPHelper.doLoggingWarnings("attachments store is null!");
 							// no return, soldier on even if attachments unavailable for some reason
 						}
 
@@ -191,9 +191,9 @@ public class EmailRenderer {
 							// page.append ("<a>\n");
 
 							if (thumbnailURL == null)
-								JSPHelper.log.info("No thumbnail for " + attachment);
+								JSPHelper.doLogging("No thumbnail for " + attachment);
 							if (attachmentURL == null)
-								JSPHelper.log.info("No attachment URL for " + attachment);
+								JSPHelper.doLogging("No attachment URL for " + attachment);
 						}
 
 						//if cleanedup.notequals(normalized) then normalization happened. Download original file (cleanedupfileURL)
@@ -238,7 +238,7 @@ public class EmailRenderer {
 			 */
 			html = "To be implemented";
 		} else {
-			JSPHelper.log.warn("Unsupported Document: " + d.getClass().getName());
+			JSPHelper.doLoggingWarnings("Unsupported Document: " + d.getClass().getName());
 			html = "";
 		}
 
@@ -306,7 +306,7 @@ public class EmailRenderer {
 				String str = a.toString();
 				thisAddrStr = str;
 				outputLineLength += str.length();
-				JSPHelper.log.warn("Address is not an instance of InternetAddress - is of instance: " + a.getClass().getName() + ", highlighting won't work.");
+				JSPHelper.doLoggingWarnings("Address is not an instance of InternetAddress - is of instance: " + a.getClass().getName() + ", highlighting won't work.");
 			}
 
 			if (i + 1 < addrs.length)
@@ -614,7 +614,7 @@ public class EmailRenderer {
 				}
 			}
 		} else
-			JSPHelper.log.warn("attachments store is null!");
+			JSPHelper.doLoggingWarnings("attachments store is null!");
 
 
 		if(thumbnailURL==null)
@@ -840,9 +840,8 @@ public class EmailRenderer {
 		// result.append ("\n" + style + "ID: " + "</td><td>" + messageId + " " + messageLink + "</td></tr>");
 		result.append("</table>\n"); // end docheader table
 
-		if (ModeConfig.isPublicMode() || ModeConfig.isDeliveryMode())
+		if (ModeConfig.isPublicMode())
 			return new StringBuilder(Util.maskEmailDomain(result.toString()));
-
 		return result;
 	}
 

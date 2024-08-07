@@ -97,7 +97,7 @@
 		<%=nBlobsExported%> attachments exported to <%=Util.escapeHTML(dir)%>.<br/>
 
         <%
-        JSPHelper.log.info ("nBlobsExported: " + nBlobsExported);
+        JSPHelper.doLogging ("nBlobsExported: " + nBlobsExported);
 
         if (blobToErrorMessage.size() > 0) {
             out.println (Util.pluralize (blobToErrorMessage.size(), "error") + "occurred.");

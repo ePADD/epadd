@@ -180,11 +180,11 @@ public class EntityFeature implements StatusProvider, Serializable {
             efts = EntityFeature.getMatches(name.toLowerCase(),archive);
         else
             efts = EntityFeature.getAbbreviations(name.toLowerCase(),archive);
-        JSPHelper.log.info("Found expansions: "+efts.size()+" for "+name);
+        JSPHelper.doLogging("Found expansions: "+efts.size()+" for "+name);
 
         Set<String> ownAddr = archive.addressBook.getOwnAddrs();
         if(efts == null){
-            JSPHelper.log.warn("Matching efs for: " + name + " are null.");
+            JSPHelper.doLoggingWarnings("Matching efs for: " + name + " are null.");
 //            result.put("result", "Never seen this name before");
 //            response.getWriter().write(result.toString(4));
             return null;
@@ -340,7 +340,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 				doc.add(new TextField(TID, key, Field.Store.YES));
 				w.addDocument(doc);
 				if (c % 1000 == 0) {
-					JSPHelper.log.info("Extracted and wrote doc for: " + c + " of " + features.keySet().size());
+					JSPHelper.doLogging("Extracted and wrote doc for: " + c + " of " + features.keySet().size());
 					status = "Indexed " + c + "/" + features.size() + " mixtures";
 					pctComplete = ((double) c * 50) / ((double) features.size()) + 50;
 				}
@@ -404,7 +404,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 				}
 
 				if (di % 1000 == 0) {
-					JSPHelper.log.info("Done analysing documents: " + di + " of: " + docs.size());
+					JSPHelper.doLogging("Done analysing documents: " + di + " of: " + docs.size());
 					status = "Analyzed " + di + "/" + docs.size() + " email documents";
 					pctComplete = ((double) di * 50) / (double) docs.size();
 				}

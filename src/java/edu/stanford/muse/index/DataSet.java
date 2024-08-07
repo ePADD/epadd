@@ -104,7 +104,7 @@ public class DataSet {
 //					authorisedEntities.put(str, tmpauth.get(str).sources);
 //				}
 //			} catch (Exception e) {
-//                JSPHelper.log.warn("Unable to find existing authorities file:" + filename + " :" + e.getMessage());
+//                JSPHelper.doConsoleLoggingWarnings("Unable to find existing authorities file:" + filename + " :" + e.getMessage());
 //			}
 //		}
         try {
@@ -154,7 +154,7 @@ public class DataSet {
 //					authorisedEntities.put(str, tmpauth.get(str).sources);
 //				}
 //			} catch (Exception e) {
-//                JSPHelper.log.warn("Unable to find existing authorities file:" + filename + " :" + e.getMessage());
+//                JSPHelper.doConsoleLoggingWarnings("Unable to find existing authorities file:" + filename + " :" + e.getMessage());
 //			}
 //		}
         try {

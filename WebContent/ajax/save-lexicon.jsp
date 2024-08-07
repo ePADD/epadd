@@ -19,7 +19,7 @@
         obj.put("status", 1);
         obj.put("error", "No archive in session");
         out.println (obj);
-        JSPHelper.log.info(obj);
+        JSPHelper.doLogging(obj);
         return;
     }
     String lexiconName = request.getParameter("lexicon");
@@ -34,12 +34,12 @@
 	{
 		// it doesn't already exist, we have to create a brand new one
 		lex = new Lexicon(archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.LEXICONS_SUBDIR, lexiconName);
-		JSPHelper.log.info ("Creating new lexicon: " + lexiconName);
+		JSPHelper.doLogging ("Creating new lexicon: " + lexiconName);
 	}
 	else
-		JSPHelper.log.info("Updating existing lexicon: " + lexiconName);
+		JSPHelper.doLogging("Updating existing lexicon: " + lexiconName);
 
-	JSPHelper.log.info ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
+	JSPHelper.doLogging ("lex lexiconName = " + lexiconName + " loaded lex's lexiconName = " + ((lex == null) ? "(lex is null)" : lex.name));
 
 	// now lexiconName and lex are both set correctly.
 	String language = "english";
@@ -59,7 +59,7 @@
 				continue;
 			newMap.put(key, val);
 		}
-		JSPHelper.log.info ("updating lexicon for " + lexiconName + " in language " + language + " with " + newMap.size() + " entries");
+		JSPHelper.doLogging ("updating lexicon for " + lexiconName + " in language " + language + " with " + newMap.size() + " entries");
 		// should we clear an existing lex first?
 		lex.update(language, newMap);
 		lex.save(archive.baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER + File.separator + "lexicons", language,archive);

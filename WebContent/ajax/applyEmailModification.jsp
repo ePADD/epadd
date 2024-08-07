@@ -22,7 +22,7 @@ if (archive == null) {
     obj.put("status", 1);
     obj.put("error", "No archive in session");
     out.println (obj);
-    JSPHelper.log.info(obj);
+    JSPHelper.doLogging(obj);
     return;
 }
 String docsetID = request.getParameter("docsetID");
@@ -82,5 +82,5 @@ if (error)
     obj.put ("errorMessage", errorMessage);
 obj.put("nMessages", nMessages);
 out.println (obj);
-JSPHelper.log.info("AJAX response: " + obj);
+JSPHelper.doLogging("AJAX response: " + obj);
 %>

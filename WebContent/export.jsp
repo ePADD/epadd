@@ -195,11 +195,11 @@ Error: Export is only available in processing or appraisal modes!
             <div class="one-line">
                 <fieldset name="message-filter" id="message-filter" class="comman-radio">
                      <label class="radio-inline">
-                        <input name="message-filter" value="non-restricted" type="radio">
+                        <input name="message-filter" value="non-restricted" type="radio" checked>
                         <span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-filter-non-restricted")%></span>
                     </label>
                     <label class="radio-inline">
-                        <input name="message-filter" value="permissive" type="radio" checked>
+                        <input name="message-filter" value="permissive" type="radio">
                         <span class="text-radio"><%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "export.mess-filter-permissive")%></span>
                     </label>
                 </fieldset>

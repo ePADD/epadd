@@ -10,8 +10,5 @@
         <module name="epadd" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="epadd" target="11" />
-    </bytecodeTargetLevel>
   </component>
 </project>

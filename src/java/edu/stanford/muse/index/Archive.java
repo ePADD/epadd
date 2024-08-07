@@ -1783,7 +1783,7 @@ after maskEmailDomain.
         //change base directory
         setBaseDir(out_dir);
 
-        if (exportInPublicMode|| exportInDelivery) {
+        if (exportInPublicMode) {
             List<Document> docs = this.getAllDocs();
             List<EmailDocument> eds = new ArrayList<>();
             for (Document doc : docs)
