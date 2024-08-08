@@ -354,7 +354,9 @@ public class LabelManager implements Serializable{
             //only non-restricted labels are exported[even if of date type].. In labelDocMap keep only those docs which are being exported.
             tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->entry.getValue().getType()!=LabType.RESTRICTION).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
             //Following requirement #260 on github don't export system labels.
-            tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry->!entry.getValue().isSysLabel()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+            if(mode== Archive.ExportMode.EXPORT_PROCESSING_TO_DISCOVERY) {
+                tmp.labelInfoMap = tmp.labelInfoMap.entrySet().stream().filter(entry -> !entry.getValue().isSysLabel()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            }
             tmp.docToLabelID.keySet().retainAll(docids);
             //alsow, following #260, label 'Reviewed' to be removed if exported to discovery module.
             if(mode== Archive.ExportMode.EXPORT_PROCESSING_TO_DISCOVERY){
@@ -368,9 +370,7 @@ public class LabelManager implements Serializable{
             if(mode == Archive.ExportMode.EXPORT_PROCESSING_TO_DELIVERY){
                 labelidsleft.remove(LABELID_REVIEWED);
             }
-
             //Now remove all those lables in docToLabelID map which don't appear in labelidsleft.
-
             Multimap<String,String> tmpdocToLabelID = LinkedHashMultimap.create();
             for(String docid: tmp.docToLabelID.keySet()){
                     Collection<String> labids = new LinkedHashSet<>(tmp.docToLabelID.get(docid));
