@@ -16,9 +16,9 @@
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="jqueryFileTree/jqueryFileTree.js"></script>
-	<script src="js/filepicker.js" type="text/javascript"></script>
+	<script src="js/filepicker.js?v=1.1" type="text/javascript"></script>
     <script src="js/muse.js" type="text/javascript"></script>
-	<script src="js/epadd.js" type="text/javascript"></script>
+	<script src="js/epadd.js?v=1.1" type="text/javascript"></script>
 
 	<style>
 		.btn-default { height: 37px; }

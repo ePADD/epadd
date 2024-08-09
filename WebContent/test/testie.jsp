@@ -26,11 +26,11 @@
 	
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/muse.js" type="text/javascript"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 	
 	<!-- For tool-tips -->
 	<script type='text/javascript' src='js/jquery.qtip-1.0.js'></script>
-	<script type='text/javascript' src='js/utils.js'></script>
+	<script type='text/javascript' src='js/utils.js?v=1.1'></script>
 	<script type='text/javascript' src='js/testpageutils.js'></script>
 	
 <jsp:include page="header.jspf"/>

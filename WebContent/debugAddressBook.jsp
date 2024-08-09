@@ -24,17 +24,17 @@
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<jsp:include page="css/css.jsp"/>
-	<link rel="stylesheet" href="css/sidebar.css">
+	<link rel="stylesheet" href="css/sidebar.css?v=1.1">
 
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script src="js/sidebar.js?v=1.1"></script>
 
 	<script type="text/javascript" src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 </head>
 <body>
 <%@include file="header.jspf"%>

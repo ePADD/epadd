@@ -558,7 +558,7 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
                 String htmlcontent = getHTMLAnnotatedDocumentContents(archive,"<body>"+content+"</body>",ed.date,ed.getUniqueId(),null /* regex to highlight */,termsToHighlight,ewid,null,true);
                 System.out.println("Done highlighting.");
                 htmlcontent += "<br>------<br>"+content.replaceAll("\n","<br>\n");
-                htmlcontent = "<link href=\"epadd.css\" rel=\"stylesheet\" type=\"text/css\"/>\n"+htmlcontent;
+                htmlcontent = "<link href=\"epadd.css?v=1.1\" rel=\"stylesheet\" type=\"text/css\"/>\n"+htmlcontent;
                 FileWriter fw = new FileWriter(new File(tmpDir+(fi++)+".html"));
                 fw.write(htmlcontent);
                 System.out.println("wrote to " + tmpDir + (fi - 1) + ".html");

@@ -22,7 +22,7 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<script src="js/muse.js" type="text/javascript"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 </head>
 <body class="color:gray;background-color:white;">
 <%@include file="header.jspf"%>

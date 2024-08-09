@@ -59,10 +59,10 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<jsp:include page="css/css.jsp"/>
-	<script type="text/javascript" src="js/stacktrace.js"></script>
+	<script type="text/javascript" src="js/stacktrace.js?v=1.1"></script>
 	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
-	<script type="text/javascript" src="js/showFolders.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
+	<script type="text/javascript" src="js/showFolders.js?v=1.1"></script>
 
 	<script type="text/javascript">
 	     var numFoldersPerRow = <%=numFoldersPerRow%>;

@@ -17,7 +17,7 @@
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css"/>
 	<jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main.css?v=1.1">
     <link rel="stylesheet" href="js/jquery-ui/jquery-ui.css">
     <link rel="stylesheet" href="js/jquery-ui/jquery-ui.theme.css">
 
@@ -26,11 +26,11 @@
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/jquery-ui/jquery-ui.js"></script>
 
-    <script src="js/selectpicker.js"></script>
+    <script src="js/selectpicker.js?v=1.1"></script>
 	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script src="js/sidebar.js?v=1.1"></script>
 	<script type="text/javascript" src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 </head>
 <body>
 <%-- Header.jspf was present here earlier --%>

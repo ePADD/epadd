@@ -8,7 +8,7 @@
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
     <%@ include file="css/css.jsp"%>
-    <script src="js/epadd.js"></script>
+    <script src="js/epadd.js?v=1.1"></script>
 </head>
 <body>
 <%@include file="header.jspf"%>

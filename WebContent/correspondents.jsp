@@ -17,8 +17,8 @@
 	<!-- Optional theme -->
 
 	<jsp:include page="css/css.jsp"/>
-	<link rel="stylesheet" href="css/sidebar.css">
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/sidebar.css?v=1.1">
+	<link rel="stylesheet" href="css/main.css?v=1.1">
 
 	<%-- jquery was present here earlier--%>
 	<script src="js/jquery.js"></script>
@@ -28,11 +28,11 @@
     <script src="js/jquery.dataTables.select.min.js"></script>
 
 	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script src="js/sidebar.js?v=1.1"></script>
 
 	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
-    <script type="text/javascript" src="js/statusUpdate.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
+    <script type="text/javascript" src="js/statusUpdate.js?v=1.1"></script>
 
 	<style type="text/css">
       .js #people {display: none;}

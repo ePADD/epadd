@@ -25,17 +25,17 @@
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<jsp:include page="css/css.jsp"/>
-	<link rel="stylesheet" href="css/sidebar.css">
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/sidebar.css?v=1.1">
+	<link rel="stylesheet" href="css/main.css?v=1.1">
 
 <%-- jquery was present here earlier --%>
 	<script src="js/jquery.js"></script>
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script src="js/sidebar.js?v=1.1"></script>
 
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 
 	<style>
 		div.cta-box { width:270px; height: 200px; display: inline-block; border-color:black; margin:10px; cursor: pointer; }

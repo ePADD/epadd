@@ -11,17 +11,17 @@
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 
     <jsp:include page="css/css.jsp"/>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 	<style>
 		.hfill {padding:10px;}
 		.vfill { height:10px;}
 	</style>
 	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 </head>
 
 <%@include file="header.jspf"%>
-<script type="text/javascript" src="js/statusUpdate.js"></script>
+<script type="text/javascript" src="js/statusUpdate.js?v=1.1"></script>
 <%@include file="div_status.jspf"%>
 <%@include file="getArchive.jspf" %>
 <%writeProfileBlock(out, archive,"Named entity extraction");

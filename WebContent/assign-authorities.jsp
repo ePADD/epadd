@@ -16,7 +16,7 @@
 
 	<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/sidebar.css?v=1.1">
 	<jsp:include page="css/css.jsp"/>
 
     <script src="js/jquery.js"></script>
@@ -28,12 +28,12 @@
 
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script src="js/sidebar.js?v=1.1"></script>
 
 	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 
-	<script src="js/utils.js" type="text/javascript"></script>	
+	<script src="js/utils.js?v=1.1" type="text/javascript"></script>
 
 	<style type="text/css">
       .js table {display: none; font-size: 14px; vertical-align: top;}

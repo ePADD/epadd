@@ -15,7 +15,7 @@
     <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../WebContent/js/filepicker.js" type="text/javascript"></script>
 
-    <script src="../WebContent/js/epadd.js"></script>
+    <script src="../WebContent/js/epadd.js?v=1.1"></script>
 
     <style type="text/css">
         .go-button, .go-button:hover { background-color: #0075bb; color: #fff; }  /* saumya wants this always filled in, not just on hover */

@@ -37,7 +37,7 @@
 
     <jsp:include page="css/css.jsp"/>
     <script src="js/muse.js"></script>
-    <script src="js/epadd.js"></script>
+    <script src="js/epadd.js?v=1.1"></script>
 </head>
 <body>
 <%@include file="header.jspf"%>

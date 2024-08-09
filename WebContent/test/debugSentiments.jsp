@@ -69,7 +69,7 @@
 <Title>Sentiments</Title>
 <jsp:include page="../css/css.jsp"/>
 <link rel="icon" type="image/png" href="images/muse-favicon.png">
-<script type="text/javascript" src="js/protovis.js"></script>
+<script type="text/javascript" src="js/protovis.js?v=1.1"></script>
 <script type="text/javascript" src="js/muse.js"></script>
 </head>
 <body>

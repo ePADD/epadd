@@ -19,7 +19,7 @@
 	<!-- Optional theme -->
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/muse.js" type="text/javascript"></script>
-	<script src="js/epadd.js" type="text/javascript"></script>
+	<script src="js/epadd.js?v=1.1" type="text/javascript"></script>
 
 	<style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}

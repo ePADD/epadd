@@ -33,8 +33,8 @@
     <link href="jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="css/selectpicker.css" rel="stylesheet" type="text/css" media="screen" />
     <jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/sidebar.css?v=1.1">
+    <link rel="stylesheet" href="css/main.css?v=1.1">
     <link rel="stylesheet" href="css/bootstrap-dialog.css">
 
     <script src="js/jquery.js"></script>
@@ -43,13 +43,13 @@
     <script src="jqueryFileTree/jqueryFileTree.js"></script>
     <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
-    <script src="js/filepicker.js"></script>
-    <script src="js/selectpicker.js"></script>
+    <script src="js/filepicker.js?v=1.1"></script>
+    <script src="js/selectpicker.js?v=1.1"></script>
     <script src="js/modernizr.min.js"></script>
-    <script src="js/sidebar.js"></script>
+    <script src="js/sidebar.js?v=1.1"></script>
 
     <script src="js/muse.js"></script>
-    <script src="js/epadd.js"></script>
+    <script src="js/epadd.js?v=1.1"></script>
     <script src="js/bootstrap-dialog.js"></script>
 
     <style>

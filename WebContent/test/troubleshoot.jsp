@@ -15,11 +15,11 @@
 <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
 <jsp:include page="../css/css.jsp"/>
 <jsp:include page="../header.jspf"/>
-<script type="text/javascript" src="js/statusUpdate.js"></script>
+<script type="text/javascript" src="js/statusUpdate.js?v=1.1"></script>
 <%@include file="../div_status.jspf"%>
 
 <script src="js/jquery.js"></script>
-<script src="js/epadd.js"></script>
+<script src="js/epadd.js?v=1.1"></script>
 	<style>
 		.hfill {padding:10px;}
 		.vfill { height:10px;}

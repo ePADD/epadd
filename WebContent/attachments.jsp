@@ -35,10 +35,10 @@
 	<link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/modernizr.min.js"></script>
-    <script src="js/selectpicker.js"></script>
+    <script src="js/selectpicker.js?v=1.1"></script>
 
 	<script type="text/javascript" src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 	
 	<style type="text/css">
       .js #attachments {display: none;}

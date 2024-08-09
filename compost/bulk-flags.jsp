@@ -34,13 +34,13 @@
     <link rel="stylesheet" href="../WebContent/bootstrap/dist/css/bootstrap.min.css">
     <link href="../WebContent/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <jsp:include page="../WebContent/css/css.jsp"/>
-    <link rel="stylesheet" href="../WebContent/css/epadd.css">
+    <link rel="stylesheet" href="../WebContent/css/epadd.css?v=1.1">
 
     <script src="../WebContent/js/jquery.js"></script>
     <script src="../WebContent/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <script src="../WebContent/js/epadd.js"></script>
+    <script src="../WebContent/js/epadd.js?v=1.1"></script>
     <style>
         div.section {margin-top: 15px; margin-bottom: 25px;}
         div.section .btn-default { position: absolute; right: 50px;}

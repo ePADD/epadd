@@ -45,7 +45,7 @@
 				out.println (result.first);
 				String redacted = result.second.booleanValue()== true? "true" : "false" ;
 				out.println ("\n");
-                out.println ("<script src=\"js/epadd.js\"></script>");
+				out.println ("<script src=\"js/epadd.js?v=1.1\"></script>");
 				out.println ("<script>initialiseqtip(); toggleEditImage(" + redacted + "," + isPreserve + ")</script>");
 			} catch (Exception e) {
 				out.println ("Sorry... exception reading page content: " + e);

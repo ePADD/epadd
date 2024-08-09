@@ -24,7 +24,7 @@
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	
 	<jsp:include page="css/css.jsp"/>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 	<style type="text/css">
 		.js #terms {display: none;}
 	</style>

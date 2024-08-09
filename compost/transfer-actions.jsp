@@ -19,8 +19,8 @@
     <script src="../WebContent/js/jquery.js"></script>
     <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../WebContent/jqueryFileTree/jqueryFileTree.js"></script>
-	<script src="../WebContent/js/epadd.js"></script>
-	<script src="../WebContent/js/filepicker.js"></script>
+	<script src="../WebContent/js/epadd.js?v=1.1"></script>
+	<script src="../WebContent/js/filepicker.js?v=1.1"></script>
 </head>
 
 <body>

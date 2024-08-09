@@ -21,7 +21,7 @@
 
   <jsp:include page="../WebContent/css/css.jsp"/>
   <script src="../WebContent/js/muse.js"></script>
-  <script src="../WebContent/js/epadd.js"></script>
+  <script src="../WebContent/js/epadd.js?v=1.1"></script>
 </head>
 <body>
 <%@include file="../WebContent/header.jspf"%>

@@ -21,7 +21,7 @@
 	<jsp:include page="css/css.jsp"/>
 	<title>Accession Metadata</title>
 	<script src="js/muse.js" type="text/javascript"></script>
-	<script src="js/epadd.js" type="text/javascript"></script>
+	<script src="js/epadd.js?v=1.1" type="text/javascript"></script>
 
 	<style>
 		.div-input-field { display: inline-block; width: 400px; margin-left: 20px; line-height:10px; padding:20px;}
@@ -33,7 +33,7 @@
 <%@include file="header.jspf"%>
 
 <!-- this is going to be really quick... -->
-<script type="text/javascript" src="js/statusUpdate.js"></script>
+<script type="text/javascript" src="js/statusUpdate.js?v=1.1"></script>
 <%@include file="div_status.jspf"%>
 <%! private static String formatMetadataField(String s) { return (s == null) ? "" : Util.escapeHTML(s); } %>
 

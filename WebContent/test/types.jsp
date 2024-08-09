@@ -17,7 +17,7 @@
 <jsp:include page="../css/css.jsp"/>
 <head>
 <script src="../js/jquery.js"></script>
-<script src="typeutils.js"></script>
+<script src="typeutils.js?v=1.1"></script>
 <script src="js/muse.js"></script>
 <link rel="icon" type="image/png" href="images/muse-favicon.png">
 

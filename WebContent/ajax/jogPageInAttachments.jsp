@@ -52,7 +52,7 @@
 				out.println ("<script>$('.qtip').remove()</script>");
 				out.println (dataset.getPageForAttachments(year, isHacky, archiveID,queryparams));
 				out.println ("\n");
-                out.println ("<script src=\"js/epadd.js\"></script>"); // @chinmay, do we need this? epadd.js should already be included
+                out.println ("<script src=\"js/epadd.js?v=1.1\"></script>"); // @chinmay, do we need this? epadd.js should already be included
 				out.println ("<script>initialiseqtip()</script>");
 			} catch (Exception e) {
 				out.println ("Sorry... exception reading page content for attachments: " + e);

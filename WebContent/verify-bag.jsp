@@ -6,8 +6,8 @@
 <%@include file="getArchive.jspf" %>
 <html>
 <head>
-	<script src="js/epadd.js" type="text/javascript"></script>
-	<script type="text/javascript" src="js/statusUpdate.js"></script>
+	<script src="js/epadd.js?v=1.1" type="text/javascript"></script>
+	<script type="text/javascript" src="js/statusUpdate.js?v=1.1"></script>
 	<title>Verify archive bag</title>
 
 	<link rel="icon" type="image/png" href="images/epadd-favicon.png">
@@ -20,7 +20,7 @@
 
 	<jsp:include page="css/css.jsp"/>
 	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 </head>
 <body>
 <%@include file="header.jspf"%>

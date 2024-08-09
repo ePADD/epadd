@@ -99,7 +99,7 @@ private String scriptForSentimentsGraph(Map<String, Collection<Document>> map, L
 
 	<jsp:include page="css/css.jsp"/>
 	<script type="text/javascript" src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 
 	<style>
 	.brush .extent {

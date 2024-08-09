@@ -14,7 +14,7 @@
 
     <jsp:include page="css/css.jsp"/>
     <script src="js/muse.js" type="text/javascript"></script>
-    <script src="js/epadd.js"></script>
+    <script src="js/epadd.js?v=1.1"></script>
     <style>.heading {font-size: 16px; color: #69AA35}</style>
   </head>
 </head>

@@ -24,7 +24,7 @@
     <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
     <script src="js/jquery.dataTables.min.js"></script>
     <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
-    <script src="js/epadd.js" type="text/javascript"></script>
+    <script src="js/epadd.js?v=1.1" type="text/javascript"></script>
 </head>
 
 <body>

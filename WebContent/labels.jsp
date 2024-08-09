@@ -14,18 +14,18 @@
 	<!-- Optional theme -->
 
 	<jsp:include page="css/css.jsp"/>
-	<link rel="stylesheet" href="css/sidebar.css">
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/sidebar.css?v=1.1">
+	<link rel="stylesheet" href="css/main.css?v=1.1">
 
 	<%-- Jquery was present here earlier --%>
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="js/modernizr.min.js"></script>
-	<script src="js/sidebar.js"></script>
+	<script src="js/sidebar.js?v=1.1"></script>
 
 	<script src="js/muse.js"></script>
-	<script src="js/epadd.js"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 
 
 

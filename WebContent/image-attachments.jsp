@@ -27,8 +27,8 @@
     <script src="js/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="js/modernizr.min.js"></script>
-    <script src="js/selectpicker.js"></script>
-	<script src="js/epadd.js"></script>
+    <script src="js/selectpicker.js?v=1.1"></script>
+	<script src="js/epadd.js?v=1.1"></script>
 	<script type="text/javascript" src="js/muse.js"></script>
     <style>
         .date-input-group {  display: flex; }

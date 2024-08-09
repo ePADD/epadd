@@ -16,7 +16,7 @@
 	<link href="../../muse/WebContent/css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="../WebContent/js/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
 	<jsp:include page="../../muse/WebContent/css/css.jsp"/>
-	<link rel="stylesheet" href="../WebContent/css/sidebar.css">
+	<link rel="stylesheet" href="../WebContent/css/sidebar.css?v=1.1">
 	<link href="../WebContent/css/suggester.css" rel="stylesheet" />
 
 
@@ -24,13 +24,13 @@
 	<script src="../WebContent/js/jquery.mockjax.js" type="text/javascript"></script>
 	<script src="../WebContent/js/jquery.autocomplete.js" type="text/javascript"></script>
 	<script src="../WebContent/js/modernizr.min.js"></script>
-	<script src="../WebContent/js/sidebar.js"></script>
+	<script src="../WebContent/js/sidebar.js?v=1.1"></script>
 
 	<script src="../../muse/WebContent/js/muse.js"></script>
-	<script src="../WebContent/js/epadd.js"></script>
+	<script src="../WebContent/js/epadd.js?v=1.1"></script>
 	
 
-	<script src="../WebContent/js/utils.js" type="text/javascript"></script>
+	<script src="../WebContent/js/utils.js?v=1.1" type="text/javascript"></script>
 	<script type='text/javascript' src='../WebContent/js/jquery.qtip-1.0.js'></script>
 	<script type="text/javascript" src="../WebContent/js/fancyBox/source/jquery.fancybox.js"></script>
 
@@ -224,7 +224,7 @@
 %>
 <jsp:include page="../WebContent/header.jspf"/>
 <script>epadd.nav_mark_active('Authorities');</script>
-<script type="text/javascript" src="../../muse/WebContent/js/statusUpdate.js"></script>
+<script type="text/javascript" src="../../muse/WebContent/js/statusUpdate.js?v=1.1"></script>
 <%@include file="../WebContent/div_status.jspf"%>
 
 <!--sidebar content-->

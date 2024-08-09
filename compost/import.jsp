@@ -17,7 +17,7 @@
     <script type="text/javascript" src="../WebContent/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="../WebContent/jqueryFileTree/jqueryFileTree.js"></script>
 	<script src="../WebContent/js/filepicker.js" type="text/javascript"></script>
-	<script src="../WebContent/js/epadd.js" type="text/javascript"></script>
+	<script src="../WebContent/js/epadd.js?v=1.1" type="text/javascript"></script>
 </head>
 <body>
 <jsp:include page="../WebContent/header.jspf"/>

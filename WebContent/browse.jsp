@@ -79,9 +79,9 @@
     <link rel="stylesheet" href="fancybox/jquery.fancybox.css" type="text/css" media="screen" />
     <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="css/jquery.qtip.min.css">
-    <jsp:include page="css/css.jsp"/>
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/main.css">
+    <jsp:include page="css/css.jsp?v=1.1"/>
+    <link rel="stylesheet" href="css/sidebar.css?v=1.1">
+    <link rel="stylesheet" href="css/main.css?v=1.1">
 
     <script src="js/jquery.js" type="text/javascript"></script>
     <script type="text/javascript" src="bootstrap/dist/js/bootstrap.min.js"></script>
@@ -92,12 +92,12 @@
     <script type='text/javascript' src='js/jquery.qtip.min.js'></script>
     <script src="js/stacktrace.js" type="text/javascript"></script>
 
-    <script src="js/selectpicker.js"></script>
-    <script src="js/sidebar.js"></script>
+    <script src="js/selectpicker.js?v=1.1"></script>
+    <script src="js/sidebar.js?v=1.1"></script>
 
     <script src="js/muse.js" type="text/javascript"></script>
-    <script src="js/epadd.js"></script>
-    <script type='text/javascript' src='js/utils.js'></script>     <!-- For tool-tips -->
+    <script src="js/epadd.js?v=1.1"></script>
+    <script type='text/javascript' src='js/utils.js?v=1.1'></script>     <!-- For tool-tips -->
     <script src="js/jquery_cookie.js" type="text/javascript"></script>  <!-- For preservation cookie -->
 
     <style>

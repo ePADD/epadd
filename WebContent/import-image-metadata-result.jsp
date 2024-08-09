@@ -32,11 +32,11 @@
     <script src="jqueryFileTree/jqueryFileTree.js"></script>
     <script src="js/jquery.autocomplete.js" type="text/javascript"></script>
 
-    <script src="js/filepicker.js"></script>
-    <script src="js/selectpicker.js"></script>
+    <script src="js/filepicker.js?v=1.1"></script>
+    <script src="js/selectpicker.js?v=1.1"></script>
 
     <script src="js/muse.js"></script>
-    <script src="js/epadd.js"></script>
+    <script src="js/epadd.js?v=1.1"></script>
     <style>
         .mini-box { height: 105px; vertical-align:top; background-color: #f5f5f8; display: inline-block; width:200px; padding:20px; margin-right:22px;}
 
