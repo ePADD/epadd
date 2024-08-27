@@ -1287,7 +1287,15 @@ is what we want.
 	{
         Map<String,Span[]> result = new ConcurrentHashMap<>();
 		Query query = new MatchAllDocsQuery();
-        TopDocs hits = isearcher.search(query, Integer.max(Config.MAX_DOCS_PER_QUERY,maxdocs));
+		TopDocs hits = null;
+		try {
+			hits = isearcher.search(query, Integer.max(Config.MAX_DOCS_PER_QUERY, maxdocs));
+		}
+		catch (Exception e)
+		{
+			log.error("Error in getAllEntitiesInDocs: " + e);
+			return result;
+		}
         ScoreDoc[] scoreDocs = hits.scoreDocs;
 
         //Tried to use parallel streams for speedup.
