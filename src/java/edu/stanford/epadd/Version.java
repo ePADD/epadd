@@ -1,4 +1,4 @@
 package edu.stanford.epadd;
-public class Version {  public static final String version = "Release 11.0.1";
+public class Version {  public static final String version = "Release X";
 public static final String buildInfo = "";
 }

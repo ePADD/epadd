@@ -96,7 +96,12 @@ public class FolderInfo implements Serializable {
 	{
 		//Looking for the index of File.separator doesn't work. We make any / or \ being /:
 		s = s.replace("\\", "/");
-		return s.substring(0, s.indexOf("/"));
+		if (s.indexOf("/") != -1) {
+			return s.substring(0, s.indexOf("/"));
+		}
+		else {
+			return s;
+		}
 	}
 
 	public static String getDisplayNameForNonMbox(String pathOriginalNonMboxFile, String pathOfTmpMboxFile) {

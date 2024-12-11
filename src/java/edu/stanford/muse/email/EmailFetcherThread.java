@@ -30,10 +30,9 @@ import groovy.lang.Tuple2;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +41,11 @@ import org.jsoup.Jsoup;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -56,6 +59,7 @@ class EmailFetcherStats implements Cloneable, Serializable {
     int nMessagesAlreadyPresent;    // running messages that were already present
     int nErrors = 0;
     int nMessagesFiltered = 0;
+
 
     public void merge(EmailFetcherStats other) {
         this.nMessagesAdded += other.nMessagesAdded;
@@ -428,6 +432,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         {
             if (rootPath.contains(EmailConvert.EPADD_EMAILCHEMY_TMP)) {
                 folderName = FolderInfo.getDisplayNameForNonMbox(emailStore.displayName, getFolderName());
+
             }
             else
             {
@@ -827,6 +832,14 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * @throws MessagingException
      */
     private String handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
+        String name = p.getFileName();
+        if (name.endsWith(".rtf")) {
+            try {
+                p = removeNewlines(p);
+            } catch (Exception e) {
+                log.error("Exception in removeNewLines. " + e);
+            }
+        }
         String ct = null;
         if (!(m instanceof MimeMessage)) {
             Exception e = new IllegalArgumentException("Not a MIME message!");
@@ -1410,6 +1423,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
 
                     String contentStr = sb.toString();
+
+
                     if (!messageLooksOk(contentStr)) {
                         dataErrors.add("Skipping message as it seems to have very long words: " + ed);
                         Set<String> label = new LinkedHashSet<>();
@@ -1860,5 +1875,42 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 .stream()
                 .map(item -> item.getName() + ": " + item.getValue())
                 .collect(Collectors.joining("\0 ", "", ""));
+    }
+
+    public static Part removeNewlines(Part originalPart) throws Exception {
+        // Extract content
+        Object content = originalPart.getContent();
+        String contentString;
+
+        if (content instanceof InputStream) {
+            // Convert InputStream to String
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader((InputStream) content))) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                contentString = sb.toString();
+            }
+        } else if (content instanceof String) {
+            contentString = (String) content;
+        } else {
+            throw new IllegalArgumentException("Unsupported content type");
+        }
+
+        // Remove leading newlines
+        String modifiedContent = contentString.replaceFirst("^(\\r?\\n)+", "");
+
+        // Create a new part with the modified content
+        MimeBodyPart newPart = new MimeBodyPart();
+        newPart.setDataHandler(new DataHandler(new ByteArrayDataSource(modifiedContent, originalPart.getContentType())));
+
+        // Copy headers from the original part
+        for (Enumeration<Header> headers = originalPart.getAllHeaders(); headers.hasMoreElements();) {
+            Header header = headers.nextElement();
+            newPart.setHeader(header.getName(), header.getValue());
+        }
+
+        return newPart;
     }
 }
