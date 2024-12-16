@@ -73,8 +73,8 @@ public class EntityBook implements Serializable {
     }
 
     public  Integer getEntitiesCountMapModuloThreshold(double threshold) {
-
-        List<Summary_L1> list = summary_L1_entityCountMap.values().stream().filter(summary->summary.score>threshold).collect(Collectors.toList());
+        // for external entities: ignore threshold
+        List<Summary_L1> list = new ArrayList<>(summary_L1_entityCountMap.values());
         return list.size();
     }
 
