@@ -225,8 +225,8 @@ public class NER implements StatusProvider {
                 log.warn("title " + title + " content " + content + " in Ner.recognizeArchive()");
                 continue;
             }
-            Span[] names = nerModel.find(content);
-            Span[] namesT = nerModel.find(title);
+            Span[] names = nerModel.find(ldoc.get("Message-ID"));
+            Span[] namesT = new Span[] {}; // ignore entities in title for now
             recTime += System.currentTimeMillis() - st;
             st = System.currentTimeMillis();
 

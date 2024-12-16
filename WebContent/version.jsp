@@ -1,1 +1,1 @@
-ePADD version Release 11.0.1
+ePADD version Release 11.0.1 - NB edition
