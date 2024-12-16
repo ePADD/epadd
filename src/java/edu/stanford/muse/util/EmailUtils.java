@@ -802,6 +802,10 @@ if (!onlyHeaders)
             return null;
 
         for (DatedDocument ed : allDocs) {
+            if (ed == null)
+            {
+                continue;
+            }
             Date d = ed.date;
             if (d == null) {
                 // drop this $ed$
