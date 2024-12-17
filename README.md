@@ -25,7 +25,7 @@ Windows installations: Java Runtime Environment 11 or later required.
 
 **Installation** 
 
-(Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1CVIpWK5FNs5KWVHgvtWTa7u0tZjUrFrBHq6_6ZJVfEA/edit?usp=sharing).
+(Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1FV4oi234qjRnvHOvIUtEr5B_W143rPPOht8IlCyXoEI/edit?tab=t.0).
 
 ePADD has been tested on and optimized for Windows 7 SP1 / 11, Mac OS X  10.13 / 10.14, and Ubuntu 16.04 . Please follow the instructions below for your operating system.
 
