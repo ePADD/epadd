@@ -1,3 +1,4 @@
+<%@page pageEncoding="UTF-8"%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page trimDirectiveWhitespaces="true"%>
 <%@page language="java" import="edu.stanford.muse.AddressBookManager.AddressBook"%>
@@ -72,6 +73,7 @@
 	//is present in the request the headers are not rendered properly. Now we set archiveID from the archive object
 	//that was loaded by default from the appraisal directory. This property is then read by header.jspf (if archiveID
 	//not passed from the request) and used for rendering the header properly.
+	request.setCharacterEncoding("UTF-8");
 	if(archive != null && request.getParameter("archiveID")==null)
 		request.setAttribute("archiveID", ArchiveReaderWriter.getArchiveIDForArchive(archive));
 %>

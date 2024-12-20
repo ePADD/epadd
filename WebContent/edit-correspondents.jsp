@@ -1,3 +1,4 @@
+<%@page pageEncoding="UTF-8"%>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@page import="java.io.*"%>
 <%@page trimDirectiveWhitespaces="true"%>
@@ -99,7 +100,7 @@
 
 <p>
 <div style="text-align:center">
-<form method="post" action="browse-top">
+<form method="post" accept-charset="utf-8" action="browse-top">
 	<!-- adding a hidden input field to pass archiveID to the server. This is a common pattern used to pass
 	//archiveID in all those forms where POST was used to invoke the server page. -->
 	<input type="hidden" value="<%=archiveID%>" class="form-control" name="archiveID"/>
