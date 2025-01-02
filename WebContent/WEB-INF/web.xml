@@ -13,6 +13,9 @@
 		<welcome-file>default.htm</welcome-file>
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
+	
+	<!-- works only with Tomcat 9.0 with 4.0 servlet spec -->
+        <request-character-encoding>UTF-8</request-character-encoding>
 
 	<servlet>
 		<servlet-name>jsp</servlet-name>
@@ -48,6 +51,18 @@
 	    <listener-class>edu.stanford.muse.webapp.SessionListener</listener-class>
 	</listener>
 
+	<!--
+	Declare a character encoding to handle form response in UTF-8.
+	The Filter comes only with the Tomcat server...
+	-->	
+	<filter>
+		<filter-name>SetCharacterEncoding</filter-name>
+		<filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
 	<filter>
 	    <filter-name>LoggingFilter</filter-name>
 	    <filter-class>
@@ -59,15 +74,30 @@
 	    </init-param>
 	</filter>
 
+	<!--
+	THIS FILTER MAPPING MUST BE THE FIRST ONE, 
+	otherwise we end up with ruined chars in the input from the GUI
+	See the "Note" in the Tomcat character encoding guide:  http://wiki.apache.org/tomcat/FAQ/CharacterEncoding
+	-->
 	<filter-mapping>
+		<filter-name>SetCharacterEncoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+ 	<filter-mapping>
 	    <filter-name>LoggingFilter</filter-name>
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<!--  treat jspf files as jsp so that they get translated. See http://www.coderanch.com/t/171516/java-Web-Component-SCWCD/certification/jspf-file-behaving-jsp-file-->
+	<!-- force every JSP or JSPF page to be UTF-8 encoded -->
 	<jsp-config>
 		<jsp-property-group>
 			<url-pattern>*.jspf</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+		</jsp-property-group>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
 		</jsp-property-group>
 	</jsp-config>
 
