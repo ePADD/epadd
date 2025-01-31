@@ -55,6 +55,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -614,7 +616,15 @@ public class JSPHelper {
 			String[] vals = rpMap.get(str1);
 			if (vals.length == 1) {
 				sb.append(str1+"=");
-				sb.append(Util.ellipsize(vals[0], 100));
+				try
+				{
+					sb.append(Util.ellipsize(URLEncoder.encode(vals[0], StandardCharsets.UTF_8.toString()), 100));
+				}
+				catch (Exception e)
+				{
+					log.warn("Exception encoding string in getURLWithParametersFromRequestParam. " + e);
+					sb.append(Util.ellipsize(vals[0], 100));
+				}
 				sb.append("&");
 			}
 			else {
