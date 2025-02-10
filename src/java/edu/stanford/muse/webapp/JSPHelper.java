@@ -31,6 +31,7 @@ import edu.stanford.muse.exceptions.NoDefaultFolderException;
 import edu.stanford.muse.index.*;
 import edu.stanford.muse.ner.NER;
 import edu.stanford.muse.ner.model.DummyNERModel;
+import edu.stanford.muse.ner.model.LoadResultsModel;
 import edu.stanford.muse.ner.model.NBModel;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.util.DetailedFacetItem;
@@ -304,7 +305,7 @@ public class JSPHelper {
 		}
 		if (param == null)
 			return null;
-			
+
 		//6.3.2023 There was an issue not being able to import Mbox folders with names
 		//containing accented characters.
 		//String newParam = new String(param.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
@@ -429,8 +430,8 @@ public class JSPHelper {
                     log.info("Using dummy openNLPNER model, all CIC patterns will be treated as valid entities");
                     nerModel = new DummyNERModel();
                 } else {
-                    log.info("Loading Bayesian classifier from: " + modelFile + " ...");
-                    nerModel = NBModel.loadModelFromRules(NBModel.MODEL_FILENAME);
+                    log.info("Loading entities from external file");
+                    nerModel = new LoadResultsModel();
                 }
             }
             if (nerModel == null) {
@@ -477,7 +478,7 @@ public class JSPHelper {
         // add the new stores
 
 		// we add the following code to support file metada requirement in epadd+ project
-// 2022-09-05	Added handling for IMAP		
+// 2022-09-05	Added handling for IMAP
 //		archive.collectionMetadata.setFileMetadatas(archive, allFolders);
       //  if (archive.isMBOX())
         	archive.collectionMetadata.setFileMetadatas(archive, allFolders);
