@@ -220,7 +220,7 @@ public class CICTokenizer implements Tokenizer, Serializable {
             ciclist.forEach(triple-> out.println(triple.first));//+","+triple.second+","+triple.third));
             out.println("--------------------------------------------------------");
         } catch (IOException e) {
-           log.warn("Unable to dump the CIC information in CICWordsOnly.txt file");
+           log.warn("Unable to dump the CIC information in CICWordsOnly.txt file " + e);
         }
 
 

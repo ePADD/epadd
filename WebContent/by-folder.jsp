@@ -63,6 +63,7 @@
         Map<String, String> folderToSource = new LinkedHashMap<>();
         Map<String, Integer> folderToInCount = new LinkedHashMap<>(), folderToOutCount = new LinkedHashMap<>(), folderToTotalCount =  new LinkedHashMap<>();
         for (EmailDocument ed: docs) {
+
             String folderName = ed.folderName;
             Pair<Boolean, Boolean> p = ab.isSentOrReceived(ed.getToCCBCC(), ed.from);
             // p: first sent, second received
@@ -78,7 +79,7 @@
             Integer I = folderToTotalCount.get(folderName);
             folderToTotalCount.put (folderName, (I == null) ? 1 : I+1);
             if (ed.emailSource != null)
-                folderToSource.put (folderName, ed.emailSource);
+                folderToSource.put(folderName, ed.emailSource);
         }
 
         int count = 0;
@@ -93,7 +94,7 @@
             //j.put(2, folderToInCount.get(folder));
             j.put(2, folderToOutCount.getOrDefault(folderName,0));
             j.put(3, folderToTotalCount.getOrDefault(folderName,0));
-            j.put(4,  Util.escapeHTML(folderName));
+            j.put(4,  folderName);
 
             resultArray.put(count++, j);
         }
@@ -104,7 +105,8 @@
         $(document).ready(function() {
             var clickable_message = function ( data, type, full, meta ) {
                 //return '<a target="_blank" title="' + full[1] + '" href="/epadd/browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[1]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
-                return '<a target="_blank" title="' + full[1] + '" href="browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[4]) + '">' + data + '</a>'; // full[4] has the URL, full[5] has the title tooltip
+                return '<a target="_blank" title="' + encodeURIComponent(full[1]) + '" href="browse?archiveID=<%=archiveID%>&folder=' + encodeURIComponent(full[4]) + '">' + data + '</a>';
+                // full[4] has the URL, full[5] has the title tooltip
             };
 
             $('#folders').dataTable({

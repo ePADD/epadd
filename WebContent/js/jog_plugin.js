@@ -991,7 +991,6 @@ function update_page_window() {
           pageImagesFetched = [];
           for (var i = 0; i < totalPages; i++)
           {
-			  console.log("xxxxxxxxxxxxxxxx pages[" + i + "] = null");
               pages[i] = null;
               pageImagesFetched[i] = false;
           }
