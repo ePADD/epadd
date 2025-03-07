@@ -1683,6 +1683,7 @@ int errortype=0;
             if (export_mode == ExportMode.EXPORT_PROCESSING_TO_DISCOVERY)
             {
                 doc.removeFields("headers_original");
+                doc.removeFields("text_html_part");
             }
             if (exportInPublicMode) {
                 String text;
