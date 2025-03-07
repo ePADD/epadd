@@ -1680,7 +1680,7 @@ int errortype=0;
             if (!retainedDocIDs.contains(doc.get("docId")))
                 return false;
 
-            if (export_mode != ExportMode.EXPORT_APPRAISAL_TO_PROCESSING)
+            if (export_mode == ExportMode.EXPORT_PROCESSING_TO_DISCOVERY)
             {
                 doc.removeFields("headers_original");
             }
