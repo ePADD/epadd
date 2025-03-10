@@ -72,7 +72,7 @@
     for(Short type: desc.keySet()){
         JSONArray j = new JSONArray();
 //        if(NEType.Type.OTHER.getCode() == type || NEType.Type.PERSON.getCode() == type || desc.get(type)==null)
-        if(NEType.Type.OTHER.getCode() == type || desc.get(type)==null)
+        if(desc.get(type)==null)
             continue;
         j.put(0, "<a href='list-entities?type="+type+"&archiveID="+archiveID+"' target='_blank'>"+Util.escapeHTML(desc.get(type))+"</a>");
         j.put(1, archive.collectionMetadata.entityCounts.getOrDefault(type,0));
