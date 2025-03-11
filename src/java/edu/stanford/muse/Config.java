@@ -60,6 +60,9 @@ public class Config {
     public static   String	FEATURES_INDEX;
     public static   String TABOO_FILE = "kill.txt";
 
+    // location of entities file written by external AI model
+    public static String ENTITIES_FILE;
+
     //this is the folder name that contains the cache for internal authority assignment
     public static   int		MAX_ENTITY_FEATURES			= 200;
     public static   int		MAX_TRY_TO_RESOLVE_NAMES	= 10;
@@ -159,6 +162,8 @@ public class Config {
         s = props.getProperty("OPENNLP_NER");
         if (!Util.nullOrEmpty(s))
             OPENNLP_NER = Boolean.parseBoolean(s);
+
+        ENTITIES_FILE = props.getProperty("nbailab.entities");
 
         s = props.getProperty("epadd.default.lexicon", "general");
         if (s != null) {
@@ -308,12 +313,12 @@ public class Config {
         }
         return props;
     }
-	
-// 2022-11-14    
+
+// 2022-11-14
     public static int setLanguage(String lang) {
         int ret = 0;
         if (Config.EPADD_LANGUAGE.equals(lang)) return 0;
-        
+
         Config.EPADD_LANGUAGE = lang;
         try {
             Parameters params = new Parameters();
@@ -322,13 +327,13 @@ public class Config {
                 .configure(params.properties()
                 .setFileName(EPADD_PROPS_FILE));
             Configuration config = builder.getConfiguration();
-            config.setProperty("epadd.language", Config.EPADD_LANGUAGE);        
-            builder.save();        
+            config.setProperty("epadd.language", Config.EPADD_LANGUAGE);
+            builder.save();
             ret = 1;
         } catch (ConfigurationException e) {
             log.warn ("Error in writing "+ EPADD_PROPS_FILE);
             ret = -1;
-        }   
+        }
         return ret;
     }
 
