@@ -163,7 +163,7 @@ public class Config {
         if (!Util.nullOrEmpty(s))
             OPENNLP_NER = Boolean.parseBoolean(s);
 
-        ENTITIES_FILE = props.getProperty("nbailab.entities");
+        ENTITIES_FILE = props.getProperty("entities");
 
         s = props.getProperty("epadd.default.lexicon", "general");
         if (s != null) {
