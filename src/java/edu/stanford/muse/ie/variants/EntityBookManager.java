@@ -44,13 +44,13 @@ public class EntityBookManager {
      * @return
      */
     public EntityBook getEntityBookForType(Short entityType){
-        if(mTypeToEntityBook.get(entityType)!=null)
-            return mTypeToEntityBook.get(entityType);
-        else{
+//        if(mTypeToEntityBook.get(entityType)!=null)
+//            return mTypeToEntityBook.get(entityType);
+//        else{
             fillEntityBookFromLucene(entityType);
             return mTypeToEntityBook.get(entityType);
         }
-    }
+//    }
 
 
     /*
