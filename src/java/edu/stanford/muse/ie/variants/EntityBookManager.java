@@ -92,7 +92,7 @@ individual type entitybook (which involves expensive operation of lucene search 
                 EmailDocument edoc = mArchive.indexer.docForId(docid);
                 for (Span span : allspans) {
                     // bail out if not of entity type that we're looking for, or not enough confidence, but don't bail out if we have to do it for all types, i.e. type is Short.MAX_TYPE
-                    if (giventype!=Short.MAX_VALUE && (span.type != giventype || span.typeScore < theta))
+                    if (giventype!=Short.MAX_VALUE && (span.type != giventype))
                         continue;
                     Short type = span.type;//if type is Short.Max_Type then set the type as the current type, if not this is like a NOP.
                     Double score = new Double(span.typeScore);
@@ -362,7 +362,7 @@ individual type entitybook (which involves expensive operation of lucene search 
 
             for (Span span : allspans) {
                 // bail out if not of entity type that we're looking for, or not enough confidence
-                if (span.type != type || span.typeScore < theta)
+                if (span.type != type)
                     continue;
 
                 String name = span.getText();
