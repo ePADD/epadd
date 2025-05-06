@@ -1317,14 +1317,20 @@ is what we want.
             docId = ldoc.get("docId");
             //Now get entities stored in fields NER.NAMES and NER.NAMES_TITLE
             String val = ldoc.get(NER.NAMES);
-
-			if (val != null) {
+			if (val == null)
+			{
+				val = "";
+			}
 				String[] plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
 				// remove kill phrases here itself
 
 				Span[] bodyentities = Arrays.stream(plainSpans).map(Span::parse).filter(s -> s != null /*&& !KillPhrases.isKillPhrase(s.getText())*/).toArray(Span[]::new);
 
 				val = ldoc.get(NER.NAMES_TITLE);
+			if (val == null)
+			{
+				val = "";
+			}
 				//Split the value and convert to span and then add to result map.
 
 				plainSpans = val.split(Indexer.NAMES_FIELD_DELIMITER);
@@ -1334,10 +1340,6 @@ is what we want.
 				Span[] allspans = ArrayUtils.addAll(bodyentities, titleentities);
 
 				result.put(docId, allspans);
-			}
-			else {
-				log.error("val null in getAllEntitiesInDocs");
-			}
         });
 
 		return result;

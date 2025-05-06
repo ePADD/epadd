@@ -44,6 +44,8 @@ import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -326,6 +328,28 @@ public class EmailUtils {
             mbox.println("X-ePADD-Labels: " + labelDescription);
         }
         List<String> headerList = archive.indexer.getOriginalHeaders(ed);
+        if (headerList.isEmpty())
+        {
+            String sender = ed.getFromString();
+            sender = Util.escapeJSON(sender);
+            String to = ed.getToString();
+            String date = Util.escapeHTML(ed.dateString());
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("d MMM, yyyy", Locale.ENGLISH);
+
+            LocalDate localDate = LocalDate.parse(date, inputFormatter);
+            String outputDate = localDate.format(outputFormatter);
+            outputDate = outputDate + " 00:00:00";
+            outputDate = outputDate.replace(",", "");
+            String subject= Util.escapeHTML(ed.description);
+            subject=Util.escapeJSON(subject);
+            String docId = ed.getUniqueId();
+            mbox.println("From: " + sender);
+            mbox.println("To: " + to);
+            mbox.println("Date: " + outputDate);
+            mbox.println("Subject: " + subject);
+            mbox.println("Message-ID: " + docId);
+        }
         for (String headerString : headerList) {
             mbox.println(headerString);
             if (headerString.toLowerCase().startsWith("content-type:")) {

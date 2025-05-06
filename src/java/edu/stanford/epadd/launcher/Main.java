@@ -329,7 +329,10 @@ public class Main {
         if (cmd.hasOption("base-dir"))
     		baseDir = cmd.getOptionValue("base-dir");
         noShutdown = !cmd.hasOption("no-shutdown");
+		if (System.getSecurityManager() != null)
+		{
         System.setSecurityManager(null); // this is important	
+		}
 	}
 	
 	public static void setupResources() throws IOException
