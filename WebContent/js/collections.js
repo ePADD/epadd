@@ -101,7 +101,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         ).append(
             $('<a></a>')
                 .addClass("inner-landing-image-text-institution")
-                .attr("href","collections?browse-type=repository&institutionName="+institution)
+                // .attr("href","collections?browse-type=repository&institutionName="+institution)
                 .append(
                     $('<div></div>').text(institution)
                 )

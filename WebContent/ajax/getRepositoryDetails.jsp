@@ -92,7 +92,7 @@ Map<String,RepositoryInfo> repositoryInfoMap = new LinkedHashMap<>();
                   if (cm != null) {
                       //if institution name is non null then process this collection only if it belongs to the given institution.
                       if(!Util.nullOrEmpty(institutionName)){
-                          if(!cm.institution.toLowerCase().equals(institutionName.toLowerCase())){
+                          if(cm.institution != null && !cm.institution.toLowerCase().equals(institutionName.toLowerCase())){
                               continue; //skip this collection
                           }
                       }
