@@ -48,7 +48,7 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
             '        <div style="clear:both;"></div>' +
             '        <select id="sort-by" class="form-control" style="width:auto; max-width:100%;">\n' +
             '            <option value="descShortTitle">Sort by short title (Descending)</option>\n' +
-            '            <option value="ascShortTitle">Sort by short title (Ascending)</option>\n' +
+            '            <option value="ascShortTitle" selected>Sort by short title (Ascending)</option>\n' +
             '            <option value="descInstitutionName">Sort by Institution (Descending)</option>\n' +
             '            <option value="ascInstitutionName">Sort by Institution (Ascending)</option>\n' +
             '        </select>\n' +
@@ -56,6 +56,8 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
             '    <hr>\n' +
             '</div>';
         $('#collectionsInfo-header').html(searchbox_header);
+        $('#sort-by').val('ascShortTitle').trigger('change');
+
     }else{
         $('#collectionsInfo-details').empty();
     }
