@@ -11,6 +11,8 @@ import com.google.gson.JsonObject;
 import edu.stanford.muse.AddressBookManager.AddressBook;
 import edu.stanford.muse.AddressBookManager.Contact;
 import edu.stanford.muse.AnnotationManager.AnnotationManager;
+import edu.stanford.muse.LabelManager.Label;
+import edu.stanford.muse.LabelManager.LabelManager;
 import edu.stanford.muse.datacache.Blob;
 import edu.stanford.muse.datacache.BlobStore;
 import edu.stanford.muse.index.*;
@@ -768,7 +770,19 @@ public class EmailRenderer {
 			result.append("<tr><td>docId: </td><td>"+ed.getUniqueId()+"</td></tr>\n");
 		final String style = "<tr><td align=\"right\" class=\"muted\" valign=\"top\">";
 		result.append(style + "<br>Folder: </td><td align=\"left\"><br>" + ed.folderName + "</td><br>");
+		Archive archive = searchResult.getArchive();
+		List<String> headerList = archive.indexer.getOriginalHeaders(ed);
+		String labelHeader = "";
+		for (String header : headerList) {
+			if (header.startsWith("X-ePADD-Labels:")) {
+				header = header.substring("X-ePADD-Labels: ".length()).trim();
+				labelHeader = header;
+				break;
+			}
+		}
+
 		result.append(JSPHelper.getHTMLForDate(archiveID,ed.date));
+		result.append(style + "<br>Labels: </td><td align=\"left\"><br>" + labelHeader + "</td><br>");
 
 
 		// email specific headers

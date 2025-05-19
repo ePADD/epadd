@@ -377,6 +377,7 @@
 </div><!-- /.modal -->
 
     <script>
+        var isDiscoveryMode = <%=ModeConfig.isDiscoveryMode()%>;
         $('.edit-accession-metadata').click (function(e) {
             var accessionID=$(e.target).closest('a').attr('data-accessionID'); // e.target is the edit-icon, so we look up to find the closest a
             window.location = 'edit-metadata?collection=<%=id%>&accession='+accessionID;
@@ -464,13 +465,20 @@
         $('.collection-enter').click(function() { fetch_page_with_progress ('ajax/async/loadArchive.jsp', "status", document.getElementById('status'), document.getElementById('status_text'), enterparams, null); });
         */
         $('.collection-enter').click(function() {
+            if (isDiscoveryMode == true)
+            {
+                loadArchive();
+            }
+            else {
             var post_params = '&exportableAssets=exportProcessing&archiveDir=<%=archiveDirForJs%>';
             var page = "ajax/async/setExportableAssets.jsp";
 
             try {
                 fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params, loadArchive);
                 //fetch_page_with_progress(page, "status", document.getElementById('status'), document.getElementById('status_text'), post_params);   //debug only
-            } catch(err) { }
+                } catch (err) {
+                }
+            }
         });
 
         var uploadBannerImageHandler=function() {

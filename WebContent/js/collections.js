@@ -19,11 +19,12 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
     //First, sort collectionDetails based on the lastname, shortname of shorttitle. Although we don't yet enforce that the shortTitle
     //should be in the format of first name last name still we are adding it as a feature should someone want to use it for ordering of
     //collection tiles.
-    collectionDetails = collectionDetails.sort(function(a,b) {
-        var shortTitle1 = a.shortTitle.trim().split(" ").splice(-1);
-        var shortTitle2 = b.shortTitle.trim().split(" ").splice(-1);
-        (shortTitle1 < shortTitle2) ? -1 : ((shortTitle1 > shortTitle2) ? 1 : 0)
-    });
+    // debugger
+    // collectionDetails = collectionDetails.sort(function(a,b) {
+    //     var shortTitle1 = a.shortTitle.trim().split(" ").splice(-1);
+    //     var shortTitle2 = b.shortTitle.trim().split(" ").splice(-1);
+    //     return (shortTitle1 > shortTitle2) ? -1 : ((shortTitle1 < shortTitle2) ? 1 : 0)
+    // });
 
     //read from collectionDetails object array and set up collection tiles.
     //1. Iterate over every element of collectionDetails.
@@ -33,24 +34,60 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         $('#collectionsInfo-header').empty();
         $('#collectionsInfo-details').empty();
         //Add div code as the first element to have search box and the header. Header name is passed as an argument here.
-        var searchbox_header = '<div style="margin:auto;width:1100px;">\n' +
+        var searchbox_header = '<div style="margin:auto;">\n' +
             '    <div class="container">\n' +
-            '        <div class="row" style="height:10px;margin-left:-1px;">\n' +
-            '            <div class="col-sm-4" ">\n' +
+            '        <div class="row" style="height:auto;margin-left:-1px;">\n' +
+            '            <div class="col-sm-4">\n' +
             '                <h1 class="text-left" style="margin-left:-30px;">' + headerstring + '</h1>\n' +
             '            </div>\n' +
-            '            <div class="col-sm-8 inner-addon right-addon">\n' +
-            '                <input name="search-collection" id="search-collection" type="text" class="form-control" placeholder="Search collection metadata">\n' +
+            '            <div class="col-sm-8 inner-addon right-addon" style="width:700px; max-width:100%;">\n' +
+            '                <input name="search-collection" id="search-collection" type="text" class="form-control" placeholder="Search collection metadata" style="width: 100%;">\n' +  <!-- Set width to 100% -->
             '                <i class="glyphicon glyphicon-search form-control-feedback"></i>\n' +
             '            </div>\n' +
             '        </div>\n' +
+            '        <div style="clear:both;"></div>' +
+            '        <select id="sort-by" class="form-control" style="width:auto; max-width:100%;">\n' +
+            '            <option value="descShortTitle">Sort by short title (Descending)</option>\n' +
+            '            <option value="ascShortTitle">Sort by short title (Ascending)</option>\n' +
+            '            <option value="descInstitutionName">Sort by Institution (Descending)</option>\n' +
+            '            <option value="ascInstitutionName">Sort by Institution (Ascending)</option>\n' +
+            '        </select>\n' +
             '    </div>\n' +
             '    <hr>\n' +
             '</div>';
-        $('#collectionsInfo-header').append(searchbox_header);
+        $('#collectionsInfo-header').html(searchbox_header);
     }else{
         $('#collectionsInfo-details').empty();
     }
+
+    function compareLastWord(aStr, bStr, direction = "asc") {
+        debugger
+        const getLastWord = str => str.trim().split(" ").splice(-1)[0];
+        const aLast = getLastWord(aStr);
+        const bLast = getLastWord(bStr);
+        return direction === "asc"
+            ? aLast.localeCompare(bLast)
+            : bLast.localeCompare(aLast);
+    }
+
+    function updateCollectionList(order) {
+        // Sort the array
+        collectionDetails = collectionDetails.sort(function (a, b) {
+            if (order === "ascShortTitle") {
+                return compareLastWord(a.shortTitle, b.shortTitle, "asc");
+            } else if (order === "descShortTitle") {
+                return compareLastWord(a.shortTitle, b.shortTitle, "desc");
+            } else if (order === "ascInstitutionName") {
+                return compareLastWord(a.institutionName, b.institutionName, "asc");
+            } else if (order === "descInstitutionName") {
+                return compareLastWord(a.institutionName, b.institutionName, "desc");
+            }
+        });
+    }
+        document.getElementById("sort-by").addEventListener("change", function() {
+            updateCollectionList(this.value);
+            renderBrowseCollection(collectionDetails, "TEST", false);
+        });
     collectionDetails.forEach(function(collectionInfo){
 
         var shortDescription= collectionInfo.shortDescription;
