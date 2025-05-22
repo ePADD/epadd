@@ -835,7 +835,7 @@ is what we want.
 		return dir;
 	}
 
-// 2022-09-13        
+// 2022-09-13
         @Override
         protected void finalize() {
             try {
@@ -1001,7 +1001,7 @@ is what we want.
 		}
 	}
 
-	
+
 	private void storeHeaders(org.apache.lucene.document.Document doc, List<Header> headers)
 	{
 		ByteArrayOutputStream bs = new ByteArrayOutputStream();
@@ -1009,29 +1009,31 @@ is what we want.
 		for (Header h : headers)
 		{
 			headerString.add(h.getName() + ": " + h.getValue());
+			if (h.getName().equals("Message-ID"))
+				doc.add(new Field("Message-ID", h.getValue(), storeOnly_ft));
 		}
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(bs);
 			oos.writeObject(headerString);
 			oos.close();
 			bs.close();
-			
+
 			doc.add(new Field("headers_original", bs.toByteArray(), storeOnly_ft));
 		} catch (IOException e) {
 			log.warn("Failed to serialize headers");
 			e.printStackTrace();
 		}
-		
+
 		java.io.ObjectInputStream ois;
 		try {
 			ois = new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(bs.toByteArray()));
 			java.util.List<String> sp = (java.util.List<String>) ois.readObject();
-			
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void storeTextHtmlPart(org.apache.lucene.document.Document doc, String textHtmlPart)
