@@ -19,6 +19,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 //import org.apache.commons.logging.Log;
@@ -274,8 +278,7 @@ public class Config {
 
     // return properties set from epadd.properties file and/or system properties
     private static Properties readProperties() {
-        Properties props = new Properties();
-
+        Properties props;
         // EPADD_PROPS_FILE is where the config is read from.
         // default <HOME>/epadd.properties, but can be overridden by system property epadd.properties
         String propsFile = System.getProperty("epadd.properties");
@@ -285,13 +288,9 @@ public class Config {
         File f = new File(EPADD_PROPS_FILE);
         if (f.exists() && f.canRead()) {
             log.info("Reading configuration from: " + EPADD_PROPS_FILE);
-            try {
-                InputStream is = new FileInputStream(EPADD_PROPS_FILE);
-                props.load(is);
-            } catch (Exception e) {
-                Util.print_exception("Error reading epadd properties file " + EPADD_PROPS_FILE, e, log);
-            }
+            props = readPropertiesFile();
         } else {
+            props = new Properties();
             log.warn("ePADD properties file " + EPADD_PROPS_FILE + " does not exist or is not readable");
             try (BufferedWriter br = new BufferedWriter(new FileWriter(EPADD_PROPS_FILE))) {
                 br.write("epadd.mode=appraisal\n#uncomment this line in order to change the epadd base directory ");
@@ -301,15 +300,62 @@ public class Config {
             }
         }
         // each individual property can further be overridden from the command line by a system property
-        for (String key: props.stringPropertyNames()) {
-            String val = System.getProperty (key);
+        for (String key : props.stringPropertyNames()) {
+            String val = System.getProperty(key);
             if (val != null && val.length() > 0)
                 props.setProperty(key, val);
         }
         return props;
     }
-	
-// 2022-11-14    
+
+    private static Properties readPropertiesFile() {
+        Properties properties = new Properties();
+        StringBuilder sb = new StringBuilder();
+        //We cant read the properties file directly into properties as any backslashes are interpreted
+        //as escape chars. Something like 'C:\\users\smith\test' will read \t as a tab.
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(EPADD_PROPS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().startsWith("#") && line.contains("=")) {
+                    String[] parts = line.split("=", 2);
+                    String key = parts[0].trim();
+                    String value = parts[1].trim();
+
+                    if (key.equals("epadd.base.dir")) {
+                        //On Linux/mac this doesn't do anything as separatorChar is '/'.
+                        //On Windows this turns forward slashes into backward slashes
+                        value = value.replace("/", String.valueOf(File.separatorChar));
+
+                        //On Windows this doesn't do anything as separatorChar is '\'.
+                        //On Linux/Mac this turns backward slashes into forward slashes
+                        value = value.replace("\\", String.valueOf(File.separatorChar));
+
+                        //On Windows, separatorChar and escape character are the same (backslash).
+                        //We need to escape the backslashes in Windows so they are not interpreted as
+                        //escape chars.
+                        //On Linux/Mac this doesn't do anything as we already replaced all backslashes
+                        //with forward slashes.
+                        value = value.replace("\\", "\\\\");
+                        line = key + "=" + value;
+                    }
+                    sb.append(line).append(System.lineSeparator());
+                }
+            }
+        } catch (IOException e) {
+            log.error("Exception reading epadd.properties file " + EPADD_PROPS_FILE + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        try (InputStream input = new ByteArrayInputStream(sb.toString().getBytes())) {
+            properties.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("epadd.base.dir = " + properties.getProperty("epadd.base.dir"));
+        return properties;
+    }
+
+    // 2022-11-14
     public static int setLanguage(String lang) {
         int ret = 0;
         if (Config.EPADD_LANGUAGE.equals(lang)) return 0;
