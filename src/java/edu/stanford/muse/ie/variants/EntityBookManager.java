@@ -44,13 +44,17 @@ public class EntityBookManager {
      * @return
      */
     public EntityBook getEntityBookForType(Short entityType){
-//        if(mTypeToEntityBook.get(entityType)!=null)
-//            return mTypeToEntityBook.get(entityType);
-//        else{
+            return this.getEntityBookForType(entityType, true);
+        }
+
+        public EntityBook getEntityBookForType(Short entityType, boolean recalculate){
+        if(mTypeToEntityBook.get(entityType)!=null && !recalculate)
+            return mTypeToEntityBook.get(entityType);
+        else{
             fillEntityBookFromLucene(entityType);
             return mTypeToEntityBook.get(entityType);
         }
-//    }
+    }
 
 
     /*
@@ -209,7 +213,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     public synchronized Set<NEType.Type> getPresentEntityTypesInArchive() {
         Set<NEType.Type> result= new LinkedHashSet<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(),false);
             if(ebook.summary_L1_entityCountMap.values().size()>0)//add this type only if at least one entity of this type is found.
                 result.add(t);
         }
@@ -217,11 +221,15 @@ individual type entitybook (which involves expensive operation of lucene search 
 
     }
         public  Map<Short,Integer> getEntitiesCountMapModuloThreshold(double threshold) {
+            return this.getEntitiesCountMapModuloThreshold(threshold, true);
+        }
+
+        public  Map<Short,Integer> getEntitiesCountMapModuloThreshold(double threshold, boolean recalculate) {
 
         //iterate over all entitybooks and get their entitycount map modulo threshold.
         Map<Short,Integer> result= new LinkedHashMap<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), recalculate);
             result.put(t.getCode(),ebook.getEntitiesCountMapModuloThreshold(threshold));
         }
         return result;
