@@ -304,36 +304,40 @@ public class EpaddPremis implements Serializable {
 
 // 2022-10-19
     public void export2JSON() {
-            InputStream inputStream = null;
-            BufferedWriter bufferedWriter = null;
-            try {
-                java.io.File xmlfile = new java.io.File (pathToDataFolder + java.io.File.separatorChar + XML_FILE_NAME);
-                inputStream = new FileInputStream(xmlfile);  
-                StringBuilder builder =  new StringBuilder();  
-                int ptr = 0;  
-                while ((ptr = inputStream.read()) != -1 ) {  
-                    builder.append((char) ptr); 
-                }  
-                String xml  = builder.toString();  
-                JSONObject jsonObj = XML.toJSONObject(xml);   
-            // Assume default encoding.
-// 2022-11-01  			
-//                FileWriter fileWriter =  new FileWriter(pathToDataFolder + java.io.File.separatorChar + JSON_FILE_NAME);
-				FileWriter fileWriter =  new FileWriter(getJsonPathAndFileName(), false);
-                bufferedWriter = new BufferedWriter(fileWriter);
+        xmlToJson(pathToDataFolder + java.io.File.separatorChar + XML_FILE_NAME, getJsonPathAndFileName());
+    }
 
-                for(int i= 0 ;i < jsonObj.toString().split(",").length; i ++) {
-                    bufferedWriter.write(jsonObj.toString().split(",")[i]);
-                    bufferedWriter.write("\n");
+
+    public static void xmlToJson(String inputXml, String outputJson) {
+        java.io.File xmlFile = new java.io.File(inputXml);
+        java.io.File jsonFile = new java.io.File(outputJson);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(xmlFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(jsonFile))) {
+
+            // 1. Read entire XML file into a StringBuilder
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
                 }
                 		
-            } catch (IOException | JSONException e) {
-                Util.print_exception("Exception in EpaddPremis.export2JSON() ", e, LogManager.getLogger(EpaddPremis.class)); 
-            } finally {
-                try {
-                    if (inputStream != null) inputStream.close();
-                    if (bufferedWriter != null) bufferedWriter.close();	
-                } catch (IOException e) {}   
+            String xmlContent = sb.toString();
+
+            // 2. Convert XML -> JSON
+            JSONObject jsonObj = XML.toJSONObject(xmlContent);
+
+            // 3. Pretty-print JSON
+            String jsonPretty = jsonObj.toString(2);
+
+            // 4. Write once, without splitting
+            writer.write(jsonPretty);
+            writer.flush();
+
+            System.out.println("Conversion complete.");
+
+        } catch (IOException e) {
+            log.error("Exception in xmlToJson(" + inputXml + ", " + outputJson + ")  ", e);
             }
     }	
 
