@@ -1804,7 +1804,7 @@ after maskEmailDomain.
         this.setEntityBookManager(entityBookManager);
         //recompute entity count because some documents have been redacted
         double theta = 0.001;
-        this.collectionMetadata.entityCounts = this.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);// getEntitiesCountMapModuloThreshold(this,theta);
+        this.collectionMetadata.entityCounts = this.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta, false);// getEntitiesCountMapModuloThreshold(this,theta);
 
         // write out the archive file.. note that this is a fresh creation of archive in the exported folder
         setStatusProvider.accept( new StaticStatusProvider(statusmsg+":"+"Export done. Saving Archive.."));

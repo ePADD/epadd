@@ -1090,7 +1090,14 @@ mergeResult.newContacts.put(C2,savedC2)
         }
         //For Tpye 2 processing
         for(Contact C2: newContact){
-            Contact copyC2 =C2.copy();
+            Contact copyC2 = null;
+            try {
+                copyC2 = C2.copy();
+            }
+            catch (Exception e)
+            {
+                log.warn("Exception merging address books. " + e.getMessage());
+            }
             //C2 = C2 - common
             C2.getNames().removeAll(commonelements);
             C2.getEmails().removeAll(commonelements);
@@ -1102,7 +1109,10 @@ mergeResult.newContacts.put(C2,savedC2)
                 //consider common = [x,y] and in A2: [a x] and [a y] then this is a case of type2 [because a appears
                 //in 2 different contacts of A2.] here we will have map of [a] -> [a x] and [a] -> [a y] to show
                 //that these are possible candidates where a can go.
+                if (copyC2 != null)
+                {
                 result.newlycreatedContacts.put(C2, copyC2);
+                }
             }
         }
 

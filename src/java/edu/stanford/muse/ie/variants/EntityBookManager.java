@@ -199,7 +199,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     Return a set of documents containing entities of the given type
      */
     public synchronized Collection<Document> getDocsWithEntityType(short type) {
-        EntityBook ebook = this.getEntityBookForType(type);
+        EntityBook ebook = this.getEntityBookForType(type, false);
         Set<Document> result = new LinkedHashSet<>();
         ebook.summary_L1_entityCountMap.values().stream().forEach(s->{
             result.addAll(s.messages);
@@ -255,7 +255,7 @@ individual type entitybook (which involves expensive operation of lucene search 
         new File(entitybooksdirpath).mkdir();//create directory if not exists.
         new File(entitybooksdirpath + File.separator + entitysubdirname + File.separator).mkdir();//create directory if not exists.
         String entityBookPath = entitybooksdirpath + File.separator + entitysubdirname + File.separator + Archive.ENTITYBOOK_SUFFIX;
-        EntityBook ebook = this.getEntityBookForType(entityType);
+        EntityBook ebook = this.getEntityBookForType(entityType, false);
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(entityBookPath));
             ebook.writeObjectToStream(bw);
@@ -279,7 +279,7 @@ individual type entitybook (which involves expensive operation of lucene search 
         Span[] names = getEntitiesInDocFromLucene(document,body);
         Set<Span> res=new LinkedHashSet<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), false);
             for(Span name:names){
                 if(ebook.nameToMappedEntity.get(EntityBook.canonicalize(name.text))!=null)
                     res.add(name);
@@ -299,7 +299,7 @@ individual type entitybook (which involves expensive operation of lucene search 
         final Map<String,Set<Document>> topofeach = new LinkedHashMap<>();
         Map<String,Collection<Document>> topofall = new LinkedHashMap<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), false);
             ebook.summary_L1_entityCountMap.entrySet().stream().sorted(new Comparator<Map.Entry<MappedEntity, Summary_L1>>() {
                 @Override
                 public int compare(Map.Entry<MappedEntity, Summary_L1> o1, Map.Entry<MappedEntity, Summary_L1> o2) {
@@ -327,7 +327,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     public Set<Document> getDocsForEntities(Set<String> entities){
         Set<Document> docset = new LinkedHashSet<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), false);
             for(String name:entities){
                 MappedEntity me = ebook.nameToMappedEntity.get(EntityBook.canonicalize(name));
                 if(me!=null){
@@ -426,7 +426,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     public Collection<MappedEntity> getEntitiesForName(String name){
         Set<MappedEntity> result= new LinkedHashSet<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), false);
             MappedEntity res = ebook.nameToMappedEntity.get(EntityBook.canonicalize(name));
             if(res!=null)
                 result.add(res);
@@ -435,7 +435,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     }
 
     private MappedEntity getEntityForNameAndType(String name, short type) {
-        EntityBook ebook = this.getEntityBookForType(type);
+        EntityBook ebook = this.getEntityBookForType(type, false);
         return ebook.nameToMappedEntity.get(EntityBook.canonicalize(name));
     }
     /* get the preferred display name for the given string */
@@ -482,7 +482,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     public Set<String> getAllEntities() {
         Set<String> result= new LinkedHashSet<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), false);
             result.addAll(ebook.getAllEntities());
 
         }
@@ -492,7 +492,7 @@ individual type entitybook (which involves expensive operation of lucene search 
     public Set<Pair<String, Pair<Pair<Date,Date>,Integer>>> getAllEntitiesSummary() {
         Set<Pair<String, Pair<Pair<Date,Date>,Integer>>> result = new LinkedHashSet<>();
         for(NEType.Type t: NEType.Type.values()) {
-            EntityBook ebook = this.getEntityBookForType(t.getCode());
+            EntityBook ebook = this.getEntityBookForType(t.getCode(), false);
             ebook.summary_L1_entityCountMap.entrySet().forEach(s -> {
                 result.add(new Pair(s.getKey().getDisplayName(), new Pair(new Pair(s.getValue().startDate, s.getValue().endDate),s.getValue().messages.size())));
             });

@@ -1,1 +1,1 @@
-ePADD version Release x
+ePADD version Release 

@@ -174,14 +174,16 @@
                         Metadata:
                         <a href="edit-metadata?collection=user&archiveID=<%=archiveID%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
                 <% } %>
-
+                <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
 				<button id="btn_delete" class="btn-default" onclick="updateHash(archiveID);" style="float: right;">Update checksum</button>
-
+                <% } %>
             </div>
 			<hr/>
             <!--div class="modal-footer"-->
 			<div class="row">
+                <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
                 <div class="col-sm-5"><button id="btn_delete" class="btn-default" onclick="delArchive(archiveID);">Delete</button></div>
+                <% } %>
                 <!--button type="button" class="ok-button btn btn-default" data-dismiss="modal"> %=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button-->
                 <div class="col-sm-5"><button type="button" class="ok-button btn btn-default" data-dismiss="modal"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button></div>               
             </div>
