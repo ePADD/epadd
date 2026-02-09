@@ -332,7 +332,7 @@ public class BlobStore implements Serializable {
         return add(blob, is, null, false);
     }
 
-        public long add(Blob blob, InputStream is, Archive archive, boolean addMimeTypeToPremisIfNoDuplicate) throws IOException {
+public long add(Blob blob, InputStream is, Archive archive, boolean addMimeTypeToPremisIfNoDuplicate) throws IOException {
         long nBytes = -1;
         /* we no longer assume that if 2 blobs have the same name and file size, their contents must be the same!
         synchronized (this) {
@@ -400,7 +400,7 @@ public class BlobStore implements Serializable {
             Files.move (tmpPath, new File(destination).toPath());
         } catch (IOException ioe) {
             // we couldn't copy the stream to the data store, so undo everything
-            Util.print_exception("IO Error copying blob to blobstore", ioe, log);
+           Util.print_exception("IO Error copying blob to blobstore", ioe, log);
             remove(blob);
             Util.ASSERT(!this.contains(blob));
             throw ioe;

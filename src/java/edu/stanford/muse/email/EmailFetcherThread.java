@@ -832,6 +832,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * @throws MessagingException
      */
     private String handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
+
         String name = p.getFileName();
         if (name.endsWith(".rtf")) {
             try {
@@ -965,7 +966,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         // the size passed in here is the part size, which is not really the binary blob size.
         // when we read the stream below in blobStore.add(), we'll set it again to the binary blob size
         Blob b = new EmailAttachmentBlob(filename, p.getSize(), (MimeMessage) m, p);
-//fetchConfig.downloadAttachments=false; Just for testing..
+        //fetchConfig.downloadAttachments=false; Just for testing..
         if (fetchConfig.downloadAttachments) {
             // this containment check is only on the basis of file name and size currently,
             // not on the actual hash

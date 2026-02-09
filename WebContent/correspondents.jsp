@@ -98,15 +98,27 @@
 
 <div style="margin:auto; width:1100px">
 	<div class="button_bar_on_datatable">
-	<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.graph")%> " class="buttons_on_datatable" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><img class="button_image_on_datatable" src="images/graph.svg"></div>
-		<%if(ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode())%>
-	<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.edit")%> " class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img class="button_image_on_datatable" src="images/edit_correspondent.svg"></div>
-		<%if(ModeConfig.isProcessingMode())%>
-			<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.merge")%> " class="buttons_on_datatable" onclick="confirmBeforeMerge()"><img class="button_image_on_datatable" src="images/merge_correspondents.svg"></div>
-		<%if(ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode())%>
-		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload")%> " class="buttons_on_datatable" onclick="$('#correspondent-upload-modal').modal('show');"><img class="button_image_on_datatable" src="images/upload.svg"></div>
-		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.download")%> " class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable" src="images/download.svg"></div>
-	</div>
+		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.graph")%> "
+			 class="buttons_on_datatable" onclick="window.location='graph?archiveID=<%=archiveID%>&view=people'"><img
+				class="button_image_on_datatable" src="images/graph.svg"></div>
+		<%if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) {%>
+			<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.edit")%> "
+			 class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img
+				class="button_image_on_datatable" src="images/edit_correspondent.svg"></div>
+		<%if (ModeConfig.isProcessingMode()) {%>
+		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.merge")%> "
+			 class="buttons_on_datatable" onclick="confirmBeforeMerge()"><img class="button_image_on_datatable"
+																			  src="images/merge_correspondents.svg">
+		</div>
+		<%}%>
+		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.upload")%> "
+			 class="buttons_on_datatable" onclick="$('#correspondent-upload-modal').modal('show');"><img
+				class="button_image_on_datatable" src="images/upload.svg"></div>
+		<%}%>
+		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.download")%> "
+			 class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable"
+																					  src="images/download.svg"></div>
+		</div>
 <table id="people" style="display:none">
 	<thead><tr><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.name")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.sent")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.received")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.received-from-owner")%> </th></tr></thead>
 	<tbody>

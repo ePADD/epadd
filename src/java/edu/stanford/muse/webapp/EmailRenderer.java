@@ -779,6 +779,10 @@ public class EmailRenderer {
 				labelHeader = header;
 				break;
 			}
+			if (header.startsWith("X-ePADD-Conversion-From"))
+			{
+				labelHeader = header;
+			}
 		}
 
 		result.append(JSPHelper.getHTMLForDate(archiveID,ed.date));

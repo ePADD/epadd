@@ -237,9 +237,10 @@
         <% if (!Util.nullOrEmpty(cm.catalogRecordLink)) { %>
         <a target="_blank" href="<%=cm.catalogRecordLink%>"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages", "collection-detail.catalog-rec")%></a>
         <br/>
+        <% }
+        if (ModeConfig.isProcessingMode()) { %>
+    		<div align="middle"><button id="btn_delete" class="btn-default" onclick="delFolder();">Delete</button></div>
         <% } %>
-		
-		<div align="middle"><button id="btn_delete" class="btn-default" onclick="delFolder();">Delete</button></div>
     </div>
 
     <div class="collection-info">

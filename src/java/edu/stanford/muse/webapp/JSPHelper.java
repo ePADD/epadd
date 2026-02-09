@@ -448,7 +448,7 @@ public class JSPHelper {
                 //archive.collectionMetadata.entityCounts = ner.stats.counts;
 				double theta = 0.001;
 				archive.collectionMetadata.entityCounts = archive.getEntityBookManager().getEntitiesCountMapModuloThreshold(theta);//getEntitiesCountMapModuloThreshold(archive,theta);
-                log.info(ner.stats);
+				log.info(ner.stats);
             }
            // archive.collectionMetadata.numPotentiallySensitiveMessages = archive.numMatchesPresetQueries();
             log.info("Number of potentially sensitive messages " + archive.collectionMetadata.numPotentiallySensitiveMessages);

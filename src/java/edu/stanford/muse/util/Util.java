@@ -34,6 +34,7 @@ import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -453,7 +454,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 				nBytes += n;
 
 			}
-		} finally {
+		} finally{
 			if (bis != null)
 				bis.close();
 			if (bos != null)

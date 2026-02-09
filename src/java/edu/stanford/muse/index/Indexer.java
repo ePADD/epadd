@@ -2041,6 +2041,11 @@ is what we want.
 		IndexSearcher searcher;
 		if(!attachment) {
 			if (isearcher == null) {
+				if (directory == null)
+				{
+					log.warn("directory is null in getLDoc()");
+					return null;
+				}
 				DirectoryReader ireader = DirectoryReader.open(directory);
 				isearcher = new IndexSearcher(ireader);
 			}
