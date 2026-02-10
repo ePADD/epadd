@@ -9,6 +9,23 @@ var browseType; //either collection or repository.
 var repositoryName;
 var institutionName;
 
+function compareStrings(aStr, bStr, direction = "asc") {
+    const a = (aStr ?? "").toString().trim();
+    const b = (bStr ?? "").toString().trim();
+    const cmp = a.localeCompare(b, undefined, { sensitivity: "base" });
+    return direction === "asc" ? cmp : -cmp;
+}
+
+// function updateCollectionList(list, order) {
+//     return list.sort((a, b) => {
+//         if (order === "ascShortTitle") return compareStrings(a.shortTitle, b.shortTitle, "asc");
+//         if (order === "descShortTitle") return compareStrings(a.shortTitle, b.shortTitle, "desc");
+//         if (order === "ascInstitutionName") return compareStrings(a.institutionName, b.institutionName, "asc");
+//         if (order === "descInstitutionName") return compareStrings(a.institutionName, b.institutionName, "desc");
+//         return 0;
+//     });
+// }
+
 /*This method renders the page when user clicks on 'Browse collections' tab on navbar. It renders a header with search bar and the
 collection details in form of tiles. The collection information is stored in variable collectionDetails.
 the first argument of this method. The headername to display is passed as the second argument.
@@ -29,6 +46,13 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
     //read from collectionDetails object array and set up collection tiles.
     //1. Iterate over every element of collectionDetails.
     //2. Construct the element to be added
+    if (document.getElementById("sort-by")) {
+        updateCollectionList(document.getElementById("sort-by").val);
+    }
+    else
+    {
+        updateCollectionList("ascShortTitle");
+    }
     if(redrawComplete) {
         //3. append the element as a child under "collectionsInfo" div (this div is on the page collections.jsp)
         $('#collectionsInfo-header').empty();
@@ -62,28 +86,26 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         $('#collectionsInfo-details').empty();
     }
 
-    function compareLastWord(aStr, bStr, direction = "asc") {
-        debugger
-        const getLastWord = str => str.trim().split(" ").splice(-1)[0];
-        const aLast = getLastWord(aStr);
-        const bLast = getLastWord(bStr);
-        return direction === "asc"
-            ? aLast.localeCompare(bLast)
-            : bLast.localeCompare(aLast);
+    function compareStrings(aStr, bStr, direction = "asc") {
+        const a = (aStr ?? "").toString().trim();
+        const b = (bStr ?? "").toString().trim();
+
+        const cmp = a.localeCompare(b, undefined, { sensitivity: "base" });
+        return direction === "asc" ? cmp : -cmp;
     }
 
     function updateCollectionList(order) {
-        // Sort the array
-        collectionDetails = collectionDetails.sort(function (a, b) {
+        collectionDetails = collectionDetails.sort((a, b) => {
             if (order === "ascShortTitle") {
-                return compareLastWord(a.shortTitle, b.shortTitle, "asc");
+                return compareStrings(a.shortTitle, b.shortTitle, "asc");
             } else if (order === "descShortTitle") {
-                return compareLastWord(a.shortTitle, b.shortTitle, "desc");
+                return compareStrings(a.shortTitle, b.shortTitle, "desc");
             } else if (order === "ascInstitutionName") {
-                return compareLastWord(a.institutionName, b.institutionName, "asc");
+                return compareStrings(a.institutionName, b.institutionName, "asc");
             } else if (order === "descInstitutionName") {
-                return compareLastWord(a.institutionName, b.institutionName, "desc");
+                return compareStrings(a.institutionName, b.institutionName, "desc");
             }
+            return 0; // always return a number
         });
     }
         document.getElementById("sort-by").addEventListener("change", function() {
@@ -209,9 +231,6 @@ var renderBrowseCollection = function(collectionDetails, headerstring, redrawCom
         var dir = $(e.target).closest('.archive-card').attr('data-dir');
         window.location = 'collection-detail?collection=' + encodeURIComponent(dir); // worried about single quotes in dir
     });
-
-
-
 };
 
 //Register method for search box..(search collection)
