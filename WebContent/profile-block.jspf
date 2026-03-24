@@ -4,13 +4,52 @@
 <%@ page import="java.io.IOException" %>
 <%@ page import="edu.stanford.muse.index.Archive" %>
 <%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%>
+<%@ page import="org.json.JSONArray"%>
 <%@ page import="edu.stanford.muse.webapp.ModeConfig" %>
 <%@ page import="edu.stanford.muse.AddressBookManager.Contact" %>
 <%@ page import="java.util.Set" %>
 
 <link rel="stylesheet" href="css/bootstrap-dialog.css">
 <script src="js/bootstrap-dialog.js"></script>
+<%-- Show a BootstrapDialog warning if any attachment files were removed from BagIt manifests --%>
+<% if (haveArchive) {
+    Archive _pbArchive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);
+    if (_pbArchive != null && _pbArchive.bagCleaningWarnings != null && !_pbArchive.bagCleaningWarnings.isEmpty()) { %>
+<script>
+    $(function() {
+        var storageKey = 'bagWarningsAcknowledged_<%=archiveID%>';
+        var warnings = <%=new org.json.JSONArray(_pbArchive.bagCleaningWarnings)%>;
+        var fingerprint = warnings.join('|');
+        if (localStorage.getItem(storageKey) === fingerprint) return; // same warnings already acknowledged
 
+        // Show only warnings not seen in the previously acknowledged set
+        var previouslyAcknowledged = localStorage.getItem(storageKey) ? localStorage.getItem(storageKey).split('|') : [];
+        var newWarnings = warnings.filter(function(w) { return previouslyAcknowledged.indexOf(w) === -1; });
+
+        var lines = newWarnings.map(function(w) {
+            var path = w.replace(/^Windows-unsafe filename: /, '')
+                        .replace(/ \(attachment file will not be visible in ePADD\)$/, '');
+            return '<code style="display:block;background:#f8f9fa;padding:2px 4px;margin:2px 0;">'
+                + $('<span>').text(path).html()
+                    .replace(/\[SPACE\]/g, '<mark>[SPACE]</mark>')
+                    .replace(/\[DOT\]/g,   '<mark>[DOT]</mark>')
+                    .replace(/(\[U\+[0-9A-F]{4}\])/g, '<mark>$1</mark>')
+                + '</code>';
+        });
+        BootstrapDialog.show({
+            title: 'Warning: attachment files not accessible',
+            message: 'The following <strong>new</strong> files have filenames that are not valid on Windows '
+                   + 'and will <strong>not</strong> be visible in ePADD:<br/><br/>'
+                   + lines.join('')
+                   + '<br/>See the <a href="report?archiveID=<%=archiveID%>">Report page</a> for details.',
+            type: BootstrapDialog.TYPE_WARNING,
+            onhide: function() {
+                localStorage.setItem(storageKey, fingerprint);
+            }
+        });
+    });
+</script>
+<% } } %>
 <%!
   // this profile block will go onto pretty much every page via the header.jspf
 

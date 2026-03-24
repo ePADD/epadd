@@ -7,7 +7,7 @@
 <%@page language="java" import="org.json.JSONObject"%>
 <%@page language="java" import="java.io.File"%>
 <%@page import="edu.stanford.muse.webapp.JSPHelper"%>
-<%@page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="java.util.function.Consumer"%>
+<%@page import="edu.stanford.muse.webapp.ModeConfig"%><%@ page import="edu.stanford.muse.index.ArchiveReaderWriter"%><%@ page import="com.google.common.collect.Multimap"%><%@ page import="edu.stanford.epadd.util.OperationInfo"%><%@ page import="edu.stanford.muse.email.StatusProvider"%><%@ page import="java.util.function.Consumer"%><%@ page import="org.json.JSONArray"%>
 <%
 
 
@@ -110,6 +110,8 @@ public void loadArchive(Multimap<String,String> params, Consumer<StatusProvider>
             resultJSON.put ("owner", bestName);
             resultJSON.put ("nDocs", nDocs);
             resultJSON.put("resultPage", resultPage);
+            if (archive.bagCleaningWarnings != null && !archive.bagCleaningWarnings.isEmpty())
+                resultJSON.put("bagCleaningWarnings", new JSONArray(archive.bagCleaningWarnings));
             //out.println (result.toString(4));
             return;
         } catch (Exception e) {

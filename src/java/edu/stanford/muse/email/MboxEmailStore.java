@@ -17,6 +17,7 @@ package edu.stanford.muse.email;
 
 
 import edu.stanford.muse.Config;
+import edu.stanford.muse.index.BagitManifestCleaner;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
@@ -178,8 +179,13 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		{
 			File filesInDir[] = f.listFiles();
 			if (filesInDir != null) // somehow this can be null when run on /tmp (maybe due to soft links etc).
-				for (File child : filesInDir)
+				for (File child : filesInDir) {
+					if (BagitManifestCleaner.isWindowsReservedName(child.getName())) {
+						log.warn("Skipping Windows reserved device name during mbox scan: " + child.getPath());
+						continue;
+					}
 					collect_mbox_folders(list, child,seenfolders);
+				}
 		}
 	}
 

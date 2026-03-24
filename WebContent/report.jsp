@@ -65,6 +65,7 @@
             {"Duplicate attachments", "duplicate attachments"},
             {"Bad folder name", " Bad folder name"},
             {"Bad account name", " Bad account name"},
+            {"Windows-unsafe filename", "attachment files not visible in ePADD"},
             {"", "other errors"} // this is needed as a catch all, otherwise the remaining errors won't be reported.
     };
 
@@ -124,12 +125,24 @@
         out.println ("<a id=\"errorType" + t + "\">"); // anchor
         out.println ("<h2>" + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "</h2>"); // errorTypes[t][1] is the description of the error
         out.println ("</a>");
+        boolean isWindowsUnsafe = "Windows-unsafe filename".equals(errorTypes[t][0]);
         for (String s : errorsByType[t])
         {
             String escapedString = Util.escapeHTML(s);
             escapedString = escapedString.replace("\n", "<br/>");
-            escapedString = escapedString.replace(" ", "&nbsp");
+            escapedString = escapedString.replace(" ", "&nbsp;");
+            if (isWindowsUnsafe) {
+                // Wrap the whole entry in monospace so invisible characters and
+                // their [SPACE]/[DOT]/[U+XXXX] annotations are easy to read,
+                // and highlight the bracketed markers in amber.
+                escapedString = escapedString
+                    .replace("[SPACE]", "<mark>[SPACE]</mark>")
+                    .replace("[DOT]",   "<mark>[DOT]</mark>")
+                    .replaceAll("(\\[U\\+[0-9A-F]{4}\\])", "<mark>$1</mark>");
+                out.println(++i + ". <span style=\"font-family:monospace;background:#f8f9fa;padding:2px 4px;border-radius:3px;\">" + escapedString + "</span><br/>\n");
+            } else {
             out.println(++i + ". " + escapedString + "<br/>\n");
+            }
         }
         out.println ("<br/><br/><hr/><br/>\n");
     }

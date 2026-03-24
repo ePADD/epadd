@@ -83,6 +83,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -299,6 +300,8 @@ public class Archive implements Serializable, StatusProvider {
     private transient AnnotationManager annotationManager;//transient because it will be saved and loaded separately
     public transient CollectionMetadata collectionMetadata = new CollectionMetadata();//setting it as transient since v5 as it will be stored/read separately
     public final List<FetchStats> allStats = new ArrayList<FetchStats>(); // multiple stats because usually there is 1 per import
+    /** Warnings generated when Windows-unsafe filenames were removed from BagIt manifests on load. Persisted with the archive. */
+    public List<String> bagCleaningWarnings = new ArrayList<>();
 
     public String archiveTitle; // this is the name of this archive
 
@@ -2493,6 +2496,8 @@ after maskEmailDomain.
                 result.addAll(asErrors);
         }
 
+        if (bagCleaningWarnings != null)
+            result.addAll(bagCleaningWarnings);
         return result;
     }
 
@@ -2634,6 +2639,12 @@ after maskEmailDomain.
 */
     //input is a bag present in userdir
     public static Bag readArchiveBag(String userdir) {
+        return readArchiveBag(userdir, null);
+    }
+
+    /** Like {@link #readArchiveBag(String)} but, if manifest cleaning is triggered, appends a warning message for
+     *  each removed filename to {@code warningsOut} (when non-null). */
+    public static Bag readArchiveBag(String userdir, List<String> warningsOut) {
         Path rootDir = Paths.get(userdir);
         BagReader reader = new BagReader();
         String errorMessage = "";
@@ -2655,6 +2666,33 @@ after maskEmailDomain.
         } catch (InvalidBagitFileFormatException e) {
             e.printStackTrace();
             errorMessage = "The file format of the bag is invalid :" + e.getMessage();
+        } catch (InvalidPathException e) {
+            try {
+                e.printStackTrace();
+                log.warn("InvalidPathException trying to read bag. Remove illegal filenames (Windows)" +
+                        "and try again. " + e.getMessage());
+                BagitManifestCleaner.Result res = BagitManifestCleaner.clean(rootDir);
+                String summary = String.format("BagIt cleanup: processed %d manifests, kept %d entries, dropped %d%n", res.manifestsProcessed(), res.totalKept(), res.totalDropped());
+                log.warn(summary);
+                StringBuilder reportContent = new StringBuilder(summary);
+                for (String droppedPath : res.allDroppedPaths()) {
+                    String warning = "Windows-unsafe filename: " + BagitManifestCleaner.annotateForDisplay(droppedPath) + " (attachment file will not be visible in ePADD)";
+                    log.warn(warning);
+                    reportContent.append(warning).append(System.lineSeparator());
+                    if (warningsOut != null)
+                        warningsOut.add(warning);
+                }
+                Path written = BackupReports.writeBackupReport(rootDir, reportContent);
+                System.out.println("Wrote report: " + written);
+            } catch (IOException io) {
+                // If the bag directory is unreadable, bubble up; otherwise invalid entries are silently skipped
+                //throw new RuntimeException("Failed to clean BagIt manifests at " + rootDir, io);
+            }
+            try {
+                bag = reader.read(rootDir);
+            } catch (Exception exception) {
+                throw new RuntimeException("Exception reading bag: " + exception.getMessage());
+            }
         }
 
        /* BagVerifier bv = new BagVerifier(Executors.newSingleThreadExecutor());

@@ -5,10 +5,11 @@ public class FetchConfig implements java.io.Serializable {
 
 	public boolean downloadMessages;
 	public boolean downloadAttachments;
+	public boolean skipDuplicates = false; // when false, duplicate emails are imported instead of being dropped
 	public Filter filter;
 	
 	public String toString()
 	{
-		return "downloadMessages: " + downloadMessages + " downloadAttachments: " + downloadAttachments + " filter: " + filter;
+		return "downloadMessages: " + downloadMessages + " downloadAttachments: " + downloadAttachments + " skipDuplicates: " + skipDuplicates + " filter: " + filter;
 	}
 }
