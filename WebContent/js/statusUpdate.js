@@ -30,7 +30,7 @@ function fetch_page_with_progress(page, spage, sdiv, sdiv_text, post_params, onr
 	}
 
 	function onSuccess(response,onready,redirect_page){
-	    if (premisData) {
+        if (premisData) {
             if (response.cancelled)
             {
                 premisData.outcome = "Cancelled by user";

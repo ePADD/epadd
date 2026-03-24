@@ -879,7 +879,8 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
      * return the archive, or null if it doesn't exist. */
     public static Archive readArchiveIfPresent(String baseDir, ModeConfig.Mode mode) {
         //check if a valid bag in basedir.
-        Bag archiveBag=Archive.readArchiveBag(baseDir);
+        List<String> bagWarnings = new ArrayList<>();
+        Bag archiveBag=Archive.readArchiveBag(baseDir, bagWarnings);
         if(archiveBag==null)
             return null;
 
@@ -933,6 +934,20 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
                 a.Verify();*/
                 //assign bag to archive object.
                 a.setArchiveBag(archiveBag);
+                // record any Windows-unsafe filenames that were cleaned from the manifests
+                if (!bagWarnings.isEmpty()) {
+                    if (a.bagCleaningWarnings == null)
+                        a.bagCleaningWarnings = new ArrayList<>();
+                    a.bagCleaningWarnings.addAll(bagWarnings);
+                    // Persist immediately so the warnings survive a restart.
+                    // Without this save the .ser.gz still has the old (warning-free) state
+                    // and the warnings would be lost as soon as ePADD is restarted.
+                    try {
+                        saveArchive(a, Archive.Save_Archive_Mode.INCREMENTAL_UPDATE);
+                    } catch (IOException e) {
+                        log.warn("Could not persist bag-cleaning warnings to archive: " + e.getMessage());
+                    }
+                }
 
                 if(mode!= ModeConfig.Mode.DISCOVERY) {
                     //now intialize the cache for lexicon

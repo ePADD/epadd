@@ -410,6 +410,10 @@ public class JSPHelper {
         fc.downloadMessages = downloadMessageText;
         fc.downloadAttachments = downloadAttachments;
         fc.filter = filter;
+        if ("false".equalsIgnoreCase(JSPHelper.getParam(paramsMap, "skipDuplicates"))) {
+            fc.skipDuplicates = false;
+            log.info("Including duplicate emails because advanced option was set");
+        }
 
         archive.setBaseDir(getBaseDir(m, session));
         m.fetchAndIndexEmails(archive, allFolders, useDefaultFolders, fc, session, setStatusProvider);

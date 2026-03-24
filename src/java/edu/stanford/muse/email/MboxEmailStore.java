@@ -17,6 +17,7 @@ package edu.stanford.muse.email;
 
 
 import edu.stanford.muse.Config;
+import edu.stanford.muse.index.BagitManifestCleaner;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
@@ -145,11 +146,6 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 						}
 
-						// ignore files from the list of recognized attachment types
-						String extension = Util.getExtension(path);
-						if (extension != null && Config.allAttachmentExtensions.contains(extension.toLowerCase()))
-							return;
-
 						log.info ("Ignoring file " + path + " because it has only 1 message and its name matches a suffix that indicates it's likely not an mbox file.");
 					}
 					Folder f1 = pair.getFirst();
@@ -178,8 +174,13 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 		{
 			File filesInDir[] = f.listFiles();
 			if (filesInDir != null) // somehow this can be null when run on /tmp (maybe due to soft links etc).
-				for (File child : filesInDir)
-					collect_mbox_folders(list, child,seenfolders);
+				for (File child : filesInDir) {
+					if (BagitManifestCleaner.isWindowsReservedName(child.getName())) {
+						log.warn("Skipping Windows reserved device name during mbox scan: " + child.getPath());
+						continue;
+					}
+					collect_mbox_folders(list, child, seenfolders);
+				}
 		}
 	}
 

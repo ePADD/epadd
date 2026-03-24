@@ -166,11 +166,9 @@ public class Log4JUtils {
 					);
 					//addAttribute("additivity",false));
 			//addAttribute("additivity", false));
-			LoggerContext lc = Configurator.initialize(builder.build());
-			//We need to shutdown it sometime to stop the already running context.
-			Configurator.shutdown(lc);
-			lc = Configurator.initialize(builder.build());
-			lc.start();
+			LoggerContext lc = (LoggerContext) LogManager.getContext(false);
+			lc.setConfiguration(builder.build());
+			lc.updateLoggers();
 
 			} catch(Exception e) {
  	        log.error("Failed creating log appender in " + filename);

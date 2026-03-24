@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd MMM HH:mm:ss} %c{1} %-5p - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.opensymphony.xwork2" level="INFO"/>
+        <Logger name="freemarker.cache" level="INFO"/>
+        <Logger name="org.apache.struts2" level="INFO"/>
+        <Logger name="org.apache.xml.security" level="INFO"/>
+        <Logger name="org.apache.commons.httpclient" level="INFO"/>
+        <Logger name="org.mortbay.log" level="INFO"/>
+        <Logger name="net.sf.ehcache" level="OFF"/>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

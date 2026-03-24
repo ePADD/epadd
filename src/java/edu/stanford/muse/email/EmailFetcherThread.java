@@ -832,7 +832,6 @@ public class EmailFetcherThread implements Runnable, Serializable {
      * @throws MessagingException
      */
     private String handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
-
         String name = p.getFileName();
         if (name.endsWith(".rtf")) {
             try {
@@ -966,7 +965,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         // the size passed in here is the part size, which is not really the binary blob size.
         // when we read the stream below in blobStore.add(), we'll set it again to the binary blob size
         Blob b = new EmailAttachmentBlob(filename, p.getSize(), (MimeMessage) m, p);
-        //fetchConfig.downloadAttachments=false; Just for testing..
+//fetchConfig.downloadAttachments=false; Just for testing..
         if (fetchConfig.downloadAttachments) {
             // this containment check is only on the basis of file name and size currently,
             // not on the actual hash
@@ -1193,7 +1192,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
             MimeMessage mm = (MimeMessage) m;
             try {
                 EmailDocument ed = convertToEmailDocument(mm, "dummy"); // id doesn't really matter here
-                if (archive.containsDoc(ed)) {
+                if (fetchConfig.skipDuplicates && archive.containsDoc(ed)) {
                     //get more info about the already present message (duplicate)
                     Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
                     archive.getDupMessageInfo().put(alreadypresent,new Tuple2<>(ed.folderName,ed.messageID));
@@ -1333,7 +1332,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         continue;
                     }*/
                     // need to check this again, because there might be duplicates such within the set we are currently processing.
-                    if (archive.containsDoc(ed)) {
+                    if (fetchConfig.skipDuplicates && archive.containsDoc(ed)) {
                         stats.nMessagesAlreadyPresent++;
                         //get more info about the already present message (duplicate)
                         Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
@@ -1766,6 +1765,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     folder.close(false);
                 if (store != null)
                     store.close();
+            } catch (javax.mail.FolderNotFoundException e) {
+                log.warn("Ignoring FolderNotFoundException on store close (likely a Windows reserved device name in mbox directory): " + e.getMessage());
             } catch (Exception e) {
                 Util.print_exception("Exception trying to close folder or store", e, LogManager.getLogger(EmailFetcherThread.class));
             }
