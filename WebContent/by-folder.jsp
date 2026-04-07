@@ -1,5 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page import="edu.stanford.muse.AddressBookManager.AddressBook"%>
+<%@page import="edu.stanford.muse.email.FolderInfo"%>
 <%@page import="edu.stanford.muse.index.EmailDocument"%>
 <%@page import="edu.stanford.muse.util.Pair" %>
 <%@page import="edu.stanford.muse.util.Util" %>
@@ -80,6 +81,17 @@
             folderToTotalCount.put (folderName, (I == null) ? 1 : I+1);
             if (ed.emailSource != null)
                 folderToSource.put(folderName, ed.emailSource);
+        }
+
+        // Also include folders that were imported but had all-duplicate messages
+        // (those emails were never added to the archive, so they don't appear above).
+        for (FolderInfo fi : archive.getFetchedFolderInfos()) {
+            String fiDisplayName = fi.displayName;
+            if (!folderToTotalCount.containsKey(fiDisplayName)) {
+                folderToTotalCount.put(fiDisplayName, 0);
+                if (fi.accountKey != null)
+                    folderToSource.put(fiDisplayName, fi.accountKey);
+            }
         }
 
         int count = 0;

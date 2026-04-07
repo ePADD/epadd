@@ -1383,6 +1383,8 @@ int errortype=0;
         }
     }
 
+    public Set<FolderInfo> getFetchedFolderInfos() { return Collections.unmodifiableSet(fetchedFolderInfos); }
+
     private FolderInfo getFetchedFolderInfo(String accountID, String fullFolderName) {
         setupFolderInfosMap();
         return fetchedFolderInfosMap.get(getFolderInfosMapKey(accountID, fullFolderName));
@@ -2566,6 +2568,11 @@ after maskEmailDomain.
             for (EmailDocument d : docs)
                 if (!Util.nullOrEmpty(d.folderName))
                     allFolders.add(d.folderName);
+            // also include folders that were imported but had all-duplicate messages
+            // (those folders have no email docs in the archive)
+            for (FolderInfo fi : fetchedFolderInfos)
+                if (!Util.nullOrEmpty(fi.displayName))
+                    allFolders.add(fi.displayName);
         }
         return allFolders;
     }

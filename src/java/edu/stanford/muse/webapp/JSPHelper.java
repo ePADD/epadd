@@ -413,6 +413,8 @@ public class JSPHelper {
         if ("false".equalsIgnoreCase(JSPHelper.getParam(paramsMap, "skipDuplicates"))) {
             fc.skipDuplicates = false;
             log.info("Including duplicate emails because advanced option was set");
+        } else {
+            fc.skipDuplicates = true;
         }
 
         archive.setBaseDir(getBaseDir(m, session));

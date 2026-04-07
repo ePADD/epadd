@@ -127,6 +127,7 @@ var Labels = function() {
         });
     }
 
+
     // redraws labels for PAGE_ON_SCREEN
     var refreshLabels = function () {
 
