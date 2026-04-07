@@ -146,11 +146,6 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 						}
 
-						// ignore files from the list of recognized attachment types
-						String extension = Util.getExtension(path);
-						if (extension != null && Config.allAttachmentExtensions.contains(extension.toLowerCase()))
-							return;
-
 						log.info ("Ignoring file " + path + " because it has only 1 message and its name matches a suffix that indicates it's likely not an mbox file.");
 					}
 					Folder f1 = pair.getFirst();
@@ -181,7 +176,13 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 			if (filesInDir != null) // somehow this can be null when run on /tmp (maybe due to soft links etc).
 				for (File child : filesInDir) {
 					if (BagitManifestCleaner.isWindowsReservedName(child.getName())) {
-						log.warn("Skipping Windows reserved device name during mbox scan: " + child.getPath());
+						boolean hasContent = child.isDirectory()
+								? (child.listFiles() != null && child.listFiles().length > 0)
+								: child.length() > 0;
+						if (hasContent)
+							log.warn("Skipping '{}' because its name is a Windows reserved device name — any emails inside will NOT be imported. Rename this folder/file on the source system to import its contents.", child.getPath());
+						else
+							log.debug("Skipping empty Windows reserved device name: {}", child.getPath());
 						continue;
 					}
 					collect_mbox_folders(list, child,seenfolders);

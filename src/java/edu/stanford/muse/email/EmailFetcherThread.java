@@ -572,7 +572,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 bodyPart = ((MimeBodyPart) messagePart);
             }
             if(bodyPart==null){
-                log.warn("WARN!! Expected MimeBodyPart but did not get any... Some invariant about the structure of mbox file is broken. Please contact the developers.");
+                log.debug("messagePart is not a MimeBodyPart (type: {}); using getInputStream() fallback for encoding", messagePart.getClass().getName());
             }
             String encoding = "quoted-printable";
             String charset =  "utf-8";
@@ -1192,7 +1192,10 @@ public class EmailFetcherThread implements Runnable, Serializable {
             MimeMessage mm = (MimeMessage) m;
             try {
                 EmailDocument ed = convertToEmailDocument(mm, "dummy"); // id doesn't really matter here
-                if (fetchConfig.skipDuplicates && archive.containsDoc(ed)) {
+                // Skip early dedup for messages with no date and no messageID: their signature
+                // is unreliable without a body snippet, which is not yet available here.
+                boolean canDedup = (ed.getDate() != null && !ed.getDate().equals(INVALID_DATE)) || ed.messageID != null;
+                if (fetchConfig.skipDuplicates && canDedup && archive.containsDoc(ed)) {
                     //get more info about the already present message (duplicate)
                     Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
                     archive.getDupMessageInfo().put(alreadypresent,new Tuple2<>(ed.folderName,ed.messageID));
@@ -1332,7 +1335,9 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         continue;
                     }*/
                     // need to check this again, because there might be duplicates such within the set we are currently processing.
-                    if (fetchConfig.skipDuplicates && archive.containsDoc(ed)) {
+                    // Skip early dedup for messages with no date and no messageID: body snippet not yet available.
+                    boolean canDedup = (ed.getDate() != null && !ed.getDate().equals(INVALID_DATE)) || ed.messageID != null;
+                    if (fetchConfig.skipDuplicates && canDedup && archive.containsDoc(ed)) {
                         stats.nMessagesAlreadyPresent++;
                         //get more info about the already present message (duplicate)
                         Document alreadypresent = archive.getAllUniqueDocsMap().get(ed);
@@ -1445,6 +1450,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
                     }
 
                     contentStr = IndexUtils.normalizeNewlines(contentStr); // just get rid of \r's
+
+                    // For messages with no date and no messageID, set a body snippet now so that
+                    // the containsDoc check inside addDoc uses a content-based signature.
+                    boolean hasNoRealDate = ed.getDate() == null || ed.getDate().equals(INVALID_DATE);
+                    if (hasNoRealDate && ed.messageID == null)
+                        ed.setBodySnippet(contentStr);
 
                     archive.addDoc(ed, contentStr, headers, textHtmlPart);
 
@@ -1766,7 +1777,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 if (store != null)
                     store.close();
             } catch (javax.mail.FolderNotFoundException e) {
-                log.warn("Ignoring FolderNotFoundException on store close (likely a Windows reserved device name in mbox directory): " + e.getMessage());
+                log.debug("Ignoring FolderNotFoundException on store close (likely a Windows reserved device name in mbox directory): " + e.getMessage());
             } catch (Exception e) {
                 Util.print_exception("Exception trying to close folder or store", e, LogManager.getLogger(EmailFetcherThread.class));
             }

@@ -359,7 +359,9 @@ public class EpaddPremis implements Serializable {
 			
             Bag bag = Archive.readArchiveBag(baseDir);
             if (bag == null) {
-                log.warn("bag null in EpaddPremis.printToFile()");
+                // Expected during first import: the bag is created at end of import (FRESH_CREATION),
+                // so it doesn't exist yet when early PREMIS events fire. BagCreator.bagInPlace will
+                // include these files when it runs, so no data is lost.
                 return;
             }
             if (archive == null) {

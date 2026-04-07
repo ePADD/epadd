@@ -57,6 +57,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 	public Address[] to, from, cc, bcc; // note: for some reason from[] is an array in JavaMail, because it was supposed to be possible for a message to have multiple senders.
 	public String messageID;
 	private String uniqueID=null;
+	private transient String bodySnippet; // used for dedup when both date and messageID are absent
 	public String sentToMailingLists[];
 	public List<Blob> attachments;
 	public boolean attachmentsYetToBeDownloaded;
@@ -84,6 +85,20 @@ public class EmailDocument extends DatedDocument implements Serializable
 		if (emailSource != null)
 			this.emailSource = emailSource;
 		this.uniqueID = Util.hash(getSignature());
+	}
+
+	/**
+	 * Sets a body snippet used to disambiguate messages that have neither a date nor a messageID.
+	 * Stores first 500 + last 500 chars plus the total length, then resets uniqueID so it is recomputed.
+	 */
+	public void setBodySnippet(String body) {
+		if (Util.nullOrEmpty(body)) return;
+		int len = body.length();
+		int snippetSize = 500;
+		String prefix = body.substring(0, Math.min(snippetSize, len));
+		String suffix = len > snippetSize ? body.substring(Math.max(0, len - snippetSize)) : "";
+		this.bodySnippet = prefix + suffix + len;
+		this.uniqueID = null; // force recompute via getUniqueId()
 	}
 
 	public void setNoPlainText() {noPlainText = true;}
@@ -775,6 +790,12 @@ public class EmailDocument extends DatedDocument implements Serializable
 		}
 		if(this.messageID !=null)
 			sb.append("MessageID: "+this.messageID + "\n");
+
+		// When both date and messageID are absent the header-only signature is unreliable.
+		// Include a body snippet (prefix + suffix + length) to distinguish messages.
+		boolean hasNoRealDate = this.date == null || this.date.equals(EmailFetcherThread.INVALID_DATE);
+		if (hasNoRealDate && this.messageID == null && this.bodySnippet != null)
+			sb.append("BodySnippet: " + this.bodySnippet + "\n");
 
 		sb.append("Subject: " + this.description + "\n");
 		sb.append("\n");
