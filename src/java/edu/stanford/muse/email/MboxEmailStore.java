@@ -126,10 +126,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 				try {
 					// read the file
 					String path = f.getPath();
-					if (path.endsWith(".msf"))
-						return; // explicitly ignore msf files, sometimes it seems to read an actual number of messages even from msf files
-
-					folderBeingScanned = f.getPath();
+folderBeingScanned = f.getPath();
 //					folderBeingScannedShortName = Util.stripFrom(f.getPath(), rootPath + File.separatorChar);
 					int idx = folderBeingScanned.lastIndexOf(File.separatorChar);
 					if (idx >= 0 && (idx+1) < folderBeingScanned.length())
@@ -139,15 +136,6 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 					Pair<Folder, Integer> pair = openFolder(null, f.getPath());
 					int count = pair.getSecond();
-					if (count == 1) { // many files are wrongly considered mbox with count 1. Ignore them if they also have a suffix that is known to cause noise. we're being cautious and ignoring these files only if they are noisy
-						for(String disallowedFileName : DictUtils.excludedFilesFromImport){
-							if (path.endsWith (disallowedFileName))
-								return;
-
-						}
-
-						log.info ("Ignoring file " + path + " because it has only 1 message and its name matches a suffix that indicates it's likely not an mbox file.");
-					}
 					Folder f1 = pair.getFirst();
 					boolean validFolder = count > 0 && f1 != null;
 					// we'll cache the folder info even if its not a valid folder.

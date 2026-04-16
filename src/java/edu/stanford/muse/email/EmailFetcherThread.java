@@ -663,8 +663,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                         try {
                             b = QuotedPrintableCodec.decodeQuotedPrintable(b);
                         } catch (DecoderException e) {
-                            e.printStackTrace();
-                            log.error("Unable to decode quoted printable encoded message");
+                            log.warn("Unable to decode quoted printable encoded message", e);
                             dataErrors.add("Unable to decode quoted printable encoded message in  " + getFolderName() + " Message #" + messageNum + " type " + type);
                             Set<String> label = new LinkedHashSet<>();
                             label.add(LabelManager.LABELID_PARSING_ERRS);

@@ -369,7 +369,7 @@ public class Lexicon implements Serializable {
 			if (lex != null)
 				lexicons.add(lex); // this lexicon doesn't know about this language
 			else
-				log.warn ("Warning: no support for " + lang + " in lexicon " + name);
+				log.debug ("No support for " + lang + " in lexicon " + name);
 		}
 		return lexicons;
 	}
@@ -626,7 +626,7 @@ public class Lexicon implements Serializable {
 				lexicons.add(lex);
 			// this lexicon doesn't know about this language
 			else
-				log.warn ("Warning: no support for " + lang + " in lexicon " + name);
+				log.debug ("No support for " + lang + " in lexicon " + name);
 		}
 
 		Map<String, String> result = new LinkedHashMap<>();
