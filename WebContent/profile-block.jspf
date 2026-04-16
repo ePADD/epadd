@@ -213,14 +213,22 @@
                         <a href="edit-metadata?collection=user&archiveID=<%=archiveID%>" style="cursor:pointer;margin-left:75px;"><img style="height:25px" src="images/edit_summary.svg"/></a>
                 <% } %>
                 <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+<<<<<<< HEAD
 				    <button id="btn_delete" class="btn-default" onclick="updateHash(archiveID);" style="float: right;">Update checksum</button>
+=======
+				<button id="btn_delete" class="btn-default" onclick="updateHash(archiveID);" style="float: right;">Update checksum</button>
+>>>>>>> d598bfbc6d58de4f913f594c2a4be24c784a4117
                 <% } %>
             </div>
 			<hr/>
             <!--div class="modal-footer"-->
 			<div class="row">
                 <% if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) { %>
+<<<<<<< HEAD
                     <div class="col-sm-5"><button id="btn_delete" class="btn-default" onclick="delArchive(archiveID);">Delete</button></div>
+=======
+                <div class="col-sm-5"><button id="btn_delete" class="btn-default" onclick="delArchive(archiveID);">Delete</button></div>
+>>>>>>> d598bfbc6d58de4f913f594c2a4be24c784a4117
                 <% } %>
                 <!--button type="button" class="ok-button btn btn-default" data-dismiss="modal"> %=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button-->
                 <div class="col-sm-5"><button type="button" class="ok-button btn btn-default" data-dismiss="modal"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","profile-block.close")%></button></div>               

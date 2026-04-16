@@ -239,7 +239,11 @@
         <br/>
         <% }
         if (ModeConfig.isProcessingMode()) { %>
+<<<<<<< HEAD
     		<div align="middle"><button id="btn_delete" class="btn-default" onclick="delFolder();">Delete</button></div>
+=======
+		<div align="middle"><button id="btn_delete" class="btn-default" onclick="delFolder();">Delete</button></div>
+>>>>>>> d598bfbc6d58de4f913f594c2a4be24c784a4117
         <% } %>
     </div>
 
