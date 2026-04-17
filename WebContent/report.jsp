@@ -141,11 +141,7 @@
                     .replaceAll("(\\[U\\+[0-9A-F]{4}\\])", "<mark>$1</mark>");
                 out.println(++i + ". <span style=\"font-family:monospace;background:#f8f9fa;padding:2px 4px;border-radius:3px;\">" + escapedString + "</span><br/>\n");
             } else {
-<<<<<<< HEAD
                 out.println(++i + ". " + escapedString + "<br/>\n");
-=======
-            out.println(++i + ". " + escapedString + "<br/>\n");
->>>>>>> d598bfbc6d58de4f913f594c2a4be24c784a4117
             }
         }
         out.println ("<br/><br/><hr/><br/>\n");

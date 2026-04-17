@@ -773,6 +773,7 @@ public class EmailRenderer {
 		Archive archive = searchResult.getArchive();
 		List<String> headerList = archive.indexer.getOriginalHeaders(ed);
 		String labelHeader = "";
+		List<String> noteHeaders = new ArrayList<>();
 		for (String header : headerList) {
 			if (header.startsWith("X-ePADD-Labels:")) {
 				header = header.substring("X-ePADD-Labels: ".length()).trim();
@@ -783,10 +784,19 @@ public class EmailRenderer {
 			{
 				labelHeader = header;
 			}
+			if (header.startsWith("X-ePADD-Note:")) {
+				noteHeaders.add(header.substring("X-ePADD-Note:".length()).trim());
+			}
 		}
 
 		result.append(JSPHelper.getHTMLForDate(archiveID,ed.date));
-		result.append(style + "<br>Labels: </td><td align=\"left\"><br>" + labelHeader + "</td><br>");
+		if (!labelHeader.isEmpty()) {
+			result.append(style + "<br>Labels: </td><td align=\"left\"><br>" + labelHeader + "</td><br>");
+		}
+		if (!noteHeaders.isEmpty()) {
+			String notesDisplay = noteHeaders.size() == 1 ? noteHeaders.get(0) : "- " + String.join("<br>- ", noteHeaders);
+			result.append(style + "<br>Note: </td><td align=\"left\"><br>" + notesDisplay + "</td><br>");
+		}
 
 
 		// email specific headers

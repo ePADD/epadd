@@ -118,11 +118,7 @@
 		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.download")%> "
 			 class="buttons_on_datatable" onclick="exportCorrespondentHandler()"><img class="button_image_on_datatable"
 																					  src="images/download.svg"></div>
-<<<<<<< HEAD
 		</div>
-=======
-	</div>
->>>>>>> d598bfbc6d58de4f913f594c2a4be24c784a4117
 <table id="people" style="display:none">
 	<thead><tr><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.name")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.sent")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.received")%> </th><th> <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.received-from-owner")%> </th></tr></thead>
 	<tbody>
