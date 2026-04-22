@@ -114,37 +114,52 @@
     for (int t = 0; t < errorTypes.length; t++) {
         if (errorsByType[t].size() == 0)
             continue;
-        out.println ("<a href=\"#errorType" + t + "\">" + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "<br/>\n");
+        out.println("<a href=\"#errorType" + t + "\" onclick=\"var el=document.getElementById('errorSection" + t + "');if(el&&!el.classList.contains('in')){$(el).collapse('show');}\">"
+            + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "</a><br/>\n");
     }
 
     // print out details
+    final int MAX_VISIBLE = 100; // show at most this many items before collapsing the rest
     for (int t = 0; t < errorTypes.length; t++) {
         if (errorsByType[t].size() == 0)
             continue;
-        int i = 0;
-        out.println ("<a id=\"errorType" + t + "\">"); // anchor
-        out.println ("<h2>" + Util.commatize(errorsByType[t].size()) + " " + errorTypes[t][1] + "</h2>"); // errorTypes[t][1] is the description of the error
-        out.println ("</a>");
+        int total = errorsByType[t].size();
         boolean isWindowsUnsafe = "Windows-unsafe filename".equals(errorTypes[t][0]);
-        for (String s : errorsByType[t])
-        {
+        String collapseId = "errorSection" + t;
+        String overflowId = "errorOverflow" + t;
+
+        out.println("<a id=\"errorType" + t + "\"></a>");
+        // Collapsible section header
+        out.println("<h2 data-toggle=\"collapse\" data-target=\"#" + collapseId + "\" style=\"cursor:pointer\">"
+            + "&#9654; " + Util.commatize(total) + " " + errorTypes[t][1] + "</h2>");
+        out.println("<div id=\"" + collapseId + "\" class=\"collapse\">");
+
+        int i = 0;
+        for (String s : errorsByType[t]) {
+            i++;
+            if (i == MAX_VISIBLE + 1) {
+                // start hidden overflow section
+                out.println("<div id=\"" + overflowId + "\" style=\"display:none\">");
+            }
             String escapedString = Util.escapeHTML(s);
-            escapedString = escapedString.replace("\n", "<br/>");
-            escapedString = escapedString.replace(" ", "&nbsp;");
             if (isWindowsUnsafe) {
-                // Wrap the whole entry in monospace so invisible characters and
-                // their [SPACE]/[DOT]/[U+XXXX] annotations are easy to read,
-                // and highlight the bracketed markers in amber.
                 escapedString = escapedString
                     .replace("[SPACE]", "<mark>[SPACE]</mark>")
                     .replace("[DOT]",   "<mark>[DOT]</mark>")
                     .replaceAll("(\\[U\\+[0-9A-F]{4}\\])", "<mark>$1</mark>");
-                out.println(++i + ". <span style=\"font-family:monospace;background:#f8f9fa;padding:2px 4px;border-radius:3px;\">" + escapedString + "</span><br/>\n");
+                out.println("<div style=\"margin-bottom:6px\"><span style=\"font-weight:bold\">" + i + ".</span> <span style=\"font-family:monospace;background:#f8f9fa;padding:2px 4px;border-radius:3px;white-space:pre-wrap;display:inline-block\">" + escapedString + "</span></div>\n");
             } else {
-                out.println(++i + ". " + escapedString + "<br/>\n");
+                out.println("<div style=\"margin-bottom:8px\"><span style=\"font-weight:bold\">" + i + ".</span> <div style=\"white-space:pre-wrap;font-family:monospace;font-size:0.9em;background:#f8f9fa;padding:6px 8px;border-radius:3px;margin-top:2px\">" + escapedString + "</div></div>\n");
             }
         }
-        out.println ("<br/><br/><hr/><br/>\n");
+        if (total > MAX_VISIBLE) {
+            out.println("</div>"); // close overflow div
+            out.println("<button class=\"btn btn-xs btn-default\" onclick=\"var d=document.getElementById('" + overflowId + "');if(d.style.display=='none'){d.style.display='';this.textContent='Show fewer';}else{d.style.display='none';this.textContent='Show all " + Util.commatize(total) + "';}\">"
+                + "Show all " + Util.commatize(total) + "</button>");
+        }
+        out.println("</div>"); // close collapse div
+        out.println("<br/><hr/><br/>\n");
+        out.flush(); // stream each section to the browser as it's ready
     }
 %>
 

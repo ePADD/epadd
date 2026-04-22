@@ -822,6 +822,14 @@ public class Indexer implements StatusProvider, java.io.Serializable {
 		isearcher = null;
 		isearcher_blob = null;
 	}
+
+	/** Commits pending writes without closing the index writers. Much faster than close() during batch import. */
+	public void commit() throws IOException {
+		if (iwriter != null)
+			iwriter.commit();
+		if (iwriter_blob != null)
+			iwriter_blob.commit();
+	}
 	private synchronized Directory initializeDirectory(Directory dir, String name) throws IOException
 	{
 		if (dir == null)

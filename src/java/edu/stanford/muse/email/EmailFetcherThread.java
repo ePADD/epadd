@@ -1499,8 +1499,8 @@ public class EmailFetcherThread implements Runnable, Serializable {
             //				if (cancelled && false) // TODO: disable for now as currently only indexes are rolled back and allDocs/blobs are not rolled back in sync yet
             //					archive.rollbackIndexWrites();
             //				else
-            currentStatus = JSONUtils.getStatusJSON("Saving archive...");
-            archive.close();
+            currentStatus = JSONUtils.getStatusJSON("Committing index...");
+            archive.commitIndex();
         }
 
         fetchedFolderInfo.lastSeenUID = highestUID;

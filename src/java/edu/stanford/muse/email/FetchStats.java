@@ -47,12 +47,16 @@ public class FetchStats implements Serializable {
             s += "Email Sources: "+String.join(",",emailSourcesInput)+"<br/>\n";
 
 
-        if (selectedFolders == null)
-            s += "Selected folders: unavailable";
-        else {
-            s += "Selected folders: " + selectedFolders.size() + "<br/>";
+        if (selectedFolders == null) {
+            s += "Selected folders: unavailable<br/>";
+        } else {
+            String folderId = "folders_" + Long.toHexString(lastUpdate);
+            s += "<a href=\"#\" data-toggle=\"collapse\" data-target=\"#" + folderId + "\" style=\"text-decoration:none;color:inherit\">"
+               + "&#9654; Selected folders: " + selectedFolders.size() + "</a><br/>";
+            s += "<div id=\"" + folderId + "\" class=\"collapse\"><div style=\"margin-left:1em\">";
             for (Pair<String, FolderInfo> p : selectedFolders)
-                s += Util.escapeHTML(p.getFirst()) + " (" + Util.escapeHTML(p.getSecond().toString()) + ")" + "<br/>";
+                s += Util.escapeHTML(p.getFirst()) + " (" + Util.escapeHTML(p.getSecond().toString()) + ")<br/>";
+            s += "</div></div>";
         }
 
         s += "selected_messages: " + Util.commatize(importStats.nTotalMessages) +  ", filtered: " + Util.commatize(importStats.nMessagesFiltered) + ", imported: " + Util.commatize(importStats.nMessagesAdded) +", duplicates: " + Util.commatize(importStats.nMessagesAlreadyPresent) + "<br/>\n";

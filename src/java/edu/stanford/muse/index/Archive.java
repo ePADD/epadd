@@ -925,6 +925,15 @@ int errortype=0;
         indexer.setupForRead();
     }
 
+    /** Commits pending Lucene writes without closing the index writers. Use during batch import instead of close()+openForWrite(). */
+    public synchronized void commitIndex() {
+        try {
+            indexer.commit();
+        } catch (IOException e) {
+            Util.print_exception("Exception committing index", e, log);
+        }
+    }
+
     public synchronized void openForWrite() throws IOException {
         log.info("Opening archive for write");
 
@@ -2659,7 +2668,11 @@ after maskEmailDomain.
         try {
             bag = reader.read(rootDir);
         } catch (IOException e) {
-            e.printStackTrace();
+            if (e instanceof java.nio.file.NoSuchFileException && e.getMessage() != null && e.getMessage().endsWith("bagit.txt"))
+                log.debug("No bagit.txt in {}, not a bag", rootDir);
+            else {
+                e.printStackTrace();
+            }
             errorMessage = "Could not read directory " + rootDir;
         } catch (UnparsableVersionException e) {
             e.printStackTrace();
