@@ -832,7 +832,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
      */
     private String handleAttachments(EmailDocument ed,int idx, Message m, Part p, List<String> textList, List<Blob> attachmentsList) throws MessagingException {
         String name = p.getFileName();
-        if (name.endsWith(".rtf")) {
+        if (name != null && name.endsWith(".rtf")) {
             try {
                 p = removeNewlines(p);
             } catch (Exception e) {
@@ -850,7 +850,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         String filename = null;
         try {
             filename = p.getFileName();
-            if (!filename.trim().isEmpty()) {
+            if (filename != null && !filename.trim().isEmpty()) {
                 filename = filename.trim();
                 if (filename.contains("\t"))
                 {
