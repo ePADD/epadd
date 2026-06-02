@@ -9,7 +9,12 @@ public class KillPhrases {
 	private static final Set<String> killPhrases = new LinkedHashSet<>();
 	static {
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(Config.getResourceAsStream(Config.TABOO_FILE)));
+			InputStream killStream = Config.getResourceAsStream(Config.TABOO_FILE);
+			if (killStream == null) {
+				System.err.println("Kill phrases file not found, proceeding with empty list: " + Config.TABOO_FILE);
+				killStream = new java.io.ByteArrayInputStream(new byte[0]);
+			}
+			BufferedReader br = new BufferedReader(new InputStreamReader(killStream));
 			String line = null;
 			int lineNum = 0;
 			while ((line = br.readLine()) != null) {

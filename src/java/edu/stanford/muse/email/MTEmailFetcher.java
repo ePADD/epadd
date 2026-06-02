@@ -179,6 +179,11 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 
 		List<FolderInfo> fetchedFolderInfos = new ArrayList<>();
 
+		// Commit the index every CROSS_FOLDER_COMMIT_INTERVAL messages across all folders.
+		// This avoids committing once per folder when many small (e.g. single-message) MBOX files are ingested.
+		final int CROSS_FOLDER_COMMIT_INTERVAL = 100;
+		int totalMessagesCommitted = 0;
+
 		// process each folders, read from a array copy because we sometimes see a concurrent modification exception here
 		for (FolderInfo fi : new ArrayList<>(folderInfos))
 		{
@@ -218,6 +223,7 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 				threads[i].setThreadID(i);
 				threads[i].setArchive(archive);
 				threads[i].setFetchConfig(fetchConfig);
+				threads[i].skipIndexCommit = true; // MTEmailFetcher controls commit cadence across folders
 			}
 
 			// execute the fetcher threads
@@ -253,8 +259,28 @@ public class MTEmailFetcher implements StatusProvider, Serializable {
 			stats = aggregateThread.stats;
 
 			log.info ("Fetch stats for folder " + fi.longName + ": " + stats);
+
+			// Commit after processing enough messages to amortize the cost across folder boundaries.
+			int totalNow = archive.getAllDocs().size();
+			if (totalNow - totalMessagesCommitted >= CROSS_FOLDER_COMMIT_INTERVAL) {
+				try {
+					archive.commitIndex();
+				} catch (Exception e) {
+					log.error("Exception committing index across folders: " + e);
+				}
+				totalMessagesCommitted = totalNow;
+				log.info("Committed index at " + totalNow + " total messages");
+			}
+
 			log.info ("Aggregate size of archive so far: " + archive.getAllDocs().size() + " messages\n------------------------------------------------------------------------------");
 			threads = null;
+		}
+
+		// Final commit to flush any remaining unflushed messages.
+		try {
+			archive.commitIndex();
+		} catch (Exception e) {
+			log.error("Exception on final index commit: " + e);
 		}
 
 		return fetchedFolderInfos;

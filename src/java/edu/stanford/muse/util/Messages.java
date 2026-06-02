@@ -79,7 +79,7 @@ public class Messages {
 		}
 		catch (MissingResourceException e)
 		{
-			log.error("Resource missing " + bundleName + " " + key, e);
+			log.debug("Resource missing {} {}", bundleName, key);
 			return "";
 		}
 	}

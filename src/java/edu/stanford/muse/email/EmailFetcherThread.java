@@ -117,6 +117,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
     private EmailStore emailStore;
 
     private boolean isCancelled;
+    boolean skipIndexCommit = false;
 
     public static boolean verbose = false;
     public static boolean debug = false;
@@ -1499,8 +1500,10 @@ public class EmailFetcherThread implements Runnable, Serializable {
             //				if (cancelled && false) // TODO: disable for now as currently only indexes are rolled back and allDocs/blobs are not rolled back in sync yet
             //					archive.rollbackIndexWrites();
             //				else
+            if (!skipIndexCommit) {
             currentStatus = JSONUtils.getStatusJSON("Committing index...");
             archive.commitIndex();
+            }
         }
 
         fetchedFolderInfo.lastSeenUID = highestUID;

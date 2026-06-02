@@ -353,7 +353,7 @@ Error: Export is only available in processing or appraisal modes!
             var baseUrl = 'export-headers';
             var dir = $('.dir', $button.closest('.panel')).val();
             if (dir && dir.length > 0)
-                window.location = baseUrl + '?archiveID=<%=archiveID%>&exportType=csv&dir=' + dir;
+                window.location = baseUrl + '?archiveID=<%=archiveID%>&exportType=csv&dir=' + encodeURIComponent(dir);
         });
     </script>
     <% } %>
