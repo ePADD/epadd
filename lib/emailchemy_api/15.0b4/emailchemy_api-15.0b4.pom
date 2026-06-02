@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emailchemy_api</groupId>
   <artifactId>emailchemy_api</artifactId>
-  <version>15.0 beta</version>
+  <version>15.0b4</version>
   <description>POM was created from install:install-file</description>
 </project>
