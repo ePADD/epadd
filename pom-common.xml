@@ -414,7 +414,7 @@
         <dependency>
             <groupId>emailchemy_api</groupId>
             <artifactId>emailchemy_api</artifactId>
-            <version>15.0-beta</version>
+            <version>15.0b4</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
         <dependency>
