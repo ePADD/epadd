@@ -805,107 +805,35 @@ public class EmailDocument extends DatedDocument implements Serializable
 	/** recompute own email addrs, and then all the contacts. to be done after fetching all messages */
 	public static AddressBook buildAddressBook(Collection<EmailDocument> docs, Collection<String> ownAddrs, Collection<String> ownNames)
 	{
-		String[] ownAddrsArray = new String[ownAddrs.size()];
-		ownAddrs.toArray(ownAddrsArray);
-		String[] ownNamesArray = new String[ownNames.size()];
-		ownNames.toArray(ownNamesArray);
+		String[] ownAddrsArray = ownAddrs.toArray(new String[0]);
+		String[] ownNamesArray = ownNames.toArray(new String[0]);
 		AddressBook addressBook = new AddressBook(ownAddrsArray, ownNamesArray);
 
-		//		log.info("Own addresses: " + EmailUtils.emailAddrsToString(ownAddrs));
-		EmailFetcherThread.log.debug ("First pass processing contacts for " + docs.size() + " messages");
-
-		Set<String> trustedAddrs = new LinkedHashSet<>();
-		for (String a: ownAddrsArray)
-			trustedAddrs.add(a.toLowerCase());
-
-		fillAddressBookFromTrustedAddresses(docs,trustedAddrs,addressBook);
-
-		return addressBook;
-
-	}
-
-	private static void fillAddressBookFromTrustedAddresses(Collection<EmailDocument> docs, Set<String> trustedAddrs, AddressBook addressBook) {
-
-		// 2 passes here: first pass just to unify and find all own email addrs
+		// 2 passes: first pass to classify messages as sent/received based on own addrs
+		EmailFetcherThread.log.debug("First pass processing contacts for " + docs.size() + " messages");
 		for (EmailDocument ed: docs)
-			addressBook.processContactsFromMessage (ed, trustedAddrs);
+			addressBook.processContactsFromMessage(ed);
 		addressBook.organizeContacts();
-		//		ownAddrs = addressBook.computeAllAddrsFor(ownAddrs);
 
-		//		log.info ("All my email addrs: ");
-		//		for (String s: ownAddrs)
-		//			log.info (s);
-
-		// now look for the real contacts, creating a new contacts set object
-		// reporcess all messages because we may have misclassified messages wrt sent/received in the first round
-		EmailFetcherThread.log.debug ("Second pass processing contacts for " + docs.size() + " messages");
-		//		AddressBook newCS = addressBook.deepClone();
+		// second pass now that sent/received classification is stable
+		EmailFetcherThread.log.debug("Second pass processing contacts for " + docs.size() + " messages");
 		addressBook.resetCounts();
 		for (EmailDocument ed: docs)
-			addressBook.processContactsFromMessage(ed, trustedAddrs);
+			addressBook.processContactsFromMessage(ed);
 		addressBook.organizeContacts();
-		//now fill summary object inside that addressbook.
-		Collection<Document> alldocs = new ArrayList<>(docs);
+
 		JSPHelper.doLogging("Computing summary of the addressbook");
-		addressBook.fillL1_SummaryObject(alldocs);
+		addressBook.fillL1_SummaryObject(new ArrayList<>(docs));
 		JSPHelper.doLogging("Summary of the addressbook computed");
 
+		return addressBook;
 	}
 
-	/*
-	This method computes a set of trusted addresses given a set of initial trusted addresses and an outgoing threshold. The logic is that if trusted addresses sent
-	more than 'threshold' number of mails to an address then that address is also a potentially trusted address.
-	 */
-	public static Set<String> computeMoreTrustedAddresses(Archive archive, Set<String> trustedAddress, int outgoingThreshold){
-		//find all messages where trustedAddress is one of the sender
-		String combinedStr = String.join(";",trustedAddress);
-		SearchResult inputSet = new SearchResult(archive, LinkedHashMultimap.create());
-		//use searchresult interface for this set.
-		SearchResult result = SearchResult.filterForCorrespondents(inputSet,combinedStr,false,true,false,false);//search for all the messages where one of
-		//the trusted addresses is a sender.
-
-		//now collect contacts (receives - to) from result set and if a contact appears in more than outgoingThreshold number of messages then that becomes trusted address as well.
-		Map<String,Integer> emailAddressToCount = new LinkedHashMap<>();
-		result.getDocumentSet().forEach(document -> {
-			EmailDocument edoc = (EmailDocument)document;
-			List<String> toemails = Arrays.stream(edoc.to).map(address -> {
-				InternetAddress ia = (InternetAddress)address;
-				return ia.getAddress();
-			}).collect(Collectors.toList());
-			toemails.forEach(email-> emailAddressToCount.put(email,emailAddressToCount.getOrDefault(email,0)+1));
-		});
-		//now search emailAddressToCount map to return those addresses which have count greater than threshold.
-		Set<String> res = emailAddressToCount.entrySet().stream().filter(stringIntegerEntry -> {return (stringIntegerEntry.getValue()>outgoingThreshold);}).map(stringIntegerEntry -> stringIntegerEntry.getKey()).collect(Collectors.toSet());
-		return res;
-	}
-	/**
-	 * This method recomputes addressbook based on a set of trusted email addresses. Initially (when importing an archive) only the owner's
-	 * 	email id (provided at the time of import) is taken as the trusted email addresses. See {@link #buildAddressBook(Collection, Collection, Collection)}
-	 * @param archive
-	 * @param trustedAddress - a set of trusted email addresses.
-	 * @return a new addressbook
-	 */
-
-	public static AddressBook recomputeAddressBook(Archive archive, Set<String> trustedAddress){
+/** Recomputes the address book for the archive from scratch. */
+	public static AddressBook recomputeAddressBook(Archive archive){
 		AddressBook oldAddressBook = archive.getAddressBook();
-		Set<String> ownAddresses = oldAddressBook.getOwnAddrs();
-		Set<String> ownNames = oldAddressBook.getOwnNamesSet();
-		String[] ownAddressesArray = ownAddresses.toArray(new String[ownAddresses.size()]);
-		String[] ownNamesArray = ownNames.toArray(new String[ownNames.size()]);
-		AddressBook newAddressBook = new AddressBook(ownAddressesArray,ownNamesArray);
-		//		log.info("Own addresses: " + EmailUtils.emailAddrsToString(ownAddrs));
-		EmailFetcherThread.log.debug ("Recomputing addressbook with trusted email addresses as- " + trustedAddress.size());
-		Collection<EmailDocument> edocs=archive.getAllDocsAsSet().stream().map(doc->((EmailDocument)doc)).collect(Collectors.toSet());
-
-		//Add original owner's emails also as trusted addresses.
-		//Q. Should we add all combined addresses corresponding to the owner's email ID as well? Not added right now.
-		//That set is obtained by the following piece of code.
-		//Set<String> owneremails_grouped = oldAddressBook.getContact(0).getEmails();
-		trustedAddress.addAll(ownAddresses);
-		fillAddressBookFromTrustedAddresses(edocs,trustedAddress,newAddressBook);
-		return newAddressBook;
-
-
+		Collection<EmailDocument> edocs = archive.getAllDocsAsSet().stream().map(doc -> (EmailDocument) doc).collect(Collectors.toSet());
+		return buildAddressBook(edocs, oldAddressBook.getOwnAddrs(), oldAddressBook.getOwnNamesSet());
 	}
 
 	/*

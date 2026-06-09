@@ -95,7 +95,7 @@
 
 
 setStatusProvider.accept(new StaticStatusProvider("Recomputing address book.."));
-EmailDocument.recomputeAddressBook(archive,new LinkedHashSet<>()); //because owner has changed and recomputation assumes owner as a trusted address. So we need to recompute it.
+EmailDocument.recomputeAddressBook(archive);
         try {
             setStatusProvider.accept(new StaticStatusProvider("Recreating authorities.."));
 

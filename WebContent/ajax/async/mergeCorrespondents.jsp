@@ -148,7 +148,7 @@ public void mergeCorrespondents(Multimap<String,String> paramsMap, Consumer<Stat
             ab.fillL1_SummaryObject(archive.getAllDocs());
 
             setStatusProvider.accept(new StaticStatusProvider("Recomputing address book..."));
-            EmailDocument.recomputeAddressBook(archive,new LinkedHashSet<>()); //because owner has changed and recomputation assumes owner as a trusted address. So we need to recompute it.
+            EmailDocument.recomputeAddressBook(archive);
 
             try {
                 archive.recreateCorrespondentAuthorityMapper(); // we have to recreate auth mappings since they may have changed

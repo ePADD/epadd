@@ -260,10 +260,8 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
     }
 
     /**
-     * the Contacts for name and email are unified if they are not already the same
-     * returns the contact for name/email (creates a new contact if needed)
-     * name could be null (or empty, which is equivalent), email cannot be
-     *
+     * returns the contact for the given email address, creating one if needed, and associating the name with it.
+     * name could be null (or empty, which is equivalent), email cannot be.
      */
     private synchronized Contact unifyContact(String email, String name) {
         // we'll implement a weaker pre-condition: both name and email could be null
@@ -280,55 +278,13 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
         if (name != null && name.equals(email)) // if the name is exactly the same as the email, it has no content.
             name = null;
 
-        // get existing contacts for email/name
-       //two cases appear; 1. Found a contact by name but not by email   --- INV: There should be only one contact with that name..Add email to that contact
-       //2. Found a contact by email but not by name -- add name to the contact that was found by name
-       //3. No contact found either by email or by name
-
-           //Case 3- create a new contact
-
-        if (!Util.nullOrEmpty(name)) {
-            Collection<Contact> cNames = lookupByName(name);
-            if(cNames!=null) {
-                if(cNames.size()>1){
-                    StringBuilder s = new StringBuilder("INFO:::When building the addressbook, name " + name + " mapped to the following contacts\n");
-                    s.append("</br>");
-                    for(Contact cName: cNames){
-                        s.append(cName.toString());
-                        s.append("</br>--------------</br>");
-                    }
-                    dataErrors.add(s.toString());
-                }
-
-                for (Contact cName : cNames) {
-                    // if name and email have different CIs, unify them first
-                    if (cName != null && cEmail != null && cName != cEmail) {
-                        log.debug("Merging contacts due to message with name=" + name + ", email=" + email + " Contacts are: " + cName + " -- and -- " + cEmail);
-                        cEmail.unify(cName);
-                        addEmailAddressForContact(email, cName);
-                        return cName;
-                    } else if (cName != null) {
-                        log.debug("Merging contacts due to message with name=" + name + " Contact is --" + cName);
-                        addEmailAddressForContact(email, cName);
-                        return cName;
-                    }
-                }
-            }
-        }
         if (cEmail != null) {
             if (!Util.nullOrEmpty(name))
                 addNameForContactAndUpdateMaps(name, cEmail);
             return cEmail;
         }
 
-        // neither cEmail nor cName was found. Case 3 above- create a new contact.
-      /*  if(name!=null && EmailUtils.normalizePersonNameForLookup("Gayle B.Harrell").equals( EmailUtils.normalizePersonNameForLookup(name))){
-            log.debug("found");
-        }
-        if(email.compareTo("harrell.gayle@leg.state.fl.us")==0){
-            log.debug("foudn case");
-        }
-*/        Contact c = new Contact(); // this blank Contact will be set up on the fly later
+        Contact c = new Contact(); // this blank Contact will be set up on the fly later
         contactIdMap.put(c, contactListForIds.size());
         contactListForIds.add(c);
         addEmailAddressForContact(email, c);
@@ -477,7 +433,7 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
     /* Single place where a <name, email address> equivalence is registered (and used to build the address book and merge different names/email addresses together.
         Any evidence of a name belonging to an email address should be logged by calling this method.
         Warning: can return null if the email address is null! */
-    Contact registerAddress(InternetAddress a, boolean isTrustedAssociation) {
+    Contact registerAddress(InternetAddress a) {
         // get email and name and normalize. email cannot be null, but name can be.
         String email = a.getAddress();
         email = EmailUtils.cleanEmailAddress(email);
@@ -488,55 +444,23 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
         String name = a.getPersonal();
         name = Util.unescapeHTML(name);
         name = EmailUtils.cleanPersonName(name);
-        String preservedName = name;//to store the name temporarily in case it gets wiped out either because of containing banned words or due to non-trusted association of name-email pair.
 
-        //region Check 1: Checks if name is a valid name or not.
         if (!Util.nullOrEmpty(name)) {
-            // watch out for bad "names" and ignore them
-            if (name.toLowerCase().equals("'" + email.toLowerCase() + "'")) // sometimes the "name" field is just the same as the email address with quotes around it
+            if (name.toLowerCase().equals("'" + email.toLowerCase() + "'"))
                 name = "";
             if (name.contains("@"))
-                name = ""; // name can't be an email address!
+                name = "";
         }
-        //endregion
 
-        //region Check 2: Checks if name contains banned words or not.
         for (String s : DictUtils.bannedStartStringsForEmailAddresses) {
             if (email.toLowerCase().startsWith(s)) {
                 log.info("not going to consider name-email pair. email: " + email + " name: " + name + " because email starts with " + s);
-                name = ""; // usually something like info@paypal.com or info@evite.com or invitations-noreply@linkedin.com -- we need to ignore the name part of such an email address, so it doesn't get merged with anything else.
+                name = "";
                 break;
             }
         }
-        //endregion
-
-        //region Check 3: Checks if this is a trusted name-address association
-        if(!isTrustedAssociation)
-            name="";
-        //endregion
 
         Contact c = unifyContact(email, name);
-
-        //Following code snippet not needed as unifyContact does the work of adding names and emails in the contact appropriately.
-        /*// DEBUG point: enable this to see all the incoming names and email addrs
-        if (c != null) {
-            if (!c.getEmails().contains(email)) {
-                if (log.isDebugEnabled())
-                    log.debug("merging email " + email + " into contact " + c);
-                c.getEmails().add(email);
-            }
-
-            if (!Util.nullOrEmpty(name) && !c.getNames().contains(name)) {
-                if (log.isDebugEnabled() && !c.getNames().contains(name))
-                    log.debug("merging name " + name + " into contact " + c);
-                c.getNames().add(name);
-            }
-        }*/
-
-        if(Util.nullOrEmpty(name)){
-            //means we emptied it because of either Check 1, Check 2 or Check 3 above. Now add it so that we can do search based on this 'non-trusted' association of name-email
-            addNameForContactAndUpdateMaps(preservedName,c);
-        }
 
         //region Nice to have feature: not needed right now.
         /*
@@ -559,29 +483,29 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
         return c;
     }
 
-    private boolean processContacts(List<Address> toCCBCCAddrs, Address fromAddrs[], String[] sentToMailingLists, boolean isTrustedAssociation) {
+    private boolean processContacts(List<Address> toCCBCCAddrs, Address fromAddrs[], String[] sentToMailingLists) {
         // let's call registerAddress first just so that the name/email maps can be set up
         if (toCCBCCAddrs != null)
             for (Address a : toCCBCCAddrs)
                 if (a instanceof InternetAddress)
-                    registerAddress((InternetAddress) a,isTrustedAssociation);
+                    registerAddress((InternetAddress) a);
         if (fromAddrs != null)
             for (Address a : fromAddrs)
                 if (a instanceof InternetAddress)
-                    registerAddress((InternetAddress) a,isTrustedAssociation);
+                    registerAddress((InternetAddress) a);
 
         Pair<Boolean, Boolean> p = isSentOrReceived(toCCBCCAddrs, fromAddrs);
         boolean sent = p.getFirst();
         boolean received = p.getSecond();
 
         // update mailing list state info
-        MailingList.trackMailingLists(this, toCCBCCAddrs, sent, fromAddrs, sentToMailingLists,isTrustedAssociation);
+        MailingList.trackMailingLists(this, toCCBCCAddrs, sent, fromAddrs, sentToMailingLists);
 
         if (sent && toCCBCCAddrs != null)
             for (Address a : toCCBCCAddrs) {
                 if (!(a instanceof InternetAddress))
                     continue;
-                registerAddress((InternetAddress) a,isTrustedAssociation);
+                registerAddress((InternetAddress) a);
             }
 
         // for sent messages we don't want to count the from field.
@@ -594,7 +518,7 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
                     if (!(a instanceof InternetAddress))
                         continue;
 
-                    registerAddress((InternetAddress) a,isTrustedAssociation);
+                    registerAddress((InternetAddress) a);
                 }
         }
 
@@ -609,50 +533,27 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
     /**
      * this method should be called with every email doc in the archive
      */
-    public synchronized void processContactsFromMessage(EmailDocument ed, Collection<String> trustedAddrs) {
+    public synchronized void processContactsFromMessage(EmailDocument ed) {
         List<Address> toCCBCC = ed.getToCCBCC();
         boolean noToCCBCC = false;
         if (toCCBCC == null || toCCBCC.size() == 0) {
             noToCCBCC = true;
             markDataError("No to/cc/bcc addresses for: " + ed);
             dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
-
         }
         if (ed.from == null || ed.from.length == 0) {
             markDataError("No from address for: " + ed);
             dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
-
         }
         if (ed.date == null) {
             markDataError("No date for: " + ed);
         }
-        boolean fromTrustedAddr = false;
-        {
-            Address[] addrs = ed.from;
-            if (ed.from != null) {
-                for (Address a : addrs) {
-                    InternetAddress ia = (InternetAddress) a;
-                    if (trustedAddrs.contains(ia.getAddress().toLowerCase())) {
-                        fromTrustedAddr = true;
-                        break;
-                    }
-                }
-            }
-        }
-        boolean b = false;
 
-        if (fromTrustedAddr) {//if this message is from trusted sender then process all name-email pairs present in this message as trusted ones.
-            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists,true);
-            log.info("Processing trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
-        } else{
-            b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists,false);
-            log.info("Processing non-trusted contacts from " + ((ed.from != null && ed.from.length > 0) ? ed.from[0] : ""));
-        }
+        boolean b = processContacts(ed.getToCCBCC(), ed.from, ed.sentToMailingLists);
 
-        if (!b && noToCCBCC) { // if we already reported no to address problem, no point reporting this error, it causes needless duplication of error messages.
+        if (!b && noToCCBCC) {
             markDataError("Owner not sender, and no to addr for: " + ed);
             dataErrosMap.put(ed.getUniqueId(), LabelManager.LABELID_MISSING_CORRESPONDENT);
-
         }
     }
 

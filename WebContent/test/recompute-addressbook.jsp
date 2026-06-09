@@ -61,12 +61,8 @@
 
     AddressBook ab = new AddressBook(new String[]{ownEmail}, new String[]{ownName});
 
-    Set<String> trustedAddrs = new LinkedHashSet<>();
-    for (String s: archive.ownerEmailAddrs)
-        trustedAddrs.add (s);
-
     for (Document ed: archive.getAllDocs()) {
-        ab.processContactsFromMessage((EmailDocument) ed, trustedAddrs);
+        ab.processContactsFromMessage((EmailDocument) ed);
     }
     ab.organizeContacts();
     archive.addressBook = ab;
