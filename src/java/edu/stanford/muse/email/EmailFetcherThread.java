@@ -49,6 +49,7 @@ import javax.mail.util.ByteArrayDataSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 class EmailFetcherStats implements Cloneable, Serializable {
@@ -1214,27 +1215,34 @@ public class EmailFetcherThread implements Runnable, Serializable {
         return resultArray;
     }
 
+    // longest run of non-space/non-tab characters we'll tolerate before flagging the message as bad 
+    //(containing very long word).
+    // newlines deliberately do NOT break a run, since binary/base64 data that leaks into a message body
+    // is often wrapped across many short lines with no spaces; such a block should still count as one
+    // long "word" rather than many short ones.
+    private static final int MAX_WORD_LENGTH = 1000;
+    private static final Pattern LONG_WORD_PATTERN = Pattern.compile("[^ \\t]{" + (MAX_WORD_LENGTH + 1) + ",}");
+
     /**
-     * Make few post checks on the content and returns true if the message looks
-     * ok
+     * Returns false if the message body contains an abnormally long unbroken word
+     * (longer than MAX_WORD_LENGTH characters, ignoring blank lines), which usually
+     * indicates binary/base64 data that leaked into the body instead of being parsed
+     * as an attachment. Such messages are not skipped, just truncated before indexing.
      */
     private boolean messageLooksOk(String content) {
         if (content == null)
             //let others handle it.
             return true;
 
-        String[] lines = content.split("\n");
-        int badlines = 0;
-        if (lines.length > 50)
-            for (String line : lines) {
-                if (!line.contains(" "))
-                    badlines++;
-                else
-                    badlines = 0;
-                if (badlines > 50)
-                    return false;
-            }
-        return true;
+        // strip out blank lines first: a run of newlines with no actual content between them
+        // is not a "long word" and shouldn't be measured as one.
+        StringBuilder nonBlankContent = new StringBuilder();
+        for (String line : content.split("\n")) {
+            if (!line.trim().isEmpty())
+                nonBlankContent.append(line).append('\n');
+        }
+
+        return !LONG_WORD_PATTERN.matcher(nonBlankContent).find();
     }
 
     //keep track of the total time elapsed in fetching messages across batches
@@ -1431,13 +1439,12 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
 
                     if (!messageLooksOk(contentStr)) {
-                        dataErrors.add("Skipping message as it seems to have very long words: " + ed);
+                        dataErrors.add("Message body truncated as it seems to have very long words (possible parsing issue): " + ed);
                         Set<String> label = new LinkedHashSet<>();
                         label.add(LabelManager.LABELID_PARSING_ERRS);
                         archive.getLabelManager().setLabels(ed.getUniqueId(),label);
-                        // but we continue, don't skip the message entirely. See issue #214
-                        //but just truncate the message..
-                        contentStr="<MESSAGE TOO LONG: POSSIBLE PARSING ISSUE- Truncated>" + contentStr.substring(0,100);
+                        // don't skip the message entirely (see issue #214), just truncate the body before indexing
+                        contentStr="<MESSAGE TOO LONG: POSSIBLE PARSING ISSUE- Truncated>" + contentStr.substring(0,5000);
 
                     }
 
