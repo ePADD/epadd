@@ -253,7 +253,10 @@
 					data: post_params,
 					success: function (j) {
 						$('#save-button .fa').removeClass('fa-spin');
-						epadd.success('Lexicon with ' + j.nCategories + ' categories saved.');
+						if (j.status && j.status != 0)
+							epadd.error(j.error || 'Sorry, there was an error saving the lexicon.');
+						else
+							epadd.success('Lexicon with ' + j.nCategories + ' categories saved.');
 					},
 					error: function (j) {
 						$('#save-button .fa').removeClass('fa-spin');

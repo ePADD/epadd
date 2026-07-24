@@ -33,6 +33,7 @@ import java.io.StringReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 /**
@@ -165,26 +166,36 @@ class Highlighter {
         return result;
     }
 
+    /**
+     * Highlights every match of regexToHighlight (real java.util.regex syntax, e.g. supports lookaround) by
+     * wrapping it in preTag/postTag. Matched directly against the full content string with Matcher offsets,
+     * rather than routing through Lucene's tokenizer/highlighter (which only sees single indexed tokens and
+     * can't parse lookaround at all) -- see Indexer.javaRegexLookup for the matching counterpart.
+     */
     private static String annotateRegex(String content, String regexToHighlight, String preTag, String postTag) {
         if (Util.nullOrEmpty(regexToHighlight))
             return content;
 
-        //We expand the query to match any numbers to the left and right of queried regular exp as the chunker is aggressive and chunks any numbers occurring together into one even if they are in different lines
-        //qs = new String[] { "[0-9]{3}[- ][0-9]{2}[- ][0-9]{4}", "3[0-9]{3}[-. ][0-9]{6}[-. ][0-9]{5}" };
-        String[] queries = new String[1];
-        queries[0] = "/" + regexToHighlight + "/";
-
-        String result = null;
+        Pattern p;
         try {
-            result = highlightBatch(content, queries, preTag, postTag);
-        } catch (Exception e) {
-            Util.print_exception("Exception while highlighting sensitive stuff", e, log);
-        }
-        if (result == null) {
-            System.err.println("Result is null!!");
+            p = Pattern.compile(regexToHighlight, Pattern.CASE_INSENSITIVE);
+        } catch (PatternSyntaxException e) {
+            Util.print_exception("Invalid regex while highlighting sensitive stuff: " + regexToHighlight, e, log);
             return content;
         }
-        return result;
+
+        Matcher m = p.matcher(content);
+        StringBuilder sb = new StringBuilder();
+        int last = 0;
+        while (m.find()) {
+            if (m.start() == m.end())
+                continue; // skip zero-width matches, e.g. a pattern that is only a lookaround assertion
+            sb.append(content, last, m.start());
+            sb.append(preTag).append(content, m.start(), m.end()).append(postTag);
+            last = m.end();
+        }
+        sb.append(content, last, content.length());
+        return sb.toString();
     }
 
     /**

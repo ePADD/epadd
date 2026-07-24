@@ -51,7 +51,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
-import org.apache.lucene.util.automaton.RegExp;
 
 import javax.mail.Header;
 
@@ -59,6 +58,9 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /*
  * this class is pretty closely tied with the summarizer (which generates cards  - Muse only.).
@@ -1594,6 +1596,12 @@ is what we want.
      * Introducing something here can seriously affect the search times.
 	 */
 	private Pair<Collection<String>,Integer> luceneLookupAsDocIdsWithTotalHits(String q, int threshold, IndexSearcher searcher, QueryType qt, int lt) throws IOException, ParseException {
+		// the regex lexicon uses real java.util.regex syntax (supports lookaround etc.), evaluated over the
+		// full, untokenized body/title text -- this can't be expressed as a Lucene automaton RegexpQuery,
+		// so it's handled as a separate linear scan rather than going through the query-building logic below.
+		if (qt == QueryType.REGEX)
+			return javaRegexLookup(q, threshold, lt);
+
 		Collection<String> result = new ArrayList<>();
 
 		//	String escaped_q = escapeRegex(q); // to mimic built-in regex support
@@ -1605,21 +1613,7 @@ is what we want.
 			query = parserSubject.parse(q);
 		else if (qt == QueryType.CORRESPONDENTS)
 			query = parserCorrespondents.parse(q);
-		else if (qt == QueryType.REGEX)
-		{
-
-			BooleanQuery.Builder builder = new BooleanQuery.Builder();
-			/**
-			 * Note: this is not a spanning (i.e. doesn't search over more than
-			 * one token) regexp, for spanning regexp use: body_unanlyzed and
-			 * title_unanlyzed fields instead
-			 */
-			Query query1 = new RegexpQuery(new Term("body", q), RegExp.ALL);
-			Query query2 = new RegexpQuery(new Term("title", q), RegExp.ALL);
-			builder.add(query1,org.apache.lucene.search.BooleanClause.Occur.SHOULD);
-			builder.add(query2, org.apache.lucene.search.BooleanClause.Occur.SHOULD);
-			query = builder.build();
-		} else /* if (qt == QueryType.PRESET_REGEX) {
+		else /* if (qt == QueryType.PRESET_REGEX) {
 			query = new BooleanQuery();
 			if(presetQueries != null) {
 				for (String pq : presetQueries) {
@@ -1742,6 +1736,67 @@ is what we want.
 			}
 		//}
         log.info(n_added + " docs added to docIdMap cache");
+		return new Pair<>(result, totalHits);
+	}
+
+	/**
+	 * Evaluates a regex lexicon query using real java.util.regex syntax (supports lookaround, backreferences etc.)
+	 * against each document's full body/title text, rather than Lucene's automaton-based RegexpQuery which only
+	 * matches within a single indexed token and doesn't support lookaround at all.
+	 * @param threshold minimum number of matches (summed across body + title) required for a doc to count as a hit
+	 * @param lt cap on the number of docIds returned in the result collection; totalHits reflects the true count
+	 * @throws IllegalArgumentException if q is not a valid java.util.regex pattern
+	 */
+	private Pair<Collection<String>,Integer> javaRegexLookup(String q, int threshold, int lt) {
+		Collection<String> result = new ArrayList<>();
+		int totalHits = 0;
+		// callers commonly leave threshold at QueryOptions' default of -1, meaning "just match/no-match,
+		// don't require a minimum occurrence count" -- same convention as the threshold <= 1 case above.
+		int minOccurrences = Math.max(threshold, 1);
+
+		Pattern p;
+		try {
+			p = Pattern.compile(q, Pattern.CASE_INSENSITIVE);
+		} catch (PatternSyntaxException e) {
+			log.warn("Invalid regex in 'regex' lexicon query: '" + q + "': " + e.getMessage());
+			throw new IllegalArgumentException("Invalid regular expression: " + e.getMessage(), e);
+		}
+
+		for (String docId : docIdToEmailDoc.keySet()) {
+			org.apache.lucene.document.Document ldoc;
+			try {
+				ldoc = getLDoc(docId);
+			} catch (IOException e) {
+				log.warn("Unable to load doc " + docId + " for regex scan", e);
+				continue;
+			}
+			if (ldoc == null)
+				continue;
+
+			int occurrences = 0;
+			String body = ldoc.get("body");
+			if (body != null) {
+				Matcher m = p.matcher(body);
+				while (m.find())
+					if (m.start() != m.end()) // ignore zero-width matches, e.g. a pattern that is only a lookaround assertion
+						occurrences++;
+			}
+			String title = ldoc.get("title");
+			if (title != null) {
+				Matcher m = p.matcher(title);
+				while (m.find())
+					if (m.start() != m.end())
+						occurrences++;
+			}
+
+			if (occurrences >= minOccurrences) {
+				totalHits++;
+				if (result.size() < lt)
+					result.add(docId);
+			}
+		}
+
+		log.info(totalHits + " docs matched regex query: " + q);
 		return new Pair<>(result, totalHits);
 	}
 

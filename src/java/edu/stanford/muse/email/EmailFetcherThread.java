@@ -1240,7 +1240,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
         for (String line : content.split("\n")) {
             if (!line.trim().isEmpty())
                 nonBlankContent.append(line).append('\n');
-        }
+            }
 
         return !LONG_WORD_PATTERN.matcher(nonBlankContent).find();
     }

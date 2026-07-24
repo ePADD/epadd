@@ -930,20 +930,22 @@ public class SearchResult {
 
         boolean doRegexHighlighting = Lexicon.REGEX_LEXICON_NAME.equals(lexiconName);
 
-        Set<String> selectedPrefixes;
-        selectedPrefixes = lexicon.wordsForSentiments(inputSet.archive.indexer, inputSet.matchedDocs.keySet(),new String[]{category} );
-        if (selectedPrefixes != null){
-            //add quotes or else, stop words will be removed and highlights single words
-            for (String sp : selectedPrefixes)
-                if (!doRegexHighlighting && !(sp.startsWith("\"") && sp.endsWith("\""))) // enclose in quotes, but only if not already to avoid excessive quoting. Also, do not add quotes if regex search
-                    inputSet.commonHLInfo.addTerm('"' + sp + '"');
-                else
-                    inputSet.commonHLInfo.addTerm(sp);
-
-        }
-
-        if (doRegexHighlighting && selectedPrefixes != null) {
-            inputSet.regexToHighlight = String.join("|", selectedPrefixes);
+        if (doRegexHighlighting) {
+            // Reuse the same expanded query used for matching above, verbatim. Lexicon.wordsForSentiment()
+            // splits a query on every '|' character to build a term set for ordinary Lucene term highlighting,
+            // which shreds a regex pattern that uses '|' inside a group (e.g. inside a lookaround alternation
+            // like (?<!a|b|c)...), and highlighting must match what searchForRegexTerm() actually matched on.
+            inputSet.regexToHighlight = query;
+        } else {
+            Set<String> selectedPrefixes = lexicon.wordsForSentiments(inputSet.archive.indexer, inputSet.matchedDocs.keySet(), new String[]{category});
+            if (selectedPrefixes != null) {
+                //add quotes or else, stop words will be removed and highlights single words
+                for (String sp : selectedPrefixes)
+                    if (!(sp.startsWith("\"") && sp.endsWith("\""))) // enclose in quotes, but only if not already to avoid excessive quoting.
+                        inputSet.commonHLInfo.addTerm('"' + sp + '"');
+                    else
+                        inputSet.commonHLInfo.addTerm(sp);
+            }
         }
 
         return inputSet;

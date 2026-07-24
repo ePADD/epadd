@@ -59,6 +59,24 @@
 				continue;
 			newMap.put(key, val);
 		}
+		// the 'regex' lexicon is matched with java.util.regex (see Indexer.javaRegexLookup), so validate
+		// each category's pattern compiles before saving -- otherwise a bad pattern just silently matches
+		// nothing at query time with no feedback to the archivist.
+		if (Lexicon.REGEX_LEXICON_NAME.equalsIgnoreCase(lexiconName)) {
+			for (Map.Entry<String, String> entry : newMap.entrySet()) {
+				try {
+					java.util.regex.Pattern.compile(entry.getValue());
+				} catch (java.util.regex.PatternSyntaxException pse) {
+					JSONObject obj = new JSONObject();
+					obj.put("status", 1);
+					obj.put("error", "Invalid regular expression for category '" + entry.getKey() + "': " + pse.getMessage());
+					out.println(obj);
+					JSPHelper.doLogging(obj);
+					return;
+				}
+			}
+		}
+
 		JSPHelper.doLogging ("updating lexicon for " + lexiconName + " in language " + language + " with " + newMap.size() + " entries");
 		// should we clear an existing lex first?
 		lex.update(language, newMap);
