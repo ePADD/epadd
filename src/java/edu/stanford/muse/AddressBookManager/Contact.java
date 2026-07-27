@@ -175,7 +175,7 @@ public class Contact extends UnionFindObject {
 		names = maskedEmailsInNames;
 
 		//Similarly mask the bestname only if the bestname is like email (contains @)
-		if(bestName.contains("@"))
+		if(bestName != null && bestName.contains("@"))
 			bestName = ab.getMaskedEmail(bestName);
 
 	}

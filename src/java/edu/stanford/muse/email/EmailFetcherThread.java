@@ -548,6 +548,14 @@ public class EmailFetcherThread implements Runnable, Serializable {
             return new Tuple2<List<String>, String>(list, "");
         }
 
+        String disposition = messagePart.getDisposition();
+        if (disposition != null && Part.ATTACHMENT.equalsIgnoreCase(disposition)) {
+            String htmlPart = handleAttachments(emailDocument, messageNum, topLevelMessage, messagePart, list, attachmentsList);
+            if (htmlPart != null)
+                textHtmlPart = htmlPart;
+            return new Tuple2<List<String>, String>(list, textHtmlPart);
+        }
+	
         if (messagePart == topLevelMessage && messagePart.isMimeType("text/html")) {
             /*
             String s = "top level part is html! message:" + m.getSubject() + " " + m.getDescription();
