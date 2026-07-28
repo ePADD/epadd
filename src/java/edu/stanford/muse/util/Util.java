@@ -1704,6 +1704,21 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		return s;
 	}
 
+	// Windows/NTFS limits a single path component (e.g. a file name) to 255 chars, and some
+	// tools (e.g. Emailchemy PST->mbox conversion) can embed an entire original folder
+	// hierarchy into a single mbox "folder name", producing names well past that limit.
+	// Truncate to maxLen, keeping a hash of the original untruncated string so that two
+	// different long names sharing a common prefix don't collide after truncation.
+	public static String truncateFileNameComponent(String s, int maxLen)
+	{
+		if (s == null || s.length() <= maxLen)
+			return s;
+
+		String suffix = "_" + hash(s).substring(0, 8);
+		int keep = Math.max(0, maxLen - suffix.length());
+		return s.substring(0, keep) + suffix;
+	}
+
 	// Replacing any of the disallowed filename characters (\/:*?"<>|&) to _
 	// (note: & causes problems with URLs for serveAttachment etc, so it's also
 	// replaced)

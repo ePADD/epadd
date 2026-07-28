@@ -881,7 +881,11 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         String sanitizedFName = Util.sanitizeFolderName(emailStore.getAccountID() + "." + getFolderName());
         if (filename == null) {
-            String tempFname = sanitizedFName + "." + idx;
+            // keep the filename well under Windows' 255-char path component limit;
+            // the blob store additionally prefixes a numeric id (e.g. "338.") and an extension
+            // may be appended below, so leave headroom rather than truncating to exactly 255
+            String truncatedFName = Util.truncateFileNameComponent(sanitizedFName, 100);
+            String tempFname = truncatedFName + "." + idx;
             dataErrors.add("attachment filename is null for " + sanitizedFName + " Message#" + idx + " assigning it the name: " + tempFname);
             //assign a special label to this message to denote that there was some problem in parsing.
             Set<String> lab = new LinkedHashSet<>();
