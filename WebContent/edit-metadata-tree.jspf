@@ -19,6 +19,8 @@
 
     private JSONArray getFileNodesJson(List<Archive.FileMetadata> fileMetadatas){
         JSONArray fileNodes = new JSONArray();
+        if (fileMetadatas == null)
+            return fileNodes;
         //System.out.println("fileMetadatas.size() = "+ fileMetadatas.size());
         for (Archive.FileMetadata fm: fileMetadatas) {
             JSONObject aFile = new JSONObject();
