@@ -96,4 +96,22 @@ public class UtilTest {
         assertFalse(Util.occursOnlyAsWholeWord("Americans in America", "America"));
         assertFalse(Util.occursOnlyAsWholeWord("No matching country", "America"));
     }
+
+    @Test
+    public void decodeMimeFileNameUnfoldsAndDecodesEncodedWords() {
+        // folded attachment name as seen in the wild; the last encoded word is not followed by whitespace
+        String folded = "Stipendium\r\n =?ISO-8859-1?Q?f=FCr_Medienkunst=5FBewerbungsrichtlinien=2Ep?=\r\n =?ISO-8859-1?Q?df?=";
+        assertEquals("Stipendium für Medienkunst_Bewerbungsrichtlinien.pdf", Util.decodeMimeFileName(folded));
+
+        assertEquals("Grüße.txt", Util.decodeMimeFileName("=?UTF-8?B?R3LDvMOfZQ==?=.txt"));
+        assertEquals("plain name.pdf", Util.decodeMimeFileName("plain name.pdf"));
+        assertEquals("=?bogus-charset?Q?abc?=.pdf", Util.decodeMimeFileName("=?bogus-charset?Q?abc?=.pdf"));
+        assertNull(Util.decodeMimeFileName(null));
+    }
+
+    @Test
+    public void sanitizeFileNameReplacesControlCharacters() {
+        assertEquals("a_b_c_d", Util.sanitizeFileName("a\rb\nc\td"));
+        assertEquals("a_b_c", Util.sanitizeFileName("a:b?c"));
+    }
 }

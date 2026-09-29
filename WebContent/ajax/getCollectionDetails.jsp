@@ -46,7 +46,7 @@ String repositoryName= request.getParameter("repositoryName");
                   Archive.CollectionMetadata cm = ArchiveReaderWriter.readCollectionMetadata(f.getAbsolutePath());
                   JSONObject collectionInfo = null;
                   if (cm != null) {
-                      if(!Util.nullOrEmpty(repositoryName) && !repositoryName.toLowerCase().equals(cm.repository.toLowerCase()))
+                      if(!Util.nullOrEmpty(repositoryName) && !repositoryName.toLowerCase().equals(Util.nullOrEmpty(cm.repository)?"":cm.repository.toLowerCase()))
                           continue; //Means this repository is of no interest. Continue to query the next repository.
                        collectionInfo = new JSONObject();
 

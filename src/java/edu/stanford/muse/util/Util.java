@@ -1719,6 +1719,36 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		return s.substring(0, keep) + suffix;
 	}
 
+	private static final Pattern MIME_ENCODED_WORD = Pattern.compile("=\\?[^?\\s]+\\?[BbQq]\\?[^?\\s]*\\?=");
+
+	// Attachment names can arrive as RFC 2047 encoded words that were folded across header lines, e.g.
+	// "Stipendium\r\n =?ISO-8859-1?Q?f=FCr_Medienkunst?=". JavaMail's getFileName() leaves these undecoded,
+	// and the CR/LF from the folding makes the name an invalid Windows path.
+	// This unfolds the name, drops whitespace between adjacent encoded words (RFC 2047 section 6.2), and
+	// decodes each encoded word. Unlike MimeUtility.decodeText, it also decodes encoded words that are not
+	// delimited by whitespace (e.g. "=?...?=.pdf"), which some mail clients produce.
+	// Encoded words that can't be decoded (e.g. unknown charset) are left as they are.
+	public static String decodeMimeFileName(String filename) {
+		if (filename == null)
+			return null;
+		filename = filename.replaceAll("\\r?\\n[ \\t]*", " ");
+		filename = filename.replaceAll("(?<=\\?=)[ \\t]+(?==\\?)", "");
+
+		Matcher m = MIME_ENCODED_WORD.matcher(filename);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			String decoded;
+			try {
+				decoded = javax.mail.internet.MimeUtility.decodeWord(m.group());
+			} catch (Exception e) {
+				decoded = m.group();
+			}
+			m.appendReplacement(sb, Matcher.quoteReplacement(decoded));
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
 	// Replacing any of the disallowed filename characters (\/:*?"<>|&) to _
 	// (note: & causes problems with URLs for serveAttachment etc, so it's also
 	// replaced)
@@ -1767,6 +1797,8 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		{
 			filename = filename.replace("&", "_");
 		}
+		// control characters (e.g. CR/LF left over from folded headers) are not allowed in Windows paths
+		filename = filename.replaceAll("\\p{Cntrl}", "_");
 		return filename;
 	}
 

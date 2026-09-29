@@ -113,18 +113,20 @@ public final class BagitManifestCleaner {
             String checksum = stripped.substring(0, space);
             // Strip only the separator whitespace on the left; preserve trailing spaces.
             String relPath = stripped.substring(space + 1).stripLeading();
+            // check the path as the BagIt reader will see it, i.e. with %0D/%0A decoded to CR/LF
+            String decodedPath = decodeManifestPath(relPath);
 
-            if (isWindowsUnsafe(relPath)) {
-                droppedPaths.add(relPath);
+            if (isWindowsUnsafe(decodedPath)) {
+                droppedPaths.add(decodedPath);
                 continue;
             }
 
             // Final guard: let Windows Path parser validate
             try {
                 // DO NOT normalize or resolve against the filesystem; just validate syntax.
-                bagRoot.resolve(relPath);
+                bagRoot.resolve(decodedPath);
             } catch (InvalidPathException e) {
-                droppedPaths.add(relPath);
+                droppedPaths.add(decodedPath);
                 continue;
             }
 
@@ -183,6 +185,11 @@ public final class BagitManifestCleaner {
             sb.append(segBuf);
         }
         return sb.toString();
+    }
+
+    /** BagIt manifests store CR and LF in paths as %0D and %0A; decode them the same way the bagit library's reader does. */
+    private static String decodeManifestPath(String relPath) {
+        return relPath.replace("%0A", "\n").replace("%0D", "\r");
     }
 
     private static int firstWhitespacePos(String s) {

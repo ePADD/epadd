@@ -859,7 +859,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
 
         String filename = null;
         try {
-            filename = p.getFileName();
+            filename = Util.decodeMimeFileName(p.getFileName());
             if (filename != null && !filename.trim().isEmpty()) {
                 filename = filename.trim();
                 if (filename.contains("\t"))
