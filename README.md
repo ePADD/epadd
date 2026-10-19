@@ -1,10 +1,11 @@
 **ePADD (Email: Process Appraise, Discover, Deliver)** 
 
-https://library.stanford.edu/projects/epadd
+https://openpreservation.org/tools/epadd/
 
 **Introduction**
 
-ePADD is a software package developed by Stanford University's Special Collections & University Archives that supports archival processes around the appraisal, ingest, processing, discovery, and delivery of email archives.
+ePADD is a software package that supports archival processes around the appraisal, ingest, processing, discovery, and delivery of email archives.
+ePADD was originally developed by Stanford University's Special Collections & University Archives and is currently hosted and maintained by the [Open Preservation Foundation](https://openpreservation.org/).
 
 The software is comprised of four modules:
 
@@ -19,7 +20,7 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 **System Requirements**
 
 OS: Windows 10/11, Mac OS X 10.13 or later, Ubuntu 18.04 or later (64-bit)
-Memory: 8 GB system RAM recommended as a starting point; actual needs scale with the size of the email archive being processed. The packaged installers (.exe/.dmg) cap the application's heap at 4 GB by default (2 GB for the Discovery module) — this is a ceiling, not a reservation. If you instead run `java -jar epadd-standalone.jar` directly, no such cap is set and the JVM falls back to its own default (roughly 25% of system RAM); pass `-Xmx#g` explicitly to control it, e.g. `java -Xmx#g -jar epadd-standalone.jar`.
+Memory: 8 GB system RAM recommended as a starting point; actual needs scale with the size of the email archive being processed. The packaged installers (.exe/.dmg) cap the application's heap at 4 GB by default (2 GB for the Discovery module), this is a ceiling, not a reservation. If you instead run `java -jar epadd-standalone.jar` directly, no such cap is set and the JVM falls back to its own default (roughly 25% of system RAM); pass `-Xmx#g` explicitly to control it, e.g. `java -Xmx#g -jar epadd-standalone.jar`.
 Browser: current version of Chrome or Firefox
 Java: Java Runtime Environment 11 or later required (bundled with the desktop installers).
 
@@ -54,7 +55,7 @@ Note: The Discovery Module is run through a separate distribution file accessibl
 
 **ePADD Documentation, Help, and other Information**
 
-More information about the software and related developments, including links to the full installation and user guide, as well as a link to the community forums, can be found via [our website] (https://library.stanford.edu/projects/epadd/).
+More information about the software and related developments, including links to the full installation and user guide, as well as a link to the community forums, can be found via [our website] (https://openpreservation.org/tools/epadd/).
 
 **License(s)**
 
