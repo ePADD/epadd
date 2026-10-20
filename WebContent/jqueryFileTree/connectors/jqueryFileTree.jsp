@@ -47,6 +47,12 @@
 				return name.charAt(0) != '.';
 		    }
 		});
+		// list() returns null for folders that exist but cannot be listed, e.g. system folders such as
+		// "System Volume Information" or "Documents and Settings" on Windows; show them as empty
+		if (files == null) {
+			JSPHelper.doLogging("Cannot list contents of folder " + dir);
+			files = new String[0];
+		}
 		Arrays.sort(files, String.CASE_INSENSITIVE_ORDER);
 		out.print("<ul class=\"jqueryFileTree\" style=\"display: none;\">");
 		// All dirs
