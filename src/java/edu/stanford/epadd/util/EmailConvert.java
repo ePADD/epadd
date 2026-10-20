@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 
@@ -51,7 +54,20 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
     private int nFoldersConverted;
     private String lastMessage = "";
     private File currentFolder;
+    private File sourceRoot; // the file or folder selected for conversion
+    private static final String EML_FORMAT = "eml";
     private static final Logger log =  LogManager.getLogger(FolderInfo.class);
+
+    // Emailchemy converts on its own thread and reports back only through the ConverterListener callbacks, so
+    // failures there are easily lost and the import page waits forever. The fields below make sure every
+    // conversion ends with either a success or an error result (see succeed() and fail()).
+    private static final long INACTIVITY_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(10);
+    private static volatile EmailConvert activeConversion; // the conversion that receives Emailchemy's uncaught exceptions
+    private static boolean uncaughtExceptionHandlerInstalled = false;
+    private volatile boolean finished;
+    private volatile boolean cancelled;
+    private volatile long lastActivity;
+    private ScheduledExecutorService watchdog;
 
     private static EmailConvert emailConvert;
     private static Random random = new Random();
@@ -152,22 +168,7 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
         license.activateWithDongle(this);
         String p_inFile = request.getParameter("inFile");
         String p_inFormat = request.getParameter("inFormat");
-        files = new ArrayList<>();
-        nFoldersConverted = 0;
-
-        File dir = new File(p_inFile);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                files.add(child);
-            }
-        } else {
-            files.add(dir);// Handle the case where dir is not really a directory.
-            // Checking dir.isDirectory() above would not be sufficient
-            // to avoid race conditions with another process that deletes
-            // directories.
-        }
-        nFolders = files.size();
+        prepareFiles(p_inFile, p_inFormat);
 
         String actionName = request.getRequestURI();
         String opID = request.getParameter("opID");
@@ -189,9 +190,9 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 //                //operationinfo object
 //                Consumer<StatusProvider> setStatusProvider = statusProvider -> this.setStatusProvider(statusProvider);
 //                cancelSetOwnerAddress(setStatusProvider);
-                if (converter != null) {
-                    converter.interrupt();
-                }
+                cancelled = true;
+                endConversion();
+                interruptConverter();
             }
         };
         JSPHelper.setOperationInfo(request.getSession(), opID, opinfo);
@@ -217,23 +218,172 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
             setStatusProvider.accept(this);
         }
         this.consumer = setStatusProvider;
-        String p_outFolder = null;
-        try {
-            p_outFolder = Files.createTempDirectory(EPADD_EMAILCHEMY_TMP).toString();
-            tmpDir = p_outFolder;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.outFolder = p_outFolder;
-        new File(p_outFolder).mkdir();
+        finished = false;
+        cancelled = false;
+        activeConversion = this;
+        installUncaughtExceptionHandler();
 
-        this.inFormat = Format.forName(p_inFormat);
-        convertFolder(files.remove(files.size() - 1), outFolder, inFormat);
+        // this runs on OperationInfo's executor, which silently swallows exceptions, so report every failure explicitly
+        try {
+            this.inFormat = Format.forName(p_inFormat);
+            if (inFormat == null) {
+                fail("Unsupported input format for Emailchemy: " + p_inFormat, null);
+                return;
+            }
+            if (files.isEmpty()) {
+                fail("No files found to convert in " + p_inFile, null);
+                return;
+            }
+            this.outFolder = Files.createTempDirectory(EPADD_EMAILCHEMY_TMP).toString();
+            tmpDir = outFolder;
+
+            startWatchdog();
+            convertFolder(files.remove(files.size() - 1), outFolder, inFormat);
+        } catch (Throwable t) {
+            fail("Could not start converting " + p_inFile + " with Emailchemy: " + t, t);
+        }
+    }
+
+    /** Reports a successful conversion to the import page. */
+    private synchronized void succeed() {
+        if (finished)
+            return;
+        endConversion();
+        resultJsonObject.put("status", 0);
+        processRequest();
+    }
+
+    /** Reports a failed conversion to the import page (only the first failure is reported) and stops converting. */
+    private synchronized void fail(String message, Throwable t) {
+        if (finished || cancelled)
+            return;
+        endConversion();
+        log.error("Email conversion failed: " + message, t);
+        interruptConverter();
+        // put "error" before "status": the import page treats the result as ready as soon as it is non-empty
+        resultJsonObject.put("error", message);
+        resultJsonObject.put("status", 1);
+    }
+
+    /**
+     * Converter.interrupt() throws a NullPointerException when the converter has no running conversion (not yet
+     * started or already finished), which made cancelling an import fail with an error.
+     */
+    private void interruptConverter() {
+        if (converter == null)
+            return;
+        try {
+            converter.interrupt();
+        } catch (Exception e) {
+            log.warn("Could not interrupt Emailchemy converter (probably not converting at the moment): " + e);
+        }
+    }
+
+    private void endConversion() {
+        finished = true;
+        if (watchdog != null)
+            watchdog.shutdownNow();
+        if (activeConversion == this)
+            activeConversion = null;
+    }
+
+    /** Fails the conversion if Emailchemy makes no progress for INACTIVITY_TIMEOUT_MS, e.g. when it stops without calling back. */
+    private void startWatchdog() {
+        lastActivity = System.currentTimeMillis();
+        watchdog = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread thread = new Thread(r, "EmailConvert-watchdog");
+            thread.setDaemon(true);
+            return thread;
+        });
+        watchdog.scheduleWithFixedDelay(() -> {
+            if (System.currentTimeMillis() - lastActivity > INACTIVITY_TIMEOUT_MS)
+                fail("Emailchemy stopped responding while converting " + currentFolder + " (no progress for "
+                        + TimeUnit.MILLISECONDS.toMinutes(INACTIVITY_TIMEOUT_MS) + " minutes).", null);
+        }, 1, 1, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Exceptions thrown on Emailchemy's own conversion thread are not reported through ConverterListener; that
+     * thread just dies and no further callbacks arrive. Report such exceptions as a failure of the active conversion,
+     * then pass them on to the previously installed handler as before.
+     */
+    private static synchronized void installUncaughtExceptionHandler() {
+        if (uncaughtExceptionHandlerInstalled)
+            return;
+        Thread.UncaughtExceptionHandler previous = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
+            EmailConvert active = activeConversion;
+            if (active != null && isFromEmailchemy(e))
+                active.fail("Emailchemy failed while converting " + active.currentFolder + ": " + e, e);
+            if (previous != null) {
+                previous.uncaughtException(thread, e);
+            } else {
+                System.err.print("Exception in thread \"" + thread.getName() + "\" ");
+                e.printStackTrace();
+            }
+        });
+        uncaughtExceptionHandlerInstalled = true;
+    }
+
+    private static boolean isFromEmailchemy(Throwable e) {
+        for (Throwable cause = e; cause != null; cause = cause.getCause())
+            for (StackTraceElement element : cause.getStackTrace())
+                if (element.getClassName().startsWith("com.weirdkid."))
+                    return true;
+        return false;
+    }
+
+    /** Sets up the list of files and folders that are passed to Emailchemy one by one. */
+    private void prepareFiles(String p_inFile, String p_inFormat) {
+        files = new ArrayList<>();
+        nFoldersConverted = 0;
+
+        File dir = new File(p_inFile);
+        sourceRoot = dir;
+        File[] directoryListing = dir.listFiles();
+        if (directoryListing != null && EML_FORMAT.equalsIgnoreCase(p_inFormat)) {
+            // Emailchemy does not convert a folder in EML format (it returns without converting or calling back),
+            // so pass it every .eml file individually, including those in subfolders
+            files.addAll(collectFiles(dir));
+        } else if (directoryListing != null) {
+            for (File child : directoryListing) {
+                files.add(child);
+            }
+        } else {
+            files.add(dir);// Handle the case where dir is not really a directory.
+            // Checking dir.isDirectory() above would not be sufficient
+            // to avoid race conditions with another process that deletes
+            // directories.
+        }
+        nFolders = files.size();
+    }
+
+    /** All regular files below dir, in subfolders too; hidden files such as .DS_Store are skipped. */
+    private static List<File> collectFiles(File dir) {
+        List<File> result = new ArrayList<>();
+        File[] children = dir.listFiles();
+        if (children == null) {
+            log.warn("Cannot list contents of folder " + dir + ", skipping it");
+            return result;
+        }
+        for (File child : children) {
+            if (child.getName().startsWith("."))
+                continue;
+            if (child.isDirectory())
+                result.addAll(collectFiles(child));
+            else if (child.isFile())
+                result.add(child);
+        }
+        return result;
     }
 
     private void convertFolder(File source, String outFolder, Format inFormat) {
-        String outFolderWithEmailFileName = outFolder + File.separatorChar + Util.filePathTail(source.toString());
-        new File(outFolderWithEmailFileName).mkdir();
+        // keep the subfolder structure of the source, so that the folders are preserved in ePADD
+        String relativePath = Util.filePathTail(source.toString());
+        if (sourceRoot != null && !source.equals(sourceRoot) && source.toPath().startsWith(sourceRoot.toPath()))
+            relativePath = sourceRoot.toPath().relativize(source.toPath()).toString();
+        String outFolderWithEmailFileName = outFolder + File.separatorChar + relativePath;
+        new File(outFolderWithEmailFileName).mkdirs();
         lastMessage = "Found " + nFolders + " folders to convert. Finished converting " + nFoldersConverted + " folders. ";
         sendStatus(lastMessage);
 
@@ -266,11 +416,12 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 
     @Override
     public void openingFile(File file) {
-
+        lastActivity = System.currentTimeMillis();
     }
 
     @Override
     public void messageConverted(Date date, String s, File file) {
+        lastActivity = System.currentTimeMillis();
         nMessageConverted++;
         if (nMessageConverted % 100 == 0) {
             String currentFolderString = "";
@@ -288,14 +439,24 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 
     @Override
     public void conversionComplete(boolean b) {
+        lastActivity = System.currentTimeMillis();
+        if (finished || cancelled)
+            return;
+        if (!b)
+            log.warn("Emailchemy reported that converting " + currentFolder + " was not successful");
         nFoldersConverted++;
         nMessageConverted = 0;
-        if (files.size() > 0) {
-            currentFolder = files.remove(files.size() - 1);
-            convertFolder(currentFolder, outFolder, inFormat);
-        } else {
-            System.out.println("Conversion Complete -------------------------------------");
-            processRequest();
+        // called on Emailchemy's thread: an exception here would otherwise end the conversion without any result
+        try {
+            if (files.size() > 0) {
+                currentFolder = files.remove(files.size() - 1);
+                convertFolder(currentFolder, outFolder, inFormat);
+            } else {
+                log.info("Emailchemy conversion complete");
+                succeed();
+            }
+        } catch (Throwable t) {
+            fail("Converting " + currentFolder + " with Emailchemy failed: " + t, t);
         }
     }
 
@@ -306,13 +467,13 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
 
     @Override
     public boolean isCancelled() {
-        return false;
+        return cancelled;
     }
 
     @Override
     public void invalidInputFile(File file, Throwable throwable) {
-        System.out.println("invalidInputFile");
-
+        lastActivity = System.currentTimeMillis();
+        log.warn("Emailchemy could not convert " + file + ", skipping it", throwable);
     }
 
     @Override
