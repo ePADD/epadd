@@ -1971,46 +1971,6 @@ is what we want.
 		return newDir;
 	}
 
-    private synchronized Directory removeFieldsFromDirectory(Directory dir, boolean attachmentType, String... fields_to_be_removed) throws IOException
-	{
-		if (!indexHasFields())
-			return dir;
-
-		boolean is_file_based = dir instanceof FSDirectory;
-
-		String tmp_name = ".tmp";
-		FSDirectory fsdir = null;
-		if (is_file_based) {
-			fsdir = (FSDirectory) dir;
-			tmp_name = fsdir.getDirectory().getFileName() + tmp_name;
-		}
-
-		Directory newDir = copyDirectoryExcludeFields(attachmentType, baseDir, tmp_name, fields_to_be_removed);
-
-		if (is_file_based) {
-			// delete the original dir and rename tmp
-			File org_file = fsdir.getDirectory().toFile();
-			File tmp_file = ((FSDirectory) newDir).getDirectory().toFile();
-            FileUtils.deleteDirectory(org_file);
-            boolean res = tmp_file.renameTo(org_file);
-		    if(!res)
-                log.warn("Rename of "+tmp_file.getName()+" failed, things may not work as expected!!");
-        }
-        return fsdir;
-	}
-
-	// since we may need to rebuild the index in a new directory, the analyzer needs to have been initialized apriori
-	private synchronized void removeFieldsFromDirectory(String... fields_to_be_removed) throws IOException
-	{
-		//directory = removeFieldsFromDirectory(directory, fields_to_be_removed);
-		//updated the signature so that now along with directory attachment type (false for email index and true for attachment index) is passed
-		//this additional variable is used for subsequent method call in removeFieldsFromDirectory method.
-		directory = removeFieldsFromDirectory(directory,false, fields_to_be_removed);
-		directory_blob = removeFieldsFromDirectory(directory_blob,true, fields_to_be_removed);
-		//directory_blob = removeFieldsFromDirectory(directory_blob, fields_to_be_removed);
-
-	}
-
 	//Method not used till v5 but if used in future, it should be updated (signature) along the lines of previous method.
 	private synchronized void copyDirectoryExcludeFields(String out_dir, String... fields_to_be_removed) throws IOException
 	{

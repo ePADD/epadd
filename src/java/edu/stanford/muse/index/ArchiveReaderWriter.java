@@ -21,7 +21,6 @@ import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
 import edu.stanford.muse.webapp.SimpleSessions;
-import gov.loc.repository.bagit.creator.BagCreator;
 import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
 import org.apache.commons.io.FileUtils;
@@ -400,32 +399,9 @@ public class ArchiveReaderWriter{
             try {
                 archive.close();
 
-
-                //First copy the content of archive.baseDir + "/data" to archive.baseDir and then create an in place bag.
-                //Why so complicated? Because we wanted to have a uniform directory structure of archive irrespective of the fact whether it is
-                //in a bag or not. That structure is 'archive.baseDir + "/data" folder'
-                File baseDirFile = Paths.get(archive.baseDir).toFile();
-                File baseDirOneUpFile = baseDirFile.getParentFile();
-
-                //29.05.2024 JF
-                //Create the tmp folder in the current location rather than the default location (something like /appdata/local/temp).
-                //This is in case the current location is on a different drive because there is not enough space in the home directory.
-                File tmp = Util.createTempDirectory(baseDirOneUpFile);
-                tmp.delete();
-
-
-
-                //It seems that if indexer kept the file handles open then move directory failed on windows because of the lock held on those file
-                //therefore call archive.close() before moving stuff around
-                //archive.close();
-                FileUtils.moveDirectory(Paths.get(archive.baseDir+File.separatorChar+Archive.BAG_DATA_FOLDER).toFile(),tmp.toPath().toFile());
-                //Files.copy(Paths.get(userDir+File.separatorChar+Archive.BAG_DATA_FOLDER),tmp.toPath(),StandardCopyOption.REPLACE_EXISTING);
-                File wheretocopy = Paths.get(archive.baseDir).toFile();
-                Util.deleteDir(wheretocopy.getPath(),log);
-
-                FileUtils.moveDirectory(tmp.toPath().toFile(),wheretocopy);
-
-                Bag bag = BagCreator.bagInPlace(Paths.get(archive.baseDir), Arrays.asList(algorithm), includeHiddenFiles);
+                //The archive's files are already in archive.baseDir + "/data"; create the bag's manifests around them
+                //without moving the data (see BagManifestRebuilder for why moving it was unsafe).
+                Bag bag = BagManifestRebuilder.rebuild(Paths.get(archive.baseDir), Arrays.asList(algorithm), includeHiddenFiles);
                 archive.openForRead();
                 archive.setArchiveBag(bag);
             } catch (NoSuchAlgorithmException e) {
