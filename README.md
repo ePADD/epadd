@@ -20,7 +20,7 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 **System Requirements**
 
 OS: Windows 10/11, Mac OS X 10.13 or later, Ubuntu 18.04 or later (64-bit)
-Memory: 8 GB system RAM recommended as a starting point; actual needs scale with the size of the email archive being processed. The packaged installers (.exe/.dmg) cap the application's heap at 4 GB by default (2 GB for the Discovery module), this is a ceiling, not a reservation. If you instead run `java -jar epadd-standalone.jar` directly, no such cap is set and the JVM falls back to its own default (roughly 25% of system RAM); pass `-Xmx#g` explicitly to control it, e.g. `java -Xmx#g -jar epadd-standalone.jar`.
+Memory: We recommend at least 8 GB of RAM. The maximum amount of memory ePADD can use is set by Java. When no maximum is specified, Java typically allows about a quarter of the computer's RAM. This is a limit, not a reservation: ePADD only uses as much memory as it needs. To allow more, run ePADD from the command line with the `-Xmx` option, e.g. `java -Xmx8g -jar epadd-standalone.jar` for a maximum of 8 GB.
 Browser: current version of Chrome or Firefox
 Java: Java Runtime Environment 11 or later required (bundled with the desktop installers).
 
@@ -38,7 +38,7 @@ When you run ePADD for the first time, a directory for the Appraisal Module is c
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
-Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Command Prompt, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM (in GB) you wish to allocate.
+Note: If ePADD runs slowly or reports that it is out of memory, you can allow it to use more memory by running the Java application directly from the command line (epadd-standalone.jar). From the Command Prompt, run: java -Xmx#g -jar epadd-standalone.jar, where # is the maximum amount of RAM (in GB) ePADD may use. Leave a few GB free for the operating system and the browser.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
@@ -49,7 +49,7 @@ When you run ePADD for the first time, a directory for the Appraisal Module is c
 
 Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
 
-Note: ePADD allocates 4096 MB RAM to the application by default. If the standard RAM allocated does not suffice, you may wish to run the Java application directly from the command line (epadd-standalone.jar). From the Terminal, you can run the application using this command: java -Xmx#g -jar epadd-standalone.jar, where # identifies the amount of RAM (in GB) you wish to allocate.
+Note: If ePADD runs slowly or reports that it is out of memory, you can allow it to use more memory by running the Java application directly from the command line (epadd-standalone.jar). From the Terminal, run: java -Xmx#g -jar epadd-standalone.jar, where # is the maximum amount of RAM (in GB) ePADD may use. Leave a few GB free for the operating system and the browser.
 
 Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
 
