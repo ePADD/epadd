@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.util.Util;
 
 public class NLP {
@@ -45,7 +43,7 @@ public class NLP {
 			log.info("Initialized tagger, available tags: " + sb);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.print_exception(e, log);
 		};
 	}
 	public static String taggedString(String s)

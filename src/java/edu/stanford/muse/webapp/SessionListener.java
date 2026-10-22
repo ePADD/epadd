@@ -24,8 +24,6 @@ import javax.servlet.http.HttpSessionListener;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.util.Util;
 

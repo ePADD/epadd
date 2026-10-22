@@ -2,8 +2,6 @@ package edu.stanford.muse.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +62,7 @@ public class TimeKeeper {
     			 System.out.println ("Checking error checking: " + TimeKeeper.since(-2) + " or " + TimeKeeper.since(3));
     		 } catch (InterruptedException e) {
     			 // TODO Auto-generated catch block
-    			 e.printStackTrace();
+    			 Util.print_exception(e, log);
     		 }
     	 }
      }

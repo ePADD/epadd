@@ -29,8 +29,6 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import javax.mail.Address;
@@ -163,7 +161,7 @@ private transient          Map<Contact, Set<EmailDocument>> L1_Summary_SentDocs 
             this.L1_Summary_ReceivedDocs = ab.L1_Summary_ReceivedDocs;
             this.L1_Summary_RecFrmOwnerDocs = ab.L1_Summary_RecFrmOwnerDocs;
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             Util.print_exception("Unable to initialize the addressbook with different contact information",e,log);
         }
         // todo: decide how to handle names are missing in text, but are associated with some email message in the archive.

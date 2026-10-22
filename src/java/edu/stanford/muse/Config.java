@@ -25,8 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /*
 VIP class. This class has constants/settings that generally do not change during an ePADD execution, and are set only at startup.
@@ -258,7 +256,7 @@ public class Config {
                 repoDetails.put(repoName,repoInformation);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             //If parsing failed at any point set repoDetails as null;
             repoDetails = null;
         }

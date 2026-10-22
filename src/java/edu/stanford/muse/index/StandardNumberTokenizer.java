@@ -158,7 +158,7 @@ final class StandardNumberTokenizer extends Tokenizer {
 
 			t.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 		}
 	}
 }

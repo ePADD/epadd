@@ -15,8 +15,6 @@ import edu.stanford.muse.util.Span;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -679,7 +677,7 @@ public class ProperNounLinker {
             }
             System.out.println("NumQ:"+numQ+"- Time: "+(System.currentTimeMillis()-st)+"ms"+"- AVG: "+((float)(System.currentTimeMillis()-st)/numQ)+"ms");
         }catch(Exception e){
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
     }
 }

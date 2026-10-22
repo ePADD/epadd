@@ -142,7 +142,7 @@ public class Accounts {
 					field.setAccessible(true);
 					field.set(null, java.lang.Boolean.FALSE);
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Util.print_exception(ex, log);
 				}
 */
 //				URL url = new URL("https://live.mozillamessaging.com/autoconfig/v1.1/" + emailDomain);

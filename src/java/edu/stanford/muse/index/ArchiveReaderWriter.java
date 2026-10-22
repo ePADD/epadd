@@ -24,8 +24,6 @@ import edu.stanford.muse.webapp.SimpleSessions;
 import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
 import org.apache.commons.io.FileUtils;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.CorruptIndexException;
@@ -288,10 +286,10 @@ public class ArchiveReaderWriter{
             return ab;
         } catch (FileNotFoundException e) {
 
-            e.printStackTrace();
+            Util.print_exception(e, log);
             return null;
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             return null;
         }
 
@@ -405,7 +403,7 @@ public class ArchiveReaderWriter{
                 archive.openForRead();
                 archive.setArchiveBag(bag);
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
 
         }else {
@@ -542,7 +540,7 @@ public class ArchiveReaderWriter{
             archive.addressBook.writeObjectToStream (bw, false, false);
             bw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
         //if this was an incremental update in addressbook, we need to update the bag's metadata as well..
@@ -622,7 +620,7 @@ public class ArchiveReaderWriter{
             archive.getCorrespondentAuthorityMapper().writeObjectToStream(cAuthorityPath);
         } catch (ParseException | IOException e) {
             log.warn("Exception while writing correspondent authority files"+e.getMessage());
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
         //if this was an incremental update in authority mapper, we need to update the bag's metadata as well..
@@ -742,14 +740,14 @@ public class ArchiveReaderWriter{
             gson.toJson(cm,fwriter);
         } catch (IOException e) {
             Util.print_exception("Unable to write processing metadata", e, log);
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }finally {
             if(fwriter!=null){
                 try {
                     fwriter.close();
                 } catch (IOException e) {
                     Util.print_exception("Unable to write processing metadata", e, log);
-                    e.printStackTrace();
+                    Util.print_exception(e, log);
                 }
             }
         }
@@ -818,14 +816,14 @@ public static void saveCollectionMetadata(Archive archive, Archive.Save_Archive_
             gson.toJson(cm,fwriter);
         } catch (IOException e) {
             Util.print_exception("Unable to write processing metadata", e, log);
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }finally {
             if(fwriter!=null){
                 try {
                     fwriter.close();
                 } catch (IOException e) {
                     Util.print_exception("Unable to write processing metadata", e, log);
-                    e.printStackTrace();
+                    Util.print_exception(e, log);
                 }
             }
         }

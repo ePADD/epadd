@@ -15,8 +15,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 /* class meant to handle variants. note this maps each word to one or more other words.
 e.g. sandy could map to sandra or alexander
   * sandy -> sandra, or alexander

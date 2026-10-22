@@ -49,7 +49,7 @@ public class ObjectCharacteristics implements Serializable {
         } catch (IOException | NoSuchAlgorithmException e) {
             log.warn("Exception calculating hash for " + fileName + "\n" + e);
 
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
         fixities.add(new Fixity(hash));
 

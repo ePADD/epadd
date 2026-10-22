@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 /** a sloppy date parser that can handle natural lang. ways of specifying a date, like jan 10, sep 29, etc. */
 public class SloppyDates {
     private static final Logger log =  LogManager.getLogger(SloppyDates.class);

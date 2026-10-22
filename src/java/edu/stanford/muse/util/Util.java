@@ -238,16 +238,12 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		// permanent breakpoint
 	}
 
+	// log is ignored: logging via the caller's logger lost messages (2022-09-12), so always use Util's logger.
+	// The console appender already shows the stack trace, so it is not printed to System.err as well.
 	public static void print_exception(String message, Throwable t, Logger log)
 	{
-		String trace = stackTrace(t);
-		String s = message + "\n" + t.toString() + "\n" + trace;
-// 2022-09-12		
-//		if (log != null)
-//			log.warn(s);
         Logger logger =  LogManager.getLogger( edu.stanford.muse.util.Util.class );
         logger.error(message, t);
-		System.err.println(s);
 	}
 
 	public static void print_exception(Throwable t, Logger log)
@@ -2594,7 +2590,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		try {
 			return URLEncoder.encode(s, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			Util.print_exception(e);
 			return null;
 		}
 	}
@@ -2781,7 +2777,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 			hash = bytesToHexString(digest.digest());
 		} catch (NoSuchAlgorithmException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Util.print_exception(e1);
 		}
 		return hash;
 	}
@@ -2796,7 +2792,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 			hash = bytesToHexString(digest.digest());
 		} catch (NoSuchAlgorithmException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Util.print_exception(e1);
 		}
 		if (map != null)
 			map.put(hash, s);
@@ -2825,7 +2821,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 			} catch (IOException e) {
 				// Do your thing with the exception. Print it, log it or mail
 				// it.
-				e.printStackTrace();
+				Util.print_exception(e);
 			}
 		}
 	}

@@ -31,8 +31,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /** Multi-threaded email fetcher - deals with a single account (but supports multiple folders). wrapper around multiple instances of EmailFetcher.
  * currently, we only fetch in single threaded mode because some servers (incl. gmail) don't play nice with MT fetching.

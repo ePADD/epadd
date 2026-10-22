@@ -38,15 +38,12 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /** EmailDocument is really like an email header - it stores metadata about a message.
  * use ed.date, ed.to/from/cc/bcc, and ed.getContents() gets its contents, ed.attachments gets its attachments */
 public class EmailDocument extends DatedDocument implements Serializable
 {
 	private static final long serialVersionUID = 1L;
-    //private static Log log = LogFactory.getLog(EmailDocument.class);
 
     public static final int SENT_MASK = 1;
     public static final int RECEIVED_MASK = 2;
@@ -271,7 +268,7 @@ public class EmailDocument extends DatedDocument implements Serializable
 			br.append("MESSAGE: ");
 			br.append(messagebody);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Util.print_exception(e, log);
 		}
 
 		return;

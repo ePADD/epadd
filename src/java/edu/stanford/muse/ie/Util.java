@@ -9,8 +9,6 @@ import edu.stanford.muse.util.EmailUtils;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Span;
 import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -53,7 +51,7 @@ public class Util {
 			wikiDoc = Jsoup.parse(new URL(wikiLink), TIMEOUT);
 		} catch (Exception e) {
 			System.err.println("Timeout or exception while fetching wiki page: " + wikiLink);
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 			return null;
 		}
 

@@ -31,8 +31,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -1007,7 +1005,7 @@ is what we want.
 			doc.add(new Field("names_offsets", bs.toByteArray(), storeOnly_ft));
 		} catch (IOException e) {
 			log.warn("Failed to serialize names_offsets");
-			e.printStackTrace();
+			Util.print_exception(e);
 		}
 	}
 
@@ -1029,7 +1027,7 @@ is what we want.
 			doc.add(new Field("headers_original", bs.toByteArray(), storeOnly_ft));
 		} catch (IOException e) {
 			log.warn("Failed to serialize headers");
-			e.printStackTrace();
+			Util.print_exception(e);
 		}
 		
 		java.io.ObjectInputStream ois;
@@ -1039,7 +1037,7 @@ is what we want.
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.print_exception(e);
 		}
 		
 	}
@@ -1175,7 +1173,7 @@ is what we want.
 		try {
 			iwriter.addDocument(doc);
 		}catch(IllegalArgumentException exception){
-			exception.printStackTrace(); //There were few instances where add Document failed. This catch is to detect those cases which will otherwise ripple to ner recognition phase
+			Util.print_exception(exception); //There were few instances where add Document failed. This catch is to detect those cases which will otherwise ripple to ner recognition phase
 			//because the document will not be found in lucene index if addDocument failed.
 
 		}
@@ -1317,7 +1315,7 @@ is what we want.
             try {
                 ldoc = isearcher.doc(ldocId);
             } catch (IOException e) {
-                e.printStackTrace();
+                Util.print_exception(e);
                 return;
             }
 
@@ -2132,7 +2130,7 @@ is what we want.
 			doc = getDoc(d);
 		} catch (IOException e) {
 			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
-			e.printStackTrace();
+			Util.print_exception(e);
 			return null;
 		}
 
@@ -2152,7 +2150,7 @@ is what we want.
 			doc = getDoc(d);
 		} catch (IOException e) {
 			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
-			e.printStackTrace();
+			Util.print_exception(e);
 			return null;
 		}
 
@@ -2218,7 +2216,7 @@ is what we want.
 			doc = getDoc(d);
 		} catch (IOException e) {
 			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
-			e.printStackTrace();
+			Util.print_exception(e);
 			return "";
 		}
 		return doc.get("text_html_part");
@@ -2232,7 +2230,7 @@ is what we want.
 			doc = getDoc(d);
 		} catch (IOException e) {
 			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
-			e.printStackTrace();
+			Util.print_exception(e);
 			return headerList;
 		}
 		BytesRef bin1ref = doc.getBinaryValue("headers_original");
@@ -2250,7 +2248,7 @@ is what we want.
 			headerList = (java.util.List<String>) ois.readObject();
 		} catch (ClassNotFoundException | IOException e) {
 			log.warn("Unable to get original headers for " + d.getUniqueId());
-			e.printStackTrace();
+			Util.print_exception(e);
 			return headerList;
 		}
 		return headerList;
@@ -2263,7 +2261,7 @@ is what we want.
 			doc = getDoc(d);
 		} catch (IOException e) {
 			log.warn("Unable to obtain document " + d.getUniqueId() + " from index");
-			e.printStackTrace();
+			Util.print_exception(e);
 			return null;
 		}
 

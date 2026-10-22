@@ -23,8 +23,6 @@ import com.sun.mail.imap.protocol.IMAPResponse;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import javax.mail.Session;
 import java.util.ArrayList;
 import java.util.List;

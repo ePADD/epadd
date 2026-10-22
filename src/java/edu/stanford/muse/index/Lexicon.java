@@ -25,8 +25,6 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 
 import java.io.*;
@@ -344,7 +342,7 @@ public class Lexicon implements Serializable {
 			try {
 				Files.deleteIfExists(new File(filepath).toPath());
 			} catch (IOException e) {
-				e.printStackTrace();
+				Util.print_exception(e, log);
 				log.debug(e.getMessage());
 			}
 		}
@@ -509,7 +507,7 @@ public class Lexicon implements Serializable {
 			writeLexiconSummaryToFile(archive,lexiconName);
 		} catch (IOException e) {
 			log.warn("Unable to store lexicon summary object in the disc. Please check as it will impact the loading time of this archive by constructing the summary using index query");
-			e.printStackTrace();
+			Util.print_exception(e, log);
 		}
 
 	}

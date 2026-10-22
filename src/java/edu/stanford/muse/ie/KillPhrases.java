@@ -27,7 +27,7 @@ public class KillPhrases {
 			br.close();
 		} catch (Exception e) {
 			System.err.println("Exception while reading taboo list from config file: " + Config.TABOO_FILE);
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 		}
 	}
 

@@ -21,8 +21,6 @@ import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 public class NLPUtils {
     private static final Logger log					= LogManager.getLogger(NLPUtils.class);
 
@@ -61,7 +59,7 @@ public class NLPUtils {
             ChunkerModel chunkerModel = new ChunkerModel(chunkerStream);
             chunker = new ChunkerME(chunkerModel);
         } catch (Exception e) {
-			e.printStackTrace();
+			Util.print_exception(e, log);
 			log.warn("Exception in init'ing sentence model");
 		    Util.print_exception(e, log);
         }finally {
@@ -97,7 +95,7 @@ public class NLPUtils {
             return sentenceDetector.sentPosDetect(text);
         }catch(IllegalArgumentException e){
             log.warn("Cannot tokenize: "+text);
-            e.printStackTrace();
+            Util.print_exception(e, log);
             return null;
         }
 	}

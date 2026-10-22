@@ -27,8 +27,6 @@ import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -62,7 +60,7 @@ import java.util.zip.GZIPInputStream;
 		try {
 			NER.initialize();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.print_exception(e);
 			throw new RuntimeException();
 		}
 		defaultTokenTypeWeights.put("PERSON", 10000); // 1000 FLAG DEBUG
@@ -759,7 +757,7 @@ import java.util.zip.GZIPInputStream;
                 System.out.println();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e);
         }
     }
 
@@ -788,7 +786,7 @@ import java.util.zip.GZIPInputStream;
 				//	System.err.println(NER.retainOnlyNames(li.getContents(doc, false)));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.print_exception(e);
 		}
 	}
 }

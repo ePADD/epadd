@@ -233,7 +233,7 @@ public class Archive implements Serializable, StatusProvider {
         try {
              docs = indexer.getAllEntitiesInDocs(maxdocs);
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         return docs;
     }
@@ -1160,7 +1160,7 @@ int errortype=0;
                     log.warn("Some serious error: For document " + doc + " no lucene doc found");
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
 
         }
@@ -1902,7 +1902,7 @@ after maskEmailDomain.
             //indexer
             //	.getHTMLAnnotatedDocumentContents(s, (IA_links ? date : null), docId, searchTerms, isRegexSearch, highlightTermsStemmed, highlightTermsUnstemmed, entitiesWithId);
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             log.warn("indexer failed to annotate doc contents " + Util.stackTrace(e));
         }
 
@@ -2283,7 +2283,7 @@ after maskEmailDomain.
                     indexer.moveDocAndAttachmentsToThisIndex(other.indexer, edoc,other.getBlobStore(),blobStore);
                 } catch (IOException e) {
                     log.warn("Unable to copy document with signature" + ((EmailDocument) doc).getSignature() + " from the incoming archive to this archive ");
-                    e.printStackTrace();
+                    Util.print_exception(e, log);
                 }
             }else
                 result.nCommonMessages+=1;
@@ -2671,24 +2671,24 @@ after maskEmailDomain.
             if (e instanceof java.nio.file.NoSuchFileException && e.getMessage() != null && e.getMessage().endsWith("bagit.txt"))
                 log.debug("No bagit.txt in {}, not a bag", rootDir);
             else {
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
             errorMessage = "Could not read directory " + rootDir;
         } catch (UnparsableVersionException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Bag is of unparsable version: " + e.getMessage();
         } catch (MaliciousPathException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Malicious path found for the bag: " + e.getMessage();
         } catch (UnsupportedAlgorithmException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "The bag has checksums for unsupported algorithms: " + e.getMessage();
         } catch (InvalidBagitFileFormatException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "The file format of the bag is invalid :" + e.getMessage();
         } catch (InvalidPathException e) {
             try {
-                e.printStackTrace();
+                Util.print_exception(e, log);
                 log.warn("InvalidPathException trying to read bag. Remove illegal filenames (Windows)" +
                         "and try again. " + e.getMessage());
                 BagitManifestCleaner.Result res = BagitManifestCleaner.clean(rootDir);
@@ -2719,37 +2719,37 @@ after maskEmailDomain.
         try {
             bv.isValid(bag, true);
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "IO Exception:" + e.getMessage();
         } catch (MissingPayloadManifestException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Payload manifest missing: " + e.getMessage();
         } catch (MissingBagitFileException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Bagit file missing: " + e.getMessage();
         } catch (MissingPayloadDirectoryException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Payload directory missing: " + e.getMessage();
         } catch (FileNotInPayloadDirectoryException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "No file in payload directory: " + e.getMessage();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Validation procedure interrupted :" + e.getMessage();
         } catch (MaliciousPathException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Malicious Path found: " + e.getMessage();
         } catch (CorruptChecksumException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Checksum is corrupted: " + e.getMessage();
         } catch (VerificationException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Can not verify the bag: " + e.getMessage();
         } catch (UnsupportedAlgorithmException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Algorithm used for constructing the bag is not supported: " + e.getMessage();
         } catch (InvalidBagitFileFormatException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             errorMessage = "Bag file format is invalid: " + e.getMessage();
         }*/
         // If error in verification return null;
@@ -2810,7 +2810,7 @@ after maskEmailDomain.
             archiveBag.getMetadata().add("Bagging-Date", new SimpleDateFormat().format(new Date()));
             MetadataWriter.writeBagMetadata(archiveBag.getMetadata(), archiveBag.getVersion(), PathUtils.getBagitDir(archiveBag), archiveBag.getFileEncoding());
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
         MessageDigest[] finalMessageDigest = new MessageDigest[2];
@@ -2844,9 +2844,9 @@ after maskEmailDomain.
             ManifestWriter.writePayloadManifests(archiveBag.getPayLoadManifests(), PathUtils.getBagitDir(archiveBag),archiveBag.getRootDir(),archiveBag.getFileEncoding());
 			
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
         //updateTagManifests(bag, algorithms, includeHidden);
@@ -2878,7 +2878,7 @@ after maskEmailDomain.
             archiveBag.getTagManifests().addAll(manifestToMessageDigest[1].keySet());
             ManifestWriter.writeTagManifests(archiveBag.getTagManifests(), PathUtils.getBagitDir(archiveBag), archiveBag.getRootDir(), archiveBag.getFileEncoding());
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
 
@@ -3100,7 +3100,7 @@ BagCreator.bagInPlace(Paths.get(userDir),Arrays.asList(algorithm),false);
             System.out.println(stats.counts);
             System.out.println(stats.all);
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
     }
 

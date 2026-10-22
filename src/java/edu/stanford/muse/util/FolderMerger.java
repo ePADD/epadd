@@ -53,7 +53,7 @@ public class FolderMerger {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e);
         }
     }
 }

@@ -319,7 +319,7 @@ public class EmailConvert extends HttpServlet implements StatusProvider, Convert
                 previous.uncaughtException(thread, e);
             } else {
                 System.err.print("Exception in thread \"" + thread.getName() + "\" ");
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
         });
         uncaughtExceptionHandlerInstalled = true;

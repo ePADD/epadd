@@ -19,8 +19,6 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /**
  * Created by Chinmay on 22 Nov 2020.
@@ -455,7 +453,7 @@ public class NBModel implements NERModel, Serializable {
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
         return nbModel;
@@ -501,7 +499,7 @@ public class NBModel implements NERModel, Serializable {
                 pageLengths.get(lc).put(redirect, pageLen);
             }
         }catch(IOException e){
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         return pageLengths;
     }
@@ -559,7 +557,7 @@ public class NBModel implements NERModel, Serializable {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         return result;
     }
@@ -691,9 +689,9 @@ public class NBModel implements NERModel, Serializable {
                 nbModelWriter.write(entityType.getDisplayName()+","+entityCnt/totalEntities+"\n");
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
     }
 
@@ -740,7 +738,7 @@ public class NBModel implements NERModel, Serializable {
                 try {
                     fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Util.print_exception(e, log);
                 }
             }
             System.err.println("Loading model...");

@@ -9,8 +9,6 @@ import edu.stanford.muse.index.Indexer;
 import edu.stanford.muse.ner.model.NERModel;
 import edu.stanford.muse.ner.model.NEType;
 import edu.stanford.muse.util.*;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Field;
@@ -152,7 +150,7 @@ public class NER implements StatusProvider {
             doc.add(new Field(fieldName, bs.toByteArray(), storeOnly_ft));
         } catch (IOException e) {
             log.warn("Failed to serialize field: "+fieldName);
-            e.printStackTrace();
+            Util.print_exception(e);
         }
     }
 

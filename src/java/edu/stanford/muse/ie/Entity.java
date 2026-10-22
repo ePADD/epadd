@@ -330,7 +330,7 @@ public class Entity extends EntityFeature {
 			//			System.out.println("hits for: " + q + " = " + docs.size());
 			//checkIndex1(archive, true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 		}
 		String content = "Abraham Lincoln, Somnath\nChandra Bose, Helooiuh, Hhayi JJh, Jfhg. \nThanks, \nBob";
 		//		Set<Set<String>> els = getEntityListings(content);

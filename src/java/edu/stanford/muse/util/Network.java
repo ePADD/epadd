@@ -23,7 +23,7 @@ public class Network {
             br.close();
             return html;
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e);
             return null;
         }
     }

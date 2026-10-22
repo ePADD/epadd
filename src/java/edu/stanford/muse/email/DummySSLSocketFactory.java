@@ -35,7 +35,7 @@ class DummySSLSocketFactory extends SSLSocketFactory {
       factory = ( SSLSocketFactory) sslcontext.getSocketFactory();
       */
     } catch( Exception ex) {
-      ex.printStackTrace();
+      edu.stanford.muse.util.Util.print_exception(ex);
     }
   }
   public static SocketFactory getDefault() {

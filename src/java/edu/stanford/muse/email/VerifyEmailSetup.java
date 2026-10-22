@@ -26,8 +26,6 @@ import javax.mail.Session;
 import javax.mail.Store;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 

@@ -14,8 +14,6 @@ import opennlp.tools.util.featuregen.FeatureGeneratorUtil;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,7 +118,7 @@ public class SequenceModel implements NERModel, Serializable {
                 ffw.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
     }
 
@@ -1016,7 +1014,7 @@ public class SequenceModel implements NERModel, Serializable {
                 pageLengths.get(lc).put(redirect, pageLen);
             }
         }catch(IOException e){
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         return pageLengths;
     }
@@ -1074,7 +1072,7 @@ public class SequenceModel implements NERModel, Serializable {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         return result;
     }
@@ -1198,7 +1196,7 @@ public class SequenceModel implements NERModel, Serializable {
             model.writeModel(Config.SETTINGS_DIR+File.separator+ MODEL_FILENAME);
         } catch(IOException e){
             log.warn("Unable to write model to disk");
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         long et = System.currentTimeMillis();
         log.info("Trained and dumped model in "+((et-st)/60000)+" minutes.");
@@ -1210,7 +1208,7 @@ public class SequenceModel implements NERModel, Serializable {
             try {
                 fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));
             } catch (Exception e) {
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
         }
         System.err.println("Loading model...");
@@ -1267,7 +1265,7 @@ public class SequenceModel implements NERModel, Serializable {
                 try {
                     fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Util.print_exception(e, log);
                 }
             }
             System.err.println("Loading model...");

@@ -20,8 +20,6 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -77,7 +75,7 @@ public class ImapPopEmailStore extends EmailStore {
 			mstoreProps.put("mail.imaps.ssl.socketFactory", socketFactory);
 		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.print_exception(e, log);
 		}
 	//	mstoreProps.put("mail.debug", "true");
 	}

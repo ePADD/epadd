@@ -88,7 +88,7 @@ public class WikiGeoApi {
 			lon = Double.parseDouble(lons);
 		} catch (Exception e) {
 			System.err.println("Exception while parsing: " + lat + ", " + lon);
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 		}
 		List<Pair<String, Double>> pairs = new ArrayList<>();
 		if (wa != null && wa.query != null && wa.query.pages != null && wa.query.pages != null) {

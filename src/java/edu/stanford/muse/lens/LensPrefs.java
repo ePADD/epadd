@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.util.Util;
 
 /** class to keep track of browser preferences of highlighted terms. 

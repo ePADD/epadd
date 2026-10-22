@@ -43,8 +43,6 @@ import java.net.UnknownHostException;
 import java.util.*;
 import java.util.function.Consumer;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /** important class -- this is the primary class used by clients to fetch email with muse.
  * fetches email from multiple accounts.
@@ -705,7 +703,7 @@ public class MuseEmailFetcher {
 		try {
 			mf.addEmailStore(new MboxEmailStore("","Koch-test","/Volumes/LaCie/ePADD Data/koch email"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Util.print_exception(e, log);
 		}
 		mf.setupFetchers(1);
 	}*/

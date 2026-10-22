@@ -5,8 +5,6 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -140,7 +138,7 @@ public class DBpediaTypeParser {
             }
             lnr.close();
         }catch(Exception e){
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
         Set<String> allTypes = new LinkedHashSet<>();
         allTypes.addAll(ontology.keySet());

@@ -267,7 +267,7 @@ public class EnglishNumberAnalyzer extends StopwordAnalyzerBase{
 			stream.close();
 			analyzer.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 		}
 	}
 }*/

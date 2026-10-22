@@ -32,8 +32,6 @@ import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeComparator;
@@ -613,7 +611,7 @@ if (!onlyHeaders)
                 for (byte by : encodedBytes)
                     mbox.print((char) by);
             } catch (Exception e) {
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
 
         }
@@ -626,7 +624,7 @@ if (!onlyHeaders)
             OutputStream encodedOut = MimeUtility.encode(baos, "quoted-printable");
             encodedOut.write(contents.getBytes(StandardCharsets.UTF_8));
         } catch (IOException | MessagingException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
 
         }
         String encoded = baos.toString();
@@ -1594,7 +1592,7 @@ if (!onlyHeaders)
             }
             lnr.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
         log.info("Read " + dbpedia.size() + " names from DBpedia, " + numPersons + " people name. dropped: " + d);

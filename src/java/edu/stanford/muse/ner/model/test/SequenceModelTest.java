@@ -14,8 +14,6 @@ import opennlp.tools.formats.Conll03NameSampleStream;
 import opennlp.tools.namefind.NameSample;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;import org.junit.Test;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -327,7 +325,7 @@ public class SequenceModelTest {
             stats.numWrongType = wrongType.size();
             log.info(stats.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
         return stats;
     }
@@ -489,7 +487,7 @@ public class SequenceModelTest {
                     System.setOut(def);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                edu.stanford.muse.util.Util.print_exception(e, log);
             }
         }
         SequenceModel.MODEL_FILENAME = oldName;
@@ -653,7 +651,7 @@ public class SequenceModelTest {
             oos.writeObject(trainTest);
             oos.close();
         }catch(IOException e){
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
     }
 
@@ -665,7 +663,7 @@ public class SequenceModelTest {
             ois.close();
             return model;
         } catch (Exception e) {
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
             return null;
         }
     }
@@ -687,7 +685,7 @@ public class SequenceModelTest {
             }
             testOnDBpedia(model,trainTestSplit.second);
         } catch(IOException e){
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
     }
 

@@ -19,8 +19,6 @@ package edu.stanford.muse.index;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;

@@ -7,8 +7,6 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,7 +64,7 @@ public class EnglishDictionary {
                 }
             }catch(Exception e){
                 log.warn("Cannot read file: "+dictStatsFile);
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
             return dictStats;
         }
@@ -267,7 +265,7 @@ public class EnglishDictionary {
             }
         }catch(IOException e){
             log.warn("Cannot read file: "+abbFile);
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
         return abbDict;
     }

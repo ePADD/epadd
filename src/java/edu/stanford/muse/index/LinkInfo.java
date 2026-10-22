@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.util.*;
 
 public class LinkInfo implements Serializable {
-	// private static Log log = LogFactory.getLog(LinkInfo.class);
 
 private static final long serialVersionUID = 1L;
 

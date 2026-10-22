@@ -138,8 +138,9 @@ public class Log4JUtils {
 					.addComponent(triggeringPolicy);
 			builder.add(appenderBuilder);
 
-			//All level messages will be written to stdout and filename
-			builder.add(builder.newRootLogger( org.apache.logging.log4j.Level.ALL).
+			//All level messages from ePADD will be written to stdout and filename; third-party libraries (Tika, POI, ...) log at INFO and above
+			builder.add(builder.newLogger("edu.stanford", org.apache.logging.log4j.Level.ALL));
+			builder.add(builder.newRootLogger( org.apache.logging.log4j.Level.INFO).
 					add(builder.newAppenderRef("Stdout")).
 					add(builder.newAppenderRef("rollingAll").addAttribute("level", org.apache.logging.log4j.Level.ALL)).
 					add(builder.newAppenderRef("rollingWarning").addAttribute("level", org.apache.logging.log4j.Level.WARN)));

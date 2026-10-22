@@ -22,8 +22,6 @@ import edu.stanford.muse.webapp.JSPHelper;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.CharArraySet;
@@ -101,7 +99,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			priorProbablity = Double.parseDouble(doc.get(PP));
 		} catch (Exception e) {
 			System.err.println("Couldn't parse type:" + doc.get(TYPE) + ", pp: " + doc.get(PP));
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 		}
 		Gson gson = new Gson();
 		String ce = doc.get(CES);
@@ -112,7 +110,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			this.cooccuringEntities = gson.fromJson(ce, mapT);
 			this.emailAddresses = gson.fromJson(ea, mapT);
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 			log.warn("Parsing emailaddresses: " + ea);
 			log.warn("Parsing ce's: " + ce);
 			log.warn("Exception while reading: context back for id: " + doc.get(ID));
@@ -319,7 +317,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			iwc.setOpenMode(OpenMode.CREATE);
 			w = new IndexWriter(index, iwc);
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 		}
 		if (w == null) {
 			log.warn("Couldn't open index files... exiting.");
@@ -347,7 +345,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 				c++;
 			} catch (Exception e) {
 				log.warn("Exception while writing/closing (to) index");
-				e.printStackTrace();
+				edu.stanford.muse.util.Util.print_exception(e, log);
 				return false;
 			}
 		}
@@ -355,7 +353,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			w.close();
 			log.warn("Done closing index files.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 			return false;
 		}
 		return true;
@@ -516,7 +514,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 				reader = DirectoryReader.open(FSDirectory.open(new File(iDir).toPath()));
 				searcher = new IndexSearcher(reader);
 			} catch (Exception e) {
-				e.printStackTrace();
+				edu.stanford.muse.util.Util.print_exception(e, log);
 			}
 
 		try {
@@ -533,7 +531,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			}
 		} catch (IOException e) {
 			log.warn("Couldn't find/read index files.");
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 			return null;
 		}
 	}
@@ -546,7 +544,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 				reader = DirectoryReader.open(FSDirectory.open(new File(iDir).toPath()));
 				searcher = new IndexSearcher(reader);
 			} catch (Exception e) {
-				e.printStackTrace();
+				edu.stanford.muse.util.Util.print_exception(e, log);
 			}
 		name = IndexUtils.canonicalizeEntity(name);
 		if (name == null) {
@@ -578,7 +576,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			return efs;
 		} catch (IOException e) {
 			log.warn("Couldn't find/read index files.");
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 			return null;
 		}
 	}
@@ -632,7 +630,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			return efs;
 		} catch (IOException e) {
 			log.info("Couldn't find/read index files.");
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 			return null;
 		}
 	}
@@ -644,7 +642,7 @@ public class EntityFeature implements StatusProvider, Serializable {
 			String aFile = System.getProperty("user.home") + File.separator + "epadd-appraisal" + File.separator + "user";
 			archive = ArchiveReaderWriter.readArchiveIfPresent(aFile);
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e, log);
 		}
 		Set<EntityFeature> efts = EntityFeature.getMatches("florida", archive); //getAbbreviations("HPC", archive);
 		long end_time = System.currentTimeMillis();
@@ -663,7 +661,7 @@ public class EntityFeature implements StatusProvider, Serializable {
                 }
             }
         }catch(Exception e){
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e, log);
         }
 	}
 

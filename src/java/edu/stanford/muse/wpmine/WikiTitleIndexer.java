@@ -119,7 +119,7 @@ public class WikiTitleIndexer {
             }
             lnr.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e);
         }
         return redirects;
     }
@@ -245,7 +245,7 @@ public class WikiTitleIndexer {
             lnr.close();
             fw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e);
         }
     }
 

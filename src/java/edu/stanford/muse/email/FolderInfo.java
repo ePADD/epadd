@@ -23,8 +23,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.util.Date;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 
 /** little holder object for folder info in folder cache.

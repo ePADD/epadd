@@ -6,8 +6,6 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;

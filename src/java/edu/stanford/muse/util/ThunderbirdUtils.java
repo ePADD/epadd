@@ -17,8 +17,6 @@ package edu.stanford.muse.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;

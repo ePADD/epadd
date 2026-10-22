@@ -10,8 +10,6 @@ import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 
@@ -229,7 +227,7 @@ public class CorrespondentAuthorityMapper extends AuthorityMapper implements   j
             pw.close();
         } catch(Exception e){
             Util.print_exception ("Error exporting authorities", e, log);
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
     }
 

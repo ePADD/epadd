@@ -17,8 +17,6 @@ package edu.stanford.muse.email;
 
 import edu.stanford.muse.util.Pair;
 import edu.stanford.muse.util.Util;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTimeComparator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

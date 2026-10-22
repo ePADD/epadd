@@ -129,7 +129,7 @@ public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
 					result.add(mm);
 					//    Contents.getContents(mm, i);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Util.print_exception(e);
 				}
 			} 
 		}

@@ -1008,7 +1008,7 @@ public class EmailFetcherThread implements Runnable, Serializable {
                 } catch (IOException ioe) {
                     success = false;
                     dataErrors.add("WARNING: Unable to fetch attachment: filename: " + filename + " size = " + p.getSize() + " subject: " + m.getSubject() + " Date : " + m.getSentDate().toString() + "\nException: " + ioe);
-                    ioe.printStackTrace(System.out);
+                    Util.print_exception(ioe, log);
                 }
             }
 

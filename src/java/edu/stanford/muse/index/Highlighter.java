@@ -8,8 +8,6 @@ import edu.stanford.muse.webapp.ModeConfig;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -350,7 +348,7 @@ class Highlighter {
                 result = highlight(result, term, preTag, postTag);
             } catch (IOException | InvalidTokenOffsetsException e) {
                 Util.print_exception("Exception while adding html annotation: " + ann.first, e, log);
-                e.printStackTrace();
+                Util.print_exception(e, log);
             }
         }
         //do some line breaking and show overflow.
@@ -580,7 +578,7 @@ String archiveID = ArchiveReaderWriter.getArchiveIDForArchive(archive);
             //System.out.println("Highlighted content: " + str);
             //getHTMLAnnotatedDocumentContents("", new Date(), "", false, new LinkedHashSet<>(Arrays.asList("Robert Creeley")), null, new LinkedHashSet<>(Arrays.asList("Charles", "Susan Howe", "Betty", "Charles Bernstein", "Carl Dennis", "Joseph Conte", "Bob Creeley", "Residence", "Uday", "LWOP", "U Penn", "Joseph", "Betty Capaldi", "Capen Chair")), false);
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
     }
 }

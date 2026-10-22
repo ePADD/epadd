@@ -16,8 +16,6 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import edu.stanford.muse.index.IndexUtils;
 import edu.stanford.muse.index.InternTable;
 import edu.stanford.muse.index.MyTokenizer;

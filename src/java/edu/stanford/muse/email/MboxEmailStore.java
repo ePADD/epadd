@@ -24,8 +24,6 @@ import edu.stanford.muse.util.Util;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import javax.mail.*;
 import java.io.*;
 import java.util.*;
@@ -307,8 +305,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 				oos.close();
 			} catch (Exception e)
 			{
-				log.warn ("Error trying to read cache file: " + e);
-				e.printStackTrace(System.err);
+				log.warn ("Error trying to read cache file", e);
 			}
 		}
 
@@ -343,8 +340,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 				oos.close();
 			} catch (IOException ioe)
 			{
-				log.warn ("Error trying to write cache file: " + ioe);
-				ioe.printStackTrace(System.err);
+				log.warn ("Error trying to write cache file", ioe);
 			}
 		}
 	}

@@ -7,8 +7,6 @@ package edu.stanford.muse.ie;
 import edu.stanford.muse.index.EmailDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 

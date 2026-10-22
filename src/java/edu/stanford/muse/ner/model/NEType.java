@@ -2,8 +2,6 @@ package edu.stanford.muse.ner.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;

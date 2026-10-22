@@ -94,7 +94,7 @@ class WPReader {
             saxParser.parse(new File(argv[0]), handler);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            edu.stanford.muse.util.Util.print_exception(e);
         }
         pageLenStream.close();
         equivsStream.close();

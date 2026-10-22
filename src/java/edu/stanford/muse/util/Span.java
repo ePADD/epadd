@@ -2,8 +2,6 @@ package edu.stanford.muse.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 /**
  * Created by vihari on 24/02/16.
  * Similar in spirit to opennlp.tools.util
@@ -142,7 +140,7 @@ public class Span implements java.io.Serializable {
                 fos.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             System.err.println("Exception writing span");
         }
 
@@ -168,7 +166,7 @@ public class Span implements java.io.Serializable {
                         }
                         br.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Util.print_exception(e, log);
                     }
                 } else if (fldrN.endsWith("ser" + sep)) {
                     try {
@@ -181,7 +179,7 @@ public class Span implements java.io.Serializable {
                         timeParse += System.nanoTime() - st;
                         ois.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Util.print_exception(e, log);
                     }
                 } else if (fldrN.endsWith("ser.gz" + sep)) {
                     try {
@@ -197,7 +195,7 @@ public class Span implements java.io.Serializable {
                         timeParse += System.nanoTime() - st;
                         ois.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Util.print_exception(e, log);
                     }
                 }
             }

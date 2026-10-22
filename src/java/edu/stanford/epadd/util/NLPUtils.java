@@ -13,7 +13,7 @@ public class NLPUtils {
 		try {
 			model = new SentenceModel(SentStream);
 		} catch (Exception e) {
-			e.printStackTrace();
+			edu.stanford.muse.util.Util.print_exception(e);
 			System.err.println("Exception in init'ing sentence model");
 		}
 		sentenceDetector = new SentenceDetectorME(model);

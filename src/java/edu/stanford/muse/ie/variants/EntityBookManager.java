@@ -10,8 +10,6 @@ import edu.stanford.muse.util.Util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;import org.apache.poi.util.ArrayUtil;
 
 import java.io.*;
 import java.util.*;
@@ -178,7 +176,7 @@ individual type entitybook (which involves expensive operation of lucene search 
                     //instead of that after finishing reading the individual entity books (from file) do recalculation of cache together.
                     filledFromFiles=true;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Util.print_exception(e, log);
                 }
             }else{
                 //fill it from lucene.
@@ -261,7 +259,7 @@ individual type entitybook (which involves expensive operation of lucene search 
             ebook.writeObjectToStream(bw);
             bw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
         }
 
     }
@@ -416,7 +414,7 @@ individual type entitybook (which involves expensive operation of lucene search 
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.print_exception(e, log);
             Util.print_exception("Unable to initialize the entitybook with different entity information",e,log);
         }
 
