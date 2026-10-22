@@ -77,7 +77,6 @@ public class Log4JUtils {
             // write a line so we can distinguish a new run in the log file
             String line = "__________________________________________________________________________________________________________________________________________________________________________ ";
             String message = line + "\n" + " Fresh deployment of ePADD started\n" + line;
-            System.out.println(message);
             log.info (message);
             log.warn (message);
 
@@ -85,7 +84,6 @@ public class Log4JUtils {
             System.out.println(message);
 
             message = "Warning messages will also be recorded in " + WARNINGS_LOG_FILE;
-            System.out.println(message);
             log.info (message);
             log.warn ("Warnings being logged to " + LOG_FILE);
         } catch (Exception e) { Util.print_exception(e);}
@@ -140,6 +138,7 @@ public class Log4JUtils {
 
 			//All level messages from ePADD will be written to stdout and filename; third-party libraries (Tika, POI, ...) log at INFO and above
 			builder.add(builder.newLogger("edu.stanford", org.apache.logging.log4j.Level.ALL));
+			builder.add(builder.newLogger("net.sf.ehcache", org.apache.logging.log4j.Level.OFF));
 			builder.add(builder.newRootLogger( org.apache.logging.log4j.Level.INFO).
 					add(builder.newAppenderRef("Stdout")).
 					add(builder.newAppenderRef("rollingAll").addAttribute("level", org.apache.logging.log4j.Level.ALL)).

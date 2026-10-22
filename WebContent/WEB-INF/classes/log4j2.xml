@@ -6,12 +6,8 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.opensymphony.xwork2" level="INFO"/>
-        <Logger name="freemarker.cache" level="INFO"/>
-        <Logger name="org.apache.struts2" level="INFO"/>
-        <Logger name="org.apache.xml.security" level="INFO"/>
-        <Logger name="org.apache.commons.httpclient" level="INFO"/>
-        <Logger name="org.mortbay.log" level="INFO"/>
+        <!-- used until Log4JUtils.initialize() sets up the log files; keep the levels in sync with it -->
+        <Logger name="edu.stanford" level="ALL"/>
         <Logger name="net.sf.ehcache" level="OFF"/>
         <Root level="INFO">
             <AppenderRef ref="Console"/>

@@ -238,11 +238,11 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 		// permanent breakpoint
 	}
 
-	// log is ignored: logging via the caller's logger lost messages (2022-09-12), so always use Util's logger.
-	// The console appender already shows the stack trace, so it is not printed to System.err as well.
+	// Logs via the caller's logger, so the log shows which class failed. Callers without a logger fall back to
+	// Util's logger, so their exceptions are not lost (2022-09-12). The console appender already shows the stack trace.
 	public static void print_exception(String message, Throwable t, Logger log)
 	{
-        Logger logger =  LogManager.getLogger( edu.stanford.muse.util.Util.class );
+        Logger logger = (log != null) ? log : LogManager.getLogger( edu.stanford.muse.util.Util.class );
         logger.error(message, t);
 	}
 

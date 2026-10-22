@@ -123,7 +123,6 @@ public class EpaddPremis implements Serializable {
             oi.close();
             fi.close();
         } catch (Exception e) {
-            System.out.println("Exception reading EpaddPremis object. " + e);
             log.warn("Exception reading EpaddPremis object. " + e);
 
             try {

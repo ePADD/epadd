@@ -139,7 +139,6 @@ public class FolderInfo implements Serializable {
 		String s;
 		if (pathOfTmpMboxFile == null)
 		{
-			System.out.println("pathOfTmpMboxFile is null in removeTmpPartOfPath");
 			log.error("pathOfTmpMboxFile is null in removeTmpPartOfPath");
 			return "";
 		}

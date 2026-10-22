@@ -416,7 +416,6 @@ public class SequenceModel implements NERModel, Serializable {
             log.info("Performing EM on: #" + mixtures.size() + " words");
             double ll = getIncompleteDataLogLikelihood();
             log.info("Start Data Log Likelihood: " + ll);
-            System.out.println("Start Data Log Likelihood: " + ll);
             Map<String, MU> revisedMixtures = new LinkedHashMap<>();
             int N = gazettes.size();
             int wi;
