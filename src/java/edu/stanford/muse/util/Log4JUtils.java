@@ -19,14 +19,10 @@ package edu.stanford.muse.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.*;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import java.io.File;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class Log4JUtils {
     private static final Logger log = LogManager.getLogger(Log4JUtils.class);
@@ -94,18 +90,6 @@ public class Log4JUtils {
             log.warn ("Warnings being logged to " + LOG_FILE);
         } catch (Exception e) { Util.print_exception(e);}
 
-    	// now rename, truncate or create the actual log file
-		//Not used for now.
-		/*try {
-			String ENTITY_LOG_FILE = LOG_FILE + ".entityExtractor.log";
-			addLogFileAppenderForPackage("edu.stanford.muse.ner.EntityExtractionManager",	ENTITY_LOG_FILE);
-
-			// write a line so we can distinguish a new run in the log file
-			String message = "Entity log messages will be recorded in " + ENTITY_LOG_FILE;
-			System.out.println(message);
-			log.info (message);
-		} catch (Exception e) { Util.print_exception(e);}*/
-
 		initialized = true;
 	}
 
@@ -117,7 +101,6 @@ public class Log4JUtils {
 		try{
 			ConfigurationBuilder<BuiltConfiguration> builder =
 					ConfigurationBuilderFactory.newConfigurationBuilder();
-			//Configurator.initialize(builder.build());
 			builder.setConfigurationName("RollingBuilder");
 			LayoutComponentBuilder layoutBuilder = builder.newLayout("PatternLayout")
 					.addAttribute("pattern", "%d{dd MMM HH:mm:ss} %c{1} %-5p - %m%n");
@@ -164,8 +147,6 @@ public class Log4JUtils {
 			builder.add(builder.newLogger("edu.stanford.muse.ner.model.NBModel",org.apache.logging.log4j.Level.ALL).
 					add(builder.newAppenderRef("entityRecognition").addAttribute("level",org.apache.logging.log4j.Level.ALL))
 					);
-					//addAttribute("additivity",false));
-			//addAttribute("additivity", false));
 			LoggerContext lc = (LoggerContext) LogManager.getContext(false);
 			lc.setConfiguration(builder.build());
 			lc.updateLoggers();
@@ -175,108 +156,4 @@ public class Log4JUtils {
  	        System.err.println("Failed creating log appender in " + filename);
  	    }
 	}
-
-	/** adds a new file appender to the root logger. expects root logger to have at least a console appender from which it borrows the layout */
-	private static void addLogFileAppenderForPackage(String packagename, String filename) {
-		try
-		{
-
-				ConfigurationBuilder<BuiltConfiguration> builder =
-						ConfigurationBuilderFactory.newConfigurationBuilder();
-				//Configurator.initialize(builder.build());
-				builder.setConfigurationName("RollingBuilderEntities");
-				LayoutComponentBuilder layoutBuilder = builder.newLayout("PatternLayout")
-						.addAttribute("pattern", "%d{dd MMM HH:mm:ss.SSS} %c{1} %-5p - %m%n");
-
-
-				//Console
-				AppenderComponentBuilder appenderBuilder = builder.newAppender("StdoutEntities", "CONSOLE").addAttribute("target",
-						org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_OUT);
-
-				appenderBuilder.add(layoutBuilder);
-				builder.add(appenderBuilder);
-				//file = all
-				ComponentBuilder triggeringPolicy = builder.newComponent("Policies")
-						.addComponent(builder.newComponent("CronTriggeringPolicy").addAttribute("schedule", "0 0 0 * * ?"))
-						.addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "100M"));
-				appenderBuilder = builder.newAppender("rollingAllEntities", "RollingFile")
-						.addAttribute("fileName", filename)
-						.addAttribute("filePattern", filename+"-%d{MM-dd-yy}.log.gz")
-						.add(layoutBuilder)
-						.addComponent(triggeringPolicy);
-				builder.add(appenderBuilder);
-
-
-				//All level messages will be written to stdout and filename
-				builder.add(builder.newLogger(packagename, org.apache.logging.log4j.Level.ALL).
-						add(builder.newAppenderRef("StdoutEntities")).
-						add(builder.newAppenderRef("rollingAllEntities")));
-				//addAttribute("additivity", false));
-			LoggerContext lc = Configurator.initialize(builder.build());
-			//We need to shutdown it sometime to stop the already running context.
-			//Configurator.shutdown(lc);
-			//lc = Configurator.initialize(builder.build());
-			//lc.start();
-
-		} catch (Exception e) {
-			log.error("Failed creating log appender in " + filename);
-			System.err.println("Failed creating log appender in " + filename);
-		}
-	}
- 	/*public static void setLoggingLevel (Logger logger, String level)
- 	{
- 		if ("debug".equalsIgnoreCase(level))
-	    	logger.setLevel(Level.DEBUG);
-	    else if ("info".equalsIgnoreCase(level))
-	    	logger.setLevel(Level.INFO);
-	    else if ("warn".equalsIgnoreCase(level))
-	    	logger.setLevel(Level.WARN);
-	    else if ("error".equalsIgnoreCase(level))
-	    	logger.setLevel(Level.ERROR);
-	    else if ("trace".equalsIgnoreCase(level))
-	    	logger.setLevel(Level.TRACE);
-	    else
-	    	log.warn ("Unknown logging level: for " + logger + " to " + level);
-
- 		log.info ("Effective logging level for " + logger.getName() + " is " + logger.getEffectiveLevel());
-	}
-*/
- 	/** taken from: http://stackoverflow.com/questions/3060240/how-do-you-flush-a-buffered-log4j-fileappender */
- 	/*public static void flushAllLogs()
- 	{
- 	    try
- 	    {
- 	        Set<FileAppender> flushedFileAppenders = new LinkedHashSet<>();
- 	        Enumeration currentLoggers = LogManager.getLoggerRepository().getCurrentLoggers();
- 	        while (currentLoggers.hasMoreElements())
- 	        {
- 	            Object nextLogger = currentLoggers.nextElement();
- 	            if (nextLogger instanceof Logger)
- 	            {
- 	                Logger currentLogger = (Logger) nextLogger;
- 	                Enumeration allAppenders = currentLogger.getAllAppenders();
- 	                while(allAppenders.hasMoreElements())
- 	                {
- 	                    Object nextElement = allAppenders.nextElement();
- 	                    if(nextElement instanceof FileAppender)
- 	                    {
- 	                        FileAppender fileAppender = (FileAppender) nextElement;
- 	                        if(!flushedFileAppenders.contains(fileAppender) && !fileAppender.getImmediateFlush())
- 	                        {
- 	                            flushedFileAppenders.add(fileAppender);
- 	                            //log.info("Appender "+fileAppender.getName()+" is not doing immediateFlush ");
- 	                            fileAppender.setImmediateFlush(true);
- 	                            currentLogger.info("Flushing appender: " + fileAppender.getName() + "\n" + fileAppender);
- 	                            fileAppender.setImmediateFlush(false);
- 	                        }
- 	                    }
- 	                }
- 	            }
- 	        }
- 	    }
- 	    catch(RuntimeException e)
- 	    {
- 	        log.error("Failed flushing logs", e);
- 	    }
- 	}*/
 }

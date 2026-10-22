@@ -105,52 +105,7 @@
           <version>2.0.1</version>
         </dependency>-->
 
-        <!-- <dependency>
-           <groupId>log4j</groupId>
-           <artifactId>log4j</artifactId>
-           <version>1.2.16</version>
-         </dependency>
-
-         <dependency>
-           <groupId>org.slf4j</groupId>
-           <artifactId>slf4j-log4j12</artifactId>
-           <version>1.7.5</version>
-         </dependency>-->
-        <!--dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.10.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.10.0</version>
-        </dependency-->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-web</artifactId>
-            <version>2.18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-taglib</artifactId>
-            <version>2.18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-            <version>2.19.0</version>
-        </dependency>
+        <!-- logging dependencies are inherited from pom-common.xml -->
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
@@ -165,11 +120,6 @@
             <groupId>edu.stanford.ejalbert</groupId>
             <artifactId>BrowserLauncher2</artifactId>
             <version>1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -251,21 +201,6 @@
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.4.5</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.5</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.beetstra.jutf7/jutf7 -->
         <dependency>
             <groupId>com.beetstra.jutf7</groupId>
@@ -314,12 +249,6 @@
             <version>1.10.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
-        </dependency>
 
 
 
