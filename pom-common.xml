@@ -399,7 +399,10 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <!-- 4.12 is the oldest version current Surefire releases accept, and
+                 4.13.1 fixes CVE-2020-15250, where TemporaryFolder left test data
+                 readable to other users on the machine. -->
+            <version>4.13.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.simplejavamail/simple-java-mail -->
         <dependency>
@@ -441,6 +444,30 @@
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/java</sourceDirectory>
+        <pluginManagement>
+            <plugins>
+                <!-- Pinned because Maven otherwise supplies whichever Surefire its
+                     own version happens to bind, so the tests ran under 3.2.5,
+                     3.5.4 or 3.6.0 depending on the machine, and those versions
+                     disagree about which JUnit releases they still support. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <!-- The mbox "From " separator line carries no timezone, so
+                             the exporter writes it in the timezone the JVM runs in,
+                             and the preservation round trip fixtures spell that line
+                             out as the UTC rendering of their own Date header. The
+                             timezone has to be set before the JVM starts, because
+                             javamail caches a date formatter the first time a message
+                             is parsed, which happens in whichever test class runs
+                             first. -->
+                        <argLine>-Duser.timezone=UTC</argLine>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
         </plugins>
 
