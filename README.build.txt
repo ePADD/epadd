@@ -49,3 +49,11 @@ muse-icon.png
 
 Running TomcatMain as the main class with the VM argument -splash:lib/splash-image.png will give exactly the same behaviour as running epadd-standalone.jar
 
+
+Automated builds:
+
+Every pull request is built and tested on Linux, Windows and both macOS
+architectures by GitHub Actions, and pushing a semantic version tag such as
+v11.1.4 publishes a release with the installers for all of them. The steps above
+remain the way to build by hand; see doc/ci.md for how the automation works,
+how to cut a release and which secrets the code signing needs.
