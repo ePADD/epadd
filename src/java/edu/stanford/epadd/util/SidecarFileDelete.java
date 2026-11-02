@@ -10,9 +10,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.json.JSONObject;
-import org.apache.commons.io.FileUtils;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.Util;
@@ -45,31 +48,26 @@ public class SidecarFileDelete extends HttpServlet {
         if (archive != null) sidecarDir = archive.getSidecarDir();
         
         String afile = request.getParameter("file");
-        if (afile.equals("")) {
-            jsonReason = "Empty input";            
-        }  else {
-//          afile = afile.replaceAll("\\/", "/");
-//          afile = afile.replaceAll("\\\\", "/");
+        if (afile == null || afile.equals("")) {
+            jsonReason = "Empty input";
+        } else if (archive == null) {
+            // without the archive the checksums could not be updated, so don't delete anything
+            jsonReason = "Collection is not loaded";
+        } else {
+          Path file = sidecarFile(sidecarDir, afile);
 
-  	  java.io.File file = FileUtils.getFile(sidecarDir + File.separator + afile);
-        
-          if(file.exists()) {
+          if (file != null) {
             try {
-                file.delete();
-                if (archive!=null) {
-                    archive.updateFileInBag(sidecarDir, archive.baseDir);
-                    jsonResult = "ok";
-                    jsonReason = "File is deleted";
-                }
-                else {
-                    jsonReason = "Failed in updating Checksum";
-                }
+                Files.delete(file);
+                archive.updateFileInBag(sidecarDir, archive.baseDir);
+                jsonResult = "ok";
+                jsonReason = "File is deleted";
             } catch (Exception e1) {
                 jsonReason = e1.getMessage();
-            } 
+            }
           } else {
             jsonReason = "File not found";
-          }            
+          }
         }
 
         json.put("result", jsonResult);
@@ -84,6 +82,23 @@ public class SidecarFileDelete extends HttpServlet {
 //            e.printStackTrace();
             Util.print_exception("SidecarFileDelete", e, JSPHelper.log);
         }
+    }
+
+    /**
+     * Returns the sidecar file with the given name, or null if there is none. Only regular files directly in
+     * sidecarDir are returned, so that names like "../blobs/x" cannot be used to delete other files of the archive.
+     */
+    static Path sidecarFile(String sidecarDir, String name) {
+        Path dir = Paths.get(sidecarDir).toAbsolutePath().normalize();
+        Path file;
+        try {
+            file = dir.resolve(name).normalize();
+        } catch (InvalidPathException e) {
+            return null;
+        }
+        if (!dir.equals(file.getParent()) || !Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS))
+            return null;
+        return file;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

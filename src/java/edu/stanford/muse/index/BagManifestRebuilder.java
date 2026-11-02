@@ -27,9 +27,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Recreates the BagIt tag files (bagit.txt, bag-info.txt, payload and tag manifests) of an archive whose
@@ -40,14 +45,101 @@ import java.util.Map;
  * the second move failed (locked file, full disk, filename invalid on Windows) the archive was left in a temp
  * folder. Here, the new tag files are written to a staging folder first and then swapped with the old ones;
  * if the swap fails, the old tag files are restored.
+ *
+ * update does the same for a single changed file or directory, keeping the checksums of all other files. Rebuilds
+ * and updates of the same bag are serialised.
  */
 public final class BagManifestRebuilder {
     private static final Logger log = LogManager.getLogger(BagManifestRebuilder.class);
+    private static final ConcurrentMap<Path, Object> LOCKS = new ConcurrentHashMap<>();
 
     private BagManifestRebuilder() {
     }
 
     public static Bag rebuild(Path bagRoot, Collection<? extends SupportedAlgorithm> algorithms, boolean includeHiddenFiles) throws IOException, NoSuchAlgorithmException {
+        synchronized (lockFor(bagRoot)) {
+            return rebuildLocked(bagRoot, algorithms, includeHiddenFiles);
+        }
+    }
+
+    /**
+     * Updates the checksums of one file or directory in the bag, e.g. after a session file was saved. Entries for
+     * files below fileOrDirectory that no longer exist are removed. The tag files are replaced the same way as in
+     * rebuild, so on failure the bag on disk and the given Bag object are left unchanged.
+     */
+    public static void update(Bag bag, Path fileOrDirectory, boolean includeHiddenFiles) throws IOException, NoSuchAlgorithmException {
+        Path bagRoot = bag.getRootDir().toAbsolutePath().normalize();
+        synchronized (lockFor(bagRoot)) {
+            Path changed = fileOrDirectory.toAbsolutePath().normalize();
+            Path dataDir = bagRoot.resolve(Archive.BAG_DATA_FOLDER);
+            if (!Files.isDirectory(dataDir))
+                throw new IOException("Cannot update bag, payload directory is missing: " + dataDir);
+
+            // work on copies so that the Bag object is only changed once the new tag files are in place
+            List<SupportedAlgorithm> algorithms = new ArrayList<>();
+            Map<Manifest, MessageDigest> payloadManifests = new HashMap<>();
+            for (Manifest old : bag.getPayLoadManifests()) {
+                Map<Path, String> kept = new HashMap<>();
+                old.getFileToChecksumMap().forEach((file, checksum) -> {
+                    Path f = file.toAbsolutePath().normalize();
+                    if (!f.startsWith(changed))
+                        kept.put(f, checksum);
+                });
+                Manifest manifest = new Manifest(old.getAlgorithm());
+                manifest.setFileToChecksumMap(kept);
+                payloadManifests.put(manifest, MessageDigest.getInstance(old.getAlgorithm().getMessageDigestName()));
+                algorithms.add(old.getAlgorithm());
+            }
+            if (Files.exists(changed))
+                Files.walkFileTree(changed, new CreatePayloadManifestsVistor(payloadManifests, includeHiddenFiles));
+            Set<Manifest> newPayloadManifests = new HashSet<>(payloadManifests.keySet());
+
+            Metadata metadata = new Metadata();
+            if (bag.getMetadata() != null)
+                metadata.addAll(bag.getMetadata().getAll());
+            metadata.upsertPayloadOxum(PathUtils.generatePayloadOxum(dataDir));
+            metadata.remove("Bagging-Date");
+            metadata.add("Bagging-Date", new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date()));
+
+            Set<Manifest> newTagManifests = new HashSet<>();
+            Path staging = Files.createTempDirectory(bagRoot, "bag-update-");
+            try {
+                BagitFileWriter.writeBagitFile(bag.getVersion(), bag.getFileEncoding(), staging);
+                ManifestWriter.writePayloadManifests(newPayloadManifests, staging, bagRoot, bag.getFileEncoding());
+                MetadataWriter.writeBagMetadata(metadata, bag.getVersion(), staging, bag.getFileEncoding());
+
+                Map<Manifest, MessageDigest> tagManifests = Hasher.createManifestToMessageDigestMap(algorithms);
+                Files.walkFileTree(staging, new CreateTagManifestsVistor(tagManifests, includeHiddenFiles));
+                ManifestWriter.writeTagManifests(tagManifests.keySet(), staging, staging, bag.getFileEncoding());
+
+                // the tag manifests refer to the files in staging; point them at the files' final location
+                for (Manifest staged : tagManifests.keySet()) {
+                    Map<Path, String> moved = new HashMap<>();
+                    staged.getFileToChecksumMap().forEach((file, checksum) -> moved.put(bagRoot.resolve(staging.relativize(file)), checksum));
+                    Manifest manifest = new Manifest(staged.getAlgorithm());
+                    manifest.setFileToChecksumMap(moved);
+                    newTagManifests.add(manifest);
+                }
+
+                replaceTagFiles(bagRoot, staging);
+            } finally {
+                FileUtils.deleteQuietly(staging.toFile());
+            }
+
+            bag.getPayLoadManifests().clear();
+            bag.getPayLoadManifests().addAll(newPayloadManifests);
+            bag.getTagManifests().clear();
+            bag.getTagManifests().addAll(newTagManifests);
+            bag.setMetadata(metadata);
+        }
+    }
+
+    /** Serialises rebuilds and updates of the same bag, which would otherwise overwrite each other's tag files. */
+    private static Object lockFor(Path bagRoot) {
+        return LOCKS.computeIfAbsent(bagRoot.toAbsolutePath().normalize(), p -> new Object());
+    }
+
+    private static Bag rebuildLocked(Path bagRoot, Collection<? extends SupportedAlgorithm> algorithms, boolean includeHiddenFiles) throws IOException, NoSuchAlgorithmException {
         Path dataDir = bagRoot.resolve(Archive.BAG_DATA_FOLDER);
         if (!Files.isDirectory(dataDir))
             throw new IOException("Cannot update bag, payload directory is missing: " + dataDir);

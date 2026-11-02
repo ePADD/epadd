@@ -20,7 +20,7 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 **System Requirements**
 
 OS: Windows 10/11, Mac OS X 10.13 or later, Ubuntu 18.04 or later (64-bit)
-Memory: We recommend at least 8 GB of RAM. The maximum amount of memory ePADD can use is set by Java. When no maximum is specified, Java typically allows about a quarter of the computer's RAM. This is a limit, not a reservation: ePADD only uses as much memory as it needs. To allow more, run ePADD from the command line with the `-Xmx` option, e.g. `java -Xmx8g -jar epadd-standalone.jar` for a maximum of 8 GB.
+Memory: We recommend at least 8 GB of RAM. The maximum amount of memory ePADD can use depends on how it is started: the Windows application (.exe) allows up to 75% of the memory that is free when ePADD starts, but at least 4 GB (2 GB for the Discovery Module); the macOS application (.dmg) allows up to 64 GB; when running `epadd-standalone.jar`, Java typically allows about a quarter of the computer's RAM. These are limits, not reservations: ePADD only uses as much memory as it needs. To set the maximum yourself, run ePADD from the command line with the `-Xmx` option, e.g. `java -Xmx8g -jar epadd-standalone.jar` for a maximum of 8 GB.
 Browser: current version of Chrome or Firefox
 Java: Java Runtime Environment 11 or later required (bundled with the desktop installers).
 

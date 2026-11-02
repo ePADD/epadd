@@ -11,12 +11,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import edu.stanford.muse.Config;
 import edu.stanford.muse.index.Archive;
 import edu.stanford.muse.index.ArchiveReaderWriter;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
+import edu.stanford.muse.webapp.ModeConfig;
+import edu.stanford.muse.webapp.SimpleSessions;
 
 @WebServlet(name = "DelFolder", urlPatterns = {"/ajax/delFolder"})
 public class DelFolder extends HttpServlet {
@@ -41,27 +47,33 @@ public class DelFolder extends HttpServlet {
         Archive archive = ArchiveReaderWriter.getArchiveForArchiveID(archiveID);  
 
         String newfolder = request.getParameter("folder");
-        if (newfolder.equals("")) {
-            jsonReason = "Empty folder";            
+        if (newfolder == null || newfolder.equals("")) {
+            jsonReason = "Empty folder";
         }  else {
-          newfolder = newfolder.replaceAll("\\/", "/");
-          newfolder = newfolder.replaceAll("\\\\", "/");
+          File file = collectionFolder(newfolder, modeBaseDir());
 
-  	  java.io.File file = FileUtils.getFile(newfolder);
-        
-          if(file.exists()) {
-//	    boolean isDeleted = FileUtils.deleteQuietly( file );
+          if (file != null) {
             try {
+                // the page doesn't send the archive ID, so also look the archive up by its folder
+                if (archive == null || !file.equals(new File(archive.baseDir).getCanonicalFile())) {
+                    WeakReference<Archive> loaded = ArchiveReaderWriter.getArchiveFromGlobalArchiveMap(new File(newfolder).getAbsolutePath());
+                    if (loaded == null)
+                        loaded = ArchiveReaderWriter.getArchiveFromGlobalArchiveMap(file.getPath());
+                    archive = loaded == null ? null : loaded.get();
+                }
                 if (archive != null) {
                     archive.close();
+                    ArchiveReaderWriter.removeFromGlobalArchiveMap(archive.baseDir, archive);
                     archive = null;
                 }
-                FileUtils.deleteDirectory(file);
+                Path leftover = deleteCollection(file);
                 jsonResult = "ok";
-                jsonReason = "Collection is deleted";
+                jsonReason = leftover == null ? "Collection is deleted"
+                        : "Collection is deleted, but some of its files could not be removed from " + leftover;
             } catch (Exception e1) {
+                Util.print_exception("DelFolder", e1, JSPHelper.log);
                 jsonReason = e1.getMessage();
-            } 
+            }
           } else {
             jsonReason = "folder not found";
           }
@@ -78,6 +90,52 @@ public class DelFolder extends HttpServlet {
         } catch (Exception e) {
 //            e.printStackTrace();
             Util.print_exception("DelFolder.PrintWriter", e, JSPHelper.log);
+        }
+    }
+
+    /** The folder that holds the collections of the current mode, as on collection-detail.jsp. */
+    private static String modeBaseDir() {
+        if (ModeConfig.isProcessingMode())
+            return Config.REPO_DIR_PROCESSING;
+        if (ModeConfig.isDeliveryMode())
+            return Config.REPO_DIR_DELIVERY;
+        if (ModeConfig.isDiscoveryMode())
+            return Config.REPO_DIR_DISCOVERY;
+        return Config.REPO_DIR_APPRAISAL;
+    }
+
+    /**
+     * Returns the collection folder for the given path, or null if it is not a collection, i.e. a folder directly
+     * in modeBaseDir. This stops the servlet from deleting any other folder.
+     */
+    static File collectionFolder(String folder, String modeBaseDir) {
+        try {
+            File base = new File(modeBaseDir).getCanonicalFile();
+            File file = new File(folder).getCanonicalFile();
+            if (!file.isDirectory() || !base.equals(file.getParentFile()))
+                return null;
+            return file;
+        } catch (IOException | SecurityException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Deletes a collection folder. It is renamed first, so if a file in it is still open (Windows), nothing is
+     * deleted. Returns null, or the renamed folder if some files in it could not be deleted.
+     */
+    static Path deleteCollection(File collection) throws IOException {
+        Path dir = collection.toPath();
+        Path trash = dir.resolveSibling(dir.getFileName() + ".deleting-" + System.currentTimeMillis());
+        Files.move(dir, trash);
+        try {
+            // without its session file, a partly deleted folder is no longer listed as a collection
+            Files.deleteIfExists(trash.resolve(Archive.BAG_DATA_FOLDER).resolve(Archive.SESSIONS_SUBDIR).resolve("default" + SimpleSessions.getSessionSuffix()));
+            FileUtils.deleteDirectory(trash.toFile());
+            return null;
+        } catch (IOException e) {
+            Util.print_exception("Could not delete all files of the collection in " + trash, e, JSPHelper.log);
+            return trash;
         }
     }
 

@@ -856,6 +856,9 @@ int errortype=0;
     public void setBaseDir(String dir) {
         baseDir = dir;
         blobStore.setDir(dir + File.separator + Archive.BAG_DATA_FOLDER + File.separatorChar + BLOBS_SUBDIR );
+        // these are serialized with the archive, so point them at its current folder in case it was exported or moved
+        lexiconsDir = new File(dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + LEXICONS_SUBDIR);
+        exportableAssetsDir = new File(dir + File.separatorChar + Archive.BAG_DATA_FOLDER + File.separatorChar + Archive.EXPORTABLE_ASSETS_SUBDIR);
     }
 
     /**
@@ -1599,14 +1602,80 @@ int errortype=0;
     public synchronized String export(Collection<? extends Document> retainedDocs, ExportMode export_mode, String out_dir, String name, Consumer<StatusProvider> setStatusProvider) throws Exception {
         if (Util.nullOrEmpty(out_dir))
             return null;
-        File dir = new File(out_dir);
-        if (dir.exists() && dir.isDirectory()) {
-            log.warn("Overwriting existing directory '" + out_dir + "' (it may already exist)");
-            FileUtils.deleteDirectory(dir);
-        } else if (!dir.mkdirs()) {
-            log.warn("Unable to create directory: " + out_dir);
-            return null;
+        File dir = new File(out_dir).getAbsoluteFile();
+        checkExportTarget(dir, baseDir == null ? null : new File(baseDir));
+
+        // an existing export is only moved aside, and deleted once the new export has succeeded
+        Path previous = null;
+        if (dir.exists()) {
+            log.warn("Replacing existing export in '" + out_dir + "'");
+            previous = dir.toPath().resolveSibling(dir.getName() + ".previous-" + System.currentTimeMillis());
+            Files.move(dir.toPath(), previous);
         }
+
+        String oldBaseDir = baseDir;
+        List<Document> savedAllDocs = allDocs;
+        LabelManager oldLabelManager = getLabelManager();
+        boolean exported = false;
+        try {
+            Files.createDirectories(dir.toPath());
+            String result = exportInto(retainedDocs, export_mode, out_dir, name, setStatusProvider);
+            exported = true;
+            return result;
+        } finally {
+            if (!exported) {
+                // exportInto restores these only when it succeeds; don't leave the archive pointing at the failed export
+                setBaseDir(oldBaseDir);
+                allDocs = savedAllDocs;
+                setLabelManager(oldLabelManager);
+            }
+            finishExport(dir, previous, exported);
+        }
+    }
+
+    /**
+     * Refuses to export into the archive's own folder (or a folder containing it, or inside it), and into an
+     * existing folder that is not an earlier ePADD export, because export replaces the target folder.
+     */
+    static void checkExportTarget(File target, File archiveDir) throws IOException {
+        File t = target.getCanonicalFile();
+        if (archiveDir != null) {
+            File a = archiveDir.getCanonicalFile();
+            if (t.toPath().startsWith(a.toPath()) || a.toPath().startsWith(t.toPath()))
+                throw new IOException("Cannot export to " + target + " because it contains or is inside the archive in " + archiveDir);
+        }
+        if (!t.exists())
+            return;
+        if (!t.isDirectory())
+            throw new IOException("Cannot export to " + target + " because a file with that name exists");
+        String[] contents = t.list();
+        boolean isArchive = new File(t, "bagit.txt").isFile() || new File(t, BAG_DATA_FOLDER + File.separator + SESSIONS_SUBDIR).isDirectory();
+        if (contents != null && contents.length > 0 && !isArchive)
+            throw new IOException("Cannot export to " + target + " because the folder exists and is not an ePADD archive. Please choose a different name or folder.");
+    }
+
+    /** After a successful export, deletes the previous one; after a failed export, deletes the partial export and restores the previous one. */
+    static void finishExport(File dir, Path previous, boolean exported) {
+        if (exported) {
+            if (previous != null) {
+                try {
+                    FileUtils.deleteDirectory(previous.toFile());
+                } catch (IOException e) {
+                    log.warn("Could not delete the previous export in " + previous, e);
+                }
+            }
+            return;
+        }
+        try {
+            FileUtils.deleteDirectory(dir);
+            if (previous != null)
+                Files.move(previous, dir.toPath());
+        } catch (IOException e) {
+            log.error("Could not clean up the failed export in " + dir + (previous == null ? "" : "; the previous export is in " + previous), e);
+        }
+    }
+
+    private String exportInto(Collection<? extends Document> retainedDocs, ExportMode export_mode, String out_dir, String name, Consumer<StatusProvider> setStatusProvider) throws Exception {
         String statusmsg = export_mode== ExportMode.EXPORT_APPRAISAL_TO_PROCESSING? "Exporting to Processing":(export_mode== ExportMode.EXPORT_PROCESSING_TO_DISCOVERY?"Exporting to Discovery":"Exporting to Delivery");
 
         boolean exportInPublicMode = export_mode== ExportMode.EXPORT_PROCESSING_TO_DISCOVERY;
@@ -2784,104 +2853,16 @@ after maskEmailDomain.
 // 2022-10-13
     //needed to make this method because sometime we want to update a bag without loading the whole archive.
     public static void updateFileInBag(Bag archiveBag, String fileOrDirectoryName, String baseDir){
-        String[] manifestinfofilename = {"manifest-md5.txt", "manifest-sha256.txt"};
-        String[] algorithms = {"MD5", "SHA-256"};
-        Path filepathname = Paths.get(fileOrDirectoryName);
-        Path baginfofile = Paths.get(baseDir+File.separatorChar+"bag-info.txt");
-//        Path manifestinfofile = Paths.get(baseDir +File.separatorChar+"manifest-md5.txt");
-        Path[] manifestinfofile = new Path[2];
-        for (int i=0; i<2; i++) manifestinfofile[i] = Paths.get(baseDir +File.separatorChar+manifestinfofilename[i]);
-		
-        //updatePayloadManifests(bag, algorithms, includeHidden);
-//        MessageDigest messageDigest = null;
-//        Map<Manifest, MessageDigest> manifestToMessageDigest= new HashMap<>();
-        MessageDigest[] messageDigest = {null, null};
-        Map<Manifest, MessageDigest>[] manifestToMessageDigest = new Map[2];
-        manifestToMessageDigest[0] = new HashMap<>();
-        manifestToMessageDigest[1] = new HashMap<>();
-        boolean includeHiddenFiles = false;
-        //updateMetadataFile(bag, metadata);
-
-        final String payloadOxum;
-        try {
-            payloadOxum = PathUtils.generatePayloadOxum(PathUtils.getDataDir(archiveBag));
-            archiveBag.getMetadata().upsertPayloadOxum(payloadOxum);
-            archiveBag.getMetadata().remove("Bagging-Date"); //remove the old bagging date if it exists so that there is only one
-            archiveBag.getMetadata().add("Bagging-Date", new SimpleDateFormat().format(new Date()));
-            MetadataWriter.writeBagMetadata(archiveBag.getMetadata(), archiveBag.getVersion(), PathUtils.getBagitDir(archiveBag), archiveBag.getFileEncoding());
-        } catch (IOException e) {
-            Util.print_exception(e, log);
+        if (archiveBag == null) {
+            log.warn("No bag to update the checksums of " + fileOrDirectoryName + " in");
+            return;
         }
-
-        MessageDigest[] finalMessageDigest = new MessageDigest[2];
+        // the tag files are replaced as a whole; if that fails, the previous ones (and archiveBag) are left unchanged
         try {
-            for (int i=0; i<2; i++) {
-                messageDigest[i] = MessageDigest.getInstance(algorithms[i]);
-                finalMessageDigest[i] = messageDigest[i];
-            }    
-            /*A very subtle bug was introduced. The case is as following; a file gets deleted from the directory but the manifest has entry for the deleted file as well.
-            When the manifest construction algorithm is iterated over the directory tree then it recomputes the hash for all files present but it does not remove the hash for deleted files. As a result,
-            although the file is deleted, its entry remains in the tag manifest file resulting in the failure of checksum. For fix; we remove entry for all those files
-            which are present in the folder that needs to be updated.
-             */
-            archiveBag.getPayLoadManifests().forEach(manifest->{
-                //from manifest remove all the files whose parent path is fileOrDirectoryName
-                Map<Path,String> mm = manifest.getFileToChecksumMap().entrySet().stream().filter(entry->
-                    !entry.getKey().startsWith(new File(fileOrDirectoryName).toPath())
-                        ).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-                manifest.setFileToChecksumMap(mm);
-//                manifestToMessageDigest.put(manifest, finalMessageDigest);
-                if ( manifest.getAlgorithm().toString().equals(algorithms[0])) manifestToMessageDigest[0].put(manifest, finalMessageDigest[0]);
-                else manifestToMessageDigest[1].put(manifest, finalMessageDigest[1]);
-            });
-            CreatePayloadManifestsVistor sut1 = new CreatePayloadManifestsVistor(manifestToMessageDigest[0], includeHiddenFiles);
-            Files.walkFileTree(filepathname, sut1);
-            CreatePayloadManifestsVistor sut2 = new CreatePayloadManifestsVistor(manifestToMessageDigest[1], includeHiddenFiles);
-            Files.walkFileTree(filepathname, sut2);
-            archiveBag.getPayLoadManifests().clear();
-            archiveBag.getPayLoadManifests().addAll(manifestToMessageDigest[0].keySet());
-            archiveBag.getPayLoadManifests().addAll(manifestToMessageDigest[1].keySet());
-            ManifestWriter.writePayloadManifests(archiveBag.getPayLoadManifests(), PathUtils.getBagitDir(archiveBag),archiveBag.getRootDir(),archiveBag.getFileEncoding());
-			
-        } catch (NoSuchAlgorithmException e) {
-            Util.print_exception(e, log);
-        } catch (IOException e) {
-            Util.print_exception(e, log);
+            BagManifestRebuilder.update(archiveBag, Paths.get(fileOrDirectoryName), false);
+        } catch (IOException | NoSuchAlgorithmException e) {
+            log.error("Failed to update the checksums of " + fileOrDirectoryName + " in " + baseDir + "; the previous checksums were kept", e);
         }
-
-        //updateTagManifests(bag, algorithms, includeHidden);
-        try {
-//            MessageDigest finalMessageDigest = messageDigest;
-//            manifestToMessageDigest.clear();
-             manifestToMessageDigest[0].clear();
-             manifestToMessageDigest[1].clear();
-//            archiveBag.getTagManifests().forEach(manifest->manifestToMessageDigest.put(manifest, finalMessageDigest));
-              archiveBag.getTagManifests().forEach( manifest->{
-                        if ( manifest.getAlgorithm().toString().equals(algorithms[0])) manifestToMessageDigest[0].put(manifest, finalMessageDigest[0]);
-                        else  manifestToMessageDigest[1].put(manifest, finalMessageDigest[1]);
-                    }    
-               );
-			
-            final CreateTagManifestsVistor tagVistor1 = new CreateTagManifestsVistor(manifestToMessageDigest[0], includeHiddenFiles);
-            Files.walkFileTree(baginfofile,tagVistor1);
-            Files.walkFileTree(manifestinfofile[0],tagVistor1);
-            Files.walkFileTree(manifestinfofile[1],tagVistor1);
-
-            final CreateTagManifestsVistor tagVistor2 = new CreateTagManifestsVistor(manifestToMessageDigest[1], includeHiddenFiles);
-            //Files.walkFileTree(filepathname, tagVistor);
-            Files.walkFileTree(baginfofile,tagVistor2);
-            Files.walkFileTree(manifestinfofile[0],tagVistor2);
-            Files.walkFileTree(manifestinfofile[1],tagVistor2);
-            //update bag'stagemanifest
-            archiveBag.getTagManifests().clear();
-            archiveBag.getTagManifests().addAll(manifestToMessageDigest[0].keySet());
-            archiveBag.getTagManifests().addAll(manifestToMessageDigest[1].keySet());
-            ManifestWriter.writeTagManifests(archiveBag.getTagManifests(), PathUtils.getBagitDir(archiveBag), archiveBag.getRootDir(), archiveBag.getFileEncoding());
-        } catch (IOException e) {
-            Util.print_exception(e, log);
-        }
-
-
     }
 
     public boolean lexiconMapContains(String lexiconName)
