@@ -253,7 +253,7 @@ public class IndexUtils {
 		{
 			try {
 				Document d = null;
-				ObjectInputStream headerOIS = new ObjectInputStream(new FileInputStream(f));
+				ObjectInputStream headerOIS = SafeObjectInput.open(new FileInputStream(f));
 				d = (Document) headerOIS.readObject();
 				headerOIS.close();
 				allDocs.add(d);

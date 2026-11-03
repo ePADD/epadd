@@ -19,6 +19,7 @@ package edu.stanford.muse.epaddpremis;//Example: ingest
 import edu.stanford.epadd.Version;
 import edu.stanford.muse.epaddpremis.premisfile.File;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
 import gov.loc.repository.bagit.domain.Bag;
@@ -116,7 +117,7 @@ public class EpaddPremis implements Serializable {
         EpaddPremis epaddPremis = null;
         try {
             FileInputStream fi = new FileInputStream(new java.io.File(baseDir + java.io.File.separatorChar + bagDataFolder + java.io.File.separatorChar + SERIALIZED_FILE_NAME));
-            ObjectInputStream oi = new ObjectInputStream(fi);
+            ObjectInputStream oi = SafeObjectInput.open(fi);
             epaddPremis = (EpaddPremis) oi.readObject();
             epaddPremis.baseDir = baseDir;
             epaddPremis.pathToDataFolder = baseDir + java.io.File.separatorChar + Archive.BAG_DATA_FOLDER;

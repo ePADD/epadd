@@ -174,7 +174,7 @@ public class Span implements java.io.Serializable {
                         byte[] bytes = new byte[(int) file.length()];
                         fi.read(bytes);
                         long st = System.nanoTime();
-                        java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(bytes));
+                        java.io.ObjectInputStream ois = SafeObjectInput.open(new java.io.ByteArrayInputStream(bytes));
                         java.util.List<Span> sp = (java.util.List<Span>) ois.readObject();
                         timeParse += System.nanoTime() - st;
                         ois.close();
@@ -190,7 +190,7 @@ public class Span implements java.io.Serializable {
                             bytes[bi++] = (byte) b;
                         //fi.read(bytes);
                         long st = System.nanoTime();
-                        java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.util.zip.GZIPInputStream(new java.io.ByteArrayInputStream(bytes)));
+                        java.io.ObjectInputStream ois = SafeObjectInput.open(new java.util.zip.GZIPInputStream(new java.io.ByteArrayInputStream(bytes)));
                         java.util.List<Span> sp = (java.util.List<Span>) ois.readObject();
                         timeParse += System.nanoTime() - st;
                         ois.close();

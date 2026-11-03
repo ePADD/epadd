@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Util;
 
 /** class to keep track of browser preferences of highlighted terms. 
@@ -61,7 +62,7 @@ public class LensPrefs implements Serializable {
 			try {
 				log.info("Trying to load lens prefs from: " + pathToPrefsFileTxt);
 				FileInputStream fis = new FileInputStream(pathToPrefsFile);
-			    ObjectInputStream ois = new ObjectInputStream(fis);
+			    ObjectInputStream ois = SafeObjectInput.open(fis);
 			    prefs = (Map<String, Map<String, Float>>) ois.readObject();
 			    ois.close();
 			} catch (FileNotFoundException e) {

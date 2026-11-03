@@ -390,7 +390,7 @@ public class NBModel implements NERModel, Serializable {
     private static synchronized Map<String,String>  loadGazette(String modelDirName){
         ObjectInputStream ois;
         try {
-            ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
+            ois = SafeObjectInput.openModel(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
             Map<String,String> model = (Map<String, String>) ois.readObject();
             ois.close();
             return model;

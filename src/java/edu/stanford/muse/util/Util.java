@@ -2808,7 +2808,7 @@ public static void aggressiveWarn(String message, long sleepMillis, Logger log)
 
 	public static Serializable readObjectFromFile(String filename) throws IOException, ClassNotFoundException
 	{
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
+		ObjectInputStream ois = SafeObjectInput.open(new FileInputStream(filename));
 		Serializable s = (Serializable) ois.readObject();
 		ois.close();
 		return s;

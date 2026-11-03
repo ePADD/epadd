@@ -2244,7 +2244,7 @@ is what we want.
 
 		java.io.ObjectInputStream ois;
 		try {
-			ois = new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(bin1bytes));
+			ois = SafeObjectInput.open(new java.io.ByteArrayInputStream(bin1bytes));
 			headerList = (java.util.List<String>) ois.readObject();
 		} catch (ClassNotFoundException | IOException e) {
 			log.warn("Unable to get original headers for " + d.getUniqueId());

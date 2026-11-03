@@ -17,6 +17,7 @@ import edu.stanford.muse.email.MuseEmailFetcher;
 import edu.stanford.muse.epaddpremis.EpaddPremis;
 import edu.stanford.muse.ie.variants.EntityBookManager;
 import edu.stanford.muse.ner.model.NEType;
+import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
 import edu.stanford.muse.webapp.ModeConfig;
@@ -93,7 +94,7 @@ public class ArchiveReaderWriter{
         // keep reading till eof exception
         Map<String, Object> result = new LinkedHashMap<>();
         try {
-            ois = new ObjectInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(filename))));
+            ois = SafeObjectInput.open(new BufferedInputStream(new GZIPInputStream(new FileInputStream(filename))));
 
             while (true)
             {

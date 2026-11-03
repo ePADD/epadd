@@ -20,6 +20,7 @@ import edu.stanford.muse.Config;
 import edu.stanford.muse.index.BagitManifestCleaner;
 import edu.stanford.muse.util.DictUtils;
 import edu.stanford.muse.util.Pair;
+import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Util;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
@@ -300,7 +301,7 @@ public class MboxEmailStore extends EmailStore implements Serializable {
 
 			try {
 				log.info ("Reading folder cache from " + cacheFile);
-				ObjectInputStream oos = new ObjectInputStream(new FileInputStream(cacheFile));
+				ObjectInputStream oos = SafeObjectInput.open(new FileInputStream(cacheFile));
 				cacheMap = (Map<String,FolderInfo>) oos.readObject();
 				oos.close();
 			} catch (Exception e)

@@ -15,6 +15,7 @@
 */
 package edu.stanford.muse.index;
 
+import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Pair;
 
 import java.io.*;
@@ -50,7 +51,7 @@ class IndexManager {
 		Archive driver = null;
 		String file = rootDir + File.separatorChar + datasetName + ".index";
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(file)));
+			ObjectInputStream ois = SafeObjectInput.open(new GZIPInputStream(new FileInputStream(file)));
 			driver = (Archive) ois.readObject();
 			ois.close();
 		} catch (Exception ioe) {
@@ -64,7 +65,7 @@ class IndexManager {
 		String file = rootDir + File.separatorChar + datasetName + ".index";
 		Collection<Document> docs = null;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(file)));
+			ObjectInputStream ois = SafeObjectInput.open(new GZIPInputStream(new FileInputStream(file)));
 			docs = (Collection<Document>) ois.readObject();
 			ois.close();
 		} catch (Exception ioe) {

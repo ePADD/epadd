@@ -965,7 +965,7 @@ public class SequenceModel implements NERModel, Serializable {
     private static synchronized Map<String,String>  loadGazette(String modelDirName){
         ObjectInputStream ois;
         try {
-            ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
+            ois = SafeObjectInput.openModel(new GZIPInputStream(Config.getResourceAsStream(modelDirName + File.separator + GAZETTE_FILE)));
             Map<String,String> model = (Map<String, String>) ois.readObject();
             ois.close();
             return model;
@@ -979,7 +979,7 @@ public class SequenceModel implements NERModel, Serializable {
         ObjectInputStream ois;
         try {
             //the buffer size can be much higher than default 512 for GZIPInputStream
-            ois = new ObjectInputStream(new GZIPInputStream(Config.getResourceAsStream(modelPath)));
+            ois = SafeObjectInput.openModel(new GZIPInputStream(Config.getResourceAsStream(modelPath)));
             SequenceModel model = (SequenceModel) ois.readObject();
             ois.close();
             return model;
