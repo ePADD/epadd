@@ -101,7 +101,7 @@ jobs:
           VERSION: ${{ needs.check-tag.outputs.display-version }}
           IS_PRERELEASE: ${{ needs.check-tag.outputs.is-prerelease }}
         run: |
-          args=(--title "ePADD $VERSION" --notes-file release-notes.md --verify-tag)
+          args=(--draft --title "ePADD $VERSION" --notes-file release-notes.md --verify-tag)
           if [ "$IS_PRERELEASE" = true ]; then
             args+=(--prerelease)
           fi
