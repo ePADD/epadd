@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import edu.stanford.muse.Config;
 import edu.stanford.muse.ner.dictionary.EnglishDictionary;
 import edu.stanford.muse.ner.featuregen.FeatureUtils;
-import edu.stanford.muse.ner.model.test.SequenceModelTest;
 import edu.stanford.muse.ner.tokenize.CICTokenizer;
 import edu.stanford.muse.ner.tokenize.Tokenizer;
 import edu.stanford.muse.util.*;
@@ -1202,29 +1201,6 @@ public class SequenceModel implements NERModel, Serializable {
         return model;
     }
 
-    private static void loadAndTestNERModel(){
-        if (fdw == null) {
-            try {
-                fdw = new FileWriter(new File(System.getProperty("user.home") + File.separator + "epadd-settings" + File.separator + "cache" + File.separator + "mixtures.dump"));
-            } catch (Exception e) {
-                Util.print_exception(e, log);
-            }
-        }
-        System.err.println("Loading model...");
-        SequenceModel nerModel;
-        log.info(Util.getMemoryStats());
-        {
-            nerModel = SequenceModel.loadModelFromRules("rules");
-            if(nerModel==null)
-                nerModel = train();
-
-            log.info(Util.getMemoryStats());
-            SequenceModelTest.ParamsCONLL params = new SequenceModelTest.ParamsCONLL();
-            SequenceModelTest.testCONLL(nerModel, false, params);
-            log.info(Util.getMemoryStats());
-        }
-    }
-
     public static void main(String[] args) {
         Options options = new Options();
 
@@ -1253,10 +1229,6 @@ public class SequenceModel implements NERModel, Serializable {
         }
 
         String inputFilePath = cmd.getOptionValue("input");
-        boolean isTest = Boolean.parseBoolean(cmd.getOptionValue("test"));
-        if(isTest)
-            loadAndTestNERModel();
-        else
         {
             //output option must be given if the control reaches here.
             String outputfilePath = cmd.getOptionValue("output");
