@@ -1,6 +1,6 @@
 name: Release
 
-# Publishes a release when a semantic version tag is pushed.
+# Creates a draft release when a semantic version tag is pushed.
 #
 # Only tags that are a full semantic version are released. The repository also
 # carries older tags such as v8 and v9.0, which are not, and pushing one of those

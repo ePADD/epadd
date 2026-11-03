@@ -2,7 +2,7 @@
 
 Every pull request is built and tested on Linux, Windows and both macOS
 architectures. Pushing a semantic version tag builds the same thing again and
-publishes it as a GitHub release.
+creates a draft GitHub release from it, which is then published by hand.
 
 ## How the pieces fit together
 
@@ -28,7 +28,7 @@ layout `epadd-launcher/build.xml` already expects.
 | File | Trigger | What it does |
 | --- | --- | --- |
 | `ci.yml` | pull request, push to `main`, manual | Lints the build scripts, then builds and tests on all five platforms. Uploads nothing unless asked. |
-| `release.yml` | push of a `v*` tag | Releases the tag if it is a semantic version, otherwise does nothing. |
+| `release.yml` | push of a `v*` tag | Creates a draft release if the tag is a semantic version, otherwise does nothing. |
 | `build.yml` | called by the other two | Does the actual work. Not triggered directly. |
 
 `ci.yml` keeps no artifacts by default, because one run produces several
@@ -46,7 +46,13 @@ git tag -a v11.1.4 -m 'ePADD 11.1.4'
 git push origin v11.1.4
 ```
 
-A tag with a prerelease identifier, for example `v11.1.4-beta.1`, is published as
+This creates a draft release, which only people with write access to the repository
+can see.
+The tag itself is public as soon as it is pushed. To publish the release, open it
+on the **Releases** page, edit the notes, check the installers and click
+**Publish release**.
+
+A tag with a prerelease identifier, for example `v11.1.4-beta.1`, is marked as
 a GitHub prerelease.
 
 Tags that are not a full semantic version are ignored. The repository already
