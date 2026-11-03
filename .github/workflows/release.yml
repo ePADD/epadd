@@ -1,0 +1,108 @@
+name: Release
+
+# Publishes a release when a semantic version tag is pushed.
+#
+# Only tags that are a full semantic version are released. The repository also
+# carries older tags such as v8 and v9.0, which are not, and pushing one of those
+# leaves this workflow doing nothing rather than failing.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  check-tag:
+    name: Check the tag
+    runs-on: ubuntu-24.04
+    outputs:
+      is-semver: ${{ steps.compute.outputs.is-semver }}
+      is-prerelease: ${{ steps.compute.outputs.is-prerelease }}
+      display-version: ${{ steps.compute.outputs.display-version }}
+    steps:
+      - name: Check out the build scripts
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
+          fetch-depth: 1
+
+      - name: Classify the tag
+        id: compute
+        env:
+          TAG: ${{ github.ref_name }}
+        run: bash .github/scripts/compute-version.sh --tag "$TAG" --ref-name "$TAG" --sha "${{ github.sha }}"
+
+      - name: Explain a tag that is not released
+        if: steps.compute.outputs.is-semver != 'true'
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          printf '::notice title=No release built::%s is not a semantic version tag\n' "$TAG"
+          {
+            printf '### No release built\n\n'
+            printf 'The tag `%s` is not a semantic version, so nothing was released.\n\n' "$TAG"
+            printf 'A release needs a tag of the form `v<major>.<minor>.<patch>`, optionally '
+            printf 'followed by a prerelease identifier, for example `v9.1.0` or `v9.1.0-beta.1`.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Build
+    needs: check-tag
+    if: needs.check-tag.outputs.is-semver == 'true'
+    uses: ./.github/workflows/build.yml
+    with:
+      release-tag: ${{ github.ref_name }}
+      sign: true
+      upload-installers: true
+    secrets: inherit
+
+  publish:
+    name: Publish
+    needs: [check-tag, build]
+    runs-on: ubuntu-24.04
+    permissions:
+      # Needed to create the release and attach its assets.
+      contents: write
+    steps:
+      - name: Check out ePADD
+        uses: actions/checkout@v7
+        with:
+          # The release notes list the commits since the previous tag.
+          fetch-depth: 0
+
+      - name: Download the deliverables
+        uses: actions/download-artifact@v8
+        with:
+          pattern: epadd-*
+          merge-multiple: true
+          path: dist
+
+      - name: Write the release notes
+        env:
+          TAG: ${{ github.ref_name }}
+          REPOSITORY: ${{ github.repository }}
+          MACOS_SIGNED: ${{ secrets.MACOS_CERTIFICATE != '' }}
+          WINDOWS_SIGNED: ${{ secrets.WINDOWS_CERTIFICATE != '' }}
+        run: |
+          bash .github/scripts/release-notes.sh \
+            --tag "$TAG" \
+            --dist dist \
+            --repository "$REPOSITORY" \
+            --macos-signed "$MACOS_SIGNED" \
+            --windows-signed "$WINDOWS_SIGNED" > release-notes.md
+          cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.check-tag.outputs.display-version }}
+          IS_PRERELEASE: ${{ needs.check-tag.outputs.is-prerelease }}
+        run: |
+          args=(--title "ePADD $VERSION" --notes-file release-notes.md --verify-tag)
+          if [ "$IS_PRERELEASE" = true ]; then
+            args+=(--prerelease)
+          fi
+          gh release create "$TAG" "${args[@]}" dist/*
