@@ -105,7 +105,7 @@
 			<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.edit")%> "
 			 class="buttons_on_datatable" onclick="window.location='edit-correspondents?archiveID=<%=archiveID%>'"><img
 				class="button_image_on_datatable" src="images/edit_correspondent.svg"></div>
-		<%if (ModeConfig.isProcessingMode()) {%>
+		<%if (ModeConfig.isAppraisalMode() || ModeConfig.isProcessingMode()) {%>
 		<div title=" <%=edu.stanford.muse.util.Messages.getMessage(archiveID, "messages", "correspondents.merge")%> "
 			 class="buttons_on_datatable" onclick="confirmBeforeMerge()"><img class="button_image_on_datatable"
 																			  src="images/merge_correspondents.svg">
