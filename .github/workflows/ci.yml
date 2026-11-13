@@ -1,0 +1,63 @@
+name: CI
+
+# Builds and tests every pull request on all four target platforms.
+#
+# Nothing is uploaded by default: one run produces several gigabytes of
+# installers, and the point of a pull request build is to prove that each
+# platform still packages. Use the manual trigger when the installers from a
+# branch are actually needed.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      upload-installers:
+        description: Keep the installers as workflow artifacts.
+        type: boolean
+        default: false
+      skip-tests:
+        description: Package without running the test suite.
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint the build scripts
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the build scripts
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github
+          fetch-depth: 1
+
+      - name: Check the syntax
+        run: |
+          for script in .github/scripts/*.sh; do
+            bash -n "$script"
+          done
+
+      - name: Shellcheck
+        # Restricted to errors because the pipeline has to keep working on the
+        # three different bash builds the runners provide, and shellcheck's style
+        # advice is not worth failing a pull request over.
+        run: shellcheck --severity=error --external-sources .github/scripts/*.sh
+
+  build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+    with:
+      upload-installers: ${{ github.event_name == 'workflow_dispatch' && inputs.upload-installers || false }}
+      skip-tests: ${{ github.event_name == 'workflow_dispatch' && inputs.skip-tests || false }}
+    # Pull requests from forks receive no secrets and sign is left off here, so a
+    # development build never has access to the signing certificates.
+    secrets: inherit

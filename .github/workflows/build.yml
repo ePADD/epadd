@@ -1,0 +1,358 @@
+name: Build
+
+# Builds every ePADD deliverable on every platform it ships for. Called by ci.yml
+# for pull requests and by release.yml for version tags.
+#
+# ePADD is assembled from three repositories. This one produces the two WARs; the
+# launcher wraps each WAR with an embedded Tomcat into a runnable jar; the
+# settings repository holds the NLP models that go inside that jar. Only this
+# repository is forked, so the other two are checked out at a pinned commit.
+# Bumping either pin is a deliberate, reviewable change.
+
+on:
+  workflow_call:
+    inputs:
+      release-tag:
+        description: The tag being released. Empty for a development build.
+        type: string
+        default: ''
+      sign:
+        description: Code sign the installers, if the certificates are configured.
+        type: boolean
+        default: false
+      upload-installers:
+        description: Keep the installers as workflow artifacts.
+        type: boolean
+        default: false
+      skip-tests:
+        description: Package without running the test suite.
+        type: boolean
+        default: false
+      retention-days:
+        description: How long to keep uploaded artifacts.
+        type: number
+        default: 7
+    outputs:
+      display-version:
+        description: Version baked into the application and the asset filenames.
+        value: ${{ jobs.version.outputs.display-version }}
+      installer-version:
+        description: Numeric version given to jpackage.
+        value: ${{ jobs.version.outputs.installer-version }}
+      is-prerelease:
+        description: Whether the release tag carries a prerelease identifier.
+        value: ${{ jobs.version.outputs.is-prerelease }}
+
+env:
+  JAVA_VERSION: '17'
+  # Zulu rather than Temurin because Temurin publishes no Windows aarch64 build
+  # of 17, and one distribution across the whole matrix beats special casing a
+  # single job. Zulu 17 exists for all five platforms here.
+  JAVA_DISTRIBUTION: zulu
+  LAUNCHER_REPOSITORY: ePADD/epadd-launcher
+  LAUNCHER_REF: b010826266372d61dfe9b67762bfc99926e33752
+  SETTINGS_REPOSITORY: ePADD/epadd-settings
+  SETTINGS_REF: 3121e21b12b2b3a5c26b26f2db269aa6bbe2271c
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    name: Derive version
+    runs-on: ubuntu-24.04
+    outputs:
+      display-version: ${{ steps.compute.outputs.display-version }}
+      installer-version: ${{ steps.compute.outputs.installer-version }}
+      is-prerelease: ${{ steps.compute.outputs.is-prerelease }}
+    steps:
+      - name: Check out the build scripts
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
+          fetch-depth: 1
+
+      - name: Compute the version strings
+        id: compute
+        env:
+          RELEASE_TAG: ${{ inputs.release-tag }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: bash .github/scripts/compute-version.sh --tag "$RELEASE_TAG" --ref-name "$REF_NAME" --sha "$SHA"
+
+  build:
+    name: ${{ matrix.platform }}
+    needs: version
+    runs-on: ${{ matrix.os }}
+    # A full build takes about ten minutes. This is here so that a step which
+    # hangs instead of failing, as the WiX installer did, gives up in under an
+    # hour rather than occupying a runner for the default six.
+    timeout-minutes: 45
+    strategy:
+      # One platform failing should not hide the result on the others.
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux-x86_64
+            installer-type: deb
+          - os: windows-2022
+            platform: windows-x86_64
+            installer-type: msi
+          # The ARM image carries no WiX, so that job installs it. epadd.exe is
+          # only built here, on x86_64: launch4j emits a 32 bit x86 binary
+          # whatever it runs on, so a second copy would be identical.
+          - os: windows-11-arm
+            platform: windows-arm64
+            installer-type: msi
+          # macos-15 is the arm64 image and macos-15-intel the x86_64 one. The
+          # bundled runtime comes from the runner, so each installer only works
+          # on the architecture it was built on.
+          - os: macos-15
+            platform: macos-arm64
+            installer-type: dmg
+          - os: macos-15-intel
+            platform: macos-x86_64
+            installer-type: dmg
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out ePADD
+        uses: actions/checkout@v7
+        with:
+          path: epadd
+          # A release build records the commit it was built from, which needs the
+          # history and tags. Development builds do not, so they stay shallow.
+          fetch-depth: ${{ inputs.release-tag == '' && 1 || 0 }}
+
+      - name: Check out the launcher
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.LAUNCHER_REPOSITORY }}
+          ref: ${{ env.LAUNCHER_REF }}
+          path: epadd-launcher
+
+      - name: Check out the settings models
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.SETTINGS_REPOSITORY }}
+          ref: ${{ env.SETTINGS_REF }}
+          path: epadd-settings
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v6
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+          # The default only looks at pom.xml, which would leave dependency
+          # changes made in the other two POMs out of the cache key.
+          cache-dependency-path: |
+            epadd/pom.xml
+            epadd/pom-common.xml
+            epadd/pom-discovery.xml
+            epadd-launcher/pom.xml
+
+      - name: Decide whether the artifacts can be signed
+        env:
+          SIGN_REQUESTED: ${{ inputs.sign }}
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+        run: |
+          # Signing is skipped rather than failed when no certificate is
+          # configured, so the pipeline is usable before the secrets exist.
+          sign_macos=false
+          sign_windows=false
+          if [ "$SIGN_REQUESTED" = true ]; then
+            if [ -n "$MACOS_CERTIFICATE" ]; then
+              sign_macos=true
+            fi
+            if [ -n "$WINDOWS_CERTIFICATE" ]; then
+              sign_windows=true
+            fi
+          fi
+          echo "SIGN_MACOS=$sign_macos" >> "$GITHUB_ENV"
+          echo "SIGN_WINDOWS=$sign_windows" >> "$GITHUB_ENV"
+
+      - name: Build the WARs
+        working-directory: epadd
+        env:
+          DISPLAY_VERSION: ${{ needs.version.outputs.display-version }}
+          RELEASE_TAG: ${{ inputs.release-tag }}
+          SKIP_TESTS: ${{ inputs.skip-tests }}
+        run: |
+          args=(--version "$DISPLAY_VERSION")
+          if [ -n "$RELEASE_TAG" ]; then
+            args+=(--provenance)
+          fi
+          if [ "$SKIP_TESTS" = true ]; then
+            args+=(--skip-tests)
+          fi
+          bash .github/scripts/build-wars.sh "${args[@]}"
+
+      - name: Upload the test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-${{ matrix.platform }}
+          path: epadd/target/surefire-reports/
+          retention-days: ${{ inputs.retention-days }}
+          if-no-files-found: ignore
+
+      - name: Build the standalone jars
+        working-directory: epadd-launcher
+        run: bash ../epadd/.github/scripts/build-standalone.sh --workspace "$(cd .. && pwd)"
+
+      - name: Install WiX
+        if: matrix.platform == 'windows-arm64'
+        shell: pwsh
+        # jpackage builds an msi by calling WiX 3, which the x86_64 image carries
+        # but the ARM one does not.
+        #
+        # The binaries zip is unpacked rather than installed with
+        # "choco install wixtoolset", because that runs the WiX MSI bootstrapper,
+        # which hung indefinitely on this image rather than failing. candle.exe
+        # and light.exe are x86 and run under emulation, which is harmless: they
+        # assemble the installer and do not end up inside it.
+        env:
+          WIX_URL: https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip
+          WIX_SHA256: 6ac824e1642d6f7277d0ed7ea09411a508f6116ba6fae0aa5f2c7daa2ff43d31
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Join-Path $env:RUNNER_TEMP 'wix314-binaries.zip'
+          $dir = Join-Path $env:RUNNER_TEMP 'wix'
+          Invoke-WebRequest -Uri $env:WIX_URL -OutFile $zip
+          $actual = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLower()
+          if ($actual -ne $env:WIX_SHA256) {
+              throw "WiX checksum mismatch: expected $env:WIX_SHA256, got $actual"
+          }
+          Expand-Archive -Path $zip -DestinationPath $dir -Force
+          if (-not (Test-Path (Join-Path $dir 'candle.exe'))) {
+              throw 'candle.exe is missing after extracting WiX'
+          }
+          $dir | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Build the Windows executable
+        # Only on x86_64: launch4j emits a 32 bit x86 binary whatever it runs on,
+        # so the ARM job would produce an identical file under a colliding name.
+        if: matrix.platform == 'windows-x86_64'
+        working-directory: epadd-launcher
+        run: bash ../epadd/.github/scripts/build-windows-exe.sh
+
+      - name: Select the application icon
+        env:
+          INSTALLER_TYPE: ${{ matrix.installer-type }}
+        run: |
+          case $INSTALLER_TYPE in
+            dmg)
+              icon=$PWD/epadd-launcher/lib/epadd.icns
+              ;;
+            msi)
+              icon=$PWD/epadd-launcher/launch4j-3.50-win32/epadd.ico
+              ;;
+            deb)
+              # jpackage wants a PNG on Linux, which neither the launcher nor
+              # this repository otherwise has. See .github/assets/README.md for
+              # why it is committed instead of converted during the build.
+              icon=$PWD/epadd/.github/assets/epadd-icon-128.png
+              ;;
+          esac
+          echo "ICON=$icon" >> "$GITHUB_ENV"
+
+      - name: Import the macOS signing certificate
+        if: env.SIGN_MACOS == 'true'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: bash epadd/.github/scripts/sign-macos.sh import-certificate
+
+      - name: Build the installers
+        env:
+          INSTALLER_TYPE: ${{ matrix.installer-type }}
+          PLATFORM: ${{ matrix.platform }}
+          DISPLAY_VERSION: ${{ needs.version.outputs.display-version }}
+          INSTALLER_VERSION: ${{ needs.version.outputs.installer-version }}
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+        run: |
+          args=(
+            --type "$INSTALLER_TYPE"
+            --platform "$PLATFORM"
+            --version "$DISPLAY_VERSION"
+            --app-version "$INSTALLER_VERSION"
+            --launcher-dir "$PWD/epadd-launcher"
+            --icon "$ICON"
+            --dest "$PWD/dist"
+          )
+          if [ "$SIGN_MACOS" = true ]; then
+            # macOS signing happens inside jpackage, because it signs the
+            # application bundle before wrapping it into the disk image.
+            args+=(--signing-identity "$MACOS_SIGNING_IDENTITY")
+          fi
+          bash epadd/.github/scripts/build-installers.sh "${args[@]}"
+
+      - name: Sign the Windows artifacts
+        if: env.SIGN_WINDOWS == 'true'
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          WINDOWS_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL }}
+        run: |
+          # Only the x86_64 job builds epadd.exe, so the list is assembled rather
+          # than hardcoded.
+          set -- dist/*.msi
+          if [ -f epadd-launcher/epadd.exe ]; then
+            set -- "$@" epadd-launcher/epadd.exe
+          fi
+          bash epadd/.github/scripts/sign-windows.sh "$@"
+
+      - name: Notarize the disk images
+        if: env.SIGN_MACOS == 'true'
+        env:
+          MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
+          MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+          MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
+        run: |
+          for image in dist/*.dmg; do
+            bash epadd/.github/scripts/sign-macos.sh notarize "$image"
+          done
+
+      - name: Collect the remaining deliverables
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          VERSION: ${{ needs.version.outputs.display-version }}
+        run: |
+          if [ -f epadd-launcher/epadd.exe ]; then
+            cp epadd-launcher/epadd.exe "dist/epadd-$VERSION.exe"
+          fi
+          # The WARs and the standalone jars are platform independent, so they
+          # are collected once rather than on every platform.
+          if [ "$PLATFORM" = linux-x86_64 ]; then
+            cp epadd/target/epadd-0.0.1-SNAPSHOT.war "dist/epadd-$VERSION.war"
+            cp epadd/target/epadd-discovery-0.0.1-SNAPSHOT.war "dist/epadd-discovery-$VERSION.war"
+            cp epadd-launcher/epadd-standalone.jar "dist/epadd-$VERSION-standalone.jar"
+            cp epadd-launcher/epadd-discovery-standalone.jar "dist/epadd-discovery-$VERSION-standalone.jar"
+          fi
+
+      - name: Summarise the build
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          {
+            printf '### %s\n\n' "$PLATFORM"
+            printf '| Artifact | Size |\n| --- | --: |\n'
+            for file in dist/*; do
+              printf '| %s | %s MiB |\n' "$(basename "$file")" "$(( $(wc -c < "$file") / 1048576 ))"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the deliverables
+        if: inputs.upload-installers
+        uses: actions/upload-artifact@v7
+        with:
+          name: epadd-${{ matrix.platform }}
+          path: dist/
+          retention-days: ${{ inputs.retention-days }}
+          if-no-files-found: error
+          # Every file is already a compressed archive of some kind.
+          compression-level: 0
