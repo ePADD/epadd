@@ -19,6 +19,7 @@ package edu.stanford.muse.epaddpremis;//Example: ingest
 import edu.stanford.epadd.Version;
 import edu.stanford.muse.epaddpremis.premisfile.File;
 import edu.stanford.muse.index.Archive;
+import edu.stanford.muse.util.AtomicFiles;
 import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.ModeConfig;
@@ -102,14 +103,16 @@ public class EpaddPremis implements Serializable {
     }
 
     public void savePremisObject() {
+        // Written atomically: writing straight to the file used to leave it truncated or zero-filled when the save was
+        // interrupted, and the archive's PREMIS history could then no longer be read.
         try {
-            FileOutputStream f = new FileOutputStream(new java.io.File(getSerializedPathAndFileName()));
-            ObjectOutputStream o = new ObjectOutputStream(f);
-            o.writeObject(this);
-            o.close();
-            f.close();
+            AtomicFiles.write(Paths.get(getSerializedPathAndFileName()), out -> {
+                try (ObjectOutputStream o = new ObjectOutputStream(out)) {
+                    o.writeObject(this);
+                }
+            });
         } catch (Exception e) {
-            log.warn("Exception saving EpaddPremis object. " + e);
+            log.warn("Exception saving EpaddPremis object. The previous version of the file is kept. " + e);
         }
     }
 

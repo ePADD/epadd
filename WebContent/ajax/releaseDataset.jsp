@@ -14,7 +14,10 @@ if (error)
 	out.println("{status: 'error'}");
 else
 {
-	dataset.clear();
+	// Only drop the session reference; don't clear() the dataset. A jogPageInMessages.jsp request
+	// may still be rendering pages from it (e.g. when the user leaves the browse page quickly), and
+	// clearing it underneath that request causes IndexOutOfBoundsExceptions. Once in-flight requests
+	// finish, nothing references the dataset and it is garbage collected.
 	session.removeAttribute(docsetID);
 	out.println("{status: 'ok'}");
 }

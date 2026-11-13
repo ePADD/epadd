@@ -17,6 +17,7 @@ import edu.stanford.muse.email.MuseEmailFetcher;
 import edu.stanford.muse.epaddpremis.EpaddPremis;
 import edu.stanford.muse.ie.variants.EntityBookManager;
 import edu.stanford.muse.ner.model.NEType;
+import edu.stanford.muse.util.AtomicFiles;
 import edu.stanford.muse.util.SafeObjectInput;
 import edu.stanford.muse.util.Util;
 import edu.stanford.muse.webapp.JSPHelper;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.lang.ref.WeakReference;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -324,6 +326,22 @@ public class ArchiveReaderWriter{
     //incremental save is used when a module (label,annotation etc) are saved from inside a loaded archive bag. We need to update the bag metadata
     //to reflect these changes otherwise the checksum calculation fails##############################################################################
 
+    /**
+     * Writes key and value as a gzipped session file, atomically (see AtomicFiles): an interrupted or failed save
+     * used to leave a truncated file behind, and the archive could then no longer be loaded.
+     *
+     * @throws IOException if the file could not be written; the target is then unchanged.
+     */
+    static void writeSessionFileAtomically(Path target, String key, Object value) throws IOException
+    {
+        AtomicFiles.write(target, out -> {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(out)))) {
+                oos.writeObject(key);
+                oos.writeObject(value);
+            }
+        });
+    }
+
     /** saves the archive in the current session to the cachedir */
     public static boolean saveArchive(Archive archive, Archive.Save_Archive_Mode mode) throws IOException
     {
@@ -354,12 +372,7 @@ public class ArchiveReaderWriter{
 
 
 
-        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(filename))))) {
-            oos.writeObject("archive");
-            oos.writeObject(archive);
-        } catch (Exception e1) {
-            Util.print_exception("Failed to write archive: ", e1, log);
-        }
+        writeSessionFileAtomically(Paths.get(filename), "archive", archive);
 
         if(mode== Archive.Save_Archive_Mode.INCREMENTAL_UPDATE){
             //archive object doesn't get modified so no point in saving it for incremental one.
