@@ -197,9 +197,14 @@
                 <% } %>
 
             ], /* col 0: click to search, cols 4 and 5 are to be rendered as checkboxes */
-			//IMP: the event handler for remove_label_link can only be instantiated after the initializatio nof this data table is done.
-            fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn();$('.remove-label').click (removeLabelFn); }
+			// the click handler for the remove buttons is attached to the table below, after it has been created
+            fnInitComplete: function() { $('#spinner-div').hide(); $('#labels').fadeIn(); }
 		});
+
+        // Delegated to the table, so that the remove buttons on every page of the table work. Binding the handler
+        // directly to $('.remove-label') only reached the rows on the first page, which are the only ones in the DOM
+        // at that point, and clicking the remove button of a label on any other page did nothing.
+        $('#labels').on('click', '.remove-label', removeLabelFn);
 	} );
 
     var uploadLabelHandler=function(){
