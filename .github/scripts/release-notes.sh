@@ -49,9 +49,11 @@ which_file() {
     fi
 }
 which_file 'Windows' "epadd-$version-windows-x86_64.msi"
+which_file 'Windows on Arm, for example Snapdragon laptops' "epadd-$version-windows-arm64.msi"
 which_file 'Mac with Apple silicon (M1 or later)' "epadd-$version-macos-arm64.dmg"
 which_file 'Mac with an Intel processor' "epadd-$version-macos-x86_64.dmg"
 which_file 'Ubuntu 24.04 or later' "epadd-$version-linux-x86_64.deb"
+which_file 'Any system with Java 11 or later, no installation' "epadd-$version-standalone.jar"
 printf '\n'
 printf 'Not sure which Mac you have? Open the Apple menu and choose About This Mac. If it shows "Chip" followed by Apple M1, M2 or later, you have Apple silicon. If it shows "Processor" with Intel, you have an Intel Mac.\n\n'
 printf 'The `epadd-discovery` files are the Discovery edition, which is used to publish collections for searching. The `.war` and `-standalone.jar` files are for server installations and for running ePADD with your own Java. The other files are described under Installing below.\n\n'
