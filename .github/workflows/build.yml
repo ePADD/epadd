@@ -145,6 +145,10 @@ jobs:
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
+          # The installers bundle this JDK, so it has to be the newest update.
+          # Without this, setup-java takes whatever matching JDK the runner image
+          # already carries, which can lag several updates behind.
+          check-latest: true
           cache: maven
           # The default only looks at pom.xml, which would leave dependency
           # changes made in the other two POMs out of the cache key.
