@@ -11,6 +11,7 @@ script_dir=$(cd "$(dirname "$0")" && pwd)
 
 tag=""
 dist=""
+java_versions=""
 repository=""
 macos_signed=false
 windows_signed=false
@@ -19,6 +20,7 @@ while [ $# -gt 0 ]; do
     case $1 in
         --tag) tag=${2-}; shift 2 ;;
         --dist) dist=${2-}; shift 2 ;;
+        --java-versions) java_versions=${2-}; shift 2 ;;
         --repository) repository=${2-}; shift 2 ;;
         --macos-signed) macos_signed=${2-}; shift 2 ;;
         --windows-signed) windows_signed=${2-}; shift 2 ;;
@@ -68,6 +70,27 @@ printf '\n'
 
 printf '## Installing\n\n'
 printf '* The `.deb`, `.msi` and `.dmg` installers each bundle their own Java runtime, so nothing needs to be installed first.\n'
+
+# --java-versions names a directory holding one file per platform, named after
+# the platform and containing the bundled Java version. It is optional, and a
+# platform whose build failed simply has no file.
+if [ -n "$java_versions" ] && [ -d "$java_versions" ]; then
+    set -- "$java_versions"/*
+    if [ -e "$1" ]; then
+        distinct=$(cat "$@" | sort -u | wc -l | tr -d ' ')
+        if [ "$distinct" = 1 ]; then
+            printf '* The bundled Java runtime is %s.\n' "$(head -n 1 "$1")"
+        else
+            printf '* The bundled Java runtime is'
+            separator=' '
+            for file in "$@"; do
+                printf '%s%s on `%s`' "$separator" "$(head -n 1 "$file")" "$(basename "$file")"
+                separator=', '
+            done
+            printf '.\n'
+        fi
+    fi
+fi
 printf '* `epadd.exe` and the `-standalone.jar` files do not bundle a runtime and need Java 11 or later on the machine.\n'
 printf '* The installers are per architecture, because each bundles the runtime it was built with: `macos-arm64` for Apple silicon, `macos-x86_64` for Intel, `windows-arm64` for Arm machines such as Snapdragon laptops, `windows-x86_64` otherwise.\n'
 printf '* `epadd.exe` is a 32 bit x86 binary and runs on either Windows architecture, under emulation on Arm.\n'

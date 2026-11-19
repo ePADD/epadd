@@ -291,6 +291,26 @@ jobs:
           fi
           bash epadd/.github/scripts/build-installers.sh "${args[@]}"
 
+      - name: Record the bundled Java version
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          # The installers bundle the JDK this job runs on, and the exact update
+          # can differ between runners, so each platform records its own. It is
+          # kept out of dist/ because everything in there becomes a release asset.
+          mkdir -p java-version
+          bash epadd/.github/scripts/java-version.sh > "java-version/$PLATFORM"
+          printf 'Bundled Java on %s: %s\n' "$PLATFORM" "$(cat "java-version/$PLATFORM")"
+
+      - name: Upload the Java version
+        if: inputs.upload-installers
+        uses: actions/upload-artifact@v7
+        with:
+          name: java-version-${{ matrix.platform }}
+          path: java-version/
+          retention-days: ${{ inputs.retention-days }}
+          if-no-files-found: error
+
       - name: Sign the Windows artifacts
         if: env.SIGN_WINDOWS == 'true'
         env:
@@ -340,6 +360,7 @@ jobs:
         run: |
           {
             printf '### %s\n\n' "$PLATFORM"
+            printf 'Bundled Java: %s\n\n' "$(cat "java-version/$PLATFORM")"
             printf '| Artifact | Size |\n| --- | --: |\n'
             for file in dist/*; do
               printf '| %s | %s MiB |\n' "$(basename "$file")" "$(( $(wc -c < "$file") / 1048576 ))"

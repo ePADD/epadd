@@ -62,6 +62,10 @@ require_file "$splash"
 java_home=$(cd "$JAVA_HOME" && pwd -P)
 jpackage=$java_home/bin/jpackage
 [ -x "$jpackage" ] || die "no jpackage in $java_home/bin; JDK 14 or later is required"
+# The whole JDK becomes the installer's runtime, so its version is the version
+# of Java the installer ships with.
+log "bundling this Java runtime:"
+"$java_home/bin/java" -version
 
 # jpackage copies the whole input directory into the application, so it gets a
 # directory holding nothing but the jar and the splash image.

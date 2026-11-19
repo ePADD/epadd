@@ -169,6 +169,7 @@ read and run outside Actions:
 | `build-windows-exe.sh` | wraps the full standalone jar into `epadd.exe` |
 | `build-installers.sh` | builds both editions' installers for the current platform |
 | `package-installer.sh` | one jpackage invocation, with the per-format arguments |
+| `java-version.sh` | prints the version of the JDK that the installers bundle |
 | `sign-windows.sh` | signs an executable or installer with signtool |
 | `sign-macos.sh` | imports the signing identity, and notarizes a disk image |
 | `release-notes.sh` | writes the body of the GitHub release |

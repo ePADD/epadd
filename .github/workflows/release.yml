@@ -79,6 +79,13 @@ jobs:
           merge-multiple: true
           path: dist
 
+      - name: Download the bundled Java versions
+        uses: actions/download-artifact@v8
+        with:
+          pattern: java-version-*
+          merge-multiple: true
+          path: java-versions
+
       - name: Write the release notes
         env:
           TAG: ${{ github.ref_name }}
@@ -89,6 +96,7 @@ jobs:
           bash .github/scripts/release-notes.sh \
             --tag "$TAG" \
             --dist dist \
+            --java-versions java-versions \
             --repository "$REPOSITORY" \
             --macos-signed "$MACOS_SIGNED" \
             --windows-signed "$WINDOWS_SIGNED" > release-notes.md
