@@ -44,7 +44,7 @@ on:
         value: ${{ jobs.version.outputs.is-prerelease }}
 
 env:
-  JAVA_VERSION: '17'
+  JAVA_VERSION: '17.0.21.1'
   # Zulu rather than Temurin because Temurin publishes no Windows aarch64 build
   # of 17, and one distribution across the whole matrix beats special casing a
   # single job. Zulu 17 exists for all five platforms here.
