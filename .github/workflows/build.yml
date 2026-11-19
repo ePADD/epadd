@@ -44,11 +44,15 @@ on:
         value: ${{ jobs.version.outputs.is-prerelease }}
 
 env:
-  JAVA_VERSION: '17.0.21.1'
-  # Zulu rather than Temurin because Temurin publishes no Windows aarch64 build
-  # of 17, and one distribution across the whole matrix beats special casing a
-  # single job. Zulu 17 exists for all five platforms here.
-  JAVA_DISTRIBUTION: zulu
+  # The installers bundle the JDK the build runs on. It is pinned to an exact
+  # Zulu build, downloaded from Azul and checked against its SHA-256: the archive
+  # and checksum for each platform are in the matrix below. Zulu rather than
+  # Temurin because Temurin publishes no Windows aarch64 build of 17.
+  #
+  # This version is the Zulu 17.70.201 hotfix release, 17.0.21.1. setup-java
+  # only uses JAVA_VERSION as the name it files the JDK under.
+  JAVA_VERSION: '17.0.21'
+  JDK_DOWNLOAD_URL: https://cdn.azul.com/zulu/bin
   LAUNCHER_REPOSITORY: ePADD/epadd-launcher
   LAUNCHER_REF: b010826266372d61dfe9b67762bfc99926e33752
   SETTINGS_REPOSITORY: ePADD/epadd-settings
@@ -96,24 +100,39 @@ jobs:
           - os: ubuntu-24.04
             platform: linux-x86_64
             installer-type: deb
+            jdk-archive: zulu17.70.201-ca-jdk17.0.21.1-linux_x64.tar.gz
+            jdk-sha256: 2837aee74267e02106ee6006809bb0de23ccfa43bf5005621517194b79975695
+            jdk-architecture: x64
           - os: windows-2022
             platform: windows-x86_64
             installer-type: msi
+            jdk-archive: zulu17.70.201-ca-jdk17.0.21.1-win_x64.zip
+            jdk-sha256: 78865bdbc82b1164e475c36d471f53880250a768385bc8e4132598d75b58bc36
+            jdk-architecture: x64
           # The ARM image carries no WiX, so that job installs it. epadd.exe is
           # only built here, on x86_64: launch4j emits a 32 bit x86 binary
           # whatever it runs on, so a second copy would be identical.
           - os: windows-11-arm
             platform: windows-arm64
             installer-type: msi
+            jdk-archive: zulu17.70.201-ca-jdk17.0.21.1-win_aarch64.zip
+            jdk-sha256: 023bddb8cde87e8c44f5573c3187568692f869f51147967e855ee16b71cdfa43
+            jdk-architecture: aarch64
           # macos-15 is the arm64 image and macos-15-intel the x86_64 one. The
           # bundled runtime comes from the runner, so each installer only works
           # on the architecture it was built on.
           - os: macos-15
             platform: macos-arm64
             installer-type: dmg
+            jdk-archive: zulu17.70.201-ca-jdk17.0.21.1-macosx_aarch64.tar.gz
+            jdk-sha256: 098dbf65069d8e0886aaa7f1fd90adc8d8e41e4b80a1bca8d88e308f3c91f97c
+            jdk-architecture: aarch64
           - os: macos-15-intel
             platform: macos-x86_64
             installer-type: dmg
+            jdk-archive: zulu17.70.201-ca-jdk17.0.21.1-macosx_x64.tar.gz
+            jdk-sha256: 7390536cc1fc2105d26885e0a8f272ebe8e7f975f68dace4c6d0924895cff3ec
+            jdk-architecture: x64
     defaults:
       run:
         shell: bash
@@ -140,15 +159,30 @@ jobs:
           ref: ${{ env.SETTINGS_REF }}
           path: epadd-settings
 
+      - name: Download the JDK
+        env:
+          ARCHIVE: ${{ matrix.jdk-archive }}
+          EXPECTED_SHA256: ${{ matrix.jdk-sha256 }}
+        run: |
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/$ARCHIVE" "$JDK_DOWNLOAD_URL/$ARCHIVE"
+          # macOS has shasum but no sha256sum.
+          if command -v sha256sum >/dev/null 2>&1; then
+            actual=$(sha256sum "$RUNNER_TEMP/$ARCHIVE" | cut -d' ' -f1)
+          else
+            actual=$(shasum -a 256 "$RUNNER_TEMP/$ARCHIVE" | cut -d' ' -f1)
+          fi
+          if [ "$actual" != "$EXPECTED_SHA256" ]; then
+            printf '::error::%s has SHA-256 %s, expected %s\n' "$ARCHIVE" "$actual" "$EXPECTED_SHA256"
+            exit 1
+          fi
+
       - name: Set up Java ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v6
         with:
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          distribution: jdkfile
+          jdkFile: ${{ runner.temp }}/${{ matrix.jdk-archive }}
           java-version: ${{ env.JAVA_VERSION }}
-          # The installers bundle this JDK, so it has to be the newest update.
-          # Without this, setup-java takes whatever matching JDK the runner image
-          # already carries, which can lag several updates behind.
-          check-latest: true
+          architecture: ${{ matrix.jdk-architecture }}
           cache: maven
           # The default only looks at pom.xml, which would leave dependency
           # changes made in the other two POMs out of the cache key.
@@ -157,6 +191,18 @@ jobs:
             epadd/pom-common.xml
             epadd/pom-discovery.xml
             epadd-launcher/pom.xml
+
+      - name: Point JAVA_HOME at the real JDK on macOS
+        if: runner.os == 'macOS'
+        run: |
+          # Azul's macOS archives keep the JDK in zulu-17.jdk/Contents/Home and
+          # put symlinks to it at the top. setup-java only looks for Contents/Home
+          # at the top, so JAVA_HOME ends up on the symlinks, and jpackage fails
+          # when it copies a runtime reached through symlinks.
+          home="$JAVA_HOME/zulu-17.jdk/Contents/Home"
+          if [ -d "$home" ]; then
+            echo "JAVA_HOME=$home" >> "$GITHUB_ENV"
+          fi
 
       - name: Decide whether the artifacts can be signed
         env:
