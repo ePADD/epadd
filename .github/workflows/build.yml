@@ -165,11 +165,13 @@ jobs:
           EXPECTED_SHA256: ${{ matrix.jdk-sha256 }}
         run: |
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/$ARCHIVE" "$JDK_DOWNLOAD_URL/$ARCHIVE"
-          # macOS has shasum but no sha256sum.
+          # macOS has shasum but no sha256sum. The file is passed on stdin
+          # because sha256sum escapes a name containing backslashes, as Windows
+          # paths do, by putting a backslash in front of the hash.
           if command -v sha256sum >/dev/null 2>&1; then
-            actual=$(sha256sum "$RUNNER_TEMP/$ARCHIVE" | cut -d' ' -f1)
+            actual=$(sha256sum < "$RUNNER_TEMP/$ARCHIVE" | cut -d' ' -f1)
           else
-            actual=$(shasum -a 256 "$RUNNER_TEMP/$ARCHIVE" | cut -d' ' -f1)
+            actual=$(shasum -a 256 < "$RUNNER_TEMP/$ARCHIVE" | cut -d' ' -f1)
           fi
           if [ "$actual" != "$EXPECTED_SHA256" ]; then
             printf '::error::%s has SHA-256 %s, expected %s\n' "$ARCHIVE" "$actual" "$EXPECTED_SHA256"
