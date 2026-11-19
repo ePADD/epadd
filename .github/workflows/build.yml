@@ -192,18 +192,6 @@ jobs:
             epadd/pom-discovery.xml
             epadd-launcher/pom.xml
 
-      - name: Point JAVA_HOME at the real JDK on macOS
-        if: runner.os == 'macOS'
-        run: |
-          # Azul's macOS archives keep the JDK in zulu-17.jdk/Contents/Home and
-          # put symlinks to it at the top. setup-java only looks for Contents/Home
-          # at the top, so JAVA_HOME ends up on the symlinks, and jpackage fails
-          # when it copies a runtime reached through symlinks.
-          home="$JAVA_HOME/zulu-17.jdk/Contents/Home"
-          if [ -d "$home" ]; then
-            echo "JAVA_HOME=$home" >> "$GITHUB_ENV"
-          fi
-
       - name: Decide whether the artifacts can be signed
         env:
           SIGN_REQUESTED: ${{ inputs.sign }}
