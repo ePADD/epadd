@@ -1,4 +1,4 @@
-# **ePADD Installation and User Guide**
+# ePADD Installation and User Guide
 
 ## *August, 2026*
 
@@ -75,145 +75,145 @@ Previous Documentation:
 
 [**2 	Getting Started**](#2-getting-started)
 
-[2.1 		System Requirements](#2.1-system-requirements)
+[2.1 		System Requirements](#21-system-requirements)
 
-[2.2 		Installing ePADD](#2.2-installing-epadd)
+[2.2 		Installing ePADD](#22-installing-epadd)
 
-[*2.2.1         Installing ePADD on Windows*](#2.2.1-installing-epadd-on-windows)
+[*2.2.1         Installing ePADD on Windows*](#221-installing-epadd-on-windows)
 
-[*2.2.2         Installing ePADD on macOS*](#2.2.2-installing-epadd-on-macos)
+[*2.2.2         Installing ePADD on macOS*](#222-installing-epadd-on-macos)
 
-[*2.2.3         Installing ePADD on Linux*](#2.2.3-installing-epadd-on-linux)
+[*2.2.3         Installing ePADD on Linux*](#223-installing-epadd-on-linux)
 
-[*2.2.4         Compatibility Note*](#2.2.4-compatibility-note)
+[*2.2.4         Compatibility Note*](#224-compatibility-note)
 
-[2.3 		Running ePADD](#2.3-running-epadd)
+[2.3 		Running ePADD](#23-running-epadd)
 
-[2.4 		Selecting a Module](#2.4-selecting-a-module)
+[2.4 		Selecting a Module](#24-selecting-a-module)
 
-[2.5 		Navigating ePADD](#2.5-navigating-epadd)
+[2.5 		Navigating ePADD](#25-navigating-epadd)
 
 [**3	Appraisal Module**](#3-appraisal-module)
 
-[3.1 	Importing email](#3.1-importing-email)
+[3.1 	Importing email](#31-importing-email)
 
-[*3.1.1	Emailchemy Integration*](#3.1.1-emailchemy-integration)
+[*3.1.1	Emailchemy Integration*](#311-emailchemy-integration)
 
-[*3.1.2	Sidecar Files*](#3.1.2-sidecar-files)
+[*3.1.2	Sidecar Files*](#312-sidecar-files)
 
-[3.2 	Reviewing Email](#3.2-reviewing-email)
+[3.2 	Reviewing Email](#32-reviewing-email)
 
-[*3.2.1         Browsing Email Messages*](#3.2.1-browsing-email-messages)
+[*3.2.1         Browsing Email Messages*](#321-browsing-email-messages)
 
-[*3.2.2         Browsing All Messages*](#3.2.2-browsing-all-messages)
+[*3.2.2         Browsing All Messages*](#322-browsing-all-messages)
 
-[*3.2.3         Editing Correspondents*](#3.2.3-editing-correspondents)
+[*3.2.3         Editing Correspondents*](#323-editing-correspondents)
 
-[*3.2.4         Performing Entity Analysis*](#3.2.4-performing-entity-analysis)
+[*3.2.4         Performing Entity Analysis*](#324-performing-entity-analysis)
 
-[*3.2.5         Performing Lexicon Analysis*](#3.2.5-performing-lexicon-analysis)
+[*3.2.5         Performing Lexicon Analysis*](#325-performing-lexicon-analysis)
 
-[*3.2.5.1         Editing a Default Lexicon*](#3.2.5.1-editing-a-default-lexicon)
+[*3.2.5.1         Editing a Default Lexicon*](#3251-editing-a-default-lexicon)
 
-[*3.2.5.2         Reviewing Lexicon Analysis Results*](#3.2.5.2-reviewing-lexicon-analysis-results)
+[*3.2.5.2         Reviewing Lexicon Analysis Results*](#3252-reviewing-lexicon-analysis-results)
 
-[*3.2.6         Reviewing Regular Expressions*](#3.2.6-reviewing-regular-expressions)
+[*3.2.6         Reviewing Regular Expressions*](#326-reviewing-regular-expressions)
 
-[*3.2.7	         Reviewing Attachments*](#3.2.7-reviewing-attachments)
+[*3.2.7	         Reviewing Attachments*](#327-reviewing-attachments)
 
-[*3.2.7.1         Reviewing Image Attachments*](#3.2.7.1-reviewing-image-attachments)
+[*3.2.7.1         Reviewing Image Attachments*](#3271-reviewing-image-attachments)
 
-[*3.2.7.2         Reviewing All Attachments*](#3.2.7.2-reviewing-all-attachments)
+[*3.2.7.2         Reviewing All Attachments*](#3272-reviewing-all-attachments)
 
-[*3.2.8         Browsing Email Folders*](#3.2.8-browsing-email-folders)
+[*3.2.8         Browsing Email Folders*](#328-browsing-email-folders)
 
-[3.3 	Appraising Email](#3.3-appraising-email)
+[3.3 	Appraising Email](#33-appraising-email)
 
-[*3.3.1         Reviewing and Creating Collection Metadata*](#3.3.1-reviewing-and-creating-collection-metadata)
+[*3.3.1         Reviewing and Creating Collection Metadata*](#331-reviewing-and-creating-collection-metadata)
 
-[*3.3.2         Searching Email Messages*](#3.3.2-searching-email-messages)
+[*3.3.2         Searching Email Messages*](#332-searching-email-messages)
 
-[*3.3.2.1         Navigating Search Results*](#3.3.2.1-navigating-search-results)
+[*3.3.2.1         Navigating Search Results*](#3321-navigating-search-results)
 
-[*3.3.3    Annotating Email Messages*](#3.3.3-annotating-email-messages)
+[*3.3.3    Annotating Email Messages*](#333-annotating-email-messages)
 
-[*3.3.4       Labeling Email Messages*](#3.3.4-labeling-email-messages)
+[*3.3.4       Labeling Email Messages*](#334-labeling-email-messages)
 
-[*3.3.4.1         Assigning bulk labels*](#3.3.4.1-assigning-bulk-labels)
+[*3.3.4.1         Assigning bulk labels*](#3341-assigning-bulk-labels)
 
-[*3.3.4.2         Creating a new label*](#3.3.4.2-creating-a-new-label)
+[*3.3.4.2         Creating a new label*](#3342-creating-a-new-label)
 
-[*3.3.4.3         Assigning bulk labels by correspondent*](#3.3.4.3-assigning-bulk-labels-by-correspondent)
+[*3.3.4.3         Assigning bulk labels by correspondent*](#3343-assigning-bulk-labels-by-correspondent)
 
-[*3.3.5         Assigning Images to the Collection*](#3.3.5-assigning-images-to-the-collection)
+[*3.3.5         Assigning Images to the Collection*](#335-assigning-images-to-the-collection)
 
-[3.4         Exporting Email for Preservation](#3.4-exporting-email-for-preservation)
+[3.4         Exporting Email for Preservation](#34-exporting-email-for-preservation)
 
-[3.5](#3.5-exporting-message-attachments)         [Exporting Message Attachments](#3.5-exporting-message-attachments)
+[3.5](#35-exporting-message-attachments)         [Exporting Message Attachments](#35-exporting-message-attachments)
 
-[3\.](#3.6-exporting-email-to-the-processing-module)6         [Exporting Email to the Processing Module](#3.6-exporting-email-to-the-processing-module)
+[3\.](#36-exporting-email-to-the-processing-module)6         [Exporting Email to the Processing Module](#36-exporting-email-to-the-processing-module)
 
 [**4 	Processing Module**](#4-processing-module)
 
-[4.1	Importing an Email Archive from the Appraisal Module into the Processing Module and Assigning Accession Metadata](#4.1-importing-an-email-archive-from-the-appraisal-module-into-the-processing-module-and-assigning-accession-metadata)
+[4.1	Importing an Email Archive from the Appraisal Module into the Processing Module and Assigning Accession Metadata](#41-importing-an-email-archive-from-the-appraisal-module-into-the-processing-module-and-assigning-accession-metadata)
 
-[4.2	Assigning Collection Metadata](#4.2-assigning-collection-metadata)
+[4.2	Assigning Collection Metadata](#42-assigning-collection-metadata)
 
-[4.3	Appraisal Revisited](#4.3-appraisal-revisited)
+[4.3	Appraisal Revisited](#43-appraisal-revisited)
 
-[4.4	Setting Default Labels](#4.4-setting-default-labels)
+[4.4	Setting Default Labels](#44-setting-default-labels)
 
-[4.5	Performing Authority Control](#4.5-performing-authority-control)
+[4.5	Performing Authority Control](#45-performing-authority-control)
 
-[*4.5.1*](#4.5.1-reconciling-correspondents-with-authorized-headings)         [*Reconciling Correspondents with Authorized Headings*](#4.5.1-reconciling-correspondents-with-authorized-headings)
+[*4.5.1*](#451-reconciling-correspondents-with-authorized-headings)         [*Reconciling Correspondents with Authorized Headings*](#451-reconciling-correspondents-with-authorized-headings)
 
-[4.6 	Exporting Email for Preservation](#4.6-exporting-email-for-preservation)
+[4.6 	Exporting Email for Preservation](#46-exporting-email-for-preservation)
 
-[4.7](#4.7-downloadable-.csv-of-search-results) 	Downloadable .CSV of Search Results
+[4.7](#47-downloadable-csv-of-search-results) 	Downloadable .CSV of Search Results
 
 4.8	Exporting Message Headers
 
-[4.9 	Exporting Message Attachments](#4.9-exporting-message-attachments)
+[4.9 	Exporting Message Attachments](#49-exporting-message-attachments)
 
-[4.10	Exporting Entities](#4.10-exporting-entities)
+[4.10	Exporting Entities](#410-exporting-entities)
 
-[4.11	Exporting Correspondents](#4.11-exporting-correspondents)
+[4.11	Exporting Correspondents](#411-exporting-correspondents)
 
-[4.12	Exporting Original Text of Non-restricted Messages as Individual Text Files](#4.12-exporting-original-text-of-non-restricted-messages-as-individual-text-files)
+[4.12	Exporting Original Text of Non-restricted Messages as Individual Text Files](#412-exporting-original-text-of-non-restricted-messages-as-individual-text-files)
 
-[4.13 	Exporting Email to the Delivery and Discovery Modules](#4.13-exporting-email-to-the-delivery-and-discovery-modules)
+[4.13 	Exporting Email to the Delivery and Discovery Modules](#413-exporting-email-to-the-delivery-and-discovery-modules)
 
 [**5	Discovery Module**](#5-discovery-module)
 
-[5.1](#5.1-testing-the-discovery-module) 	[Testing the Discovery Module](#5.1-testing-the-discovery-module)
+[5.1](#51-testing-the-discovery-module) 	[Testing the Discovery Module](#51-testing-the-discovery-module)
 
-[5.2	Mounting the Discovery Module under a Web Server](#5.2-mounting-the-discovery-module-under-a-web-server)
+[5.2	Mounting the Discovery Module under a Web Server](#52-mounting-the-discovery-module-under-a-web-server)
 
-[5.3	Searching Entities Across Collections](#5.3-searching-entities-across-collections)
+[5.3	Searching Entities Across Collections](#53-searching-entities-across-collections)
 
-[5.4	Navigating to a Collection](#5.4-navigating-to-a-collection)
+[5.4	Navigating to a Collection](#54-navigating-to-a-collection)
 
-[5.5	Browsing Email](#5.5-browsing-email)
+[5.5	Browsing Email](#55-browsing-email)
 
-[5.6	Searching Email](#5.6-searching-email)
+[5.6	Searching Email](#56-searching-email)
 
 [**6 	Delivery Module**](#6-delivery-module)
 
-[6.1 	Importing the Email Archive into the Delivery Module](#6.1-importing-the-email-archive-into-the-delivery-module)
+[6.1 	Importing the Email Archive into the Delivery Module](#61-importing-the-email-archive-into-the-delivery-module)
 
-[6.2 	Navigating to a Collection](#6.2-navigating-to-a-collection)
+[6.2 	Navigating to a Collection](#62-navigating-to-a-collection)
 
-[6.3  	Browsing the Email Archive](#6.3-browsing-the-email-archive)
+[6.3  	Browsing the Email Archive](#63-browsing-the-email-archive)
 
-[6.4 	Searching the Email Archive](#6.4-searching-the-email-archive)
+[6.4 	Searching the Email Archive](#64-searching-the-email-archive)
 
-[6.5 	Labeling messages](#6.5-labeling-messages)
+[6.5 	Labeling messages](#65-labeling-messages)
 
 [**Appendix**](#appendix-epadd-data-flows)
 
 [ePADD Data Flows](#appendix-epadd-data-flows)
 
-# **1 	Overview** {#1-overview}
+# 1 Overview
 
 Welcome to ePADD, the all-in-one email appraisal, processing, discovery, and delivery solution for donors, archival repositories, and researchers. This installation and user guide will assist the new ePADD user in making the most of the program.
 
@@ -227,11 +227,11 @@ ePADD consists of four modules – Appraisal, Processing, Discovery, and Deliver
 
 **Delivery:** Enables archival repositories to provide moderated full-text access to unrestricted email archives within a reading room environment on a local server.
 
-# **2 	Getting Started** {#2-getting-started}
+# 2 Getting Started
 
 This section will get you started working with ePADD from installation through navigating the software platform.
 
-## **2.1 	System Requirements** {#2.1-system-requirements}
+## 2.1 System Requirements
 
 **OS:** 64-bit Windows (x86\_64 or Arm), macOS (Apple silicon or Intel), Linux. The Debian package (.deb) requires Ubuntu 24.04 or later; on other Linux distributions use the standalone .jar.
 
@@ -264,7 +264,7 @@ Choose a value below the computer's total installed RAM, leaving sufficient memo
 
 The Windows executable (epadd.exe) and the standalone .jar files do not include Java. To use them, a 64-bit Java Runtime Environment, version 11 or later, must be installed on the computer.
 
-## **2.2 	Installing ePADD** {#2.2-installing-epadd}
+## 2.2 Installing ePADD
 
 Please download the latest ePADD distribution files from [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). Each release offers several files. The release notes contain a table, "Which file do I need?", that links to the right installer for each type of computer. In summary:
 
@@ -277,7 +277,7 @@ Please download the latest ePADD distribution files from [https\://github.com/eP
 | Ubuntu 24.04 or later | epadd-\<version\>-linux-x86\_64.deb |
 | Any system with Java 11 or later, no installation | epadd-\<version\>-standalone.jar |
 
-The .msi, .dmg and .deb installers include their own Java runtime, so nothing else needs to be installed first (see Section [2.1: System Requirements](#2.1-system-requirements)). Each installer is built for one processor architecture, so please make sure to choose the file that matches your computer.
+The .msi, .dmg and .deb installers include their own Java runtime, so nothing else needs to be installed first (see Section [2.1: System Requirements](#21-system-requirements)). Each installer is built for one processor architecture, so please make sure to choose the file that matches your computer.
 
 Files whose names begin with *epadd-discovery* are the corresponding installers and files for the Discovery Module (see the notes below). The *.war* files are for server installations.
 
@@ -292,7 +292,7 @@ The epadd-settings folder is located at:
 On Windows: C:\\Users\\\<username\>\\epadd-settings  
 Mac: /Users/\<username\>/epadd-settings
 
-### **2.2.1         Installing ePADD on Windows** {#2.2.1-installing-epadd-on-windows}
+### 2.2.1 Installing ePADD on Windows
 
 ePADD is available for Windows in two forms:
 
@@ -345,7 +345,7 @@ ePADD saves all data in folders in the C:\\users\\\<username\>\\ directory, unle
 
 **Note:** The user can optionally create and modify a named entity kill list to suppress text strings that ePADD has identified as entities from appearing as such within the software. To do so, create a text file titled 'kill.txt' in the ePADD-settings folder. Each line of the document should contain a single named entity. Save the file and restart ePADD. The entities you listed should be suppressed.
 
-### **2.2.2         Installing ePADD on macOS** {#2.2.2-installing-epadd-on-macos}
+### 2.2.2 Installing ePADD on macOS
 
 Please download the latest ePADD disk image (.dmg) from [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). There are two different disk images for macOS, and you need the one that matches the processor of your Mac:
 
@@ -403,7 +403,7 @@ ePADD saves all data in folders in the Macintosh HD/Users/\<username\>/ director
 
 **Note:** The user can optionally create and modify a named entity kill list to suppress text strings that ePADD has identified as entities from appearing as such within the software. To do so, create a text file titled 'kill.txt' in the ePADD-settings folder. Each line of the document should contain a single named entity. Save the file and restart ePADD. The entities you listed should be suppressed.
 
-### **2.2.3         Installing ePADD on Linux** {#2.2.3-installing-epadd-on-linux}
+### 2.2.3 Installing ePADD on Linux
 
 For Ubuntu 24.04 or later, please download the Debian package *epadd-\<version\>-linux-x86\_64.deb* from [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). The package includes Java, so no separate Java installation is needed. It is available for 64-bit x86 computers only.
 
@@ -427,19 +427,19 @@ ePADD saves all data in folders in the user's home directory (/home/\<username\>
 
 **Note:** The Discovery Module is available as the Debian package *epadd-discovery-\<version\>-linux-x86\_64.deb* (installed with *sudo apt install* as above and uninstalled with *sudo apt remove epadd-discovery*) or as *epadd-discovery-\<version\>-standalone.jar*.
 
-### **2.2.4         	Compatibility Note** {#2.2.4-compatibility-note}
+### 2.2.4 Compatibility Note
 
 Important: Releases from 6.0 onward package all email archive files using the BagIt specification, and are not backwards compatible with previous releases earlier to v. 5\. Users should migrate v. 5 ePADD folders using the script available via [https\://github.com/ePADD/epadd/releases](https://github.com/ePADD/epadd/releases).
 
 ePADD 5.0 is not compatible with previous versions.
 
-## **2.3 	Running ePADD** {#2.3-running-epadd}
+## 2.3 Running ePADD
 
 If you installed ePADD with an installer, start it from the Start menu or desktop shortcut (Windows), the Applications folder (macOS) or the application menu (Linux). If you use epadd.exe, simply double-click the executable file. The standalone .jar can be started with *java \-jar epadd-\<version\>-standalone.jar*.
 
-## **2.4 	Selecting a Module** {#2.4-selecting-a-module}
+## 2.4 Selecting a Module
 
-The first time you run ePADD, it will default to the Appraisal Module. For testing, this may be changed by manually pointing the browser to localhost:9099/epadd/switch-module. However, for production, it is best practice to first close ePADD, and change the default module using the epadd.properties file (see section [2.2: Installing ePADD](#2.2-installing-epadd) in this guide for more details on configuring ePADD).
+The first time you run ePADD, it will default to the Appraisal Module. For testing, this may be changed by manually pointing the browser to localhost:9099/epadd/switch-module. However, for production, it is best practice to first close ePADD, and change the default module using the epadd.properties file (see section [2.2: Installing ePADD](#22-installing-epadd) in this guide for more details on configuring ePADD).
 
 Note that an email archive must first be ingested into ePADD and exported through the Appraisal Module before it can be accessed in the Processing Module, and exported once again to the Discovery and Delivery Modules before it can be accessed in those modules.
 
@@ -451,7 +451,7 @@ The four modules are:
 
 **Appraisal Module** – Provides creators, curators, and archivists with a toolset to load, review, and manage an email archive on a local server prior to accessioning that archive to a repository. The module includes various methods to help a user determine the relevance and importance of email messages, to identify and flag sensitive messages, and to impose restrictions on access. Email can be exported from this module to the Processing Module.
 
-**Processing** **Module** – Enables an archivist to organize and edit an email archive on a local server following the initial appraisal of materials. Includes the ability to annotate messages, to identify and flag sensitive information, to further refine entity extraction, and to approve/assign authority headings. Email processed through this module can be exported to the Discovery and Delivery Modules. (Note that the Discovery Module is downloaded and run separately; see sections [3.6: Exporting Email to the Processing Module](#3.6-exporting-email-to-the-processing-module) and [5.2: Mounting the Discovery Module Under a Web Server](#5.2-mounting-the-discovery-module-under-a-web-server) for further information).
+**Processing** **Module** – Enables an archivist to organize and edit an email archive on a local server following the initial appraisal of materials. Includes the ability to annotate messages, to identify and flag sensitive information, to further refine entity extraction, and to approve/assign authority headings. Email processed through this module can be exported to the Discovery and Delivery Modules. (Note that the Discovery Module is downloaded and run separately; see sections [3.6: Exporting Email to the Processing Module](#36-exporting-email-to-the-processing-module) and [5.2: Mounting the Discovery Module Under a Web Server](#52-mounting-the-discovery-module-under-a-web-server) for further information).
 
 **Discovery Module** \- A separate, public web-based discovery environment designed to allow remote users to search email correspondents, headers, and extracted entities, while limiting full-text access to the materials.
 
@@ -463,7 +463,7 @@ The four modules are:
 
 Please note that it is always best practice to fully quit ePADD and restart ePADD before beginning work in another module.  You *must* fully quit and restart ePADD in order to switch to another module from either the Discovery or Delivery module.
 
-## **2.5 	Navigating ePADD** {#2.5-navigating-epadd}
+## 2.5 Navigating ePADD
 
 The navigation bar at the top of the screen will present you with primary menu options aligning with the functionality of a particular module. Selecting one of these primary menu options will bring you to a sub-menu offering the potential to carry out related tasks. ePADD is flexible and does not require that the user navigate through a given module in any particular order. Links to documentation, user forums, and other helpful information can be found via the **Help** dropdown located in the far right of the navigation bar.
 
@@ -506,7 +506,7 @@ selecting the help drawer button located in the top right corner of a screen:
 
 **An example of a screen which provides helpful information accessed via the help drawer.** ![][image11]
 
-# **3	Appraisal Module** {#3-appraisal-module}
+# 3 Appraisal Module
 
 ![][image12]
 
@@ -514,7 +514,7 @@ selecting the help drawer button located in the top right corner of a screen:
 
 The **Appraisal Module** provides creators, curators and archivists with a robust toolset to load, review and manage the email of an individual (or optionally, a group of individuals) prior to accessioning that mail to a repository. The module includes various tools to help a user determine the relevance and importance of email messages, to identify and flag sensitive messages, and to impose restrictions on access.
 
-## **3.1 	Importing email** {#3.1-importing-email}
+## 3.1 Importing email
 
 The Appraisal module is the default module (although this can be adjusted using the epadd.properties file).  When first launched, you will find yourself on the **Import** screen. This interface is where you enter information (name and an associated email address) about the owner of the email account (optional), as well as specify the location and account info, if applicable, of the MBOX files or IMAP email accounts that ePADD will be ingesting for review and potential transfer to an archival repository. You can select multiple accounts, as well as multiple MBOX files, by selecting the *Add another account* or the *Add* anothe*r folder* buttons. Note that many email clients do not allow incoming IMAP connections due to their security settings, before attempting an import using IMAP, verify that your account will allow it.
 
@@ -554,7 +554,7 @@ If you delete the directory manually (not from within ePADD as described below),
 
 This method \- deleting the directory manually \- can be used at any point if you need or want to start again.
 
-### **3.1.1	Emailchemy Integration** {#3.1.1-emailchemy-integration}
+### 3.1.1 Emailchemy Integration
 
 As an optional add-on, ePADD offers users the ability to import various email file formats using Emailchemy, an email conversion tool (this add-on is unavailable in earlier versions of ePADD). Emailchemy also allows users to export emails, through ePADD’s Appraisal and/or Processing modules, in formats other than MBOX, which is ePADD’s standard format. For example, users can export to EML, if that is a preferred preservation format. Click on the following link for a comprehensive list of file formats that Emailchemy reads and writes: [https\://weirdkid.com/emailchemy/](https://weirdkid.com/emailchemy/).[^1]
 
@@ -584,7 +584,7 @@ Following the import, select ‘Folders’ on the Appraisal module dashboard for
 
 ![][image25]
 
-### **3.1.2	Sidecar Files** {#3.1.2-sidecar-files}
+### 3.1.2 Sidecar Files
 
 A sidecar file is a file that is not necessarily part of an email archive, but which contains information that is relevant to it, such as a donor agreement, finding aid or metadata file. Sidecar files are optional and can include any type of documentation considered relevant by the user. ePADD allows users to upload, export, list and delete sidecar files. To upload a sidecar file, go to the Import screen and click on the upload icon:
 
@@ -600,7 +600,7 @@ To view a list of uploaded sidecar files and, if necessary, delete any of them, 
 
 ![][image27]
 
-## **3.2 	Reviewing Email** {#3.2-reviewing-email}
+## 3.2 Reviewing Email
 
 The Appraisal Module provides the user with a diverse set of tools for reviewing and assessing email prior to transfer to an archival repository.
 
@@ -621,17 +621,17 @@ With the exception of reviewing the report and potentially investigating possibl
 
 The various tools ePADD provides to assist in email review are described below.
 
-### **3.2.1         Browsing Email Messages** {#3.2.1-browsing-email-messages}
+### 3.2.1 Browsing Email Messages
 
 After loading email into ePADD, the program opens the **Browse** screen as the default view. The user can also navigate to the **Browse** screen from the Appraisal Module Menu. From this screen, the user can browse All Messages (which allows users to browse all messages in the collection, one-by-one);by Correspondent; by Person or Other entities; by account folder structure; by Lexicon categories; or by whether messages include Image Attachments, Other Attachments; or contain sensitive information (identified through regular expressions).
 
-### **3.2.2	Browsing All Messages** {#3.2.2-browsing-all-messages}
+### 3.2.2 Browsing All Messages
 
 Users can browse all messages in a collection by clicking on ‘All Messages’, which is located in the banner at the top of the ePADD dashboard:
 
 ![][image16]
 
-### **3.2.3         Editing Correspondents** {#3.2.3-editing-correspondents}
+### 3.2.3 Editing Correspondents
 
 ![][image31]
 
@@ -661,7 +661,7 @@ Two or more correspondents can now be selected within the correspondents list in
 
 The entry will now contain all of the email addresses, names and titles contained within the items which were combined.
 
-### **Instructions:**
+### Instructions:
 
 In the correspondents tab, search for the entries you wish to merge and select them by clicking on the entry anywhere other than the name/message figure totals
 
@@ -687,7 +687,7 @@ Once the merge is complete the following message is displayed:
 
 ### 
 
-### **3.2.4        Performing Entity Analysis** {#3.2.4-performing-entity-analysis}
+### 3.2.4 Performing Entity Analysis
 
 ePADD identifies, extracts, and manages entities using a custom natural language processing toolkit. The extracted entities include persons, fine-grained entities such as corporations and government agencies, as well as other entity types such as diseases, awards, and events.  
 Extracted entities can be reviewed by navigating to **Entities**, accessible under the **Browse** menu option from the navigation bar.
@@ -715,7 +715,7 @@ The user can merge entities by grouping them together using find, cut, and paste
 
 The user can optionally create and modify a single entity kill list to suppress text strings that ePADD has identified as entities from appearing as such under any entity category. To do so, create a text file titled 'kill.txt' in the ePADD-settings folder. Each line of the document should contain a single named entity. Save the file and restart ePADD. The entities you listed should be suppressed.
 
-### **3.2.5          Performing Lexicon Analysis** {#3.2.5-performing-lexicon-analysis}
+### 3.2.5 Performing Lexicon Analysis
 
 ePADD employs lexicon analysis to search email messages for terms associated with personal or restricted information, which might indicate the need for further review. ePADD ships with several default lexicons. The 'Sensitive' lexicon can be used to assist in the identification of email messages with the potential for confidential content.
 
@@ -730,7 +730,7 @@ Users can create a new lexicon, import a lexicon from outside ePADD, or view a c
 
 From a particular lexicon page, you can choose to view a graph of the results, or edit the existing lexicon. Or, you can select a category to view all messages that contain a term included in that category.
 
-#### ***3.2.5.1*** 	**Editing a Default Lexicon** {#3.2.5.1-editing-a-default-lexicon}
+#### ***3.2.5.1*** **Editing a Default Lexicon**
 
 ![][image46]
 
@@ -746,7 +746,7 @@ Users can export lexicons using the Export Button, to install them for use with 
 
 The user **must** use the ePADD interface to add, remove, or update lexicons. This is because of how the bag checksum is calculated.
 
-#### **3.2.5.2         Reviewing Lexicon Analysis Results** {#3.2.5.2-reviewing-lexicon-analysis-results}
+#### 3.2.5.2 Reviewing Lexicon Analysis Results
 
 ePADD allows a user to test the results of any category  in order to ascertain whether a particular term is too general or too specific to be helpful.  
 ![][image47]  
@@ -754,11 +754,11 @@ ePADD allows a user to test the results of any category  in order to ascertain w
 
 Lexicon analysis results for a whole lexicon may be reviewed via Advanced Search. A user can also view lexicon analysis results directly by clicking category results from the Lexicon Table screen.
 
-### **3.2.6 	Reviewing Regular Expressions**  **![][image49]** {#3.2.6-reviewing-regular-expressions}
+### 3.2.6 Reviewing Regular Expressions **![][image49]**
 
 To further aid in identifying potentially confidential materials, ePADD searches the archive for sensitive messages by searching for regular expressions such as social security numbers, and credit card numbers. Regular expressions are a customizable lexicon under the Lexicon Search browse category, selected from the lexicon dropdown menu. Note that since each lexicon category contains just one regular expression, results for each category display under Lexicon Search results. The user can find the form of many common regular expressions online; [https\://regexlib.com/](https://regexlib.com/) may be a helpful resource in this regard.
 
-## **3.2.7	Reviewing Attachments** {#3.2.7-reviewing-attachments}
+## 3.2.7 Reviewing Attachments
 
 ```
 ePADD allows the user to browse and review email attachments. ePADD uses the Apache Tika toolkit to recognize a wide range of document formats. A complete list of formats recognized by Apache Tika can be found [here](http://tika.apache.org/1.4/formats.html).   
@@ -766,7 +766,7 @@ ePADD allows the user to browse and review email attachments. ePADD uses the Apa
 
 &nbsp;
 
-#### **3.2.7.1         Reviewing Image Attachments** {#3.2.7.1-reviewing-image-attachments}
+#### 3.2.7.1 Reviewing Image Attachments
 
 Select **Image Attachments** from the Appraisal Module menu to navigate to the Image Attachments screen. Image attachments are displayed chronologically by year and are de-duplicated. The user can navigate between years using the left and right arrows at the top right of the screen. The user can switch between a grid and list view using the icons in the top right corner. Selecting the Message View button will open the set of all messages associated with the currently displayed set of attachments. Selecting an image attachment will give the user the option to directly access the related message. The user can also export the current set of attachments as a .zip file by selecting the download icon.
 
@@ -776,7 +776,7 @@ Facets on the left can be used to further refine the set of images displayed by 
 
 ![][image50]
 
-#### **3.2.7.2         Reviewing All Attachments** {#3.2.7.2-reviewing-all-attachments}
+#### 3.2.7.2 Reviewing All Attachments
 
 ![][image51]
 
@@ -787,9 +787,9 @@ As with the Image Attachments view, attachments are displayed chronologically by
 
 ![][image53]
 
-### **3.2.8  	Browsing Email Folders** {#3.2.8-browsing-email-folders}
+### 3.2.8 Browsing Email Folders
 
-### **![][image54]**
+### ![][image54]
 
 The user can navigate email messages by folder structure using the Browse Folders interface, accessible from the Browse screen.
 
@@ -798,11 +798,11 @@ The user can navigate email messages by folder structure using the Browse Folder
 
 If using Gmail, to ensure messages appear in the appropriate folder, please be sure to deselect the non-unique 'All Mail' folder during ingest for email ingested via IMAP.
 
-## **3.3 	Appraising Email** {#3.3-appraising-email}
+## 3.3 Appraising Email
 
 Once you have confirmed the identity of correspondents, edited the lexicon to your satisfaction, and reviewed entities and attachments, the next step is using the information you have learned to appraise individual email messages. ePADD provides the user with a faceted search interface from which to annotate individual email messages and make appraisal decisions.
 
-### **3.3.1         Reviewing and Creating Collection Metadata** {#3.3.1-reviewing-and-creating-collection-metadata}
+### 3.3.1 Reviewing and Creating Collection Metadata
 
 ePADD allows users to add manually an extensive range of metadata associated with a particular email archive. First, click on the information button \-  \- which is located to the right of the email archive’s title on the ePADD dashboard:
 
@@ -859,7 +859,7 @@ As well XML, PREMIS metadata is also available in JSON format.
 
 ![][image63]
 
-### **3.3.2         Searching Email Messages** {#3.3.2-searching-email-messages}
+### 3.3.2 Searching Email Messages
 
 ![][image66]![][image67]
 
@@ -889,7 +889,7 @@ Likewise, ePADD enables a user to search an email archive for multiple terms usi
 
 Finally, ePADD enables a user to search for a list of email addresses using Correspondent List Search. Type or paste one term per line to search for and apply labels to a set of email addresses.
 
-#### **3.3.2.1         Navigating Search Results** {#3.3.2.1-navigating-search-results}
+#### 3.3.2.1 Navigating Search Results
 
 Upon submitting a search query, ePADD opens a new browser window displaying the message browse screen.
 
@@ -907,7 +907,7 @@ If you ever wish to return to a particular message, you can search for a message
 
 **![][image75]**
 
-## **3.3.3	Annotating Email Messages**
+### 3.3.3 Annotating Email Messages
 
 ePADD allows the user to annotate email messages from the message browse screen. These annotations are persistent across ePADD sessions, and can be used to provide supplemental information to assist the archivist in processing the collection, including elaborating on access restrictions or to provide additional information for the benefit of researchers.
 
@@ -918,7 +918,7 @@ Once you have added an annotation, a new facet, Annotations, will appear in resu
 
 ![][image77]
 
-### **3.3.4	Labeling Email Messages**  **![][image78]** {#3.3.4-labeling-email-messages}
+### 3.3.4 Labeling Email Messages **![][image78]**
 
 ePADD allows the user to label email messages that should not be exported for transfer to an archival repository, as well as messages that should be transferred with restrictions.
 
@@ -935,7 +935,7 @@ After you have assigned labels, they appear in the message browse screen.
 
 ![][image80]
 
-#### **3.3.4.1         Assigning bulk labels** {#3.3.4.1-assigning-bulk-labels}
+#### 3.3.4.1 Assigning bulk labels
 
 To apply a label to more than one message, you can select the label management button above the message pane:
 
@@ -947,7 +947,7 @@ You can also assign default labels for all messages by using the 'Set labels for
 
 ![][image83]
 
-#### **3.3.4.2         Creating a new label** {#3.3.4.2-creating-a-new-label}
+#### 3.3.4.2 Creating a new label
 
 ![][image84]
 
@@ -974,11 +974,11 @@ Because ePADD enables users to assign multiple restriction labels to a given mes
 
 **Warning:** Since importing labels overwrites all current label assignments, this task should only be undertaken prior to accessioning / processing a collection.
 
-#### **3.3.4.3         Assigning bulk labels by correspondent** {#3.3.4.3-assigning-bulk-labels-by-correspondent}
+#### 3.3.4.3 Assigning bulk labels by correspondent
 
 ePADD also gives the user the ability to assign labels to all messages from a list of correspondents, using the *Correspondents List Search* option.
 
-### **3.3.5         Assigning Images to the Collection** {#3.3.5-assigning-images-to-the-collection}
+### 3.3.5 Assigning Images to the Collection
 
 ePADD allows the user to assign up to three images to any given collection to improve the end-user experience: a profile image in Appraisal, and profile, landing page, and banner images in Processing.
 
@@ -988,7 +988,7 @@ Images are set in the location they appear. You can set the profile image from t
 
 Within Processing, you can add the landing image from the Collection Browse page, and the banner image from the Collection Details page, using a similar interface.
 
-## **3.4 	Exporting Email for Preservation** {#3.4-exporting-email-for-preservation}
+## 3.4 Exporting Email for Preservation
 
 ePADD can export email messages, including their headers and attachments, in MBOX or EML format for long-term preservation or transfer to a digital preservation repository. Both formats are suitable for preserving email. This functionality is available in both the Appraisal and Processing modules.
 
@@ -1060,7 +1060,7 @@ When downloading in EML format, the messages are provided as individual EML file
 
 When downloading in MBOX format, ePADD produces a single MBOX file containing the selected messages.
 
-## **3.5 	Exporting Message Attachments** {#3.5-exporting-message-attachments}
+## 3.5 Exporting Message Attachments
 
 Select Export from the Appraisal Module menu at the top of the screen to navigate to the Export screen.
 
@@ -1070,7 +1070,7 @@ Select Export from the Appraisal Module menu at the top of the screen to navigat
 
 You can choose to export attachments according to various criteria, including particular formats. The user can also indicate whether they would like to export only those attachments which have not been recognized by Apache Tika (and are therefore not indexed with ePADD), for further review. Note that messages are only flagged in this way if they have also been appraised or processed by ePADD.
 
-## **3.6  Exporting Email to the Processing Module** {#3.6-exporting-email-to-the-processing-module}
+## 3.6 Exporting Email to the Processing Module
 
 Once you have reviewed the email archive, the final step is to export the appraised email archive (along with whatever supplemental information or annotations you have added) so it can be transferred to an archival repository, and/or processed in another ePADD module.
 
@@ -1118,21 +1118,21 @@ epadd.mode=appraisal
 If it is already running, you must restart ePADD. If no module is specified in the properties files, ePADD will start in its default mode, which is the Appraisal module.
 
 Note that when changing the mode to ‘discovery’, you also need to start ePADD using the file  
-epadd-discovery-standalone.jar as described elsewhere in this guide (please see section [5.2 Mounting the Discovery Module under a Web Server](#5.2-mounting-the-discovery-module-under-a-web-server)). Although ePADD will start in discovery mode using epadd.exe or epadd-standalone.jar, it will not completely work as intended.
+epadd-discovery-standalone.jar as described elsewhere in this guide (please see section [5.2 Mounting the Discovery Module under a Web Server](#52-mounting-the-discovery-module-under-a-web-server)). Although ePADD will start in discovery mode using epadd.exe or epadd-standalone.jar, it will not completely work as intended.
 
-# **4 	Processing Module** {#4-processing-module}
+# 4 Processing Module
 
 ![][image107]
 
-Email archives must initially be ingested to ePADD from the Appraisal module. To work with a collection within the Processing module, it is best practice to first close ePADD, and change the default module using the epadd.properties file (see section [2.2: Installing ePADD](#2.2-installing-epadd) in this guide for more details on configuring ePADD). After confirming successful import of files into Processing, you can optionally delete files in Appraisal by deleting the 'epadd-appraisal' folder in your user directory.
+Email archives must initially be ingested to ePADD from the Appraisal module. To work with a collection within the Processing module, it is best practice to first close ePADD, and change the default module using the epadd.properties file (see section [2.2: Installing ePADD](#22-installing-epadd) in this guide for more details on configuring ePADD). After confirming successful import of files into Processing, you can optionally delete files in Appraisal by deleting the 'epadd-appraisal' folder in your user directory.
 
 If you are planning to run multiple modules on a single workstation, you may also navigate between modules by manually navigating to localhost:9099/epadd/switch-module using the web browser address bar. Again, please note that it is always best practice to close the archive using the 'Close' header menu option, and to fully quit ePADD, before beginning work in another module.
 
 **Please note that if you wish to export an unprocessed MBOX file for preservation, this should be your first step upon starting up the Processing Module. Select Export from the navigation bar, then use the Export messages in MBOX format option.**
 
-## **4.1	Importing an Email Archive from the Appraisal Module into the Processing Module and Assigning Accession Metadata** {#4.1-importing-an-email-archive-from-the-appraisal-module-into-the-processing-module-and-assigning-accession-metadata}
+## 4.1 Importing an Email Archive from the Appraisal Module into the Processing Module and Assigning Accession Metadata
 
-Please note that it is always best practice to fully quit ePADD before beginning work in another module. To work with a collection within the Processing module, it is recommended to first close ePADD, and change the default module using the epadd.properties file (see section [2.2: Installing ePADD](#2.2-installing-epadd) of this guide for more details on configuring ePADD).
+Please note that it is always best practice to fully quit ePADD before beginning work in another module. To work with a collection within the Processing module, it is recommended to first close ePADD, and change the default module using the epadd.properties file (see section [2.2: Installing ePADD](#22-installing-epadd) of this guide for more details on configuring ePADD).
 
 ePADD uses the concept of accessions and collections. All email exported from Appraisal is considered an accession. To create a new collection within ePADD Processing, select 'Add' from the navigation bar, then use the 'Browse' button to navigate to the folder exported from the Appraisal Module. Assign accession metadata, then import the email archive identified by clicking the 'Import Accession' button.
 
@@ -1143,7 +1143,7 @@ Once you have added an accession to a new collection, you have the ability to ad
 
 Add an additional accession to an existing collection by selecting the Add Accession button,  from the Collection page, below Collection Details. You can also edit accession metadata at any time from the Collection page.
 
-## **4.2	Assigning Collection Metadata** {#4.2-assigning-collection-metadata}
+## 4.2 Assigning Collection Metadata
 
 After the accession has been imported, you will be brought to the Browse screen. Close the archive using the close button in the navigation bar to return to the Collections page.
 
@@ -1173,7 +1173,7 @@ When you have finished adding information, click Save.
 
 ![][image117]
 
-## **4.3	Appraisal Revisited** {#4.3-appraisal-revisited}
+## 4.3 Appraisal Revisited
 
 The **Processing Module** includes all of the review and appraisal functionality of the **Appraisal Module**, as well as additional functionality associated with archival processing. Please refer to **Section 3: Appraisal Module** for information on Reviewing Email (Browsing Email Messages; Editing Correspondents; Performing Entity Analysis, Performing Lexicon Analysis; and Reviewing Attachments) as well as Appraising Email (Searching Email Messages; Annotating Email Messages; and Restricting Email Messages).
 
@@ -1181,7 +1181,7 @@ There is no set order to perform the steps above. In fact, different email archi
 
 The various unique functionalities provided by the Processing Module to assist with archival processing are described below.
 
-## **4.4	Setting Default Labels** {#4.4-setting-default-labels}
+## 4.4 Setting Default Labels
 
 If you wish to reset any labels that were added in Appraisal, or set new default labels, navigate to Labels from the Browse screen and select Set labels for all messages.
 
@@ -1191,16 +1191,16 @@ The Processing Module contains an additional restriction label not present in th
 
 When processing a large email collection, it is not always possible to carry out appraisal on an entire collection, and a sub-set or smaller collection identified within the collection may be selected as an interim measure. A sub-set of appraised records rather than the collection in its entirety can be transferred to the Delivery module using the ‘permission’ label (We introduced a new type of label: the ‘permission’ label. You have to create a custom label of type ‘permission’ for example ‘Cleared for Transfer to Delivery module’).
 
-## **4.5	Performing Authority Control** {#4.5-performing-authority-control}
+## 4.5 Performing Authority Control
 
 ePADD allows the user to reconcile correspondents and named entities extracted by ePADD with authorized headings (including OCLC FAST headings).
 
 Within the Processing Module, select **Authorities** from the navigation bar to begin this process.
 
-### **4.5.1        Reconciling Correspondents with Authorized Headings** {#4.5.1-reconciling-correspondents-with-authorized-headings}
+### 4.5.1 Reconciling Correspondents with Authorized Headings
 
 ```
-For more information about how ePADD merges correspondents, as well as how to manually override merged correspondents, please see section [3.2.3: Editing Correspondents](#3.2.3-editing-correspondents) for further information.
+For more information about how ePADD merges correspondents, as well as how to manually override merged correspondents, please see section [3.2.3: Editing Correspondents](#323-editing-correspondents) for further information.
 
 The order of correspondents on the Authorities screen can be relisted alphabetically by person, or by volume of messages exchanged.  You can also select how many correspondent entries to view per page using the option box in the top left corner, as well as search for a particular correspondent using the search box at the top of the page.
 ```
@@ -1219,9 +1219,9 @@ If you are unsatisfied with ePADD’s results, you can add an authorized heading
 
 ![][image120]
 
-Any actions taken in the Authorities interface are autosaved. Authorized correspondents can be exported as a .CSV file by selecting **Export** from the navigation bar, then using the *Export Correspondents* option. See section [4.11: Exporting Correspondents](#4.11-exporting-correspondents) for more information.
+Any actions taken in the Authorities interface are autosaved. Authorized correspondents can be exported as a .CSV file by selecting **Export** from the navigation bar, then using the *Export Correspondents* option. See section [4.11: Exporting Correspondents](#411-exporting-correspondents) for more information.
 
-## **4.6 	Exporting Email for Preservation** {#4.6-exporting-email-for-preservation}
+## 4.6 Exporting Email for Preservation
 
 The Processing Module supports the same preservation export and email download functionality as the Appraisal Module.
 
@@ -1239,11 +1239,11 @@ For detailed instructions, including Emailchemy licence requirements, export for
 
 &nbsp;
 
-## **4.7 	Downloadable .csv of search results** {#4.7-downloadable-.csv-of-search-results}
+## 4.7 Downloadable .csv of search results
 
 The header metadata for the email selection produced by the results of any search, generated by any means, (search, advanced search, from the correspondents list, from the lexicon) can be downloaded as a CSV file.
 
-### **Instructions**
+### Instructions
 
 Select the ‘download messages as MBOX’ option on the selected search results page:  
 ![][image121]
@@ -1269,7 +1269,7 @@ The CSV will then download, consisting of the following header data fields:
 
 ## 
 
-## **4.8	Exporting Message Headers**
+## 4.8 Exporting Message Headers
 
 Message headers can be exported from Processing as a .CSV file to aid in social network analysis using the *Export Headers (CSV)* option. Exported fields include Date, From (resolved name), from (email address), To (resolved name), To (email address), CC (resolved name), CC (email address), BCC (resolved name), BCC (email address).
 
@@ -1277,7 +1277,7 @@ Select **Export** from the Processing Module menu at the top of the screen to na
 
 ![][image124]
 
-## **4.9 	Exporting Message Attachments** {#4.9-exporting-message-attachments}
+## 4.9 Exporting Message Attachments
 
 Users can also choose to export attachments according to various search criteria. The user can indicate whether they would like to export only those attachments which have not been recognized by Apache Tika (and are therefore not indexed with ePADD) for further review. Note that messages are only flagged in this way if they have also been appraised or processed by ePADD.
 
@@ -1285,7 +1285,7 @@ Select **Export** from the Processing Module menu at the top of the screen to na
 
 ![][image125]
 
-## **4.10	Exporting Entities** {#4.10-exporting-entities}
+## 4.10 Exporting Entities
 
 Users can export recognized entities. The user can select whether they would like to export all entities or just particular entity types. Entities are exported as CSV and include the following fields: Entity name, number of related messages, start and end dates for related messages, entity type, and score (whether there is a direct match with an entity in DBPedia).
 
@@ -1293,7 +1293,7 @@ Select **Export** from the Processing Module menu at the top of the screen to na
 
 ![][image126]
 
-## **4.11	Exporting Correspondents** {#4.11-exporting-correspondents}
+## 4.11 Exporting Correspondents
 
 Users can export correspondents from the email archive. Users can choose to export only correspondents that have been confirmed via the Authorities interface (which include related unique identifiers), or only  unconfirmed correspondents. Unconfirmed correspondents are exported as CSV and include the following fields: Correspondent name, number of sent and received messages, number of mentions, and start and end dates for related messages.
 
@@ -1301,7 +1301,7 @@ Select **Export** from the Processing Module menu at the top of the screen to na
 
 ![][image127]
 
-## **4.12	Exporting Original Text of Non-restricted Messages as Individual Text Files** {#4.12-exporting-original-text-of-non-restricted-messages-as-individual-text-files}
+## 4.12 Exporting Original Text of Non-restricted Messages as Individual Text Files
 
 Users can export all message text (subject line and message body) as individual TXT files to support topic modeling and other methods of text analysis.
 
@@ -1309,7 +1309,7 @@ Select **Export** from the Processing Module menu at the top of the screen to na
 
 ![][image128]
 
-## **4.13 	Exporting Email to the Delivery and Discovery Modules** {#4.13-exporting-email-to-the-delivery-and-discovery-modules}
+## 4.13 Exporting Email to the Delivery and Discovery Modules
 
 Once you have reviewed the email archive, the final step is to export the processed email archive (along with whatever supplemental information or annotations you have added) for display in the Discovery and/or Delivery Modules.
 
@@ -1332,11 +1332,11 @@ This step may take some time as ePADD assembles the exported email archive and a
 
 **Exporting the processed email archive from the Processing Module creates two folders: one to support Discovery, and one to support Delivery**
 
-# **5	Discovery Module** {#5-discovery-module}
+# 5 Discovery Module
 
 The Discovery Module is designed to run on a web-server, and allow remote users to search redacted header information and extracted entities from an email archive while limiting access to the full-text of messages..
 
-## **5.1	Testing the Discovery Module** {#5.1-testing-the-discovery-module}
+## 5.1 Testing the Discovery Module
 
 To test the Discovery module on your local workstation, copy the folder 'Email archive of \<name\>-Discovery,' exported through the Processing Module to the 'epadd-discovery' folder in your user directory. (Please see section [2: Getting Started](#2-getting-started) for more information about locating your user directory). If an 'epadd-discovery' folder does not already exist within your user directory, create that folder.
 
@@ -1346,7 +1346,7 @@ Note: Before exporting to Discovery, you may wish to reset the 'reviewed' status
 
 &nbsp;
 
-## **5.2	Mounting the Discovery Module under a Web Server** {#5.2-mounting-the-discovery-module-under-a-web-server}
+## 5.2 Mounting the Discovery Module under a Web Server
 
 Please follow the steps below to mount  the ePADD Discovery Module under a web server.
 
@@ -1384,7 +1384,7 @@ Please also ensure that the 9099 port is accessible from outside and will remain
 
 Where {machine-name} is the publicly visible name/IP of the machine where the epadd-discovery module is running.
 
-## **5.3	Searching Entities Across Collections** {#5.3-searching-entities-across-collections}
+## 5.3 Searching Entities Across Collections
 
 ```
 ePADD supports cross-collection entity search. Navigate to Search from the Discovery navigation bar to access cross-collection entity search.
@@ -1392,11 +1392,11 @@ ePADD supports cross-collection entity search. Navigate to Search from the Disco
 
 &nbsp;
 
-## **![][image133]**
+## ![][image133]
 
 Cross-collection entity search supports autocomplete. The user can navigate from search results to the related collection.
 
-## **5.4	Navigating to a Collection** {#5.4-navigating-to-a-collection}
+## 5.4 Navigating to a Collection
 
 The Collections menu provides a user with access to the redacted email of any processed collections.
 
@@ -1412,7 +1412,7 @@ The next screen provides basic details of the collection.  A user can proceed wi
 
 **Access a Collection by clicking the 'ENTER' button.**
 
-## **5.5	Browsing Email** {#5.5-browsing-email}
+## 5.5 Browsing Email
 
 The Browse Menu provides a user with access to several options to browse a redacted email archive, including by Correspondent as well as by extracted entity type (persons, organizations, and locations).
 
@@ -1420,7 +1420,7 @@ The Browse Menu provides a user with access to several options to browse a redac
 
 **Browse Menu in the Discovery Module**
 
-## **5.6	Searching Email** {#5.6-searching-email}
+## 5.6 Searching Email
 
 ![][image137]  
 To search the email archive, navigate to the Search screen.
@@ -1452,20 +1452,20 @@ ePADD also allows a user to search the email archive for entities contained in a
 ![Macintosh HD:Users:jschne:Desktop:ePADD UI May 2015:Discovery:Screen Shot 2015-05-24 at 2.13.56 PM.png][image142]  
 **Discovery Module search results, displaying only redacted headers and extracted entities**
 
-# **6 	Delivery Module** {#6-delivery-module}
+# 6 Delivery Module
 
 **![][image143]**  
 **Delivery Module Navigation Bar**
 
 The Delivery Module enables archival repositories to provide moderated full-text access to unrestricted email archives within a reading room.
 
-## **6.1 	Importing the Email Archive into the Delivery Module** {#6.1-importing-the-email-archive-into-the-delivery-module}
+## 6.1 Importing the Email Archive into the Delivery Module
 
 In order for ePADD to recognize the email archive, you must first ensure it is in the proper location within your user directory. (See section [2: Getting Started](#2-getting-started) for more information about locating your user directory). If an 'epadd-delivery' folder does not already exist within your user directory, create that folder, and add the appropriate email archive (which should be a folder titled 'Email Archive of \<Archive Owner\>-Delivery') to that location.
 
 Now run the ePADD software, and select the Delivery Module by pointing the browser to localhost:9099/epadd/switch-module and selecting the Discovery Module..
 
-## **6.2 	Navigating to a Collection** {#6.2-navigating-to-a-collection}
+## 6.2 Navigating to a Collection
 
 The Collections menu provides a user with moderated access to processed email archives.  
 The user selects the collection they wish to access by clicking on the related image.
@@ -1478,7 +1478,7 @@ The next screen provides basic details of the collection.  A user can proceed wi
 
 ![][image145]
 
-## **6.3  	Browsing the Email Archive** {#6.3-browsing-the-email-archive}
+## 6.3 Browsing the Email Archive
 
 The Browse Menu provides a user with access to several options to browse the email archive, including by Correspondent or by extracted entity type (persons, organizations, and locations). The user can also generate complex tiered searches using a customizable lexicon, as well as browse image attachments, and download documents and other attachments to the workstation for further review.
 
@@ -1486,7 +1486,7 @@ The Browse Menu provides a user with access to several options to browse the ema
 
 **Browse Menu in the Delivery Module**
 
-## **6.4 	Searching the Email Archive** {#6.4-searching-the-email-archive}
+## 6.4 Searching the Email Archive
 
 ![][image147]![][image148]
 
@@ -1510,13 +1510,13 @@ Likewise, ePADD enables a user to search an email archive for multiple terms usi
 
 Finally, ePADD enables a user to search for a list of email addresses using Correspondent List Search. Type or paste one term per line to search for and apply labels to a set of email addresses.
 
-## **6.5 	Labeling messages** {#6.5-labeling-messages}
+## 6.5 Labeling messages
 
 ePADD allows the user to label messages as 'reviewed' to assist with keeping track of research, to add an unlimited number of custom descriptive labels, as well as to request copies of messages from the email archive. Exported messages retain user annotations.
 
 Users can optionally apply labels to a set of messages via the label management interface. Select the label management button, located to the above right of the message pane in the message browse/search result view:
 
-# **Appendix		ePADD Data Flows** {#appendix-epadd-data-flows}
+# Appendix ePADD Data Flows
 
 The following diagrams illustrate the progression of an email archive in ePADD, from import  through to the Appraisal, Processing and Discovery/Delivery modules.
 
