@@ -40,14 +40,18 @@ version=${tag#v}
 
 printf 'ePADD %s, built from `%s`.\n\n' "$version" "${commit:0:7}"
 
+# The manual as it was at this tag, so the notes keep describing this release.
+printf '[ePADD User Guide](https://github.com/%s/blob/%s/docs/manual/README.md)\n\n' "$repository" "$tag"
+
 # A short guide to the one installer most people need. A row is left out when
 # its installer is not among the assets, for example after a platform failed.
 printf '## Which file do I need?\n\n'
 printf '| Your computer | Download |\n| --- | --- |\n'
+download_base="https://github.com/$repository/releases/download/$tag"
 which_file() {
     local computer=$1 asset=$2
     if [ -e "$dist/$asset" ]; then
-        printf '| %s | `%s` |\n' "$computer" "$asset"
+        printf '| %s | [`%s`](%s/%s) |\n' "$computer" "$asset" "$download_base" "$asset"
     fi
 }
 which_file 'Windows' "epadd-$version-windows-x86_64.msi"
@@ -57,16 +61,9 @@ which_file 'Mac with an Intel processor' "epadd-$version-macos-x86_64.dmg"
 which_file 'Ubuntu 24.04 or later' "epadd-$version-linux-x86_64.deb"
 which_file 'Any system with Java 11 or later, no installation' "epadd-$version-standalone.jar"
 printf '\n'
-printf 'See below for a full list of downloads.\n\n'
+printf 'See the Assets section below for a full list of downloads.\n\n'
 printf 'Not sure which Mac you have? Open the Apple menu and choose About This Mac. If it shows "Chip" followed by Apple M1, M2 or later, you have Apple silicon. If it shows "Processor" with Intel, you have an Intel Mac.\n\n'
 printf 'The `epadd-discovery` files are the Discovery edition, which is used to publish collections for searching. The `.war` and `-standalone.jar` files are for server installations and for running ePADD with your own Java. The other files are described under Installing below.\n\n'
-
-printf '## All downloads\n\n'
-printf '| Asset | Size |\n| --- | --: |\n'
-for asset in "$dist"/*; do
-    printf '| `%s` | %s MiB |\n' "$(basename "$asset")" "$(( $(wc -c < "$asset") / 1048576 ))"
-done
-printf '\n'
 
 printf '## Installing\n\n'
 printf '* The `.deb`, `.msi` and `.dmg` installers each bundle their own Java runtime, so nothing needs to be installed first.\n'
