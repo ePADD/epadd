@@ -197,7 +197,7 @@
 					%>
 					<%}%>
 
-					<li><a target="_blank" href="https://docs.google.com/document/d/1CVIpWK5FNs5KWVHgvtWTa7u0tZjUrFrBHq6_6ZJVfEA/edit"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.documentation")%></a></li>
+					<li><a target="_blank" href="https://github.com/ePADD/epadd/blob/main/docs/manual/README.md"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.documentation")%></a></li>
 					<li><a target="_blank" href="https://epadd.nimeyo.com"><%=edu.stanford.muse.util.Messages.getMessage(archiveID,"messages","help.user-forum")%></a></li>
 
 					<% if (!ModeConfig.isDiscoveryMode()) { %>

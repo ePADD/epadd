@@ -19,39 +19,20 @@ Delivery: Enables archival repositories to provide moderated full-text access to
 
 **System Requirements**
 
-OS: Windows 10/11, Mac OS X 10.13 or later, Ubuntu 18.04 or later (64-bit)
-Memory: We recommend at least 8 GB of RAM. The maximum amount of memory ePADD can use depends on how it is started: the Windows application (.exe) allows up to 75% of the memory that is free when ePADD starts, but at least 4 GB (2 GB for the Discovery Module); the macOS application (.dmg) allows up to 64 GB; when running `epadd-standalone.jar`, Java typically allows about a quarter of the computer's RAM. These are limits, not reservations: ePADD only uses as much memory as it needs. To set the maximum yourself, run ePADD from the command line with the `-Xmx` option, e.g. `java -Xmx8g -jar epadd-standalone.jar` for a maximum of 8 GB.
-Browser: current version of Chrome or Firefox
-Java: Java Runtime Environment 11 or later required (bundled with the desktop installers).
+64-bit Windows 10/11, macOS or Ubuntu 24.04 or later, at least 8 GB of RAM, and a current version of Chrome or Firefox. The installers include Java; `epadd.exe` and the standalone jar need Java 11 or later. See [System Requirements](docs/manual/README.md#21-system-requirements) in the manual for details, including how much memory ePADD uses.
 
-**Installation** 
+**Installation**
 
-(Note that a full installation and user guide is accessible [here](https://docs.google.com/document/d/1FV4oi234qjRnvHOvIUtEr5B_W143rPPOht8IlCyXoEI/edit?tab=t.0).
+Download ePADD from the [releases page](https://github.com/ePADD/epadd/releases). The "Which file do I need?" table at the top of each release names the right file for your computer.
 
-ePADD has been tested on and optimized for Windows 7 SP1 / 11, Mac OS X  10.13 / 10.14, and Ubuntu 16.04 . Please follow the instructions below for your operating system.
+* **Windows:** double-click the `.msi` file (`windows-x86_64`, or `windows-arm64` for Arm processors such as Snapdragon). No administrator rights are needed. [More](docs/manual/README.md#221-installing-epadd-on-windows)
+* **macOS:** open the `.dmg` file (`macos-arm64` for Apple silicon, `macos-x86_64` for Intel) and drag ePADD into Applications. [More](docs/manual/README.md#222-installing-epadd-on-macos)
+* **Ubuntu:** `sudo apt install ./epadd-<version>-linux-x86_64.deb` [More](docs/manual/README.md#223-installing-epadd-on-linux)
+* **Any system with Java 11 or later, without installing:** `java -jar epadd-<version>-standalone.jar`
 
-*Installing ePADD on Windows*
+If Windows or macOS warns about an unrecognised developer, the installation sections of the manual linked above explain how to continue. The files starting with `epadd-discovery-` are the [Discovery Module](docs/manual/README.md#5-discovery-module), which is installed in the same way.
 
-Please download the latest ePADD distribution files (.exe) from https://github.com/ePADD/epadd/releases/. You will need to have Java 11 or later installed on your machine for ePADD to work properly.
-
-When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it. The ePADD Appraisal Module directory is located at c:\users\<username>\epadd-appraisal. 
-
-Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. Upon running ePADD, the application icon  will appear in the Windows Taskbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
-
-Note: If ePADD runs slowly or reports that it is out of memory, you can allow it to use more memory by running the Java application directly from the command line (epadd-standalone.jar). From the Command Prompt, run: java -Xmx#g -jar epadd-standalone.jar, where # is the maximum amount of RAM (in GB) ePADD may use. Leave a few GB free for the operating system and the browser.
-
-Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
-
-*Installing ePADD on OSX*
-
-Please download the latest ePADD distribution files (.dmg) from https://github.com/ePADD/epadd/releases/.
-When you run ePADD for the first time, a directory for the Appraisal Module is created to store working files. When ePADD starts up, it checks this directory and relies upon it to resume earlier work.  If the software does not locate this directory, ePADD will create it.  The ePADD Appraisal Module directory is located at Macintosh HD/Users/<username>/epadd-appraisal.
-
-Depending upon your network permissions, you may be asked to allow ePADD access to your internet connection. Certain functionality (for instance, downloading email from an email account using the IMAP protocol, or communicating with DBPedia to generate relevance rankings for authority reconciliation) requires an internet connection. In Mac OSX, the application icon  will appear in the OSX Finder Toolbar. Right-click on this icon at any point to open an ePADD window or to quit ePADD.
-
-Note: If ePADD runs slowly or reports that it is out of memory, you can allow it to use more memory by running the Java application directly from the command line (epadd-standalone.jar). From the Terminal, run: java -Xmx#g -jar epadd-standalone.jar, where # is the maximum amount of RAM (in GB) ePADD may use. Leave a few GB free for the operating system and the browser.
-
-Note: The Discovery Module is run through a separate distribution file accessible via https://github.com/ePADD/epadd/releases/. Please see the installation and user guide for more information about the Discovery Module.
+The [ePADD Installation and User Guide](docs/manual/README.md) covers installation, settings and all features in full.
 
 **ePADD Documentation, Help, and other Information**
 
