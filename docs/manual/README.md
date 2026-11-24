@@ -1,8 +1,6 @@
 # ePADD Installation and User Guide
 
-## *August, 2026*
-
-## *Version 11*
+*Version 11.1.4 · November 2026*
 
 **ePADD** is a software application that supports archival processes around the appraisal, ingest, processing, discovery, and delivery of email archives. It is open source and licensed under an Apache Public License, v2.0.
 
@@ -52,6 +50,7 @@ Funding for **ePADD** development has previously been provided by the Andrew W. 
 | 3/1/2024 | 11 | Guide updated for the Appraisal and Processing modules to reflect changes in 11 release |
 | 8/24/2026 | 11.1.3 | Guide updated to reflect changes in 11.1.3 release |
 | 10/23/2026 | 11.1.4 | Guide updated to reflect changes in 11.1.4 release and reformatted for GitHub Markdown.&nbsp; |
+| 11/24/2026 | 11.1.4 | Installation instructions updated for the Windows (.msi), macOS (.dmg) and Linux (.deb) installers with bundled Java, with direct download links |
 
 &nbsp;
 

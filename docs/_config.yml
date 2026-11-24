@@ -1,0 +1,16 @@
+# GitHub Pages configuration for the ePADD documentation.
+#
+# The site is built from the docs/ folder of the main branch. The user guide in
+# manual/README.md is served as manual/ and keeps working when it is viewed in
+# the repository as well, because it needs no front matter: GitHub Pages turns
+# README.md into the folder's index page and takes the page title from its
+# first heading.
+title: ePADD
+description: Email archiving and discovery software
+theme: jekyll-theme-primer
+
+# GFM input makes the heading anchors the same as on github.com, so the links
+# in the manual's table of contents work on both.
+markdown: kramdown
+kramdown:
+  input: GFM
