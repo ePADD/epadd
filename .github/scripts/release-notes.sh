@@ -41,7 +41,8 @@ version=${tag#v}
 printf 'ePADD %s, built from `%s`.\n\n' "$version" "${commit:0:7}"
 
 # The manual as it was at this tag, so the notes keep describing this release.
-printf '[ePADD User Guide](https://github.com/%s/blob/%s/docs/manual/README.md)\n\n' "$repository" "$tag"
+manual_url="https://github.com/$repository/blob/$tag/docs/manual/README.md"
+printf '[ePADD User Guide](%s)\n\n' "$manual_url"
 
 # A short guide to the one installer most people need. A row is left out when
 # its installer is not among the assets, for example after a platform failed.
@@ -101,6 +102,8 @@ if [ "$windows_signed" != true ] || [ "$macos_signed" != true ]; then
         printf '* The macOS artifacts are neither signed nor notarized, so Gatekeeper will refuse to open them until the application is allowed under System Settings, Privacy and Security.\n'
     fi
 fi
+
+printf '\nMore about installation can be found in the [ePADD User Guide](%s#22-installing-epadd).\n' "$manual_url"
 
 if [ -n "$previous_tag" ]; then
     printf '\n## Changes since %s\n\n' "$previous_tag"

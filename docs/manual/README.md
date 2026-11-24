@@ -254,7 +254,7 @@ If ePADD runs slowly or reports an out-of-memory error:
 
 For example, to set the maximum to 12 GB, open a Command Prompt or terminal, navigate to the directory containing the standalone .jar file, and run:
 
-*java \-Xmx12g \-jar epadd-\<version\>-standalone.jar*
+*java \-Xmx12g \-jar epadd-11.1.4-standalone.jar*
 
 Choose a value below the computer's total installed RAM, leaving sufficient memory for the operating system, web browser, and other applications
 
@@ -270,12 +270,12 @@ Please download the latest ePADD distribution files from [https\://github.com/eP
 
 | Your computer | File to download |
 | --- | --- |
-| Windows (most PCs) | epadd-\<version\>-windows-x86\_64.msi |
-| Windows on Arm, for example Snapdragon laptops | epadd-\<version\>-windows-arm64.msi |
-| Mac with Apple silicon (M1 or later) | epadd-\<version\>-macos-arm64.dmg |
-| Mac with an Intel processor | epadd-\<version\>-macos-x86\_64.dmg |
-| Ubuntu 24.04 or later | epadd-\<version\>-linux-x86\_64.deb |
-| Any system with Java 11 or later, no installation | epadd-\<version\>-standalone.jar |
+| Windows (most PCs) | [epadd-11.1.4-windows-x86\_64.msi](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-windows-x86_64.msi) |
+| Windows on Arm, for example Snapdragon laptops | [epadd-11.1.4-windows-arm64.msi](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-windows-arm64.msi) |
+| Mac with Apple silicon (M1 or later) | [epadd-11.1.4-macos-arm64.dmg](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-macos-arm64.dmg) |
+| Mac with an Intel processor | [epadd-11.1.4-macos-x86\_64.dmg](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-macos-x86_64.dmg) |
+| Ubuntu 24.04 or later | [epadd-11.1.4-linux-x86\_64.deb](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-linux-x86_64.deb) |
+| Any system with Java 11 or later, no installation | [epadd-11.1.4-standalone.jar](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-standalone.jar) |
 
 The .msi, .dmg and .deb installers include their own Java runtime, so nothing else needs to be installed first (see Section [2.1: System Requirements](#21-system-requirements)). Each installer is built for one processor architecture, so please make sure to choose the file that matches your computer.
 
@@ -296,7 +296,7 @@ Mac: /Users/\<username\>/epadd-settings
 
 ePADD is available for Windows in two forms:
 
-* **Windows installer (.msi), recommended.** Download *epadd-\<version\>-windows-x86\_64.msi*, or *epadd-\<version\>-windows-arm64.msi* for Windows computers with an Arm processor (for example laptops with a Snapdragon processor). If you are unsure, open *Settings \> System \> About* and check the *System type*: "x64-based processor" requires the x86\_64 file, "ARM-based processor" the arm64 file. The installer includes Java, so no separate Java installation is needed.  
+* **Windows installer (.msi), recommended.** Download [*epadd-11.1.4-windows-x86\_64.msi*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-windows-x86_64.msi), or [*epadd-11.1.4-windows-arm64.msi*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-windows-arm64.msi) for Windows computers with an Arm processor (for example laptops with a Snapdragon processor). If you are unsure, open *Settings \> System \> About* and check the *System type*: "x64-based processor" requires the x86\_64 file, "ARM-based processor" the arm64 file. The installer includes Java, so no separate Java installation is needed.  
 * **Windows executable (epadd-\<version\>.exe).** This file runs without installation but does not include Java. **You will need to have a 64-bit Java Runtime Environment version 11 or later installed on your machine to use it.** It runs on both x86\_64 and Arm computers.
 
 **Installing with the .msi installer**
@@ -335,7 +335,7 @@ Depending on your network permissions, you may be asked to allow ePADD access to
 
 Upon running ePADD, the application icon **![Macintosh HD:private:var:folders:5m:rh\_kt9gx601gl7lw5qyk54gr0000gq:T:TemporaryItems:epadd\_logo.png][image2]** will appear in the Windows Taskbar. If you do not see the icon, it may be hidden from view. Consult ‘Windows help & learning’ \- [https\://support.microsoft.com/en-gb/windows](https://support.microsoft.com/en-gb/windows) \- for more information. Right-click on the ePADD icon at any point to open an ePADD window or to quit ePADD.
 
-**Note:** The Discovery Module is run through a separate distribution, available as an installer (*epadd-discovery-\<version\>-windows-x86\_64.msi* or *epadd-discovery-\<version\>-windows-arm64.msi*) or as *epadd-discovery-\<version\>-standalone.jar*, which requires Java 11 or later.
+**Note:** The Discovery Module is run through a separate distribution, available as an installer ([*epadd-discovery-11.1.4-windows-x86\_64.msi*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-windows-x86_64.msi) or [*epadd-discovery-11.1.4-windows-arm64.msi*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-windows-arm64.msi)) or as [*epadd-discovery-11.1.4-standalone.jar*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-standalone.jar), which requires Java 11 or later.
 
 These files are accessible via [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). Be careful not to use the standard ePADD application in a discovery environment. The ePADD discovery application should be used in a public discovery environment because it is more secure than the standard ePADD application. For example, it does not allow any modifications to the archive.
 
@@ -349,8 +349,8 @@ ePADD saves all data in folders in the C:\\users\\\<username\>\\ directory, unle
 
 Please download the latest ePADD disk image (.dmg) from [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). There are two different disk images for macOS, and you need the one that matches the processor of your Mac:
 
-* *epadd-\<version\>-macos-arm64.dmg* for Macs with Apple silicon (M1, M2 or later).  
-* *epadd-\<version\>-macos-x86\_64.dmg* for Macs with an Intel processor.
+* [*epadd-11.1.4-macos-arm64.dmg*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-macos-arm64.dmg) for Macs with Apple silicon (M1, M2 or later).  
+* [*epadd-11.1.4-macos-x86\_64.dmg*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-macos-x86_64.dmg) for Macs with an Intel processor.
 
 Not sure which Mac you have? Open the Apple menu and choose *About This Mac*. If it shows "Chip" followed by Apple M1, M2 or later, you have Apple silicon. If it shows "Processor" with Intel, you have an Intel Mac.
 
@@ -395,7 +395,7 @@ In Mac OS, the application icon **![Macintosh HD:private:var:folders:5m:rh\_kt9g
 
 **ePADD requires an internet connection to download email using the IMAP protocol**
 
-**Note:** The Discovery Module is run through a separate distribution, available as a disk image (*epadd-discovery-\<version\>-macos-arm64.dmg* or *epadd-discovery-\<version\>-macos-x86\_64.dmg*) or as *epadd-discovery-\<version\>-standalone.jar*, which requires Java 11 or later. These files are accessible via [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/).  Be careful not to use the standard ePADD application in a discovery environment. The ePADD discovery application should be used in a public discovery environment because it is more secure than the standard ePADD application. For example, it does not allow any modifications to the archive.
+**Note:** The Discovery Module is run through a separate distribution, available as a disk image ([*epadd-discovery-11.1.4-macos-arm64.dmg*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-macos-arm64.dmg) or [*epadd-discovery-11.1.4-macos-x86\_64.dmg*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-macos-x86_64.dmg)) or as [*epadd-discovery-11.1.4-standalone.jar*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-standalone.jar), which requires Java 11 or later. These files are accessible via [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/).  Be careful not to use the standard ePADD application in a discovery environment. The ePADD discovery application should be used in a public discovery environment because it is more secure than the standard ePADD application. For example, it does not allow any modifications to the archive.
 
 ePADD saves all data in folders in the Macintosh HD/Users/\<username\>/ directory. We recommend as best practice making periodic back-ups of all ePADD related folders in this directory, which may include: epadd-settings, epadd-appraisal, epadd-processing, epadd-discovery, and epadd-delivery.
 
@@ -405,7 +405,7 @@ ePADD saves all data in folders in the Macintosh HD/Users/\<username\>/ director
 
 ### 2.2.3 Installing ePADD on Linux
 
-For Ubuntu 24.04 or later, please download the Debian package *epadd-\<version\>-linux-x86\_64.deb* from [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). The package includes Java, so no separate Java installation is needed. It is available for 64-bit x86 computers only.
+For Ubuntu 24.04 or later, please download the Debian package [*epadd-11.1.4-linux-x86\_64.deb*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-linux-x86_64.deb) from [https\://github.com/ePADD/epadd/releases/](https://github.com/ePADD/epadd/releases/). The package includes Java, so no separate Java installation is needed. It is available for 64-bit x86 computers only.
 
 **Installing with the .deb package**
 
@@ -413,19 +413,19 @@ For Ubuntu 24.04 or later, please download the Debian package *epadd-\<version\>
 
 2) Install the package (administrator rights are required):
 
-*sudo apt install ./epadd-\<version\>-linux-x86\_64.deb*
+*sudo apt install ./epadd-11.1.4-linux-x86\_64.deb*
 
 3) Start ePADD from the application menu (it is listed under *Office*) or by running */opt/epadd/bin/epadd* in a terminal.
 
 To upgrade, install the package of the newer version in the same way. To uninstall ePADD, run *sudo apt remove epadd*. Your data and settings folders are not affected by either.
 
-The package was built on Ubuntu 24.04 and its dependencies are resolved against that release. On older Ubuntu versions and on other Linux distributions, use *epadd-\<version\>-standalone.jar* instead, which requires a 64-bit Java Runtime Environment version 11 or later:
+The package was built on Ubuntu 24.04 and its dependencies are resolved against that release. On older Ubuntu versions and on other Linux distributions, use [*epadd-11.1.4-standalone.jar*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-11.1.4-standalone.jar) instead, which requires a 64-bit Java Runtime Environment version 11 or later:
 
-*java \-jar epadd-\<version\>-standalone.jar*
+*java \-jar epadd-11.1.4-standalone.jar*
 
 ePADD saves all data in folders in the user's home directory (/home/\<username\>/), unless you have defined a different location using the epadd.properties file. The epadd.properties file and its settings work as described for macOS above. We recommend as best practice making periodic backups of all ePADD related folders in this directory, which may include: epadd-settings, epadd-appraisal, epadd-processing, epadd-discovery, and epadd-delivery.
 
-**Note:** The Discovery Module is available as the Debian package *epadd-discovery-\<version\>-linux-x86\_64.deb* (installed with *sudo apt install* as above and uninstalled with *sudo apt remove epadd-discovery*) or as *epadd-discovery-\<version\>-standalone.jar*.
+**Note:** The Discovery Module is available as the Debian package [*epadd-discovery-11.1.4-linux-x86\_64.deb*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-linux-x86_64.deb) (installed with *sudo apt install* as above and uninstalled with *sudo apt remove epadd-discovery*) or as [*epadd-discovery-11.1.4-standalone.jar*](https://github.com/ePADD/epadd/releases/download/v11.1.4/epadd-discovery-11.1.4-standalone.jar).
 
 ### 2.2.4 Compatibility Note
 
@@ -435,7 +435,7 @@ ePADD 5.0 is not compatible with previous versions.
 
 ## 2.3 Running ePADD
 
-If you installed ePADD with an installer, start it from the Start menu or desktop shortcut (Windows), the Applications folder (macOS) or the application menu (Linux). If you use epadd.exe, simply double-click the executable file. The standalone .jar can be started with *java \-jar epadd-\<version\>-standalone.jar*.
+If you installed ePADD with an installer, start it from the Start menu or desktop shortcut (Windows), the Applications folder (macOS) or the application menu (Linux). If you use epadd.exe, simply double-click the executable file. The standalone .jar can be started with *java \-jar epadd-11.1.4-standalone.jar*.
 
 ## 2.4 Selecting a Module
 
